@@ -1,6 +1,6 @@
 ---
 title: "W10 Review Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -88,6 +88,53 @@ non-UTF-8 names. Every high finding came with a concrete input; none was
 reported as needing only a suspicion. Queue wait and context loading inside
 each reviewer were not observed.
 
+#### Fixes and re-reviews
+
+Every finding was reproduced with a failing test before its fix. The
+forecast fix (`759509c3f`) refuses non-finite values, an end in the future
+and active minutes over the elapsed time, adds `BEFORE INSERT` triggers so
+`REPLACE` aborts, labels calibration `empirical` only for one task type,
+returns exit 2 on store errors, and states in R152 and RUN-0021 that a
+dropped trigger or replaced store file is not prevented. The dispatcher fix
+(`27d140727`) diffs with `--no-renames`, skips empty patches, releases
+leases and the worktree on a setup error, kills a finished worker's group
+before reading its result, writes the integrated patch afresh with its
+SHA-256, runs integration checks with a timeout and cancel, runs Git
+through the recorded worktree directory, honours a cancel newer than the
+run start, refuses owning `.`, and releases a dead run's leases in
+`cleanup`.
+
+Round 2, the affected slice only, was sent to the same reviewers at
+2026-11-18T21:23:05Z. The forecast reviewer approved after 60 s with 6 tool
+calls, noting a sub-second end-time edge and a missing `empirical` test,
+both fixed in `3339e367e`. The dispatcher reviewer resolved all ten round-1
+findings after 120 s with 6 tool calls but blocked on a defect the fix
+introduced: a unit id such as an absolute path let the new `rmtree`
+fallback delete any directory (high), plus a command that cannot start
+leaking its worktree and leases (medium) and a group killed after its
+leader was reaped (low). `a70090601` refuses ids that are not plain tokens,
+limits `rmtree` to a run's own worktree folder, guards the worker start,
+and detects exits with `waitid(WNOWAIT)` so the group is killed first.
+Round 3, dispatched at 2026-11-18T21:26:42Z, approved after 43 s with 6
+tool calls with one follow-up, command entries Popen cannot start, fixed in
+`0f82a56cd` by plan validation and a guarded integration start; that last
+change closed with an author check, not another round. A real two-worker
+run on the fixed dispatcher passed in 39.1 s with integration passed and
+no worktree left.
+
+#### Review cost and yield
+
+Before this Task the three PRs had an author check only, which found none
+of these defects; the automated security review of PR 1109 found one.
+The fresh-context reviews found 21 defects across three rounds (dispatcher
+14: 4 high, 4 medium, 6 low; forecast 7: 1 high, 1 medium, 5 low), and
+each one the author tested reproduced, so no false block was observed. Two
+findings were introduced by the author's own fixes and caught by the next
+round. Review time was 135 s and 60 s for the forecast and 246 s, 120 s and
+43 s for the dispatcher, 604 s in total over five rounds; the reported
+subagent token totals were 79 thousand and 111 thousand. Queue wait,
+context loading and the author's fix time were not observed separately.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -97,7 +144,9 @@ each reviewer were not observed.
 
 ### Blockers and Decisions
 
-The review findings are being fixed under this Task with regression tests.
+None. Advisory and unfixed: the forecast API's `forecasted_at` can still
+backdate a forecast (the CLI does not expose it), and integration check
+output is discarded rather than logged.
 
 ## Verification Evidence
 
@@ -108,10 +157,18 @@ The review findings are being fixed under this Task with regression tests.
 | Policy checks | 147 | W163 | Governance contract and provider renderer | Workflows 1.6.0, GitHub governance 1.12.0, skill 1.4.0 | PASS | Contract 0 failures; renderer drift 0 | required | - |
 | Forecast review | 147 | W163 | Fresh-context `code-reviewer` review | PRs 1105 and 1108 packet, main `24b7e60b9` | FAIL | Block: 1 high, 1 medium, 4 low; 135 s, 1 round | required | - |
 | Dispatcher review | 147 | W163 | Fresh-context `code-reviewer` review | PR 1109 packet, main `24b7e60b9` | FAIL | Block: 3 high, 3 medium, 4 low; 246 s, 1 round | required | - |
+| Forecast fix RED | 147 | W163 | `test_task_forecast` | New finding tests on `0a1b8ae38` | FAIL | 7 failures, 1 error | required | - |
+| Forecast fix GREEN | 147 | W163 | `test_task_forecast` | `3339e367e` | PASS | 12 tests | required | Forecast fix RED |
+| Forecast re-review | 147 | W163 | Fresh-context `code-reviewer` review | Fix slice, round 2 | PASS | Approve; all six findings resolved; 60 s | required | Forecast review |
+| Dispatcher fix RED | 147 | W163 | `test_work_dispatch` | New finding tests on `0a1b8ae38` and `27d140727` | FAIL | 6 failures, 4 errors; then 2 failures, 2 errors for round 2; then 3 errors for round 3 | required | - |
+| Dispatcher fix GREEN | 147 | W163 | `test_work_dispatch` | `0f82a56cd` | PASS | 26 tests | required | Dispatcher fix RED |
+| Dispatcher re-review | 147 | W163 | Fresh-context `code-reviewer` review | Fix slices, rounds 2 and 3 | PASS | Round 2 block on 1 new high, round 3 approve with one follow-up, fixed; 120 s and 43 s | required | Dispatcher review |
+| Real dispatch after fixes | 147 | W163 | `work_dispatch.py run` | Three-unit plan, two workers, `0f82a56cd` | PASS | 39.1 s; integration passed with SHA-256; one worktree left | required | - |
 
 ### Resolution Links
 
-None yet.
+Forecast fix GREEN resolves Forecast fix RED, Dispatcher fix GREEN
+resolves Dispatcher fix RED, and each re-review resolves its first review.
 
 ## Acceptance Decision
 
@@ -119,11 +176,11 @@ None yet.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 147 | pending | Policy checks, Forecast review, Dispatcher review | Awaits the fixes and the owner's decision | @buenhyden |
+| 147 | pending | Policy checks, Forecast re-review, Dispatcher re-review, Forecast fix GREEN, Dispatcher fix GREEN, Real dispatch after fixes | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
-The review findings must be fixed or recorded, and the fixes reviewed.
+None beyond the owner's decision; the advisory items above are recorded.
 
 ## Handoff
 
@@ -134,4 +191,5 @@ rules.
 
 ### Next Owner
 
-The author resolves the review findings; the owner decides criterion 147.
+The owner decides criterion 147, and criteria 145 and 146 with these
+reviews in view.
