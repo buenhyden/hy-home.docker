@@ -62,6 +62,7 @@ MUTATION_OVERRIDES = {
     "scripts/operations/agent_memory.py": "runtime",
     "scripts/operations/session_analysis.py": "runtime",
     "scripts/operations/task_forecast.py": "runtime",
+    "scripts/operations/work_dispatch.py": "runtime",
     "scripts/operations/provider_surface_renderer.py": "check-write",
     "scripts/operations/secret-catalog.py": "check-write",
     "scripts/operations/workspace-inventory.py": "check-write",

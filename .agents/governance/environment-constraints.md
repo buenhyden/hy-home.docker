@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.21.0"
+version: "1.22.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -176,6 +176,11 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R153 | Recording an outcome | Required: one outcome per task, completed, failed or cancelled, scored against the last revision fixed before the start; failed and cancelled tasks are censored and counted apart | `task_forecast.py` refuses a missing pre-start forecast or a second outcome | `tests/validation/test_task_forecast.py` |
 | ENVIRONMENT-CONSTRAINTS-R154 | Reporting forecast quality | Required: report coverage with its 95% Wilson interval, pinball loss and sample size per quantile; below 20 completed tasks the result is labelled `insufficient sample` and claims no calibrated guarantee | none | none |
 | ENVIRONMENT-CONSTRAINTS-R155 | Using a forecast | Forbidden: treating it as a deadline or approval, skipping a required check because time ran over, or summing per-task P80 values into a parallel run's P80 | none | none |
+| ENVIRONMENT-CONSTRAINTS-R156 | Running work units in parallel | Required: dispatch them with `scripts/operations/work_dispatch.py` from a plan naming each unit's command, dependencies, owned paths and shared resources, one worktree per unit, the Task and brief revision passed to the worker | none | none |
+| ENVIRONMENT-CONSTRAINTS-R157 | A unit starts | Required: every dependency succeeded and the unit holds a lease on each owned path and shared resource; a lease carries a fencing generation and a result whose lease expired or was taken over is refused | the dispatcher's lease store | `tests/validation/test_work_dispatch.py` |
+| ENVIRONMENT-CONSTRAINTS-R158 | A unit's result | Forbidden: accepting a change outside the unit's owned paths; a failure blocks only its downstream units and a cancel stops every running worker's process group | the dispatcher | `tests/validation/test_work_dispatch.py` |
+| ENVIRONMENT-CONSTRAINTS-R159 | Integrating units | Required: apply every unit patch on the base and run the integration checks again; a worker's own success never stands for the integrated result | the dispatcher | `tests/validation/test_work_dispatch.py` |
+| ENVIRONMENT-CONSTRAINTS-R160 | Claiming a parallel gain | Required: compare elapsed time with one worker on the same plan, setup and integration included, and state N; a worktree is never treated as a sandbox | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -510,6 +515,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Compose start selection (R149): no check is named.
 - Whole-stack start (R150): the hookify rule sees only the command text; a profile list read from an environment file or a command built at run time is outside it.
 - Task forecasts (R151, R154, R155): no check is named; R152 and R153 are enforced by the store and the CLI.
+- Parallel work (R156, R160): no check is named; R157 to R159 are enforced by the dispatcher, which checks ownership after the worker ends and does not confine the worker's processes, ports or volumes.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.

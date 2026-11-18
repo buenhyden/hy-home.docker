@@ -1317,6 +1317,17 @@ files:
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/operations/work_dispatch.py
+  kind: operations
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_work_dispatch.py
 - path: scripts/operations/workspace-inventory.py
   kind: operations
   authority: .github/workflow-contract.yml

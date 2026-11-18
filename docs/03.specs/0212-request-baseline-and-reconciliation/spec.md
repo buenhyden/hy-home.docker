@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.86.0"
+version: "1.87.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1166,6 +1166,15 @@ target, backup, recovery boundary, and action-specific authorization.
      cancelled tasks censored apart. A small sample is never reported as a
      calibrated guarantee, and at least one real task is forecast and
      observed.
+146. TSK-0090 applies the 4.2.0 W10-PARALLEL design with shell workers, as
+     the owner chose on 2026-11-18: a dispatcher runs dependent work units
+     in separate worktrees, each holding fenced leases on its owned paths
+     and shared resources. A late result after a lease was taken over, a
+     change outside ownership and a failed upstream are refused or blocked,
+     a cancel leaves no worker or worktree, and the integrator reruns the
+     checks on the combined patches. Two independent units and one
+     shared-resource unit run for real, and the gain is measured against
+     one worker with setup and integration included.
 
 ### Evidence Requirements
 

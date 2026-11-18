@@ -604,6 +604,7 @@
         "tests.lib.hooks.test_session_capture",
         "tests.validation.test_session_analysis",
         "tests.validation.test_task_forecast",
+        "tests.validation.test_work_dispatch",
         "-v"
       ],
       "cwd": ".",
@@ -1885,6 +1886,7 @@
           "scripts/operations/agent_memory.py",
           "scripts/operations/session_analysis.py",
           "scripts/operations/task_forecast.py",
+          "scripts/operations/work_dispatch.py",
           "scripts/operations/provider_surface_renderer.py",
           "tests/lib/hooks/",
           "tests/lib/ops/test_memory_backup.py",
@@ -1896,6 +1898,7 @@
           "tests/validation/test_agent_memory_capacity.py",
           "tests/validation/test_session_analysis.py",
           "tests/validation/test_task_forecast.py",
+          "tests/validation/test_work_dispatch.py",
           "tests/validation/test_agent_governance_ci_routing.py"
         ],
         "suites": [
