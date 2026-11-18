@@ -1,6 +1,6 @@
 ---
 title: "W08 Session Analysis Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -80,6 +80,13 @@ ran again.
 
 ### Blockers and Decisions
 
+On 2026-11-18 the owner decided the five candidates, recorded with
+`decide --owner buenhyden`: the pasted result block repeated three times
+and both Claude capture-gap reasons are accepted for a later, separately
+approved Task; the repeated continuation prompt and `/compact` are
+rejected. A decision adopts nothing. W08-CAPTURE removed 25 test sessions
+from the capture store; none was a source of these candidates.
+
 The installed timer first fires at 2026-11-19 03:00 KST. A missed-window
 catch-up by `Persistent=true` needs the host to miss a firing, which has
 not happened.
@@ -97,6 +104,7 @@ not happened.
 | Real scheduled run | 141 | W157 | systemd transient timer firing `run --trigger scheduled` | Real stores at 14:09:45 KST | PASS | Complete, no new events since the last window, not analysed twice | required | - |
 | Real duplicate run | 141 | W157 | CLI run while another owner holds the lease | Real analysis store | PASS | Exit 75 skipped; the next run after release completed | required | - |
 | Daily timer | 141 | W157 | `install-timer` and `systemctl --user list-timers` | User systemd | PASS | `hy-home-session-analysis.timer` next at 2026-11-19 03:00 KST | required | - |
+| Candidate decisions | 141 | W157 | `session_analysis.py decide` | Five pending candidates in the real analysis store | PASS | 3 accepted, 2 rejected by buenhyden; no candidate left pending | required | - |
 | Missed-window catch-up | 141 | W157 | `Persistent=true` firing after a missed run | User systemd | NOT_RUN | No firing has been missed yet | required | - |
 
 ### Resolution Links
@@ -109,12 +117,13 @@ Analysis GREEN resolves Analysis RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 141 | pending | Analysis GREEN, Real scheduled run, Real duplicate run, Daily timer | Awaits the first 03:00 run, a missed-window catch-up and the owner's decision | @buenhyden |
+| 141 | pending | Analysis GREEN, Real scheduled run, Real duplicate run, Daily timer | Awaits the first 03:00 run, a missed-window catch-up and the owner's criterion decision | @buenhyden |
 
 ### Remaining Conditions
 
 The first daily run at 2026-11-19 03:00 KST and a catch-up after a missed
-firing remain to be observed. The 5 candidates await review.
+firing remain to be observed. The three accepted candidates need their own
+approved Task before anything changes.
 
 ## Handoff
 
@@ -125,5 +134,5 @@ and RUN-0021 hold the W156 behavior.
 
 ### Next Owner
 
-The implementer owns W157. The owner decides criterion 141 and the
-candidates.
+The implementer owns W157. The owner decides criterion 141 and approves
+any Task for the accepted candidates.
