@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.82.0"
+version: "1.83.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -402,6 +402,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W155 | 140 | Observe native capture from a Claude session and a Codex session | W154 | TSK-0084 | Native capture status for both providers |
 | W156 | 141 | Analyse captured sessions with deterministic rules under a lease, per window, into reviewable candidates on a daily user timer | W154 | TSK-0085 | Analysis RED and GREEN tests, manifest and routing checks |
 | W157 | 141 | Observe a real scheduled run, a duplicate run and a missed-window catch-up | W156 | TSK-0085 | Timer journal, status record and run table |
+| W158 | 142 | Move the eight shared policies to `docs/00.workspace/`, rewrite live references, map the responsibility layers and teach the link, metadata, contract and gate checkers the new home | None | TSK-0086 | Link, metadata, lifecycle, contract and renderer checks; moved-link and baseline RED and GREEN tests |
 
 #### Current v30 continuation and delivery
 
@@ -766,21 +767,21 @@ The durable contract is the current request baseline and reconciliation recorded
 
 The owner is @buenhyden; the receipts are the Tasks named in the Work Breakdown.
 
-W121 promotes to `.agents/governance/sdlc.md` (promotion owners, state axes,
+W121 promotes to `docs/00.workspace/02.process/sdlc.md` (promotion owners, state axes,
 transition events, acceptance and readiness rules),
-`.agents/governance/documentation-protocol.md` (operations currency, version
-boundary), `.agents/governance/github-governance.md` (Issue closure),
+`docs/00.workspace/02.process/documentation-protocol.md` (operations currency, version
+boundary), `docs/00.workspace/02.process/github-governance.md` (Issue closure),
 `docs/99.templates/registry.json` (`common.section_forms`), the Task and Plan
 templates, and the glossary. The handoff condition is the merge of its pull
 request; TSK-0063's Promotion Receipt records each target.
 
 W122 promotes to `docs/99.templates/registry.json`
 (`common.archive_retention`, `common.vocabulary_contract`), the profile
-schema, `.agents/governance/documentation-protocol.md` (the enforcement it now
+schema, `docs/00.workspace/02.process/documentation-protocol.md` (the enforcement it now
 has) and the glossary Provenance. The handoff condition is the merge of its
 pull request; TSK-0064's Promotion Receipt records each target.
 
-W123 promotes to `.agents/governance/documentation-protocol.md` (the
+W123 promotes to `docs/00.workspace/02.process/documentation-protocol.md` (the
 Relations derivation and the Change Impact row). The handoff condition is the
 merge of its pull request; TSK-0064's Promotion Receipt records the target.
 
@@ -793,12 +794,12 @@ the handoff condition is the merge of its pull request.
 W125 promotes to `.github/workflow-contract.yml` (`guarantee`, `security_db`),
 `docs/99.templates/contracts/document-frontmatter.schema.json` and
 `docs/99.templates/contracts/document-profile.schema.json` (SemVer patterns)
-and `.agents/governance/documentation-protocol.md` (Version objects). The
+and `docs/00.workspace/02.process/documentation-protocol.md` (Version objects). The
 handoff condition is the merge of each pull request; TSK-0064's Promotion
 Receipt records each target.
 
-W126 promotes to `.agents/governance/git-workflow.md` (Git action stages,
-merge subjects), `.agents/governance/github-governance.md` (review path, SHA
+W126 promotes to `docs/00.workspace/02.process/git-workflow.md` (Git action stages,
+merge subjects), `docs/00.workspace/02.process/github-governance.md` (review path, SHA
 pinning, CI shards, immutable releases), `.agents/governance/agentic.md`
 (no-model-API scope), `.github/workflow-contract.yml` and
 `.github/workflows/ci-quality.yml` (shards and aggregate) and `.cz.toml`. The
