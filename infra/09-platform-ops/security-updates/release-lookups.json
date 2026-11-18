@@ -62700,7 +62700,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
-          "source_input_sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74",
+          "source_input_sha256": "2b8f8444fb5f34c8f2284f64ead1ca11c55aab4d4ff648a79cf5e73ea39fa8e2",
           "assessment_version": "3.7.17",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -63059,7 +63059,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2",
-          "source_input_sha256": "a220ca2569b9262b1b9beb1c612e6a73560be4272d43b7da1611961fce355764",
+          "source_input_sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64",
           "assessment_version": "2026.11.9-57ff753ad",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -67055,7 +67055,7 @@
         "decision": "defer",
         "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/traefik",
         "declared_subject": "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
-        "source_input_sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74",
+        "source_input_sha256": "2b8f8444fb5f34c8f2284f64ead1ca11c55aab4d4ff648a79cf5e73ea39fa8e2",
         "operational_execution": "NOT_RUN",
         "applicability": "UNKNOWN",
         "official_advisory_queries": [

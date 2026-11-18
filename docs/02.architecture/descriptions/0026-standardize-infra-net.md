@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.12.0"
+version: "1.13.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
@@ -71,7 +71,7 @@ networks beside it, then it left the services and the root.
 | `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, RedisInsight | development client → dev PostgreSQL/Valkey |
 | `experience_ingress_net` | 10.250.16.0/24, internal | Traefik and Storybook | gateway → Storybook only |
 | `redisinsight_ingress_net` | 10.250.18.0/24, internal, isolated, dynamic from .128/25 | Traefik and RedisInsight (fixed .3) | gateway → RedisInsight only; no host address |
-| `<service>_ingress_net` (14) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
+| `<service>_ingress_net` (15) | 10.250.24.0/24–10.250.40.0/24 and 10.250.50.0/24 (`searxng_ingress_net`), internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
 | `seaweedfs_s3_metrics_net` | 10.250.41.0/24, internal, isolated, dynamic from .128/25 | `seaweedfs-s3` (metrics listener bound to fixed .2), Prometheus, Alloy | metrics/pprof scrape of `seaweedfs-s3:9327`; reaches no master/volume/filer API |
 | `oauth2_proxy_metrics_net` | 10.250.43.0/24, internal, isolated, dynamic from .128/25 | OAuth2 Proxy (metrics listener bound to fixed .2, alias `oauth2-proxy-metrics`) and Prometheus | metrics scrape of 44180 only (SPEC-0267) |
 | `keycloak_management_net` | 10.250.44.0/24, internal, isolated, dynamic from .128/25 | Keycloak (management listener bound to fixed .2, alias `keycloak-management`), Prometheus and Gatus | health and metrics on 9000 only (SPEC-0267) |
@@ -119,6 +119,7 @@ that network is then its trust boundary, and the consumer gets a scoped network.
 | Restic offsite egress on `restic_offsite_net` | `restic-offsite` | Cloudflare R2 | ADR-0056 | The description records no failure handling for this interface. |
 | Crawl4AI public egress on `crawl4ai_outbound_net` | `crawl4ai-egress` | Public addresses on ports 80/443 | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | SearXNG public search on `searxng_outbound_net` | `searxng` | Public search engines | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SearXNG route `searxng.${DEFAULT_URL}` on `searxng_ingress_net` | `searxng` through Traefik | Browsers (SSO) and programs on other hosts, such as Hermes on 192.168.0.22 (Basic `/search` API) | [POL-0110](../../05.operations/policies/09-ai-and-search/0110-searxng.md); `sso-auth` for browsers, `searxng-api-auth` htpasswd for `/search` | Traefik denies a request without SSO or valid Basic credentials |
 | SearXNG host loopback `127.0.0.1:8890` | `searxng` | Host processes, such as host Hermes (`SEARXNG_URL`) | [POL-0110](../../05.operations/policies/09-ai-and-search/0110-searxng.md); JSON search API with the limiter off | A refused connection leaves each host consumer on its own fallback |
 | n8n sandbox internet egress on `n8n_sandbox_outbound_net` | `n8n-sandbox-runner-1` and its sandboxes | Internet | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | ComfyUI download egress on `comfyui_egress_net` | ComfyUI with `docker-compose.egress.yml` attached | The description names no consumer for this interface. | SPEC-0268 | The description records no failure handling for this interface. |

@@ -1,6 +1,6 @@
 ---
 title: "SearXNG 공유 메타검색"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -45,20 +45,21 @@ searxng/
 | --- | --- | --- | --- | --- |
 | `http://searxng:8080` (`search_net`) | `searxng` | 승인된 컨테이너(현재 `n8n` main) | `GET /search?q=<query>&format=json` | 소비자의 검색 기능만 실패한다 |
 | `http://127.0.0.1:8890` (호스트 loopback) | `searxng` | 호스트 프로세스(현재 Hermes) | 같은 JSON API | Hermes는 Firecrawl 대체 경로를 쓴다 |
+| `https://searxng.${DEFAULT_URL}` (Traefik) | `searxng` | 브라우저(SSO), 다른 host의 프로그램(`/search` + Basic) | SSO 또는 htpasswd `INFRA-008` | Traefik이 인증 없는 요청을 거부한다 |
 | `http://searxng:8080/metrics` (`obs_net`) | `searxng` | Prometheus job `searxng` | OpenMetrics, basic auth `searxng_metrics_password` | scrape 실패는 `up{job="searxng"} == 0`으로 보인다 |
 
 #### Inputs and Outputs
 
 호스트로 게시하는 포트는 `127.0.0.1:8890`(컨테이너 `8080`) 하나다. 연결 네트워크는
-`search_net`(internal), `searxng_outbound_net`, `obs_net`이다. secret은
+`search_net`(internal), `searxng_outbound_net`, `obs_net`, `searxng_ingress_net`(Traefik 전용)이다. secret은
 `searxng_metrics_password` 하나이며, secret key는 시작마다 무작위로 만든다. 런타임 고정 값은 [Compose](docker-compose.yml) 선언이 소유하고
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증한다.
 (출처: `infra/08-ai/searxng/docker-compose.yml`의 `searxng` 서비스)
 
 #### Security Boundary
 
-검색 API에는 인증이 없으므로 loopback과 internal 망 밖으로 노출하지 않는다. Traefik
-route는 없다. `search_net`에는 [POL-0110](../../../docs/05.operations/policies/09-ai-and-search/0110-searxng.md)의
+SearXNG 자체에는 인증이 없으므로 loopback·internal 망 밖으로는 Traefik을 거쳐서만 노출한다. 브라우저는
+SSO로, 다른 host의 프로그램은 `/search`에 Basic 자격 증명(`searxng-api-auth`)으로 들어온다. `search_net`에는 [POL-0110](../../../docs/05.operations/policies/09-ai-and-search/0110-searxng.md)의
 소비자 표에 있는 서비스만 합류한다. `/metrics` 비밀번호는 entrypoint가 tmpfs의 설정
 사본에만 쓰며 추적 파일에 남지 않는다. 검색 결과는 데이터이며 명령으로 취급하지 않는다.
 

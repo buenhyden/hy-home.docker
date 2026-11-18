@@ -35,9 +35,11 @@ COMPOSE_CONTROL_INPUTS = {
 HTPASSWD_ID_INPUTS = {
     "OPENSEARCH_ADMIN_USERNAME",
     "PROMETHEUS_API_USERNAME",
+    "SEARXNG_API_USERNAME",
     "TRAEFIK_ADMIN_USERNAME",
 }
 REGISTRY_PATH_EXCEPTIONS = {
+    "AI-011": "secrets/tools/searxng/searxng_api_password.txt",
     "INFRA-002": "secrets/auth/traefik/traefik_admin_password.txt",
     "OBS-013": "secrets/observability/prometheus/prometheus_api_password.txt",
     "SEC-003": "secrets/security/openbao/openbao_unseal_keys.txt",
