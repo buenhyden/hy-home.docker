@@ -35,6 +35,9 @@ services:
     container_name: searxng
     hostname: searxng
     user: '977:977'
+    # Reads searxng_metrics_password through the shared secrets group.
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint:
       - /bin/sh
       - -ec
