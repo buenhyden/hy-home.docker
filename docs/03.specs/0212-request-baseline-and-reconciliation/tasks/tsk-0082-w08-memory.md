@@ -111,6 +111,20 @@ without the export and pruned. R2 objects under the 30-day bucket lock
 cannot be deleted until their lock expires. The removal is destructive, so
 it runs only after the exact targets are listed and confirmed.
 
+On 2026-11-18 the owner confirmed the local and ledger removal now and the
+R2 removal after its lock expires. The 30 local state snapshots holding
+`/src/state/exports/agent-memory.sqlite3` were rewritten without it by
+`restic rewrite --forget --exclude` through the restic service entrypoint,
+since `backup.sh` has no rewrite route. `prune` and then
+`prune --max-unused 0` removed the unreferenced data, and `restic check`
+found no errors. `capacity reconcile` then cleared the 60 allocations that
+the earlier snapshots left in the real ledger.
+
+The 2026-11-18 daily run failed for a separate reason: the state
+repository held 8,289 MiB against its 8 GiB budget, so the Restic backup
+was skipped. Retention pruning of that repository is outside this Task and
+needs its own approval.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -141,6 +155,10 @@ and the hosted candidate checks.
 | Memory regression | 138 | W148 | memory, offsite and backup contract suites | Changed capacity, backup and orchestrator sources | PASS | 119 tests, seven opt-in Docker rehearsals skipped | required | - |
 | Exclusion RED | 138 | W149 | orchestrator memory exclusion contract | Exclusion tests on the W148 orchestrator | FAIL | Two failures: the daily run still called `agent_memory.py` and staged the export | required | - |
 | Exclusion GREEN | 138 | W149 | orchestrator memory exclusion contract | Orchestrator without the memory step | PASS | Backup contract and memory suites, 127 tests with three opt-in rehearsals skipped; shellcheck clean | required | Exclusion RED |
+| Local removal dry run | 138 | W149 | `restic rewrite --dry-run --exclude` on the 30 listed state snapshots | Local state repository on 2026-11-18 | PASS | Would modify 30 snapshots | required | - |
+| Local memory removal | 138 | W149 | `restic rewrite --forget --exclude`, `prune`, `prune --max-unused 0`, `restic check`, `restic find` | Local state repository on 2026-11-18 | PASS | 30 snapshots rewritten; 126 MiB pruned, 0 B unused; check clean; no snapshot holds the export | required | - |
+| Ledger reconcile | 138 | W149 | `agent_memory.py capacity reconcile` | Real ledger on 2026-11-18 | PASS | Generation 1 to 2, 60 legacy allocations to 0 | required | - |
+| R2 memory removal | 138 | W149 | rewrite and prune of the 30 R2 copies | R2 repository under the 30-day bucket lock | NOT_RUN | Owner deferred it until the lock expires, about mid-December | required | - |
 | Backup code removal | 138 | W149 | memory, offsite, backup contract and routing suites; manifest, workflow contract, ruff, shellcheck | Working tree without memory backup code, on `b3f589aff` | PASS | 163 tests in 59 s, seven opt-in Docker rehearsals skipped; manifest and workflow contract PASS | required | - |
 
 ### Resolution Links
@@ -158,10 +176,9 @@ Daily export RED and Exclusion GREEN resolves Exclusion RED.
 
 ### Remaining Conditions
 
-W149 still removes the earlier memory backups after their exact targets are
-confirmed: 30 local state snapshots and 30 R2 copies hold the export, and
-the real ledger keeps its legacy allocations until `capacity reconcile` runs; R2 objects stay until their 30-day lock ends. W150 adds the D06
-record semantics and W151 needs a native Claude and Codex observation. A
+W149 still removes the 30 R2 copies of the memory export after their
+30-day lock ends; the local snapshots and the ledger are clean. W150 adds
+the D06 record semantics and W151 needs a native Claude and Codex observation. A
 live daily run remains unobserved.
 
 ## Handoff
