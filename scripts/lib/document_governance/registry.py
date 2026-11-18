@@ -454,8 +454,8 @@ def validate_registry_at_revision(
     )
 
     def owner_exists(path: str) -> bool:
-        # A relation owner must exist in the revision the Registry came from.
-        return (
+        # A relation owner exists now or in the revision the Registry came from.
+        return (ROOT / path).is_file() or (
             subprocess.run(
                 ["git", "cat-file", "-e", f"{revision}:{path}"],
                 cwd=root,

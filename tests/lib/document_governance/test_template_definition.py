@@ -51,7 +51,10 @@ def _reference_failures(definition: dict) -> list[str]:
         path, _, anchor = ref.partition("#")
         target = ROOT / path
         if (
-            not re.fullmatch(r"\.agents/governance/[a-z-]+\.md", path)
+            not re.fullmatch(
+                r"(?:\.agents/governance|docs/00\.workspace/0[1-3]\.[a-z]+)/[a-z-]+\.md",
+                path,
+            )
             or not target.is_file()
         ):
             failures.append(ref)

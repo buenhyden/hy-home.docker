@@ -1,6 +1,6 @@
 ---
 title: "SDLC Structure Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -124,6 +124,8 @@ Codex session has not been observed.
 | All link modes | 142 | W158 | `check-document-links.py --mode all` | Staged change and an `origin/main` worktree | FAIL | 5 `stage-link-outside-docs` findings in the n8n and SearXNG READMEs, identical on `main`; none from this change | required | - |
 | Contract and renderer | 142 | W158 | agent governance contract, renderer check | Staged change | PASS | contract 0 failures; renderer drift 0 | required | - |
 | Focused suites | 142 | W158 | links, relations, registry, gate contract, workflow contract, CI routing, script manifest, surface ownership, entrypoint and gate plan modules | Staged change, controller Python 3.14.8 | PASS | 666 tests; metadata modules 297 tests | required | - |
+| Hosted candidate RED | 142 | W158 | PR 1096 candidate-documents | Commit `75a98d6c1` | FAIL | 46: template policy references pinned to `.agents/governance/`; generation-7 fixtures whose committed Registry names owners only the working tree holds | required | - |
+| Hosted candidate GREEN | 142 | W158 | PR 1096 candidate-documents | Test pattern and an owner predicate accepting the working tree or the revision | PASS | Locally 111 tests across generation 6 and 7, template definition, relations and acceptance; hosted rerun pending | required | Hosted candidate RED |
 | Hook matchers | 142 | W158 | `hook_rules.evaluate` probe | Moved SDLC, a moved policy, the workspace README, an agent policy | PASS | Memory warning on both watched files; Korean warning on both policy homes, not on the README | required | - |
 | Native loading | 142 | W158 | a fresh provider session reading a moved policy | Claude and Codex | NOT_RUN | Not observed | required | - |
 
@@ -131,7 +133,8 @@ Codex session has not been observed.
 
 Moved link GREEN resolves Moved link RED. Relation owner GREEN resolves
 Relation owner RED. Moved baseline GREEN resolves Moved baseline RED.
-Workspace link GREEN resolves Workspace link RED. The All link modes
+Workspace link GREEN resolves Workspace link RED. Hosted candidate GREEN
+resolves Hosted candidate RED. The All link modes
 failure predates this Task and stays with the SearXNG owner.
 
 ## Acceptance Decision
