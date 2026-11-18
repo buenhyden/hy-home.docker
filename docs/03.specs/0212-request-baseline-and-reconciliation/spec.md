@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.82.0"
+version: "1.83.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1136,6 +1136,13 @@ target, backup, recovery boundary, and action-specific authorization.
      with fencing, one analysis per window, and candidates linked to their
      source events that change nothing until a separate approved Task. A
      real scheduled run, a duplicate run and a missed window are observed.
+142. TSK-0086 brings the Docker sandbox to the 4.2.0 W09-ENV design on the
+     owner's decision of 2026-11-18: candidate and test Docker work runs on
+     a per-user rootless daemon, never the production socket. Selections
+     take a bounded `depends_on` closure and refuse empty, `all` and
+     wildcard requests; services that would reach the host are blocked;
+     networks are internal; only recorded runs are cleaned. Install, start,
+     refusal and cleanup are observed on the real host.
 
 ### Evidence Requirements
 

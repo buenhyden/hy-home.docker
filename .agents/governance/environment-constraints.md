@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.18.0"
+version: "1.19.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -169,6 +169,12 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R146 | Analysis candidate | Required: name its source events, frequency, conditions, proposal, risk and acceptance test | none | none |
 | ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check, memory or policy without a separate approved Task | none | none |
 | ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
+| ENVIRONMENT-CONSTRAINTS-R149 | Candidate or test Docker work | Required: the per-user rootless daemon through `scripts/operations/sandbox_env.py` | none | none |
+| ENVIRONMENT-CONSTRAINTS-R150 | Candidate or test Docker work | Forbidden: the production socket, a host path bind outside the repository or the run directory, a real secret file, host networking or privilege | none | none |
+| ENVIRONMENT-CONSTRAINTS-R151 | Sandbox selection | Required: named services and their `depends_on` closure within 8 services and 4 GiB of memory limits | none | none |
+| ENVIRONMENT-CONSTRAINTS-R152 | Sandbox selection | Forbidden: an empty, `all` or wildcard selection | none | none |
+| ENVIRONMENT-CONSTRAINTS-R153 | Sandbox start | Required: internal networks only, a recorded `hyhome-sbx-` project, and cleanup of that run alone on failure | none | none |
+| ENVIRONMENT-CONSTRAINTS-R154 | Sandbox cleanup | Forbidden: removing a project or volume the sandbox did not record | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -443,6 +449,18 @@ This project has a graphify knowledge graph at `graphify-out/`.
   policy changes only through a separate approved Task. A failed or
   missing analysis never blocks commit, push or other work.
 
+- Candidate and test Docker work runs only on the per-user rootless daemon
+  through `scripts/operations/sandbox_env.py`, never on the production
+  socket. A selection names services and takes their `depends_on` closure,
+  within 8 services and 4 GiB of memory limits; an empty, `all` or wildcard
+  selection is refused. A service that mounts the Docker socket, binds a
+  host path outside the repository (read-only) or the run directory, uses a
+  real secret file, host networking, the host PID namespace or privilege is
+  blocked with its reason. A start marks every used network internal,
+  records its `hyhome-sbx-<run>` project in the ignored `.workspace-sandbox/`
+  and cleans up only that run when it fails; cleanup removes only recorded
+  projects.
+
 #### Provider Surface Regeneration
 
 - Provider surface `--write` is allowed once only after an approved canonical
@@ -494,6 +512,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Memory recall (R132-R135): no check is named.
 - Session capture (R136-R142): no check is named.
 - Session analysis (R143-R148): no check is named.
+- Docker sandbox (R149-R154): no check is named.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.82.0"
+version: "1.83.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -402,6 +402,8 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W155 | 140 | Observe native capture from a Claude session and a Codex session | W154 | TSK-0084 | Native capture status for both providers |
 | W156 | 141 | Analyse captured sessions with deterministic rules under a lease, per window, into reviewable candidates on a daily user timer | W154 | TSK-0085 | Analysis RED and GREEN tests, manifest and routing checks |
 | W157 | 141 | Observe a real scheduled run, a duplicate run and a missed-window catch-up | W156 | TSK-0085 | Timer journal, status record and run table |
+| W158 | 142 | Add the rootless sandbox doctor, bounded closure plan, host-reach refusals, internal-network start and recorded cleanup | None | TSK-0086 | Sandbox RED and GREEN tests, fixture render, manifest and routing checks |
+| W159 | 142 | Install the rootless daemon and observe start, refusals, isolation and cleanup on the real host | W158 | TSK-0086 | Live sandbox run records |
 
 #### Current v30 continuation and delivery
 

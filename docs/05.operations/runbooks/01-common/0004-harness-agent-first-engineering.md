@@ -1,6 +1,6 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.5.0"
+version: "1.6.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -209,6 +209,33 @@ diff·revision을 Task에 연결한다. 후보 workflow가 후보 controller와 
 실행한 초록색 결과는 그 정의의 승인 증거가 아니다. 현재 원격에서 trusted
 정의 검증을 강제하는지 확인되지 않으면 그 주장만 미확인으로 남긴다.
 일반 문서 교정에 새로운 전체 QA나 반복 승인을 추가하지 않는다.
+
+#### 격리 Docker sandbox
+
+후보 실행·시험용 Docker 작업은 운영 daemon(`/var/run/docker.sock`)이 아니라 사용자
+rootless daemon에서만 한다. [`sandbox_env.py`](../../../../scripts/operations/sandbox_env.py)가
+점검·선택·기동·정리를 한 진입점으로 소유한다.
+
+```bash
+python3 scripts/operations/sandbox_env.py doctor
+python3 scripts/operations/sandbox_env.py install
+python3 scripts/operations/sandbox_env.py plan app -f tests/fixtures/sandbox/compose.yaml
+python3 scripts/operations/sandbox_env.py up app -f tests/fixtures/sandbox/compose.yaml
+python3 scripts/operations/sandbox_env.py down "<run id>"
+python3 scripts/operations/sandbox_env.py cleanup
+```
+
+`doctor`는 호스트·가상화·도구·운영 socket 접근·rootless 준비를 읽기 전용으로 보고한다.
+`install`은 `uidmap`(newuidmap/newgidmap)이 있을 때만 `dockerd-rootless-setuptool.sh`로
+사용자 daemon을 설치하며 `install --uninstall`로 제거한다. `plan`은 요청 서비스와
+`depends_on` closure를 계산하고 빈 선택·`all`·와일드카드·8개 초과·메모리 4 GiB 초과를
+거부한다. Docker socket, 저장소 밖이나 쓰기 가능한 bind, 실제 secret 파일, host
+network·PID, privileged, 메모리 한도 없음은 서비스별 사유로 막는다. `up`은 허용된
+closure만 `hyhome-sbx-<run>` project로 rootless daemon에 올리고, 사용하는 network를 모두
+`internal`로 덮어 외부·운영망 경로를 끊는다. 실행 기록은 git과 백업에서 제외한
+`.workspace-sandbox/`에 남는다. 시작이 실패하면 그 run만 정리한다. `down`과 `cleanup`은
+기록된 `hyhome-sbx-` project만 지우며 운영 project·volume은 대상이 아니다. 전체 stack을
+한 번에 올리는 sandbox 예외는 없다.
 
 #### Evaluation and QA Ownership
 
