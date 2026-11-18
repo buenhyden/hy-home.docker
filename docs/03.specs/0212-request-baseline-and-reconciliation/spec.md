@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.84.0"
+version: "1.85.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1151,6 +1151,12 @@ target, backup, recovery boundary, and action-specific authorization.
      `up`, `start` or `create` is refused by both providers' hooks before
      it runs, while rendering every profile stays allowed. The host survey
      and the hook refusal are evidenced separately from configuration.
+144. TSK-0088 prepares the owner's 2026-11-18 SDD-PATHS decision to adopt
+     every proposed numbered docs subfolder: a bounded plan of each
+     directory move with its digest and consumers, and a rehearsal in a
+     disposable copy that names every reader, schema, route and link the
+     final cutover must convert. No real path, identity or allocator
+     changes before Q07-CUTOVER.
 
 ### Evidence Requirements
 
