@@ -150,7 +150,7 @@ failure predates this Task and stays with the SearXNG owner.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 142 | pending | Moved link GREEN, Relation owner GREEN, Moved baseline GREEN, Document checks, Contract and renderer | Awaits the owner's decision | @buenhyden |
+| 142 | pending | Moved link GREEN, Relation owner GREEN, Moved baseline GREEN, Document checks, Contract and renderer, Native loading observed | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
