@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.12.0"
+version: "1.13.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -688,6 +688,25 @@ Claude와 Codex가 함께 쓰는 memory 저장소(`.workspace-memory/memory.sqli
 규칙은 [환경 제약](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory))는
 Git이 무시하므로 Git으로 복구되지 않으며, 백업에서도 제외한다(아래
 "공유 기억 백업 제외").
+
+#### 세션 수집
+
+`scripts/lib/hooks/session_capture.py`가 공용 hook dispatcher에서 이 워크스페이스의
+사용자 프롬프트(비밀값 가림)와 event metadata를 `.workspace-capture/capture.sqlite3`에
+남긴다. 디렉터리는 0700이고 Git과 백업에서 제외하며, 90일이 지난 기록은 재대조 때
+지운다. 응답·도구 입출력은 복사하지 않고, 다른 개인 세션 파일은 읽지 않는다.
+
+```bash
+python3 -m scripts.lib.hooks.session_capture status
+python3 -m scripts.lib.hooks.session_capture reconcile
+```
+
+`status`의 세션별 `completeness`는 complete, partial, unavailable 중 하나이며
+`reason`이 부족한 이유를 적는다. Codex는 transcript 형식에서 사용자 프롬프트를
+구분할 수 없어 hook 수집만 하고 partial로 남는다. 종료 hook 하나로 수집이 완전하다고
+보지 않는다. `capture_failures`가 늘면 `.workspace-capture/degraded.log`의 원인을 확인한다.
+수집 실패는 hook 결과나 개발 작업을 막지 않는다. 수집 기록은 증거일 뿐 기억·정책·
+승인·Task 인수가 아니다.
 
 #### 공유 기억 백업 제외 (2026-11-18)
 

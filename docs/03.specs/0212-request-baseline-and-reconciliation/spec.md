@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.80.0"
+version: "1.81.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1122,6 +1122,14 @@ target, backup, recovery boundary, and action-specific authorization.
      earlier implementation on the same cases, and an index is added only on
      a measured gain. Recall after withdrawal or erase is evidenced for both
      providers separately from fixtures.
+140. TSK-0084 brings session capture to the 4.2.0 W08-CAPTURE design on the
+     owner's decisions of 2026-11-18: visible prompts with secrets redacted
+     and event metadata, kept 90 days in a private directory outside Git and
+     backups. Hooks only enqueue durably and never change their result; a
+     detached cursor reconciliation recovers missed prompts without
+     duplicates and reports each session as complete, partial or
+     unavailable. Captured records never become memory, policy or approval.
+     Native capture is evidenced for both providers separately from fixtures.
 
 ### Evidence Requirements
 

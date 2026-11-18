@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.80.0"
+version: "1.81.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -398,6 +398,8 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W151 | 138 | Observe a Claude write, a Codex read and update, and the Claude read of the latest revision | W150 | TSK-0082 | Native cross-provider observation |
 | W152 | 139 | Match IDs, source paths, spacing-free Korean and all terms among admissible records, with selection reasons, conflict flags, a data-only marker and one read snapshot | W150 | TSK-0083 | Synthetic recall evaluation RED and GREEN against the earlier search, latency split |
 | W153 | 139 | Observe that a withdrawn or erased record leaves both providers' recall | W152 | TSK-0083 | Native Claude and Codex search observation |
+| W154 | 140 | Capture redacted visible prompts and event metadata from the hook dispatcher, reconcile Claude transcripts by cursor, prune after 90 days and report completeness | W150 | TSK-0084 | Capture RED and GREEN tests, manifest and routing checks |
+| W155 | 140 | Observe native capture from a Claude session and a Codex session | W154 | TSK-0084 | Native capture status for both providers |
 
 #### Current v30 continuation and delivery
 
