@@ -27,10 +27,20 @@ from scripts.lib.ops.memory_sources import (  # noqa: E402
     run_git,
 )
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 STORE_DIRECTORY = ".workspace-memory"
 STORE_NAME = "memory.sqlite3"
 TIERS = ("short-term", "long-term", "domain")
+# D06 record kind is a meaning axis; the tier stays the retention budget axis.
+KINDS = ("session-context", "decision", "experience")
+TIER_KIND = {
+    "short-term": "session-context",
+    "long-term": "experience",
+    "domain": "experience",
+}
+INITIAL_BASELINE = "initial"
+MAX_SUPERSEDES = 16
+MAX_ERASE = 100
 ELIGIBILITY = ("eligible", "ineligible")
 SENSITIVITY = ("public", "internal")
 # Logical limits, checked inside the write transaction.
@@ -85,12 +95,20 @@ COLUMNS = (
     "sensitivity",
     "body",
 )
+META = (
+    "CREATE TABLE IF NOT EXISTS store_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
+)
 SIDECARS = (
     "CREATE TABLE IF NOT EXISTS provenance (memory_id TEXT NOT NULL, revision INTEGER NOT NULL,"
     " metadata TEXT NOT NULL, request_key TEXT UNIQUE, fingerprint TEXT NOT NULL,"
     " PRIMARY KEY (memory_id, revision))",
     "CREATE TABLE IF NOT EXISTS conflicts (conflict_id INTEGER PRIMARY KEY, memory_id TEXT NOT NULL,"
     " expected_revision INTEGER NOT NULL, current_revision INTEGER NOT NULL, metadata TEXT NOT NULL, body TEXT NOT NULL)",
+)
+
+
+MIGRATION_REQUIRED = (
+    "MEMORY_MIGRATION_REQUIRED: run `agent_memory.py migrate` once to add schema 3"
 )
 
 
@@ -172,10 +190,187 @@ def connect(path: Path) -> sqlite3.Connection:
     connection.execute("PRAGMA journal_mode = DELETE")
     page_size = connection.execute("PRAGMA page_size").fetchone()[0]
     connection.execute(f"PRAGMA max_page_count = {MAX_DATABASE_BYTES // page_size}")
-    connection.execute(SCHEMA)
-    for statement in SIDECARS:
-        connection.execute(statement)
+    connection.execute("BEGIN IMMEDIATE")
+    try:
+        new_store = not _table_exists(connection, "revisions")
+        connection.execute(SCHEMA)
+        for statement in SIDECARS:
+            connection.execute(statement)
+        # Only a brand-new store starts at schema 3; an existing one migrates
+        # through the explicit `migrate` command.
+        if new_store:
+            _initialize_meta(connection)
+        connection.execute("COMMIT")
+    except BaseException:
+        connection.execute("ROLLBACK")
+        raise
     return connection
+
+
+def _table_exists(connection: sqlite3.Connection, name: str) -> bool:
+    return (
+        connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)
+        ).fetchone()
+        is not None
+    )
+
+
+def _initialize_meta(connection: sqlite3.Connection) -> None:
+    connection.execute(META)
+    connection.executemany(
+        "INSERT OR IGNORE INTO store_meta VALUES (?, ?)",
+        (("schema_version", str(SCHEMA_VERSION)), ("baseline_id", INITIAL_BASELINE)),
+    )
+
+
+def _meta(connection: sqlite3.Connection) -> dict[str, str] | None:
+    if not _table_exists(connection, "store_meta"):
+        return None
+    return dict(connection.execute("SELECT key, value FROM store_meta").fetchall())
+
+
+def current_baseline(connection: sqlite3.Connection) -> str:
+    return (_meta(connection) or {}).get("baseline_id", INITIAL_BASELINE)
+
+
+def _write(connection: sqlite3.Connection, action):
+    """Run one short write transaction and map SQLite failures to exit codes."""
+    try:
+        connection.execute("BEGIN IMMEDIATE")
+        try:
+            result = action()
+            connection.execute("COMMIT")
+            return result
+        except BaseException:
+            if connection.in_transaction:
+                connection.execute("ROLLBACK")
+            raise
+    except sqlite3.OperationalError as error:
+        text = str(error).lower()
+        if "locked" in text or "busy" in text:
+            raise MemoryStoreError(
+                EXIT_BUSY, "MEMORY_STORE_BUSY: another writer holds the store"
+            ) from error
+        if "full" in text:
+            raise MemoryStoreError(
+                EXIT_FULL, "MEMORY_STORE_FULL: no space; nothing was written"
+            ) from error
+        raise
+
+
+def migrate(connection: sqlite3.Connection) -> dict[str, object]:
+    """Add schema-3 store metadata; existing revisions stay byte-for-byte."""
+
+    def action():
+        before = _meta(connection)
+        _initialize_meta(connection)
+        return {
+            "schema_version": SCHEMA_VERSION,
+            "baseline_id": current_baseline(connection),
+            "migrated": before is None,
+        }
+
+    return _write(connection, action)
+
+
+def cutover(
+    connection: sqlite3.Connection, *, expected: str, baseline_id: str
+) -> dict[str, object]:
+    """Move the store to a new baseline; earlier records leave default reads."""
+    if not 1 <= len(baseline_id) <= 128 or baseline_id == expected:
+        raise MemoryStoreError(EXIT_UNAVAILABLE, "MEMORY_INVALID: invalid baseline")
+
+    def action():
+        meta = _meta(connection)
+        if meta is None:
+            raise MemoryStoreError(EXIT_UNAVAILABLE, MIGRATION_REQUIRED)
+        if meta["baseline_id"] != expected:
+            raise MemoryStoreError(
+                EXIT_CONFLICT,
+                f"MEMORY_REVISION_CONFLICT: baseline is {meta['baseline_id']}, not {expected}",
+            )
+        connection.execute(
+            "UPDATE store_meta SET value=? WHERE key='baseline_id'", (baseline_id,)
+        )
+        return {"baseline_id": baseline_id, "previous_baseline_id": expected}
+
+    return _write(connection, action)
+
+
+def erase(connection: sqlite3.Connection, memory_ids: list[str]) -> dict[str, object]:
+    """Delete every revision, provenance row and conflict of the named records."""
+    ids = sorted(set(memory_ids))
+    if not ids or len(ids) > MAX_ERASE or any(not 1 <= len(i) <= 128 for i in ids):
+        raise MemoryStoreError(EXIT_UNAVAILABLE, "MEMORY_INVALID: invalid erase set")
+    # Overwrite freed pages; the journal, filesystem and SSD may still hold copies.
+    connection.execute("PRAGMA secure_delete = ON")
+    marks = ",".join("?" * len(ids))
+
+    def action():
+        found = [
+            row[0]
+            for row in connection.execute(
+                f"SELECT DISTINCT memory_id FROM revisions WHERE memory_id IN ({marks})",
+                ids,
+            )
+        ]
+        counts = {
+            table: connection.execute(
+                f"DELETE FROM {table} WHERE memory_id IN ({marks})", ids
+            ).rowcount
+            for table in ("revisions", *sorted(_sidecars(connection)))
+        }
+        return {
+            "erased": found,
+            "missing": [i for i in ids if i not in found],
+            "deleted_rows": counts,
+            "residue": "SQLite pages are overwritten; journal, filesystem and"
+            " storage-device copies are not proven erased",
+        }
+
+    return _write(connection, action)
+
+
+def _timestamp(value: str | None, name: str) -> str | None:
+    if value is None:
+        return None
+    try:
+        parsed = dt.datetime.fromisoformat(value)
+    except (TypeError, ValueError):
+        parsed = None
+    if parsed is None or parsed.tzinfo is None:
+        raise MemoryStoreError(
+            EXIT_UNAVAILABLE, f"MEMORY_INVALID: {name} needs an ISO time with a zone"
+        )
+    return parsed.astimezone(dt.UTC).isoformat(timespec="seconds")
+
+
+def _context(connection: sqlite3.Connection, as_of: str | None) -> dict[str, object]:
+    """Baseline, evaluation time and reverse supersession links for one read."""
+    baseline = current_baseline(connection)
+    superseded_by: dict[str, list[str]] = {}
+    if "provenance" in _sidecars(connection):
+        rows = connection.execute(
+            "SELECT r.memory_id, r.eligibility, p.metadata FROM revisions r"
+            " JOIN (SELECT memory_id, max(revision) AS top FROM revisions GROUP BY memory_id) c"
+            " ON r.memory_id = c.memory_id AND r.revision = c.top"
+            " LEFT JOIN provenance p ON p.memory_id = r.memory_id AND p.revision = r.revision"
+        )
+        for memory_id, eligibility, metadata in rows:
+            meta = json.loads(metadata or "{}")
+            if (
+                eligibility == "eligible"
+                and meta.get("baseline_id", INITIAL_BASELINE) == baseline
+            ):
+                for target in meta.get("supersedes", []):
+                    superseded_by.setdefault(target, []).append(memory_id)
+    return {
+        "baseline": baseline,
+        "as_of": _timestamp(as_of, "as_of")
+        or dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        "superseded_by": superseded_by,
+    }
 
 
 def _record(row: sqlite3.Row) -> dict[str, object]:
@@ -192,8 +387,12 @@ def _current(connection: sqlite3.Connection, memory_id: str) -> sqlite3.Row | No
 
 
 def _view(
-    connection: sqlite3.Connection, row: sqlite3.Row, cwd: Path | None = None
+    connection: sqlite3.Connection,
+    row: sqlite3.Row,
+    cwd: Path | None = None,
+    context: dict[str, object] | None = None,
 ) -> dict[str, object]:
+    context = context or _context(connection, None)
     record = _record(row)
     metadata = (
         connection.execute(
@@ -214,6 +413,27 @@ def _view(
     state = reuse_state(
         provenance["review_state"], record["source_refs"], cwd or Path.cwd()
     )
+    record.update(
+        kind=provenance.get("kind") or TIER_KIND[row["tier"]],
+        baseline_id=provenance.get("baseline_id", INITIAL_BASELINE),
+        observed_at=provenance.get("observed_at") or row["created_at"],
+        valid_from=provenance.get("valid_from"),
+        valid_until=provenance.get("valid_until"),
+        supersedes=list(provenance.get("supersedes", [])),
+        invalidated_by=list(context["superseded_by"].get(row["memory_id"], [])),
+    )
+    # A reviewed record is reusable only in the current baseline, inside its
+    # validity window and while no current record supersedes it.
+    if state == "current":
+        as_of = context["as_of"]
+        if record["baseline_id"] != context["baseline"]:
+            state = "other-baseline"
+        elif record["invalidated_by"]:
+            state = "superseded"
+        elif (record["valid_from"] and as_of < record["valid_from"]) or (
+            record["valid_until"] and as_of >= record["valid_until"]
+        ):
+            state = "outside-validity"
     record["provenance"] = {**provenance, "reuse_state": state}
     return record
 
@@ -224,11 +444,12 @@ def get(
     *,
     current_only: bool = False,
     cwd: Path | None = None,
+    as_of: str | None = None,
 ) -> dict[str, object] | None:
     row = _current(connection, memory_id)
     if row is None:
         return None
-    record = _view(connection, row, cwd)
+    record = _view(connection, row, cwd, _context(connection, as_of))
     return (
         None
         if current_only
@@ -247,19 +468,50 @@ def history(
         "SELECT * FROM revisions WHERE memory_id = ? ORDER BY revision DESC LIMIT ?",
         (memory_id, max(1, min(limit, MAX_HISTORY))),
     )
-    return [{**_view(connection, row), "historical": True} for row in rows]
+    context = _context(connection, None)
+    return [
+        {**_view(connection, row, None, context), "historical": True} for row in rows
+    ]
+
+
+def export_selected(
+    connection: sqlite3.Connection, memory_ids: list[str], include_history: bool
+) -> list[dict[str, object]]:
+    """Export named records, their current revision or every revision."""
+    context = _context(connection, None)
+    records, missing = [], []
+    for memory_id in sorted(set(memory_ids)):
+        rows = connection.execute(
+            "SELECT * FROM revisions WHERE memory_id = ? ORDER BY revision DESC"
+            + ("" if include_history else " LIMIT 1"),
+            (memory_id,),
+        ).fetchall()
+        if not rows:
+            missing.append(memory_id)
+        records += [_view(connection, row, None, context) for row in rows]
+    if missing:
+        raise MemoryStoreError(
+            1, "MEMORY_NOT_FOUND: no record for " + ", ".join(missing)
+        )
+    return records
 
 
 def current_records(
-    connection: sqlite3.Connection, tier: str | None, everything: bool
+    connection: sqlite3.Connection,
+    tier: str | None,
+    everything: bool,
+    as_of: str | None = None,
 ) -> list[dict[str, object]]:
     rows = connection.execute(
         "SELECT r.* FROM revisions r JOIN (SELECT memory_id, max(revision) AS top"
         " FROM revisions GROUP BY memory_id) c"
         " ON r.memory_id = c.memory_id AND r.revision = c.top ORDER BY r.memory_id"
     )
+    context = _context(connection, as_of)
     records = [
-        _view(connection, row) for row in rows if tier is None or row["tier"] == tier
+        _view(connection, row, None, context)
+        for row in rows
+        if tier is None or row["tier"] == tier
     ]
     return [
         r
@@ -303,9 +555,13 @@ def usage(connection: sqlite3.Connection) -> dict[str, object]:
         if "conflicts" in sidecars
         else 0,
         "sqlite_version": sqlite3.sqlite_version,
-        "database_page_limit": connection.execute("PRAGMA max_page_count").fetchone()[
-            0
-        ],
+        # The limit every writing connection applies, not this reader's default.
+        "database_page_limit": MAX_DATABASE_BYTES
+        // connection.execute("PRAGMA page_size").fetchone()[0],
+        "database_pages": connection.execute("PRAGMA page_count").fetchone()[0],
+        "schema_version": int((_meta(connection) or {}).get("schema_version", 2)),
+        "baseline_id": current_baseline(connection),
+        "migration_required": _meta(connection) is None,
     }
 
 
@@ -396,9 +652,19 @@ def _put(
     request_key: str | None = None,
     review_state: str = "candidate",
     domain_id: str | None = None,
+    kind: str | None = None,
+    observed_at: str | None = None,
+    valid_from: str | None = None,
+    valid_until: str | None = None,
+    supersedes: list[str] | tuple[str, ...] = (),
     cwd: Path | None = None,
 ) -> int:
     size = len(body.encode("utf-8"))
+    kind = kind or TIER_KIND.get(tier)
+    observed_at = _timestamp(observed_at, "observed_at")
+    valid_from = _timestamp(valid_from, "valid_from")
+    valid_until = _timestamp(valid_until, "valid_until")
+    supersedes = sorted(set(supersedes))
     if (
         not 1 <= len(memory_id) <= 128
         or expected_revision < 0
@@ -415,34 +681,56 @@ def _put(
             domain_id is not None
             and (tier != "domain" or not 1 <= len(domain_id) <= 128)
         )
+        or kind not in KINDS
+        or (valid_from and valid_until and valid_from >= valid_until)
+        or len(supersedes) > MAX_SUPERSEDES
+        or any(not 1 <= len(s) <= 128 or s == memory_id for s in supersedes)
     ):
         raise MemoryStoreError(
             EXIT_UNAVAILABLE, "MEMORY_INVALID: invalid record metadata"
         )
     domain_id = (domain_id or "legacy") if tier == "domain" else None
-    metadata = json.dumps(
-        dict(
-            review_state=review_state,
-            domain_id=domain_id,
-            tier=tier,
-            owner=owner,
-            source_refs=source_refs,
-            sensitivity=sensitivity,
-            eligibility=eligibility,
-            workspace_id=workspace_id,
-            memory_id=memory_id,
-            expected_revision=expected_revision,
-            request_key=request_key,
-        ),
-        sort_keys=True,
-        ensure_ascii=False,
-        separators=(",", ":"),
+    fields = dict(
+        kind=kind,
+        observed_at=observed_at,
+        valid_from=valid_from,
+        valid_until=valid_until,
+        supersedes=supersedes,
     )
-    fingerprint = hashlib.sha256((metadata + "\0" + body).encode()).hexdigest()
+
+    def describe(baseline_id: str) -> str:
+        return json.dumps(
+            dict(
+                fields,
+                baseline_id=baseline_id,
+                review_state=review_state,
+                domain_id=domain_id,
+                tier=tier,
+                owner=owner,
+                source_refs=source_refs,
+                sensitivity=sensitivity,
+                eligibility=eligibility,
+                workspace_id=workspace_id,
+                memory_id=memory_id,
+                expected_revision=expected_revision,
+                request_key=request_key,
+            ),
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+
     try:
         # The write lock makes revision, identity and quota checks atomic.
         connection.execute("BEGIN IMMEDIATE")
         try:
+            meta = _meta(connection)
+            if meta is None:
+                raise MemoryStoreError(EXIT_UNAVAILABLE, MIGRATION_REQUIRED)
+            # The request digest binds the baseline too, so a retry after a
+            # cutover is a different request.
+            metadata = describe(meta["baseline_id"])
+            fingerprint = hashlib.sha256((metadata + "\0" + body).encode()).hexdigest()
             row = _current(connection, memory_id)
             current = 0 if row is None else row["revision"]
             prior = (
@@ -480,6 +768,10 @@ def _put(
                     reason="request-identity"
                     if prior is not None
                     else "stale-revision",
+                )
+            if any(_current(connection, target) is None for target in supersedes):
+                raise MemoryStoreError(
+                    EXIT_UNAVAILABLE, "MEMORY_INVALID: supersedes an unknown record"
                 )
             if not _has_room(connection, metadata, size, tier, domain_id):
                 raise MemoryStoreError(
