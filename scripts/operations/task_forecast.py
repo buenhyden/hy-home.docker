@@ -3,10 +3,10 @@
 
 A forecast is fixed before the task starts and never edited: a changed
 estimate is a new revision, and SQLite triggers refuse any update or delete.
-An outcome is recorded once, as completed or cancelled, and closes the task.
-`score` reports, per quantile, how often the actual time fell at or under the
-forecast and the mean pinball loss, with the sample size; cancelled tasks are
-censored and counted apart. A forecast is a planning aid, not a deadline,
+An outcome is recorded once, as completed, failed or cancelled, and closes the
+task. `score` reports, per quantile, how often the actual time fell at or under
+the forecast with its 95% Wilson interval and the mean pinball loss, with the
+sample size; failed and cancelled tasks are censored and counted apart. A forecast is a planning aid, not a deadline,
 an approval or a reason to skip a required check.
 """
 
@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import math
 import os
 import sqlite3
 import sys
@@ -28,7 +29,7 @@ from scripts.lib.hooks import session_capture as capture  # noqa: E402
 STORE_NAME = "forecast.sqlite3"
 UNITS = ("minutes",)
 TIME_BASES = ("elapsed", "active")
-STATUSES = ("completed", "cancelled")
+STATUSES = ("completed", "failed", "cancelled")
 QUANTILES = (("p30", 0.3), ("p50", 0.5), ("p80", 0.8))
 # ponytail: a flat floor; a per-type calibration rule can replace it with data
 MIN_CALIBRATION_SAMPLE = 20
@@ -228,6 +229,16 @@ def observe(
     }
 
 
+def _wilson(hits: int, n: int, z: float = 1.96) -> tuple[float, float] | None:
+    """95% Wilson score interval for a coverage share; None without a sample."""
+    if not n:
+        return None
+    share, spread = hits / n, z * z / n
+    centre = (share + spread / 2) / (1 + spread)
+    margin = z * math.sqrt(share * (1 - share) / n + spread / (4 * n)) / (1 + spread)
+    return (round(centre - margin, 4), round(centre + margin, 4))
+
+
 def score(directory: Path, task_type: str | None = None) -> dict:
     """Coverage and pinball per quantile over completed tasks; censored apart."""
     connection = connect(directory)
@@ -235,15 +246,15 @@ def score(directory: Path, task_type: str | None = None) -> dict:
         outcomes = connection.execute(
             "SELECT * FROM outcomes ORDER BY task_ref"
         ).fetchall()
-        completed, cancelled = [], 0
+        completed, censored = [], {"failed": 0, "cancelled": 0}
         for outcome in outcomes:
             _, chosen = _pre_start(
                 connection, outcome["task_ref"], _when(outcome["started_at"])
             )
             if task_type and chosen["task_type"] != task_type:
                 continue
-            if outcome["status"] == "cancelled":
-                cancelled += 1
+            if outcome["status"] in censored:
+                censored[outcome["status"]] += 1
                 continue
             elapsed = (
                 _when(outcome["finished_at"]) - _when(outcome["started_at"])
@@ -260,9 +271,11 @@ def score(directory: Path, task_type: str | None = None) -> dict:
     for name, p in QUANTILES:
         pairs = [(row[name], actual) for row, actual in completed]
         n = len(pairs)
+        hits = sum(actual <= q for q, actual in pairs)
         quantiles[name] = {
             "n": n,
-            "coverage": sum(actual <= q for q, actual in pairs) / n if n else None,
+            "coverage": hits / n if n else None,
+            "coverage_95": _wilson(hits, n),
             # pinball L_p(y, q) = (p - 1[y < q]) * (y - q), not doubled
             "pinball": (
                 sum((p - (actual < q)) * (actual - q) for q, actual in pairs) / n
@@ -273,13 +286,15 @@ def score(directory: Path, task_type: str | None = None) -> dict:
     return {
         "task_type": task_type,
         "completed": len(completed),
-        "cancelled": cancelled,
+        "failed": censored["failed"],
+        "cancelled": censored["cancelled"],
         "calibration": (
             "empirical"
             if len(completed) >= MIN_CALIBRATION_SAMPLE
             else "insufficient sample"
         ),
-        "note": "completed tasks only; cancelled tasks are censored, not scored",
+        "note": "completed tasks only; failed and cancelled tasks are censored,"
+        " not scored",
         "quantiles": quantiles,
     }
 

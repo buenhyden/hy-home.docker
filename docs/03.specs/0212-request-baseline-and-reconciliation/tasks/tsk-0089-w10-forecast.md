@@ -1,6 +1,6 @@
 ---
 title: "W10 Forecast Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -72,6 +72,19 @@ queueing. The actual fell between P30 and P50; `score` reports N 1 per
 quantile, coverage 0, 1 and 1 for P30, P50 and P80, pinball 0.54, 0.60 and
 1.64, and `insufficient sample`.
 
+#### Rerun gap closure
+
+The 2026-11-18 rerun of W10-FORECAST compared the merged tool with the
+prompt. Two requirements were unmet: a failed task could only be recorded
+as cancelled, and coverage carried no confidence bound. `observe` now
+accepts `failed`, which `score` censors and counts apart like `cancelled`,
+and each quantile reports a 95% Wilson interval `coverage_95`. Existing
+store rows need no migration because status is free text. On the real
+store the one sample gives P30 coverage 0 with interval 0 to 0.79, which
+shows that one sample cannot support a calibration claim. Cost and token
+counts stay unrecorded because no source measures them, and parallel
+distributions stay with W10-PARALLEL.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -94,11 +107,13 @@ Calibration needs at least 20 completed tasks of one type; none has it.
 | Real store immutability | 145 | W161 | direct `UPDATE` on the real forecast store | `W10-FORECAST-PR-CI` revision 1 | PASS | Refused: forecasts are append-only | required | - |
 | Real outcome | 145 | W161 | `task_forecast.py observe` and `score` | `W10-FORECAST-PR-CI` after the hosted checks | NOT_RUN | Hosted checks not yet run | required | - |
 | Real outcome observed | 145 | W161 | `task_forecast.py observe` and `score` | `W10-FORECAST-PR-CI`, PR 1105 checks on `db5ff1f22` | PASS | 7.8 minutes against P30 6, P50 9, P80 16; N 1, `insufficient sample` | required | Real outcome |
+| Failed and bound RED | 145 | W161 | `test_task_forecast` | New failed-outcome and interval tests on `856a7863c` | FAIL | 2 errors: status `failed` refused, no `coverage_95` | required | - |
+| Failed and bound GREEN | 145 | W161 | `test_task_forecast` | Failed status and Wilson interval | PASS | 7 tests; 1 of 3 gives 0.0615 to 0.7923 | required | Failed and bound RED |
 
 ### Resolution Links
 
 Forecast GREEN resolves Forecast RED. Real outcome observed resolves Real
-outcome.
+outcome. Failed and bound GREEN resolves Failed and bound RED.
 
 ## Acceptance Decision
 
@@ -106,7 +121,7 @@ outcome.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 145 | pending | Forecast GREEN, Real store immutability, Real outcome observed | Awaits the owner's decision | @buenhyden |
+| 145 | pending | Forecast GREEN, Real store immutability, Real outcome observed, Failed and bound GREEN | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 

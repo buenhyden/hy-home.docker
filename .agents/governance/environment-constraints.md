@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.20.0"
+version: "1.21.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -173,8 +173,8 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R150 | Starting Compose services on this server | Forbidden: selecting every profile with `--profile '*'` or `COMPOSE_PROFILES` holding `*` for `up`, `start` or `create` | hookify `block-whole-stack-compose-start` refuses the visible forms | `tests/lib/hooks/test_compose_start_rule.py` |
 | ENVIRONMENT-CONSTRAINTS-R151 | Forecasting a task | Required: record P30, P50 and P80 completion minutes with `scripts/operations/task_forecast.py` before the task starts, with the time basis, assumptions and reference class | none | none |
 | ENVIRONMENT-CONSTRAINTS-R152 | Changing a forecast | Required: append a new revision; editing or deleting a recorded forecast or outcome is refused | SQLite triggers in the forecast store | `tests/validation/test_task_forecast.py` |
-| ENVIRONMENT-CONSTRAINTS-R153 | Recording an outcome | Required: one outcome per task, completed or cancelled, scored against the last revision fixed before the start; cancelled tasks are censored and counted apart | `task_forecast.py` refuses a missing pre-start forecast or a second outcome | `tests/validation/test_task_forecast.py` |
-| ENVIRONMENT-CONSTRAINTS-R154 | Reporting forecast quality | Required: report coverage, pinball loss and sample size per quantile; below 20 completed tasks the result is labelled `insufficient sample` and claims no calibrated guarantee | none | none |
+| ENVIRONMENT-CONSTRAINTS-R153 | Recording an outcome | Required: one outcome per task, completed, failed or cancelled, scored against the last revision fixed before the start; failed and cancelled tasks are censored and counted apart | `task_forecast.py` refuses a missing pre-start forecast or a second outcome | `tests/validation/test_task_forecast.py` |
+| ENVIRONMENT-CONSTRAINTS-R154 | Reporting forecast quality | Required: report coverage with its 95% Wilson interval, pinball loss and sample size per quantile; below 20 completed tasks the result is labelled `insufficient sample` and claims no calibrated guarantee | none | none |
 | ENVIRONMENT-CONSTRAINTS-R155 | Using a forecast | Forbidden: treating it as a deadline or approval, skipping a required check because time ran over, or summing per-task P80 values into a parallel run's P80 | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
