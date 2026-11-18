@@ -199,5 +199,14 @@ class CaptureTests(unittest.TestCase):
             self.assertIn("skipped", capture.reconcile(self.directory)[0])
 
 
+class CaptureDirectoryTests(unittest.TestCase):
+    def test_an_explicit_directory_keeps_tests_out_of_the_real_store(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            with mock.patch.dict(os.environ, {"HY_HOME_CAPTURE_DIR": temporary}):
+                self.assertEqual(Path(temporary), capture.capture_dir())
+        with mock.patch.dict(os.environ, {"HY_HOME_CAPTURE_DIR": ""}):
+            self.assertEqual(capture.CAPTURE_DIRECTORY, capture.capture_dir().name)
+
+
 if __name__ == "__main__":
     unittest.main()

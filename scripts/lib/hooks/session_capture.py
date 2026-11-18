@@ -89,7 +89,14 @@ def _bounded(text: str) -> tuple[str, int]:
 
 
 def capture_dir(cwd: Path | None = None) -> Path:
-    """The private directory beside the shared memory store of this clone."""
+    """The private directory beside the shared memory store of this clone.
+
+    `HY_HOME_CAPTURE_DIR` names another directory, so a test that drives the
+    real hooks never writes into the operator's store.
+    """
+    override = os.environ.get("HY_HOME_CAPTURE_DIR")
+    if override:
+        return Path(override)
     from scripts.operations.agent_memory import store_path
 
     return store_path(cwd).parent.parent / CAPTURE_DIRECTORY
