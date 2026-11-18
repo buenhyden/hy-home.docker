@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.87.0"
+version: "1.88.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1175,6 +1175,13 @@ target, backup, recovery boundary, and action-specific authorization.
      checks on the combined patches. Two independent units and one
      shared-resource unit run for real, and the gain is measured against
      one worker with setup and integration included.
+147. TSK-0091 applies the 4.2.0 W10-REVIEW design with the owner's
+     2026-11-19 decisions: review has three risk classes, a medium-risk
+     code change gets one fresh-context primary review, a defect reachable
+     from accepted input keeps its severity when only a specific input
+     triggers it, and each review records its dispatch and return times and
+     rounds. Fresh-context reviews of PRs 1105, 1108 and 1109 run after
+     merge, and their findings are fixed or recorded.
 
 ### Evidence Requirements
 

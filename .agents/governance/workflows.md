@@ -1,10 +1,10 @@
 ---
 title: "Workflows"
-version: "1.5.1"
+version: "1.6.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Workflows
@@ -42,9 +42,11 @@ Every repository change follows one lifecycle:
    repository Gate; a configured hook is supporting evidence, not approval.
 6. **Review by risk** — a high-risk change gets an independent review: a
    read-only reviewer who did not implement it evaluates the exact diff and
-   verification evidence. A low-risk change closes with the focused checks
-   and an author check recorded in the Task; it needs no second reviewer.
-   [Review risk](#review-risk) defines the two classes.
+   verification evidence. A medium-risk change gets one primary review by
+   a read-only reviewer in a fresh context who did not write it. A low-risk
+   change closes with the focused checks and an author check recorded in the
+   Task; it needs no second reviewer. [Review risk](#review-risk) defines
+   the three classes.
 7. **Evidence** — the Task records commands, results, recovery, skipped checks
    with rationale, review disposition, and remaining uncertainty.
 8. **Handoff** — `workflow-supervisor` reports the next owner or completion
@@ -67,17 +69,25 @@ cannot broaden it.
 A change is high-risk when it touches a
 [protected surface](../../docs/00.workspace/02.process/approval-boundaries.md#enforcement), changes a policy, role, skill,
 shared contract or Registry rule, changes validator, gate or hook behavior,
-or performs a security, secret, remote, runtime or data action. Every other
-change is low-risk: an ordinary document or README edit, a Task evidence or
+or performs a security, secret, remote, runtime or data action. A change
+that meets none of those but changes executable code or tests, such as a
+new operations command or its tests, is medium-risk. Every other change is
+low-risk: an ordinary document or README edit, a Task evidence or
 acceptance record, or a Stage 01 to 05 prose correction that changes no
 rule.
 
-A high-risk change gets one independent review as below. A low-risk change
-closes with its focused checks and an author check in the Task that names
-what was compared and what was not checked; the author check is not called
-independent review. When the class is unclear, treat the change as
-high-risk. A reviewer does not rerun a check whose input is unchanged, and
-an evidence-only commit after review needs no new review.
+A high-risk change gets one independent review as below, with any boundary
+specialist review it needs. A medium-risk change gets one primary review: a
+read-only reviewer in a fresh context who did not write it reviews the diff,
+the governing criteria and the recorded check results against the
+[diff review checklist](../prompts/diff-review.md), with no specialist
+unless an actual boundary appears. A low-risk change closes with its focused
+checks and an author check in the Task that names what was compared and
+what was not checked; the author check is not called independent review.
+When the class is unclear, take the higher class. A reviewer does not rerun
+a check whose input is unchanged, and an evidence-only commit after review
+needs no new review. A review run after merge is recorded as such, and its
+findings are fixed or recorded in the owning Task.
 
 ### Review Scope and Evidence Updates
 
@@ -97,6 +107,11 @@ readback. They do not restart implementation tests, full QA or an unchanged
 source review. A result update that changes contract meaning, acceptance or
 approval is reviewed for that change. Preserve actual failures and review
 history; do not manufacture a new approval from an existing verdict.
+
+Each review's Task evidence row records when the reviewer was dispatched and
+when it returned, and how many review rounds the change took. A number that
+was not observed, such as queue wait or context loading inside the
+reviewer, is reported as unmeasured, never estimated.
 
 Static validation and independent review precede an operational action,
 which waits for its exact target. An implementation that fails validation or independent

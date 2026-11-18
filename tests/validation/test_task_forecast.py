@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import math
+import os
 import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from scripts.operations import task_forecast as forecast
 
@@ -38,6 +41,103 @@ class ForecastTests(unittest.TestCase):
             with self.subTest(quantiles=quantiles, extra=extra):
                 with self.assertRaises(forecast.ForecastError):
                     self.predict(quantiles=quantiles, **extra)
+
+    def test_non_finite_values_are_refused(self) -> None:
+        for quantiles in ((1, 2, math.inf), (math.nan, 2, 3)):
+            with self.subTest(quantiles=quantiles):
+                with self.assertRaises(forecast.ForecastError):
+                    self.predict(quantiles=quantiles)
+        self.predict(time_basis="active")
+        with self.assertRaises(forecast.ForecastError):
+            forecast.observe(
+                self.directory,
+                "T1",
+                "completed",
+                START,
+                "2026-11-18T10:05:00+00:00",
+                active_minutes=math.nan,
+            )
+        self.assertEqual(0, forecast.score(self.directory)["completed"])
+
+    def test_insert_or_replace_cannot_rewrite_a_row(self) -> None:
+        self.predict()
+        forecast.observe(
+            self.directory, "T1", "failed", START, "2026-11-18T10:05:00+00:00"
+        )
+        connection = forecast.connect(self.directory)
+        for statement in (
+            "INSERT OR REPLACE INTO forecasts SELECT * FROM forecasts",
+            "REPLACE INTO outcomes SELECT task_ref, 'completed', started_at,"
+            " finished_at, active_minutes, runner_wait_minutes,"
+            " user_wait_minutes, observed_at FROM outcomes",
+        ):
+            with self.subTest(statement=statement):
+                with self.assertRaises(sqlite3.DatabaseError):
+                    connection.execute(statement)
+        connection.close()
+        self.assertEqual(1, forecast.score(self.directory)["failed"])
+
+    def test_a_future_end_or_active_time_over_elapsed_is_refused(self) -> None:
+        self.predict(time_basis="active")
+        for finished, active in (
+            ("2999-01-01T00:00:00+00:00", 5),
+            ("2026-11-18T10:10:00+00:00", 11),
+        ):
+            with self.subTest(finished=finished, active=active):
+                with self.assertRaises(forecast.ForecastError):
+                    forecast.observe(
+                        self.directory,
+                        "T1",
+                        "completed",
+                        START,
+                        finished,
+                        active_minutes=active,
+                    )
+
+    def test_calibration_is_claimed_per_type_only(self) -> None:
+        for task, task_type in (("T1", "ci-run"), ("T2", "build")):
+            forecast.forecast(
+                self.directory,
+                task,
+                task_type,
+                1,
+                2,
+                3,
+                forecasted_at="2026-11-18T09:00:00+00:00",
+            )
+            forecast.observe(
+                self.directory, task, "completed", START, "2026-11-18T10:02:00+00:00"
+            )
+        with mock.patch.object(forecast, "MIN_CALIBRATION_SAMPLE", 2):
+            pooled = forecast.score(self.directory)
+            one = forecast.score(self.directory, "ci-run")
+        self.assertEqual(2, pooled["completed"])
+        self.assertNotEqual("empirical", pooled["calibration"])
+        self.assertEqual(1, one["completed"])
+        self.assertEqual("insufficient sample", one["calibration"])
+        with mock.patch.object(forecast, "MIN_CALIBRATION_SAMPLE", 1):
+            typed = forecast.score(self.directory, "ci-run")
+        self.assertEqual("empirical", typed["calibration"])
+
+    def test_the_cli_refuses_with_exit_2_instead_of_a_traceback(self) -> None:
+        self.directory.mkdir(parents=True)
+        with mock.patch.dict(os.environ, {"HY_HOME_CAPTURE_DIR": str(self.directory)}):
+            refused = forecast.main(
+                [
+                    "observe",
+                    "missing",
+                    "--status",
+                    "completed",
+                    "--started-at",
+                    START,
+                    "--finished-at",
+                    START,
+                ]
+            )
+            (self.directory / forecast.STORE_NAME).unlink()
+            (self.directory / forecast.STORE_NAME).symlink_to(self.directory / "x")
+            broken = forecast.main(["score"])
+        self.assertEqual((2, 2), (refused, broken))
 
     def test_a_changed_estimate_is_a_new_revision_and_rows_are_immutable(
         self,

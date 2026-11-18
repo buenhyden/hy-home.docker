@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -262,9 +263,119 @@ class DispatchTests(unittest.TestCase):
         self.assertEqual(2, len(git(self.repo, "worktree", "list").splitlines()))
         removed = dispatch.cleanup(self.repo, self.state)
         self.assertEqual(1, len(removed))
+        self.assertIsNotNone(
+            dispatch.Leases(self.state).acquire(["path:a.txt"], "next-run", 60)
+        )
         time.sleep(0.2)
         with self.assertRaises(ProcessLookupError):
             os.killpg(worker, 0)
+        self.assertEqual(1, len(git(self.repo, "worktree", "list").splitlines()))
+
+    def test_a_rename_into_an_owned_path_is_rejected(self) -> None:
+        report = self.run_plan([unit("a", "mv base.txt a.txt", owned=["a.txt"])])
+        (result,) = report["units"]
+        self.assertEqual("rejected", result["status"])
+        self.assertIn("base.txt", result["reason"])
+
+    def test_a_unit_without_changes_integrates_and_feeds_dependents(self) -> None:
+        report = self.run_plan(
+            [
+                unit("check", "test -f base.txt"),
+                unit("b", "echo b > b.txt", owned=["b.txt"], depends=["check"]),
+            ]
+        )
+        states = {u["id"]: u["status"] for u in report["units"]}
+        self.assertEqual({"check": "succeeded", "b": "succeeded"}, states)
+        self.assertEqual("passed", report["integration"]["status"])
+
+    def test_background_children_end_with_their_worker(self) -> None:
+        marker = self.state.parent / "child.pid"
+        report = self.run_plan(
+            [
+                unit(
+                    "a",
+                    f"sleep 30 & echo $! > {marker}; echo a > a.txt",
+                    owned=["a.txt"],
+                )
+            ]
+        )
+        self.assertEqual("succeeded", report["units"][0]["status"])
+        time.sleep(0.2)
+        with self.assertRaises(ProcessLookupError):
+            os.kill(int(marker.read_text()), 0)
+
+    def test_cancel_reaches_a_running_integration_check(self) -> None:
+        marker = self.state.parent / "check.pid"
+
+        def cancel() -> None:
+            deadline = time.monotonic() + 10
+            while not marker.exists() and time.monotonic() < deadline:
+                time.sleep(0.05)
+            dispatch.cancel(self.state)
+
+        threading.Thread(target=cancel).start()
+        report = self.run_plan(
+            [unit("a", "echo a > a.txt", owned=["a.txt"])],
+            checks=[["sh", "-c", f"echo $$ > {marker}; sleep 30"]],
+        )
+        self.assertEqual("cancelled", report["status"])
+        self.assertLess(report["elapsed_seconds"], 10)
+        time.sleep(0.2)
+        with self.assertRaises(ProcessLookupError):
+            os.kill(int(marker.read_text()), 0)
+
+    def test_an_integration_check_times_out(self) -> None:
+        report = self.run_plan(
+            [unit("a", "echo a > a.txt", owned=["a.txt"])],
+            checks=[["sleep", "30"]],
+            integration_timeout=1,
+        )
+        self.assertEqual("failed", report["integration"]["status"])
+        self.assertIn("timeout", report["integration"]["reason"])
+
+    def test_a_damaged_worktree_cannot_stage_into_the_main_repository(self) -> None:
+        (self.repo / "user.txt").write_text("user work\n")
+        report = self.run_plan(
+            [unit("a", "rm -f .git; echo a > a.txt", owned=["a.txt"])]
+        )
+        self.assertEqual(["a.txt"], report["units"][0].get("changed"))
+        self.assertEqual("?? user.txt\n", git(self.repo, "status", "--porcelain"))
+        self.assertEqual(1, len(git(self.repo, "worktree", "list").splitlines()))
+
+    def test_an_older_cancel_does_not_stop_a_new_run(self) -> None:
+        dispatch.cancel(self.state)
+        time.sleep(0.05)
+        report = self.run_plan([unit("a", "echo a > a.txt", owned=["a.txt"])])
+        self.assertEqual("succeeded", report["status"])
+
+    def test_the_integrated_patch_carries_its_digest(self) -> None:
+        report = self.run_plan([unit("a", "echo a > a.txt", owned=["a.txt"])])
+        integration = report["integration"]
+        digest = hashlib.sha256(Path(integration["patch"]).read_bytes()).hexdigest()
+        self.assertEqual(digest, integration["sha256"])
+
+    def test_a_non_utf8_file_name_does_not_crash_the_run(self) -> None:
+        report = self.run_plan(
+            [unit("a", "mkdir -p d; printf x > \"d/$(printf 'n\\377')\"", owned=["d/"])]
+        )
+        self.assertEqual("succeeded", report["units"][0]["status"])
+
+    def test_a_command_that_cannot_start_fails_cleanly(self) -> None:
+        plan = [unit("a", "true", owned=["a.txt"])]
+        plan[0]["command"] = ["no-such-tool-for-dispatch"]
+        report = self.run_plan(plan)
+        self.assertEqual("failed", report["units"][0]["status"])
+        self.assertEqual(1, len(git(self.repo, "worktree", "list").splitlines()))
+        self.assertIsNotNone(
+            dispatch.Leases(self.state).acquire(["path:a.txt"], "next-run", 60)
+        )
+
+    def test_a_missing_integration_program_fails_integration(self) -> None:
+        report = self.run_plan(
+            [unit("a", "echo a > a.txt", owned=["a.txt"])],
+            checks=[["no-such-check-for-dispatch"]],
+        )
+        self.assertEqual("failed", report["integration"]["status"])
         self.assertEqual(1, len(git(self.repo, "worktree", "list").splitlines()))
 
     def test_bad_plans_are_refused(self) -> None:
@@ -273,6 +384,12 @@ class DispatchTests(unittest.TestCase):
             [unit("a", "true", depends=["missing"])],
             [unit("a", "true"), unit("a", "true")],
             [unit("a", "true", owned=["../x"])],
+            [unit("a", "true", owned=["."])],
+            [unit("/tmp/victim", "true", owned=["x.txt"])],
+            [unit("..", "true", owned=["x.txt"])],
+            [unit("a/b", "true", owned=["x.txt"])],
+            [dict(unit("a", "true"), command=["sleep", 5])],
+            [dict(unit("a", "true"), command=["echo", "a\x00b"])],
         ):
             with self.subTest(units=json.dumps(units)[:80]):
                 with self.assertRaises(dispatch.PlanError):

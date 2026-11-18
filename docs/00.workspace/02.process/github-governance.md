@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.11.0"
+version: "1.12.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # GitHub Governance Policy
@@ -60,6 +60,7 @@ None: this document states no exclusion.
 | GITHUB-GOVERNANCE-R24 | Classifying a change's risk | Required: use the Review risk class read with the change-type verification matrix and protected surfaces | none | none |
 | GITHUB-GOVERNANCE-R25 | PR candidate | Required: the required `candidate-quality` check runs the static and contract checks | none | none |
 | GITHUB-GOVERNANCE-R26 | High-risk final diff | Required: review it in a fresh context separate from the one that wrote it, against the diff review checklist | none | none |
+| GITHUB-GOVERNANCE-R123 | Medium-risk diff | Required: one primary review in a fresh context by a read-only reviewer who did not write it, against the diff review checklist | none | none |
 | GITHUB-GOVERNANCE-R27 | Low-risk diff | Required: close it with the author check the Review risk policy defines | none | none |
 | GITHUB-GOVERNANCE-R28 | Criterion acceptance | Required: the owner accepts each criterion explicitly in the Task's Criterion Acceptance | none | Task Criterion Acceptance |
 | GITHUB-GOVERNANCE-R29 | Criterion acceptance | Forbidden: treating a merge as acceptance | none | none |
@@ -199,7 +200,9 @@ target and action.
   The required `candidate-quality` check runs the static and contract checks.
   A high-risk final diff is reviewed in a fresh context separate from the one
   that wrote it, against the [diff review checklist](../../../.agents/prompts/diff-review.md);
-  a low-risk diff closes with the author check that policy defines. The owner then accepts
+  a medium-risk diff gets one primary review by a read-only reviewer in a
+  fresh context who did not write it; a low-risk diff closes with the author
+  check that policy defines. The owner then accepts
   each criterion explicitly in the Task's Criterion Acceptance, which a merge
   is not. Git history and the recovery rules below cover rollback. The review
   path calls no model-inference API, under the
@@ -440,7 +443,7 @@ Four rules name a check the policy ties to them (R48, R60, R61, R104); every oth
 - Protection and remote read-back: R1-R8.
 - CODEOWNERS review: R9-R13, R34.
 - Issues, Tasks and Projects: R14-R20, R120-R122.
-- PR completion, review and acceptance: R21-R33.
+- PR completion, review and acceptance: R21-R33, R123.
 - Recovery, merge and branch discipline: R35-R44, R54-R56.
 - Renovate and dependency updates: R45-R47, R49-R53.
 - Actions security: R57-R59, R62-R65.

@@ -3,11 +3,11 @@ name: "code-review-dimensions"
 description: "Use when a scoped diff needs evidence-backed correctness, security, maintainability, performance, and governance review with calibrated severity."
 metadata:
   title: "code-review-dimensions"
-  version: "1.3.1"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "code-review-dimensions"
   scope: "common"
   owner_agent: "code-reviewer"
@@ -34,7 +34,7 @@ None: this skill states no exclusion.
 
 1. Evaluate correctness, security, maintainability, performance, and governance only where the diff and specification make each dimension relevant.
 2. Reproduce candidate defects against tracked code or tests and cite the narrowest useful file-and-line location.
-3. Calibrate Critical, Important, and Minor severity from impact, reachability, and remediation urgency.
+3. Calibrate Critical, Important, and Minor severity from impact, reachability, and remediation urgency. A defect reachable from input or configuration the change currently accepts keeps its severity even when only a specific input triggers it; name that input. A suspicion without a reproducible input is a suggestion, labelled as such.
 
 #### Gates
 
