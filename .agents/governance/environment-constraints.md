@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.24.0"
+version: "1.25.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Environment Constraints
@@ -169,7 +169,7 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R146 | Analysis candidate | Required: name its source events, frequency, conditions, proposal, risk and acceptance test | none | none |
 | ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check, memory or policy without a separate approved Task | none | none |
 | ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
-| ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | none | none |
+| ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | `lab.py select` prints the closure and the union with running HOME services and refuses an empty start or one that leaves every HOME service running | `tests/validation/test_lab_controller.py` |
 | ENVIRONMENT-CONSTRAINTS-R150 | Starting Compose services on this server | Forbidden: selecting every profile with `--profile '*'` or `COMPOSE_PROFILES` holding `*` for `up`, `start` or `create` | hookify `block-whole-stack-compose-start` refuses the visible forms | `tests/lib/hooks/test_compose_start_rule.py` |
 | ENVIRONMENT-CONSTRAINTS-R151 | Forecasting a task | Required: record P30, P50 and P80 completion minutes with `scripts/operations/task_forecast.py` before the task starts, with the time basis, assumptions and reference class | none | none |
 | ENVIRONMENT-CONSTRAINTS-R152 | Changing a forecast | Required: append a new revision; editing, deleting or replacing a recorded forecast or outcome is refused; the triggers stop edits through SQL, not a dropped trigger or a replaced store file | SQLite triggers in the forecast store | `tests/validation/test_task_forecast.py` |
@@ -183,6 +183,7 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R160 | Claiming a parallel gain | Required: compare elapsed time with one worker on the same plan, setup and integration included, and state N; a worktree is never treated as a sandbox | none | none |
 | ENVIRONMENT-CONSTRAINTS-R161 | Observing agent tools and scheduled jobs | Required: `scripts/operations/observe.py report` joins capture, analysis, forecast, dispatch and the watched units by time window, names an owner and a next step for each failure, counts journal lines without copying log text, prompts or secrets, and states its own cost and what it cannot measure | none | `tests/validation/test_observe.py` |
 | ENVIRONMENT-CONSTRAINTS-R162 | Using an observe report | Forbidden: treating it as a gate, an approval or a fix; a failure it shows is resolved through its owner's record | none | none |
+| ENVIRONMENT-CONSTRAINTS-R163 | Reporting a LAB or service run on the operating Docker daemon | Forbidden: calling its result a sandbox result; it shares the operating socket, networks and volumes and is an operating-host result | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -514,7 +515,8 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Memory recall (R132-R135): no check is named.
 - Session capture (R136-R142): no check is named.
 - Session analysis (R143-R148): no check is named.
-- Compose start selection (R149): no check is named.
+- Compose start selection (R149): `lab.py select` reads the render and the running containers when an operator runs it; nothing makes a start run it first, and two starts at once can each pass it.
+- Sandbox claims (R163): no check is named.
 - Whole-stack start (R150): the hookify rule sees only the command text; a profile list read from an environment file or a command built at run time is outside it.
 - Task forecasts (R151, R154, R155): no check is named; R152 and R153 are enforced by the store and the CLI.
 - Observation (R161, R162): no check is named; the report reads stores and the journal and changes nothing.
