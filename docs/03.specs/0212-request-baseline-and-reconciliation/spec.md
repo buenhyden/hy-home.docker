@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.83.0"
+version: "1.84.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1144,6 +1144,13 @@ target, backup, recovery boundary, and action-specific authorization.
      reference, Registry path, CI route and generated surface follows the
      move; terminal Task bodies stay unchanged and their old links still
      resolve. Hookify rules and native bindings do not move.
+143. TSK-0087 applies the 4.2.0 W09-ENV design on the owner's 2026-11-18
+     decisions: work targets this server's own Docker daemon, and the
+     repository needs no separate sandbox. Services start only by named
+     profile or service with their dependency closure; an every-profile
+     `up`, `start` or `create` is refused by both providers' hooks before
+     it runs, while rendering every profile stays allowed. The host survey
+     and the hook refusal are evidenced separately from configuration.
 
 ### Evidence Requirements
 
