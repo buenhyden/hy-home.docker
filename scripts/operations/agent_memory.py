@@ -565,6 +565,17 @@ def usage(connection: sqlite3.Connection) -> dict[str, object]:
     }
 
 
+def conflict_counts(connection: sqlite3.Connection) -> dict[str, int]:
+    """Unresolved stored conflicts per record, for recall to flag."""
+    if "conflicts" not in _sidecars(connection):
+        return {}
+    return dict(
+        connection.execute(
+            "SELECT memory_id, count(*) FROM conflicts GROUP BY memory_id"
+        ).fetchall()
+    )
+
+
 def _sidecars(connection: sqlite3.Connection) -> set[str]:
     return {
         row[0]
