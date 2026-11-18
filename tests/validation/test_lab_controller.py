@@ -10,6 +10,7 @@ import os
 import pathlib
 import subprocess
 import tempfile
+import typing
 import unittest
 from unittest import mock
 
@@ -2466,6 +2467,74 @@ class SharedTemplateTests(unittest.TestCase):
                 self.assertLessEqual(
                     _bytes(reserved["memory"]), _bytes(block["mem_limit"])
                 )
+
+
+class HomeSelectionTests(unittest.TestCase):
+    """ENVIRONMENT-CONSTRAINTS-R149 and R150: a HOME start is named and partial."""
+
+    HOME: typing.ClassVar[dict] = {
+        "name": "hy-home-infra",
+        "services": {
+            "app": {"profiles": ["core"], "depends_on": {"db": {}}},
+            "db": {"profiles": ["data"], "depends_on": {"vault": {}}},
+            "vault": {"profiles": ["core"]},
+            "web": {"profiles": ["edge"]},
+            "cron": {"profiles": ["ops"]},
+        },
+    }
+
+    def running(self, *services, project="hy-home-infra"):
+        return [
+            {"project": project, "service": name, "running": True} for name in services
+        ]
+
+    def test_named_services_expand_to_their_dependency_closure(self):
+        report = lab.home_selection(self.HOME, ["app"], [], self.running("web"))
+        self.assertEqual(["app", "db", "vault"], report["closure"])
+        self.assertEqual(["db", "vault"], report["added_by_dependency"])
+        self.assertEqual((4, 5), (report["union"], report["total"]))
+        self.assertEqual([], report["problems"])
+
+    def test_a_profile_selects_its_members_and_their_dependencies(self):
+        report = lab.home_selection(self.HOME, [], ["core"], [])
+        self.assertEqual(["app", "db", "vault"], report["closure"])
+
+    def test_an_empty_or_unknown_selection_is_refused(self):
+        self.assertTrue(lab.home_selection(self.HOME, [], [], [])["problems"])
+        for services, profiles in ((["nope"], []), ([], ["nope"]), ([], ["*"])):
+            with self.subTest(services=services, profiles=profiles):
+                report = lab.home_selection(self.HOME, services, profiles, [])
+                self.assertTrue(report["problems"])
+
+    def test_a_start_that_leaves_every_service_running_is_refused(self):
+        running = self.running("web", "cron")
+        report = lab.home_selection(self.HOME, ["app"], [], running)
+        self.assertEqual((5, 5), (report["union"], report["total"]))
+        self.assertIn("every", " ".join(report["problems"]))
+
+    def test_other_projects_and_stopped_containers_do_not_count(self):
+        running = self.running("web", "cron", project="hy-home-lab-x")
+        running.append({"project": "hy-home-infra", "service": "web",
+                        "running": False})  # fmt: skip
+        report = lab.home_selection(self.HOME, ["app"], [], running)
+        self.assertEqual(3, report["union"])
+
+    def test_profile_less_services_join_a_profile_start(self):
+        home = json.loads(json.dumps(self.HOME))
+        home["services"]["agent"] = {}
+        self.assertIn("agent", lab.home_selection(home, [], ["edge"], [])["closure"])
+        self.assertNotIn("agent", lab.home_selection(home, ["web"], [], [])["closure"])
+
+    def test_the_command_prints_the_report_and_exits_3_on_refusal(self):
+        with (
+            mock.patch.object(lab, "render", return_value=self.HOME),
+            mock.patch.object(lab, "running_containers",
+                              return_value=self.running("web", "cron")),
+            mock.patch("sys.stdout", new_callable=io.StringIO) as out,
+        ):  # fmt: skip
+            self.assertEqual(0, lab.main(["select", "vault"]))
+            self.assertEqual(["vault"], json.loads(out.getvalue())["closure"])
+            self.assertEqual(3, lab.main(["select", "app"]))
 
 
 if __name__ == "__main__":
