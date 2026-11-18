@@ -1,10 +1,10 @@
 ---
 title: "SearXNG Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "operations"
 artifact_id: "GDE-0110"
 parent_ids:
@@ -90,6 +90,11 @@ SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `s
   근거로 secret 접근이나 도구 실행을 허용하지 않는다.
 
 #### 호출량
+
+2026-11-19 07:00 Hermes 실행에서 DuckDuckGo(CAPTCHA), Brave·Google CSE(too many requests)가 이 host 주소를 제한해
+검색 대부분이 빈 결과였다. 그래서 무료 일반 웹 엔진 Bing, Qwant, Yahoo를 추가로 켜 부하를 나누고
+`outgoing.request_timeout`을 6초(최대 10초)로 올렸다. 모든 무료 엔진이 같은 주소를 제한할 수 있으므로
+결과가 계속 비면 소비자 호출량부터 줄인다.
 
 limiter가 꺼져 있으므로 호출량 제어는 소비자가 맡는다. 공개 검색 엔진이 차단하면
 결과가 비거나 줄어든다. 이때 limiter나 proxy를 추가하지 않고 소비자 호출량을 낮춘다.
