@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.85.0"
+version: "1.86.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -405,6 +405,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W158 | 142 | Move the eight shared policies to `docs/00.workspace/`, rewrite live references, map the responsibility layers and teach the link, metadata, contract and gate checkers the new home | None | TSK-0086 | Link, metadata, lifecycle, contract and renderer checks; moved-link and baseline RED and GREEN tests |
 | W159 | 143 | Survey the server Docker and block every-profile Compose starts with a hookify rule, rules R149 and R150 and a rule test | None | TSK-0087 | Rule RED and GREEN tests, dispatcher probe, native Claude and Codex refusal |
 | W160 | 144 | Plan the 19 numbered docs subfolder moves for Q07 and rehearse them in a disposable worktree to list every consumer | None | TSK-0088 | Collision review, rehearsal checker results, unchanged real tree and allocator |
+| W161 | 145 | Record, observe and score P30, P50 and P80 task forecasts in a private append-only store | None | TSK-0089 | Forecast RED and GREEN tests, manifest and routing checks, one real forecast and outcome |
 
 #### Current v30 continuation and delivery
 
