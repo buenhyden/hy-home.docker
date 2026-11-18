@@ -1,6 +1,6 @@
 ---
 title: "W08 Session Capture Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -80,6 +80,24 @@ hook entry starts in about 0.06 s on this host. A routing test forbids the
 module: a 1 s SQLite busy wait, a non-blocking lock and a detached
 reconcile.
 
+#### Native Claude observation
+
+Once the dispatcher change was in the main checkout, this session's own
+hooks captured events, and a second Claude session in the workspace was
+captured too. The first status showed two defects. Claude records provider
+notifications as `user` lines and fires `UserPromptSubmit` for them, so 215
+`<task-notification>` texts were stored as prompts; Claude 2.1.327 marks a
+typed prompt with `origin.kind: human` and a notification with
+`task-notification`, so capture now keeps only human turns, drops compact
+summaries and lines starting with a notification, command output or system
+reminder tag, and the hook ignores a notification prompt. And 48 failures
+came from test runs that called the real dispatcher with payloads that had
+no session ID; every provider event carries one, so such a call is now
+ignored instead of counted. The 215 misclassified rows and the 48 log lines
+were deleted from the real store, which the transcripts can rebuild, and a
+reconcile then reported both sessions complete with 427 events and no
+failure.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -103,11 +121,15 @@ observation waits for the Codex usage limit, reported until 16:29 KST on
 | Capture RED | 140 | W154 | `test_session_capture` | New tests on `0dcf8bc2f` | FAIL | Import error: no capture module | required | - |
 | Capture GREEN | 140 | W154 | `test_session_capture` | Capture module and dispatcher change | PASS | 10 tests: idempotency, redaction, recovery, partial flush, rewrite, Codex, outside paths, retention, failure, lock | required | Capture RED |
 | Contract checks | 140 | W154 | capture, script manifest, routing and surface suites | Capture change on `0dcf8bc2f` | PASS | 162 tests | required | - |
-| Native capture | 140 | W155 | `session_capture status` after Claude and Codex sessions | Real capture store | NOT_RUN | Awaits a Claude hook after the change and the Codex usage limit | required | - |
+| System turn RED | 140 | W154 | `test_session_capture` notification and session cases | Real store status after native capture | FAIL | 215 notifications stored as prompts; 48 non-provider calls counted as failures | required | - |
+| System turn GREEN | 140 | W154 | `test_session_capture` notification and session cases | Origin filter and session guard | PASS | 12 tests | required | System turn RED |
+| Native Claude capture | 140 | W155 | `session_capture status` | Real capture store, two Claude sessions | PASS | Both complete, 427 events, no failure | required | - |
+| Native Codex capture | 140 | W155 | `session_capture status` after a Codex session | Real capture store | NOT_RUN | Codex usage limit until 16:29 KST | required | - |
 
 ### Resolution Links
 
-Capture GREEN resolves Capture RED.
+Capture GREEN resolves Capture RED, and System turn GREEN resolves System
+turn RED.
 
 ## Acceptance Decision
 
@@ -119,8 +141,8 @@ Capture GREEN resolves Capture RED.
 
 ### Remaining Conditions
 
-W155 needs the native capture status from a Claude session and a Codex
-session. W08-ANALYSIS owns scheduled analysis of the captured events.
+W155 needs the native capture status from a Codex session; the Claude
+sessions are observed. W08-ANALYSIS owns scheduled analysis of the captured events.
 
 ## Handoff
 
