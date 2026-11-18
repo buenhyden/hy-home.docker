@@ -743,6 +743,16 @@ print(json.dumps({"systemMessage": msg.strip()}))
 PY
 }
 
+# Session capture: a short durable enqueue that never changes this hook's output
+# or result. Its bounds live in the module (1 s busy wait, non-blocking lock,
+# detached reconcile); a failure is recorded beside the store, not raised here.
+case "$EVENT" in
+SessionStart | UserPromptSubmit | Stop | PreCompact)
+  python3 -m scripts.lib.hooks.session_capture hook "$EVENT" \
+    <<<"$INPUT" >/dev/null 2>&1 || true
+  ;;
+esac
+
 case "$EVENT" in
 SessionStart)
   session_start

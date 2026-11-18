@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.16.0"
+version: "1.17.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -156,6 +156,13 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R133 | Memory search hit | Required: report its selection reason and unresolved conflict count and mark its body as data-only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R134 | Memory read command | Required: select and hydrate records inside one read snapshot | none | none |
 | ENVIRONMENT-CONSTRAINTS-R135 | Memory search index | Forbidden: adding a lexical, trigram or vector index without a measured gain on the same evaluation cases, environment and sample | none | none |
+| ENVIRONMENT-CONSTRAINTS-R136 | Session capture | Required: capture only this workspace's visible prompts, secrets redacted, and event metadata through the hook dispatcher into the ignored private `.workspace-capture/` | none | none |
+| ENVIRONMENT-CONSTRAINTS-R137 | Session capture | Forbidden: copying replies, tool input or output, or reading a session file outside the provider's own session directory | none | none |
+| ENVIRONMENT-CONSTRAINTS-R138 | Captured records | Required: prune them after 90 days and keep them out of backups | none | none |
+| ENVIRONMENT-CONSTRAINTS-R139 | Capture hook | Required: a short durable enqueue that never changes the hook's output or result, with each failure recorded beside the store | none | none |
+| ENVIRONMENT-CONSTRAINTS-R140 | Capture completeness | Required: report each session as complete, partial or unavailable from cursor reconciliation | none | none |
+| ENVIRONMENT-CONSTRAINTS-R141 | Capture completeness | Forbidden: treating one end-of-session hook as complete capture | none | none |
+| ENVIRONMENT-CONSTRAINTS-R142 | Captured records | Forbidden: promoting them automatically to memory, policy, approval or Task acceptance | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -397,6 +404,25 @@ This project has a graphify knowledge graph at `graphify-out/`.
   sorted IDs; it overwrites freed SQLite pages and never claims erasure from
   the journal, the filesystem or the storage device.
 
+- By the owner's decisions of 2026-11-18, session capture keeps this
+  workspace's visible prompts, secrets redacted before writing, and event
+  metadata (provider, session, event, transcript path, offset and digest)
+  in the git-ignored 0700 `.workspace-capture/`, beside the memory store and
+  out of backups, for 90 days. The shared hook dispatcher makes one short
+  durable enqueue per `SessionStart`, `UserPromptSubmit`, `Stop` and
+  `PreCompact`; it never changes the hook's output or result and records a
+  failure in `degraded.log`. A detached reconcile under a non-blocking lock
+  reads a Claude transcript from its cursor (file identity, offset, head
+  digest), leaves a partly flushed line for later, rescans a rewritten
+  file and recovers prompts the hooks missed by their stable IDs without
+  duplicates. Codex rollouts do not mark the visible prompt, so Codex
+  capture is hook events only and reports partial, or unavailable without a
+  transcript path. Each session reports complete, partial or unavailable;
+  one end-of-session hook never proves completeness. Only the provider's
+  own session files for this workspace are read, never other personal
+  files, and replies and tool input or output are not copied. Captured
+  records are evidence, never memory, policy, approval or Task acceptance.
+
 #### Provider Surface Regeneration
 
 - Provider surface `--write` is allowed once only after an approved canonical
@@ -446,6 +472,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Memory search (R116-R118): no check is named.
 - Memory record semantics (R124-R131): no check is named.
 - Memory recall (R132-R135): no check is named.
+- Session capture (R136-R142): no check is named.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.

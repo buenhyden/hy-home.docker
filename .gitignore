@@ -160,5 +160,7 @@ volumes/
 # and a stated reason.
 graphify-out/
 
-# Shared agent memory store (scripts/operations/agent_memory.py)
+# Shared agent memory store (scripts/operations/agent_memory.py) and session
+# capture (scripts/lib/hooks/session_capture.py)
 .workspace-memory/
+.workspace-capture/
