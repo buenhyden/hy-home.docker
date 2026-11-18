@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.21.0"
+version: "1.22.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -787,6 +787,22 @@ python3 scripts/operations/work_dispatch.py cleanup
 lease와 실행 기록은 `.workspace-capture/dispatch/`에 있다. `cleanup`은 dispatcher가
 죽은 실행의 worker를 멈추고 worktree를 지우고 그 실행의 lease를 푼다. 병렬 효과는 같은 계획을 worker 1개로
 실행한 시간과 준비·통합 시간을 포함해 비교하고 표본 수를 함께 적는다.
+
+#### 관측 보고
+
+`scripts/operations/observe.py report`는 지정한 시간 구간(기본 최근 24시간)에 수집
+저장소, 세션 분석 실행, 작업 예측 결과, 병렬 실행 보고서와 `hyhome-backup.service`·
+`hy-home-session-analysis.service`의 journal에서 일어난 일을 센다. 실패마다 담당
+문서와 다음 확인 단계를 적고, journal 줄은 세기만 하며 로그 본문·prompt·secret은
+옮기지 않는다. 보고는 자기 실행 시간을 관측 비용으로 적고, 잴 수 없는 항목(대기,
+문맥 적재, 토큰과 비용)을 따로 적는다. 읽을 수 없는 저장소, 일부 줄을 숨기는 journal,
+29시간 이상 구간에 실행이 없는 매일 unit(timer 지연 30분과 최대 4시간 실행을 감안)은 0이 아니라 실패로 적는다. 병렬 실행 보고서는
+worker가 쓸 수 있으므로 정해진 형식의 값만 옮긴다. 검사나 승인이 아니며 실패는 담당
+기록에서 해결한다.
+
+```bash
+python3 scripts/operations/observe.py report --since 2026-11-12T00:00:00+00:00
+```
 
 #### 공유 기억 백업 제외 (2026-11-18)
 
