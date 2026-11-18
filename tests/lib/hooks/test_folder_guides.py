@@ -203,6 +203,7 @@ class DispatcherDeliveryTests(IsolatedState):
             "PATH": "/usr/bin:/bin",
             "CLAUDE_PROJECT_DIR": str(ROOT),
             "XDG_STATE_HOME": self.state_home,
+            "HY_HOME_CAPTURE_DIR": str(Path(self.state_home) / "capture"),
         }
         if provider:
             env["HY_HOME_HOOK_PROVIDER"] = provider
@@ -519,6 +520,11 @@ class DispatcherDeliveryTests(IsolatedState):
             "SessionStart", {"session_id": "s", "source": "startup"}
         )
         self.assertNotIn("re-read the nearest folder", startup)
+
+    def test_hook_capture_goes_to_the_test_directory(self) -> None:
+        self.run_hook("SessionStart", {"session_id": "s", "source": "startup"})
+        store = Path(self.state_home) / "capture" / "capture.sqlite3"
+        self.assertTrue(store.is_file())
 
 
 if __name__ == "__main__":

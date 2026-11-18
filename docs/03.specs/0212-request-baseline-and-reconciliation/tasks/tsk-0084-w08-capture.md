@@ -1,6 +1,6 @@
 ---
 title: "W08 Session Capture Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -107,10 +107,19 @@ failure.
 
 ### Blockers and Decisions
 
-W155 needs native events. The dispatcher in the main checkout captures
-this Claude session's hooks once the change is in place; the Codex
-observation waits for the Codex usage limit, reported until 16:29 KST on
-2026-11-18.
+After the Codex usage limit ended at 16:29 KST on 2026-11-18, three
+`codex exec` sessions in this workspace each recorded SessionStart,
+UserPromptSubmit and Stop through the shared dispatcher. Codex transcripts
+stay unparsed, so those sessions report partial with the reason "transcript
+format unsupported; hook events only", as designed.
+
+The real store also held 25 sessions named `s` or `test-<32 hex>` with 60
+events. `test_folder_guides` drove the real hooks from the repository root,
+and capture resolves its store from that repository. `capture_dir` now
+honors `HY_HOME_CAPTURE_DIR`, the hook tests point it at their temporary
+state, and RUN-0021 says so. The 25 test sessions were deleted by exact
+name from the real store, leaving 13 provider sessions; no pending analysis
+candidate cited a deleted event.
 
 ## Verification Evidence
 
@@ -125,11 +134,16 @@ observation waits for the Codex usage limit, reported until 16:29 KST on
 | System turn GREEN | 140 | W154 | `test_session_capture` notification and session cases | Origin filter and session guard | PASS | 12 tests | required | System turn RED |
 | Native Claude capture | 140 | W155 | `session_capture status` | Real capture store, two Claude sessions | PASS | Both complete, 427 events, no failure | required | - |
 | Native Codex capture | 140 | W155 | `session_capture status` after a Codex session | Real capture store | NOT_RUN | Codex usage limit until 16:29 KST | required | - |
+| Native Codex capture observed | 140 | W155 | `session_capture status` after a Codex session | Real capture store after three `codex exec` sessions | PASS | 3 sessions, each SessionStart, UserPromptSubmit and Stop by hook; partial, transcript format unsupported | required | Native Codex capture |
+| Test isolation RED | 140 | W154 | `CaptureDirectoryTests` | New test before the override | FAIL | `capture_dir` ignored `HY_HOME_CAPTURE_DIR` and returned the real store | required | - |
+| Test isolation GREEN | 140 | W154 | `CaptureDirectoryTests` | Override and hook test environment | PASS | 38 capture and folder-guide tests; the real store held 38 sessions before and after the run | required | Test isolation RED |
+| Test session removal | 140 | W154 | exact-name delete in the real capture store | Sessions `s` and `test-<32 hex>` | PASS | 25 sessions and 60 events deleted; 13 provider sessions remain; no analysis candidate affected | required | - |
 
 ### Resolution Links
 
 Capture GREEN resolves Capture RED, and System turn GREEN resolves System
-turn RED.
+turn RED. Native Codex capture observed resolves Native Codex capture, and
+Test isolation GREEN resolves Test isolation RED.
 
 ## Acceptance Decision
 
@@ -137,20 +151,21 @@ turn RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 140 | pending | Capture GREEN, Contract checks | Awaits W155 and the owner's decision | @buenhyden |
+| 140 | pending | Capture GREEN, System turn GREEN, Native Claude capture, Native Codex capture observed, Test isolation GREEN | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
-W155 needs the native capture status from a Codex session; the Claude
-sessions are observed. W08-ANALYSIS owns scheduled analysis of the captured events.
+None in W154 or W155. W08-ANALYSIS owns scheduled analysis of the captured
+events.
 
 ## Handoff
 
 ### Promotion Receipt
 
 `session_capture.py`, `agent-event-hook.sh`, ENVIRONMENT-CONSTRAINTS-R136 to
-R142 and RUN-0021 hold the W154 behavior.
+R142 and RUN-0021 hold the W154 behavior, including the test directory
+override.
 
 ### Next Owner
 
-The implementer owns W155. The owner decides criterion 140.
+The owner decides criterion 140.
