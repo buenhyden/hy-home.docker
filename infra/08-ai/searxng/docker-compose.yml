@@ -11,6 +11,8 @@ x-tier-label: &tier-label
 # Docker cannot publish a port through an internal network. SearXNG queries a
 # fixed set of search engines and does not fetch arbitrary URLs for callers.
 # Prometheus scrapes /metrics on obs_net with the searxng_metrics_password.
+# Traefik reaches it on searxng_ingress_net (SSO for browsers, Basic for the
+# /search API).
 networks:
   search_net:
     name: search_net
@@ -81,6 +83,21 @@ services:
       search_net: {}
       searxng_outbound_net: {}
       obs_net: {}
+      searxng_ingress_net: {}
     labels:
       <<: *tier-label
-      traefik.enable: 'false'
+      # Browsers use SSO. Programs on other hosts (for example Hermes on
+      # 192.168.0.22) send Basic credentials to /search only, as with
+      # prometheus-api; requests without them stay on the SSO router.
+      traefik.enable: 'true'
+      traefik.docker.network: searxng_ingress_net
+      traefik.http.routers.searxng.rule: Host(`searxng.${DEFAULT_URL}`)
+      traefik.http.routers.searxng.entrypoints: websecure
+      traefik.http.routers.searxng.tls: 'true'
+      traefik.http.routers.searxng.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.routers.searxng-api.rule: Host(`searxng.${DEFAULT_URL}`) && PathPrefix(`/search`) && HeaderRegexp(`Authorization`, `^Basic `)
+      traefik.http.routers.searxng-api.entrypoints: websecure
+      traefik.http.routers.searxng-api.tls: 'true'
+      traefik.http.routers.searxng-api.middlewares: gateway-standard-chain@file,searxng-api-auth@file
+      traefik.http.routers.searxng-api.service: searxng
+      traefik.http.services.searxng.loadbalancer.server.port: '8080'

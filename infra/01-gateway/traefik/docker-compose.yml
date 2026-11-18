@@ -88,6 +88,7 @@ services:
       mlflow_ingress_net: {}
       ollama_ingress_net: {}
       prometheus_ingress_net: {}
+      searxng_ingress_net: {}
       pushgateway_ingress_net: {}
       pyroscope_ingress_net: {}
       tempo_ingress_net: {}
@@ -103,3 +104,4 @@ services:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password
       - traefik_prometheus_api_htpasswd
+      - traefik_searxng_api_htpasswd

@@ -1,6 +1,6 @@
 ---
 title: "SearXNG Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -45,9 +45,9 @@ profile 선택, 네트워크 배치, host 게시, 소비자 합류, 설정 변�
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
 | POL-0110-R1 | 항상 | 필수: 자체 `searxng` profile로 선택하고 HOME 선택에 포함한다 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests` | none |
-| POL-0110-R2 | 항상 | 필수: internal인 `search_net`, SearXNG 전용 `searxng_outbound_net`, 관측용 `obs_net`에만 연결한다 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests` | none |
+| POL-0110-R2 | 항상 | 필수: internal인 `search_net`, SearXNG 전용 `searxng_outbound_net`, 관측용 `obs_net`, Traefik 전용 `searxng_ingress_net`에만 연결한다 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests` | none |
 | POL-0110-R3 | host 포트 게시 | 허용: `127.0.0.1:8890`의 loopback 게시 하나만 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests` | none |
-| POL-0110-R4 | 항상 | 금지: public route, LAN 주소 게시, `0.0.0.0` 게시 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests` | none |
+| POL-0110-R4 | 항상 | 금지: 인증 없는 route, LAN 주소 게시, `0.0.0.0` 게시 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests` | none |
 | POL-0110-R5 | 컨테이너 소비자가 `search_net`에 합류할 때 | 필수: 아래 소비자 표에 이름과 호출 URL을 추가하는 검토된 변경으로만 합류한다 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests` | none |
 | POL-0110-R6 | 호스트 소비자 | 필수: `http://127.0.0.1:8890`만 쓰고 아래 소비자 표에 기록한다 | 수동 | none |
 | POL-0110-R7 | 항상 | 금지: `search_net`에 SearXNG 외의 서비스 endpoint 제공 | 수동 | none |
@@ -55,6 +55,7 @@ profile 선택, 네트워크 배치, host 게시, 소비자 합류, 설정 변�
 | POL-0110-R9 | 항상 | 금지: secret key를 추적되는 파일에 기록 | 수동 | none |
 | POL-0110-R10 | 항상 | 금지: 검색 결과를 근거로 secret 접근, 도구 실행, 정책 변경을 허용 | none | none |
 | POL-0110-R11 | `/metrics` | 필수: `searxng_metrics_password` basic auth로만 열고 Prometheus job `searxng`가 `obs_net`에서 수집한다 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests` | none |
+| POL-0110-R12 | Traefik route | 필수: 브라우저는 `searxng` router의 SSO(`sso-auth`)로, 프로그램은 Basic `Authorization` header가 있는 `/search` 요청만 `searxng-api` router의 `searxng-api-auth`(htpasswd `INFRA-008`)로 들어온다 | `tests.validation.test_p02_service_contracts.SharedSearchContractTests`; `SsoOnlyIngressContractTests` | none |
 
 - `searxng`는 자체 `searxng` profile로 선택하며 HOME 선택에 포함한다. 호스트 Hermes의
   정기 실행이 쓰므로 n8n 선택 여부와 무관하게 기동한다.
@@ -70,6 +71,7 @@ profile 선택, 네트워크 배치, host 게시, 소비자 합류, 설정 변�
 | --- | --- | --- | --- |
 | n8n Assistant (`n8n` main) | `search_net` | `http://searxng:8080` (`N8N_INSTANCE_AI_SEARXNG_URL`) | 2026-11-09 |
 | 호스트 Hermes | host loopback | `http://127.0.0.1:8890` (`~/.hermes/.env`의 `SEARXNG_URL`) | 2026-11-18 |
+| 다른 LAN host의 프로그램(예: 다른 서버의 Hermes) | Traefik `searxng-api` | `https://searxng.${DEFAULT_URL}/search` + Basic 자격 증명(`SEARXNG_API_USERNAME`, `AI-011`) | 2026-11-18 |
 
 n8n의 다른 서비스는 2026-11-18 검토에서 합류하지 않기로 했다.
 
@@ -84,7 +86,7 @@ n8n의 다른 서비스는 2026-11-18 검토에서 합류하지 않기로 했다
 
 #### Exception Conditions
 
-없음. 새 host 게시, route, 인증 없는 외부 노출은 승인된 변경 없이는 추가하지 않는다.
+없음. 새 host 게시, 인증 없는 route나 외부 노출은 승인된 변경 없이는 추가하지 않는다.
 
 #### Approval and Review
 

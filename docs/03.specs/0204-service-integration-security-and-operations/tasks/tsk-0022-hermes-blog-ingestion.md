@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1828,6 +1828,18 @@ observability. Hermes keeps its Firecrawl fallback.
 - Live recreation needs the new secret file, created by the owner, and the merged
   change in the main checkout.
 
+#### SearXNG Traefik route — 2026-11-18
+
+The owner chose a Traefik route so that programs on other hosts, such as Hermes on
+192.168.0.22, can use SearXNG, with SSO for browsers and Basic authentication for
+programs (the `prometheus-api` pattern), keeping `127.0.0.1:8890` and `search_net`.
+SearXNG joins its own `searxng_ingress_net` (10.250.50.0/24, internal, isolated,
+Traefik only, SPEC-0266 pattern). The `searxng-api` router accepts only `/search`
+requests carrying a Basic `Authorization` header and checks them with
+`searxng-api-auth` (htpasswd `INFRA-008`, built by `gen-secrets.sh` from
+`AI-010` `SEARXNG_API_USERNAME` and `AI-011`). Requests without credentials stay
+on the SSO router.
+
 #### Lifecycle Events
 
 Recorded on 2026-11-15 (SPEC-0212 TSK-0070): the owner's 2026-10-30
@@ -1894,6 +1906,8 @@ None: nothing was recorded here before this Task moved to the common form.
 | SearXNG entrypoint metrics password | 23 | W83 | Local run of the entrypoint script with fake secret and settings files | `feat/searxng-host-loopback` | PASS | valid value written with mode 0600; empty, quote and `&` values exit 64 | required | - |
 | SearXNG live recreation | 23 | W83 | `docker compose --profile searxng --profile workflow-n8n --profile obs-core up -d --no-deps searxng n8n prometheus`; health, `docker port`, host JSON search, `/metrics` auth, Prometheus `up`, n8n fetch, network members | HOME `ef1baf216`, 2026-11-18 11:3x KST | PASS | all three healthy; only `127.0.0.1:8890`; host search 37 results; `/metrics` 401 without and 200 with the secret; `up{job="searxng"}`=1 (28 series); n8n fetch 37 results; `search_net`=`searxng`,`n8n`; `searxng_outbound_net`=`searxng`; old `n8n_search_net`/`n8n_search_outbound_net` empty and kept | required | - |
 | Hermes SearXNG search | 23 | W83 | Next scheduled Hermes run uses `web.search_backend: searxng` at `127.0.0.1:8890` | Hermes run 2026-11-19 07:00 KST | NOT_RUN | Hermes config and its Firecrawl fallback are unchanged | required | - |
+| SearXNG Traefik route contract | 23 | W83 | `python3 -m unittest tests.validation.test_p02_service_contracts` (RED: 3 failures before the route; GREEN 45) | `feat/searxng-traefik-route` | PASS | SSO router `searxng`, Basic `/search` router `searxng-api` with `searxng-api-auth` (INFRA-008), `searxng_ingress_net` 10.250.50.0/24 shared only with Traefik | required | - |
+| SearXNG Traefik route live | 23 | W83 | Recreate `traefik` and `searxng`; SSO redirect without credentials, 200 with Basic on `/search`, 401 with a wrong password; call from 192.168.0.22 | HOME | NOT_RUN | Needs the merged change and the owner-generated `AI-011`/`INFRA-008` files | required | - |
 
 ### Resolution Links
 

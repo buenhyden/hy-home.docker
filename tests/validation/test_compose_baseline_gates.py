@@ -5939,6 +5939,7 @@ ROUTES_WITHOUT_SSO = {
     "opensearch": "security-plugin",
     "opensearch-dashboards": "security-plugin",
     "prometheus-api": "gateway-basic-auth",
+    "searxng-api": "gateway-basic-auth",
     # Signed machine API
     "s3": "sigv4",
     # MCP resource server: Keycloak bearer tokens for its own URL (SPEC-0219)

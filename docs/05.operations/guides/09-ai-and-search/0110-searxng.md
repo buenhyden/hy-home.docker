@@ -1,6 +1,6 @@
 ---
 title: "SearXNG Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -60,7 +60,10 @@ SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `s
   만들어 쓴다. Prometheus job `searxng`가 `obs_net`에서 수집하고 Alloy가 container log를 수집한다.
 - `search_net`(internal)은 소비자 컨테이너와 SearXNG만 참여한다.
   `searxng_outbound_net`은 SearXNG만 참여하는 bridge로, 공개 검색 엔진으로 나가는
-  경로이자 `127.0.0.1:8890` 게시 경로다. Traefik route는 없다.
+  경로이자 `127.0.0.1:8890` 게시 경로다.
+- Traefik route `https://searxng.${DEFAULT_URL}`: 브라우저는 SSO(`sso-auth`)로 들어오고,
+  다른 host의 프로그램은 Basic `Authorization` header를 붙인 `/search` 요청만 `searxng-api` router의
+  htpasswd(`traefik_searxng_api_htpasswd`, `INFRA-008`)로 들어온다. Traefik은 `searxng_ingress_net`으로만 닿는다.
 - 자체 `searxng` profile로 선택하며 HOME 선택에 포함된다.
 
 ### Authority
@@ -77,6 +80,9 @@ SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `s
 - **컨테이너 소비자**: 서비스를 `search_net`에 합류시키고 `http://searxng:8080`을
   호출한다. 정책의 소비자 표와 `SharedSearchContractTests.ADMITTED`를 같은 변경에서
   갱신한다.
+- **다른 host의 프로그램**: `https://searxng.${DEFAULT_URL}/search?q=<query>&format=json`을 Basic 자격 증명으로
+  호출한다. 사용자 이름은 `.env`의 `SEARXNG_API_USERNAME`, 비밀번호는 `secrets/tools/searxng/searxng_api_password.txt`(`AI-011`)이며
+  `gen-secrets.sh`가 htpasswd를 만든다. 그 host는 `searxng.${DEFAULT_URL}` 이름 해석과 HOME 인증서 신뢰가 필요하다.
 - **호스트 소비자**: `http://127.0.0.1:8890`을 호출하고 정책의 소비자 표에
   기록한다. 호스트 Hermes는 `~/.hermes/config.yaml`의 `web.search_backend: searxng`와
   `~/.hermes/.env`의 `SEARXNG_URL`을 쓴다. 이 값은 추적하지 않는다.
