@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.10.0"
+version: "1.11.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -597,7 +597,7 @@ restore는 HOME/offsite custody를 대신하지 않는다.
 
 #### 전체 용량과 최초 채택
 
-기억 DB schema 2와 개별 본문·DB 상한을 유지하며, 별도
+기억 DB schema 3과 개별 본문·DB 상한을 유지하며, 별도
 `.workspace-memory/capacity.sqlite3`와 `capacity.lock`이 1 GiB 논리 할당량을
 관리한다. 원장은 자신과 기억 DB·journal을 계산하며 백업 복사본이나 snapshot은
 계산하지 않는다. 파일시스템 hard quota가 아니다.
@@ -648,8 +648,37 @@ pin하며 Git blob ID를 쓰면 `hash_algorithm`은 `git-blob`으로 구분한�
 다른 의미 입력은 충돌이며, 충돌 diagnostic의 `stored`와 양쪽 revision을
 확인한다. `stored=false`이면 incoming 본문이 보존되었다고 보고하지 않는다.
 16 KiB 본문/32 MiB 전체 본문과 계층·영역·metadata·page 상한은 환경 제약 5절이
-소유하며, 초과해도 기존 기억을 삭제하지 않는다. 작업 worktree는 이 schema 2
+소유하며, 초과해도 기존 기억을 삭제하지 않는다. 작업 worktree는 이 schema 3
 CLI와 helper를 함께 사용한다. 구버전 CLI는 새 재사용/용량 계약을 보장하지 않는다.
+
+#### 기록 의미·기준선·선택 삭제
+
+기록은 tier와 별개인 `--kind`(`session-context`, `decision`, `experience`), 저장소
+기준선, `--observed-at`, 선택적 `--valid-from`/`--valid-until`, `--supersedes ID`를
+가진다. 시각은 시간대가 있는 ISO 형식만 받는다. 기본 `get`·`list`·`search`는 현재
+기준선이고, `--as-of`(기본 현재) 시점에 유효하며, 적격인 현재 기록이 대체하지 않은
+검토 기록만 반환한다. 제외 이유는 `reuse_state`의 `other-baseline`,
+`outside-validity`, `superseded`로 보인다. kind가 없는 이전 기록은 tier에서
+파생하고(short-term은 session-context, 나머지는 experience), 기준선은 `initial`이다.
+
+schema 3 이전에 만든 저장소는 쓰기를 거절하고(`MEMORY_MIGRATION_REQUIRED`, exit 2),
+읽기는 계속된다. 모든 worktree·provider의 쓰기를 잠시 멈추고 한 번 실행한다.
+기존 revision은 바꾸지 않고 `store_meta`만 추가하며, 다시 실행해도 같은 결과다.
+
+```bash
+python3 scripts/operations/agent_memory.py migrate
+python3 scripts/operations/agent_memory.py baseline show
+python3 scripts/operations/agent_memory.py baseline cutover --expected initial --to "<새 기준선 ID>"
+python3 scripts/operations/agent_memory.py export --memory-id "<ID>" --history
+python3 scripts/operations/agent_memory.py erase --memory-id "<ID>" --confirm "<정렬한 ID 목록>"
+```
+
+기준선 전환은 예상 기준선이 다르면 exit 3으로 거절한다. 전환 뒤 이전 기준선 기록은
+기본 조회에서 빠지지만 `list --all`·`export`·`history`로 남아 있다. `erase`는
+소유자가 승인한 기록만 대상으로 하며, `--confirm`은 정렬한 ID를 쉼표로 이은 값이어야
+한다. 해당 기록의 모든 revision·provenance·conflict를 지우고 SQLite 빈 page를
+덮어쓰지만 journal·파일시스템·저장장치의 잔존 삭제는 주장하지 않는다. 기억은
+백업 대상이 아니므로 삭제할 백업 사본은 없다.
 
 Claude와 Codex가 함께 쓰는 memory 저장소(`.workspace-memory/memory.sqlite3`,
 규칙은 [환경 제약](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory))는
