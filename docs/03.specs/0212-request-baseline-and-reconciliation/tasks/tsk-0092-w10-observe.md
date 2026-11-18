@@ -1,6 +1,6 @@
 ---
 title: "W10 Observe Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -71,6 +71,34 @@ fixed grouping, run read-only through the `restic` service, removes 14 of
 48 state snapshots (2026-09-22 12:12 to 2026-11-11 01:07) and no host
 snapshot, a subset of the approved target.
 
+#### Prune with the fixed grouping
+
+After PR 1111 merged, the approved command ran once from 2026-11-18T22:23:51Z
+to 22:24:18Z and exited 0. Restic removed 14 state snapshots, the same IDs
+as its dry run, and no host snapshot; prune removed 352 MiB of blobs and
+left 6.855 GiB with 344 MiB unused. Raw data fell from 7.165 to 6.519 GiB
+over 34 state snapshots; the host set is unchanged. The budget check
+measures the repository on disk, which the read-only commands do not show:
+by the removed size it should fall from 8216 MiB to about 7860 MiB, under
+the 8192 MiB budget with about 330 MiB of headroom, while the daily size
+moved by up to 250 MiB over the last week. The next daily run at 03:42 KST
+on 2026-11-20 is the observation of whether it is under budget.
+
+#### Observe command
+
+`scripts/operations/observe.py report` reads, without writing, the capture,
+analysis and forecast stores, the dispatch run reports and the journal of
+`hyhome-backup.service` and the user unit `hy-home-session-analysis.service`
+over a time window, and lists each failure with its owner and next step.
+Journal lines are counted, never copied, and the report states its own run
+time and what it cannot measure (queue wait, context loading inside agents,
+token and money cost). ENVIRONMENT-CONSTRAINTS-R161 and R162 and RUN-0021
+state it. Run on this host for 2026-11-12 to 19, it reported in 0.131 s
+373 events, 10 incomplete sessions under the known capture gaps, 2 complete
+analysis runs, 1 forecast outcome, 4 dispatch runs and 5 failed and 2
+finished backups, naming RUN-0021 as the backup owner; the same failures
+had taken a week and a manual journal read to find.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -80,8 +108,8 @@ snapshot, a subset of the approved target.
 
 ### Blockers and Decisions
 
-The prune with the fixed grouping runs once after this change merges, and
-the observe command follows.
+Correlation of capture events to a Task, and the queue and context-loading
+times, are not recorded by any store and stay unmeasured.
 
 ## Verification Evidence
 
@@ -98,10 +126,17 @@ the observe command follows.
 | Restic dry run | 148 | W164 | `restic forget --dry-run` with the fixed grouping | Both local repositories, read-only | PASS | State: remove 14 of 48; host: remove 0 of 34 | required | - |
 | Hosted lab isolation | 148 | W164 | `test_no_document_or_script_starts_the_root_with_every_profile` | PR 1111 candidate-core at `a2eb4c866` | FAIL | The whole-stack hook rule from PR 1101 quotes its BLOCKED examples; first selected by this backup change | required | - |
 | Lab isolation fixed | 148 | W164 | `test_no_document_or_script_starts_the_root_with_every_profile` | Exemption for the blocking hook rule, like `lab.py` | PASS | Lab isolation tests pass | required | Hosted lab isolation |
+| Prune after fix | 148 | W164 | Runbook step 7 `forget-prune` | Approved command after PR 1111, host and tags grouping | PASS | 14 state snapshots removed, IDs equal to the dry run; 352 MiB of blobs removed; raw data 7.165 to 6.519 GiB | required | First prune |
+| Observe RED | 148 | W164 | `test_observe` | New tests before the module | FAIL | Import error: no observe module | required | - |
+| Observe GREEN | 148 | W164 | `test_observe` | `observe.py` | PASS | 6 tests: window counts, owners and next steps, no log text, window and cost, unreadable journal, empty store | required | Observe RED |
+| Real observe report | 148 | W164 | `observe.py report` | This host, 2026-11-12 to 19 | PASS | 5 failed backups with RUN-0021 as owner, known capture gaps, 0.131 s | required | - |
+| Backup under budget | 148 | W164 | Daily `hyhome-backup.service` | 2026-11-20 03:42 KST run | NOT_RUN | Not yet run | required | - |
 
 ### Resolution Links
 
-Grouping GREEN resolves Grouping RED.
+Grouping GREEN resolves Grouping RED, Lab isolation fixed resolves Hosted
+lab isolation, Prune after fix resolves First prune, and Observe GREEN
+resolves Observe RED.
 
 ## Acceptance Decision
 
@@ -109,12 +144,12 @@ Grouping GREEN resolves Grouping RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 148 | pending | Scheduled analysis, Grouping GREEN | Awaits the prune, the observe command and the owner's decision | @buenhyden |
+| 148 | pending | Scheduled analysis, Grouping GREEN, Prune after fix, Observe GREEN, Real observe report | Awaits the next backup run and the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
-The fixed prune must run and bring the state repository under budget, and
-the observe command must be built and run.
+The 2026-11-20 daily backup must show the state repository under budget;
+with about 330 MiB of headroom the budget decision may return.
 
 ## Handoff
 
@@ -124,5 +159,4 @@ the observe command must be built and run.
 
 ### Next Owner
 
-The author runs the approved prune after merge and builds the observe
-command; the owner decides criterion 148.
+The owner decides criterion 148 and, if the backup fails again, the budget.

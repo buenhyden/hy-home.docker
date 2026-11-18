@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.23.0"
+version: "1.24.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -181,6 +181,8 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R158 | A unit's result | Forbidden: accepting a change outside the unit's owned paths, renames included; a failure blocks only its downstream units, a finished worker's process group is killed before its result is read, and a cancel stops every running worker and integration check | the dispatcher | `tests/validation/test_work_dispatch.py` |
 | ENVIRONMENT-CONSTRAINTS-R159 | Integrating units | Required: apply every unit patch on the base and run the integration checks again, each within a timeout; a worker's own success never stands for the integrated result, and the operator compares the reported SHA-256 before applying the integrated patch | the dispatcher | `tests/validation/test_work_dispatch.py` |
 | ENVIRONMENT-CONSTRAINTS-R160 | Claiming a parallel gain | Required: compare elapsed time with one worker on the same plan, setup and integration included, and state N; a worktree is never treated as a sandbox | none | none |
+| ENVIRONMENT-CONSTRAINTS-R161 | Observing agent tools and scheduled jobs | Required: `scripts/operations/observe.py report` joins capture, analysis, forecast, dispatch and the watched units by time window, names an owner and a next step for each failure, counts journal lines without copying log text, prompts or secrets, and states its own cost and what it cannot measure | none | `tests/validation/test_observe.py` |
+| ENVIRONMENT-CONSTRAINTS-R162 | Using an observe report | Forbidden: treating it as a gate, an approval or a fix; a failure it shows is resolved through its owner's record | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -515,6 +517,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Compose start selection (R149): no check is named.
 - Whole-stack start (R150): the hookify rule sees only the command text; a profile list read from an environment file or a command built at run time is outside it.
 - Task forecasts (R151, R154, R155): no check is named; R152 and R153 are enforced by the store and the CLI.
+- Observation (R161, R162): no check is named; the report reads stores and the journal and changes nothing.
 - Parallel work (R156, R160): no check is named; R157 to R159 are enforced by the dispatcher, which checks ownership after the worker ends and does not confine the worker's processes, ports or volumes.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
