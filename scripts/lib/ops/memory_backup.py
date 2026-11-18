@@ -148,11 +148,12 @@ class DockerMetadata:
         self.offsite = bool(account and bucket)
         return Path(exports[0]) / "agent-memory.sqlite3"
 
-    def has_memory(self, location, snapshot_id):
+    def memory_bytes(self, location, snapshot_id):
+        """Return the memory export size in the snapshot, or None when absent."""
         output = self.call(
             self.command(location, "ls", "--json", snapshot_id, MEMORY_EXPORT)
         )
-        seen = False
+        seen = None
         try:
             lines = [json.loads(line) for line in output.splitlines() if line.strip()]
             if not lines or any(not isinstance(row, dict) for row in lines):
@@ -165,10 +166,10 @@ class DockerMetadata:
                     row.get("type") != "file"
                     or type(size) is not int
                     or not 0 < size <= SNAPSHOT_BYTES
-                    or seen
+                    or seen is not None
                 ):
                     raise ValueError("invalid memory export metadata")
-                seen = True
+                seen = size
         except (ValueError, TypeError, RecursionError) as error:
             raise BackupError(
                 "MEMORY_BACKUP_REFUSED: memory snapshot metadata unavailable"
@@ -223,7 +224,8 @@ class DockerMetadata:
                     )
                 if "hyhome-state" not in tags:
                     continue
-                if not self.has_memory(location, identity):
+                size = self.memory_bytes(location, identity)
+                if size is None:
                     continue
                 self.snapshots[location].append(
                     {"id": identity, "tree": tree, "tags": tags, "original": original}
@@ -234,6 +236,7 @@ class DockerMetadata:
                         "snapshot_id": identity,
                         "location": location,
                         "evidence_ref": f"restic-metadata:{repository_id}:{identity}",
+                        "memory_bytes": size,
                     }
                 )
         return export, external
@@ -385,7 +388,7 @@ def _allocation(row):
         "resource_key": f"external:{row['location']}:{row['repository_id']}:{row['snapshot_id']}",
         "kind": "external",
         "location": row["location"],
-        "charged_bytes": SNAPSHOT_BYTES,
+        "charged_bytes": row["memory_bytes"],
         "evidence_ref": row["evidence_ref"],
     }
 

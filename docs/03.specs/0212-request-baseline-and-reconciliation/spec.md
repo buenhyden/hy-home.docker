@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.77.0"
+version: "1.78.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -1104,6 +1104,13 @@ target, backup, recovery boundary, and action-specific authorization.
      requiredness and table columns, or declares why not. Roles move with
      their Registry profile, template, readers and current documents;
      terminal Tasks keep their recorded form.
+138. TSK-0082 brings the shared agent memory to the 4.2.0 W08-MEMORY design
+     on the owner's decisions of 2026-11-18. Each snapshot is charged the
+     memory export size it holds, so retention fits the 1 GiB allocation,
+     and every daily memory snapshot passes capacity admission. Records
+     carry their baseline, kind, validity and supersession, and
+     selective export and erase exist. Native cross-provider use is
+     evidenced separately from fixtures.
 
 ### Evidence Requirements
 

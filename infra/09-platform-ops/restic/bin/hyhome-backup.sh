@@ -210,15 +210,20 @@ memory_store="$repo_root/.workspace-memory/memory.sqlite3"
 if [[ ! -e "$memory_store" && ! -L "$memory_store" ]]; then
     echo "agent memory store absent: backup skipped"
 else
-    # Exit 4 is only the memory capacity refusal: its 1 GiB ledger charges
-    # 64 MiB per existing snapshot and stays saturated, so that refusal drops
-    # the export with a warning instead of failing the run (2026-11-11).
+    # The 1 GiB ledger charges each snapshot the memory export size it holds.
+    # Reconcile it from the current snapshot metadata before admitting the
+    # export; a failed reconcile is reported and the export still runs.
+    python3 "$repo_root/scripts/operations/agent_memory.py" capacity reconcile \
+        >/dev/null || { echo "agent memory capacity reconcile failed" >&2; status=1; }
+    # Any refused or failed export leaves memory out of this snapshot, so it
+    # fails the run; exit 4 is the capacity refusal.
     memory_rc=0
     python3 "$repo_root/scripts/operations/agent_memory.py" backup \
         --output "$staging/agent-memory.sqlite3" || memory_rc=$?
     if (( memory_rc == 4 )); then
-        echo "agent memory backup refused for capacity; export dropped (SPEC-0270)" >&2
+        echo "agent memory backup refused for capacity; export dropped" >&2
         rm -f "$staging/agent-memory.sqlite3"
+        status=1
     elif (( memory_rc != 0 )); then
         echo "agent memory backup failed; export dropped" >&2
         rm -f "$staging/agent-memory.sqlite3"
