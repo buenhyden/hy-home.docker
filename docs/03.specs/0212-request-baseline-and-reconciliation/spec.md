@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.90.0"
+version: "1.91.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1197,6 +1197,12 @@ target, backup, recovery boundary, and action-specific authorization.
      LAB and service runs on the operating Docker daemon are never reported
      as sandbox results; and the Kubernetes context boundary is observed.
      The live LAB run stays runtime-only by the owner's choice.
+150. TSK-0094 applies the 4.2.0 W09-CLEANUP design with the owner's
+     2026-11-19 decision: the canonical commands and checks run in a clean
+     worktree without the 4.2.0 package or staging content, the staging
+     content is listed with its owner and kept while in use, and only the
+     owner-approved one-off folder is deleted; the package itself goes in
+     Q07-CUTOVER.
 
 ### Evidence Requirements
 
