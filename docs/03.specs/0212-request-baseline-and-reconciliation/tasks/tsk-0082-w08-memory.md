@@ -1,6 +1,6 @@
 ---
 title: "W08 Shared Memory Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -125,6 +125,43 @@ repository held 8,289 MiB against its 8 GiB budget, so the Restic backup
 was skipped. Retention pruning of that repository is outside this Task and
 needs its own approval.
 
+#### W150 D06 record semantics
+
+The store already met D06 on immutable revisions, compare-and-swap writes,
+whole-request digests, source pins, conflict preservation, private paths and
+the capacity limits; those stay. W150 adds the missing D06 fields to the
+provenance metadata of each new revision, so the revisions table and its
+rows are unchanged and the request digest covers every new field. A record
+now carries a kind (`session-context`, `decision`, `experience`) separate
+from the tier, the store baseline, an observation time, an optional validity
+window and optional `supersedes` links, with `invalidated_by` derived in
+reverse. Default reads return a record only when it is reviewed and
+source-current, in the current baseline, valid at `--as-of` and not
+superseded by an eligible current record; the reason shows as
+`other-baseline`, `outside-validity` or `superseded`. Records without the
+new fields derive their kind from the tier and belong to the `initial`
+baseline.
+
+A new `store_meta` table holds the schema version and the current baseline.
+A new store starts at schema 3; an existing store refuses writes with
+`MEMORY_MIGRATION_REQUIRED` and keeps serving reads until an explicit
+`migrate`, which adds only `store_meta`. `baseline cutover` moves the store
+to a new baseline against the expected one. `export --memory-id` and
+`--history` export named records, and `erase` removes every revision,
+provenance row and conflict of the named records after `--confirm` repeats
+their sorted IDs, with SQLite `secure_delete` on and no claim of journal or
+device erasure. `usage` now reports the page limit that writers enforce
+instead of a read-only connection's default. ENVIRONMENT-CONSTRAINTS-R124 to
+R131 and RUN-0021 state the behavior; the same change drops two enforcement
+gap lines and a rule range that still named the removed backup rules.
+
+Removing the backup tests in the W149 change also removed the
+`WorktreeStoreTests` class header, so those cases ran inside `StoreTests`;
+the header is restored. A rehearsal of the migration on a private copy of
+the real store was declined, so the synthetic schema-2 migration test
+stands as the migration evidence. The real store (9 records, 15 revisions,
+schema 2) needs the owner-approved `migrate` before its next write.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -159,12 +196,17 @@ and the hosted candidate checks.
 | Local memory removal | 138 | W149 | `restic rewrite --forget --exclude`, `prune`, `prune --max-unused 0`, `restic check`, `restic find` | Local state repository on 2026-11-18 | PASS | 30 snapshots rewritten; 126 MiB pruned, 0 B unused; check clean; no snapshot holds the export | required | - |
 | Ledger reconcile | 138 | W149 | `agent_memory.py capacity reconcile` | Real ledger on 2026-11-18 | PASS | Generation 1 to 2, 60 legacy allocations to 0 | required | - |
 | R2 memory removal | 138 | W149 | rewrite and prune of the 30 R2 copies | R2 repository under the 30-day bucket lock | NOT_RUN | Owner deferred it until the lock expires, about mid-December | required | - |
+| D06 records RED | 138 | W150 | `RecordSemanticsTests` and the erase and baseline CLI test | New tests on the pre-change code at `dcdffa56d` | FAIL | Seven errors and one failure: no kind, validity, supersession, baseline, export, erase or migration; reader page limit wrong | required | - |
+| D06 records GREEN | 138 | W150 | `RecordSemanticsTests` and the erase and baseline CLI test | D06 store and CLI on `dcdffa56d` | PASS | All eight cases passed | required | D06 records RED |
+| D06 regression | 138 | W150 | memory store, CLI, search, capacity and routing suites | D06 store and CLI on `dcdffa56d` | PASS | 147 tests in 60 s | required | - |
+| Real store state | 138 | W150 | read-only `agent_memory.py usage` and `list --all` | Real store on 2026-11-18 | PASS | Schema 2, migration required, 9 records and 15 revisions, page limit 16,384 | optional | - |
 | Backup code removal | 138 | W149 | memory, offsite, backup contract and routing suites; manifest, workflow contract, ruff, shellcheck | Working tree without memory backup code, on `b3f589aff` | PASS | 163 tests in 59 s, seven opt-in Docker rehearsals skipped; manifest and workflow contract PASS | required | - |
 
 ### Resolution Links
 
 Size charge GREEN resolves Size charge RED, Daily export GREEN resolves
-Daily export RED and Exclusion GREEN resolves Exclusion RED.
+Daily export RED, Exclusion GREEN resolves Exclusion RED and D06 records
+GREEN resolves D06 records RED.
 
 ## Acceptance Decision
 
@@ -177,8 +219,9 @@ Daily export RED and Exclusion GREEN resolves Exclusion RED.
 ### Remaining Conditions
 
 W149 still removes the 30 R2 copies of the memory export after their
-30-day lock ends; the local snapshots and the ledger are clean. W150 adds
-the D06 record semantics and W151 needs a native Claude and Codex observation. A
+30-day lock ends; the local snapshots and the ledger are clean. W150 is
+implemented in source; the real store still needs its approved `migrate`
+before the next write. W151 needs a native Claude and Codex observation. A
 live daily run remains unobserved.
 
 ## Handoff
@@ -187,7 +230,9 @@ live daily run remains unobserved.
 
 `memory_capacity.py`, `agent_memory.py`, the daily orchestrator,
 ENVIRONMENT-CONSTRAINTS section 5 and RUN-0021 hold the W149 behavior; the
-W148 size charge was removed with the backup code.
+W148 size charge was removed with the backup code. `agent_memory.py`,
+`memory_cli.py`, ENVIRONMENT-CONSTRAINTS-R124 to R131 and RUN-0021 hold the
+W150 record semantics.
 
 ### Next Owner
 

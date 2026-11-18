@@ -328,6 +328,40 @@ class MemoryCliCapacityTests(unittest.TestCase):
         finally:
             connection.close()
 
+    def test_erase_needs_the_exact_confirmation_and_baseline_commands_work(self):
+        self.initialize()
+        for memory_id in ("alpha", "beta"):
+            result, _, error = self.cli(
+                "put",
+                memory_id,
+                "--expected-revision",
+                "0",
+                "--tier",
+                "long-term",
+                "--owner",
+                "fixture",
+                "--kind",
+                "decision",
+                body="synthetic",
+            )
+            self.assertEqual(0, result, error)
+        erase = ("erase", "--memory-id", "beta", "--memory-id", "alpha", "--confirm")
+        result, _, error = self.cli(*erase, "beta,alpha")
+        self.assertEqual(memory.EXIT_UNAVAILABLE, result)
+        self.assertIn("--confirm", error)
+        self.assertEqual(0, self.cli("get", "alpha", "--historical")[0])
+        result, output, error = self.cli(*erase, "alpha,beta")
+        self.assertEqual(0, result, error)
+        self.assertEqual(["alpha", "beta"], json.loads(output)["erased"])
+        self.assertEqual(1, self.cli("get", "alpha", "--historical")[0])
+        shown = json.loads(self.cli("baseline", "show")[1])
+        self.assertEqual("initial", shown["baseline_id"])
+        move = ("baseline", "cutover", "--to", "b2", "--expected")
+        self.assertEqual(memory.EXIT_CONFLICT, self.cli(*move, "wrong")[0])
+        result, _, error = self.cli(*move, "initial")
+        self.assertEqual(0, result, error)
+        self.assertEqual("b2", json.loads(self.cli("usage")[1])["baseline_id"])
+
 
 if __name__ == "__main__":
     unittest.main()
