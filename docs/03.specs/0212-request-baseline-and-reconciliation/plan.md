@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.90.0"
+version: "1.91.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -410,6 +410,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W163 | 147 | Add the medium review class, the reachable-input severity rule and review timing records, and run late fresh-context reviews of PRs 1105, 1108 and 1109 | W162 | TSK-0091 | Contract, renderer, metadata and link checks; two real read-only reviews with timings; fixes with RED and GREEN tests |
 | W164 | 148 | Fix the local Restic forget-prune grouping, prune once on approval, and add an on-demand observe command with failure owners | W163 | TSK-0092 | Restic grouping RED and GREEN, real prune with sizes, observe tests and a real observe report |
 | W165 | 149 | Add a read-only HOME start check that expands the dependency closure and refuses an empty or whole-project start, and record the LAB sandbox and Kubernetes context boundaries | W164 | TSK-0093 | Select RED and GREEN, a real select run, a closure oracle over every HOME service, the profile control and the boundary observations |
+| W166 | 150 | Prove the canonical commands and checks run without the 4.2.0 package or staging content, list staging owners and delete only an owner-approved leftover | W165 | TSK-0094 | Package reference scan, clean-worktree suites, checks and commands, and the approved deletion |
 
 #### Current v30 continuation and delivery
 
