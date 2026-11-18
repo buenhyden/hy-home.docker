@@ -12,6 +12,11 @@ Commands:
   down LAB                    stop only that project; never removes volumes
   reap                        stop every LAB whose lease has expired
   status                      print ledger entries and whether each runs
+  select [SERVICE...] [--profile P]
+                              read-only HOME start check: print the
+                              depends_on closure and refuse an empty start
+                              or one that leaves every HOME service running;
+                              the closure is an upper bound
   readiness LAB [--report PATH]
                               read-only promotion readiness report
                               (SPEC-0263); exit 0 only when every
@@ -702,6 +707,63 @@ def running_containers(docker: str) -> list[dict]:
             }
         )
     return containers
+
+
+def home_selection(
+    model: dict, services: list[str], profiles: list[str], containers: list[dict]
+) -> dict:
+    """Expand a HOME start to the services Compose would start (R149, R150).
+
+    Named services start with their `depends_on` closure; profiles alone start
+    their members and every profile-less service. The closure is taken over
+    the every-profile render, so it is an upper bound.
+    """
+    declared = model.get("services") or {}
+    problems = []
+    if not services and not profiles:
+        problems.append("name the services or profiles to start")
+    if "*" in profiles:
+        problems.append("every profile at once is refused (R150)")
+    known_profiles = {p for s in declared.values() for p in s.get("profiles") or []}
+    problems += [f"unknown service {s}" for s in services if s not in declared]
+    problems += [
+        f"unknown profile {p}" for p in profiles if p != "*" and p not in known_profiles
+    ]
+    if services:
+        picked = {s for s in services if s in declared}
+    else:
+        picked = {
+            name
+            for name, service in declared.items()
+            if not service.get("profiles") or set(service["profiles"]) & set(profiles)
+        }
+    closure, stack = set(), list(picked)
+    while stack:
+        name = stack.pop()
+        if name in closure or name not in declared:
+            continue
+        closure.add(name)
+        stack += list(declared[name].get("depends_on") or {})
+    running = {
+        c["service"]
+        for c in containers
+        if c["running"] and c["project"] == model.get("name")
+    }
+    # A running container of a service no longer declared is not counted.
+    union = (closure | running) & set(declared)
+    if declared and union >= set(declared):
+        problems.append(
+            f"the start would leave every one of {len(declared)} HOME services running"
+        )
+    return {
+        "project": model.get("name"),
+        "closure": sorted(closure),
+        "added_by_dependency": sorted(closure - picked),
+        "already_running": sorted(closure & running),
+        "union": len(union),
+        "total": len(declared),
+        "problems": problems,
+    }
 
 
 def _has_symlink_component(path: pathlib.Path) -> bool:
@@ -1863,6 +1925,9 @@ def main(argv: list[str] | None = None) -> int:
     commands.add_parser("down").add_argument("lab")
     commands.add_parser("reap")
     commands.add_parser("status")
+    select = commands.add_parser("select")
+    select.add_argument("services", nargs="*")
+    select.add_argument("--profile", action="append", default=[])
     ready = commands.add_parser("readiness")
     ready.add_argument("lab")
     ready.add_argument("--report", type=pathlib.Path)
@@ -1883,6 +1948,15 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_reap(args, env)
         if args.command == "readiness":
             return cmd_readiness(args)
+        if args.command == "select":
+            report = home_selection(
+                render(args.docker, args.root_env_file, None),
+                args.services,
+                args.profile,
+                running_containers(args.docker),
+            )
+            print(json.dumps(report, indent=2))
+            return 3 if report["problems"] else 0
         projects = {
             c["project"] for c in running_containers(args.docker) if c["running"]
         }
