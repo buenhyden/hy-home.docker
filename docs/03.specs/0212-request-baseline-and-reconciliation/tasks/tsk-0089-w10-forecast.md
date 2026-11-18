@@ -1,6 +1,6 @@
 ---
 title: "W10 Forecast Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -65,7 +65,12 @@ Before pushing this change, the store received forecast
 `W10-FORECAST-PR-CI` for the pull request's hosted checks, elapsed minutes
 P30 6, P50 9, P80 16, from ten completed `ci-quality` runs on PRs 1096 to
 1104 with a median of 4.6 minutes and code PRs at 6.7 and 15.3. A direct
-update of that row in the real store was refused by the trigger.
+update of that row in the real store was refused by the trigger. The push
+was at 11:36:47 UTC and the last of ten non-skipped checks completed
+successfully at 11:44:35 UTC, 7.8 elapsed minutes with about 20 seconds of
+queueing. The actual fell between P30 and P50; `score` reports N 1 per
+quantile, coverage 0, 1 and 1 for P30, P50 and P80, pinball 0.54, 0.60 and
+1.64, and `insufficient sample`.
 
 #### Lifecycle Events
 
@@ -76,7 +81,6 @@ update of that row in the real store was refused by the trigger.
 
 ### Blockers and Decisions
 
-The outcome of the real forecast is recorded after the hosted checks end.
 Calibration needs at least 20 completed tasks of one type; none has it.
 
 ## Verification Evidence
@@ -89,10 +93,12 @@ Calibration needs at least 20 completed tasks of one type; none has it.
 | Forecast GREEN | 145 | W161 | `test_task_forecast` | Forecast module | PASS | 6 tests: inversion and units, revisions and immutability, pre-start rule, single outcome, active basis, coverage, pinball and censoring | required | Forecast RED |
 | Real store immutability | 145 | W161 | direct `UPDATE` on the real forecast store | `W10-FORECAST-PR-CI` revision 1 | PASS | Refused: forecasts are append-only | required | - |
 | Real outcome | 145 | W161 | `task_forecast.py observe` and `score` | `W10-FORECAST-PR-CI` after the hosted checks | NOT_RUN | Hosted checks not yet run | required | - |
+| Real outcome observed | 145 | W161 | `task_forecast.py observe` and `score` | `W10-FORECAST-PR-CI`, PR 1105 checks on `db5ff1f22` | PASS | 7.8 minutes against P30 6, P50 9, P80 16; N 1, `insufficient sample` | required | Real outcome |
 
 ### Resolution Links
 
-Forecast GREEN resolves Forecast RED.
+Forecast GREEN resolves Forecast RED. Real outcome observed resolves Real
+outcome.
 
 ## Acceptance Decision
 
@@ -100,11 +106,11 @@ Forecast GREEN resolves Forecast RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 145 | pending | Forecast GREEN, Real store immutability | Awaits the real outcome and the owner's decision | @buenhyden |
+| 145 | pending | Forecast GREEN, Real store immutability, Real outcome observed | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
-The real outcome of `W10-FORECAST-PR-CI` is recorded after its checks end.
+Calibration needs at least 20 completed tasks of one type.
 
 ## Handoff
 
@@ -115,4 +121,4 @@ the W161 behavior.
 
 ### Next Owner
 
-The implementer records the real outcome. The owner decides criterion 145.
+The owner decides criterion 145.
