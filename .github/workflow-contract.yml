@@ -600,6 +600,7 @@
         "tests.validation.test_agent_memory_capacity",
         "tests.lib.hooks.test_folder_guides",
         "tests.lib.hooks.test_request_brief",
+        "tests.lib.hooks.test_session_capture",
         "-v"
       ],
       "cwd": ".",

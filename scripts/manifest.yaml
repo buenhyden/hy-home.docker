@@ -569,6 +569,18 @@ files:
   tests:
   - tests/lib/hooks/test_folder_guides.py
   - tests/lib/hooks/test_request_brief.py
+- path: scripts/lib/hooks/session_capture.py
+  kind: library
+  authority: .agents/governance/environment-constraints.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  - scripts/hooks/agent-event-hook.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/hooks/test_session_capture.py
 - path: scripts/lib/hooks/tool_payload.py
   kind: library
   authority: .agents/governance/providers/registry.yaml
