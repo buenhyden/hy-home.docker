@@ -180,6 +180,7 @@ SSO_ONLY_BACKENDS = (
     "prometheus",
     "pushgateway",
     "pyroscope",
+    "searxng",
     "tempo",
     "terrakube-ui",
 )
@@ -1041,12 +1042,55 @@ class SharedSearchContractTests(unittest.TestCase):
         # Host processes such as host Hermes use http://127.0.0.1:8890 (owner, 2026-11-18).
         self.assertEqual(["127.0.0.1:8890:8080"], service["ports"])
         self.assertFalse(service.get("privileged", False))
-        self.assertEqual("false", service["labels"]["traefik.enable"])
         self.assertEqual(
-            {"search_net", "searxng_outbound_net", "obs_net"}, set(service["networks"])
+            {"search_net", "searxng_outbound_net", "obs_net", "searxng_ingress_net"},
+            set(service["networks"]),
         )
         self.assertIs(True, data["networks"]["search_net"]["internal"])
         self.assertNotIn("internal", data["networks"]["searxng_outbound_net"])
+
+    def test_traefik_routes_browsers_through_sso_and_programs_through_basic(
+        self,
+    ) -> None:
+        labels = _compose(self.SEARXNG)["services"]["searxng"]["labels"]
+        self.assertEqual("true", labels["traefik.enable"])
+        self.assertEqual("searxng_ingress_net", labels["traefik.docker.network"])
+        self.assertEqual(
+            "Host(`searxng.${DEFAULT_URL}`)",
+            labels["traefik.http.routers.searxng.rule"],
+        )
+        self.assertEqual(
+            "gateway-standard-chain@file,sso-errors@file,sso-auth@file",
+            labels["traefik.http.routers.searxng.middlewares"],
+        )
+        # Programs (for example Hermes on another LAN host) send Basic credentials
+        # to /search only; the browser UI stays behind SSO (owner, 2026-11-18).
+        self.assertEqual(
+            "Host(`searxng.${DEFAULT_URL}`) && PathPrefix(`/search`) && "
+            "HeaderRegexp(`Authorization`, `^Basic `)",
+            labels["traefik.http.routers.searxng-api.rule"],
+        )
+        self.assertEqual(
+            "gateway-standard-chain@file,searxng-api-auth@file",
+            labels["traefik.http.routers.searxng-api.middlewares"],
+        )
+        middleware = yaml.safe_load(
+            (ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml").read_text()
+        )["http"]["middlewares"]["searxng-api-auth"]
+        self.assertEqual(
+            "/run/secrets/traefik_searxng_api_htpasswd",
+            middleware["basicAuth"]["usersFile"],
+        )
+        traefik = _compose("infra/01-gateway/traefik/docker-compose.yml")["services"][
+            "traefik"
+        ]
+        self.assertIn("traefik_searxng_api_htpasswd", traefik["secrets"])
+        self.assertEqual(
+            "./secrets/auth/traefik/traefik_searxng_api_htpasswd.txt",
+            _compose("docker-compose.yml")["secrets"]["traefik_searxng_api_htpasswd"][
+                "file"
+            ],
+        )
 
     def test_prometheus_scrapes_searxng_metrics_with_a_secret(self) -> None:
         settings = yaml.safe_load((ROOT / self.SETTINGS).read_text())

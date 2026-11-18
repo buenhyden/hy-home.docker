@@ -1,6 +1,6 @@
 ---
 title: "SearXNG Recovery Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -81,6 +81,8 @@ n8n 재생성이 함께 필요하다.
 
 2. `64` 종료는 `searxng_metrics_password`가 없거나 비었거나 따옴표·`|`·`&`·역슬래시를 포함함을 뜻한다. secret 소유자 절차로 값을 고친 뒤 재생성한다. Prometheus에서 `up{job="searxng"}`가 0이면 `obs_net` 합류와 비밀번호 일치를 확인한다.
 
+   Traefik route는 `SEARXNG_API_USERNAME`과 `AI-011` 파일 값을 담은 권한 0600의 netrc 파일로 확인한다. 비밀번호를 명령 인자에 넣지 않는다: `curl -fsS --netrc-file <netrc> 'https://searxng.${DEFAULT_URL}/search?q=test&format=json'`. 자격 증명 없는 `/search`는 SSO로 넘어가고, 틀린 자격 증명은 401이다.
+
    호스트에서 JSON API를 확인한다. 검색어는 무해한 고정 값만 쓴다.
 
    ```bash
@@ -100,7 +102,7 @@ n8n 재생성이 함께 필요하다.
 
 ### Stop Conditions
 
-`0.0.0.0`이나 LAN 주소 게시, Traefik route 생성, `search_net`에 승인되지 않은 서비스
+`0.0.0.0`이나 LAN 주소 게시, 인증 없는 Traefik route, `search_net`에 승인되지 않은 서비스
 합류, 예상 밖 출력, 복구 실패이면 중단한다.
 
 ## Verification

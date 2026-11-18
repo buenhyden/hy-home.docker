@@ -67,6 +67,11 @@ http:
       basicAuth:
         usersFile: "/run/secrets/traefik_prometheus_api_htpasswd"
 
+    # 5. SearXNG /search API용 Basic Auth (다른 host의 Hermes 등 비대화형 client)
+    searxng-api-auth:
+      basicAuth:
+        usersFile: "/run/secrets/traefik_searxng_api_htpasswd"
+
     large-body:
       buffering:
         maxRequestBodyBytes: 104857600  # 100MB

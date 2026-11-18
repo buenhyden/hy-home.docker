@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.6.0"
+version: "1.7.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -61,7 +61,7 @@ next_review_at: "2027-05-13"
 #### Flow and membership
 
 Traefik이 route하는 backend 중 자체 인증이 있는 것은 `edge_net`, `sso-auth`만으로 보호되는 것은
-Traefik만 함께 붙는 `<service>_ingress_net`(`10.250.24.0/24`–`10.250.40.0/24`, SPEC-0266)을 쓰고
+Traefik만 함께 붙는 `<service>_ingress_net`(`10.250.24.0/24`–`10.250.40.0/24`, SPEC-0266, SearXNG는 `10.250.50.0/24`)을 쓰고
 `traefik.docker.network`로 그 망을 지정한다. `seaweedfs-s3` 메트릭은 `seaweedfs_s3_metrics_net`
 (`10.250.41.0/24`)에서 scrape한다. ComfyUI만 붙는 비내부 `comfyui_egress_net`(`10.250.42.0/24`)은 모델·custom node 설치용 유지보수 overlay `infra/08-ai/comfyui/docker-compose.egress.yml`을 붙일 때만 쓰며, 기본 구성의 ComfyUI는 이 망과 host port 없이 `comfyui_ingress_net`에만 붙는다(SPEC-0268). 자체 인증이 없는 보조 listener는 소비자만 붙는 내부 망의 고정 주소 `.2`에만 bind한다(SPEC-0267): `oauth2_proxy_metrics_net`(`10.250.43.0/24`), `keycloak_management_net`(`10.250.44.0/24`), `grafana_pprof_net`(`10.250.45.0/24`), `traefik_metrics_net`(`10.250.46.0/24`), 그리고 기존 `seaweedfs_s3_metrics_net`의 `10.250.41.2`와 `n8n_worker_runner_net`의 `10.250.23.2`. 이 망들은 동적 범위를 `.128/25`로 둔다. 퇴역한 망이 쓰던 `10.250.9.0/24`·`10.250.12.0/24`와 SPEC-0269에서 없앤 `n8n_main_runner_net`의 `10.250.22.0/24`는 재사용하지 않는다. n8n-worker 전용 내부 망 `n8n_ollama_net`(`10.250.47.0/24`), `opsflow_capture_net`(`10.250.48.0/24`), `opsflow_notifier_db_net`(`10.250.49.0/24`)도 명시 subnet을 쓴다(SPEC-0212 TSK-0071).
 Prometheus scrape 대상은 `obs_net`,
