@@ -108,6 +108,7 @@ class CapacityTests(unittest.TestCase):
             "snapshot_id": "b" * 64,
             "location": "state",
             "evidence_ref": "snapshot metadata",
+            "memory_bytes": capacity.COPY_BYTES,
         }
         self.initialize(
             external_snapshots=[snapshot, {**snapshot, "location": "offsite"}]
@@ -205,6 +206,7 @@ class CapacityTests(unittest.TestCase):
                 "snapshot_id": "b" * 64,
                 "location": "state",
                 "evidence_ref": "fixed producer metadata",
+                "memory_bytes": capacity.COPY_BYTES,
             }
         )
         self.manager.resolve(
@@ -316,6 +318,7 @@ class CapacityTests(unittest.TestCase):
             "snapshot_id": "b" * 64,
             "location": "state",
             "evidence_ref": "metadata",
+            "memory_bytes": capacity.COPY_BYTES,
         }
         for snapshot in (
             {**base, "location": "unknown"},
@@ -323,6 +326,11 @@ class CapacityTests(unittest.TestCase):
             {**base, "evidence_ref": ""},
             {**base, "repository_id": None},
             {**base, "extra": True},
+            {**base, "memory_bytes": 0},
+            {**base, "memory_bytes": capacity.COPY_BYTES + 1},
+            {**base, "memory_bytes": True},
+            {**base, "memory_bytes": "1024"},
+            {key: value for key, value in base.items() if key != "memory_bytes"},
         ):
             with (
                 self.subTest(snapshot=snapshot),
@@ -332,7 +340,8 @@ class CapacityTests(unittest.TestCase):
         allocation = capacity.external_allocation(base)
         for allocations in (
             [allocation],
-            [{**allocation, "charged_bytes": 1}],
+            [{**allocation, "charged_bytes": 0}],
+            [{**allocation, "charged_bytes": capacity.COPY_BYTES + 1}],
             [{**allocation, "resource_key": "bad"}],
             [{**allocation, "kind": "other"}],
         ):
@@ -422,6 +431,47 @@ class CapacityTests(unittest.TestCase):
         self.assertEqual(
             capacity.COPY_BYTES, self.manager.status()["local_backup_bytes"]
         )
+
+    def test_external_snapshots_charge_their_verified_export_size(self):
+        # Daily retention keeps more snapshots than 1 GiB / 64 MiB; each is
+        # charged the memory export size it actually holds.
+        snapshots = [
+            {
+                "repository_id": "a" * 64,
+                "snapshot_id": f"{index:064x}",
+                "location": "state",
+                "evidence_ref": "snapshot metadata",
+                "memory_bytes": 50_000,
+            }
+            for index in range(40)
+        ]
+        self.initialize(
+            external_snapshots=snapshots,
+            observed_repositories=[{"repository_id": "a" * 64, "location": "state"}],
+        )
+        self.assertEqual(40 * 50_000, self.manager.status()["external_bytes"])
+        self.manager.reserve("daily", fingerprint(), capacity.COPY_BYTES)
+        self.assertEqual(
+            "pending", self.manager.operation("daily", fingerprint())["state"]
+        )
+
+    def test_settlement_never_lowers_an_existing_charge(self):
+        snapshot = {
+            "repository_id": "a" * 64,
+            "snapshot_id": "b" * 64,
+            "location": "state",
+            "evidence_ref": "snapshot metadata",
+            "memory_bytes": 4096,
+        }
+        self.initialize(
+            external_snapshots=[snapshot],
+            observed_repositories=[{"repository_id": "a" * 64, "location": "state"}],
+        )
+        self.manager.reserve("job", fingerprint(), capacity.COPY_BYTES)
+        lower = capacity.external_allocation({**snapshot, "memory_bytes": 1})
+        with self.assertRaises(capacity.CapacityError):
+            self.manager.settle("job", [lower])
+        self.assertEqual(4096, self.manager.status()["external_bytes"])
 
 
 if __name__ == "__main__":

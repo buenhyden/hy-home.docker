@@ -27,9 +27,9 @@ class BackupContractTests(unittest.TestCase):
             self.assertNotIn("unexpected-restic", result.stdout)
 
     def test_daily_backup_entrypoint_is_not_admission_gated(self):
-        # The 1 GiB memory cap charges 64 MiB per existing snapshot, so the
-        # gate refused every daily backup (2026-11-11); the daily path stays
-        # direct; snapshot accounting is not admission-gated yet.
+        # The daily snapshot step itself is not admission-gated yet; its
+        # snapshots are charged their memory export size at the next
+        # reconciliation (D-11, W08-MEMORY).
         script = (RESTIC / "backup.sh").read_text()
         body = script.split("\n    backup)\n", 1)[1].split("\n        ;;\n", 1)[0]
         self.assertNotIn("require_memory_admission", body)

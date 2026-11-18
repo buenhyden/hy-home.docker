@@ -103,7 +103,7 @@ class Transport:
                         "struct_type": "node",
                         "type": "file",
                         "path": memory_backup.MEMORY_EXPORT,
-                        "size": 1024,
+                        "size": snapshot.get("memory_size", 1024),
                     }
                 )
             return subprocess.CompletedProcess(
@@ -205,6 +205,10 @@ class BackupTests(unittest.TestCase):
             [row["location"] for row in result["external_snapshots"]],
             ["state", "offsite"],
         )
+        self.assertEqual(
+            [row["memory_bytes"] for row in result["external_snapshots"]],
+            [1024, 1024],
+        )
         self.assertFalse(any("dump" in argv for argv, _ in self.transport.calls))
 
     def test_reservation_precedes_io_and_new_snapshot_is_settled(self):
@@ -214,7 +218,9 @@ class BackupTests(unittest.TestCase):
         )
         self.assertEqual(result["snapshot_count"], 1)
         allocated = self.ledger.calls[-1][2]
-        self.assertEqual(allocated[0]["charged_bytes"], 64 * 1024 * 1024)
+        # Reservation stays at the ceiling; settlement charges the export size.
+        self.assertEqual(self.ledger.calls[1][-1], 64 * 1024 * 1024)
+        self.assertEqual(allocated[0]["charged_bytes"], 1024)
         self.assertIn("c" * 64, allocated[0]["resource_key"])
         argv, kwargs = next(
             row for row in self.transport.calls if "budget-backup" in row[0]
@@ -619,7 +625,13 @@ class RealLedgerTests(unittest.TestCase):
 
     def test_fully_synced_offsite_needs_no_new_memory_allocation_near_cap(self):
         self.transport.local = [
-            {"id": str(index) * 64, "tree": "d" * 64, "tags": ["hyhome-state"]}
+            # Full-ceiling exports put the ledger near its cap.
+            {
+                "id": str(index) * 64,
+                "tree": "d" * 64,
+                "tags": ["hyhome-state"],
+                "memory_size": 64 * 1024 * 1024,
+            }
             for index in range(1, 7)
         ]
         self.transport.remote = [

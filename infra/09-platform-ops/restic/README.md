@@ -1,10 +1,10 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Restic Backup Jobs
@@ -112,7 +112,7 @@ restic/
   `capacity reconcile`이 예약을 정산합니다. 컨테이너 부재나 기존 원격
   snapshot만으로 실행 종료를 추정하지 않습니다. 완료 후에는 확인된 해당
   컨테이너만 제거하며 volume 삭제나 강제 종료는 하지 않습니다.
-- 기억의 1 GiB는 논리 할당량입니다. 위치별 snapshot 64 MiB를 계산하고,
+- 기억의 1 GiB는 논리 할당량입니다. 위치별 snapshot마다 그 snapshot에 든 기억 export 크기(최대 64 MiB)를 계산하고,
   offsite 복사 때는 정확한 원본 snapshot ID로 이미 복사된 항목만 제외합니다.
   같은 파일 tree라는 이유만으로 서로 다른 snapshot을 합산에서 빼지 않습니다.
   실제 디스크·R2 용량 보호는 위의 기존 제한을 계속 사용합니다.

@@ -152,16 +152,24 @@ def validate_copy_context(memory_path: Path, context: dict) -> None:
 
 
 def external_allocation(snapshot: dict) -> dict:
+    """Charge a snapshot the verified size of the memory export it holds."""
     if not isinstance(snapshot, dict) or set(snapshot) != {
         "repository_id",
         "snapshot_id",
         "location",
         "evidence_ref",
+        "memory_bytes",
     }:
         raise CapacityError()
-    repository, identity, location, evidence = (
+    repository, identity, location, evidence, size = (
         snapshot[key]
-        for key in ("repository_id", "snapshot_id", "location", "evidence_ref")
+        for key in (
+            "repository_id",
+            "snapshot_id",
+            "location",
+            "evidence_ref",
+            "memory_bytes",
+        )
     )
     if (
         not isinstance(repository, str)
@@ -172,13 +180,15 @@ def external_allocation(snapshot: dict) -> dict:
         or location not in {"state", "offsite"}
         or not isinstance(evidence, str)
         or not 1 <= len(evidence) <= 512
+        or type(size) is not int
+        or not 1 <= size <= COPY_BYTES
     ):
         raise CapacityError()
     return {
         "resource_key": f"external:{location}:{repository}:{identity}",
         "kind": "external",
         "location": location,
-        "charged_bytes": COPY_BYTES,
+        "charged_bytes": size,
         "evidence_ref": evidence,
     }
 
@@ -212,6 +222,7 @@ def _allocation(value: dict) -> dict:
                 "repository_id": pieces[2],
                 "snapshot_id": pieces[3],
                 "evidence_ref": value["evidence_ref"],
+                "memory_bytes": value["charged_bytes"],
             }
         )
     else:
@@ -235,7 +246,8 @@ def _stored_allocation(value: dict) -> dict:
             for key in ("resource_key", "kind", "location", "evidence_ref")
         )
         or type(value["charged_bytes"]) is not int
-        or value["charged_bytes"] != COPY_BYTES
+        or not 1 <= value["charged_bytes"] <= COPY_BYTES
+        or (value["kind"] == "local" and value["charged_bytes"] != COPY_BYTES)
         or not 1 <= len(value["evidence_ref"]) <= 512
     ):
         raise CapacityError()
@@ -249,6 +261,7 @@ def _stored_allocation(value: dict) -> dict:
                 "snapshot_id": parts[3],
                 "location": parts[1],
                 "evidence_ref": value["evidence_ref"],
+                "memory_bytes": value["charged_bytes"],
             }
         )
     elif (
@@ -705,6 +718,11 @@ class MemoryCapacity:
                     "SELECT charged_bytes FROM allocations WHERE resource_key=?",
                     (allocation["resource_key"],),
                 ).fetchone()
+                # Only reconciliation from a complete inventory may lower a charge.
+                if previous is not None and allocation["charged_bytes"] < previous[0]:
+                    raise CapacityError(
+                        "MEMORY_CAPACITY_CONFLICT: settlement cannot lower a charge"
+                    )
                 increase += max(
                     0,
                     allocation["charged_bytes"]
