@@ -5,7 +5,6 @@ network. A wrapper sends the R2 address to a local repository, so nothing
 reaches R2. Synthetic secrets only.
 """
 
-import hashlib
 import os
 import subprocess
 import tempfile
@@ -34,7 +33,7 @@ class CapContractTests(unittest.TestCase):
         self.assertIn("max_bytes=9000000000", script)
         # The variable can only lower the cap.
         self.assertIn('[ "$BACKUP_OFFSITE_MAX_BYTES" -lt "$max_bytes" ]', script)
-        copy = branch(script, "budget-copy")
+        copy = branch(script, "copy")
         self.assertLess(copy.index('guard "$pending"'), copy.index("restic copy"))
         artifact = branch(script, "artifact")
         self.assertLess(
@@ -108,7 +107,7 @@ class CapRehearsalTests(unittest.TestCase):
         )
         subprocess.run(["rm", "-rf", str(self.work)], check=False)
 
-    def run_in(self, args, cap=None, admission=None):
+    def run_in(self, args, cap=None):
         argv = ["docker", "run", "--rm", "--network", "none"]
         for name in SECRETS:
             argv += ["-v", f"{self.work / 'secrets' / name}:/run/secrets/{name}:ro"]
@@ -131,17 +130,11 @@ class CapRehearsalTests(unittest.TestCase):
         ]
         if cap:
             variables.append(f"BACKUP_OFFSITE_MAX_BYTES={cap}")
-        if admission:
-            variables.append(
-                "HYHOME_MEMORY_ADMISSION_SHA256="
-                + hashlib.sha256(admission.encode()).hexdigest()
-            )
         for variable in variables:
             argv += ["-e", variable]
         argv += ["--entrypoint", "/bin/sh", IMAGE, *args]
         return subprocess.run(
             argv,
-            input=admission,
             capture_output=True,
             text=True,
             timeout=180,
@@ -149,18 +142,7 @@ class CapRehearsalTests(unittest.TestCase):
         )
 
     def offsite(self, *args, cap=None):
-        admission = None
-        if args and args[0] == "copy":
-            # Synthetic producer admission only. The native fixture proves the
-            # independent physical R2 cap; host capacity admission has its own
-            # mocked-transport integration suite.
-            admission = (
-                "HYHOME_MEMORY_BUDGET_V1 offsite " + "0" * 64 + " " + "1" * 64 + "\n"
-            )
-            args = ("budget-copy", *args[1:])
-        return self.run_in(
-            ["/opt/hyhome/offsite.sh", *args], cap=cap, admission=admission
-        )
+        return self.run_in(["/opt/hyhome/offsite.sh", *args], cap=cap)
 
     def remote_snapshots(self):
         result = self.offsite("cmd", "snapshots", "--json")

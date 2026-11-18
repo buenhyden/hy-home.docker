@@ -30,33 +30,6 @@ require_initialized() {
 action="${1:-snapshots}"
 [ "$#" -gt 0 ] && shift
 
-# Registered mutations receive a one-operation stdin admission only after the
-# host has persisted capacity. This prevents accidental direct entrypoint use;
-# an operator with arbitrary Docker access can still bypass the entrypoint.
-require_memory_admission() {
-    IFS= read -r admission || { echo "memory capacity admission absent" >&2; exit 64; }
-    [ "${#admission}" -le 256 ] || { echo "invalid memory capacity admission" >&2; exit 64; }
-    actual="$(printf '%s\n' "$admission" | sha256sum | cut -d' ' -f1)"
-    if [ -z "${HYHOME_MEMORY_ADMISSION_SHA256:-}" ] ||
-        [ "$actual" != "$HYHOME_MEMORY_ADMISSION_SHA256" ]; then
-        echo "memory capacity admission mismatch" >&2; exit 64;
-    fi
-    case "$admission" in
-        'HYHOME_MEMORY_BUDGET_V1 state '*) ;;
-        *) echo "memory capacity admission target mismatch" >&2; exit 64 ;;
-    esac
-    IFS=' ' read -r protocol target request nonce extra <<EOF
-$admission
-EOF
-    if [ "$protocol" != HYHOME_MEMORY_BUDGET_V1 ] || [ "$target" != state ] ||
-        [ -n "$extra" ] || [ "${#request}" -ne 64 ] || [ "${#nonce}" -ne 64 ]; then
-        echo "invalid memory capacity admission fields" >&2; exit 64
-    fi
-    case "$request$nonce" in *[!0-9a-f]*) echo "invalid memory capacity admission fields" >&2; exit 64 ;; esac
-    MEMORY_OPERATION_TAG="memory-op-$request"
-    unset protocol target request nonce extra
-    unset admission actual HYHOME_MEMORY_ADMISSION_SHA256
-}
 
 case "$action" in
     snapshots)
@@ -79,8 +52,6 @@ case "$action" in
         done
         ;;
     backup)
-        # Daily path stays ungated; snapshot accounting is not admission-gated
-        # yet, and budget-backup keeps the admission-gated route.
         for set in $SETS; do
             require_initialized "$set"
         done
@@ -105,38 +76,6 @@ case "$action" in
         echo /src/state/dev-pgbackrest >>"$list"
         RESTIC_REPOSITORY="$(repo_for state)" restic backup \
             --host hy-home --tag hyhome-state \
-            --exclude-file "$SETS_DIR/state-exclude.txt" --exclude-caches \
-            --files-from-verbatim "$list"
-        RESTIC_REPOSITORY="$(repo_for host)" restic backup \
-            --host hy-home --tag hyhome-host \
-            --exclude-file "$SETS_DIR/host-exclude.txt" /src/host
-        ;;
-    budget-backup)
-        require_memory_admission
-        for set in $SETS; do
-            require_initialized "$set"
-        done
-        # state: only allowlisted file-safe trees plus the export staging;
-        # host: the whole secrets/ and .env mount.
-        list=/tmp/state-paths
-        : >"$list"
-        grep -v -e '^#' -e '^$' "$SETS_DIR/state-include.txt" | while read -r rel; do
-            case "$rel" in /* | *..*) echo "invalid include: $rel" >&2; exit 64 ;; esac
-            case "$rel" in
-            ai/ollama/models/*) src=/src/state/ollama-models/${rel#ai/ollama/models/} ;;
-            *) src=/src/state/volumes/$rel ;;
-            esac
-            if [ -e "$src" ]; then
-                printf '%s\n' "$src" >>"$list"
-            else
-                echo "include not present, skipped: $rel"
-            fi
-        done
-        echo /src/state/exports >>"$list"
-        echo /src/state/pgbackrest >>"$list"
-        echo /src/state/dev-pgbackrest >>"$list"
-        RESTIC_REPOSITORY="$(repo_for state)" restic backup \
-            --host hy-home --tag hyhome-state --tag "$MEMORY_OPERATION_TAG" \
             --exclude-file "$SETS_DIR/state-exclude.txt" --exclude-caches \
             --files-from-verbatim "$list"
         RESTIC_REPOSITORY="$(repo_for host)" restic backup \

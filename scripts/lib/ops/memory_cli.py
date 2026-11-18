@@ -6,9 +6,7 @@ import argparse
 import json
 import sqlite3
 import sys
-from pathlib import Path
 
-from scripts.lib.ops.memory_backup import BackupError
 from scripts.lib.ops.memory_capacity import CapacityError, MemoryCapacity
 from scripts.lib.ops.memory_search import search_records
 
@@ -44,10 +42,6 @@ def _parser(memory):
     eligibility.add_argument("eligibility", choices=memory.ELIGIBILITY)
     commands.add_parser("usage")
     commands.add_parser("export")
-    backup = commands.add_parser("backup")
-    backup.add_argument("--output", type=Path, required=True)
-    restore = commands.add_parser("restore")
-    restore.add_argument("--input", type=Path, required=True)
     search = commands.add_parser("search")
     search.add_argument("--query", required=True)
     search.add_argument("--limit", type=int, default=10)
@@ -57,16 +51,6 @@ def _parser(memory):
     capacity.add_parser("status")
     reconcile = capacity.add_parser("reconcile")
     reconcile.add_argument("--expected-generation", type=int)
-    reconcile.add_argument(
-        "--legacy-output",
-        type=Path,
-        action="append",
-        default=[],
-        help="Known pre-upgrade backup output; metadata is verified without reading its body",
-    )
-    coordinated = commands.add_parser("backup-run")
-    coordinated.add_argument("--target", choices=("state", "offsite"), required=True)
-    coordinated.add_argument("--request-key")
     return parser
 
 
@@ -112,9 +96,6 @@ def _dispatch(memory, connection, args, path):
                 "reason": "capacity metadata unavailable; growth refused",
             }
         return {**memory.usage(connection), "aggregate_capacity": aggregate}
-    if command == "backup":
-        memory.backup(connection, args.output)
-        return {"backup": args.output.as_posix()}
     identity = connection.execute(
         "SELECT workspace_id FROM revisions LIMIT 1"
     ).fetchone()
@@ -172,20 +153,7 @@ def run(argv, memory):
             if args.capacity_command == "status":
                 result = manager.status()
             else:
-                from scripts.lib.ops.memory_backup import reconcile_backups
-
-                result = reconcile_backups(
-                    path,
-                    expected_generation=args.expected_generation,
-                    legacy_outputs=tuple(args.legacy_output),
-                )
-        elif args.command == "backup-run":
-            from scripts.lib.ops.memory_backup import run_backup
-
-            result = run_backup(path, args.target, request_key=args.request_key)
-        elif args.command == "restore":
-            memory.restore(args.input, path)
-            result = {"restored": True}
+                result = manager.reconcile(expected_generation=args.expected_generation)
         else:
             writing = args.command in {"put", "set-eligibility"}
             if (
@@ -199,15 +167,6 @@ def run(argv, memory):
         print(error, file=sys.stderr)
         if getattr(error, "details", None):
             print(json.dumps(error.details, sort_keys=True), file=sys.stderr)
-        return error.code
-    except BackupError as error:
-        print(
-            "MEMORY_BACKUP_REFUSED: metadata or backup operation failed; reservation retained",
-            file=sys.stderr,
-        )
-        metric = getattr(error, "offsite_repo_bytes", None)
-        if type(metric) is int and metric >= 0:
-            print(json.dumps({"result": "FAIL", "offsite_repo_bytes": metric}))
         return error.code
     except (OSError, sqlite3.Error, ValueError, TypeError, RecursionError) as error:
         print(f"MEMORY_UNAVAILABLE: {type(error).__name__}", file=sys.stderr)

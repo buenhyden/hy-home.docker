@@ -34,14 +34,7 @@ class MemoryCliCapacityTests(unittest.TestCase):
         return result, output.getvalue(), error.getvalue()
 
     def initialize(self):
-        return MemoryCapacity(self.path).reconcile(
-            {
-                "schema_version": 1,
-                "complete": True,
-                "local_paths": [],
-                "external_snapshots": [],
-            }
-        )
+        return MemoryCapacity(self.path).reconcile()
 
     def test_status_and_missing_search_never_initialize_state(self):
         result, output, _ = self.cli("capacity", "status")
@@ -158,21 +151,9 @@ class MemoryCliCapacityTests(unittest.TestCase):
                 "ineligible",
             )[0],
         )
-        directory = self.path.parent.parent / "backup"
-        directory.mkdir(mode=0o700)
-        self.assertEqual(0, self.cli("backup", "--output", str(directory / "copy"))[0])
 
-    def test_reconciliation_uses_the_fixed_metadata_producer_and_search_is_value_free(
-        self,
-    ):
-        with mock.patch(
-            "scripts.lib.ops.memory_backup.reconcile_backups",
-            side_effect=lambda path, **kwargs: self.initialize(),
-        ) as producer:
-            self.assertEqual(0, self.cli("capacity", "reconcile")[0])
-            producer.assert_called_once_with(
-                self.path, expected_generation=None, legacy_outputs=()
-            )
+    def test_local_reconciliation_and_value_free_search(self):
+        self.assertEqual(0, self.cli("capacity", "reconcile")[0])
         self.assertEqual(
             0,
             self.cli(
@@ -194,26 +175,6 @@ class MemoryCliCapacityTests(unittest.TestCase):
         self.assertNotIn("private-query-marker", error)
         with self.assertRaises(SystemExit):
             self.cli("capacity", "reconcile", "--input", "invented-inventory.json")
-
-    def test_backup_coordinator_refusal_preserves_the_existing_size_metric(self):
-        from scripts.lib.ops.memory_backup import BackupError
-
-        error = BackupError("MEMORY_BACKUP_REFUSED: private-diagnostic-marker")
-        error.offsite_repo_bytes = 123
-        with mock.patch("scripts.lib.ops.memory_backup.run_backup", side_effect=error):
-            result, output, diagnostic = self.cli("backup-run", "--target", "offsite")
-        self.assertEqual(4, result)
-        self.assertEqual(123, json.loads(output)["offsite_repo_bytes"])
-        self.assertNotIn("private-diagnostic-marker", diagnostic)
-        self.assertNotIn("Traceback", diagnostic)
-        with mock.patch(
-            "scripts.lib.ops.memory_backup.reconcile_backups",
-            side_effect=BackupError("private-reconcile-marker"),
-        ):
-            result, output, diagnostic = self.cli("capacity", "reconcile")
-        self.assertEqual(4, result)
-        self.assertEqual("", output)
-        self.assertNotIn("private-reconcile-marker", diagnostic)
 
     def test_legacy_snapshot_reads_preserve_bytes_and_do_not_create_sidecars(self):
         self.path.parent.mkdir(mode=0o700)
@@ -254,39 +215,6 @@ class MemoryCliCapacityTests(unittest.TestCase):
         self.assertEqual([], json.loads(self.cli("search", "--query", "wording")[1]))
         self.assertEqual(before, (self.path.read_bytes(), self.path.stat().st_mode))
         self.assertEqual([self.path], list(self.path.parent.iterdir()))
-
-    def test_backup_cannot_overwrite_capacity_control_files(self):
-        self.initialize()
-        self.assertEqual(
-            0,
-            self.cli(
-                "put",
-                "note",
-                "--expected-revision",
-                "0",
-                "--tier",
-                "long-term",
-                "--owner",
-                "fixture",
-                body="kept",
-            )[0],
-        )
-        before = MemoryCapacity(self.path).path.read_bytes()
-        controls = {
-            name + suffix
-            for name in ("memory.sqlite3", "capacity.sqlite3")
-            for suffix in ("", "-journal", "-wal", "-shm")
-        }
-        for name in controls | {
-            "capacity.lock",
-            "backup.lock",
-            "copy.lock",
-            ".memory.sqlite3.tmp",
-            ".memory.sqlite3.restore-" + "a" * 32,
-        }:
-            result, _, _ = self.cli("backup", "--output", str(self.path.parent / name))
-            self.assertEqual(memory.EXIT_BACKUP, result)
-        self.assertEqual(before, MemoryCapacity(self.path).path.read_bytes())
 
     def test_committed_put_recovers_after_capacity_settlement_was_interrupted(self):
         self.initialize()
@@ -361,52 +289,13 @@ class MemoryCliCapacityTests(unittest.TestCase):
         connection.commit()
         connection.close()
         before = path.read_bytes()
-        with mock.patch(
-            "scripts.lib.ops.memory_backup.reconcile_backups",
-            side_effect=lambda path, **kwargs: self.initialize(),
-        ):
-            for arguments in (("capacity", "status"), ("capacity", "reconcile")):
-                result, output, error = self.cli(*arguments)
-                self.assertEqual(4, result)
-                self.assertEqual("", output)
-                self.assertNotIn("Traceback", error)
-                self.assertNotIn("private-diagnostic-marker", error)
+        for arguments in (("capacity", "status"), ("capacity", "reconcile")):
+            result, output, error = self.cli(*arguments)
+            self.assertEqual(4, result)
+            self.assertEqual("", output)
+            self.assertNotIn("Traceback", error)
+            self.assertNotIn("private-diagnostic-marker", error)
         self.assertEqual(before, path.read_bytes())
-
-    def test_restore_registers_an_unregistered_legacy_source_without_changing_it(self):
-        self.initialize()
-        source = self.path.parent.parent / "legacy.sqlite3"
-        connection = sqlite3.connect(source)
-        connection.execute(memory.SCHEMA)
-        connection.execute(
-            "INSERT INTO revisions VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-            (
-                "legacy",
-                1,
-                1,
-                "fixture",
-                "long-term",
-                "fixture",
-                "2026-10-13",
-                "[]",
-                "eligible",
-                "internal",
-                "preserved",
-            ),
-        )
-        connection.commit()
-        connection.close()
-        source.chmod(0o600)
-        before = source.read_bytes()
-        memory.restore(source, self.path)
-        self.assertEqual(before, source.read_bytes())
-        self.assertEqual(
-            64 * 1024 * 1024, MemoryCapacity(self.path).status()["local_backup_bytes"]
-        )
-        result, output, error = self.cli("get", "legacy", "--historical")
-        self.assertEqual(0, result, error)
-        self.assertEqual(1, json.loads(output)["schema_version"])
-        self.assertEqual(2, memory.SCHEMA_VERSION)
 
     def test_unknown_pending_put_does_not_write_or_silently_retry(self):
         self.initialize()
