@@ -112,7 +112,7 @@ Kubernetes resources are only lock names here; no worker started a service.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Dispatch RED | 146 | W162 | `test_work_dispatch` | New tests before the module | FAIL | Import error: no dispatch module | required | - |
 | Dispatch GREEN | 146 | W162 | `test_work_dispatch` | Dispatch module | PASS | 14 tests: concurrency, brief and fence handoff, shared and overlapping locks, ownership, downstream blocking, timeout, cancel, takeover fencing, generations, integration failure, upstream patch, dispatcher death cleanup, bad plans | required | Dispatch RED |
-| Patch tamper RED | 146 | W162 | `test_a_worker_cannot_replace_another_units_patch` | New test on the committed dispatcher `92dbe2b38` | FAIL | Integration failed after a worker overwrote another unit's patch file | required | - |
+| Patch tamper RED | 146 | W162 | `test_work_dispatch` | New tamper test on the committed dispatcher `92dbe2b38` | FAIL | Integration failed after a worker overwrote another unit's patch file | required | - |
 | Patch tamper GREEN | 146 | W162 | `test_work_dispatch` | Patches kept in memory, integrated ownership check | PASS | 15 tests | required | Patch tamper RED |
 | Real parallel run | 146 | W162 | `work_dispatch.py run` | Three-unit plan on `7807dcf62`, two workers and one | PASS | 36.7 s against 40.9 s, N 1 each; shared resource serialised; integration passed both times | required | - |
 | Real cancel | 146 | W162 | `work_dispatch.py run` and SIGTERM | Same plan, two workers | PASS | Status cancelled, integration not run, one worktree and no check process left | required | - |
