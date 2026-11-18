@@ -771,8 +771,8 @@ generation이 붙어 만료되거나 다른 실행이 가져간 lease의 결과�
 검사를 모두 멈추고 새 단위를 시작하지 않는다. 모든 단위가 성공하면 기준 커밋에 patch를
 차례로 적용하고 통합 검사를 시간 제한(`integration_timeout`, 기본 600초) 안에서 다시
 실행한다. worker의 성공이 통합 결과를 대신하지 않는다. 결과 patch는 실행 폴더에 남고
-실제 브랜치에는 사람이나 통합 담당자가 적용하며, 적용 전에 보고서의 `sha256`과
-patch의 SHA-256이 같은지 확인한다. worktree는 파일만 나눌 뿐 sandbox가 아니다.
+실제 브랜치에는 사람이나 통합 담당자가 적용하며, 적용 전에 dispatcher가 표준 출력으로
+낸 `sha256`과 patch의 SHA-256이 같은지 확인한다(실행 폴더의 보고서는 worker가 쓸 수 있다). worktree는 파일만 나눌 뿐 sandbox가 아니다.
 
 ```bash
 python3 scripts/operations/work_dispatch.py run PLAN.json

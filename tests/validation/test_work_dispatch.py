@@ -360,6 +360,16 @@ class DispatchTests(unittest.TestCase):
         )
         self.assertEqual("succeeded", report["units"][0]["status"])
 
+    def test_a_command_that_cannot_start_fails_cleanly(self) -> None:
+        plan = [unit("a", "true", owned=["a.txt"])]
+        plan[0]["command"] = ["no-such-tool-for-dispatch"]
+        report = self.run_plan(plan)
+        self.assertEqual("failed", report["units"][0]["status"])
+        self.assertEqual(1, len(git(self.repo, "worktree", "list").splitlines()))
+        self.assertIsNotNone(
+            dispatch.Leases(self.state).acquire(["path:a.txt"], "next-run", 60)
+        )
+
     def test_bad_plans_are_refused(self) -> None:
         for units in (
             [unit("a", "true", depends=["b"]), unit("b", "true", depends=["a"])],
@@ -367,6 +377,9 @@ class DispatchTests(unittest.TestCase):
             [unit("a", "true"), unit("a", "true")],
             [unit("a", "true", owned=["../x"])],
             [unit("a", "true", owned=["."])],
+            [unit("/tmp/victim", "true", owned=["x.txt"])],
+            [unit("..", "true", owned=["x.txt"])],
+            [unit("a/b", "true", owned=["x.txt"])],
         ):
             with self.subTest(units=json.dumps(units)[:80]):
                 with self.assertRaises(dispatch.PlanError):

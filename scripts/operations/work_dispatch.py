@@ -21,6 +21,7 @@ import hashlib
 import json
 import os
 import posixpath
+import re
 import shutil
 import signal
 import sqlite3
@@ -39,6 +40,8 @@ STORE_NAME = "dispatch.sqlite3"
 CANCEL_NAME = "cancel"
 DEFAULT_WORKERS = 2
 DEFAULT_INTEGRATION_TIMEOUT = 600
+# A unit id becomes a path component, so it must be a plain token.
+UNIT_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 TICK = 0.05
 
 
@@ -168,8 +171,25 @@ def _remove_worktree(repo: Path, tree: Path) -> bool:
         capture_output=True,
         check=False,
     )
-    shutil.rmtree(tree, ignore_errors=True)
+    # Delete only a run's own worktree folder, never a path a plan could name.
+    if tree.parent.name == "wt" and tree.parent.parent.parent.name == "runs":
+        shutil.rmtree(tree, ignore_errors=True)
     return not tree.exists()
+
+
+def _exited(process: subprocess.Popen) -> bool:
+    """True once the leader exited, without reaping it.
+
+    The leader stays a zombie until `wait`, so its process group id cannot be
+    reused while the group is killed.
+    """
+    try:
+        return (
+            os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+            is not None
+        )
+    except ChildProcessError:
+        return True
 
 
 def _killpg(pid: int) -> None:
@@ -184,6 +204,9 @@ def _validate(plan: dict) -> dict[str, dict]:
     ids = [u.get("id") for u in units]
     if not units or not all(ids) or len(set(ids)) != len(ids):
         raise PlanError("units need unique ids")
+    for uid in ids:
+        if not isinstance(uid, str) or not UNIT_ID.fullmatch(uid) or ".." in uid:
+            raise PlanError(f"unit id {uid!r} is not a plain token")
     graph = {}
     for u in units:
         if not u.get("command") or not isinstance(u["command"], list):
@@ -265,7 +288,6 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
     def finish(uid: str, status: str, reason: str = "") -> None:
         result[uid].update(status=status, reason=reason, finished=clock())
         job = running.pop(uid)
-        _killpg(job["process"].pid)
         leases.release(job["tokens"], job["holder"])
         _remove_worktree(repo, job["worktree"])
         (root / f"{uid}.pgid").unlink(missing_ok=True)
@@ -273,7 +295,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
     def collect(uid: str, job: dict) -> None:
         # Background children must not outlive the worker into the checks.
         _killpg(job["process"].pid)
-        code = job["process"].returncode
+        code = job["process"].wait()
         if code != 0:
             return finish(uid, "failed", f"exit {code}")
         gitdir, tree = job["gitdir"], job["worktree"]
@@ -325,30 +347,33 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
                 if prior in ancestors and patches[prior]:
                     _wt(gitdir, tree, "apply", "--index", "-", data=patches[prior])
             start_tree = _wt(gitdir, tree, "write-tree").decode().strip()
-        except subprocess.CalledProcessError as error:
+            env = dict(
+                os.environ,
+                HY_TASK=str(plan.get("task", "")),
+                HY_BRIEF_REVISION=str(plan.get("brief_revision", "")),
+                HY_WORK_UNIT=u["id"],
+                HY_FENCE=json.dumps(tokens),
+            )
+            with open(root / f"{u['id']}.log", "wb") as log:
+                process = subprocess.Popen(
+                    u["command"],
+                    cwd=tree,
+                    env=env,
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    stdin=subprocess.DEVNULL,
+                    start_new_session=True,
+                )
+        except (subprocess.CalledProcessError, OSError) as error:
             leases.release(tokens, holder)
             _remove_worktree(repo, tree)
-            result[u["id"]].update(
-                status="failed", reason=f"setup failed: {error.cmd[3:6]}"
+            reason = (
+                f"setup failed: {error.cmd[3:6]}"
+                if isinstance(error, subprocess.CalledProcessError)
+                else f"could not start: {error.strerror}"
             )
+            result[u["id"]].update(status="failed", reason=reason)
             return
-        env = dict(
-            os.environ,
-            HY_TASK=str(plan.get("task", "")),
-            HY_BRIEF_REVISION=str(plan.get("brief_revision", "")),
-            HY_WORK_UNIT=u["id"],
-            HY_FENCE=json.dumps(tokens),
-        )
-        with open(root / f"{u['id']}.log", "wb") as log:
-            process = subprocess.Popen(
-                u["command"],
-                cwd=tree,
-                env=env,
-                stdout=log,
-                stderr=subprocess.STDOUT,
-                stdin=subprocess.DEVNULL,
-                start_new_session=True,
-            )
         (root / f"{u['id']}.pgid").write_text(str(process.pid))
         running[u["id"]] = dict(
             process=process,
@@ -370,7 +395,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
                     _kill(job["process"])
                     finish(uid, "cancelled", "cancel requested")
             for uid, job in list(running.items()):
-                if job["process"].poll() is not None:
+                if _exited(job["process"]):
                     collect(uid, job)
                 elif time.monotonic() > job["deadline"]:
                     _kill(job["process"])
@@ -484,7 +509,7 @@ def _integrate(
                 start_new_session=True,
             )
             deadline = time.monotonic() + timeout
-            while process.poll() is None:
+            while not _exited(process):
                 if cancel_requested() or time.monotonic() > deadline:
                     _kill(process)
                     if cancel_requested():
@@ -496,7 +521,7 @@ def _integrate(
                     }
                 time.sleep(TICK)
             _killpg(process.pid)
-            if process.returncode != 0:
+            if process.wait() != 0:
                 return {
                     "status": "failed",
                     "reason": f"check {check} exit {process.returncode}",
