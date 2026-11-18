@@ -109,15 +109,30 @@ class ForecastTests(unittest.TestCase):
         forecast.observe(
             self.directory, "T4", "cancelled", START, "2026-11-18T10:03:00+00:00"
         )
+        self.predict("T5")
+        forecast.observe(
+            self.directory, "T5", "failed", START, "2026-11-18T10:40:00+00:00"
+        )
         result = forecast.score(self.directory)
         self.assertEqual(3, result["completed"])
         self.assertEqual(1, result["cancelled"])
+        self.assertEqual(1, result["failed"])
         self.assertEqual("insufficient sample", result["calibration"])
         p50 = result["quantiles"]["p50"]
         self.assertEqual(3, p50["n"])
         self.assertAlmostEqual(1 / 3, p50["coverage"])
+        # 95% Wilson interval for 1 of 3
+        low, high = p50["coverage_95"]
+        self.assertAlmostEqual(0.0615, low, places=4)
+        self.assertAlmostEqual(0.7923, high, places=4)
         # pinball at p=0.5 for actuals 5, 25, 50 against q=20
         self.assertAlmostEqual((7.5 + 2.5 + 15) / 3, p50["pinball"])
+
+    def test_an_empty_score_has_no_coverage_or_bound(self) -> None:
+        p50 = forecast.score(self.directory)["quantiles"]["p50"]
+        self.assertEqual(
+            (0, None, None), (p50["n"], p50["coverage"], p50["coverage_95"])
+        )
 
 
 if __name__ == "__main__":

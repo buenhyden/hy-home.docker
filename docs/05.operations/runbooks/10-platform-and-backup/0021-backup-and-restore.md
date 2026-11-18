@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.16.0"
+version: "1.17.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -752,8 +752,8 @@ python3 scripts/operations/task_forecast.py score --type ci-run
 추정을 바꾸면 새 revision이 추가될 뿐 기존 값은 고칠 수 없고, 결과가 기록된 작업에는
 추정을 더할 수 없다. 평가는 작업 시작 전에 고정된 마지막 revision을 쓰며, 시작 뒤에
 만든 추정만 있는 작업의 결과는 거부한다. `score`는 분위수별 표본 수, 실제 값이 추정
-이하였던 비율(coverage)과 pinball 손실을 내고, 취소된 작업은 중도 절단 표본으로 따로
-센다. 완료 표본이 20건 미만이면 `insufficient sample`로 표시하며 이를 보정된 80%
+이하였던 비율(coverage)과 그 95% Wilson 구간, pinball 손실을 내고, 실패(`failed`)나
+취소(`cancelled`)로 끝난 작업은 중도 절단 표본으로 따로 센다. 완료 표본이 20건 미만이면 `insufficient sample`로 표시하며 이를 보정된 80%
 보장으로 읽지 않는다. 예측은 계획 참고값이며 기한·승인·필수 검사 생략의 근거가
 아니다. 병렬 작업의 전체 완료 분포는 작업별 P80을 더해 구하지 않는다.
 
