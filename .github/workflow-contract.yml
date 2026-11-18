@@ -602,6 +602,7 @@
         "tests.lib.hooks.test_request_brief",
         "tests.lib.hooks.test_session_capture",
         "tests.validation.test_session_analysis",
+        "tests.validation.test_sandbox_env",
         "-v"
       ],
       "cwd": ".",
@@ -1881,6 +1882,8 @@
           "scripts/lib/ops/memory_cli.py",
           "scripts/operations/agent_memory.py",
           "scripts/operations/session_analysis.py",
+          "scripts/operations/sandbox_env.py",
+          "tests/fixtures/sandbox/",
           "scripts/operations/provider_surface_renderer.py",
           "tests/lib/hooks/",
           "tests/lib/ops/test_memory_backup.py",
@@ -1891,6 +1894,7 @@
           "tests/validation/test_memory_backup_contract.py",
           "tests/validation/test_agent_memory_capacity.py",
           "tests/validation/test_session_analysis.py",
+          "tests/validation/test_sandbox_env.py",
           "tests/validation/test_agent_governance_ci_routing.py"
         ],
         "suites": [

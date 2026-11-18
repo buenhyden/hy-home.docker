@@ -1,0 +1,47 @@
+# Synthetic sandbox fixture owned by this workspace (W09-ENV). `app` and
+# `cache` are an allowed closure; the other three must be refused by plan.
+name: sandbox-fixture
+
+services:
+  app:
+    image: busybox:1.37.0
+    command: ["sh", "-c", "echo ready > /tmp/ready && sleep 3600"]
+    mem_limit: 64m
+    depends_on:
+      cache:
+        condition: service_started
+    networks: [sbx]
+    healthcheck:
+      test: ["CMD", "test", "-f", "/tmp/ready"]
+      interval: 2s
+      retries: 10
+
+  cache:
+    image: busybox:1.37.0
+    command: ["sh", "-c", "sleep 3600"]
+    mem_limit: 64m
+    networks: [sbx]
+
+  socket-user:
+    image: busybox:1.37.0
+    mem_limit: 64m
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  host-binder:
+    image: busybox:1.37.0
+    mem_limit: 64m
+    volumes:
+      - /etc:/host-etc
+
+  secret-user:
+    image: busybox:1.37.0
+    mem_limit: 64m
+    secrets: [real_secret]
+
+networks:
+  sbx: {}
+
+secrets:
+  real_secret:
+    file: /etc/hostname

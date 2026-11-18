@@ -164,3 +164,5 @@ graphify-out/
 # capture (scripts/lib/hooks/session_capture.py)
 .workspace-memory/
 .workspace-capture/
+# Rootless Docker sandbox run records (scripts/operations/sandbox_env.py)
+.workspace-sandbox/
