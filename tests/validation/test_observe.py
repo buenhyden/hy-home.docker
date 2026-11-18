@@ -85,7 +85,7 @@ class ObserveTests(unittest.TestCase):
             {
                 "hyhome-backup.service": [
                     "hyhome-backup.service: Failed with result 'exit-code'.",
-                    "RESTIC_PASSWORD=do-not-copy-this",
+                    "journal body marker do-not-copy-this",
                     "hyhome-backup.service: Failed with result 'exit-code'.",
                     "Finished hyhome-backup.service - HOME backup.",
                 ],
