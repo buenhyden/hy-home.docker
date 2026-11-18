@@ -229,8 +229,11 @@ python3 scripts/operations/sandbox_env.py cleanup
 `install`은 `uidmap`(newuidmap/newgidmap)이 있을 때만 `dockerd-rootless-setuptool.sh`로
 사용자 daemon을 설치하며 `install --uninstall`로 제거한다. `plan`은 요청 서비스와
 `depends_on` closure를 계산하고 빈 선택·`all`·와일드카드·8개 초과·메모리 4 GiB 초과를
-거부한다. Docker socket, 저장소 밖이나 쓰기 가능한 bind, 실제 secret 파일, host
-network·PID, privileged, 메모리 한도 없음은 서비스별 사유로 막는다. `up`은 허용된
+거부한다. Docker socket, 저장소 밖이나 쓰기 가능한 bind, 저장소의 `secrets/`·`.env*`·`.git`·
+`.workspace-*` bind, 호스트에 닿는 volume(external·bind/device driver 옵션), 실제
+secret·config·env 파일, external network, host·공유 namespace, privileged, 추가
+capability, unconfined profile, 호스트 장치·GPU, 별도 runtime, 메모리 한도 없음은
+서비스별 사유로 막는다. `up`은 허용된
 closure만 `hyhome-sbx-<run>` project로 rootless daemon에 올리고, 사용하는 network를 모두
 `internal`로 덮어 외부·운영망 경로를 끊는다. 실행 기록은 git과 백업에서 제외한
 `.workspace-sandbox/`에 남는다. 시작이 실패하면 그 run만 정리한다. `down`과 `cleanup`은

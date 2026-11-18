@@ -170,7 +170,7 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check, memory or policy without a separate approved Task | none | none |
 | ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
 | ENVIRONMENT-CONSTRAINTS-R149 | Candidate or test Docker work | Required: the per-user rootless daemon through `scripts/operations/sandbox_env.py` | none | none |
-| ENVIRONMENT-CONSTRAINTS-R150 | Candidate or test Docker work | Forbidden: the production socket, a host path bind outside the repository or the run directory, a real secret file, host networking or privilege | none | none |
+| ENVIRONMENT-CONSTRAINTS-R150 | Candidate or test Docker work | Forbidden: the production socket, a host path bind outside the repository or the run directory or into its secrets, environment, Git or state paths, a volume that reaches the host, a real secret, config or env file, an external network, a host or shared namespace, privilege, added capabilities, an unconfined profile, host devices or GPUs, or a custom runtime | none | none |
 | ENVIRONMENT-CONSTRAINTS-R151 | Sandbox selection | Required: named services and their `depends_on` closure within 8 services and 4 GiB of memory limits | none | none |
 | ENVIRONMENT-CONSTRAINTS-R152 | Sandbox selection | Forbidden: an empty, `all` or wildcard selection | none | none |
 | ENVIRONMENT-CONSTRAINTS-R153 | Sandbox start | Required: internal networks only, a recorded `hyhome-sbx-` project, and cleanup of that run alone on failure | none | none |
@@ -456,7 +456,11 @@ This project has a graphify knowledge graph at `graphify-out/`.
   selection is refused. A service that mounts the Docker socket, binds a
   host path outside the repository (read-only) or the run directory, uses a
   real secret file, host networking, the host PID namespace or privilege is
-  blocked with its reason. A start marks every used network internal,
+  blocked with its reason, as are binds into the repository's secrets,
+  environment, Git or state paths, volumes that reach the host, config or
+  env files outside the run directory, external networks, shared
+  namespaces, added capabilities, unconfined profiles, host devices or GPUs
+  and custom runtimes. A start marks every used network internal,
   records its `hyhome-sbx-<run>` project in the ignored `.workspace-sandbox/`
   and cleans up only that run when it fails; cleanup removes only recorded
   projects.

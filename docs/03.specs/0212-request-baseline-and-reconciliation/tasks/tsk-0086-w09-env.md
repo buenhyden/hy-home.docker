@@ -1,6 +1,6 @@
 ---
 title: "W09 Docker Sandbox Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -48,9 +48,11 @@ range. `lxc`, `bwrap` and `k3d` exist. No sandbox entry and no guard
 against a whole-stack start existed.
 
 The rendered model has 89 services, all behind profiles, with 158 bind
-mounts, 4 Docker socket mounts and 61 secret users. Run alone under the new
-checks, 15 services are allowed as defined; the rest bind host paths or use
-real secret files, which the sandbox must not receive.
+mounts, 4 Docker socket mounts and 61 secret users. Run alone under the
+final checks, 4 services are allowed as defined (`conftest`,
+`crawl4ai-egress`, `storybook`, `wiremock`); the rest reach the host
+through binds, secrets, env files, devices or GPUs, which the sandbox must
+not receive.
 
 #### W158 design
 
@@ -62,7 +64,14 @@ services, refuses an empty, `all` or wildcard selection and more than 8
 services or 4 GiB of memory limits, and blocks per service: the Docker
 socket, a bind outside the repository (read-only) or the run directory, a
 real secret file, host networking or PID, privilege, and a missing memory
-limit. `up` runs only on the rootless socket, never a production socket,
+limit. A security review of the first commit found four bypasses, closed
+in the same change: read-only binds into the repository's `secrets/`,
+`.env*`, `.git` and `.workspace-*` paths; named volumes that are external
+or bind a host path through driver options; network modes other than
+`none` or a selected service, and external networks; and host or shared
+IPC, UTS, user and cgroup namespaces, devices and GPU reservations,
+added capabilities, unconfined profiles, custom runtimes, and config or
+env files outside the run directory. `up` runs only on the rootless socket, never a production socket,
 overrides every used network to `internal`, records the
 `hyhome-sbx-<run>` project in the ignored `.workspace-sandbox/` and removes
 only that run if the start fails. `down` and `cleanup` remove only
@@ -89,7 +98,7 @@ daemon cannot start, and the production socket is never a substitute.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Sandbox RED | 142 | W158 | `test_sandbox_env` | New tests on `ebc758a4a` | FAIL | Import error: no sandbox module | required | - |
-| Sandbox GREEN | 142 | W158 | `test_sandbox_env` | Sandbox module and fixture | PASS | 9 tests: closure and refusals, host reach, budgets, socket choice, internal networks, failed start, owned cleanup, fixture render, doctor | required | Sandbox RED |
+| Sandbox GREEN | 142 | W158 | `test_sandbox_env` | Sandbox module and fixture | PASS | 10 tests: closure and refusals, host reach, secret stores, volume drivers and namespaces, budgets, socket choice, internal networks, failed start, owned cleanup, fixture render, doctor | required | Sandbox RED |
 | Contract checks | 142 | W158 | sandbox, script manifest, routing and surface suites | Sandbox change | PASS | 161 tests | required | - |
 | Fixture plan | 142 | W158 | `sandbox_env.py plan` on the fixture | Host Docker CLI, read-only render | PASS | `app` gives `app` and `cache`; socket, `/etc` bind and real secret refused; empty, `all` and `db*` refused | required | - |
 | Live sandbox | 142 | W159 | install, `up`, refusal, isolation and `cleanup` on the rootless daemon | Real host | NOT_RUN | Waits for the owner to install `uidmap` | required | - |
