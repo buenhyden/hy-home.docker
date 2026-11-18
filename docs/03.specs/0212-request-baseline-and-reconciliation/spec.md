@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.85.0"
+version: "1.86.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1157,6 +1157,15 @@ target, backup, recovery boundary, and action-specific authorization.
      disposable copy that names every reader, schema, route and link the
      final cutover must convert. No real path, identity or allocator
      changes before Q07-CUTOVER.
+145. TSK-0089 applies the 4.2.0 W10-FORECAST design on the owner's
+     2026-11-18 decisions: P30, P50 and P80 completion minutes are fixed
+     before a task starts in a private local store, elapsed time by default.
+     A changed estimate is a new revision, edits and deletions are refused,
+     an outcome needs a pre-start forecast and is recorded once, and scoring
+     reports coverage, pinball loss and sample size per quantile with
+     cancelled tasks censored apart. A small sample is never reported as a
+     calibrated guarantee, and at least one real task is forecast and
+     observed.
 
 ### Evidence Requirements
 
