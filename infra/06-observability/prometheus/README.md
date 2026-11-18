@@ -1,10 +1,10 @@
 ---
 title: "Prometheus"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-01-12"
 ---
 
@@ -114,7 +114,7 @@ Compose가 참조하는 secret은 `grafana_metrics_password`, `openbao_token`, `
 `up --plan`을 실행하지 않는다. 기대 대상의 갱신과 문제 해결은
 Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus.md`)을 따른다.
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
 
 1. **PromQL Optimization**: 비용이 큰 대시보드 쿼리에는 Recording Rules를 사용합니다.
 2. **Rule Management**: 변경 사항을 적용하기 전에 항상 `promtool`로 검증합니다.

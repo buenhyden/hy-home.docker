@@ -1,10 +1,10 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -41,7 +41,7 @@ completion approval, and exact capture preparation difficult.
 - [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - SPEC-0179
-- [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
+- [Retention policy](../../00.workspace/02.process/documentation-protocol.md#retention-by-status)
 
 ### Decision Scope
 

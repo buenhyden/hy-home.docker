@@ -1,10 +1,10 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -133,7 +133,7 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 - Pyroscope 필수값 점검(`retention_period: 168h`가 출력되어야 정상):
   `rg -n 'retention_period' infra/06-observability/pyroscope/config/pyroscope.yaml`
 - Documentation contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+  원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
 ### Limits
 

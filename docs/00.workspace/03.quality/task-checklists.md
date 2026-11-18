@@ -17,7 +17,7 @@ Check scope, implementation evidence, and completion before changing repository 
 
 #### Authority
 
-This policy is the canonical owner of the task checklists for editing, work, and completion under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+This policy is the canonical owner of the task checklists for editing, work, and completion under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
 ### Applies To
 
@@ -69,7 +69,7 @@ None: this document states no exclusion.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../02.process/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -91,12 +91,12 @@ None: no exception exists to approve.
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.
 - [ ] Record pass, fail, baseline debt, skipped checks, recovery, and review separately.
 - [ ] Record final criterion acceptance before disposition. A Stage 03 package
-      may wait once it is [ready for removal review](sdlc.md#sequence);
+      may wait once it is [ready for removal review](../02.process/sdlc.md#sequence);
       cancelled criteria do not waive remaining Spec acceptance evidence, and
-      closing a criterion follows the [SDLC](sdlc.md#sequence) decisions.
+      closing a criterion follows the [SDLC](../02.process/sdlc.md#sequence) decisions.
 - [ ] Before removing a retired document, meet the
-      [retirement preconditions](documentation-protocol.md#retirement-preconditions);
-      delete a Stage 03 package only as the [SDLC](sdlc.md#sequence) allows.
+      [retirement preconditions](../02.process/documentation-protocol.md#retirement-preconditions);
+      delete a Stage 03 package only as the [SDLC](../02.process/sdlc.md#sequence) allows.
 - [ ] Distinguish the worktree, index, and commit a review examined, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.
@@ -113,13 +113,13 @@ No check, script or review is tied to any rule in Requirements.
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../02.process/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
-- [Agentic policy](agentic.md)
-- [Approval boundaries](approval-boundaries.md)
-- [Git workflow](git-workflow.md)
-- [Postflight checklist](postflight-checklist.md)
+- [Agentic policy](../../../.agents/governance/agentic.md)
+- [Approval boundaries](../02.process/approval-boundaries.md)
+- [Git workflow](../02.process/git-workflow.md)
+- [Postflight checklist](../../../.agents/governance/postflight-checklist.md)

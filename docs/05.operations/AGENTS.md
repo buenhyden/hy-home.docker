@@ -1,10 +1,10 @@
 ---
 title: "Operations Agent Guide"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Operations Agent Guide
@@ -31,7 +31,7 @@ execution belongs to the Stage 03 Task.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -41,8 +41,8 @@ canonical governance or a Stage contract.
 ### Intake
 
 - [Bootstrap](../../.agents/governance/bootstrap.md),
-  [documentation protocol](../../.agents/governance/documentation-protocol.md),
-  [approval boundaries](../../.agents/governance/approval-boundaries.md),
+  [documentation protocol](../00.workspace/02.process/documentation-protocol.md),
+  [approval boundaries](../00.workspace/02.process/approval-boundaries.md),
   [environment constraints](../../.agents/governance/environment-constraints.md).
 - Roles: [`doc-writer`](../../.agents/roles/doc-writer.md),
   [`incident-responder`](../../.agents/roles/incident-responder.md).
@@ -82,7 +82,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../../.agents/governance/approval-boundaries.md)
+[approval boundaries](../00.workspace/02.process/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions

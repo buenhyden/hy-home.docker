@@ -1,6 +1,6 @@
 # Pull Request
 
-> **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `.agents/governance/git-workflow.md`.
+> **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `docs/00.workspace/02.process/git-workflow.md`.
 > Human `feat/` and `fix/` source branches may include an issue ID segment, for example `feat/123-add-service`.
 
 ## Related Specification
@@ -72,7 +72,7 @@ created only by the separately authorized main release producer after merging;
 this PR does not publish a release or move historical refs.
 
 For affected surfaces, select checks from the
-[shared change-type verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix).
+[shared change-type verification matrix](../docs/00.workspace/03.quality/quality-standards.md#5-change-type-verification-matrix).
 Record the selected command, execution environment, result, and reason for any
 unexecuted check in Validation Evidence. This template adds no gate and does
 not require both public profiles for every harness change.
@@ -94,7 +94,7 @@ changes; otherwise record N/A and the reason in Validation Evidence):
 - [ ] Registered candidate results and required acceptance are linked in the Task
 - [ ] Source/provider configuration is not presented as live native-event execution
 
-See [Approval Boundaries](../.agents/governance/approval-boundaries.md) for protected surfaces.
+See [Approval Boundaries](../docs/00.workspace/02.process/approval-boundaries.md) for protected surfaces.
 
 ## Risk Assessment
 
@@ -104,7 +104,7 @@ See [Approval Boundaries](../.agents/governance/approval-boundaries.md) for prot
 ## Validations
 
 - [ ] I have reviewed the relevant governance policies under `.agents/governance/`.
-- [ ] My source branch follows the governed branch policy in `.agents/governance/git-workflow.md`.
+- [ ] My source branch follows the governed branch policy in `docs/00.workspace/02.process/git-workflow.md`.
 - [ ] My code strictly follows the Implementation Specification.
 - [ ] Documentation has been added/updated using `docs/99.templates`, or marked N/A with a reason.
 - [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.

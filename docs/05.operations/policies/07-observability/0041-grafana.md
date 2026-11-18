@@ -1,10 +1,10 @@
 ---
 title: "Grafana Operations Policy"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -177,7 +177,7 @@ Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 �
 - Dashboard count:
   `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`
 - Repository contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+  원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
 ### Limits
 

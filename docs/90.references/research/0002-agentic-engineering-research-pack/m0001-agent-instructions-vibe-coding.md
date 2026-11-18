@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agent Instructions and Bounded Vibe Coding"
-version: "1.4.0"
+version: "1.4.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0001"
 parent_ids:
@@ -420,7 +420,7 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference) | 2026-08-08 | External mutable | HTTP 200; instruction replacement and configuration boundary. |
 > | [Canonical governance bootstrap](../../../../.agents/governance/bootstrap.md) | 2026-08-14 | Workspace tracked | Re-read: canonical loading sequence and evidence boundary. |
 > | Provider-neutral notes (retired path: `../../../00.agent-governance/providers/agents-md.md`) | 2026-08-14 | Workspace tracked | Re-read: exact 6-level precedence list (§4) and Canonical Adapter Model (§5) with the five adapter rules. |
-> | [Task checklists](../../../../.agents/governance/task-checklists.md) | 2026-08-14 | Workspace tracked | Re-read: pre-task ambiguity-blocking rule, in-task loop-bound rule, completion evidence duties. |
+> | [Task checklists](../../../00.workspace/03.quality/task-checklists.md) | 2026-08-14 | Workspace tracked | Re-read: pre-task ambiguity-blocking rule, in-task loop-bound rule, completion evidence duties. |
 > | [Environment constraints](../../../../.agents/governance/environment-constraints.md) | 2026-08-14 | Workspace tracked | Read: "most-specific in-scope instruction file wins" and "system/developer/direct user instructions always override repository instruction files." |
 > | Root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) | 2026-08-14 | Workspace tracked | Read directly: exact line counts and `@`-import vs. prose-instruction loading mechanism per file. |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08) | 2026-08-08 | Workspace stale/advisory | Built from `f8a72211`; corroborated against tracked sources and not used as current proof. |
@@ -466,7 +466,7 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > Preserve the five evidence states above and never infer live compliance from a
 > tracked file.
 
-> Revalidated 2026-11-06: `.claude/settings.local.json` is an ignored local file (`.gitignore:112`), not tracked state; `.claude/rules/` does not exist; Claude native surfaces are `.claude/agents/` (14), `.claude/skills/`, `.claude/hooks/` (7 wrappers), `.claude/output-styles/`, `.claude/settings.json`; Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles). The dated values above are preserved as observed.
+> Revalidated 2026-11-06: `.claude/settings.local.json` is an ignored local file (`.gitignore:112`), not tracked state; `.claude/rules/` does not exist; Claude native surfaces are `.claude/agents/` (14), `.claude/skills/`, `.claude/hooks/` (7 wrappers), `.claude/output-styles/`, `.claude/settings.json`; Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `docs/00.workspace/02.process/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles). The dated values above are preserved as observed.
 
 ### Alternatives
 

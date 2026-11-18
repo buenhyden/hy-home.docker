@@ -1,10 +1,10 @@
 ---
 title: "IaC Deployment Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "POL-0060"
 parent_ids:
@@ -84,7 +84,7 @@ socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credent
 ### Mechanisms
 
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+- 원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix))
 - OpenTofu/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
 
 ### Limits

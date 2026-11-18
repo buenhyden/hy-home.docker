@@ -197,7 +197,13 @@ class FolderGuideShimTests(unittest.TestCase):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
-        for name in (".agents", ".claude", ".codex", "scripts/hooks"):
+        for name in (
+            ".agents",
+            ".claude",
+            ".codex",
+            "docs/00.workspace",
+            "scripts/hooks",
+        ):
             shutil.copytree(
                 ROOT / name,
                 self.root / name,

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Scope Application Matrix"
-version: "1.5.0"
+version: "1.5.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0015"
 parent_ids:
@@ -686,7 +686,7 @@ access dates do not mean those sources were reopened in this refresh.
 > | `SCOPE-COMP-001` | `scope-application-matrix.md` | synthesis-only | `—` |
 >
 
-> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); the Stage 00 scope files ("14 scopes") are retired; persona routing is in `.agents/governance/persona.md`; `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `tests/lib/agent_governance/test_agent_governance_contract.py` and `tests/validation/test_agent_governance_contract.py` are absent; the current suite is `tests/validation/test_agent_governance_ci_routing.py`, with `scripts/validation/check-agent-governance-contract.py`; `.claude/hooks/` has 7 wrappers (old: 24 hooks); 5 workflows (old: 7). The dated values above are preserved as observed.
+> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `docs/00.workspace/02.process/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); the Stage 00 scope files ("14 scopes") are retired; persona routing is in `.agents/governance/persona.md`; `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `tests/lib/agent_governance/test_agent_governance_contract.py` and `tests/validation/test_agent_governance_contract.py` are absent; the current suite is `tests/validation/test_agent_governance_ci_routing.py`, with `scripts/validation/check-agent-governance-contract.py`; `.claude/hooks/` has 7 wrappers (old: 24 hooks); 5 workflows (old: 7). The dated values above are preserved as observed.
 
 ### Alternatives
 

@@ -1,10 +1,10 @@
 ---
 title: "WARNING: manual pre-commit execution"
-version: "1.1.4"
+version: "1.1.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-18"
 action: "warn"
 enabled: true
 event: "bash"
@@ -22,7 +22,7 @@ pattern: "pre-commit\\s+run"
 
 ### Authority
 
-Owning policy: [Quality standards execution boundary](../quality-standards.md#4-execution-boundary).
+Owning policy: [Quality standards execution boundary](../../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary).
 
 ## Scope
 

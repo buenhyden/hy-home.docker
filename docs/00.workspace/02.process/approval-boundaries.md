@@ -18,7 +18,7 @@ It never expands through delegation or provider handoff.
 
 #### Authority
 
-This policy is the canonical owner of approval of protected operations and surfaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+This policy is the canonical owner of approval of protected operations and surfaces under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
 ### Applies To
 
@@ -118,7 +118,7 @@ mutation, a remote write outside the request's branch and pull request, a
 credential operation, or destructive recovery waits for its exact target under
 this policy. The secret-specific execution evidence and
 redaction boundary are defined by
-[Environment constraints](environment-constraints.md#22-approved-secrets-work-protocol).
+[Environment constraints](../../../.agents/governance/environment-constraints.md#22-approved-secrets-work-protocol).
 
 **Core Rules**
 
@@ -154,14 +154,14 @@ redaction boundary are defined by
   revision each consumer reads.
 - Role permissions come from canonical role frontmatter; provider/model and
   permission translations come from `.agents/governance/providers/registry.yaml`; lifecycle,
-  retry, and stop behavior comes from [workflows.md](workflows.md). Provider
+  retry, and stop behavior comes from [workflows.md](../../../.agents/governance/workflows.md). Provider
   facts cannot override agent governance policy.
 - Untracked or ignored scratch state is not evidence. Preserve other workers'
   dirty state and stop if ownership cannot be proven.
 - A configured hook or provider surface proves tracked configuration only, not
   adoption.
 - Cost, token, and time limits are execution guardrails, not safety
-  authorization; their preflight owner is [Agentic policy](agentic.md).
+  authorization; their preflight owner is [Agentic policy](../../../.agents/governance/agentic.md).
 - An explicit policy-maintenance request authorizes matching reversible policy
   text edits within the writer's permission profile. It does not authorize any
   protected operation that the edited policy describes.
@@ -242,6 +242,6 @@ No rule here names an automated check; the rules that require an approval or a r
 Changes land in place with Task evidence; related documents:
 
 - [GitHub governance](github-governance.md)
-- [Environment constraints](environment-constraints.md)
-- [Agentic policy](agentic.md)
-- [Provider registry](providers/registry.yaml)
+- [Environment constraints](../../../.agents/governance/environment-constraints.md)
+- [Agentic policy](../../../.agents/governance/agentic.md)
+- [Provider registry](../../../.agents/governance/providers/registry.yaml)

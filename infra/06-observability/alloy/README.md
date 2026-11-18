@@ -1,10 +1,10 @@
 ---
 title: "Grafana Alloy Unified Collector"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-01-12"
 ---
 
@@ -102,7 +102,7 @@ Compose가 참조하는 secret은 `hermes_otlp_token`, `quality_otlp_token`이�
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
 
 1. Alloy 가이드(`docs/05.operations/guides/07-observability/0040-alloy.md`)를 따릅니다.
 2. 새로운 파이프라인 컴포넌트나 재레이블링 규칙을 추가하려면 `config.alloy`를 수정합니다.

@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Agent Guide"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Infrastructure Agent Guide
@@ -32,7 +32,7 @@ recreates a service.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -43,9 +43,9 @@ canonical governance or a Stage contract.
 
 - [Bootstrap](../.agents/governance/bootstrap.md),
   [agentic governance](../.agents/governance/agentic.md),
-  [approval boundaries](../.agents/governance/approval-boundaries.md),
+  [approval boundaries](../docs/00.workspace/02.process/approval-boundaries.md),
   [environment constraints](../.agents/governance/environment-constraints.md),
-  [quality standards](../.agents/governance/quality-standards.md).
+  [quality standards](../docs/00.workspace/03.quality/quality-standards.md).
 - Roles: [`infra-implementer`](../.agents/roles/infra-implementer.md),
   [`iac-reviewer`](../.agents/roles/iac-reviewer.md),
   [`security-auditor`](../.agents/roles/security-auditor.md),
@@ -85,7 +85,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../.agents/governance/approval-boundaries.md)
+[approval boundaries](../docs/00.workspace/02.process/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 ### Secrets and External Effects

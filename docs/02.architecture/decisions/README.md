@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.8.0"
+version: "1.8.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 ---
 
@@ -205,7 +205,7 @@ docs/02.architecture/decisions/
 
 - [에이전트 작업 규칙](../AGENTS.md)
 - [ADR Template](../../99.templates/templates/architecture/decision.template.md)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks

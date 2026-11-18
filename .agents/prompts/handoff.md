@@ -1,10 +1,10 @@
 ---
 title: "Handoff Prompt"
-version: "1.0.0"
+version: "1.0.1"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-18"
 created: "2026-09-06"
 ---
 
@@ -16,7 +16,7 @@ Produce a handoff that lets the next session reconstruct its working state
 from tracked files and Git. The receiving session may be a different provider,
 a different model, or the same agent after a context reset. The controller
 resolves current authorization through
-[Approval Boundaries](../governance/approval-boundaries.md#authorization-source-and-records).
+[Approval Boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records).
 
 ## Inputs
 
@@ -112,5 +112,5 @@ with that part marked unavailable and name what is needed.
 
 - [Prompt index](README.md)
 - [Workflows](../governance/workflows.md)
-- [Task checklists](../governance/task-checklists.md)
-- [Approval boundaries](../governance/approval-boundaries.md)
+- [Task checklists](../../docs/00.workspace/03.quality/task-checklists.md)
+- [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md)

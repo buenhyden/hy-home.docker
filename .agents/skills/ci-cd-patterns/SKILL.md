@@ -3,11 +3,11 @@ name: "ci-cd-patterns"
 description: "Use when delivery workflows need deterministic local and CI gates, least-privilege jobs, and explicit remote promotion boundaries."
 metadata:
   title: "ci-cd-patterns"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "ci-cd-patterns"
   scope: "ops"
   owner_agent: "ci-cd-engineer"
@@ -61,8 +61,8 @@ Stop when credentials, remote rulesets, or promotion authority are required; pro
 Owning role, policies and related documents:
 
 - [CI/CD engineer](../../roles/ci-cd-engineer.md)
-- [GitHub governance](../../governance/github-governance.md)
-- [Task checklists](../../governance/task-checklists.md)
+- [GitHub governance](../../../docs/00.workspace/02.process/github-governance.md)
+- [Task checklists](../../../docs/00.workspace/03.quality/task-checklists.md)
 
 ## Verification
 

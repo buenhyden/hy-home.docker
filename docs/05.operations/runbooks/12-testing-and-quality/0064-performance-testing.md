@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Incident Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "RUN-0064"
 parent_ids:
@@ -105,7 +105,7 @@ next_review_at: "2027-05-13"
 #### Service Checks
 
 `--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
-[quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
+[quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix)의
 원격 PR 경로가 소유하며 조회 결과를 검증 PASS로 기록하지 않는다.
 
 - 실행 중이던 부하 생성 서비스가 중지되었다. UI의 idle 표시만으로 중단 완료를 판정하지 않는다.

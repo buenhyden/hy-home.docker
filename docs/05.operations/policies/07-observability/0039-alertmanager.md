@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "POL-0039"
 parent_ids:
@@ -142,7 +142,7 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
 - Alert routing config:
   `rg -n 'group_by: \["alertname", "job", "domain", "severity"\]|repeat_interval: 4h|receiver: "team-notifications-slack"|receiver: "critical-notifications"|severity="critical"|email_configs:' infra/06-observability/alertmanager/config/config.yml`
 - Repository contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+  원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
 ### Limits
 

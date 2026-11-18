@@ -1,10 +1,10 @@
 ---
 title: "Hermes DevOps Daily Brief Recovery Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0054"
 parent_ids:
@@ -37,7 +37,7 @@ On 2026-11-11 the owner (@buenhyden) asked for this failure to run as its own
 Task. That covers read-only diagnosis and a repository-side fix. Hermes agent
 configuration under `~/.hermes`, a model or provider change, and any paid
 model use stay owner decisions, under the
-[approval boundaries](../../../../.agents/governance/approval-boundaries.md).
+[approval boundaries](../../../00.workspace/02.process/approval-boundaries.md).
 
 ## Execution Log
 

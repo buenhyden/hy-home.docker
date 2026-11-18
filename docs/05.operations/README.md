@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "2.3.0"
+version: "2.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 ---
 
@@ -96,13 +96,13 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 - Incident는 특정 사건의 관찰·영향·대응 타임라인을, Postmortem은 원인·교훈·
   재발 방지 조치를 소유한다.
 - 독자 목적, 역할별 작성 기준, Incident/Postmortem 후속 조치 기준은
-  [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이 소유한다.
+  [공통 Agent 거버넌스 작성 정책](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)이 소유한다.
   Guide의 주된 독자 필요를 본문에 명시하며 Diátaxis의 technical reference를
   Stage 90의 증거 분류와 혼동하지 않는다.
 
 #### External Release Evidence
 
-이 저장소는 [공통 Agent 거버넌스의 external-release-evidence 정책](../../.agents/governance/documentation-protocol.md#release-evidence-boundary)을
+이 저장소는 [공통 Agent 거버넌스의 external-release-evidence 정책](../00.workspace/02.process/documentation-protocol.md#release-evidence-boundary)을
 사용한다. [runbook 색인](runbooks/README.md)의 platform and backup 항목에 있는 Release Runbook(`RUN-0009`)은
 반복 절차를, 현재 Task는 특정 실행의 검증과 결과를 소유한다. CHANGELOG, tag,
 CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
@@ -127,8 +127,8 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Template catalog](../99.templates/templates/README.md)
-- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
-- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
+- [Documentation protocol](../00.workspace/02.process/documentation-protocol.md)
+- [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
 - [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
@@ -163,4 +163,4 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 
 #### Transition and Exit
 
-Guide·Policy·Runbook은 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따르고, Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태이다. superseded 또는 retired에 이른 Guide·Policy·Runbook은 [은퇴 전제 조건](../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가하며 해당 역할 인덱스와 inbound link를 같은 변경에서 갱신한다.
+Guide·Policy·Runbook은 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따르고, Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태이다. superseded 또는 retired에 이른 Guide·Policy·Runbook은 [은퇴 전제 조건](../00.workspace/02.process/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가하며 해당 역할 인덱스와 inbound link를 같은 변경에서 갱신한다.

@@ -1,10 +1,10 @@
 ---
 title: "qa-engineer"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-18"
 agent_id: "qa-engineer"
 scope: "qa"
 tier: "worker"
@@ -56,7 +56,7 @@ Stop when failures are nondeterministic, environment-only, or outside approved s
 
 ## Related Documents
 
-- [Quality standards](../governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [E2E testing](../skills/e2e-testing/SKILL.md)
 - [Style validation](../skills/style-validation/SKILL.md)
 - [Test authoring](../skills/test-authoring/SKILL.md)

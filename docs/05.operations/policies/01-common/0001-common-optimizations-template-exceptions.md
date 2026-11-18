@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
@@ -75,7 +75,7 @@ next_review_at: "2027-05-13"
 | POL-0001-R30 | 배포 시 | 금지: 문서와 레지스트리 간 불일치 상태로 배포 진행 | none | none |
 | POL-0001-R31 | 모델/프롬프트 변경 | 필수: [agentic governance](../../../../.agents/governance/agentic.md)가 소유하는 절차를 따른다 | none | none |
 | POL-0001-R32 | 문서 변경 후 | 필수: 관련 validation을 통과한다 | none | none |
-| POL-0001-R33 | 로그/트레이스 보존 | 필수: [task checklists](../../../../.agents/governance/task-checklists.md)를 따른다 | none | none |
+| POL-0001-R33 | 로그/트레이스 보존 | 필수: [task checklists](../../../00.workspace/03.quality/task-checklists.md)를 따른다 | none | none |
 | POL-0001-R34 | secret 노출 또는 승인 없는 runtime 변경 징후 | 필수: 즉시 중단한다 | none | none |
 
 - **Required**:
@@ -106,7 +106,7 @@ next_review_at: "2027-05-13"
 
 - **Model / Prompt Change Process**: [agentic governance](../../../../.agents/governance/agentic.md)가 소유한다.
 - **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
-- **Log / Trace Retention**: [task checklists](../../../../.agents/governance/task-checklists.md)를 따른다.
+- **Log / Trace Retention**: [task checklists](../../../00.workspace/03.quality/task-checklists.md)를 따른다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
 ### Exceptions

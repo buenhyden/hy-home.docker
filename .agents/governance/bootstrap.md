@@ -1,10 +1,10 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.9.0"
+version: "1.10.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Agent Bootstrap Policy
@@ -35,7 +35,7 @@ None: this document states no exclusion.
 | --- | --- | --- | --- | --- |
 | BOOTSTRAP-R1 | Always | Required: enter through root `AGENTS.md` or `CLAUDE.md` | none | none |
 | BOOTSTRAP-R2 | Always | Required: load this policy, the matching authored `.claude/provider.md` or `.codex/provider.md` adapter and only the provider facts required from the Provider Registry | none | none |
-| BOOTSTRAP-R3 | Always | Required: resolve only the agent governance policies, canonical role and skills needed for the request | none | none |
+| BOOTSTRAP-R3 | Always | Required: resolve only the workspace and agent governance policies, canonical role and skills needed for the request | none | none |
 | BOOTSTRAP-R4 | The request needs to find which surface owns something | Required: read `.agents/knowledge/` | none | none |
 | BOOTSTRAP-R5 | The request produces a handoff, a diff review, a commit message or a test design | Required: read `.agents/prompts/` | none | none |
 | BOOTSTRAP-R6 | Always | Forbidden: treating `.agents/knowledge/` or `.agents/prompts/` as granting a tool, a path, a permission or an approval | none | none |
@@ -48,7 +48,7 @@ None: this document states no exclusion.
 | BOOTSTRAP-R13 | Deciding which folders carry a folder `AGENTS.md` | Required: follow the documentation protocol | none | none |
 | BOOTSTRAP-R14 | Repository changes | Required: execute the applicable registered gates and record evidence in that Task | none | Task record |
 | BOOTSTRAP-R15 | Always | Forbidden: root shims or adapters defining an alternative to this load sequence | none | none |
-| BOOTSTRAP-R16 | Always | Required: keep tool-neutral rules in `.agents/governance/` | none | none |
+| BOOTSTRAP-R16 | Always | Required: keep tool-neutral rules people and agents share in `docs/00.workspace/` and agent execution rules in `.agents/governance/` | none | none |
 | BOOTSTRAP-R17 | Always | Forbidden: copying a rule into a root shim | none | none |
 | BOOTSTRAP-R18 | Always | Forbidden: naming providers under `.agents/` other than as Provider Registry translation facts and the capability matrix | none | none |
 | BOOTSTRAP-R19 | Always | Forbidden: Provider Registry translation facts or the capability matrix carrying policy | none | none |
@@ -87,7 +87,7 @@ None: this document states no exclusion.
 2. Load this policy, the matching authored `.claude/provider.md` or
    `.codex/provider.md` adapter, and only the provider facts required from
    `.agents/governance/providers/registry.yaml`.
-3. Resolve only the agent governance policies, canonical role, and skills needed for
+3. Resolve only the workspace and agent governance policies, canonical role, and skills needed for
    the request. Read `.agents/knowledge/` when the request needs to find which
    surface owns something, and `.agents/prompts/` when it produces a handoff, a
    diff review, a commit message, or a test design. Neither grants a tool, a
@@ -99,20 +99,21 @@ None: this document states no exclusion.
    Spec Package plus its current Task. Before changing a file in a folder or
    below it, read the nearest ancestor folder `AGENTS.md`; it routes to the
    canonical owners above and adds no authority. The
-   [documentation protocol](documentation-protocol.md#readme-and-agentsmd)
+   [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)
    decides which folders carry one.
 5. Execute the applicable registered gates and record evidence in that Task.
 
 Root shims and adapters route to this sequence and do not define alternatives.
 Root `AGENTS.md` and `CLAUDE.md` are entry shims: tool-neutral rules live in
-`.agents/governance/`, which both shims reach, so no rule is copied into a
+`docs/00.workspace/` (shared by people and agents) and `.agents/governance/`
+(agent execution), which both shims reach, so no rule is copied into a
 shim. Provider names appear under `.agents/` only as Provider Registry
 translation facts and the capability matrix, which carry no policy.
 Loading governing stage documents and the current Task is scoped execution
 context, not permission for outside-docs instructions to depend on an individual
 stage document. Current agent rules live in their canonical governance owner;
 README navigation, historical provenance and typed machine inputs follow the
-[documentation protocol](documentation-protocol.md#entry-point-for-documents-outside-docs).
+[documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs).
 
 #### Authority and Precedence
 
@@ -149,7 +150,7 @@ history is the record of what was removed.
   guidance are written in English; every `README.md` is Korean. Native
   syntax, quotations, and preserved evidence keep their form, and each
   document's language follows the
-  [documentation protocol](documentation-protocol.md#document-language).
+  [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md#document-language).
 - Stage documents are read-only unless the request authorizes change.
 - Keep root shims concise.
 - Never write plaintext credentials or secret values.
@@ -161,7 +162,7 @@ history is the record of what was removed.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -173,8 +174,8 @@ None: no exception exists to approve.
 
 #### Verification Routing
 
-Use [task-checklists.md](task-checklists.md) for completion and
-[approval-boundaries.md](approval-boundaries.md) for protected surfaces. Stage
+Use [task-checklists.md](../../docs/00.workspace/03.quality/task-checklists.md) for completion and
+[approval-boundaries.md](../../docs/00.workspace/02.process/approval-boundaries.md) for protected surfaces. Stage
 99 owns document shapes; registered scripts own executable checks.
 
 ### Limits
@@ -192,13 +193,13 @@ The Requirements prose ties no named check, gate or review to any of its rules.
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
 - [Governance navigation](../README.md)
-- [Completion checklist](task-checklists.md)
-- [Approval boundaries](approval-boundaries.md)
-- [Documentation protocol](documentation-protocol.md)
+- [Completion checklist](../../docs/00.workspace/03.quality/task-checklists.md)
+- [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md)
+- [Documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)

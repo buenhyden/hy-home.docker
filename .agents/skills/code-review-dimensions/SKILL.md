@@ -3,11 +3,11 @@ name: "code-review-dimensions"
 description: "Use when a scoped diff needs evidence-backed correctness, security, maintainability, performance, and governance review with calibrated severity."
 metadata:
   title: "code-review-dimensions"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "code-review-dimensions"
   scope: "common"
   owner_agent: "code-reviewer"
@@ -62,7 +62,7 @@ Owning role, policies and related documents:
 
 - [Code reviewer](../../roles/code-reviewer.md)
 - [Change review execution](../change-review-execution/SKILL.md)
-- [Common scope](../../governance/quality-standards.md)
+- [Common scope](../../../docs/00.workspace/03.quality/quality-standards.md)
 
 ## Verification
 

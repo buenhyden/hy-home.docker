@@ -1,10 +1,10 @@
 ---
 title: "GitHub Control Surface"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-02-14"
 ---
 
@@ -39,7 +39,7 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 
 - 소유: 아래 인벤토리, 그리고 각 정의를 정본 소유자와 검증 명령으로 매핑하는 것.
 - 비소유: GitHub 거버넌스 정책은
-  [github-governance.md](../.agents/governance/github-governance.md)에 있다.
+  [github-governance.md](../docs/00.workspace/02.process/github-governance.md)에 있다.
   게이트 구성은 [workflow-contract.yml](./workflow-contract.yml)에 있다.
   서버 측 브랜치 보호는 GitHub 프로젝트 설정에 있으며, 여기서는 제안만 한다.
 
@@ -68,7 +68,7 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 #### Usage
 
 1. 정본 소유자부터 바꾼다. 동작 자체가 바뀔 때는
-   [github-governance.md](../.agents/governance/github-governance.md)를
+   [github-governance.md](../docs/00.workspace/02.process/github-governance.md)를
    편집한다 → 정책이 새 규칙을 명시한다.
 2. 작업이나 게이트 노드를 추가, 제거, 재배선할 때는
    [workflow-contract.yml](./workflow-contract.yml)에 변경 사항을 선언한다 →
@@ -124,10 +124,10 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 
 ### Related Documentation
 
-- [정본 GitHub 거버넌스](../.agents/governance/github-governance.md)
+- [정본 GitHub 거버넌스](../docs/00.workspace/02.process/github-governance.md)
 - [로컬 main-protection 제안](./rulesets/main-protection.md)
 - [에이전트 거버넌스 개요](../.agents/README.md)
-- [현재 정본 에이전트 거버넌스 작업 체크리스트](../.agents/governance/task-checklists.md)
+- [현재 정본 에이전트 거버넌스 작업 체크리스트](../docs/00.workspace/03.quality/task-checklists.md)
 - Canonical home의 과거 결정: ADR-0032 (현재 권한은 위 에이전트 거버넌스가 소유)
 - [저장소 README](../README.md)
 - [문서 인덱스](../docs/README.md)

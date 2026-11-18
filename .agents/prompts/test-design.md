@@ -1,10 +1,10 @@
 ---
 title: "Test Design Prompt"
-version: "0.2.0"
+version: "0.2.1"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-18"
 created: "2026-09-06"
 ---
 
@@ -91,6 +91,6 @@ adding a second owner.
 ## Related Documents
 
 - [Prompt index](README.md)
-- [Quality standards](../governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [Workflows](../governance/workflows.md)
 - [Environment constraints](../governance/environment-constraints.md)

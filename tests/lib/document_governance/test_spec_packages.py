@@ -1748,8 +1748,8 @@ Narrative after the registered table.
                     spec_packages.load_spec_packages(stage)
 
     ACTIVE_ROUTE_FILES = (
-        ROOT / ".agents/governance/documentation-protocol.md",
-        ROOT / ".agents/governance/quality-standards.md",
+        ROOT / "docs/00.workspace/02.process/documentation-protocol.md",
+        ROOT / "docs/00.workspace/03.quality/quality-standards.md",
         ROOT / ".agents/skills/execution-plan-agent/SKILL.md",
         ROOT / ".claude/skills/execution-plan-agent/SKILL.md",
         ROOT / "README.md",
@@ -6717,7 +6717,7 @@ _PROMOTION_MAP = """
 
 ### Durable Meaning
 
-The contract lives in `.agents/governance/sdlc.md` and
+The contract lives in `docs/00.workspace/02.process/sdlc.md` and
 `docs/99.templates/registry.json`, the glossary and [the Task](tasks/tsk-0001-work.md).
 
 ### Owner and Receipt
@@ -6768,11 +6768,13 @@ class PromotionReadinessTests(unittest.TestCase):
                 "Promotion Map target docs/99.templates/registry.json "
                 "appears in no Promotion Receipt",
             ),
-            self.readiness("Updated `.agents/governance/sdlc.md` in commit abc1234."),
+            self.readiness(
+                "Updated `docs/00.workspace/02.process/sdlc.md` in commit abc1234."
+            ),
         )
         self.assertEqual(
             (
-                "Promotion Map target .agents/governance/sdlc.md "
+                "Promotion Map target docs/00.workspace/02.process/sdlc.md "
                 "appears in no Promotion Receipt",
                 "Promotion Map target docs/99.templates/registry.json "
                 "appears in no Promotion Receipt",
@@ -6782,7 +6784,7 @@ class PromotionReadinessTests(unittest.TestCase):
         # A longer file name does not stand for the target's own name.
         self.assertEqual(
             (
-                "Promotion Map target .agents/governance/sdlc.md "
+                "Promotion Map target docs/00.workspace/02.process/sdlc.md "
                 "appears in no Promotion Receipt",
             ),
             self.readiness("`docs/other-sdlc.md` and `registry.json`"),
@@ -6792,8 +6794,8 @@ class PromotionReadinessTests(unittest.TestCase):
         self,
     ) -> None:
         for receipt in (
-            "`.agents/governance/sdlc.md`, `docs/99.templates/registry.json` (abc1234)",
-            "Updated `.agents/governance/sdlc.md`; `registry.json` abbreviates its path.",
+            "`docs/00.workspace/02.process/sdlc.md`, `docs/99.templates/registry.json` (abc1234)",
+            "Updated `docs/00.workspace/02.process/sdlc.md`; `registry.json` abbreviates its path.",
             "Updated `sdlc.md`. No durable update to `registry.json` is needed: "
             "the change is read-only.",
         ):
@@ -6863,7 +6865,7 @@ Owner @owner.
         spec_packages = _spec_packages_module()
         receipt = (
             "\n## Handoff\n\n### Promotion Receipt\n\n"
-            "`.agents/governance/sdlc.md` and `docs/99.templates/registry.json`\n"
+            "`docs/00.workspace/02.process/sdlc.md` and `docs/99.templates/registry.json`\n"
             "\n### Next Owner\n\n@owner\n"
         )
         plan = dataclasses.replace(

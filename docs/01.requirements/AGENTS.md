@@ -1,10 +1,10 @@
 ---
 title: "Requirements Agent Guide"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Requirements Agent Guide
@@ -33,7 +33,7 @@ scope; they belong to Stage 02, Stage 03 and Stage 05.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -44,11 +44,11 @@ canonical governance or a Stage contract.
 
 - Load order and authority: [bootstrap](../../.agents/governance/bootstrap.md).
 - Authoring, identity, language and retirement rules:
-  [documentation protocol](../../.agents/governance/documentation-protocol.md).
+  [documentation protocol](../00.workspace/02.process/documentation-protocol.md).
 - Stage purposes and type families:
-  [stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md).
+  [stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md).
 - Approval for Stage edits:
-  [approval boundaries](../../.agents/governance/approval-boundaries.md).
+  [approval boundaries](../00.workspace/02.process/approval-boundaries.md).
 - Role: [`doc-writer`](../../.agents/roles/doc-writer.md). Skill:
   [`requirements-to-design-agent`](../../.agents/skills/requirements-to-design-agent/SKILL.md).
 - Edit-time warnings: the
@@ -90,7 +90,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../../.agents/governance/approval-boundaries.md)
+[approval boundaries](../00.workspace/02.process/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions
@@ -101,7 +101,7 @@ has not granted, or when a required check fails.
 ### Secrets and External Effects
 
 This guide adds no secret or external-effect rule;
-[approval boundaries](../../.agents/governance/approval-boundaries.md) owns both.
+[approval boundaries](../00.workspace/02.process/approval-boundaries.md) owns both.
 
 ## Verification
 

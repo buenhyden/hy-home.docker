@@ -1425,7 +1425,7 @@
             "ref": "plan:Promotion Map/Consumer Updates"
           }
         ],
-        "owner": ".agents/governance/sdlc.md",
+        "owner": "docs/00.workspace/02.process/sdlc.md",
         "reverse_lookup": "derived"
       },
       "supersession": {
@@ -1464,7 +1464,7 @@
             "ref": "rel.structural-ownership"
           }
         ],
-        "owner": ".agents/governance/documentation-protocol.md",
+        "owner": "docs/00.workspace/02.process/documentation-protocol.md",
         "reverse_lookup": "derived"
       }
     },
@@ -3258,6 +3258,7 @@
       "frontmatter_policy": "required",
       "path_pattern": "docs/01.requirements/README.md",
       "additional_paths": [
+        "docs/00.workspace/README.md",
         "docs/02.architecture/README.md",
         "docs/02.architecture/decisions/README.md",
         "docs/02.architecture/descriptions/README.md",
@@ -3518,6 +3519,9 @@
         "docs/90.references/README.md": {
           "layer": "references"
         },
+        "docs/00.workspace/README.md": {
+          "layer": "workspace"
+        },
         "docs/98.archive/README.md": {
           "layer": "archive"
         },
@@ -3637,19 +3641,19 @@
       "exceptions": [],
       "additional_paths": [
         ".agents/governance/agentic.md",
-        ".agents/governance/approval-boundaries.md",
-        ".agents/governance/documentation-protocol.md",
+        "docs/00.workspace/02.process/approval-boundaries.md",
+        "docs/00.workspace/02.process/documentation-protocol.md",
         ".agents/governance/environment-constraints.md",
-        ".agents/governance/git-workflow.md",
-        ".agents/governance/github-governance.md",
+        "docs/00.workspace/02.process/git-workflow.md",
+        "docs/00.workspace/02.process/github-governance.md",
         ".agents/governance/output-style.md",
         ".agents/governance/persona.md",
         ".agents/governance/postflight-checklist.md",
         ".agents/governance/provider-capability-matrix.md",
-        ".agents/governance/quality-standards.md",
-        ".agents/governance/stage-authoring-matrix.md",
+        "docs/00.workspace/03.quality/quality-standards.md",
+        "docs/00.workspace/01.project/stage-authoring-matrix.md",
         ".agents/governance/standards.md",
-        ".agents/governance/task-checklists.md"
+        "docs/00.workspace/03.quality/task-checklists.md"
       ],
       "required_frontmatter_by_status": {
         "superseded": [
@@ -4040,7 +4044,7 @@
       "type": "governance/workflow",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": ".agents/governance/sdlc.md",
+      "path_pattern": "docs/00.workspace/02.process/sdlc.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/sdlc",
@@ -4508,9 +4512,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4570,9 +4574,9 @@
         "Holding operational procedures; a Guide or Runbook owns them."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4633,9 +4637,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4700,9 +4704,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4767,9 +4771,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4831,9 +4835,9 @@
         "Being hand-edited; the renderer writes it."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#document-language",
-        ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language",
+        "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4894,9 +4898,9 @@
         "Overriding canonical governance or a Stage contract."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
         ".agents/governance/bootstrap.md#canonical-load-order",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4960,8 +4964,8 @@
         "Being hand-edited; it is a generated projection."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5020,8 +5024,8 @@
         "Being hand-edited; it is a generated projection."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5079,9 +5083,9 @@
         "Holding the hook script."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5148,9 +5152,9 @@
         "Restating the routed owner's rule."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5213,9 +5217,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5280,9 +5284,9 @@
         "Redefining a common term locally."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5350,9 +5354,9 @@
         "Translating provider syntax; adapters do."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5362,7 +5366,7 @@
         "TERM-RULE",
         "TERM-EXCEPTION"
       ],
-      "applicability": "Applies to every file the governance-policy profile owns: .agents/governance/bootstrap.md, .agents/governance/agentic.md, .agents/governance/approval-boundaries.md, .agents/governance/documentation-protocol.md and 11 more registered paths.",
+      "applicability": "Applies to every file the governance-policy profile owns: .agents/governance/bootstrap.md, .agents/governance/agentic.md, docs/00.workspace/02.process/approval-boundaries.md, docs/00.workspace/02.process/documentation-protocol.md and 11 more registered paths.",
       "relationships": [
         "Ranked under Authority and Precedence in bootstrap.md; roles, skills and folder guides route to it."
       ],
@@ -5419,9 +5423,9 @@
         "Overriding the selected role's permission profile."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5486,9 +5490,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5553,9 +5557,9 @@
         "Adding a gate."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5619,9 +5623,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5686,9 +5690,9 @@
         "Holding provider syntax; projections carry it."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5748,15 +5752,15 @@
       "profiles": [
         "governance-sdlc"
       ],
-      "purpose": "English SDLC workflow contract (.agents/governance/sdlc.md).",
+      "purpose": "English SDLC workflow contract (docs/00.workspace/02.process/sdlc.md).",
       "responsibility": "State the inputs, sequence, stop conditions and outputs of the delivery workflow.",
       "non_goals": [
         "Holding a Spec Package's execution state; the Task holds it."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/sdlc.md#sequence",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/sdlc.md#sequence",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5766,7 +5770,7 @@
         "TERM-ACCEPTANCE",
         "TERM-PROMOTION"
       ],
-      "applicability": "Applies to every file the governance-sdlc profile owns: .agents/governance/sdlc.md, .agents/governance/workflows.md.",
+      "applicability": "Applies to every file the governance-sdlc profile owns: docs/00.workspace/02.process/sdlc.md, .agents/governance/workflows.md.",
       "relationships": [
         "Glossary terms for Execution, Verification, Acceptance and Promotion name it as policy owner."
       ],
@@ -5823,9 +5827,9 @@
         "Overriding policy."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5890,9 +5894,9 @@
         "Owning obligations; a Policy owns them."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/documentation-protocol.md#document-language",
-        ".agents/governance/documentation-protocol.md#reference-framework-adoption"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language",
+        "docs/00.workspace/02.process/documentation-protocol.md#reference-framework-adoption"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5958,8 +5962,8 @@
         "Keeping a second current-state value beside frontmatter status."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6025,8 +6029,8 @@
         "Redefining agent governance rules."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6094,8 +6098,8 @@
         "Setting a completion deadline for corrective actions."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6159,9 +6163,9 @@
         "Owning obligations; a Policy owns them."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/documentation-protocol.md#document-language",
-        ".agents/governance/approval-boundaries.md#authorization-source-and-records"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language",
+        "docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6227,9 +6231,9 @@
         "Holding the package index; the audit-pack README does."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6286,9 +6290,9 @@
         "Setting current policy."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6348,9 +6352,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
-        ".agents/governance/documentation-protocol.md#readme-navigation",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6411,9 +6415,9 @@
         "Setting current policy."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6469,9 +6473,9 @@
         "Setting current policy."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6535,9 +6539,9 @@
         "Holding the package index."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6598,9 +6602,9 @@
         "Setting current policy."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/documentation-protocol.md#document-language"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6664,8 +6668,8 @@
         "Inferring approval from status alone."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6729,8 +6733,8 @@
         "Holding historical structure as authority."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6792,8 +6796,8 @@
         "Holding the Spec's behavior contract or acceptance criteria."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6853,8 +6857,8 @@
         "Holding prose, frontmatter or status; the Spec carries them."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6914,8 +6918,8 @@
         "Holding prose, frontmatter or status; the Spec carries them."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6977,8 +6981,8 @@
         "Creating a second lifecycle or approval record."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7043,8 +7047,8 @@
         "Holding prose, frontmatter or status; the Spec carries them."
       ],
       "policy_refs": [
-        ".agents/governance/stage-authoring-matrix.md#document-type-families",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7106,8 +7110,8 @@
         "Describing design; Architecture does."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7170,8 +7174,8 @@
         "Recording approval, review or execution; those are separate facts in the Task."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/sdlc.md#sequence"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7238,9 +7242,9 @@
         "Copying the Plan's strategy."
       ],
       "policy_refs": [
-        ".agents/governance/documentation-protocol.md#role-specific-authoring",
-        ".agents/governance/sdlc.md#sequence",
-        ".agents/governance/approval-boundaries.md#authorization-source-and-records"
+        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/02.process/sdlc.md#sequence",
+        "docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",

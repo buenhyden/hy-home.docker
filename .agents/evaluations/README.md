@@ -1,10 +1,10 @@
 ---
 title: "Agent Evaluation Evidence"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-09-03"
 ---
 
@@ -125,7 +125,7 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 ### Related Documentation
 
 - [Agent execution and evaluation policy](../governance/agentic.md)
-- [Quality policy](../governance/quality-standards.md)
+- [Quality policy](../../docs/00.workspace/03.quality/quality-standards.md)
 - [Canonical Skill ownership](../README.md#inputs-and-outputs)
 - [Handoff input/output contract](../prompts/handoff.md)
 - [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)

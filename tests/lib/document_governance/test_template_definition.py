@@ -377,7 +377,9 @@ class TemplateDefinitionTests(unittest.TestCase):
     def test_dangling_authored_references_are_reported(self) -> None:
         definition = copy.deepcopy(self.definitions["sdlc/task"])
         definition["consumer_paths"] = ["scripts/does-not-exist.py"]
-        definition["policy_refs"] = [".agents/governance/sdlc.md#no-such-anchor"]
+        definition["policy_refs"] = [
+            "docs/00.workspace/02.process/sdlc.md#no-such-anchor"
+        ]
         definition["vocabulary_refs"] = ["TERM-NOT-A-TERM"]
         definition["validation"]["positive"] = [
             "tests.lib.document_governance.test_registry:NoSuchTests"

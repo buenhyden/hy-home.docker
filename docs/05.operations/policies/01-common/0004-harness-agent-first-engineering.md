@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -101,7 +101,7 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 
 자동 답변 점수 QA와 완료 사건의 전용 증명은 현재 delivery gate가 아니다.
 현재 문서·Docker 계약과 이를 지원하는 회귀의 허용 범위, 폐기 순서, 단계별 실행은
-[quality policy](../../../../.agents/governance/quality-standards.md)가 소유한다.
+[quality policy](../../../00.workspace/03.quality/quality-standards.md)가 소유한다.
 정적 source나 수동 비교를 native 호출·복구 성공으로 기록하지 않는다.
 Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 미실행은 성공이 아니다.
 

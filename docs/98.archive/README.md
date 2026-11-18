@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "3.1.0"
+version: "3.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "archive"
 ---
 
@@ -24,7 +24,7 @@ Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합�
 폐기된 번호는 [Stage 99 Registry](../99.templates/registry.json)의
 `identity_spaces.*.reserved_history`가 보관해 다시 쓰이지 않게 합니다.
 
-처분 정책은 [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)이
+처분 정책은 [문서 보존 및 은퇴 정책](../00.workspace/02.process/documentation-protocol.md)이
 소유합니다. 이 README는 탐색과 체계 설명만 맡습니다.
 
 #### Audience
@@ -87,7 +87,7 @@ Stage 98은 현재 보존 기록을 담지 않으며 활성 문서가 아닙니�
 
 #### Policy and Templates
 
-- [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
+- [문서 보존 및 은퇴 정책](../00.workspace/02.process/documentation-protocol.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 

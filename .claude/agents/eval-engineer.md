@@ -56,7 +56,7 @@ Stop after the task retry limit, narrow the fixture or mark uncertainty, and esc
 
 ## Related Documents
 
-- [Quality standards](../../.agents/governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [Workspace audit revalidation](../../.agents/skills/workspace-audit-revalidation/SKILL.md)
 - [Agent catalog contract](../../.agents/governance/providers/registry.yaml)
 - [Subagent protocol](../../.agents/governance/agentic.md)

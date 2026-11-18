@@ -1,10 +1,10 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-03-05"
 ---
 
@@ -150,5 +150,5 @@ subagent 인계 파일이 그 예입니다.
 - [Staging tree contract](./repo-support/README.md)
 - [Subagent protocol](../.agents/governance/agentic.md)
 - [Environment constraints](../.agents/governance/environment-constraints.md)
-- [Task checklists](../.agents/governance/task-checklists.md)
+- [Task checklists](../docs/00.workspace/03.quality/task-checklists.md)
 - [Repository README](../README.md)

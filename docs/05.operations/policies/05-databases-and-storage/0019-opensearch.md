@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "2.2.0"
+version: "2.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -118,7 +118,7 @@ next_review_at: "2027-05-13"
 - `test -f labs/opensearch-cluster/docker-compose.yml`
 - `docker compose --profile opensearch config --quiet`
 - `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+- 원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
 custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 실제 빌드 호환성 및 LAB 인증서 검증은 아직 확인되지 않았으며 (미검증), runtime admission blocker로 남는다.
 

@@ -17,7 +17,7 @@ This rule defines the mandatory git workflow for all contributors and agents.
 
 #### Authority
 
-This policy is the canonical owner of local Git authoring, branch integration, commits, review, and remote delivery boundaries under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+This policy is the canonical owner of local Git authoring, branch integration, commits, review, and remote delivery boundaries under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
 ### Applies To
 
@@ -79,16 +79,16 @@ None: this document states no exclusion.
 | GIT-WORKFLOW-R44 | Remote PR QA | Required: exclude the link leaf | none | none |
 | GIT-WORKFLOW-R45 | Remote PR QA | Required: keep the metadata, relationship, lifecycle and applicable operations catalog checks | none | none |
 | GIT-WORKFLOW-R46 | Governance work | Required: ensure linked stage docs remain accurate | none | none |
-| GIT-WORKFLOW-R47 | Before declaring a PR done | Required: apply the Completion Gate from `.agents/governance/github-governance.md` | none | none |
+| GIT-WORKFLOW-R47 | Before declaring a PR done | Required: apply the Completion Gate from `docs/00.workspace/02.process/github-governance.md` | none | none |
 | GIT-WORKFLOW-R48 | Work is incomplete | Required: mark the PR Draft/WIP | none | none |
 | GIT-WORKFLOW-R49 | The PR is not ready | Forbidden: requesting final review | none | none |
-| GIT-WORKFLOW-R50 | Merge readiness and branch lifecycle | Required: follow `.agents/governance/github-governance.md` section 3 | none | none |
+| GIT-WORKFLOW-R50 | Merge readiness and branch lifecycle | Required: follow `docs/00.workspace/02.process/github-governance.md` section 3 | none | none |
 | GIT-WORKFLOW-R51 | A pull request | Required: carry the work of one Spec Package | none | none |
 | GIT-WORKFLOW-R52 | A pull request | Allowed: hold several of that Spec's Tasks as separate logical commits | none | none |
 | GIT-WORKFLOW-R53 | A pull request | Forbidden: mixing Specs | none | none |
 | GIT-WORKFLOW-R54 | Always | Required: keep commits atomic and reviewable | none | none |
 | GIT-WORKFLOW-R55 | A cleanup proposal | Required: document it in the PR | none | none |
-| GIT-WORKFLOW-R56 | A cleanup proposal | Required: satisfy the recovery-commit and history-rewrite rules of `.agents/governance/github-governance.md` section 3 | none | none |
+| GIT-WORKFLOW-R56 | A cleanup proposal | Required: satisfy the recovery-commit and history-rewrite rules of `docs/00.workspace/02.process/github-governance.md` section 3 | none | none |
 | GIT-WORKFLOW-R57 | Requesting review | Required: request it only after self-review and programmatic checks pass | none | none |
 | GIT-WORKFLOW-R58 | Requesting review | Required: summarize scope, risk and how to verify | none | none |
 | GIT-WORKFLOW-R59 | Review feedback before re-requesting review | Required: resolve or reply to each finding, re-run affected checks and record what changed | none | none |
@@ -103,7 +103,7 @@ None: this document states no exclusion.
 | GIT-WORKFLOW-R68 | A development push | Forbidden: generating or publishing a changelog | none | none |
 | GIT-WORKFLOW-R69 | A future release tag | Required: `v` plus strict SemVer (`.cz.toml` `tag_format`) | none | none |
 | GIT-WORKFLOW-R70 | Always | Forbidden: pushing a tag independently | none | none |
-| GIT-WORKFLOW-R71 | Releasing | Required: the release producer is the one defined in `.agents/governance/github-governance.md` section 8 | none | none |
+| GIT-WORKFLOW-R71 | Releasing | Required: the release producer is the one defined in `docs/00.workspace/02.process/github-governance.md` section 8 | none | none |
 | GIT-WORKFLOW-R72 | An existing non-SemVer historical ref | Required: keep it as evidence | none | none |
 | GIT-WORKFLOW-R73 | Deleting or rewriting an existing non-SemVer historical ref | Required: the owner's approval for that ref | manual | none |
 | GIT-WORKFLOW-R74 | A specific release publication | Required: its exact version, commit, approved target and recovery path | none | none |
@@ -192,14 +192,14 @@ automatic enforcement from configuration alone.
    corpus. Remote PR QA excludes the link leaf; metadata, relationship,
    lifecycle and applicable operations catalog checks remain.
 4. For governance work, ensure linked stage docs remain accurate.
-5. Apply the Completion Gate from `.agents/governance/github-governance.md` before declaring the PR done.
-6. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `.agents/governance/github-governance.md` section 3.
+5. Apply the Completion Gate from `docs/00.workspace/02.process/github-governance.md` before declaring the PR done.
+6. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `docs/00.workspace/02.process/github-governance.md` section 3.
 7. A pull request carries the work of one Spec Package. It may hold several
    of that Spec's Tasks as separate logical commits, and it never mixes
    Specs.
 8. Keep commits atomic and reviewable. Document any cleanup proposal in the PR;
    the recovery-commit and history-rewrite rules it must satisfy are owned by
-   `.agents/governance/github-governance.md` section 3.
+   `docs/00.workspace/02.process/github-governance.md` section 3.
 9. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
 10. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 
@@ -219,12 +219,12 @@ automatic enforcement from configuration alone.
   Changelog form. No development push generates or publishes a changelog.
 - Future release tags are `v` plus strict SemVer (`.cz.toml` `tag_format`). Do
   not push a tag independently; the release producer is defined in
-  `.agents/governance/github-governance.md` section 8. Existing non-SemVer
+  `docs/00.workspace/02.process/github-governance.md` section 8. Existing non-SemVer
   historical refs remain evidence; deleting or rewriting one needs the owner's
   approval for that ref.
 - A specific release publication still requires its exact version, commit,
   approved target and recovery path. Select `RUN-0009` through the
-  [platform and backup runbook index](../../docs/05.operations/runbooks/10-platform-and-backup/README.md).
+  [platform and backup runbook index](../../05.operations/runbooks/10-platform-and-backup/README.md).
 
 #### 5. Agent Completion Commit Discipline
 
@@ -258,7 +258,7 @@ None: no exception exists to approve.
 #### 6. Enforcement
 
 Changes that bypass checks or violate secret safety must not be merged.
-GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `.agents/governance/github-governance.md`.
+GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `docs/00.workspace/02.process/github-governance.md`.
 
 #### 7. Git action stages
 
@@ -319,7 +319,7 @@ Only the commit grammar rows and the merge-subject exemption name a check, and d
 
 Changes land in place with Task evidence; related documents:
 
-- [Quality standards](quality-standards.md)
-- [Operations runbook index](../../docs/05.operations/runbooks/README.md)
+- [Quality standards](../03.quality/quality-standards.md)
+- [Operations runbook index](../../05.operations/runbooks/README.md)
 - [GitHub governance](github-governance.md)
-- [Bootstrap policy](bootstrap.md)
+- [Bootstrap policy](../../../.agents/governance/bootstrap.md)

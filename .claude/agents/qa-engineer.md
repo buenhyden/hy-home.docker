@@ -58,7 +58,7 @@ Stop when failures are nondeterministic, environment-only, or outside approved s
 
 ## Related Documents
 
-- [Quality standards](../../.agents/governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [E2E testing](../../.agents/skills/e2e-testing/SKILL.md)
 - [Style validation](../../.agents/skills/style-validation/SKILL.md)
 - [Test authoring](../../.agents/skills/test-authoring/SKILL.md)

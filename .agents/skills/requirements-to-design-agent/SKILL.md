@@ -3,11 +3,11 @@ name: "requirements-to-design-agent"
 description: "Use when approved requirements need traceable architecture inputs, coverage analysis, alternatives, and explicit unresolved decision gaps."
 metadata:
   title: "requirements-to-design-agent"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "requirements-to-design-agent"
   scope: "architecture"
   owner_agent: "rules-engineer"
@@ -62,7 +62,7 @@ Owning role, policies and related documents:
 
 - [Rules engineer](../../roles/rules-engineer.md)
 - [ADR writing](../adr-writing/SKILL.md)
-- [Architecture scope](../../governance/stage-authoring-matrix.md)
+- [Architecture scope](../../../docs/00.workspace/01.project/stage-authoring-matrix.md)
 
 ## Verification
 

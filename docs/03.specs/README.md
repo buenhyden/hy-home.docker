@@ -1,10 +1,10 @@
 ---
 title: "명세 패키지"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "specs"
 ---
 
@@ -76,7 +76,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0263 | [LAB 이전 계약](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
-package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
+package가 removal review 준비 상태인지는 [SDLC](../00.workspace/02.process/sdlc.md#sequence)
 규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle
 상태도, 처분 승인도 아닙니다.
 
@@ -106,9 +106,9 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
 #### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
-- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
+- [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
 - [Document Registry](../99.templates/registry.json)
-- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
@@ -126,7 +126,7 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
    승인되면, 현재 문서가 여전히 기대는 의미를 01·02 owner에 요약한 뒤 package를
    삭제하고 Spec 번호를
    `reserved_history`에 추가합니다. clarify, analyze, 구현, 검증 순서는
-   [SDLC](../../.agents/governance/sdlc.md)를 따릅니다.
+   [SDLC](../00.workspace/02.process/sdlc.md)를 따릅니다.
 
 #### Package 수명주기
 
@@ -155,5 +155,5 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
 - lifecycle generation migration proof는 마지막 generation 6 revision에서 읽으므로,
   proof를 지녔던 package도 같은 조건으로 삭제합니다.
   철회와 완료의 처분 기록은
-  [문서 보존 정책](../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)을
+  [문서 보존 정책](../00.workspace/02.process/documentation-protocol.md#document-retention-and-retirement)을
   따릅니다.

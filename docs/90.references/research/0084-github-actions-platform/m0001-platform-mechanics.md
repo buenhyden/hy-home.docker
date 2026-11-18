@@ -1,10 +1,10 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "0.3.0"
+version: "0.3.1"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0084-m0001"
 parent_ids:
@@ -53,7 +53,7 @@ about against documented platform rules rather than against local habit.
 
 `.github/workflows/` and `.github/workflow-contract.yml` remain the tracked
 implementation and its typed registry. The current policy is
-[GitHub governance](../../../../.agents/governance/github-governance.md).
+[GitHub governance](../../../00.workspace/02.process/github-governance.md).
 This Stage 90 document is a platform reference and changes no rule, workflow,
 or contract.
 
@@ -162,7 +162,7 @@ or contract.
 - [CI workflow](../../../../.github/workflows/ci-quality.yml)
 - [Main protection record](../../../../.github/rulesets/main-protection.md)
 - Completed SPEC-0172 outcome (retired; Git history)
-- [GitHub governance](../../../../.agents/governance/github-governance.md)
+- [GitHub governance](../../../00.workspace/02.process/github-governance.md)
 
 ### Versions and Dates
 
@@ -577,7 +577,7 @@ for the two `public-validation-*` hooks to `3989da584` on 2026-09-03.
 These are dated workflow observations.
 
 The tracked [quality workflow](../../../../.github/workflows/ci-quality.yml)
-and [execution policy](../../../../.agents/governance/quality-standards.md#4-execution-boundary)
+and [execution policy](../../../00.workspace/03.quality/quality-standards.md#4-execution-boundary)
 separate commit checks, PR candidates and main-push security. The actionlint
 hook is scoped to workflow YAML in `.pre-commit-config.yaml`. The style
 controller's `local-staged` mode examines the staged index. Its `pr-merge`

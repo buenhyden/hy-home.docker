@@ -1,10 +1,10 @@
 ---
 title: "Prefer --force-with-lease over --force."
-version: "1.0.5"
+version: "1.0.6"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 action: "warn"
 enabled: true
 event: "bash"
@@ -22,7 +22,7 @@ Apply the declared `warn` action for warn-force-push.
 
 ### Authority
 
-Owning policy: [GitHub governance](../github-governance.md).
+Owning policy: [GitHub governance](../../../docs/00.workspace/02.process/github-governance.md).
 
 ## Scope
 
@@ -40,7 +40,7 @@ None.
 
 **Force push detected (project rule)**
 
-`.agents/governance/github-governance.md` — Repository Protection Contract:
+`docs/00.workspace/02.process/github-governance.md` — Repository Protection Contract:
 
 > "no direct pushes, no force pushes, no bypass of required checks"
 

@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-01-12"
 ---
 
@@ -101,7 +101,7 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
 
 1. **PromQL Optimization**: Pushgateway에서 메트릭을 쿼리할 때는 서로 다른 배치 실행을 구분할 수 있도록 항상 `job` 레이블을 포함합니다.
 2. **Maintenance**: 갱신되지 않은 오래된 메트릭이 있는지 주기적으로 확인합니다.

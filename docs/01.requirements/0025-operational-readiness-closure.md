@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -173,7 +173,7 @@ document governs it.
 #### Verification Method
 
 Select registered checks that exercise the condition and follow the execution
-scope in [Quality Standards](../../.agents/governance/quality-standards.md#4-execution-boundary).
+scope in [Quality Standards](../00.workspace/03.quality/quality-standards.md#4-execution-boundary).
 Run the full profile when the applicable verification scope calls for it.
 [SPEC-0212](../03.specs/0212-request-baseline-and-reconciliation/spec.md#acceptance-criteria)
 criterion 114 covers the mapping of requirements to acceptance conditions.

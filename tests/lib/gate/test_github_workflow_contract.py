@@ -1129,7 +1129,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(9, len(contract.actions))
         self.assertEqual(1, contract.execution_evidence.schema_version)
         self.assertEqual(
-            ".agents/governance/quality-standards.md#7-local-qaci-orchestration",
+            "docs/00.workspace/03.quality/quality-standards.md#7-local-qaci-orchestration",
             contract.execution_evidence.owner,
         )
         self.assertEqual("ci-gate-evidence", contract.execution_evidence.directory_name)
@@ -2067,6 +2067,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             shutil.copytree(ROOT / ".github", root / ".github")
             shutil.copytree(ROOT / "scripts", root / "scripts")
             shutil.copytree(ROOT / ".agents/governance", root / ".agents/governance")
+            shutil.copytree(ROOT / "docs/00.workspace", root / "docs/00.workspace")
             # Registry validation checks all admitted cwd values, including
             # the P05 Node leaves; this fixture does not execute npm there.
             (

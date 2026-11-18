@@ -1,10 +1,10 @@
 ---
 title: "Agent Knowledge"
-version: "0.5.0"
+version: "0.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-09-06"
 ---
 
@@ -86,7 +86,7 @@ member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repositor
 #### Policy and Templates
 
 - [Agent governance index](../README.md)
-- [Documentation protocol](../governance/documentation-protocol.md)
+- [Documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)
 - README 템플릿 `docs/99.templates/templates/governance/knowledge-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
 ### Checks
@@ -117,8 +117,8 @@ member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repositor
 | Retrieve | bootstrap order 또는 role의 관련 문서에서 진입함 | 모든 role |
 | Re-review | refresh trigger가 발동하거나 선언된 review cycle이 경과함 | `doc-writer` |
 | Expire | route된 owner가 더 이상 존재하지 않거나 claim이 더 이상 유효하지 않음 | `doc-writer` |
-| Archive | member가 `living` lifecycle을 통해 대체되거나 폐기됨 | [documentation protocol](../governance/documentation-protocol.md) |
-| Delete | age나 count로는 결코 삭제되지 않으며, 등록된 retirement route를 통해서만 삭제됨 | [documentation protocol](../governance/documentation-protocol.md) |
+| Archive | member가 `living` lifecycle을 통해 대체되거나 폐기됨 | [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md) |
+| Delete | age나 count로는 결코 삭제되지 않으며, 등록된 retirement route를 통해서만 삭제됨 | [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md) |
 
 age와 file count는 retention 기준이 아닙니다. member는 routing이 올바른 동안
 유지되며 여전히 유효한 의미가 canonical owner로 이동했을 때 폐기됩니다.

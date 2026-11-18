@@ -1,10 +1,10 @@
 ---
 title: "Template Catalog"
-version: "3.1.0"
+version: "3.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "templates"
 ---
 
@@ -73,7 +73,7 @@ layer: "templates"
 #### Policy and Templates
 
 - [Registry](../registry.json)
-- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
+- [Documentation protocol](../../00.workspace/02.process/documentation-protocol.md)
 - 이 README의 양식 원본은 `common/readme-stage.template.md`이며 형식은 [Stage 99 Registry](../registry.json)의 profile이 소유합니다
 
 ### Checks
@@ -91,7 +91,7 @@ layer: "templates"
 4. 선언된 `type`을 유지하고 profile이 식별자를 선언하면 저장된 high-water
    mark보다 큰 번호를 할당합니다.
 5. 적용할 검사는 공통 agent governance의
-   [verification matrix](../../../.agents/governance/quality-standards.md#5-change-type-verification-matrix)로
+   [verification matrix](../../00.workspace/03.quality/quality-standards.md#5-change-type-verification-matrix)로
    고릅니다. 실행 전에 `--explain`으로 선택된 gate를 확인하고, 안전하지
    않거나 쓸 수 없는 leaf는 정확한 이유와 함께 DEFER로 기록합니다. full
    또는 all-files 실행도 Task 범위와 controlled-wrapper 승인 경계를

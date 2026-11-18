@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: direct push to main"
-version: "1.2.3"
+version: "1.2.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 action: "block"
 enabled: true
 event: "bash"
@@ -22,7 +22,7 @@ Apply the declared `block` action for block-direct-main-push.
 
 ### Authority
 
-`.agents/governance/github-governance.md` — Repository Protection Contract:
+`docs/00.workspace/02.process/github-governance.md` — Repository Protection Contract:
 
 > "Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks."
 

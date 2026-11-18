@@ -17,7 +17,7 @@ Universal quality gate for agent-driven changes in this repository.
 
 #### Authority
 
-This policy is the canonical owner of change-specific verification, security, reliability, and quality routing under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+This policy is the canonical owner of change-specific verification, security, reliability, and quality routing under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
 ### Applies To
 
@@ -324,7 +324,7 @@ never a vulnerability fix or a branch protection bypass. Never use a skipped
 audit, lower threshold, continue-on-error, blanket package exception or
 omitted development audit.
 
-Remote PR candidate validation and review by [risk](workflows.md#review-risk) own candidate acceptance, while
+Remote PR candidate validation and review by [risk](../../../.agents/governance/workflows.md#review-risk) own candidate acceptance, while
 main-push security remains a post-merge observation.
 
 #### 3. Reliability Baseline
@@ -369,7 +369,7 @@ main-push security remains a post-merge observation.
   current owner; remove callers and registration; remove exclusive helpers,
   fixtures and tests; preserve useful actual results in existing Task/history.
 - Stage 98 holds no records, as the
-  [documentation protocol](documentation-protocol.md#document-retention-and-retirement)
+  [documentation protocol](../02.process/documentation-protocol.md#document-retention-and-retirement)
   defines. Its only Stage 98-specific check is corpus lifecycle occupancy,
   which fails on any tracked file there other than the README; the README is
   checked like any other README. No archive integrity, retention, recovery,
@@ -396,7 +396,7 @@ main-push security remains a post-merge observation.
   Never make the check pass by editing only its test expectation or by only
   relaxing the rule, and never adopt an unapproved test constant as policy.
   Changing the canonical rule itself needs its owner's approval under
-  [approval boundaries](approval-boundaries.md#authorization-source-and-records).
+  [approval boundaries](../02.process/approval-boundaries.md#authorization-source-and-records).
 
 #### 4. Execution Boundary
 
@@ -515,7 +515,7 @@ main-push security remains a post-merge observation.
 The canonical delivery phase matrix above implements the policy meanings of
 `QA-STAGES-1` 1.0.0. The twelve Git-stage cells (four actions, each before,
 during and after) are bound in
-[git-workflow section 7](git-workflow.md#7-git-action-stages), each as Run,
+[git-workflow section 7](../02.process/git-workflow.md#7-git-action-stages), each as Run,
 Observe, Reuse or Not applicable. A Git
 event (commit, push, pull request or merge, each before, during or after), the
 SDLC stage and the document stage are separate axes; a check
@@ -548,17 +548,17 @@ protection settings require approved mutation and authenticated read-back.
 - Follow the sole load order in `.agents/governance/bootstrap.md#canonical-load-order`.
 - Follow repeatable orchestration in `.agents/governance/workflows.md`.
 - Apply the document language priority in
-  `.agents/governance/documentation-protocol.md#document-language` and the
+  `docs/00.workspace/02.process/documentation-protocol.md#document-language` and the
   README navigation rule in
-  `.agents/governance/documentation-protocol.md#readme-navigation`.
-- Resolve write permission through `.agents/governance/approval-boundaries.md`.
+  `docs/00.workspace/02.process/documentation-protocol.md#readme-navigation`.
+- Resolve write permission through `docs/00.workspace/02.process/approval-boundaries.md`.
 
 #### 9. Completion Routing
 
-Use only `.agents/governance/task-checklists.md#before-completion`. Its conditional
+Use only `docs/00.workspace/03.quality/task-checklists.md#before-completion`. Its conditional
 harness, evidence, documentation, and controlled-gate clauses determine which
 quality checks apply. PR-specific completion remains owned by the Completion
-Gate in `.agents/governance/github-governance.md`.
+Gate in `docs/00.workspace/02.process/github-governance.md`.
 
 #### 6. Generated-Artifact Freshness
 
@@ -635,7 +635,7 @@ Unknown changed inputs still expand fail-closed within their actual context.
 Do not follow successful selected verification with an unconditional full run.
 
 Final review and evidence-update reuse follow
-[Workflows](workflows.md#review-scope-and-evidence-updates), including affected
+[Workflows](../../../.agents/governance/workflows.md#review-scope-and-evidence-updates), including affected
 slice revalidation and mandatory protected-surface expertise. An evidence-only
 Task update does not create another independent source-review gate.
 
@@ -712,7 +712,7 @@ and no separate formatting tool is added.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../02.process/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -768,12 +768,12 @@ Seven rules name a check that rejects or fails a violation and one rule rests on
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../02.process/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
-- `.agents/governance/github-governance.md`
+- `docs/00.workspace/02.process/github-governance.md`
 - `.agents/governance/agentic.md`
-- `.agents/governance/git-workflow.md`
+- `docs/00.workspace/02.process/git-workflow.md`

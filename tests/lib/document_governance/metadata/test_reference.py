@@ -38,7 +38,7 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
             init_git(root)
             paths = (
                 pathlib.Path(".agents/governance/bootstrap.md"),
-                pathlib.Path(".agents/governance/quality-standards.md"),
+                pathlib.Path("docs/00.workspace/03.quality/quality-standards.md"),
             )
             for relative in paths:
                 target = root / relative

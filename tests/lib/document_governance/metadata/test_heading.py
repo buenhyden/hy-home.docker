@@ -1335,7 +1335,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         self.assertNotIn("effective-body-placeholder", {item.code for item in findings})
 
     def test_active_policy_rejects_unresolved_prose(self) -> None:
-        path = pathlib.Path(".agents/governance/documentation-protocol.md")
+        path = pathlib.Path("docs/00.workspace/02.process/documentation-protocol.md")
         text = (ROOT / path).read_text(encoding="utf-8")
         record = metadata.Record(
             path,
@@ -1349,7 +1349,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         self.assertIn("effective-body-placeholder", {item.code for item in findings})
 
     def test_current_non_sdlc_authored_document_rejects_residue(self) -> None:
-        path = pathlib.Path(".agents/governance/documentation-protocol.md")
+        path = pathlib.Path("docs/00.workspace/02.process/documentation-protocol.md")
         text = (ROOT / path).read_text(encoding="utf-8")
         record = metadata.Record(
             path,

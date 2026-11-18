@@ -1,10 +1,10 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.5.0"
+version: "1.5.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0019"
 parent_ids:
@@ -742,7 +742,7 @@ questions unassessed. Those limitations are part of the result.
 > reason — a PDF fetch succeeding is not the same evidence class as reading its
 > normative clauses.
 
-> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `scripts/validation/check-repo-contracts.sh` and `docs/90.references/data/security/security-automation-readiness.md` are absent; `docs/99.templates/registry.json` now defines 44 profiles and 38 template roles; 5 workflows (old: 7). The dated values above are preserved as observed.
+> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `docs/00.workspace/02.process/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `scripts/validation/check-repo-contracts.sh` and `docs/90.references/data/security/security-automation-readiness.md` are absent; `docs/99.templates/registry.json` now defines 44 profiles and 38 template roles; 5 workflows (old: 7). The dated values above are preserved as observed.
 
 ### Alternatives
 

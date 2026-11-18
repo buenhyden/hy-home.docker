@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2025-11-12"
 ---
 
@@ -111,7 +111,7 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`, `grafana_admin_pas
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
 
 1. LGTM 스택 가이드(`docs/05.operations/guides/07-observability/0042-lgtm-stack.md`)를 따릅니다.
 2. 데이터 파이핑은 Alloy 수집기 가이드(`docs/05.operations/guides/07-observability/0040-alloy.md`)를 참고합니다.

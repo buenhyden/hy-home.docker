@@ -1,10 +1,10 @@
 ---
 title: "Workflows"
-version: "1.5.0"
+version: "1.5.1"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-18"
 ---
 
 # Workflows
@@ -35,7 +35,7 @@ Every repository change follows one lifecycle:
    routine human approval. Required approval and read-only `rules-engineer`
    policy review are resolved before a protected mutation begins. The
    authorization source is owned by
-   [approval boundaries](approval-boundaries.md#authorization-source-and-records);
+   [approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records);
    Task records describe evidence and never authenticate it.
 4. **Implement** — the assigned contributor changes only approved scope.
 5. **Validate** — `qa-engineer` runs focused checks and any applicable
@@ -65,7 +65,7 @@ cannot broaden it.
 ### Review Risk
 
 A change is high-risk when it touches a
-[protected surface](approval-boundaries.md#enforcement), changes a policy, role, skill,
+[protected surface](../../docs/00.workspace/02.process/approval-boundaries.md#enforcement), changes a policy, role, skill,
 shared contract or Registry rule, changes validator, gate or hook behavior,
 or performs a security, secret, remote, runtime or data action. Every other
 change is low-risk: an ordinary document or README edit, a Task evidence or
@@ -115,7 +115,7 @@ current operation.
 
 ### SDLC Workflow
 
-The [SDLC sequence](sdlc.md#sequence) owns the stage order. `sdlc.md` owns stage boundaries, the Stage 99 registry owns document shapes
+The [SDLC sequence](../../docs/00.workspace/02.process/sdlc.md#sequence) owns the stage order. `sdlc.md` owns stage boundaries, the Stage 99 registry owns document shapes
 and lifecycle values, and `scripts/` owns executable validation.
 
 ### Supporting Workflows
@@ -127,7 +127,7 @@ and lifecycle values, and `scripts/` owns executable validation.
 - Incident: response record -> corrective Task routed to its canonical stage.
 - Governance: source change -> validation -> regeneration -> independent review.
 
-The [execution boundary](quality-standards.md#4-execution-boundary) owns the
+The [execution boundary](../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary) owns the
 only approved all-files pre-commit route and its clean linked-worktree,
 Task, prefix, and Git-visible-state conditions. Workflows does not create a
 second local invocation path.
@@ -148,7 +148,7 @@ Task-owned commands, results, review disposition, sanitized evidence, and the ne
 
 ## Related Documents
 
-- [SDLC](sdlc.md)
+- [SDLC](../../docs/00.workspace/02.process/sdlc.md)
 - [Agentic policy](agentic.md)
-- [Stage authoring matrix](stage-authoring-matrix.md)
+- [Stage authoring matrix](../../docs/00.workspace/01.project/stage-authoring-matrix.md)
 - [Provider capability matrix](provider-capability-matrix.md)

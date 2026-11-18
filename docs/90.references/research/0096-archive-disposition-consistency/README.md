@@ -1,10 +1,10 @@
 ---
 title: "Archive Disposition Consistency Assessment"
-version: "0.4.0"
+version: "0.4.1"
 type: "reference/research-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0096"
 created: "2026-09-15"
@@ -32,7 +32,7 @@ finding, SPEC-0177/SPEC-0178 route는 주제 연구나 infrastructure 연구에
 
 #### Scope
 
-- 범위 안: `.agents/governance/documentation-protocol.md`(문서 보존 및
+- 범위 안: `docs/00.workspace/02.process/documentation-protocol.md`(문서 보존 및
   은퇴), `docs/98.archive/README.md`, `docs/99.templates/registry.json`와
   그 schema, `REQ-0026`, `AD-0030`, `ADR-0033`, `ADR-0035`, SPEC-0177
   package, 이를 강제하는 `scripts/lib/document_governance/`와
@@ -86,7 +86,7 @@ finding, SPEC-0177/SPEC-0178 route는 주제 연구나 infrastructure 연구에
 
 #### Related Documents
 
-- [문서 보존 정책](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
+- [문서 보존 정책](../../../00.workspace/02.process/documentation-protocol.md#document-retention-and-retirement)
 - [REQ-0026 문서 보존 및 은퇴](../../../01.requirements/0026-document-retention-and-retirement.md)
 - ADR-0035 Stage 98 Retention Classes and Route Dispositions (superseded)
 - ADR-0036 보존 기록 탐색 (은퇴; Git 이력)
@@ -166,7 +166,7 @@ identifier가 아닙니다.
 | A20 Templates and identity | identity 하나당 machine contract 하나 | Tombstone은 `tomb-<은퇴한 identity>`를 쓰는 반면 그 파일명은 별도 `tombstone` 발급을 사용(정책 Authoring Rule 8); 그 발급의 high water(234)는 추적된 Tombstone 140개와 조정되지 않음 | 규칙은 일관됨; 개수는 미검증 | source read | 기록 |
 | A21 Gates | switch로 gate된 규칙이 비활성임을 증명 | W3, W4, W6의 test가 `transition`에서 비활성임을 단정; 위 corpus check는 위반을 보고하지 않음 | 일관됨 | reproduced | 유지 |
 | A22 Publishing and context | archive 본문은 현재로 재게시되지 않음 | 추적되는 문서 site 설정이 없음; `llms.txt`는 어떤 archive 경로도 명명하지 않음 | 해당 없음 | reproduced | 유지 |
-| A23 Security and public routes | archive route 기록은 HTTP routing이 아님 | 추적되는 public site나 redirect 설정이 없음; secret 처리는 `.agents/governance/approval-boundaries.md`를 따름 | 해당 없음 | source read | 유지 |
+| A23 Security and public routes | archive route 기록은 HTTP routing이 아님 | 추적되는 public site나 redirect 설정이 없음; secret 처리는 `docs/00.workspace/02.process/approval-boundaries.md`를 따름 | 해당 없음 | source read | 유지 |
 | A24 Stale facts and counts | 현재 텍스트가 현재 tree와 일치 | SPEC-0177 Task의 날짜가 있는 개수는 날짜가 있는 관찰임; index와 정책의 transition 표는 구현된 코드를 없는 것으로 설명(A05, A12); Task의 Commit Ledger는 W2 승인 이전에서 끝남 | 오래된 현재 설명 | reproduced | 이 평가를 기록하는 변경에서 수정됨 |
 | A25 Integration | 기존 작업을 재사용하지 중복하지 않음 | SPEC-0177 W5, W7, W8은 남아 있음; `ADR-0035`는 `proposed`; 이 평가가 드러낸 정책 변경은 SPEC-0177을 넓히는 대신 별도 draft package로 제안됨 | 일관됨 | source read | SPEC-0177은 W4b로 수정됨; SPEC-0178 작성됨 |
 

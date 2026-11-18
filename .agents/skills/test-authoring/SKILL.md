@@ -3,11 +3,11 @@ name: "test-authoring"
 description: "Use when a behavioral contract or reproducible defect needs a witnessed RED test, minimal correction, GREEN result, and regression coverage."
 metadata:
   title: "test-authoring"
-  version: "1.4.0"
+  version: "1.4.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "test-authoring"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -72,7 +72,7 @@ Owning role, policies and related documents:
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [E2E testing](../e2e-testing/SKILL.md)
-- [QA scope](../../governance/quality-standards.md)
+- [QA scope](../../../docs/00.workspace/03.quality/quality-standards.md)
 
 ## Verification
 
