@@ -1036,6 +1036,19 @@ class SharedSearchContractTests(unittest.TestCase):
         self.assertEqual("home-searxng", settings["general"]["instance_name"])
         self.assertIn("json", settings["search"]["formats"])
 
+    def test_searxng_spreads_load_over_more_free_engines(self) -> None:
+        # 2026-11-19: DuckDuckGo, Brave and Google CSE rate-limited this host's
+        # address under the 07:00 Hermes load; more free engines spread it.
+        settings = yaml.safe_load((ROOT / self.SETTINGS).read_text())
+        enabled = {
+            engine["name"]
+            for engine in settings["engines"]
+            if engine.get("disabled") is False
+        }
+        self.assertLessEqual({"bing", "qwant", "yahoo"}, enabled)
+        self.assertEqual(6.0, settings["outgoing"]["request_timeout"])
+        self.assertEqual(10.0, settings["outgoing"]["max_request_timeout"])
+
     def test_searxng_is_loopback_only_and_unprivileged(self) -> None:
         data = _compose(self.SEARXNG)
         service = data["services"]["searxng"]
