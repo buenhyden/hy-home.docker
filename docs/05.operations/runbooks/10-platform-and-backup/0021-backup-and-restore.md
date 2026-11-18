@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.13.0"
+version: "1.14.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -707,6 +707,32 @@ python3 -m scripts.lib.hooks.session_capture reconcile
 보지 않는다. `capture_failures`가 늘면 `.workspace-capture/degraded.log`의 원인을 확인한다.
 수집 실패는 hook 결과나 개발 작업을 막지 않는다. 수집 기록은 증거일 뿐 기억·정책·
 승인·Task 인수가 아니다.
+
+#### 세션 예약 분석
+
+`scripts/operations/session_analysis.py`가 소유자 결정(2026-11-18)에 따라 LLM 없이
+결정론적 규칙으로 수집 기록을 분석한다. 반복 프롬프트(같은 정규화 문구 3회 이상),
+불완전 수집 세션, 수집 실패를 후보로 만들고 각 후보에 근거 event ID·빈도·조건·제안·
+위험·수용 시험을 남긴다. 결과는 `.workspace-capture/analysis.sqlite3`, 마지막 실행
+상태는 `analysis-status.json`과 systemd journal에 남는다.
+
+```bash
+python3 scripts/operations/session_analysis.py install-timer
+python3 scripts/operations/session_analysis.py run
+python3 scripts/operations/session_analysis.py status
+python3 scripts/operations/session_analysis.py candidates
+python3 scripts/operations/session_analysis.py decide "<후보 ID>" rejected --owner "<검토자>"
+```
+
+`install-timer`는 사용자 systemd timer `hy-home-session-analysis.timer`를 매일
+03:00 Asia/Seoul로 설치하며 `Persistent=true`로 놓친 실행을 다음 기동에 따라잡는다.
+service에는 `Restart`가 없어 실패가 반복 실행을 만들지 않는다. 실행은 마지막 완료
+창 이후의 기록만 읽고, 같은 창은 다시 분석하지 않는다. lease가 유효하면 중복 실행은
+exit 75로 건너뛰고, lease를 잃은 실행은 결과를 쓰지 않는다(fenced). SIGTERM은
+취소로 기록한다. `decide`는 결정만 남기며 기억·정책·검사기를 바꾸지 않는다. 채택한
+후보의 실제 변경은 별도 Task와 승인으로 진행한다. 수집이 없거나 분석이 실패해도
+commit·push와 다른 작업은 막지 않는다. 제거는 `systemctl --user disable --now
+hy-home-session-analysis.timer`다.
 
 #### 공유 기억 백업 제외 (2026-11-18)
 

@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.17.0"
+version: "1.18.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -163,6 +163,12 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R140 | Capture completeness | Required: report each session as complete, partial or unavailable from cursor reconciliation | none | none |
 | ENVIRONMENT-CONSTRAINTS-R141 | Capture completeness | Forbidden: treating one end-of-session hook as complete capture | none | none |
 | ENVIRONMENT-CONSTRAINTS-R142 | Captured records | Forbidden: promoting them automatically to memory, policy, approval or Task acceptance | none | none |
+| ENVIRONMENT-CONSTRAINTS-R143 | Session analysis | Required: deterministic local rules over captured records only, with no model call | none | none |
+| ENVIRONMENT-CONSTRAINTS-R144 | Session analysis schedule | Required: a user systemd timer at 03:00 Asia/Seoul with catch-up of missed runs and no automatic restart | none | none |
+| ENVIRONMENT-CONSTRAINTS-R145 | Session analysis run | Required: one lease with a fencing token, an analysis key per window and a status record of every run | none | none |
+| ENVIRONMENT-CONSTRAINTS-R146 | Analysis candidate | Required: name its source events, frequency, conditions, proposal, risk and acceptance test | none | none |
+| ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check, memory or policy without a separate approved Task | none | none |
+| ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -423,6 +429,20 @@ This project has a graphify knowledge graph at `graphify-out/`.
   files, and replies and tool input or output are not copied. Captured
   records are evidence, never memory, policy, approval or Task acceptance.
 
+- By the owner's decisions of 2026-11-18, session analysis is deterministic
+  and local: `scripts/operations/session_analysis.py` groups repeated
+  prompts, incomplete captures and capture failures without any model call.
+  A user systemd timer runs it daily at 03:00 Asia/Seoul with
+  `Persistent=true`, so a missed day is caught up, and its service has no
+  `Restart`. A run takes one lease with a fencing token, reads only records
+  after the last completed window, keys each window so it is analysed once,
+  and writes `analysis-status.json`; a duplicate run is skipped and a run
+  that lost its lease writes nothing. Each candidate names its source
+  events, frequency, conditions, proposal, risk and acceptance test.
+  `decide` records a review decision only; a rule, skill, check, memory or
+  policy changes only through a separate approved Task. A failed or
+  missing analysis never blocks commit, push or other work.
+
 #### Provider Surface Regeneration
 
 - Provider surface `--write` is allowed once only after an approved canonical
@@ -473,6 +493,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Memory record semantics (R124-R131): no check is named.
 - Memory recall (R132-R135): no check is named.
 - Session capture (R136-R142): no check is named.
+- Session analysis (R143-R148): no check is named.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.
