@@ -1,6 +1,6 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.6.5"
+version: "1.7.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -114,7 +114,10 @@ profile extending `:read-only` and denying reads to a synthetic protected
 directory also refused its file read with `EACCES`. The launcher used
 `--include-managed-config`. These observations cover the tested CLI launch
 and synthetic paths. The managed desktop reviewer remains a separate
-execution route.
+execution route. On `codex exec` 0.169.0 with a `workspace-write` parent, a
+spawned `code-reviewer` thread ran with the parent's sandbox and could open
+a synthetic fixture for writing, so the role's `sandbox_mode` did not apply
+there; a read-only review on that route needs a read-only parent.
 Respect the active sandbox and approval boundary; do not mutate user-global or
 ignored local configuration or install global skill copies.
 
