@@ -188,7 +188,7 @@ def observe(
     started, finished = _when(started_at), _when(finished_at)
     if finished < started:
         raise ForecastError("finished_at precedes started_at")
-    if finished > _when(now()):
+    if finished > dt.datetime.now(dt.UTC):
         raise ForecastError("finished_at is in the future")
     elapsed = (finished - started).total_seconds() / 60
     for value in (active_minutes, runner_wait_minutes, user_wait_minutes):

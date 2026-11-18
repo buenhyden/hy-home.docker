@@ -115,6 +115,9 @@ class ForecastTests(unittest.TestCase):
         self.assertNotEqual("empirical", pooled["calibration"])
         self.assertEqual(1, one["completed"])
         self.assertEqual("insufficient sample", one["calibration"])
+        with mock.patch.object(forecast, "MIN_CALIBRATION_SAMPLE", 1):
+            typed = forecast.score(self.directory, "ci-run")
+        self.assertEqual("empirical", typed["calibration"])
 
     def test_the_cli_refuses_with_exit_2_instead_of_a_traceback(self) -> None:
         self.directory.mkdir(parents=True)
