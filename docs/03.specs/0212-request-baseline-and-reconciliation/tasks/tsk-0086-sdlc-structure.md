@@ -1,6 +1,6 @@
 ---
 title: "SDLC Structure Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -103,8 +103,13 @@ cleared with that fix.
 
 ### Blockers and Decisions
 
-None block W158. Native loading of a moved policy by a fresh Claude or
-Codex session has not been observed.
+None block W158. After the merge, a fresh headless Claude session in plan
+mode and a fresh read-only `codex exec` session were each asked, without a
+path, which files own the shared SDLC and approval boundaries. Both
+followed their entry file and bootstrap to
+`docs/00.workspace/02.process/sdlc.md` 2.3.0 and
+`docs/00.workspace/02.process/approval-boundaries.md` 1.6.0 with the
+correct titles; Claude cited BOOTSTRAP-R16 as its route.
 
 ## Verification Evidence
 
@@ -128,13 +133,15 @@ Codex session has not been observed.
 | Hosted candidate GREEN | 142 | W158 | PR 1096 candidate-documents | Test pattern and an owner predicate accepting the working tree or the revision | PASS | Locally 111 tests across generation 6 and 7, template definition, relations and acceptance; hosted rerun pending | required | Hosted candidate RED |
 | Hook matchers | 142 | W158 | `hook_rules.evaluate` probe | Moved SDLC, a moved policy, the workspace README, an agent policy | PASS | Memory warning on both watched files; Korean warning on both policy homes, not on the README | required | - |
 | Native loading | 142 | W158 | a fresh provider session reading a moved policy | Claude and Codex | NOT_RUN | Not observed | required | - |
+| Native loading observed | 142 | W158 | a fresh provider session reading a moved policy | `claude -p` in plan mode and `codex exec` read-only on `dc53d574f` | PASS | Both named the SDLC 2.3.0 and approval boundaries 1.6.0 at their `docs/00.workspace/02.process/` paths from the bootstrap alone | required | Native loading |
 
 ### Resolution Links
 
 Moved link GREEN resolves Moved link RED. Relation owner GREEN resolves
 Relation owner RED. Moved baseline GREEN resolves Moved baseline RED.
 Workspace link GREEN resolves Workspace link RED. Hosted candidate GREEN
-resolves Hosted candidate RED. The All link modes
+resolves Hosted candidate RED. Native loading observed resolves Native
+loading. The All link modes
 failure predates this Task and stays with the SearXNG owner.
 
 ## Acceptance Decision
@@ -143,12 +150,11 @@ failure predates this Task and stays with the SearXNG owner.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 142 | pending | Moved link GREEN, Relation owner GREEN, Moved baseline GREEN, Document checks, Contract and renderer | Awaits native loading and the owner's decision | @buenhyden |
+| 142 | pending | Moved link GREEN, Relation owner GREEN, Moved baseline GREEN, Document checks, Contract and renderer, Native loading observed | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
-A fresh session's loading of a moved policy remains unobserved. Five
-outside-docs links in the n8n and SearXNG READMEs fail on `main` too and
+Five outside-docs links in the n8n and SearXNG READMEs fail on `main` too and
 are not this Task's change.
 
 ## Handoff
@@ -161,5 +167,5 @@ homes.
 
 ### Next Owner
 
-The implementer observes native loading. The owner decides criterion 142.
+The owner decides criterion 142.
 DOC-PATH-PLAN owns SDD-PATHS.
