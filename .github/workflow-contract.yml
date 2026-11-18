@@ -593,6 +593,7 @@
       "argv": [
         "run-unittest",
         "tests.lib.hooks.test_tool_payload",
+        "tests.lib.hooks.test_compose_start_rule",
         "tests.lib.hooks.test_agent_memory",
         "tests.lib.ops.test_memory_capacity",
         "tests.lib.ops.test_memory_retrieval_eval",
