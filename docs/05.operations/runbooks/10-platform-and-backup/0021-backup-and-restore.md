@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.14.0"
+version: "1.15.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -706,7 +706,8 @@ python3 -m scripts.lib.hooks.session_capture reconcile
 구분할 수 없어 hook 수집만 하고 partial로 남는다. 종료 hook 하나로 수집이 완전하다고
 보지 않는다. `capture_failures`가 늘면 `.workspace-capture/degraded.log`의 원인을 확인한다.
 수집 실패는 hook 결과나 개발 작업을 막지 않는다. 수집 기록은 증거일 뿐 기억·정책·
-승인·Task 인수가 아니다.
+승인·Task 인수가 아니다. 실제 hook을 실행하는 시험은 `HY_HOME_CAPTURE_DIR`로 임시
+디렉터리를 지정해 운영 수집 기록에 시험 세션을 남기지 않는다.
 
 #### 세션 예약 분석
 
