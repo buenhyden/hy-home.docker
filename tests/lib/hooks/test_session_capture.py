@@ -170,6 +170,27 @@ class CaptureTests(unittest.TestCase):
         self.assertEqual(1, report["capture_failures"])
         self.assertIn("UserPromptSubmit", report["last_failure"])
 
+    def test_only_prompts_the_user_typed_are_captured(self):
+        notice = "<task-notification>task finished</task-notification>"
+        self.assertIsNone(self.prompt(notice))
+        system = json.loads(line("u1", notice))
+        system["origin"] = {"kind": "task-notification"}
+        typed = json.loads(line("u2", "typed"))
+        typed["origin"] = {"kind": "human"}
+        summary = json.loads(line("u3", "continued session summary"))
+        summary["isCompactSummary"] = True
+        self.transcript.write_text(
+            "".join(json.dumps(record) + "\n" for record in (system, typed, summary))
+        )
+        self.prompt("first")  # creates the session row
+        self.session()
+        prompts = [e["prompt"] for e in self.events()]
+        self.assertEqual(["first", "typed"], prompts)
+
+    def test_a_payload_without_a_session_is_ignored_not_counted(self):
+        capture.enqueue("SessionStart", {}, "claude", self.directory, "workspace")
+        self.assertEqual(0, capture.status(self.directory)["capture_failures"])
+
     def test_a_held_reconcile_lock_skips_instead_of_waiting(self):
         self.directory.mkdir()
         with open(self.directory / "reconcile.lock", "a") as lock:

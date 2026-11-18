@@ -55,6 +55,8 @@ SECRETS = (
     re.compile(r"\bxox[abprs]-[A-Za-z0-9-]{10,}"),
     re.compile(r"\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}"),
 )
+# Lines a provider injects as user turns that the user did not type.
+SYSTEM_PREFIXES = ("<task-notification>", "<local-command-stdout>", "<system-reminder>")
 ASSIGNMENT = re.compile(
     r"(?i)\b(password|passwd|secret|token|api[_-]?key)(\s*[:=]\s*)(\S+)"
 )
@@ -136,8 +138,11 @@ def enqueue(
         return None
     session = str(payload.get("session_id") or "")
     if not session:
-        _degraded(directory, f"{provider} {event} without a session ID")
-        return None
+        return None  # every provider event carries one; this caller is not a provider
+    if event == "UserPromptSubmit" and str(
+        payload.get("prompt") or ""
+    ).lstrip().startswith(SYSTEM_PREFIXES):
+        return None  # a provider notification, not a prompt the user typed
     transcript = payload.get("transcript_path")
     transcript = transcript if isinstance(transcript, str) and transcript else None
     offset = None
@@ -203,7 +208,10 @@ def enqueue(
 
 def _claude_prompt(line: dict) -> tuple[str, str] | None:
     """Return the visible prompt text and its stable ID, or None."""
-    if line.get("type") != "user" or line.get("isMeta"):
+    if line.get("type") != "user" or line.get("isMeta") or line.get("isCompactSummary"):
+        return None
+    origin = line.get("origin")
+    if isinstance(origin, dict) and origin.get("kind") != "human":
         return None
     message = line.get("message")
     content = message.get("content") if isinstance(message, dict) else None
@@ -215,6 +223,8 @@ def _claude_prompt(line: dict) -> tuple[str, str] | None:
             part.get("text", "") for part in parts if part.get("type") == "text"
         )
     if not isinstance(content, str) or not content:
+        return None
+    if content.lstrip().startswith(SYSTEM_PREFIXES):
         return None
     return content, str(line.get("promptId") or line.get("uuid") or "")
 
