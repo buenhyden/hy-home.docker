@@ -1,6 +1,6 @@
 ---
 title: "W08 Shared Memory Task"
-version: "0.4.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -125,6 +125,16 @@ repository held 8,289 MiB against its 8 GiB budget, so the Restic backup
 was skipped. Retention pruning of that repository is outside this Task and
 needs its own approval.
 
+The owner then approved the retention prune. A dry run of the policy
+(`--keep-daily 30 --keep-weekly 13 --keep-monthly 12`) listed 6 state and 16
+host snapshots, and `backup.sh forget-prune` with its confirmation removed
+exactly those; deduplication left only about 2 MiB to free. Measured the way
+the daily run measures it, `BACKUP_STATE_REPO_DIR` now holds 8,161 MiB
+against the 8,192 MiB budget, with 7,385 MiB in Restic and the rest in
+pgBackRest. The next daily run measures after pgBackRest adds a backup, so
+it may still skip Restic; raising the budget or shortening a retention
+policy is a separate owner decision.
+
 #### W150 D06 record semantics
 
 The store already met D06 on immutable revisions, compare-and-swap writes,
@@ -162,6 +172,19 @@ the real store was declined, so the synthetic schema-2 migration test
 stands as the migration evidence. The real store (9 records, 15 revisions,
 schema 2) needs the owner-approved `migrate` before its next write.
 
+#### W150 migration and W151 cross-provider check
+
+After the merge the owner-approved `migrate` ran on the real store, which
+now reports schema 3 with no migration required. For W151, Claude Code
+wrote probe `w151-cross-provider-probe` at revision 1. Codex, through
+`codex exec` in this workspace, read that revision and wrote revision 2
+against it. Claude Code then read revision 2 with Codex as owner. A Claude
+write still expecting revision 1 was refused with
+`MEMORY_REVISION_CONFLICT`, recorded as a stale-revision conflict, and left
+revision 2 in place. A plain `get` hides the probe because its reuse state
+is `candidate`, which is the designed behavior. The probe stays in the
+store.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -195,11 +218,17 @@ and the hosted candidate checks.
 | Local removal dry run | 138 | W149 | `restic rewrite --dry-run --exclude` on the 30 listed state snapshots | Local state repository on 2026-11-18 | PASS | Would modify 30 snapshots | required | - |
 | Local memory removal | 138 | W149 | `restic rewrite --forget --exclude`, `prune`, `prune --max-unused 0`, `restic check`, `restic find` | Local state repository on 2026-11-18 | PASS | 30 snapshots rewritten; 126 MiB pruned, 0 B unused; check clean; no snapshot holds the export | required | - |
 | Ledger reconcile | 138 | W149 | `agent_memory.py capacity reconcile` | Real ledger on 2026-11-18 | PASS | Generation 1 to 2, 60 legacy allocations to 0 | required | - |
+| Retention prune dry run | 138 | W149 | `restic forget --dry-run` with the daily retention policy | State and host repositories on 2026-11-18 | PASS | Would remove 6 state and 16 host snapshots | optional | - |
+| Retention prune | 138 | W149 | `backup.sh forget-prune` and the daily run's `du` budget measure | State and host repositories on 2026-11-18 | PASS | Removed 6 and 16 snapshots, about 2 MiB freed; directory 8,161 of 8,192 MiB | optional | - |
 | R2 memory removal | 138 | W149 | rewrite and prune of the 30 R2 copies | R2 repository under the 30-day bucket lock | NOT_RUN | Owner deferred it until the lock expires, about mid-December | required | - |
 | D06 records RED | 138 | W150 | `RecordSemanticsTests` and the erase and baseline CLI test | New tests on the pre-change code at `dcdffa56d` | FAIL | Seven errors and one failure: no kind, validity, supersession, baseline, export, erase or migration; reader page limit wrong | required | - |
 | D06 records GREEN | 138 | W150 | `RecordSemanticsTests` and the erase and baseline CLI test | D06 store and CLI on `dcdffa56d` | PASS | All eight cases passed | required | D06 records RED |
 | D06 regression | 138 | W150 | memory store, CLI, search, capacity and routing suites | D06 store and CLI on `dcdffa56d` | PASS | 147 tests in 60 s | required | - |
 | Real store state | 138 | W150 | read-only `agent_memory.py usage` and `list --all` | Real store on 2026-11-18 | PASS | Schema 2, migration required, 9 records and 15 revisions, page limit 16,384 | optional | - |
+| Real store migration | 138 | W150 | read-only `agent_memory.py usage` | Real store after the owner-approved `migrate` | PASS | Schema 3, migration not required, 19 revisions | required | - |
+| Cross-provider round trip | 138 | W151 | Claude `put`, Codex `get --historical` and `put`, Claude `get --historical` | Probe `w151-cross-provider-probe` in the real store | PASS | Codex read revision 1 by Claude and wrote revision 2; Claude read revision 2 owned by Codex; both Codex commands exited 0 | required | - |
+| Cross-provider stale write | 138 | W151 | Claude `put --expected-revision 1` after Codex's write | Same probe | PASS | `MEMORY_REVISION_CONFLICT` at revision 2; conflict stored; revision 2 kept | required | - |
+| Daily run without memory | 138 | W149 | `hyhome-backup.timer` run after the W149 merge | Host systemd | NOT_RUN | Last run 2026-11-18 03:57 KST, before the merge; next 2026-11-19 03:52 KST | required | - |
 | Backup code removal | 138 | W149 | memory, offsite, backup contract and routing suites; manifest, workflow contract, ruff, shellcheck | Working tree without memory backup code, on `b3f589aff` | PASS | 163 tests in 59 s, seven opt-in Docker rehearsals skipped; manifest and workflow contract PASS | required | - |
 
 ### Resolution Links
@@ -214,15 +243,14 @@ GREEN resolves D06 records RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 138 | pending | Size charge GREEN, Daily export GREEN, Memory regression | Awaits W149 to W151 and the owner's decision | @buenhyden |
+| 138 | pending | Exclusion GREEN, Local memory removal, Ledger reconcile, D06 records GREEN, Real store migration, Cross-provider round trip, Cross-provider stale write | Awaits the R2 removal, the first daily run without memory and the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
 W149 still removes the 30 R2 copies of the memory export after their
-30-day lock ends; the local snapshots and the ledger are clean. W150 is
-implemented in source; the real store still needs its approved `migrate`
-before the next write. W151 needs a native Claude and Codex observation. A
-live daily run remains unobserved.
+30-day lock ends; the local snapshots and the ledger are clean. The first
+daily run after W149, due 2026-11-19 03:52 KST, remains to be observed.
+W150 and W151 are observed.
 
 ## Handoff
 
@@ -236,4 +264,4 @@ W150 record semantics.
 
 ### Next Owner
 
-The implementer owns W149 to W151. The owner decides criterion 138.
+The implementer owns the W149 R2 removal and the first daily run observation. The owner decides criterion 138.
