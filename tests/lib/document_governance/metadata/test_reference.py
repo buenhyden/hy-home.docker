@@ -681,7 +681,7 @@ A detached Evidence row is rejected.
 ### Normative and Evidence
 
 - [Plan](plan.md)
-- [Task](tasks/tsk-0001-task-evidence-table-integrity.md)
+- [Task](01.tasks/tsk-0001-task-evidence-table-integrity.md)
 
 ### Historical and Navigation
 
@@ -727,7 +727,7 @@ The temporary repository is discarded after the test.
 ## Related Documents
 
 - [Specification](spec.md)
-- [Task](tasks/tsk-0001-task-evidence-table-integrity.md)
+- [Task](01.tasks/tsk-0001-task-evidence-table-integrity.md)
 """,
                 encoding="utf-8",
             )
@@ -945,7 +945,7 @@ This synthetic fixture names no next owner.
             task = (
                 root
                 / package_relative
-                / ("tasks/tsk-0001-task-evidence-table-integrity.md")
+                / ("01.tasks/tsk-0001-task-evidence-table-integrity.md")
             )
             marker = "\n### Resolution Links\n"
             source = task.read_text(encoding="utf-8")
