@@ -515,7 +515,7 @@ class ReferencePackageTests(unittest.TestCase):
             consumer = root / "scripts/validation/current.py"
             consumer.parent.mkdir(parents=True)
             consumer.write_text(
-                'CURRENT = "docs/90.references/03.data/governance/current.yaml"\n',
+                'CURRENT = "docs/90.references/data/governance/current.yaml"\n',
                 encoding="utf-8",
             )
             findings = self.references.validate_active_reference_consumers(

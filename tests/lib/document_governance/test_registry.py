@@ -1330,7 +1330,8 @@ class DocumentRegistryTests(unittest.TestCase):
                 "git",
                 "show",
                 f"{PRE_SEMVER_WIDENING_COMMIT}:"
-                "docs/99.templates/01.contracts/document-frontmatter.schema.json",
+                # The route that revision used, before SPEC-0212-TSK-0096.
+                "docs/99.templates/contracts/document-frontmatter.schema.json",
             ],
             cwd=ROOT,
             capture_output=True,

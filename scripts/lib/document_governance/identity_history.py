@@ -36,6 +36,7 @@ MAX_GIT_SCAN_SECONDS = 45
 MAX_IDENTITY_SOURCE_BYTES = 4 * 1024 * 1024
 IDENTITY_SOURCE_SUFFIXES = frozenset({".md", ".json", ".yaml", ".yml"})
 IDENTITY_SOURCE_PREFIXES = (
+    "docs/00.workspace/02.architecture/",
     "docs/01.requirements/",
     "docs/02.architecture/",
     "docs/03.specs/",
@@ -547,6 +548,7 @@ def _history_identity_group(path: str) -> tuple[str, bool] | None:
         (
             "docs/02.architecture/01.descriptions/",
             "docs/00.workspace/02.architecture/01.descriptions/",
+            "docs/02.architecture/descriptions/",
         )
     ):
         return "docs/02.architecture/01.descriptions/history.md", False
@@ -554,6 +556,7 @@ def _history_identity_group(path: str) -> tuple[str, bool] | None:
         (
             "docs/02.architecture/02.decisions/",
             "docs/00.workspace/02.architecture/02.decisions/",
+            "docs/02.architecture/decisions/",
         )
     ):
         return "docs/02.architecture/02.decisions/history.md", False
@@ -593,7 +596,8 @@ def _historical_objects(
             raise IdentityHistoryError("Git identity object name is malformed")
         if not path:
             continue
-        if path in {"docs", prefix}:
+        if path == prefix or prefix.startswith(f"{path}/"):
+            # The prefix itself and its ancestor trees carry no identity.
             continue
         if (
             not path.startswith(f"{prefix}/")

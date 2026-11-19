@@ -112,6 +112,21 @@ def _registry_with_live_spec(number: int):
 
 
 class IdentityHistoryTests(unittest.TestCase):
+    def test_every_identity_route_is_scanned_as_an_identity_source(self) -> None:
+        """A route that may own an identity must also be read on the base side."""
+
+        from scripts.lib.document_governance import identity_history
+
+        for _prefix, _space, roots in identity_history.IDENTITY_PREFIX_SPACES:
+            for root in (roots,) if isinstance(roots, str) else roots:
+                with self.subTest(root=root):
+                    self.assertTrue(
+                        root.startswith(identity_history.IDENTITY_SOURCE_PREFIXES)
+                    )
+                    self.assertIsNotNone(
+                        identity_history._history_identity_group(root + "0001-x.md")
+                    )
+
     def test_incident_year_does_not_consume_allocation_numbers(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)

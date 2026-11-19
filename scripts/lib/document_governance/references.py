@@ -54,9 +54,10 @@ _ACTIVE_CONSUMER_PATHS = (
 _RETIRED_ACTIVE_PATHS = (
     "docs/90.references/learning",
     "docs/90.references/llm-wiki",
-    "docs/90.references/03.data/governance/",
-    "docs/90.references/03.data/knowledge/",
-    "docs/90.references/03.data/security/",
+    # Retired before SPEC-0212-TSK-0096 numbered `data/` as `03.data/`.
+    "docs/90.references/data/governance/",
+    "docs/90.references/data/knowledge/",
+    "docs/90.references/data/security/",
 )
 
 MAX_ROOT_ENTRIES = 8

@@ -1348,6 +1348,47 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                 if allowed:
                     self.assertNotIn("missing-link-anchor", codes)
 
+    def test_open_task_resolves_unnumbered_routes_only_in_evidence_rows(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        for section, allowed in (
+            ("## Verification Evidence", True),
+            ("## Acceptance Decision", True),
+            ("## Scope", False),
+        ):
+            with (
+                self.subTest(section=section),
+                tempfile.TemporaryDirectory() as temp,
+            ):
+                root = pathlib.Path(temp)
+                source = (
+                    root
+                    / "docs/03.specs/0204-service-integration-security-and-operations"
+                    / "01.tasks/tsk-0001-example.md"
+                )
+                target = root / "docs/02.architecture/01.descriptions/0001-example.md"
+                source.parent.mkdir(parents=True)
+                target.parent.mkdir(parents=True)
+                source.write_text(
+                    "---\n"
+                    'type: "sdlc/task"\n'
+                    'status: "in-progress"\n'
+                    "---\n\n"
+                    f"{section}\n\n"
+                    "| Evidence | Location |\n| --- | --- |\n"
+                    "| Row | [AD](../../../02.architecture/descriptions/0001-example.md) |\n",
+                    encoding="utf-8",
+                )
+                target.write_text("# Example\n", encoding="utf-8")
+                graph = build_document_graph([source, target], repo_root=root)
+                codes = {finding.code for finding in check_alignment(graph)}
+                self.assertEqual(allowed, "missing-link-target" not in codes)
+
     def test_historical_operations_resolution_requires_registered_source_and_graph_target(
         self,
     ) -> None:

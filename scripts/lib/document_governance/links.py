@@ -901,9 +901,24 @@ def _target_headings(
         return None, "link-target-unreadable"
 
 
-def _is_table_row(text: str, line: int) -> bool:
+_EVIDENCE_SECTIONS = frozenset({"## Verification Evidence", "## Acceptance Decision"})
+
+
+def _is_evidence_row(text: str, line: int) -> bool:
+    """A table row under a Task's Verification Evidence or Acceptance Decision."""
+
     lines = text.splitlines()
-    return 0 < line <= len(lines) and lines[line - 1].lstrip().startswith("|")
+    if not 0 < line <= len(lines) or not lines[line - 1].lstrip().startswith("|"):
+        return False
+    section = next(
+        (
+            candidate.rstrip()
+            for candidate in reversed(lines[: line - 1])
+            if candidate.startswith("## ")
+        ),
+        "",
+    )
+    return section in _EVIDENCE_SECTIONS
 
 
 def _historical_operations_target(
@@ -921,7 +936,7 @@ def _historical_operations_target(
     if (
         numbered != link.target
         and classify_path(link.source, registry) == "task"
-        and _is_table_row(node.text, link.line)
+        and _is_evidence_row(node.text, link.line)
         and _regular_target(graph, numbered)[0] is not None
     ):
         # Task Evidence and Acceptance rows are immutable records, so a row

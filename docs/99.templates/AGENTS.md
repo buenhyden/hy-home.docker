@@ -19,7 +19,7 @@ Stage 99 holds the document contracts: the Registry, the schemas and the
 copyable templates every other stage is validated against. This guide routes
 an agent that changes them. The human guide is [README.md](README.md).
 
-`registry.json`, `contracts/*.schema.json`, `templates/**` and this folder's
+`registry.json`, `01.contracts/*.schema.json`, `02.templates/**` and this folder's
 README. A change here changes what every governed document must look like.
 
 #### Non-goals

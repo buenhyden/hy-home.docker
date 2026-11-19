@@ -453,9 +453,12 @@ def validate_registry_at_revision(
             "docs/99.templates/01.contracts/document-profile.schema.json",
             root=root,
         )
-    except RegistryError:
+    except RegistryError as error:
         # A revision before SPEC-0212-TSK-0096 keeps its schema in the
-        # unnumbered folder; each snapshot is read with its own schema.
+        # unnumbered folder; only an absent numbered schema falls back, so a
+        # malformed one is still reported.
+        if str(error) != "trusted revision must contain one JSON blob":
+            raise
         schema = _load_json_document_at_revision(
             revision,
             "docs/99.templates/contracts/document-profile.schema.json",
