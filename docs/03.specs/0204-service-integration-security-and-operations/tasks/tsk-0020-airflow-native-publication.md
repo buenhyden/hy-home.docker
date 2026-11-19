@@ -1,15 +1,21 @@
 ---
 title: "Airflow Native Publication Rehearsal Task"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/task"
-status: "blocked"
+status: "cancelled"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0020"
 parent_ids:
 - "SPEC-0204-PLAN-0001"
 created: "2026-10-16"
+cancellation:
+  reason: "Native publication recovery never unblocked; criterion 18 stays with TSK-0012"
+  authorization_ref: "#owner-decisions-2026-11-19"
+  criteria_disposition:
+  - criterion: 18
+    withdrawal_ref: "#owner-decisions-2026-11-19"
 ---
 
 # Airflow Native Publication Rehearsal Task
@@ -346,6 +352,14 @@ The first scoped editorial metadata command on Task SHA `d51f29be3c89633fe10f43f
 
 PR #509 merged this Task's sources after delivery formatting. The merged fixture and native test hashes therefore differ from the reviewed V2 hashes above; the Evidence row `Merged source custody` records the exact difference. It is formatting plus one gitleaks-safe assignment, so it does not revoke the V2 source reviews and is not a new runtime result.
 
+#### Owner decisions 2026-11-19
+
+Source: user
+
+In this chat the owner cancelled this blocked Task. Its native publication
+recovery never unblocked, and its 17 open required rows stay as recorded.
+Criterion 18 remains with TSK-0012.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -353,6 +367,7 @@ PR #509 merged this Task's sources after delivery formatting. The merged fixture
 | SPEC-0204-TSK-0020 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0020 | ready | in-progress | #w75-boundary-and-execution-plan |
 | SPEC-0204-TSK-0020 | in-progress | blocked | #editorial-preservation-and-current-recovery-handoff |
+| SPEC-0204-TSK-0020 | blocked | cancelled | #owner-decisions-2026-11-19 |
 
 #### Retained barrier custody move — 2026-10-20
 
@@ -478,12 +493,7 @@ and creates no duplicate acceptance row.
 
 ### Remaining Conditions
 
-Initial artifact status remains draft before first commit. Source validation,
-independent review, actual runtime and cleanup receipts remain distinct. Revert
-only owning source commits; delete only exact invocation-owned fixture identities.
-A fixture PASS cannot complete HOME, actual TimescaleDB, OIDC or offsite recovery.
-
-PR #509 landed the draft baseline. Runtime recovery is BLOCKED as recorded above, so the current status is `blocked` with the same owner and resume conditions.
+None for this Task. Criterion 18 stays pending under TSK-0012.
 
 ## Handoff
 
