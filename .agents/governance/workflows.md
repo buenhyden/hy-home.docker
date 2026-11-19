@@ -1,6 +1,6 @@
 ---
 title: "Workflows"
-version: "1.6.0"
+version: "1.7.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -88,6 +88,15 @@ When the class is unclear, take the higher class. A reviewer does not rerun
 a check whose input is unchanged, and an evidence-only commit after review
 needs no new review. A review run after merge is recorded as such, and its
 findings are fixed or recorded in the owning Task.
+
+A reviewer counts as read-only only where its runtime enforces it. When a
+spawned reviewer would run with its parent's write access, or enforcement
+on that route is unobserved, the review runs from a read-only parent. A
+review whose read-only state was not enforced is recorded as such in the
+owning Task and does not meet a read-only review requirement until it is
+rerun on an enforced route or a human accepts it. The
+[capability matrix](provider-capability-matrix.md) records the observed
+routes.
 
 ### Review Scope and Evidence Updates
 

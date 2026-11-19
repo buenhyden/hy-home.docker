@@ -1,6 +1,6 @@
 ---
 title: "W08 Shared Memory Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -231,6 +231,7 @@ and the hosted candidate checks.
 | Daily run without memory | 138 | W149 | `hyhome-backup.timer` run after the W149 merge | Host systemd | NOT_RUN | Last run 2026-11-18 03:57 KST, before the merge; next 2026-11-19 03:52 KST | required | - |
 | Backup code removal | 138 | W149 | memory, offsite, backup contract and routing suites; manifest, workflow contract, ruff, shellcheck | Working tree without memory backup code, on `b3f589aff` | PASS | 163 tests in 59 s, seven opt-in Docker rehearsals skipped; manifest and workflow contract PASS | required | - |
 | First run without memory | 138 | W149 | `journalctl -u hyhome-backup.service`, memory lines per run | Daily runs of 2026-11-16 to 19 | PASS | 2 memory lines on each of 16, 17 and 18, none on 19; Restic skipped over budget on 19, so snapshot content stays unobserved | required | - |
+| R2 memory removal attempt | 138 | W149 | rewrite and prune of the 30 R2 copies | Snapshot `eec729a7` (2026-10-13), owner request 2026-11-19 | FAIL | R2 refused removing the old snapshot file: "The object is locked by the bucket policy"; the R2 copies were uploaded from the 2026-10-20 re-initialization on, so the lock counts from upload. The rewrite left a new snapshot `d0f50bdd` without the export and no lock file; nothing was deleted | required | - |
 
 ### Resolution Links
 
@@ -250,7 +251,11 @@ GREEN resolves D06 records RED.
 
 On 2026-11-19 the owner kept criterion 138 pending: the SDLC accepts it only
 after its open required rows are resolved; TSK-0095 lists them with their
-next check.
+next check. A removal attempt on 2026-11-19 was refused by the R2 lock: 2 of the 30
+copies were uploaded at about 20:10 to 20:30 KST on 2026-10-20 and unlock
+around then on 2026-11-19, and the other 28 unlock one a day until about
+2026-12-10; `eec729a7` then needs a `forget`, since its rewrite
+`d0f50bdd` already exists.
 
 W149 still removes the 30 R2 copies of the memory export after their
 30-day lock ends; the local snapshots and the ledger are clean. The first daily run after W149, on 2026-11-19, ran without the memory step

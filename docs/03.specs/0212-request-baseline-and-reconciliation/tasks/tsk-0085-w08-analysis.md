@@ -1,6 +1,6 @@
 ---
 title: "W08 Session Analysis Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -107,6 +107,7 @@ not happened.
 | Candidate decisions | 141 | W157 | `session_analysis.py decide` | Five pending candidates in the real analysis store | PASS | 3 accepted, 2 rejected by buenhyden; no candidate left pending | required | - |
 | Missed-window catch-up | 141 | W157 | `Persistent=true` firing after a missed run | User systemd | NOT_RUN | No firing has been missed yet | required | - |
 | First 03:00 run | 141 | W157 | `journalctl --user -u hy-home-session-analysis.service`, `list-timers` | 2026-11-19 | PASS | Finished at 03:00:22 KST, 128 events, 4 candidates; next at 2026-11-20 03:00 | required | - |
+| Missed-window catch-up observed | 141 | W157 | `Persistent=true` firing after a missed run | User systemd: the timer stamp set to 2026-11-18 02:00 KST, then the timer restarted, 2026-11-19 | PASS | Fired at once at 09:59:26 KST, `trigger` scheduled, `state` complete, 86 events, 4 candidates; next run still 2026-11-20 03:00 | required | Missed-window catch-up |
 
 ### Resolution Links
 
@@ -118,16 +119,15 @@ Analysis GREEN resolves Analysis RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 141 | pending | Analysis GREEN, Real scheduled run, Real duplicate run, Daily timer, First 03:00 run | On 2026-11-19 the owner chose to accept once the open required rows are resolved; they stay required and open | @buenhyden |
+| 141 | accepted | Analysis GREEN, Real scheduled run, Real duplicate run, Daily timer, First 03:00 run, Missed-window catch-up observed | Owner @buenhyden accepted on 2026-11-19 in this chat once the catch-up was observed | @buenhyden |
 
 ### Remaining Conditions
 
-On 2026-11-19 the owner kept criterion 141 pending: the SDLC accepts it only
-after its open required rows are resolved; TSK-0095 lists them with their
-next check.
+The owner accepted criterion 141 on 2026-11-19 after the catch-up run was
+observed (Missed-window catch-up observed).
 
 The first daily run at 2026-11-19 03:00 KST is observed (First 03:00 run);
-a catch-up after a missed firing remains to be observed. The three accepted candidates need their own
+a catch-up after a missed firing was observed on 2026-11-19. The three accepted candidates need their own
 approved Task before anything changes.
 
 ## Handoff
