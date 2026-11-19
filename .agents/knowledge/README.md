@@ -1,10 +1,10 @@
 ---
 title: "Agent Knowledge"
-version: "0.6.0"
+version: "0.7.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-20"
 created: "2026-09-06"
 ---
 
@@ -47,14 +47,14 @@ route하고 link를 남깁니다.
 
 | Path | Purpose |
 | --- | --- |
-| [agent-glossary.md](agent-glossary.md) | agent·provider 전용 용어; 공통 용어는 [Repository Vocabulary](../../docs/00.workspace/01.project/glossary.md)가 정의 |
+| [glossary.md](glossary.md) | 공통 Repository Vocabulary와 agent·provider 용어; Docker 로컬 의미는 [로컬 용어집](../../docs/00.workspace/01.project/glossary.md)으로 연결 |
 | [repository-map.md](repository-map.md) | 표면에서 canonical owner로의 경로 |
 | [verification-surface-map.md](verification-surface-map.md) | 검증 진입점과 suite 경로 |
 
 ```text
 .agents/knowledge/
 ├── README.md
-├── agent-glossary.md
+├── glossary.md
 ├── repository-map.md
 └── verification-surface-map.md
 ```
@@ -67,7 +67,7 @@ route하고 link를 남깁니다.
 
 #### Classification
 
-member는 세 종류입니다. `agent-glossary.md`는 agent·provider 전용 용어(공통 용어는 `docs/00.workspace/01.project/glossary.md`), `repository-map.md`는 표면에서 canonical owner로의 routing, `verification-surface-map.md`는 검증 진입점이며, 모두 authority가 아니라 owner로 route하는 지식입니다.
+member는 세 종류입니다. `glossary.md`는 공통 용어와 agent·provider 의미(Docker 로컬 의미는 `docs/00.workspace/01.project/glossary.md`), `repository-map.md`는 표면에서 canonical owner로의 routing, `verification-surface-map.md`는 검증 진입점이며, 모두 authority가 아니라 owner로 route하는 지식입니다.
 
 ### Owners
 
@@ -96,8 +96,9 @@ member는 세 종류입니다. `agent-glossary.md`는 agent·provider 전용 용
 1. 기존 member가 이미 해당 내용을 소유하는지 확인합니다. 두 번째 owner를
    추가하는 대신 기존 member를 확장합니다.
 2. `docs/99.templates/02.templates/91.agent-governance/knowledge.template.md`를 복사하고
-   등록된 섹션을 유지합니다. 공통 용어는 이 폴더가 아니라
-   `docs/00.workspace/01.project/glossary.md`가 정의합니다. 새 member 경로는
+   등록된 섹션을 유지합니다. 공통 용어는 이 폴더의 `glossary.md`가 별도
+   `governance-vocabulary` 양식으로 정의합니다. Docker 로컬 의미는
+   `docs/00.workspace/01.project/glossary.md`가 소유합니다. 새 knowledge member 경로는
    Registry `governance-knowledge` profile의 `additional_paths`에 등록해야
    분류됩니다.
 3. 모든 claim을 tracked source에서 도출하고 그 source를 관찰 commit과

@@ -16,7 +16,6 @@ class NumberedFoldersTests(unittest.TestCase):
         "docs/00.workspace/02.process/approval-boundaries.md": (
             "docs/00.workspace/04.quality/approval-boundaries.md"
         ),
-        ".agents/knowledge/glossary.md": "docs/00.workspace/01.project/glossary.md",
         "docs/05.operations/guides/01-common/0004-x.md": (
             "docs/05.operations/01.guides/01.common/0004-x.md"
         ),
@@ -44,6 +43,8 @@ class NumberedFoldersTests(unittest.TestCase):
             "infra/01-gateway/README.md",
             "docs/03.specs/README.md",
             "docs/05.operations/README.md",
+            ".agents/knowledge/glossary.md",
+            "docs/00.workspace/01.project/glossary.md",
         ):
             with self.subTest(path=path):
                 self.assertEqual(P(path), numbered_path(P(path)))

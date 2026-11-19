@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "2.3.0"
+version: "2.3.1"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -84,7 +84,7 @@ integration in the merge, operation in Stage 05, and retirement in the removing
 Task. No axis is inferred from another: a PASS check is not acceptance, an
 accepted ADR or approved Spec is not execution, and a merge is not acceptance
 or deployment. These terms follow the
-[glossary](../01.project/glossary.md). Plan, README and Issue text link the
+[glossary](../../../.agents/knowledge/glossary.md). Plan, README and Issue text link the
 Task; they do not restate its status, results or acceptance. A pull request
 reports the checks of its own candidate and links the Task for the rest.
 

@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.15.0"
+version: "1.15.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-20"
 ---
 
 # Agent Quality and Security Standards
@@ -234,7 +234,7 @@ None: this document states no exclusion.
 | QUALITY-STANDARDS-R207 | A gate | Required: own one current invariant, not a historical document count, copied command list or Task's observed commit | none | none |
 | QUALITY-STANDARDS-R208 | Ownership split | Required: the workflow manifest owns composition, agent governance owns approval and completion policy and Stage 99 owns document structure | none | none |
 | QUALITY-STANDARDS-R209 | Provider adapter and PR template | Required: refer to these owners rather than adding another unconditional full run or independent checklist | none | none |
-| QUALITY-STANDARDS-R210 | Every leaf in `.github/workflow-contract.yml` | Required: name a resolving `.agents/governance/<document>.md#<heading anchor>` in `rule_owner` | workflow contract fails a leaf without a resolving `rule_owner` | `UNOWNED` in `run-ci-gate.py --crosswalk` |
+| QUALITY-STANDARDS-R210 | Every leaf in `.github/workflow-contract.yml` | Required: name a resolving canonical policy heading in `rule_owner` under `.agents/governance/` or `docs/00.workspace/01.project/`, `03.process/`, `04.quality/` | workflow contract fails a leaf without a resolving `rule_owner` | `UNOWNED` in `run-ci-gate.py --crosswalk` |
 | QUALITY-STANDARDS-R211 | Both public profiles | Required: use one Compose leaf that validates every declared selection independently, including port-collision checks | none | none |
 | QUALITY-STANDARDS-R212 | An explicit operator-selected Compose combination | Required: belongs to the standalone Compose validator, not a second required leaf with the same command | none | none |
 | QUALITY-STANDARDS-R213 | A current lifecycle, parser or gate contract changes | Allowed: focused fixtures | none | none |
@@ -647,7 +647,9 @@ agent governance owns approval and completion policy; Stage 99 owns document str
 A provider adapter and a PR template refer to these owners rather than adding
 another unconditional full run or independent checklist. Every leaf in
 `.github/workflow-contract.yml` names its governing rule in `rule_owner`, a
-`.agents/governance/<document>.md#<heading anchor>` that must resolve; a leaf
+`<canonical-policy-path>#<heading anchor>` under `.agents/governance/` or
+`docs/00.workspace/01.project/`, `03.process/`, `04.quality/` that must
+resolve. These are the existing checker's allowed owner classes; a leaf
 without one, or one naming a missing document or heading, fails the workflow
 contract and shows as `UNOWNED` in `run-ci-gate.py --crosswalk`.
 

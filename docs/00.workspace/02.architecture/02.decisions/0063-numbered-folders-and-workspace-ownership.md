@@ -1,10 +1,10 @@
 ---
 title: "Numbered Classification Folders and Workspace Ownership"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0063"
 parent_ids:
@@ -86,7 +86,7 @@ architecture documents and the shared vocabulary. Native provider paths,
    them) live under `docs/00.workspace/02.architecture/` with their issued
    identities; the existing AD and ADR profiles own both routes, and product
    and workspace share one identity namespace.
-4. The shared vocabulary lives at `docs/00.workspace/01.project/glossary.md`;
+4. Original 2026-11-19 placement, replaced below on 2026-11-20: the shared vocabulary lives at `docs/00.workspace/01.project/glossary.md`;
    agent- and provider-only terms live in `.agents/knowledge/agent-glossary.md`.
 5. Approval boundaries are a quality owner at
    `docs/00.workspace/04.quality/approval-boundaries.md`.
@@ -102,6 +102,18 @@ by SPEC-0212 TSK-0096 and TSK-0097.
 
 #### Supersession
 
+The direct P03-OWNERSHIP 1.1.0 requirement of 2026-11-20 explicitly
+replaces only Chosen Option 4: common Repository Vocabulary, including
+agent/provider meanings, belongs at
+[`.agents/knowledge/glossary.md`](../../../../.agents/knowledge/glossary.md);
+[the docs00 glossary](../../01.project/glossary.md) owns narrower local
+bindings. The separate agent glossary is retired after its meanings migrate,
+without a redirect. This scoped owner-directed amendment preserves the
+original accepted choice above as history, all numbering and architecture
+placements, and the pending environment/maintenance follow-up below.
+SPEC-0212 criterion157/W173 and TSK-0101 own implementation and evidence;
+this amendment records the decision, not implementation or acceptance.
+
 ADR-0057's role-and-domain layout carries forward; only its folder names
 `<role>/<NN-domain>/` become `<NN.role>/<NN.domain>/`.
 
@@ -111,7 +123,7 @@ ADR-0057's role-and-domain layout carries forward; only its folder names
 
 - Positive: every folder level sorts and reads the same way.
 - Positive: workspace structure, shared vocabulary and approval boundaries
-  each have one workspace owner.
+  each have one canonical owner; the current vocabulary placement follows the scoped amendment above.
 
 ### Follow-up
 

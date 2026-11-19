@@ -62,7 +62,7 @@ canonical_sources:
   - .agents/governance/workflows.md
   - .agents/knowledge/README.md
   - docs/00.workspace/01.project/glossary.md
-  - .agents/knowledge/agent-glossary.md
+  - .agents/knowledge/glossary.md
   - .agents/knowledge/repository-map.md
   - .agents/knowledge/verification-surface-map.md
   - .agents/prompts/README.md

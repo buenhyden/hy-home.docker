@@ -2814,7 +2814,7 @@ class RegisteredTableContractTests(unittest.TestCase):
 
     TARGETS: ClassVar[dict[str, str]] = {
         "postmortem": "docs/05.operations/04.incidents/2026/inc-0002-airflow-keycloak-native-auth/postmortem.md",
-        "governance-vocabulary": "docs/00.workspace/01.project/glossary.md",
+        "governance-vocabulary": ".agents/knowledge/glossary.md",
         "incident": "docs/05.operations/04.incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md",
         "runbook": "docs/05.operations/03.runbooks/12.testing-and-quality/0092-wiremock.md",
     }

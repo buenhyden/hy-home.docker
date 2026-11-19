@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.98.0"
+version: "1.99.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1282,6 +1282,24 @@ target, backup, recovery boundary, and action-specific authorization.
      cache deletion, global hook replacement or remote timing probes.
      Record normal authorized delivery separately from fixture evidence and
      leave owner acceptance explicit. No later prompt executes in this unit.
+
+157. TSK-0101 applies P03-OWNERSHIP 1.1.0 to this Docker workspace.
+     Classify all six workspace document classes and canonical agent/provider
+     surfaces by subject, readers, authority and actual enforcement. Preserve
+     correct workspace/product architecture separation and completed work.
+     Common Repository Vocabulary belongs at `.agents/knowledge/glossary.md`;
+     `docs/00.workspace/01.project/glossary.md` owns narrower local meanings.
+     Preserve the adopted 43 Term IDs, meanings and contract 3.0.1, migrate
+     valid agent terms once, and retire the former separate owner without
+     redirects. Update actual registry, navigation, template and path consumers
+     together; neither current glossary path is an obsolete relocation.
+     Correct rule_owner prose to its existing canonical policy classes and
+     route bootstrap order to its sole owner. Explicitly record the scoped
+     replacement of ADR-0063's glossary placement, preserving its history and
+     other decisions. Draft environment/maintenance promotion stays with P05;
+     final numbering stays with P17. Verify applicable failure boundaries,
+     review independently and deliver the checked P03 PR without running P04.
+     Distinguish source, verification, delivery and pending owner acceptance.
 
 ### Evidence Requirements
 
