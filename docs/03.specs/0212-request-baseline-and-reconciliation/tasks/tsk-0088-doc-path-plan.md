@@ -1,10 +1,10 @@
 ---
 title: "Document Path Plan Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0088"
 parent_ids:
@@ -156,9 +156,13 @@ None: the rehearsal failures are the plan's findings, which Q07 resolves.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 144 | pending | Collision review, Rehearsal contracts, Real tree unchanged | Awaits the owner's decision; the failing rehearsal rows are inputs to Q07 | @buenhyden |
+| 144 | pending | Collision review, Rehearsal contracts, Real tree unchanged | On 2026-11-19 the owner chose to accept once the open required rows are resolved; they stay required and open | @buenhyden |
 
 ### Remaining Conditions
+
+On 2026-11-19 the owner kept criterion 144 pending: the SDLC accepts it only
+after its open required rows are resolved; TSK-0095 lists them with their
+next check.
 
 Q07-CUTOVER converts the listed consumers, moves the 19 folders, and
 decides how terminal Task links resolve.

@@ -1,10 +1,10 @@
 ---
 title: "W09 Environment Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0087"
 parent_ids:
@@ -88,6 +88,7 @@ operating environment file preselects every profile is unobserved.
 | Dispatcher probe | 143 | W159 | shared dispatcher with Bash PreToolUse payloads | Every-profile `up` and a named-service `up` | PASS | Deny naming the rule for the first; no decision for the second; no Docker command ran | required | - |
 | Native refusal | 143 | W159 | Claude Bash tool and `codex exec` | A command whose text selects every profile for `up` | PASS | Both providers' PreToolUse hooks refused it before it ran; the Codex command was a harmless `echo` | required | - |
 | Environment file profiles | 143 | W159 | key presence of `COMPOSE_PROFILES` in `.env` | Operating environment file | NOT_RUN | Read refused by the permission classifier | optional | - |
+| Environment file profiles observed | 143 | W159 | `docker compose config --services` without a profile, with a scratch `.env` control | Operating project and a scratch project on 2026-11-19 (TSK-0093) | PASS | 0 services selected; the control selects 1 when `.env` sets the key, so `.env` sets none | required | - |
 
 ### Resolution Links
 
@@ -99,12 +100,14 @@ Rule GREEN resolves Rule RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 143 | pending | Host survey, Rule GREEN, Dispatcher probe, Native refusal | Awaits the owner's decision | @buenhyden |
+| 143 | accepted | Host survey, Rule GREEN, Dispatcher probe, Native refusal, Environment file profiles observed | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
 
-Whether `.env` preselects profiles is unobserved; the owner can confirm it
-or allow the key check.
+The owner accepted criterion 143 on 2026-11-19.
+
+The 2026-11-19 observation (Environment file profiles observed) shows the
+operating `.env` sets no profile, so the key check is no longer needed.
 
 ## Handoff
 

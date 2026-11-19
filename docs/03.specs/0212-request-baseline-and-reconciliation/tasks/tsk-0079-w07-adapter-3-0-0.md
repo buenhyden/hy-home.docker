@@ -1,10 +1,10 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0079"
 parent_ids:
@@ -474,9 +474,11 @@ Edit resolves the missing project PostToolUse exit-status witness.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 135 | pending | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation, Trusted Claude manual PreCompact completion, Trusted Claude project Stop retry completion, Trusted Claude project PostToolUse exit | Owner @buenhyden chose per-criterion acceptance on 2026-11-16 in this chat; held by unresolved required rows Native malformed output, Native reviewer boundaries, Native cross-provider integration and Codex desktop reviewer write-open | @buenhyden |
+| 135 | pending | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation, Trusted Claude manual PreCompact completion, Trusted Claude project Stop retry completion, Trusted Claude project PostToolUse exit | On 2026-11-19 the owner chose to accept once the Codex reviewer and sandbox rows are resolved; they stay required and open | @buenhyden |
 
 ### Remaining Conditions
+
+On 2026-11-19 the owner kept criterion 135 pending: the SDLC accepts it only after the unresolved required Codex reviewer and sandbox rows below are resolved; TSK-0095 lists them with their next check.
 
 A trusted Claude session observed SessionStart and UserPromptSubmit
 delivery and a PreToolUse allow and deny on the native Edit route only.

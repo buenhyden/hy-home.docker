@@ -1,10 +1,10 @@
 ---
 title: "W08 Memory Recall Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0083"
 parent_ids:
@@ -134,9 +134,11 @@ recall.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 139 | pending | Recall GREEN, Recall regression, Latency split, Native recall observed | Awaits the owner's decision | @buenhyden |
+| 139 | accepted | Recall GREEN, Recall regression, Latency split, Native recall observed | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 139 on 2026-11-19.
 
 None in W152 or W153; the owner decides criterion 139.
 

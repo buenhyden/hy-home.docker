@@ -1,6 +1,6 @@
 ---
 title: "W09 Cleanup Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -111,9 +111,11 @@ None.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 150 | pending | Package references, Clean suites, Clean checks, Clean commands, Approved deletion | Awaits the owner's decision | @buenhyden |
+| 150 | accepted | Package references, Clean suites, Clean checks, Clean commands, Approved deletion | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 150 on 2026-11-19.
 
 The package is removed only in Q07-CUTOVER after acceptance.
 

@@ -1,10 +1,10 @@
 ---
 title: "W08 Shared Memory Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0082"
 parent_ids:
@@ -230,6 +230,7 @@ and the hosted candidate checks.
 | Cross-provider stale write | 138 | W151 | Claude `put --expected-revision 1` after Codex's write | Same probe | PASS | `MEMORY_REVISION_CONFLICT` at revision 2; conflict stored; revision 2 kept | required | - |
 | Daily run without memory | 138 | W149 | `hyhome-backup.timer` run after the W149 merge | Host systemd | NOT_RUN | Last run 2026-11-18 03:57 KST, before the merge; next 2026-11-19 03:52 KST | required | - |
 | Backup code removal | 138 | W149 | memory, offsite, backup contract and routing suites; manifest, workflow contract, ruff, shellcheck | Working tree without memory backup code, on `b3f589aff` | PASS | 163 tests in 59 s, seven opt-in Docker rehearsals skipped; manifest and workflow contract PASS | required | - |
+| First run without memory | 138 | W149 | `journalctl -u hyhome-backup.service`, memory lines per run | Daily runs of 2026-11-16 to 19 | PASS | 2 memory lines on each of 16, 17 and 18, none on 19; Restic skipped over budget on 19, so snapshot content stays unobserved | required | - |
 
 ### Resolution Links
 
@@ -243,13 +244,18 @@ GREEN resolves D06 records RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 138 | pending | Exclusion GREEN, Local memory removal, Ledger reconcile, D06 records GREEN, Real store migration, Cross-provider round trip, Cross-provider stale write | Awaits the R2 removal, the first daily run without memory and the owner's decision | @buenhyden |
+| 138 | pending | Exclusion GREEN, Local memory removal, Ledger reconcile, D06 records GREEN, Real store migration, Cross-provider round trip, Cross-provider stale write, First run without memory | On 2026-11-19 the owner chose to accept once the open required rows are resolved; they stay required and open | @buenhyden |
 
 ### Remaining Conditions
 
+On 2026-11-19 the owner kept criterion 138 pending: the SDLC accepts it only
+after its open required rows are resolved; TSK-0095 lists them with their
+next check.
+
 W149 still removes the 30 R2 copies of the memory export after their
-30-day lock ends; the local snapshots and the ledger are clean. The first
-daily run after W149, due 2026-11-19 03:52 KST, remains to be observed.
+30-day lock ends; the local snapshots and the ledger are clean. The first daily run after W149, on 2026-11-19, ran without the memory step
+(First run without memory), but Restic was skipped over the state budget,
+so a snapshot without memory is observed only by the next successful run.
 W150 and W151 are observed.
 
 ## Handoff
