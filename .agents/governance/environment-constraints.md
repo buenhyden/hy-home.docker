@@ -518,7 +518,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Session analysis (R143-R148): no check is named.
 - Compose start selection (R149): `lab.py select` reads the render and the running containers when an operator runs it; nothing makes a start run it first, and two starts at once can each pass it.
 - Sandbox claims (R163): no check is named.
-- Secret content reads (R164): the hookify rule sees only the command text; a quoted path, a variable, a script that reads the file or a hook bypass is outside it.
+- Secret content reads (R164): the hookify rule sees only the command text; a quoted path, a variable, an interpreter or script that reads the file, `find -exec`, `xargs`, `git show`, a recursive read of a parent directory, `docker compose config` without `--services` or a hook bypass is outside it. An approved secret operation runs through a registered script that never prints the value, or the user runs the command.
 - Whole-stack start (R150): the hookify rule sees only the command text; a profile list read from an environment file or a command built at run time is outside it.
 - Task forecasts (R151, R154, R155): no check is named; R152 and R153 are enforced by the store and the CLI.
 - Observation (R161, R162): no check is named; the report reads stores and the journal and changes nothing.

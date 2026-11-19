@@ -31,6 +31,20 @@ class SecretContentReadTests(unittest.TestCase):
             "less .env.local",
             "source .env && echo done",
             "tail infra/app/.env",
+            "echo ok\ncat secrets/db/x.txt",
+            "grep -rn . secrets",
+            "rg -uu TOKEN secrets/",
+            "grep -E 'KEY|TOKEN' .env",
+            "awk 'BEGIN{FS=\"=\"};{print $2}' .env",
+            "sed -n '1p;2p' secrets/x",
+            "LC_ALL=C cat .env",
+            "env cat .env",
+            "timeout 5 cat .env",
+            "if true; then cat .env; fi",
+            "{ cat .env; }",
+            "vim -es '+%p' '+q!' .env",
+            "paste .env",
+            "cat prod.env",
         ):
             with self.subTest(command=command):
                 self.assertTrue(blocked(command))
@@ -51,6 +65,11 @@ class SecretContentReadTests(unittest.TestCase):
             "cat docs/secrets-policy.md",
             "docker compose --env-file .env config --services",
             "echo secrets/x",
+            "head x.env.example",
+            "diff .env.example infra/a/.env.example",
+            "sed -i 's/.env/.env.local/' docs/x.md",
+            "grep -rn 'secrets' docs",
+            "python3 scripts/operations/lab.py --env-file labs/.env check x",
         ):
             with self.subTest(command=command):
                 self.assertFalse(blocked(command))
