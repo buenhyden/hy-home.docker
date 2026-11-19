@@ -1,6 +1,6 @@
 ---
 title: "SDLC Structure Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -111,6 +111,19 @@ authoring-time check is left as an optional extension because the fixtures
 build such Plans on purpose. The D24 common forms stay as W03-FORMS
 delivered them.
 
+#### SDD-CONFORMANCE recheck on 2026-11-19
+
+The 2026-11-19 SDD-CONFORMANCE request was rerun after criteria 145 to 151
+were added. Its only item here is still D-W04, so the result is
+KEEP_VERIFIED: no code changes. The Spec Package reader suite, the
+selection-contract suite with the route fixture, and the active-corpus
+metadata check pass. Every criterion of the eight live packages maps to a
+Work Unit, and every Task a Plan names exists. The refusal of an
+acceptance with an unresolved required row was observed live on
+2026-11-19, when the metadata check refused `accepted` for criteria 135 and
+138 during W11-ACCEPT. No trace export or new check was added. The runs
+are structure checks, not semantic review or owner acceptance.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -154,6 +167,10 @@ correct titles; Claude cited BOOTSTRAP-R16 as its route.
 | Route fixture RED | 142 | W158 | `test_a_workspace_policy_change_selects_the_agent_governance_contract` | Workflow contract without the `docs/00.workspace/` route | FAIL | The selector refused the path as unmapped | required | - |
 | Route fixture GREEN | 142 | W158 | `test_a_workspace_policy_change_selects_the_agent_governance_contract` | Current workflow contract | PASS | The agent-governance suite and `leaf.local-agent-governance-contract` selected | required | Route fixture RED |
 | Native loading observed | 142 | W158 | a fresh provider session reading a moved policy | `claude -p` in plan mode and `codex exec` read-only on `dc53d574f` | PASS | Both named the SDLC 2.3.0 and approval boundaries 1.6.0 at their `docs/00.workspace/02.process/` paths from the bootstrap alone | required | Native loading |
+| SDD reader recheck | 142 | W158 | `test_spec_packages` | Clean worktree at `d4f94d1be` | PASS | 160 tests in 1005.8 s | required | - |
+| Selection contract recheck | 142 | W158 | `test_ci_gate_contract`, including the route fixture | `main` at `c64fb4408` | PASS | 47 tests | required | - |
+| Active corpus recheck | 142 | W158 | `check-document-metadata.py --mode check-active` | `main` at `c64fb4408` | PASS | 595 documents, 0 violations | required | - |
+| Criterion mapping recheck | 142 | W158 | Spec criteria against Plan Work Units and named Task files | Eight live packages at `c64fb4408` | PASS | 214 criteria, 0 unmapped, 0 missing Tasks | required | - |
 
 ### Resolution Links
 
@@ -170,7 +187,7 @@ failure predates this Task and stays with the SearXNG owner.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 142 | accepted | Moved link GREEN, Relation owner GREEN, Moved baseline GREEN, Document checks, Contract and renderer, Native loading observed, All link modes after fix | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
+| 142 | accepted | Moved link GREEN, Relation owner GREEN, Moved baseline GREEN, Document checks, Contract and renderer, Native loading observed, All link modes after fix, SDD reader recheck, Selection contract recheck, Active corpus recheck, Criterion mapping recheck | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
 
