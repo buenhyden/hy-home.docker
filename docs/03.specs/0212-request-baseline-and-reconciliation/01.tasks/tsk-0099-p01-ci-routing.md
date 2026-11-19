@@ -1,6 +1,6 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -115,6 +115,13 @@ current authority, maintenance evidence and next input change. Existing
 Spec criterion 155 and Plan W171 remain the contract and owner; no new
 Spec, wrapper, test, completion ledger or approval gate is needed. Fresh
 document checks and the new PR's required CI verify this documentation delta.
+
+[PR1129](https://github.com/buenhyden/hy-home.docker/pull/1129) delivers this
+one-file maintenance update. Its first head `7af95e1cb73f20f5924e483a569a3313a6c7dd2e`
+passed routing/core/required aggregate in run44589566583. Brief revision 2
+rebinds the same Task after that commit for this observed receipt only.
+Final receipt-head checks and merge are read back from the PR; this paragraph
+does not claim that an unexecuted candidate or owner acceptance passed.
 
 #### Discovery and exclusions
 
@@ -316,6 +323,7 @@ statements retain that evidence; E23/E26/E30/E31 verify the corrections.
 | E36 | 155 | W171 | Matching 1.1.0 requirement/decision and dependency comparison | Clean HEAD 60f905d4; final implementation a6e797d0; P00 PR1128; matching P01/D01/Docker inputs | PASS | Six requirements mapped above; only four existing execution documents changed since implementation. Source/test/tool/contract scope unchanged; reuse dated successful results without replay or new acceptance claim | required | - |
 | E37 | 155 | W171 | Separate requirement-to-consumer inspection and low-risk author diff check | P01 1.1.0; unchanged tracked source and this Task delta | PASS | Inspection worker found no blocking implementation gap and confirmed six mappings against source/tests, corroborating the stale advisory graph. No writes or test replay; this is not a new enforced read-only runtime observation. Author checked exact one-file diff, historical/current authority, generation-7 shape, pending acceptance and absence of private payloads | required | - |
 | E38 | 155 | W171 | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 60f905d4; .venv/bin/python scripts/validation/check-document-links.py --mode all --changed --base-ref 60f905d4; .venv/bin/python scripts/validation/check-document-corpus-lifecycle.py | Current 1.1.0 Task maintenance delta | PASS | All exit 0: one selected metadata record, zero violations; three selected link documents, zero failures/warnings; corpus/occupancy violations zero. Existing generation-7 form preserved. Changed-plan explanation and git diff --check passed; counts describe observations only. No permanent diagnostic or progress artifact created; matching input package retained | required | - |
+| E39 | 155 | W171 | Hosted maintenance candidate and authorized remote delivery read-back | PR1129 head 7af95e1c against base 60f905d4 | PASS | [Run44589566583](https://github.com/buenhyden/hy-home.docker/actions/runs/44589566583): routing/core/required candidate-quality success; document shard explicitly unselected and main-security N/A for PR. Commit and dedicated branch push completed normally. Strict current-head required check/admin/conversation protection remains enforced, with zero approving reviews required. Final receipt-head result and merge remain separate PR observations | required | - |
 
 ### Resolution Links
 
