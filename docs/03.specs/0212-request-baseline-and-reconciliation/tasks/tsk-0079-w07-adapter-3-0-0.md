@@ -455,6 +455,7 @@ project trust before it can supply the missing delivery evidence.
 | RUNTIME-CLOSE Claude onFailure | 135 | W140 | headless PreToolUse failure control | Claude Code 2.1.327, synthetic project hook with `onFailure: block`, four Writes | PASS | Exit 1 refused by onFailure; invalid JSON on exit 0 still ran; explicit deny refused; no output allowed | required | - |
 | RUNTIME-CLOSE Codex sandbox observed | 135 | W140 | read-only exec write attempt | `codex exec --sandbox read-only` 0.169.0 on a scratch fixture, 2026-11-19 | PASS | The shell write was refused with `read-only file system`; fixture unchanged; 20 s, 22,613 tokens | required | RUNTIME-CLOSE Codex sandbox |
 | Codex CLI reviewer subagent rerun | 135 | W140 | shell write and sensitive path denial | `codex exec --sandbox workspace-write` spawning `code-reviewer` (`sandbox_mode = "read-only"`) on an ignored synthetic file, 2026-11-19 | FAIL | The subagent wrote the file and reported `WROTE`; the parent did not run the command; 67 s, 74,473 tokens; fixture removed | required | - |
+| Read-only parent rule review | 135 | W140 | Fresh-context `rules-engineer` review | Workflows 1.7.0 rule as committed in `599d277fb`, dispatched 2026-11-19T01:23:31Z | PASS | Approve with follow-up after 55 s, 16 tool calls: the unmet outcome, a pointer to the capability matrix instead of the adapters, unobserved routes and placement were fixed; a cross-link to the agentic read-only scope rule was left as optional | required | - |
 
 ### Resolution Links
 

@@ -1,10 +1,10 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.3.1"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Provider Capability Matrix
@@ -77,6 +77,7 @@ None: this document states no exclusion.
 | Explicit invocation | skill-local control and shared approval | `disable-model-invocation: true` | `agents/openai.yaml`: `policy.allow_implicit_invocation: false` |
 | Model and effort | Provider Registry | native model and effort | native model and reasoning |
 | Permissions | role plus Provider Registry | permission mode | sandbox mode |
+| Spawned reviewer read-only enforcement | Review Risk in `workflows.md` | tool allowlist of the generated reviewer agent; a spawned reviewer was observed with no write or shell tool and a refused sensitive read (SPEC-0212 TSK-0079) | on 0.169.0 a spawned reviewer keeps its parent's sandbox despite `sandbox_mode = "read-only"`; a read-only parent enforces it |
 | Semantic events | Registry plus native hook config | Claude adapter | Codex adapter |
 
 Native skill frontmatter uses `name`, `description`, and nested governance
