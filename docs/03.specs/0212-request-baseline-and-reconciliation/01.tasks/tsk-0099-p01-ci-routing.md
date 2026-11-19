@@ -1,6 +1,6 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.1.4"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -19,14 +19,23 @@ created: "2026-11-20"
 ### Objective and Parent
 
 Own criterion 155 and W171 under the [Spec](../spec.md) and [Plan](../plan.md).
-Apply P01-CI-ROUTING 1.0.0 to the current Docker workspace, reusing P00's
-finding F-DKR-003 and excluding completed work from reimplementation.
+Maintain the merged P01-CI-ROUTING implementation against the current 1.1.0
+request, reusing P00's finding F-DKR-003 and excluding completed work from
+reimplementation. The original 1.0.0 execution below remains dated evidence.
 
 ### Inputs and Authority
 
-The direct user request authorizes P01 implementation, verification, commit,
-push, PR and merge, and explicitly excludes automatic execution of other
-prompts. The only external package input is
+The current direct user request authorizes P01 reconciliation, verification,
+commit, push, PR and merge only. Its package is
+`_workspace/workspace_governance_remediation_1_1_0_20261120/`: README,
+P01 prompt, decisions-20261120, execution contract, questions, sources, D01,
+Docker profile and findings. No other workspace profile is an implementation
+input. The following original-request details are historical provenance,
+not instructions to read the earlier package.
+
+The original direct user request authorized P01 implementation, verification, commit,
+push, PR and merge, and explicitly excluded automatic execution of other
+prompts. The only external package input was
 `_workspace/workspace_governance_remediation_1_0_0_20261119/`: README,
 P01 prompt, execution contract, questions, sources, D01, Docker profile and
 findings. No other repository or old package supplies implementation.
@@ -61,6 +70,58 @@ Brief revision 9 binds this result-only update to merged baseline
 ## Execution Log
 
 ### Work Performed
+
+#### Current 1.1.0 maintenance boundary
+
+On 2026-11-20, the current root and common directory remain those recorded
+above. Branch `codex/p01-ci-evidence`, HEAD
+`60f905d41663147745256120b6e840fa4ba20959` and remote main agree; the
+working tree is clean. The branch's ahead marker describes committed
+history, not unowned edits. P00 1.1.0 is merged through
+[PR1128](https://github.com/buenhyden/hy-home.docker/pull/1128).
+Request revision `1272c1f821bb8a9a614b3cdfb0d659eb` and brief
+`P01-CI-ROUTING-docker-1.1.0` revision 1 bind this Task alone. The coordinator
+is its exclusive writer; the audit worker has no write assignment. No
+partial implementation or concurrent writer is inherited.
+
+The current matching D01 still has design version 1.0.0. Q-01–Q-04 have
+been compared with P01; none changes its CI input, trust or result contract.
+The previously completed eleven areas remain excluded by their actual
+receipts, without introducing a fixed-count completion gate. Open PR1047
+and PR1048 retain their previously observed heads and remain separate image
+updates; neither is merged or treated as current implementation.
+
+Only four Spec/Plan/Task files differ between final implementation head
+`a6e797d0` and this baseline. Workflow, selector, runner, document libraries,
+regression consumers, manifest, lock/toolchain and policy inputs are unchanged.
+Reuse their source-level results and dated hosted evidence; this does not
+claim that an old run tested a new candidate or an unchanged live service.
+[PR1127](https://github.com/buenhyden/hy-home.docker/pull/1127) delivered the
+result-only receipt as `b8ddeee632ed44dc4ecb2cda0e29d3c586618e1f`; its
+[run44582373102](https://github.com/buenhyden/hy-home.docker/actions/runs/44582373102)
+passed routing/core/required aggregate with documents correctly unselected.
+
+| P01 requirement | Maintained implementation and evidence |
+| --- | --- |
+| 1: Events, consumers and timing | Workflow contract, `ci-quality.yml` and gate runner; event table and separated observed queue/setup/plan/leaf/aggregate boundaries below; E11/E12/E33. No p95 or total speedup claim. |
+| 2: Complete event union and self-regression | Existing gate change discovery, execution contexts and contract root rules; both rename sides, deletion, global consumers and runner regressions; E03/E04/E08/E09. |
+| 3: Honest result aggregation | Existing always-reporting `candidate-quality`; selected missing/skip/cancel/error blocks, valid unselected shard is N/A; E08/E09/E32/E33. No whole-workflow path filter or active merge queue. |
+| 4: Shared parsing and affected closure | Existing `spec_packages.py`, `links.py`, `metadata/reference.py`, `lifecycle/public.py` and link CLI; immutable parse reuse, complete indexes, changed/inbound scope, global expansion and fail-closed base discovery; E06/E16/E17/E19/E21/E26/E28. |
+| 5: Meaningful reuse and event separation | Existing shared prepared plan, authenticated candidate and exact invocation bindings; PR quality and merge security have different consumers. E08/E09/E12/E30/E31/E33, unchanged source and trust scope. No new persistent result cache or privileged PR route. |
+| 6: Representative selection cases | Existing gate/plan/context and document tests cover document/code/manifest/lock/rename/delete/global/empty/error cases; E03/E04/E08/E09/E17/E31. P04 must map any new form consumer into this same selector. |
+
+No known P01 implementation gap was found. Only this nonterminal Task's
+current authority, maintenance evidence and next input change. Existing
+Spec criterion 155 and Plan W171 remain the contract and owner; no new
+Spec, wrapper, test, completion ledger or approval gate is needed. Fresh
+document checks and the new PR's required CI verify this documentation delta.
+
+[PR1129](https://github.com/buenhyden/hy-home.docker/pull/1129) delivers this
+one-file maintenance update. Its first head `7af95e1cb73f20f5924e483a569a3313a6c7dd2e`
+passed routing/core/required aggregate in run44589566583. Brief revision 2
+rebinds the same Task after that commit for this observed receipt only.
+Final receipt-head checks and merge are read back from the PR; this paragraph
+does not claim that an unexecuted candidate or owner acceptance passed.
 
 #### Discovery and exclusions
 
@@ -259,6 +320,10 @@ statements retain that evidence; E23/E26/E30/E31 verify the corrections.
 | E33 | 155 | W171 | Hosted candidate-quality aggregate | Final head a6e797d0; authenticated candidate 0704be89; run 44576522487 | PASS | Routing/core/documents/aggregate success; 404 core and 1142 document tests in this run; GitHub read-back confirms current-head checks and clean merge state. Exact time boundaries above; unchanged earlier review evidence reused | required | E32 |
 | E34 | 155 | W171 | Authorized P01 implementation delivery | PR1126 current head a6e797d0 after required checks | PASS | GitHub merge and read-back confirm merge commit 16d2be3f6c4c9a8b0de69e0224b5b6c6727432df at 2026-11-19 17:49:04 UTC. Fast-forward local reconciliation preserved a clean tree; owner acceptance is not inferred | required | - |
 | E35 | 155 | W171 | Result-only receipt authoring checks | This Task delta against 16d2be3f | PASS | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 16d2be3f: selected one record, zero violations; .venv/bin/python scripts/validation/check-document-links.py --mode all --changed --base-ref 16d2be3f: two selected documents, zero failures/warnings; .venv/bin/python scripts/validation/check-document-corpus-lifecycle.py: zero corpus/occupancy violations. All three commands exited 0; selected-plan explanation and diff check passed | required | - |
+| E36 | 155 | W171 | Matching 1.1.0 requirement/decision and dependency comparison | Clean HEAD 60f905d4; final implementation a6e797d0; P00 PR1128; matching P01/D01/Docker inputs | PASS | Six requirements mapped above; only four existing execution documents changed since implementation. Source/test/tool/contract scope unchanged; reuse dated successful results without replay or new acceptance claim | required | - |
+| E37 | 155 | W171 | Separate requirement-to-consumer inspection and low-risk author diff check | P01 1.1.0; unchanged tracked source and this Task delta | PASS | Inspection worker found no blocking implementation gap and confirmed six mappings against source/tests, corroborating the stale advisory graph. No writes or test replay; this is not a new enforced read-only runtime observation. Author checked exact one-file diff, historical/current authority, generation-7 shape, pending acceptance and absence of private payloads | required | - |
+| E38 | 155 | W171 | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 60f905d4; .venv/bin/python scripts/validation/check-document-links.py --mode all --changed --base-ref 60f905d4; .venv/bin/python scripts/validation/check-document-corpus-lifecycle.py | Current 1.1.0 Task maintenance delta | PASS | All exit 0: one selected metadata record, zero violations; three selected link documents, zero failures/warnings; corpus/occupancy violations zero. Existing generation-7 form preserved. Changed-plan explanation and git diff --check passed; counts describe observations only. No permanent diagnostic or progress artifact created; matching input package retained | required | - |
+| E39 | 155 | W171 | Hosted maintenance candidate and authorized remote delivery read-back | PR1129 head 7af95e1c against base 60f905d4 | PASS | [Run44589566583](https://github.com/buenhyden/hy-home.docker/actions/runs/44589566583): routing/core/required candidate-quality success; document shard explicitly unselected and main-security N/A for PR. Commit and dedicated branch push completed normally. Strict current-head required check/admin/conversation protection remains enforced, with zero approving reviews required. Final receipt-head result and merge remain separate PR observations | required | - |
 
 ### Resolution Links
 
@@ -284,7 +349,7 @@ different observations; neither substitutes for owner acceptance.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 155 | pending | E16, E17, E19, E21, E23, E26, E28, E30, E31, E33, E34 | Implementation, verification and merge complete; owner acceptance remains separate | @buenhyden |
+| 155 | pending | E16, E17, E19, E21, E23, E26, E28, E30, E31, E33, E34, E36, E37, E38 | Implementation, verification and merge complete; 1.1.0 maintenance confirmed; owner acceptance remains separate | @buenhyden |
 
 ### Remaining Conditions
 
@@ -317,7 +382,9 @@ are not cleanup candidates. No unrelated active work was deleted.
 ### Next Owner
 
 After P01 verification and requested delivery, the next input is
-`_workspace/workspace_governance_remediation_1_0_0_20261119/prompts/P02-LOCAL-FEEDBACK.md`.
-Its prerequisite is P00 and P01's actual result and exclusions. Do not execute
+`_workspace/workspace_governance_remediation_1_1_0_20261120/prompts/P02-LOCAL-FEEDBACK.md`.
+Its prerequisite is P00 1.1.0's merged result and P01's maintained implementation,
+verification and exclusions. Criterion 155 owner acceptance remains pending;
+do not infer it from prompt entry, merge or this maintenance decision. Do not execute
 P02 automatically. Preserve the matching package through P17; remove only
 P01-owned one-off timing/test artifacts when finished.
