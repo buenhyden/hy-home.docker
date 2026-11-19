@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.94.0"
+version: "1.95.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -414,6 +414,26 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W167 | 151 | Judge every prerequisite criterion with the owner, list runtime remainders and rehearse the cutover allocation read only | W166 | TSK-0095 | Acceptance ledger, journal reconciliation and cutover rehearsal |
 | W168 | 152 | Move every classification folder to `NN.name`, move workspace architecture, vocabulary and approval boundaries into the workspace classes, convert every consumer and test, and move product runtime rules to their product owners | W160 | TSK-0096 | Link, corpus, metadata, catalog, contract, manifest and renderer checks; governance and validation test modules against a clean `main` baseline |
 | W169 | 153 | Triage CodeQL, rerun the venv-only test modules, record the owner's acceptances, add the environment and maintenance guides and move the RUN-0021 workspace sections | W168 | TSK-0097 | Alert triage, venv test run, link, metadata, catalog, corpus, manifest and contract checks |
+| W170 | 154 | Reconcile the current Docker workspace with remediation 1.0.0; preserve matching completed work, map owners and consumers, and route defects, observations and decisions to P01–P17 | None | TSK-0098 | Finding coverage and path checks; changed metadata, links, corpus lifecycle, changed-selector explanation and diff check |
+
+#### Current P00 remediation sequence
+
+The direct 2026-11-20 request reuses this package's reconciliation ownership.
+The doc-writer owns only `spec.md`, `plan.md` and
+`01.tasks/tsk-0098-p00-reconcile.md` in this package. TSK-0097 retains criterion
+153 and its independent CodeQL and maintenance-authority remainders; no
+terminal Task is reopened. W170 is a local documentation unit with focused
+checks and review of its logical diff. Reverting these three edits reverses
+the unit without changing runtime or data. No executable logic is added, so
+implementation RED/GREEN and coverage expansion have no subject here.
+
+[TSK-0098](01.tasks/tsk-0098-p00-reconcile.md#ordered-follow-up) owns the
+ordered P01–P17 file and validation map, findings and preserved decisions.
+Its follow-ups promote durable rules to the existing workspace, agent,
+product and Stage 99 owners before final P17 retirement. This planning
+sequence is not evidence that any follow-up ran. Read-only PR discovery,
+document checks and owner acceptance are recorded separately; full suites,
+native workers and live services are not P00 checks.
 
 #### Current v30 continuation and delivery
 
