@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -156,7 +156,7 @@ fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정
 
 n8n의 OpenTelemetry 모듈은 license 없이 켜지며 `N8N_OTEL_ENABLED=true`와 `N8N_OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318`, service별 `N8N_OTEL_EXPORTER_SERVICE_NAME`(`n8n`, `n8n-worker`)만 설정합니다. 나머지 `N8N_OTEL_*` 옵션은 기본값이라 production 실행만, 100% sampling, node span 포함, start marker span 없음입니다. 속성은 workflow·node ID와 이름, 실행 mode·상태·오류 형식, node item 수이고 credential과 실행 payload는 없지만, 실패 span에는 오류 메시지와 stack이 exception 이벤트로 실리고 외부 HTTP 요청에는 `traceparent` 헤더가 붙습니다. Alloy가 없으면 시작 연결 확인이 오류를 로그에 남기고 추적만 건너뜁니다.
 
-n8n Assistant는 UI provider connection에서 고른 모델(`anthropic/claude-sonnet-5`)과 공유 웹 검색 `searxng`(`N8N_INSTANCE_AI_SEARXNG_URL`, [GDE-0110](../../../docs/05.operations/guides/09-ai-and-search/0110-searxng.md))를 씁니다. 모델과 Anthropic key는 UI에서 관리하며, `N8N_INSTANCE_AI_MODEL`을 설정하면 UI 변경이 거부되므로 Compose에 두지 않습니다. SearXNG 설정·네트워크·게시는 [GDE-0110](../../../docs/05.operations/guides/09-ai-and-search/0110-searxng.md)이 다룹니다. 코드 sandbox는 opt-in profile `n8n-sandbox`로 `n8n-sandbox-certs`·`n8n-sandbox-api`·privileged `n8n-sandbox-runner-1`(owner 결정 2026-11-09)을 쓰며, 세 service 모두 host port와 route가 없고 runner는 `n8n_sandbox_runner_net`과 `n8n_sandbox_outbound_net`만 사용합니다. secret 파일 3개(`n8n_sandbox_api_key`, `n8n_sandbox_runner_registration_token`, `n8n_sandbox_runner_api_key`)가 `secrets/automation/n8n/`에 있어야 `n8n`이 시작하며 자세한 보안 주의는 GDE-0053을 따릅니다. env로 설정한 sandbox 설정은 Assistant UI에서 잠기며, 이는 의도한 동작입니다.
+n8n Assistant는 UI provider connection에서 고른 모델(`anthropic/claude-sonnet-5`)과 공유 웹 검색 `searxng`(`N8N_INSTANCE_AI_SEARXNG_URL`, `GDE-0110`)를 씁니다. 모델과 Anthropic key는 UI에서 관리하며, `N8N_INSTANCE_AI_MODEL`을 설정하면 UI 변경이 거부되므로 Compose에 두지 않습니다. SearXNG 설정·네트워크·게시는 `GDE-0110`이 다룹니다. 코드 sandbox는 opt-in profile `n8n-sandbox`로 `n8n-sandbox-certs`·`n8n-sandbox-api`·privileged `n8n-sandbox-runner-1`(owner 결정 2026-11-09)을 쓰며, 세 service 모두 host port와 route가 없고 runner는 `n8n_sandbox_runner_net`과 `n8n_sandbox_outbound_net`만 사용합니다. secret 파일 3개(`n8n_sandbox_api_key`, `n8n_sandbox_runner_registration_token`, `n8n_sandbox_runner_api_key`)가 `secrets/automation/n8n/`에 있어야 `n8n`이 시작하며 자세한 보안 주의는 GDE-0053을 따릅니다. env로 설정한 sandbox 설정은 Assistant UI에서 잠기며, 이는 의도한 동작입니다.
 
 UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
 deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.
