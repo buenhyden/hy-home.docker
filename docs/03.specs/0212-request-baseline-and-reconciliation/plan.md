@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.95.0"
+version: "1.96.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -415,6 +415,30 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W168 | 152 | Move every classification folder to `NN.name`, move workspace architecture, vocabulary and approval boundaries into the workspace classes, convert every consumer and test, and move product runtime rules to their product owners | W160 | TSK-0096 | Link, corpus, metadata, catalog, contract, manifest and renderer checks; governance and validation test modules against a clean `main` baseline |
 | W169 | 153 | Triage CodeQL, rerun the venv-only test modules, record the owner's acceptances, add the environment and maintenance guides and move the RUN-0021 workspace sections | W168 | TSK-0097 | Alert triage, venv test run, link, metadata, catalog, corpus, manifest and contract checks |
 | W170 | 154 | Reconcile the current Docker workspace with remediation 1.0.0; preserve matching completed work, map owners and consumers, and route defects, observations and decisions to P01–P17 | None | TSK-0098 | Finding coverage and path checks; changed metadata, links, corpus lifecycle, changed-selector explanation and diff check |
+| W171 | 155 | Split document regressions by actual consumers, restrict content validation to changed/inbound scope, share immutable parsing/history inputs and preserve fail-closed candidate aggregation | W170 | TSK-0099 | RED/GREEN gate and document tests; same-input timing; workflow/manifest/ownership/document checks; independent review and hosted PR checks |
+
+#### Current P01 routing implementation
+
+The direct P01 request authorizes W171 and local commit, branch push, pull
+request and merge after required checks. It reuses P00 and prior completed
+work; only P01 is executed. [TSK-0099](01.tasks/tsk-0099-p01-ci-routing.md)
+owns exact paths, test results, timing, review and delivery evidence.
+
+The CI writer owns the workflow contract, gate contract and their existing
+selection/execution tests. The document writer owns the shared document
+parse, changed/inbound selection and existing document tests. The coordinator
+owns this Spec, Plan and Task. They share one worktree and do not overwrite
+each other's paths. Confirm the native brief's exact scope before each writer
+acts. First demonstrate missing behavior in focused tests, then implement;
+independent code/security review precedes ordinary hooks and remote delivery.
+
+Preserve full candidate-diff and aggregate behavior already covered by tests.
+No service start or permission expansion is needed. Existing gates remain the
+single delivery route. Reverting W171's source/configuration changes restores
+the old selection and parsing behavior without changing runtime or user data.
+P02 local timing work and later memory/session/identity changes stay outside
+this unit. Durable consumers are the workflow contract and document libraries;
+the Task records their promotion and any unobserved boundary.
 
 #### Current P00 remediation sequence
 

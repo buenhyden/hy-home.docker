@@ -28,6 +28,7 @@ from scripts.lib.document_governance.identity_history import (
     collect_issued_identities,
     validate_identity_history,
 )
+from scripts.lib.document_governance.links import document_controls_changed
 from scripts.lib.document_governance.metadata.heading import (
     _introduced_body_findings,
     _machine_template_findings,
@@ -393,6 +394,9 @@ def _validate_repository_contracts(
     previous_records: Mapping[str, Record] | None = None,
     current_records: Mapping[str, Record] | None = None,
     frontmatter_validator: FrontmatterValidator | None = None,
+    validation_paths: set[str] | None = None,
+    transition_overrides: Mapping[tuple[str, str, str], TransitionOverride]
+    | None = None,
 ) -> tuple[
     list[Finding],
     frozenset[tuple[str, str, str]],
@@ -440,7 +444,9 @@ def _validate_repository_contracts(
             root,
             profiles,
             selected_paths=sorted(
-                _changed_paths(root, (), BaseSelection("worktree", None, None))
+                validation_paths
+                if validation_paths is not None
+                else _changed_paths(root, (), BaseSelection("worktree", None, None))
             ),
             previous_records=previous_records,
             require_git=True,
@@ -654,6 +660,11 @@ def _validate_repository_contracts(
                     for finding in spec_lifecycle.findings
                 )
         for record in records:
+            if (
+                validation_paths is not None
+                and record.path.as_posix() not in validation_paths
+            ):
+                continue
             # Template sources keep their own route because their placeholders
             # are correct for a template and invalid for an authored document.
             findings.extend(
@@ -662,6 +673,7 @@ def _validate_repository_contracts(
                     record,
                     profiles,
                     manifest,
+                    transition_overrides=transition_overrides,
                     actual_lifecycle_transitions=actual_lifecycle_transitions,
                     actual_lifecycle_normalizations=frozenset(
                         actual_lifecycle_normalizations
@@ -670,7 +682,8 @@ def _validate_repository_contracts(
                         actual_lifecycle_normalization_sources
                     ),
                     unchanged_generation_statuses=unchanged_generation_statuses,
-                    enforce_initial_status=transition_ref is not None,
+                    enforce_initial_status=validation_paths is not None
+                    or transition_ref is not None,
                     frontmatter_validator=frontmatter_validator,
                 )
                 if finding.severity == "error"
@@ -682,6 +695,8 @@ def _validate_repository_contracts(
 
     readme_registry = profiles.get("_registry") if registry_native else None
     for path in tracked_markdown:
+        if validation_paths is not None and path.as_posix() not in validation_paths:
+            continue
         # `.github/repository-surface.md` carries the repository README form
         # under another name: GitHub resolves a repository's displayed README
         # from `.github/` as well as the root, so a README.md there would take
@@ -918,6 +933,42 @@ def validate_repository_contracts(
         frontmatter_validator=frontmatter_validator,
     )
     return findings
+
+
+def _metadata_validation_paths(
+    changed: set[str],
+    current: Mapping[str, Record],
+    previous: Mapping[str, Record],
+) -> set[str]:
+    """Keep complete identity indexes while validating only changed consumers."""
+
+    if document_controls_changed(changed):
+        return set(current)
+    by_id: dict[str, set[str]] = collections.defaultdict(set)
+    consumers: dict[str, set[str]] = collections.defaultdict(set)
+    for path, record in current.items():
+        artifact_id = record.metadata.get("artifact_id")
+        if isinstance(artifact_id, str):
+            by_id[artifact_id].add(path)
+        for field in ("parent_ids", "supersedes"):
+            for target in _string_list(record.metadata.get(field)) or ():
+                consumers[target].add(path)
+    selected = set(changed)
+    queue = collections.deque(changed)
+    while queue:
+        path = queue.popleft()
+        identities = {
+            value
+            for records in (current, previous)
+            if (record := records.get(path)) is not None
+            and isinstance(value := record.metadata.get("artifact_id"), str)
+        }
+        for identity in identities:
+            for dependent in by_id[identity] | consumers[identity]:
+                if dependent not in selected:
+                    selected.add(dependent)
+                    queue.append(dependent)
+    return selected
 
 
 def _relation_impact_findings(
@@ -1356,6 +1407,13 @@ def render_report(
     return "\n".join(lines)
 
 
+def _managed_document_change(path: str) -> str | None:
+    normalized = _normalized_target_path(path)
+    if normalized is not None:
+        return normalized.as_posix()
+    return path if document_controls_changed((path,)) else None
+
+
 def _changed_paths(
     root: pathlib.Path,
     explicit: Sequence[str],
@@ -1364,39 +1422,37 @@ def _changed_paths(
     changed: set[str] = set()
     commands = [
         (
-            "unstaged Markdown discovery",
-            ["diff", "--name-only", "-z", "--diff-filter=ACDMRT", "--", "*.md"],
+            "unstaged document/control discovery",
+            ["diff", "--name-only", "-z", "--no-renames", "--diff-filter=ACDMRT"],
         ),
         (
-            "staged Markdown discovery",
+            "staged document/control discovery",
             [
                 "diff",
                 "--cached",
                 "--name-only",
                 "-z",
+                "--no-renames",
                 "--diff-filter=ACDMRT",
-                "--",
-                "*.md",
             ],
         ),
         (
-            "untracked Markdown discovery",
-            ["ls-files", "-z", "--others", "--exclude-standard", "--", "*.md"],
+            "untracked document/control discovery",
+            ["ls-files", "-z", "--others", "--exclude-standard"],
         ),
     ]
     if base.merge_base:
         commands.insert(
             0,
             (
-                "committed branch Markdown discovery",
+                "committed branch document/control discovery",
                 [
                     "diff",
                     "--name-only",
                     "-z",
+                    "--no-renames",
                     "--diff-filter=ACDMRT",
                     f"{base.merge_base}...HEAD",
-                    "--",
-                    "*.md",
                 ],
             ),
         )
@@ -1407,16 +1463,16 @@ def _changed_paths(
                 f"cannot establish local Git snapshot: {operation} failed"
             )
         changed.update(
-            normalized.as_posix()
+            normalized
             for path in _decode_git_paths(result.stdout, operation)
-            if (normalized := _normalized_target_path(path.as_posix())) is not None
+            if (normalized := _managed_document_change(path.as_posix())) is not None
         )
     if explicit:
         return {
-            normalized.as_posix()
+            normalized
             for path in explicit
-            if (normalized := _normalized_target_path(path)) is not None
-        }
+            if (normalized := _managed_document_change(path)) is not None
+        } | {path for path in changed if document_controls_changed((path,))}
     return changed
 
 
@@ -1841,6 +1897,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     native_findings: list[Finding] = []
     records_by_path = {record.path.as_posix(): record for record in records}
+    validation_paths = (
+        _metadata_validation_paths(
+            changed_selection, records_by_path, base_records_by_path
+        )
+        if args.mode == "check-changed"
+        else set(records_by_path)
+    )
     actual_lifecycle_transitions: frozenset[tuple[str, str, str]] = frozenset()
     actual_lifecycle_normalizations: frozenset[tuple[str, str, str]] = frozenset()
     actual_lifecycle_normalization_sources: dict[str, str] = {}
@@ -1863,6 +1926,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     ),
                     current_records=records_by_path,
                     frontmatter_validator=frontmatter_validator,
+                    validation_paths=validation_paths,
+                    transition_overrides=transition_overrides,
                 )
                 actual_lifecycle_normalization_sources = {
                     path: source for path, source, _ in actual_lifecycle_normalizations
@@ -1873,23 +1938,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         except (ProfileError, SpecPackageError) as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
-    findings_by_path = {
-        record.path.as_posix(): validate_record(
-            record,
-            profiles,
-            manifest,
-            transition_overrides=transition_overrides,
-            enforce_initial_status=args.mode == "check-changed",
-            actual_lifecycle_transitions=actual_lifecycle_transitions,
-            actual_lifecycle_normalizations=actual_lifecycle_normalizations,
-            actual_lifecycle_normalization_sources=(
-                actual_lifecycle_normalization_sources
-            ),
-            unchanged_generation_statuses=generation_bindings.unchanged_statuses,
-            frontmatter_validator=frontmatter_validator,
-        )
-        for record in records
-    }
+    if args.mode == "check-changed":
+        findings_by_path: dict[str, list[Finding]] = collections.defaultdict(list)
+        for finding in native_findings:
+            findings_by_path[finding.path].append(finding)
+    else:
+        findings_by_path = {
+            record.path.as_posix(): validate_record(
+                record,
+                profiles,
+                manifest,
+                transition_overrides=transition_overrides,
+                enforce_initial_status=False,
+                actual_lifecycle_transitions=actual_lifecycle_transitions,
+                actual_lifecycle_normalizations=actual_lifecycle_normalizations,
+                actual_lifecycle_normalization_sources=(
+                    actual_lifecycle_normalization_sources
+                ),
+                unchanged_generation_statuses=generation_bindings.unchanged_statuses,
+                frontmatter_validator=frontmatter_validator,
+            )
+            for record in records
+        }
     if args.mode != "check-changed":
         # Active/report checks also enforce runtime authority. Changed mode uses
         # the same helper through the existing introduced-body comparison.
@@ -1980,10 +2050,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             manifest,
             findings_by_path,
         )
-    parser_failures = [record for record in records if record.parse_error]
-    rendered = render_report(records, profiles, findings_by_path)
-
     if args.mode == "report":
+        parser_failures = [record for record in records if record.parse_error]
+        rendered = render_report(records, profiles, findings_by_path)
         if args.output:
             output = args.output if args.output.is_absolute() else root / args.output
             fresh = _write_or_check_output(output, rendered, args.check)
@@ -1999,7 +2068,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2 if parser_failures else 0
 
     directly_selected_paths = (
-        changed_selection
+        validation_paths
         if args.mode == "check-changed"
         else {
             record.path.as_posix()

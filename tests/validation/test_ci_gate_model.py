@@ -5,6 +5,7 @@ import json
 import pathlib
 import subprocess
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -12,6 +13,307 @@ from scripts.lib.gate import ci_gate_contract as contract
 from scripts.validation import ci_gate_runner as runner
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+class PreparedCandidatePlanTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = contract.load_contract_document(ROOT)
+        self.gates = contract.parse_gate_registry(self.document, "contract")
+        self.public = contract.parse_public_gate_contract(self.document)
+        self.environment = {
+            "GITHUB_SHA": "a" * 40,
+            "PR_BASE_SHA": "b" * 40,
+            "PR_HEAD_SHA": "c" * 40,
+        }
+        self.paths = ("docs/README.md",)
+        self.suites = contract.select_public_suites(self.public, "changed", self.paths)
+        self.roots = contract.public_root_gate_ids(
+            self.public, self.suites, changed_paths=self.paths
+        )
+        self.plan = runner.build_public_validation_plan(
+            self.gates,
+            self.roots,
+            self.public,
+            self.suites,
+            runner.ExecutionContext.PULL_REQUEST,
+            root=ROOT,
+        )
+
+    def encoded(self):
+        return runner.prepare_candidate_plan(
+            ROOT,
+            self.document,
+            self.environment,
+            self.paths,
+            self.suites,
+            self.roots,
+            self.plan,
+        )
+
+    def restored(self, payload, digest):
+        with mock.patch.object(
+            runner, "collect_changed_paths", return_value=self.paths
+        ):
+            return runner.restore_candidate_plan(
+                ROOT,
+                self.document,
+                self.gates,
+                self.public,
+                self.environment,
+                payload,
+                digest,
+            )
+
+    def test_shared_plan_is_consumed_without_replanning(self) -> None:
+        payload, digest = self.encoded()
+        with mock.patch.object(
+            runner,
+            "build_public_validation_plan",
+            side_effect=AssertionError("replanned"),
+        ):
+            self.assertEqual(
+                (self.paths, self.suites, self.roots, self.plan),
+                self.restored(payload, digest),
+            )
+
+    def test_tampered_or_stale_plan_is_refused(self) -> None:
+        payload, digest = self.encoded()
+        for changed_payload, changed_digest in (
+            (payload + " ", digest),
+            (payload, "0" * 64),
+        ):
+            with (
+                self.subTest(payload=changed_payload[-10:]),
+                self.assertRaises(contract.GateContractError),
+            ):
+                self.restored(changed_payload, changed_digest)
+        self.environment["GITHUB_SHA"] = "d" * 40
+        with self.assertRaises(contract.GateContractError):
+            self.restored(payload, digest)
+
+    def test_self_rehashed_missing_or_forged_selection_is_refused(self) -> None:
+        import hashlib
+
+        payload, _ = self.encoded()
+        for key, value in (
+            ("plan", []),
+            ("changed_paths", []),
+            ("changed_paths", None),
+            ("selected_suites", []),
+            ("contract_sha256", "0" * 64),
+        ):
+            data = json.loads(payload)
+            data[key] = value
+            changed = json.dumps(data, sort_keys=True, separators=(",", ":"))
+            digest = hashlib.sha256(changed.encode()).hexdigest()
+            with self.subTest(key=key), self.assertRaises(contract.GateContractError):
+                self.restored(changed, digest)
+
+    def test_unknown_or_rebound_invocation_is_refused(self) -> None:
+        import hashlib
+
+        payload, _ = self.encoded()
+        for key, value in (
+            ("gate_id", "leaf.unknown"),
+            ("argv", ["--help"]),
+            ("allowed_env_keys", ["SECRET_TOKEN"]),
+        ):
+            data = json.loads(payload)
+            data["plan"][0][key] = value
+            changed = json.dumps(data, sort_keys=True, separators=(",", ":"))
+            with self.subTest(key=key), self.assertRaises(contract.GateContractError):
+                self.restored(changed, hashlib.sha256(changed.encode()).hexdigest())
+
+    def test_valid_empty_diff_has_an_empty_shared_plan(self) -> None:
+        self.paths = ()
+        self.suites = contract.select_public_suites(self.public, "changed", self.paths)
+        self.roots = contract.public_root_gate_ids(
+            self.public, self.suites, changed_paths=self.paths
+        )
+        self.plan = runner.build_public_validation_plan(
+            self.gates,
+            self.roots,
+            self.public,
+            self.suites,
+            runner.ExecutionContext.PULL_REQUEST,
+            root=ROOT,
+        )
+        self.assertEqual(((), (), (), ()), self.restored(*self.encoded()))
+
+    def test_missing_malformed_and_oversized_producer_output_is_refused(self) -> None:
+        import hashlib
+
+        for payload in ("", "[]", '{"plan":null}', " " * 262_145):
+            with (
+                self.subTest(size=len(payload)),
+                self.assertRaises(contract.GateContractError),
+            ):
+                self.restored(payload, hashlib.sha256(payload.encode()).hexdigest())
+
+    def test_late_manifest_and_contract_change_invalidates_plan(self) -> None:
+        import tempfile
+
+        payload, digest = self.encoded()
+        self.document = {**self.document, "changed-contract": True}
+        with self.assertRaises(contract.GateContractError):
+            self.restored(payload, digest)
+        self.document = contract.load_contract_document(ROOT)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "scripts").mkdir()
+            (root / "scripts/manifest.yaml").write_text("different manifest")
+            with self.assertRaises(contract.GateContractError):
+                runner.restore_candidate_plan(
+                    root,
+                    self.document,
+                    self.gates,
+                    self.public,
+                    self.environment,
+                    payload,
+                    digest,
+                )
+
+    def test_plan_input_manifest_must_be_bounded_regular_and_not_a_symlink(
+        self,
+    ) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "scripts").mkdir()
+            manifest = root / "scripts/manifest.yaml"
+            for kind in ("missing", "symlink", "oversized"):
+                if kind == "symlink":
+                    manifest.symlink_to(ROOT / "scripts/manifest.yaml")
+                elif kind == "oversized":
+                    manifest.unlink()
+                    with manifest.open("wb") as handle:
+                        handle.truncate(1_048_577)
+                with (
+                    self.subTest(kind=kind),
+                    self.assertRaises(contract.GateContractError),
+                ):
+                    runner.prepare_candidate_plan(
+                        root,
+                        self.document,
+                        self.environment,
+                        self.paths,
+                        self.suites,
+                        self.roots,
+                        self.plan,
+                    )
+
+    def test_candidate_cli_reuses_plan_and_requires_producer_output(self) -> None:
+        import contextlib
+        import io
+
+        payload, digest = self.encoded()
+        environment = {
+            **self.environment,
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "pull_request",
+            "CI_GATE_REQUIRE_PREPARED_PLAN": "true",
+            "CI_GATE_PREPARED_PLAN": payload,
+            "CI_GATE_PREPARED_PLAN_SHA256": digest,
+        }
+        with (
+            mock.patch.object(
+                runner, "_authenticated_execution_environment", return_value=environment
+            ),
+            mock.patch.object(runner, "validate_gate_registry", return_value=()),
+            mock.patch.object(runner, "validate_rule_owners", return_value=()),
+            mock.patch.object(runner, "collect_changed_paths", return_value=self.paths),
+            mock.patch.object(
+                runner,
+                "build_public_validation_plan",
+                side_effect=AssertionError("replanned"),
+            ),
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertEqual(
+                0,
+                runner.main(
+                    ["--profile", "changed", "--job", "candidate-core", "--explain"]
+                ),
+            )
+        self.assertIn("candidate-core", output.getvalue())
+        environment.pop("CI_GATE_PREPARED_PLAN")
+        with (
+            mock.patch.object(
+                runner, "_authenticated_execution_environment", return_value=environment
+            ),
+            mock.patch.object(runner, "validate_gate_registry", return_value=()),
+            mock.patch.object(runner, "validate_rule_owners", return_value=()),
+            contextlib.redirect_stderr(io.StringIO()) as error,
+        ):
+            self.assertEqual(
+                1,
+                runner.main(
+                    [
+                        "--profile",
+                        "changed",
+                        "--job",
+                        "candidate-core",
+                        "--requirements",
+                    ]
+                ),
+            )
+        self.assertIn("required producer plan is missing", error.getvalue())
+
+    def test_routing_cli_builds_one_plan_for_all_consumers(self) -> None:
+        import contextlib
+        import io
+
+        environment = {
+            **self.environment,
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "pull_request",
+        }
+        with (
+            mock.patch.object(
+                runner, "_authenticated_execution_environment", return_value=environment
+            ),
+            mock.patch.object(runner, "validate_gate_registry", return_value=()),
+            mock.patch.object(runner, "validate_rule_owners", return_value=()),
+            mock.patch.object(runner, "collect_changed_paths", return_value=self.paths),
+            mock.patch.object(
+                runner,
+                "build_public_validation_plan",
+                wraps=runner.build_public_validation_plan,
+            ) as build,
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertEqual(
+                0,
+                runner.main(
+                    [
+                        "--profile",
+                        "changed",
+                        "--job",
+                        "candidate-documents",
+                        "--routing",
+                    ]
+                ),
+            )
+        self.assertEqual(1, build.call_count)
+        fields = dict(line.split("=", 1) for line in output.getvalue().splitlines())
+        self.assertEqual(
+            (self.paths, self.suites, self.roots, self.plan),
+            self.restored(fields["plan"], fields["plan-sha256"]),
+        )
+
+    def test_full_link_profile_keeps_broad_capability(self) -> None:
+        route = next(
+            item
+            for item in self.public.validators
+            if item.entrypoint.name == "check-document-links.py"
+        )
+        self.assertEqual(
+            ("--mode", "all"),
+            runner._context_validator_argv(
+                route, runner.ExecutionContext.LOCAL, "full"
+            ),
+        )
 
 
 def _real_public_plan(

@@ -309,18 +309,8 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             contracts.assert_called_once()
             base_records.assert_called_once()
             self.assertEqual({}, contracts.call_args.kwargs["previous_records"])
-            self.assertTrue(
-                any(
-                    call.kwargs.get("actual_lifecycle_transitions") == transitions
-                    for call in validate_record.call_args_list
-                )
-            )
-            self.assertTrue(
-                any(
-                    call.kwargs.get("actual_lifecycle_normalizations") == normalizations
-                    for call in validate_record.call_args_list
-                )
-            )
+            # Native contracts own record validation; main reuses those findings.
+            validate_record.assert_not_called()
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
 

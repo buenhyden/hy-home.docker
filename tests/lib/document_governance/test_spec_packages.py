@@ -5023,6 +5023,27 @@ Narrative after the registered table.
         self.assertEqual([], violations)
 
 
+class CompletionParseReuseTests(unittest.TestCase):
+    def test_identical_text_reuses_mask_without_sharing_mutable_lines(self):
+        module = _spec_packages_module()
+        body = "# Cache fixture\n\n## Evidence\nKeep `<!-- literal -->`.\n"
+        with mock.patch.object(
+            module, "_completion_line_states", wraps=module._completion_line_states
+        ) as scan:
+            first = module._completion_visible_lines(body)
+            expected = list(first)
+            first.clear()
+            self.assertEqual(expected, module._completion_visible_lines(body))
+        self.assertEqual(1, scan.call_count)
+
+    def test_changed_text_never_reuses_a_previous_mask(self):
+        module = _spec_packages_module()
+        first = module._completion_visible_lines("## Evidence\nOriginal parse fixture")
+        second = module._completion_visible_lines("## Evidence\nChanged parse fixture")
+        self.assertNotEqual(first, second)
+        self.assertIn("Changed parse fixture", second)
+
+
 class HistoricalSpecSnapshotReuseTests(unittest.TestCase):
     def fixture_git(self, revision):
         module = _spec_packages_module()

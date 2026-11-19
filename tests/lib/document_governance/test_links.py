@@ -2046,6 +2046,424 @@ def load_links_cli():
     return module
 
 
+class ChangedDocumentScopeTests(unittest.TestCase):
+    def committed_tree(self, root, files):
+        self.graph(root, files)
+        track_repository(root)
+        git = [
+            "git",
+            "-C",
+            str(root),
+            "-c",
+            "user.name=Fixture",
+            "-c",
+            "user.email=f@example.invalid",
+        ]
+        subprocess.run(
+            [*git, "-c", "core.hooksPath=", "commit", "-qm", "baseline"], check=True
+        )
+        return subprocess.check_output([*git, "rev-parse", "HEAD"], text=True).strip()
+
+    def graph(self, root, files):
+        from scripts.lib.document_governance.links import build_document_graph
+
+        for relative, text in files.items():
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(text, encoding="utf-8")
+        return build_document_graph([root / path for path in files], repo_root=root)
+
+    def test_changed_anchor_checks_all_inbound_types_without_unrelated_failures(self):
+        from scripts.lib.document_governance.links import (
+            run_mode,
+            select_changed_documents,
+        )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            graph = self.graph(
+                root,
+                {
+                    "docs/target.md": "# New heading\n",
+                    "docs/source.md": '[read](target.md#old "historical")\n',
+                    "docs/other.md": "[old unrelated](missing.md)\n",
+                },
+            )
+            selected = select_changed_documents(graph, {"docs/target.md"})
+            findings = run_mode("alignment", selected)
+            self.assertEqual(
+                {"docs/target.md", "docs/source.md"},
+                {path.as_posix() for path in selected.selected_paths},
+            )
+            self.assertEqual(["docs/source.md:1"], [item.path for item in findings])
+            self.assertEqual("missing-link-anchor", findings[0].code)
+
+    def test_deleted_target_and_deleted_command_still_select_consumers(self):
+        from scripts.lib.document_governance.links import (
+            run_mode,
+            select_changed_documents,
+        )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            graph = self.graph(
+                root,
+                {
+                    "docs/source.md": "[read](deleted.md)\n```sh\npython3 scripts/gone.py\n```\n",
+                    "docs/other.md": "# Other\n",
+                },
+            )
+            (root / "scripts").mkdir()
+            selected = select_changed_documents(
+                graph, {"docs/deleted.md", "scripts/gone.py"}
+            )
+            self.assertEqual(
+                {"missing-link-target"},
+                {item.code for item in run_mode("alignment", selected)},
+            )
+            self.assertEqual(
+                {"document-command-path-missing"},
+                {item.code for item in run_mode("commands", selected)},
+            )
+
+    def test_global_parser_change_expands_scope_and_empty_change_is_not_applicable(
+        self,
+    ):
+        from scripts.lib.document_governance.links import (
+            run_mode,
+            select_changed_documents,
+        )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            graph = self.graph(root, {"docs/source.md": "[bad](missing.md)\n"})
+            self.assertEqual(
+                [], run_mode("alignment", select_changed_documents(graph, set()))
+            )
+            self.assertIsNone(
+                select_changed_documents(
+                    graph, {"scripts/lib/document_governance/links.py"}
+                ).selected_paths
+            )
+            self.assertTrue(
+                run_mode(
+                    "alignment",
+                    select_changed_documents(
+                        graph, {"docs/99.templates/registry.json"}
+                    ),
+                )
+            )
+
+    def test_unsafe_change_paths_are_rejected(self):
+        from scripts.lib.document_governance.links import select_changed_documents
+
+        with tempfile.TemporaryDirectory() as raw:
+            graph = self.graph(pathlib.Path(raw), {"docs/source.md": "# Source\n"})
+            for path in (
+                "../outside.md",
+                "/tmp/x.md",
+                "docs/../x.md",
+                "docs\\x.md",
+                "docs/new\nline.md",
+            ):
+                with self.subTest(path=path), self.assertRaises(ValueError):
+                    select_changed_documents(graph, {path})
+
+    def test_structural_consumers_use_bare_artifact_ids_and_transitive_relations(self):
+        from scripts.lib.document_governance.links import select_changed_documents
+
+        with tempfile.TemporaryDirectory() as raw:
+            graph = self.graph(
+                pathlib.Path(raw),
+                {
+                    "docs/parent.md": "---\nartifact_id: REQ-0001\n---\n# Parent\n",
+                    "docs/child.md": "---\nartifact_id: REQ-0002\nparent_ids: [REQ-0001]\n---\n# Child\n",
+                    "docs/next.md": "---\nsupersedes: [REQ-0002]\n---\n# Next\n",
+                    "docs/unrelated.md": "# Unrelated\n",
+                },
+            )
+            selected = select_changed_documents(graph, {"docs/parent.md"})
+            self.assertEqual(
+                {"docs/parent.md", "docs/child.md", "docs/next.md"},
+                {path.as_posix() for path in selected.selected_paths},
+            )
+
+    def test_navigation_cycles_do_not_widen_a_content_change_to_unrelated_docs(self):
+        from scripts.lib.document_governance.links import (
+            run_mode,
+            select_changed_documents,
+        )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            graph = self.graph(
+                root,
+                {
+                    "README.md": "[docs](docs/README.md)\n",
+                    "docs/README.md": "[root](../README.md)\n[page](page.md)\n",
+                    "docs/page.md": "# Changed\n",
+                    "docs/unrelated.md": "[home](README.md)\n[broken](missing.md)\n",
+                },
+            )
+            selected = select_changed_documents(graph, {"docs/page.md"})
+            self.assertNotIn(
+                pathlib.PurePosixPath("docs/unrelated.md"), selected.selected_paths
+            )
+            self.assertNotIn(
+                pathlib.PurePosixPath("README.md"), selected.selected_paths
+            )
+            self.assertEqual([], run_mode("alignment", selected))
+
+    def test_changed_source_with_colon_keeps_its_alignment_failure(self):
+        from scripts.lib.document_governance.links import (
+            run_mode,
+            select_changed_documents,
+        )
+
+        with tempfile.TemporaryDirectory() as raw:
+            graph = self.graph(
+                pathlib.Path(raw),
+                {
+                    "docs/source:part.md": "[read](target.md#missing)\n",
+                    "docs/target.md": "# Target\n",
+                },
+            )
+            findings = run_mode(
+                "alignment", select_changed_documents(graph, {"docs/source:part.md"})
+            )
+            self.assertEqual(
+                ["docs/source:part.md:1"], [item.path for item in findings]
+            )
+
+    def test_git_discovery_failure_is_not_an_empty_diff(self):
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            base = self.committed_tree(root, {"docs/source.md": "# Source\n"})
+            failure = subprocess.CompletedProcess(["git", "diff"], 1, b"", b"failed")
+            with (
+                mock.patch.object(module, "_run_git", return_value=failure),
+                mock.patch("sys.stderr", io.StringIO()),
+                mock.patch("sys.stdout", io.StringIO()) as output,
+            ):
+                self.assertEqual(
+                    1,
+                    module.main(
+                        [
+                            "--root",
+                            str(root),
+                            "--mode",
+                            "alignment",
+                            "--changed",
+                            "--base-ref",
+                            base,
+                        ]
+                    ),
+                )
+            self.assertNotIn("NOT_APPLICABLE", output.getvalue())
+
+    def test_changed_cli_rejects_missing_base_and_uses_whole_branch_union(self):
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self.graph(
+                root, {"docs/changed.md": "# First\n", "docs/other.md": "# Other\n"}
+            )
+            track_repository(root)
+            git = [
+                "git",
+                "-C",
+                str(root),
+                "-c",
+                "user.name=Fixture",
+                "-c",
+                "user.email=f@example.invalid",
+            ]
+            subprocess.run(
+                [*git, "-c", "core.hooksPath=", "commit", "-qm", "baseline"], check=True
+            )
+            base = subprocess.check_output(
+                [*git, "rev-parse", "HEAD"], text=True
+            ).strip()
+            (root / "docs/changed.md").write_text("# Second\n")
+            subprocess.run([*git, "add", "."], check=True)
+            subprocess.run(
+                [*git, "-c", "core.hooksPath=", "commit", "-qm", "first"], check=True
+            )
+            (root / "docs/other.md").write_text("# Third\n")
+            with (
+                mock.patch.object(module, "run_mode", return_value=[]) as run,
+                mock.patch("sys.stdout", io.StringIO()),
+            ):
+                self.assertEqual(
+                    0,
+                    module.main(
+                        [
+                            "--root",
+                            str(root),
+                            "--mode",
+                            "alignment",
+                            "--changed",
+                            "--base-ref",
+                            base,
+                        ]
+                    ),
+                )
+
+            self.assertEqual(
+                {"docs/changed.md", "docs/other.md"},
+                {path.as_posix() for path in run.call_args.args[1].selected_paths},
+            )
+            with mock.patch("sys.stderr", io.StringIO()):
+                self.assertEqual(
+                    1,
+                    module.main(
+                        [
+                            "--root",
+                            str(root),
+                            "--mode",
+                            "alignment",
+                            "--changed",
+                            "--base-ref",
+                            "missing-base",
+                        ]
+                    ),
+                )
+
+    def test_changed_cli_preserves_global_edits_alongside_explicit_content(self):
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            base = self.committed_tree(
+                root,
+                {
+                    "docs/source.md": "# Source\n",
+                    "docs/other.md": "# Other\n",
+                    "scripts/lib/document_governance/parser.py": "# parser fixture\n",
+                },
+            )
+            (root / "scripts/lib/document_governance/parser.py").write_text(
+                "# changed\n"
+            )
+            with (
+                mock.patch.object(module, "run_mode", return_value=[]) as run,
+                mock.patch("sys.stdout", io.StringIO()),
+            ):
+                self.assertEqual(
+                    0,
+                    module.main(
+                        [
+                            "--root",
+                            str(root),
+                            "--mode",
+                            "alignment",
+                            "--changed",
+                            "--base-ref",
+                            base,
+                            "--changed-path",
+                            "docs/source.md",
+                        ]
+                    ),
+                )
+            self.assertIsNone(run.call_args.args[1].selected_paths)
+
+    def test_changed_cli_empty_diff_and_invalid_environment_base_are_distinct(self):
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            base = self.committed_tree(
+                root, {"docs/source.md": "[old unrelated](missing.md)\n"}
+            )
+            output = io.StringIO()
+            with mock.patch("sys.stdout", output):
+                self.assertEqual(
+                    0,
+                    module.main(
+                        [
+                            "--root",
+                            str(root),
+                            "--mode",
+                            "alignment",
+                            "--changed",
+                            "--base-ref",
+                            base,
+                        ]
+                    ),
+                )
+            self.assertIn("NOT_APPLICABLE", output.getvalue())
+            with (
+                mock.patch.dict(os.environ, {"TEMPLATE_GATE_BASE": "missing-base"}),
+                mock.patch("sys.stderr", io.StringIO()),
+            ):
+                self.assertEqual(
+                    1,
+                    module.main(
+                        ["--root", str(root), "--mode", "alignment", "--changed"]
+                    ),
+                )
+
+    def test_rename_selection_keeps_both_paths_and_old_inbound_links(self):
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            base = self.committed_tree(
+                root, {"docs/old.md": "# Old\n", "docs/source.md": "[read](old.md)\n"}
+            )
+            (root / "docs/old.md").rename(root / "docs/new.md")
+            changes = module._changed_paths(root, base)
+            self.assertIn("docs/old.md", changes)
+            self.assertIn("docs/new.md", changes)
+            with (
+                mock.patch("sys.stderr", io.StringIO()),
+                mock.patch("sys.stdout", io.StringIO()),
+            ):
+                self.assertEqual(
+                    1,
+                    module.main(
+                        [
+                            "--root",
+                            str(root),
+                            "--mode",
+                            "alignment",
+                            "--changed",
+                            "--base-ref",
+                            base,
+                        ]
+                    ),
+                )
+
+    def test_commonmark_parse_is_shared_and_new_graph_reads_changed_content(self):
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            graph = self.graph(
+                root,
+                {
+                    "docs/source.md": "[read](target.md)\n",
+                    "docs/target.md": "# Target\n",
+                },
+            )
+            with mock.patch.object(
+                links, "MarkdownIt", side_effect=AssertionError("reparse")
+            ):
+                self.assertEqual([], links.check_alignment(graph))
+                links.inbound_link_lookup(
+                    graph,
+                    pathlib.PurePosixPath("docs/target.md"),
+                    links.load_registry(),
+                )
+                links.select_changed_documents(graph, {"docs/target.md"})
+            (root / "docs/target.md").unlink()
+            rebuilt = links.build_document_graph(
+                [root / "docs/source.md"], repo_root=root
+            )
+            self.assertEqual(
+                {"missing-link-target"},
+                {item.code for item in links.check_alignment(rebuilt)},
+            )
+
+
 class LinkSelectionScopeTests(unittest.TestCase):
     """The gate must read the corpus it is supposed to protect."""
 

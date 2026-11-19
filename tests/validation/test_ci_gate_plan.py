@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import dataclasses
+import hashlib
 import io
 import itertools
 import json
@@ -424,7 +425,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "ci.frontend-quality",
             "ci.storybook-coverage",
             "ci.zizmor",
-            "leaf.document-governance-library-regressions",
+            *contract.DOCUMENT_REGRESSION_GATE_IDS,
             "leaf.local-document-corpus-lifecycle-tests",
             "leaf.local-document-metadata-tests",
             "local.workflow-harness",
@@ -472,8 +473,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
-                "leaf.p03-hermes",
-                "leaf.p11-hermes",
             },
             ids,
         )
@@ -481,7 +480,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             {
                 "leaf.local-document-corpus-lifecycle-tests",
                 "leaf.local-document-metadata-tests",
-                "leaf.document-governance-library-regressions",
+                *contract.DOCUMENT_REGRESSION_GATE_IDS,
                 "leaf.operations-catalog",
             }
             & ids
@@ -504,13 +503,11 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
-                "leaf.p03-hermes",
-                "leaf.p11-hermes",
             },
             ids,
         )
         self.assertNotIn("leaf.local-document-metadata-tests", ids)
-        self.assertNotIn("leaf.document-governance-library-regressions", ids)
+        self.assertFalse(set(contract.DOCUMENT_REGRESSION_GATE_IDS) & ids)
         self.assertFalse(
             {
                 "leaf.compose-validation",
@@ -553,7 +550,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         document_tests = {
             "leaf.local-document-corpus-lifecycle-tests",
             "leaf.local-document-metadata-tests",
-            "leaf.document-governance-library-regressions",
+            *contract.DOCUMENT_REGRESSION_GATE_IDS,
         }
         for path, expected in (
             ("docs/README.md", set()),
@@ -576,7 +573,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
     ) -> None:
         cases = {
             "scripts/lib/document_governance/spec_packages.py": (
-                "leaf.document-governance-library-regressions",
+                "leaf.document-governance-lifecycle-regressions",
                 "leaf.repo-document-metadata",
                 True,
             ),
@@ -914,7 +911,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         )
         targets = {
             "leaf.local-document-metadata-tests",
-            "leaf.document-governance-library-regressions",
+            "leaf.document-governance-contract-regressions",
         }
         for path in owners:
             with self.subTest(path=path):
@@ -961,7 +958,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
     ) -> None:
         targets = {
             "leaf.local-document-metadata-tests",
-            "leaf.document-governance-library-regressions",
+            *contract.DOCUMENT_REGRESSION_GATE_IDS,
         }
         for path in (
             ".github/workflow-contract.yml",
@@ -1349,7 +1346,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 )
                 ids = {item.gate_id for item in plan}
                 self.assertLessEqual(expected, ids)
-                self.assertNotIn("leaf.document-governance-library-regressions", ids)
+                self.assertFalse(set(contract.DOCUMENT_REGRESSION_GATE_IDS) & ids)
 
     def test_prerequisites_follow_the_selected_plan(self) -> None:
         document = contract.load_contract_document(ROOT)
@@ -1441,7 +1438,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
         plan = build_public_plan("full", runner.ExecutionContext.LOCAL)
         ids = [item.gate_id for item in plan]
         self.assertEqual(1, ids.count("leaf.local-document-metadata-tests"))
-        self.assertEqual(1, ids.count("leaf.document-governance-library-regressions"))
+        for gate_id in contract.DOCUMENT_REGRESSION_GATE_IDS:
+            self.assertEqual(1, ids.count(gate_id))
 
     def test_relevant_frontend_failure_propagates(self) -> None:
         document = contract.load_contract_document(ROOT)
@@ -1657,7 +1655,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
 
     def test_job_option_selects_only_that_jobs_leaves(self) -> None:
         documents = {
-            "leaf.document-governance-library-regressions",
+            *contract.DOCUMENT_REGRESSION_GATE_IDS,
             "leaf.local-document-metadata-tests",
             "leaf.local-document-corpus-lifecycle-tests",
         }
@@ -1799,7 +1797,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         registry = contract.parse_gate_registry(
             contract.load_contract_document(ROOT), contract_path
         )
-        input_paths = {contract_path}
+        input_paths = {contract_path, "scripts/manifest.yaml"}
         for node in registry.nodes:
             if node.entrypoint is not None:
                 input_paths.add(node.entrypoint.as_posix())
@@ -1876,7 +1874,25 @@ class CiGateRunnerContractTests(unittest.TestCase):
                         timeout=30,
                     )
                     self.assertEqual(0, result.returncode, result.stderr)
-                    self.assertEqual(f"selected={selected}\n", result.stdout)
+                    outputs = dict(
+                        line.split("=", 1) for line in result.stdout.splitlines()
+                    )
+                    self.assertEqual(
+                        {"selected", "plan", "plan-sha256"}, outputs.keys()
+                    )
+                    self.assertEqual(selected, outputs["selected"])
+                    self.assertEqual(
+                        hashlib.sha256(outputs["plan"].encode()).hexdigest(),
+                        outputs["plan-sha256"],
+                    )
+                    prepared = json.loads(outputs["plan"])
+                    self.assertEqual(
+                        (base, head, merge),
+                        tuple(
+                            prepared[key]
+                            for key in ("base_sha", "head_sha", "merge_sha")
+                        ),
+                    )
                     self.assertEqual("", result.stderr)
             result = subprocess.run(
                 command,
@@ -2667,6 +2683,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 pathlib.PurePosixPath("scripts/validation/check-storybook-contract.sh"),
                 (),
             ),
+            (pathlib.PurePosixPath("scripts/validation/check-p03-hermes.py"), ()),
+            (pathlib.PurePosixPath("scripts/validation/check-p11-hermes.py"), ()),
             (
                 pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
                 ("--mode", "pr-merge"),

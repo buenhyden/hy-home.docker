@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.95.0"
+version: "1.96.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1242,6 +1242,20 @@ target, backup, recovery boundary, and action-specific authorization.
      acceptance remain separate. Questions are limited to applicable Q-01–Q-04.
      The matching package stays available through P17, without a second
      completion ledger or a per-task SHA approval gate.
+
+155. TSK-0099 implements P01-CI-ROUTING 1.0.0 for this Docker workspace:
+     changed documents and changed validators select their actual content,
+     inbound and regression consumers, while shared schema/helper changes
+     expand to their real consumers. A valid empty diff selects no checks;
+     unknown paths, unreadable bases and selected missing, failed, erroneous
+     or cancelled results never pass. Preserve complete event-specific diffs,
+     candidate trust, staged-byte boundaries, the candidate-quality name and
+     separate security lane. Share immutable parse/index/Git inputs within
+     an invocation without caching stale working content or verdicts. Compare
+     equivalent selected inputs before and after, reporting sample size,
+     cold/warm, queue/setup/plan/check/aggregate boundaries. Existing completed
+     work is reused; only P01 is delivered through reviewed local commits and
+     its checked pull request, without executing P02 or later prompts.
 
 ### Evidence Requirements
 

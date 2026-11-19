@@ -1008,6 +1008,13 @@ def _completion_line_states(
 
 
 def _completion_visible_lines(body: str) -> list[str]:
+    """Give each consumer fresh lines from the shared immutable text parse."""
+
+    return list(_completion_visible_snapshot(body))
+
+
+@functools.lru_cache(maxsize=8)
+def _completion_visible_snapshot(body: str) -> tuple[str, ...]:
     """Keep completion evidence inside the shared Markdown form boundary."""
     from scripts.lib.document_governance.metadata.heading import _markdown_form_lines
 
@@ -1028,7 +1035,7 @@ def _completion_visible_lines(body: str) -> list[str]:
             level, title = heading
             visible = f"{'#' * level} {title}"
         result.append((visible or "") if source else "")
-    return result
+    return tuple(result)
 
 
 # A Registry ``common`` heading value names its legacy H2. A document in the
@@ -6291,6 +6298,8 @@ def validate_repository_spec_package_lifecycle(
     current: Sequence[SpecPackage],
     *,
     base_ref: str | None = None,
+    registry: DocumentRegistry | None = None,
+    _historical_context: HistoricalSpecSnapshotContext | None = None,
 ) -> tuple[SpecPackageFinding, ...]:
     """Validate current removals and lifecycle events against bounded Git."""
 
@@ -6298,6 +6307,8 @@ def validate_repository_spec_package_lifecycle(
         root,
         current,
         base_ref=base_ref,
+        registry=registry,
+        _historical_context=_historical_context,
     ).findings
 
 

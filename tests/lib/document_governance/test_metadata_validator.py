@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import pathlib
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from scripts.lib.document_governance.metadata_validator import (
     _write_or_check_output,
@@ -17,6 +20,180 @@ from scripts.lib.document_governance.taxonomy import (
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 PROFILES = ROOT / "docs/99.templates/registry.json"
+
+
+class ChangedMetadataClosureTests(unittest.TestCase):
+    def test_native_changed_flow_validates_selected_records_once_with_complete_index(
+        self,
+    ):
+        from scripts.lib.document_governance.metadata import reference
+        from scripts.lib.document_governance.metadata.profile import (
+            BaseSelection,
+            Finding,
+            Record,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+
+        registry = load_registry(PROFILES)
+        records = [
+            Record(
+                pathlib.Path("docs/changed.md"),
+                {"artifact_id": "REQ-0001"},
+                "requirement",
+            ),
+            Record(
+                pathlib.Path("docs/unrelated.md"),
+                {"artifact_id": "REQ-0002"},
+                "requirement",
+            ),
+        ]
+        calls = []
+
+        def validate(record, profiles, manifest, **kwargs):
+            self.assertIn("REQ-0002", manifest)
+            calls.append(record.path.as_posix())
+            return (
+                [
+                    Finding(
+                        "docs/unrelated.md", "unrelated-invalid", "preexisting fixture"
+                    )
+                ]
+                if record.path.name == "unrelated.md"
+                else []
+            )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            source = root / "registry.json"
+            source.write_bytes(PROFILES.read_bytes())
+            (root / "docs").mkdir()
+            (root / "docs/changed.md").write_text("# Changed\n")
+            patches = {
+                "load_registry": registry,
+                "resolve_base_selection": BaseSelection("explicit", "HEAD", "a" * 40),
+                "_changed_paths": {"docs/changed.md"},
+                "collect_records_at_ref": [],
+                "collect_records": records,
+                "_tracked_repository_markdown": [pathlib.Path("docs/unrelated.md")],
+                "_reference_delegation_findings": [],
+                "_index_membership_findings": [],
+                "_allocation_findings": [],
+                "_role_design_findings": [],
+                "_introduced_body_findings": [],
+                "_generation_task_body_baseline": (None, None),
+                "_text_at_ref": None,
+                "version_change_findings": [],
+                "product_version_findings": [],
+                "collect_selected_records_at_ref": {},
+            }
+            for controls in (
+                set(),
+                {"scripts/lib/document_governance/metadata/profile.py"},
+            ):
+                with self.subTest(controls=controls), contextlib.ExitStack() as stack:
+                    patches["_changed_paths"] = {"docs/changed.md"} | controls
+                    calls.clear()
+                    for name, value in patches.items():
+                        stack.enter_context(
+                            mock.patch.object(reference, name, return_value=value)
+                        )
+                    stack.enter_context(
+                        mock.patch.object(
+                            reference, "validate_record", side_effect=validate
+                        )
+                    )
+                    stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
+                    stack.enter_context(contextlib.redirect_stderr(io.StringIO()))
+                    result = reference.main(
+                        [
+                            "--root",
+                            str(root),
+                            "--registry",
+                            str(source),
+                            "--mode",
+                            "check-changed",
+                            "--base-ref",
+                            "HEAD",
+                        ]
+                    )
+                    self.assertEqual(1 if controls else 0, result)
+                    self.assertEqual(
+                        ["docs/changed.md", "docs/unrelated.md"]
+                        if controls
+                        else ["docs/changed.md"],
+                        calls,
+                    )
+
+    def test_actual_control_edit_survives_explicit_content_selection(self):
+        from scripts.lib.document_governance.metadata import reference
+        from scripts.lib.document_governance.metadata.profile import BaseSelection
+
+        control = "scripts/lib/document_governance/metadata/profile.py"
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            path = root / control
+            path.parent.mkdir(parents=True)
+            path.write_text("# original fixture\n")
+            git = [
+                "git",
+                "-C",
+                str(root),
+                "-c",
+                "user.name=Fixture",
+                "-c",
+                "user.email=f@example.invalid",
+            ]
+            subprocess.run([*git, "init", "-q"], check=True)
+            subprocess.run([*git, "add", "."], check=True)
+            subprocess.run(
+                [*git, "-c", "core.hooksPath=", "commit", "-qm", "baseline"], check=True
+            )
+            base = subprocess.check_output(
+                [*git, "rev-parse", "HEAD"], text=True
+            ).strip()
+            path.write_text("# changed fixture\n")
+            selection = reference._changed_paths(
+                root,
+                ["docs/00.workspace/03.process/sdlc.md"],
+                BaseSelection("explicit", base, base),
+            )
+            self.assertIn(control, selection)
+            self.assertIn("docs/00.workspace/03.process/sdlc.md", selection)
+
+    def test_changed_identity_checks_transitive_current_consumers_only(self):
+        from scripts.lib.document_governance.metadata import reference
+        from scripts.lib.document_governance.metadata.profile import Record
+
+        records = {
+            path: Record(pathlib.Path(path), values, "requirement")
+            for path, values in {
+                "parent.md": {"artifact_id": "REQ-0001"},
+                "child.md": {"artifact_id": "REQ-0002", "parent_ids": ["REQ-0001"]},
+                "next.md": {"artifact_id": "REQ-0003", "supersedes": ["REQ-0002"]},
+                "unrelated.md": {"artifact_id": "REQ-0004"},
+            }.items()
+        }
+        self.assertEqual(
+            {"parent.md", "child.md", "next.md"},
+            reference._metadata_validation_paths({"parent.md"}, records, {}),
+        )
+
+    def test_deleted_or_changed_id_keeps_previous_identity_consumers(self):
+        from scripts.lib.document_governance.metadata import reference
+        from scripts.lib.document_governance.metadata.profile import Record
+
+        old = Record(pathlib.Path("old.md"), {"artifact_id": "REQ-0001"}, "requirement")
+        child = Record(
+            pathlib.Path("child.md"), {"parent_ids": ["REQ-0001"]}, "requirement"
+        )
+        self.assertEqual(
+            {"old.md", "child.md"},
+            reference._metadata_validation_paths(
+                {"old.md"}, {"child.md": child}, {"old.md": old}
+            ),
+        )
+        self.assertEqual(set(), reference._metadata_validation_paths(set(), {}, {}))
 
 
 class LabDocumentSelectionTests(unittest.TestCase):

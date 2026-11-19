@@ -10,6 +10,7 @@ from scripts.lib.document_governance.lifecycle.contract import (
     metadata,
 )
 from scripts.lib.document_governance.spec_packages import (
+    HistoricalSpecSnapshotContext,
     SpecPackageError,
     load_spec_packages,
     validate_repository_spec_package_lifecycle,
@@ -31,8 +32,9 @@ def _spec_package_lifecycle_findings(
     if not isinstance(registry, metadata.DocumentRegistry):
         return findings
     try:
+        context = HistoricalSpecSnapshotContext()
         packages = (
-            load_spec_packages(stage03, registry=registry)
+            load_spec_packages(stage03, registry=registry, _historical_context=context)
             if stage03.exists() or stage03.is_symlink()
             else ()
         )
@@ -40,6 +42,8 @@ def _spec_package_lifecycle_findings(
             root,
             packages,
             base_ref=base_ref,
+            registry=registry,
+            _historical_context=context,
         )
     except SpecPackageError as error:
         findings.append(

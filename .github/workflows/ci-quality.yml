@@ -17,6 +17,11 @@ concurrency:
 jobs:
   candidate-core:
     if: github.event_name == 'pull_request'
+    needs: [candidate-routing]
+    env:
+      CI_GATE_REQUIRE_PREPARED_PLAN: 'true'
+      CI_GATE_PREPARED_PLAN: ${{ needs.candidate-routing.outputs.plan }}
+      CI_GATE_PREPARED_PLAN_SHA256: ${{ needs.candidate-routing.outputs.plan-sha256 }}
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -195,6 +200,8 @@ jobs:
     timeout-minutes: 5
     outputs:
       selected: ${{ steps.route.outputs.selected }}
+      plan: ${{ steps.route.outputs.plan }}
+      plan-sha256: ${{ steps.route.outputs.plan-sha256 }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -218,6 +225,10 @@ jobs:
   candidate-documents:
     if: github.event_name == 'pull_request' && needs.candidate-routing.outputs.selected == 'true'
     needs: [candidate-routing]
+    env:
+      CI_GATE_REQUIRE_PREPARED_PLAN: 'true'
+      CI_GATE_PREPARED_PLAN: ${{ needs.candidate-routing.outputs.plan }}
+      CI_GATE_PREPARED_PLAN_SHA256: ${{ needs.candidate-routing.outputs.plan-sha256 }}
     permissions:
       contents: read
     runs-on: ubuntu-latest

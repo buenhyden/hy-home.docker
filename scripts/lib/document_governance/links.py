@@ -142,6 +142,8 @@ class DocumentGraph:
     links: tuple[DocumentLink, ...]
     input_findings: tuple[LinkFinding, ...] = ()
     registry: DocumentRegistry | None = None
+    selected_paths: frozenset[pathlib.PurePosixPath] | None = None
+    commonmark_links: tuple[DocumentLink, ...] | None = None
 
 
 @dataclasses.dataclass(frozen=True, order=True)
@@ -645,6 +647,9 @@ def _local_link(
 
 def _links_with_commonmark(graph: DocumentGraph) -> Iterable[DocumentLink]:
     """Retain legacy edges and supplement them with wrapped links and shortcuts."""
+    if graph.commonmark_links is not None:
+        yield from graph.commonmark_links
+        return
     yield from graph.links
     existing = {(link.source, link.decoded_target, link.title) for link in graph.links}
     parser = MarkdownIt("commonmark")
@@ -794,7 +799,7 @@ def build_document_graph(
             continue
         nodes.append(DocumentNode(relative, text, metadata, _headings(text)))
         links.extend(parse_local_markdown_links(relative, text))
-    return DocumentGraph(
+    graph = DocumentGraph(
         root,
         tuple(sorted(nodes, key=lambda item: item.path.as_posix())),
         tuple(
@@ -811,6 +816,9 @@ def build_document_graph(
         tuple(sorted(set(input_findings))),
         registry,
     )
+    return dataclasses.replace(
+        graph, commonmark_links=tuple(_links_with_commonmark(graph))
+    )
 
 
 def _diagnostic_text(message: str) -> str:
@@ -825,6 +833,110 @@ def _finding(link: DocumentLink, code: str, message: str) -> LinkFinding:
 
 def _node_map(graph: DocumentGraph) -> dict[pathlib.PurePosixPath, DocumentNode]:
     return {node.path: node for node in graph.nodes}
+
+
+def _checked_nodes(graph: DocumentGraph) -> tuple[DocumentNode, ...]:
+    return tuple(
+        node
+        for node in graph.nodes
+        if graph.selected_paths is None or node.path in graph.selected_paths
+    )
+
+
+def _document_consumers(
+    graph: DocumentGraph,
+) -> tuple[
+    Mapping[pathlib.PurePosixPath, set[pathlib.PurePosixPath]],
+    Mapping[pathlib.PurePosixPath, set[pathlib.PurePosixPath]],
+]:
+    """Index all link types, typed relations and runnable command references."""
+
+    nodes = _node_map(graph)
+    consumers: dict[pathlib.PurePosixPath, set[pathlib.PurePosixPath]] = (
+        collections.defaultdict(set)
+    )
+    structural: dict[pathlib.PurePosixPath, set[pathlib.PurePosixPath]] = (
+        collections.defaultdict(set)
+    )
+    for link in _links_with_commonmark(graph):
+        target = link.target
+        if target not in nodes and target / "README.md" in nodes:
+            target /= "README.md"
+        consumers[target].add(link.source)
+    by_id: dict[str, set[pathlib.PurePosixPath]] = collections.defaultdict(set)
+    for node in graph.nodes:
+        for identity in _ids(node.metadata.get("artifact_id")):
+            by_id[identity].add(node.path)
+    for node in graph.nodes:
+        for field in ("parent_ids", "supersedes"):
+            for identity in _ids(node.metadata.get(field)):
+                for target in by_id[identity]:
+                    structural[target].add(node.path)
+        for _, lines in _command_blocks(node.text):
+            if any(line.strip() == _ILLUSTRATIVE_COMMAND_MARKER for line in lines):
+                continue
+            for line in lines:
+                for match in _COMMAND_PATH_TOKEN.finditer(line):
+                    consumers[pathlib.PurePosixPath(match[1].rstrip(".,;:)"))].add(
+                        node.path
+                    )
+    return consumers, structural
+
+
+def document_controls_changed(paths: Iterable[str]) -> bool:
+    """Shared parser, profile and schema changes invalidate document verdicts."""
+
+    return any(
+        path.startswith(("docs/99.templates/", "scripts/lib/document_governance/"))
+        or path
+        in {
+            "scripts/validation/check-document-links.py",
+            "scripts/validation/check-document-metadata.py",
+            "scripts/validation/check-document-corpus-lifecycle.py",
+        }
+        for path in paths
+    )
+
+
+def select_changed_documents(
+    graph: DocumentGraph, changed: Iterable[str]
+) -> DocumentGraph:
+    """Select changed and inbound consumers while retaining the complete index."""
+
+    paths: set[pathlib.PurePosixPath] = set()
+    for raw in changed:
+        path = pathlib.PurePosixPath(raw)
+        if (
+            not path.parts
+            or path.is_absolute()
+            or path.as_posix() != raw
+            or any(part in {".", ".."} for part in path.parts)
+            or "\\" in raw
+            or any(ord(character) < 32 or ord(character) == 127 for character in raw)
+        ):
+            raise ValueError("changed document path must stay inside the repository")
+        paths.add(path)
+    if document_controls_changed(path.as_posix() for path in paths):
+        return dataclasses.replace(graph, selected_paths=None)
+    nodes = _node_map(graph)
+    consumers, structural = _document_consumers(graph)
+    targets = paths | {path.parent for path in paths}
+    selected = set(paths)
+    selected.update(
+        parent / "README.md" for parent in targets if parent / "README.md" in nodes
+    )
+    selected.update(source for target in targets for source in consumers[target])
+    # An unchanged router's inbound links did not change when its child did.
+    queue = collections.deque(paths)
+    visited = set(paths)
+    while queue:
+        target = queue.popleft()
+        for source in structural[target]:
+            if source not in visited:
+                visited.add(source)
+                selected.add(source)
+                queue.append(source)
+    return dataclasses.replace(graph, selected_paths=frozenset(selected & nodes.keys()))
 
 
 def _regular_target(
@@ -1508,6 +1620,8 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     reserved: dict[str, frozenset[int]] = {}
     terminal_tasks: dict[pathlib.PurePosixPath, bool] = {}
     for link in _links_with_commonmark(graph):
+        if graph.selected_paths is not None and link.source not in graph.selected_paths:
+            continue
         if link.absolute:
             findings.append(_finding(link, "absolute-local-link", link.raw_target))
             continue
@@ -1558,7 +1672,7 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
                 findings.append(_finding(link, heading_error, link.raw_target))
             elif headings is not None and link.fragment not in headings:
                 findings.append(_finding(link, "missing-link-anchor", link.raw_target))
-    for node in graph.nodes:
+    for node in _checked_nodes(graph):
         for line_no, block in _paragraphs(node.text):
             findings.extend(
                 LinkFinding(f"{node.path.as_posix()}:{line_no}", code, message)
@@ -1710,7 +1824,7 @@ def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
     """
 
     findings: list[LinkFinding] = list(graph.input_findings)
-    for node in graph.nodes:
+    for node in _checked_nodes(graph):
         if node.path.as_posix().casefold().startswith(f"{_DOC_ROOT}/"):
             continue
         lines = tuple(_unfenced_lines(node.text, include_fenced=True))
@@ -1851,7 +1965,7 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
         for parent in pathlib.PurePosixPath(path).parents
     }
     findings: list[LinkFinding] = list(graph.input_findings)
-    for node in graph.nodes:
+    for node in _checked_nodes(graph):
         if node.path.name != "README.md":
             continue
         directory = node.path.parent
@@ -1950,14 +2064,14 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
 def check_language(graph: DocumentGraph) -> list[LinkFinding]:
     """Hold every document to the language its Registry profile declares.
 
-    SPEC-0187 migrated the corpus, so every document is judged, not only the
-    ones a change touches. A profile with no declared language, such as a
-    Stage 98 record or a generated adapter, is not judged.
+    Full and global-rule runs judge the corpus; a changed run judges its
+    affected consumers. A profile with no declared language, such as a Stage
+    98 record or a generated adapter, is not judged.
     """
 
     registry = graph.registry or load_registry()
     findings: list[LinkFinding] = list(graph.input_findings)
-    for node in graph.nodes:
+    for node in _checked_nodes(graph):
         profile_id = classify_path(node.path.as_posix(), registry)
         declared = registry.profiles.get(profile_id or "", {}).get("language")
         if not isinstance(declared, str):
@@ -2063,7 +2177,7 @@ def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
     registry = graph.registry or load_registry()
     terminal_task_statuses = registry.lifecycle_terminal_statuses["task"]
     findings: list[LinkFinding] = []
-    for node in graph.nodes:
+    for node in _checked_nodes(graph):
         # The Registry path profile, not a self-declared `type`, makes a Task.
         if (
             classify_path(node.path.as_posix(), registry) == "task"
@@ -2116,4 +2230,20 @@ def run_mode(mode: str, graph: DocumentGraph) -> list[LinkFinding]:
         handler = MODE_HANDLERS[mode]
     except KeyError as error:
         raise ValueError(f"unsupported link-check mode: {mode}") from error
-    return handler(graph)
+    if graph.selected_paths == frozenset():
+        return list(graph.input_findings)
+    findings = handler(graph)
+    if graph.selected_paths is None:
+        return findings
+    selected = {path.as_posix() for path in graph.selected_paths}
+    checked: list[LinkFinding] = []
+    for finding in findings:
+        source, separator, line = finding.path.rpartition(":")
+        if (
+            finding in graph.input_findings
+            or finding.path == "."
+            or finding.path in selected
+            or (separator and line.isdecimal() and source in selected)
+        ):
+            checked.append(finding)
+    return checked

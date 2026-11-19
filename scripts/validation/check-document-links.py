@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import posixpath
 import sys
@@ -21,8 +22,17 @@ from scripts.lib.document_governance.links import (  # noqa: E402
     relation_lookup,
     removed_template_mention_total,
     run_mode,
+    select_changed_documents,
     traceability_pair_total,
 )
+from scripts.lib.document_governance.metadata.identity import (  # noqa: E402
+    _decode_git_paths,
+    _run_git,
+)
+from scripts.lib.document_governance.metadata.lifecycle import (  # noqa: E402
+    resolve_base_selection,
+)
+from scripts.lib.document_governance.metadata.profile import ProfileError  # noqa: E402
 from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     OperationsAuthorityError,
     tracked_paths,
@@ -77,6 +87,18 @@ def _current_graph(
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
+    parser.add_argument(
+        "--changed",
+        action="store_true",
+        help="check changed documents and inbound consumers",
+    )
+    parser.add_argument("--base-ref", help="comparison base for --changed")
+    parser.add_argument(
+        "--changed-path",
+        action="append",
+        default=[],
+        help="explicit changed path; repeat for a scoped input",
+    )
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--mode", choices=(*tuple(MODE_HANDLERS), "all"))
     mode.add_argument(
@@ -85,6 +107,46 @@ def _parser() -> argparse.ArgumentParser:
         help="report derived reverse relations and inbound references by link type",
     )
     return parser
+
+
+def _changed_paths(root: pathlib.Path, base_ref: str | None) -> set[str]:
+    base = resolve_base_selection(
+        root, base_ref or os.environ.get("TEMPLATE_GATE_BASE")
+    )
+    if base.merge_base is None:
+        raise ProfileError(
+            "changed link validation requires a readable comparison base"
+        )
+    commands = (
+        [
+            "diff",
+            "--name-only",
+            "-z",
+            "--no-renames",
+            "--diff-filter=ACDMRT",
+            f"{base.merge_base}...HEAD",
+        ],
+        [
+            "diff",
+            "--cached",
+            "--name-only",
+            "-z",
+            "--no-renames",
+            "--diff-filter=ACDMRT",
+        ],
+        ["diff", "--name-only", "-z", "--no-renames", "--diff-filter=ACDMRT"],
+        ["ls-files", "-z", "--others", "--exclude-standard"],
+    )
+    changed: set[str] = set()
+    for command in commands:
+        result = _run_git(root, command, operation="changed link discovery")
+        if result.returncode:
+            raise ProfileError("cannot establish changed link inputs")
+        changed.update(
+            path.as_posix()
+            for path in _decode_git_paths(result.stdout, "changed link discovery")
+        )
+    return changed
 
 
 def _print_impact(root: pathlib.Path, target: pathlib.PurePosixPath) -> int:
@@ -123,6 +185,10 @@ def _print_impact(root: pathlib.Path, target: pathlib.PurePosixPath) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    if (args.base_ref is not None or args.changed_path) and not args.changed:
+        _parser().error("--base-ref and --changed-path require --changed")
+    if args.impact is not None and args.changed:
+        _parser().error("--changed cannot be combined with --impact")
     root = args.root.resolve()
     if args.impact is not None:
         return _print_impact(root, args.impact)
@@ -131,8 +197,18 @@ def main(argv: list[str] | None = None) -> int:
         registry_path = root / "docs/99.templates/registry.json"
         registry = load_registry(registry_path) if registry_path.exists() else None
         graph = _current_graph(root, registry)
+        if args.changed:
+            changes = _changed_paths(root, args.base_ref)
+            graph = select_changed_documents(graph, changes | set(args.changed_path))
         findings = tuple(finding for mode in modes for finding in run_mode(mode, graph))
-    except (OSError, ValueError, TypeError, KeyError, OperationsAuthorityError):
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        OperationsAuthorityError,
+        ProfileError,
+    ):
         print(
             "document-link-input-invalid: bounded document or Registry input is invalid",
             file=sys.stderr,
@@ -150,12 +226,16 @@ def main(argv: list[str] | None = None) -> int:
     print(
         "document links: "
         f"mode={args.mode} documents={len(graph.nodes)} links={len(graph.links)} "
+        f"selected_documents={len(graph.nodes) if graph.selected_paths is None else len(graph.selected_paths)} "
         f"catalog_pairs_total={traceability_pair_total(graph)} "
         f"removed_template_mentions_total={removed_template_mention_total(graph)} "
         f"failures={failures} warnings={warnings} historical_documents=0"
     )
     if failures:
         return 1
+    if graph.selected_paths == frozenset():
+        print("NOT_APPLICABLE: no changed documents or inbound consumers")
+        return 0
     print(f"PASS: document link mode {args.mode}")
     return 0
 

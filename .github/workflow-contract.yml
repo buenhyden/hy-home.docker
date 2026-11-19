@@ -36,8 +36,14 @@
           "runs_on": "ubuntu-latest",
           "timeout_minutes": 60,
           "condition": "github.event_name == 'pull_request'",
-          "needs": [],
-          "environment": null
+          "needs": [
+            "candidate-routing"
+          ],
+          "environment": {
+            "CI_GATE_REQUIRE_PREPARED_PLAN": "true",
+            "CI_GATE_PREPARED_PLAN": "${{ needs.candidate-routing.outputs.plan }}",
+            "CI_GATE_PREPARED_PLAN_SHA256": "${{ needs.candidate-routing.outputs.plan-sha256 }}"
+          }
         },
         "candidate-routing": {
           "permissions": {
@@ -59,7 +65,11 @@
           "needs": [
             "candidate-routing"
           ],
-          "environment": null
+          "environment": {
+            "CI_GATE_REQUIRE_PREPARED_PLAN": "true",
+            "CI_GATE_PREPARED_PLAN": "${{ needs.candidate-routing.outputs.plan }}",
+            "CI_GATE_PREPARED_PLAN_SHA256": "${{ needs.candidate-routing.outputs.plan-sha256 }}"
+          }
         },
         "candidate-quality": {
           "permissions": {},
@@ -349,37 +359,101 @@
       "rule_owner": "docs/00.workspace/04.quality/quality-standards.md#gate-and-fixture-ownership"
     },
     {
-      "gate_id": "leaf.document-governance-library-regressions",
+      "gate_id": "leaf.document-governance-structure-regressions",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
         "tests.lib.document_governance.test_architecture",
+        "tests.lib.document_governance.test_relations",
+        "tests.lib.document_governance.test_requirements",
+        "tests.lib.document_governance.test_taxonomy",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "document-governance-structure-regressions",
+      "guarantee": "none",
+      "rule_owner": "docs/00.workspace/03.process/documentation-protocol.md#authoring-rules"
+    },
+    {
+      "gate_id": "leaf.document-governance-links-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.lib.document_governance.test_links",
+        "tests.lib.document_governance.test_references",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "document-governance-links-regressions",
+      "guarantee": "none",
+      "rule_owner": "docs/00.workspace/03.process/documentation-protocol.md#authoring-rules"
+    },
+    {
+      "gate_id": "leaf.document-governance-lifecycle-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
         "tests.lib.document_governance.test_generation6",
         "tests.lib.document_governance.test_generation7",
         "tests.lib.document_governance.test_identity_history",
-        "tests.lib.document_governance.test_language",
-        "tests.lib.document_governance.test_links",
-        "tests.lib.document_governance.test_metadata_validator",
         "tests.lib.document_governance.test_numbered_folders",
-        "tests.lib.document_governance.test_operations_catalog",
-        "tests.lib.document_governance.test_operations_moves",
-        "tests.lib.document_governance.test_operations_taxonomy",
-        "tests.lib.document_governance.test_references",
-        "tests.lib.document_governance.test_registry",
-        "tests.lib.document_governance.test_relations",
-        "tests.lib.document_governance.test_requirements",
-        "tests.lib.document_governance.test_semver",
         "tests.lib.document_governance.test_spec_packages",
-        "tests.lib.document_governance.test_taxonomy",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 20,
+      "opaque": true,
+      "suite_key": "document-governance-lifecycle-regressions",
+      "guarantee": "none",
+      "rule_owner": "docs/00.workspace/03.process/documentation-protocol.md#authoring-rules"
+    },
+    {
+      "gate_id": "leaf.document-governance-contract-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.lib.document_governance.test_language",
+        "tests.lib.document_governance.test_metadata_validator",
+        "tests.lib.document_governance.test_registry",
+        "tests.lib.document_governance.test_semver",
         "tests.lib.document_governance.test_template_definition",
         "-v"
       ],
       "cwd": ".",
       "allowed_env_keys": [],
-      "timeout_minutes": 45,
+      "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "document-governance-library-regressions",
+      "suite_key": "document-governance-contract-regressions",
+      "guarantee": "none",
+      "rule_owner": "docs/00.workspace/03.process/documentation-protocol.md#authoring-rules"
+    },
+    {
+      "gate_id": "leaf.document-governance-operations-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.lib.document_governance.test_operations_catalog",
+        "tests.lib.document_governance.test_operations_moves",
+        "tests.lib.document_governance.test_operations_taxonomy",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "document-governance-operations-regressions",
       "guarantee": "none",
       "rule_owner": "docs/00.workspace/03.process/documentation-protocol.md#authoring-rules"
     },
@@ -434,7 +508,8 @@
       "entrypoint": "scripts/validation/check-document-links.py",
       "argv": [
         "--mode",
-        "all"
+        "all",
+        "--changed"
       ],
       "cwd": ".",
       "allowed_env_keys": [],
@@ -1415,7 +1490,11 @@
       "default": "candidate-core",
       "leaf_gate_ids": {
         "candidate-documents": [
-          "leaf.document-governance-library-regressions",
+          "leaf.document-governance-structure-regressions",
+          "leaf.document-governance-links-regressions",
+          "leaf.document-governance-lifecycle-regressions",
+          "leaf.document-governance-contract-regressions",
+          "leaf.document-governance-operations-regressions",
           "leaf.local-document-metadata-tests",
           "leaf.local-document-corpus-lifecycle-tests"
         ]
@@ -1439,7 +1518,11 @@
         "local.document-corpus-lifecycle",
         "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-document-metadata-tests",
-        "leaf.document-governance-library-regressions",
+        "leaf.document-governance-structure-regressions",
+        "leaf.document-governance-links-regressions",
+        "leaf.document-governance-lifecycle-regressions",
+        "leaf.document-governance-contract-regressions",
+        "leaf.document-governance-operations-regressions",
         "leaf.operations-catalog"
       ],
       "operations": [
@@ -1519,7 +1602,8 @@
         "entrypoint": "scripts/validation/check-document-links.py",
         "argv": [
           "--mode",
-          "all"
+          "all",
+          "--changed"
         ],
         "contexts": [
           "local"
@@ -1594,30 +1678,6 @@
         "suite": "operations",
         "gate_id": "leaf.template-security-baseline",
         "entrypoint": "scripts/validation/check-template-security-baseline.sh",
-        "argv": [],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "repository-integrity",
-        "gate_id": "leaf.p03-hermes",
-        "entrypoint": "scripts/validation/check-p03-hermes.py",
-        "argv": [],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "repository-integrity",
-        "gate_id": "leaf.p11-hermes",
-        "entrypoint": "scripts/validation/check-p11-hermes.py",
         "argv": [],
         "contexts": [
           "local",
@@ -2352,9 +2412,7 @@
         "prefixes": [
           "docs/05.operations/",
           "scripts/lib/document_governance/operations_catalog.py",
-          "scripts/validation/check-operations-catalog.py",
-          "tests/lib/document_governance/test_operations_catalog.py",
-          "tests/lib/document_governance/test_operations_taxonomy.py"
+          "scripts/validation/check-operations-catalog.py"
         ],
         "root_gate_ids": [
           "leaf.operations-catalog"
@@ -2379,7 +2437,44 @@
         "root_gate_ids": [
           "leaf.local-document-corpus-lifecycle-tests",
           "leaf.local-document-metadata-tests",
-          "leaf.document-governance-library-regressions"
+          "leaf.document-governance-structure-regressions",
+          "leaf.document-governance-links-regressions",
+          "leaf.document-governance-lifecycle-regressions",
+          "leaf.document-governance-contract-regressions",
+          "leaf.document-governance-operations-regressions"
+        ],
+        "exclude_prefixes": [
+          "scripts/lib/document_governance/links.py",
+          "scripts/lib/document_governance/references.py",
+          "scripts/lib/document_governance/language.py",
+          "scripts/lib/document_governance/git_provenance.py",
+          "scripts/lib/document_governance/semver.py",
+          "scripts/lib/document_governance/architecture.py",
+          "scripts/lib/document_governance/requirements.py",
+          "scripts/lib/document_governance/operations_moves.py",
+          "scripts/lib/document_governance/numbered_folders.py",
+          "scripts/lib/document_governance/template_definition.py",
+          "scripts/lib/document_governance/metadata/",
+          "scripts/lib/document_governance/lifecycle/",
+          "tests/lib/document_governance/test_architecture.py",
+          "tests/lib/document_governance/test_relations.py",
+          "tests/lib/document_governance/test_requirements.py",
+          "tests/lib/document_governance/test_taxonomy.py",
+          "tests/lib/document_governance/test_links.py",
+          "tests/lib/document_governance/test_references.py",
+          "tests/lib/document_governance/test_generation6.py",
+          "tests/lib/document_governance/test_generation7.py",
+          "tests/lib/document_governance/test_identity_history.py",
+          "tests/lib/document_governance/test_numbered_folders.py",
+          "tests/lib/document_governance/test_spec_packages.py",
+          "tests/lib/document_governance/test_language.py",
+          "tests/lib/document_governance/test_metadata_validator.py",
+          "tests/lib/document_governance/test_registry.py",
+          "tests/lib/document_governance/test_semver.py",
+          "tests/lib/document_governance/test_template_definition.py",
+          "tests/lib/document_governance/test_operations_catalog.py",
+          "tests/lib/document_governance/test_operations_moves.py",
+          "tests/lib/document_governance/test_operations_taxonomy.py"
         ]
       },
       {
@@ -2456,7 +2551,6 @@
         "prefixes": [
           "CHANGELOG.md",
           ".github/workflows/publish-release.yml",
-          "scripts/lib/document_governance/semver.py",
           "scripts/operations/release.py",
           "tests/validation/test_release.py"
         ],
@@ -2625,6 +2719,7 @@
           "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_webhook_transport.py"
         ],
         "root_gate_ids": [
+          "leaf.p03-hermes",
           "leaf.repository-integrity-regressions"
         ]
       },
@@ -2635,6 +2730,7 @@
           "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/"
         ],
         "root_gate_ids": [
+          "leaf.p11-hermes",
           "leaf.repository-integrity-regressions"
         ]
       },
@@ -2925,6 +3021,142 @@
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/links.py",
+          "scripts/lib/document_governance/references.py",
+          "scripts/lib/document_governance/language.py",
+          "scripts/lib/document_governance/git_provenance.py"
+        ],
+        "root_gate_ids": [
+          "leaf.local-document-metadata-tests",
+          "leaf.document-governance-links-regressions",
+          "leaf.document-governance-contract-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/architecture.py",
+          "scripts/lib/document_governance/requirements.py"
+        ],
+        "root_gate_ids": [
+          "leaf.local-document-metadata-tests",
+          "leaf.document-governance-structure-regressions",
+          "leaf.document-governance-contract-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/operations_moves.py"
+        ],
+        "root_gate_ids": [
+          "leaf.document-governance-operations-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/numbered_folders.py",
+          "scripts/lib/document_governance/template_definition.py",
+          "scripts/lib/document_governance/metadata/"
+        ],
+        "root_gate_ids": [
+          "leaf.local-document-corpus-lifecycle-tests",
+          "leaf.local-document-metadata-tests",
+          "leaf.document-governance-links-regressions",
+          "leaf.document-governance-lifecycle-regressions",
+          "leaf.document-governance-contract-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/lifecycle/"
+        ],
+        "root_gate_ids": [
+          "leaf.local-document-corpus-lifecycle-tests",
+          "leaf.local-document-metadata-tests",
+          "leaf.document-governance-lifecycle-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/document_governance/test_architecture.py",
+          "tests/lib/document_governance/test_relations.py",
+          "tests/lib/document_governance/test_requirements.py",
+          "tests/lib/document_governance/test_taxonomy.py"
+        ],
+        "root_gate_ids": [
+          "leaf.document-governance-structure-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/document_governance/test_links.py",
+          "tests/lib/document_governance/test_references.py"
+        ],
+        "root_gate_ids": [
+          "leaf.document-governance-links-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/document_governance/test_generation6.py",
+          "tests/lib/document_governance/test_generation7.py",
+          "tests/lib/document_governance/test_identity_history.py",
+          "tests/lib/document_governance/test_numbered_folders.py",
+          "tests/lib/document_governance/test_spec_packages.py"
+        ],
+        "root_gate_ids": [
+          "leaf.document-governance-lifecycle-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/document_governance/test_language.py",
+          "tests/lib/document_governance/test_metadata_validator.py",
+          "tests/lib/document_governance/test_registry.py",
+          "tests/lib/document_governance/test_semver.py",
+          "tests/lib/document_governance/test_template_definition.py"
+        ],
+        "root_gate_ids": [
+          "leaf.document-governance-contract-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/document_governance/test_operations_moves.py"
+        ],
+        "root_gate_ids": [
+          "leaf.document-governance-operations-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/document_governance/test_operations_catalog.py"
+        ],
+        "root_gate_ids": [
+          "leaf.document-governance-operations-regressions",
+          "leaf.operations-catalog"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/document_governance/test_operations_taxonomy.py"
+        ],
+        "root_gate_ids": [
+          "leaf.document-governance-operations-regressions",
+          "leaf.operations-catalog"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/semver.py"
+        ],
+        "root_gate_ids": [
+          "leaf.local-document-metadata-tests",
+          "leaf.document-governance-contract-regressions",
+          "leaf.release-regressions"
         ]
       }
     ],
