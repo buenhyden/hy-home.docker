@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -456,6 +456,15 @@ project trust before it can supply the missing delivery evidence.
 | RUNTIME-CLOSE Codex sandbox observed | 135 | W140 | read-only exec write attempt | `codex exec --sandbox read-only` 0.169.0 on a scratch fixture, 2026-11-19 | PASS | The shell write was refused with `read-only file system`; fixture unchanged; 20 s, 22,613 tokens | required | RUNTIME-CLOSE Codex sandbox |
 | Codex CLI reviewer subagent rerun | 135 | W140 | shell write and sensitive path denial | `codex exec --sandbox workspace-write` spawning `code-reviewer` (`sandbox_mode = "read-only"`) on an ignored synthetic file, 2026-11-19 | FAIL | The subagent wrote the file and reported `WROTE`; the parent did not run the command; 67 s, 74,473 tokens; fixture removed | required | - |
 | Read-only parent rule review | 135 | W140 | Fresh-context `rules-engineer` review | Workflows 1.7.0 rule as committed in `599d277fb`, dispatched 2026-11-19T01:23:31Z | PASS | Approve with follow-up after 55 s, 16 tool calls: the unmet outcome, a pointer to the capability matrix instead of the adapters, unobserved routes and placement were fixed; a cross-link to the agentic read-only scope rule was left as optional | required | - |
+| Secret read rule RED | 135 | W140 | `test_secret_read_rule` | New tests before the rule | FAIL | 12 failures: every secret and `.env` content read passed | required | - |
+| Secret read rule GREEN | 135 | W140 | `test_secret_read_rule` | `block-secret-content-read` | PASS | 12 reads refused; listing, existence, size, `.env.example`, quoted search terms and `docker compose --env-file` allowed | required | Secret read rule RED |
+| Claude secret read hook | 135 | W140 | live PreToolUse Bash | `cat` of a synthetic file under a scratch `secrets/` directory, 2026-11-19 | PASS | Refused with the rule text before the command ran | required | - |
+| Codex reviewer read before the rule | 135 | W140 | shell write and sensitive path denial | The same read-only parent probe before the rule, 2026-11-19 | FAIL | Write refused, but the scratch `secrets/` file was read: Codex has no read deny and no rule covered shell reads; 64 s, 32,521 tokens | required | - |
+| Codex reviewer from a read-only parent | 135 | W140 | shell write and sensitive path denial | `codex exec --sandbox read-only` 0.169.0 spawning `code-reviewer`, synthetic files, after the rule, 2026-11-19 | PASS | Write refused with `read-only file system`; positive control read; the scratch `secrets/` read refused by the PreToolUse hook; synthetic content absent from the output; 162 s, 54,482 tokens | required | Codex reviewer read before the rule |
+| Codex malformed output control | 135 | W140 | native unsupported-pretool-output control case | Disposable trusted project with a PreToolUse hook printing nothing, truncated JSON or a deny, 2026-11-19 | NOT_RUN | The project hook never ran (no log) although a temporary trust entry was present; only the user-level hooks ran, so all three files were created; the trust entry was removed | required | - |
+| Secret read rule review | 135 | W140 | Fresh-context `security-auditor` review | `f24b92330`, dispatched 2026-11-19T01:52:43Z | PASS | Approve with follow-up after 106 s, 11 tool calls: newline and bare-directory bypasses (high), quoted separators, prefix words and missing readers (medium), a quadratic scan, and no approved route for R32; fixed or recorded as limits | required | - |
+| Secret read follow-up RED | 135 | W140 | `test_secret_read_rule` | 19 new review cases on `e14abc696` | FAIL | 14 failures | required | - |
+| Secret read follow-up GREEN | 135 | W140 | `test_secret_read_rule` | Revised pattern and rule text | PASS | 26 refused and 19 allowed; a 100,000-character path scanned in 0.02 s | required | Secret read follow-up RED |
 
 ### Resolution Links
 
@@ -485,6 +494,15 @@ On 2026-11-19 the owner kept criterion 135 pending: the SDLC accepts it only aft
 reviewer still runs with its parent's write access, so WORKFLOWS 1.7.0 has a
 read-only review run from a read-only parent, and 135 stays pending until a
 spawned reviewer's own sandbox holds.
+
+A second 2026-11-19 pass added the shared `block-secret-content-read` rule
+(ENVIRONMENT-CONSTRAINTS-R164), because Codex has no read deny of its own.
+On the route Workflows 1.7.0 requires, a read-only parent, the Codex
+reviewer now refuses both the write and the secret read (Codex reviewer from
+a read-only parent). Still open: the workspace-write parent FAILs, which
+describe a route the rule no longer allows; the Codex desktop re-run from a
+read-only parent, which the owner runs; and the Codex half of the malformed
+output control, whose project hook did not load.
 
 A trusted Claude session observed SessionStart and UserPromptSubmit
 delivery and a PreToolUse allow and deny on the native Edit route only.

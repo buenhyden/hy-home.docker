@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.25.0"
+version: "1.26.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -184,6 +184,7 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R161 | Observing agent tools and scheduled jobs | Required: `scripts/operations/observe.py report` joins capture, analysis, forecast, dispatch and the watched units by time window, names an owner and a next step for each failure, counts journal lines without copying log text, prompts or secrets, and states its own cost and what it cannot measure | none | `tests/validation/test_observe.py` |
 | ENVIRONMENT-CONSTRAINTS-R162 | Using an observe report | Forbidden: treating it as a gate, an approval or a fix; a failure it shows is resolved through its owner's record | none | none |
 | ENVIRONMENT-CONSTRAINTS-R163 | Reporting a LAB or service run on the operating Docker daemon | Forbidden: calling its result a sandbox result; it shares the operating socket, networks and volumes and is an operating-host result | none | none |
+| ENVIRONMENT-CONSTRAINTS-R164 | Agent shell command | Forbidden: reading the content of a file under a `secrets/` directory or of a `.env` file other than `.env.example`; listing, existence and size checks stay allowed | hookify `block-secret-content-read` refuses the visible forms | `tests/lib/hooks/test_secret_read_rule.py` |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -517,6 +518,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Session analysis (R143-R148): no check is named.
 - Compose start selection (R149): `lab.py select` reads the render and the running containers when an operator runs it; nothing makes a start run it first, and two starts at once can each pass it.
 - Sandbox claims (R163): no check is named.
+- Secret content reads (R164): the hookify rule sees only the command text; a quoted path, a variable, an interpreter or script that reads the file, `find -exec`, `xargs`, `git show`, a recursive read of a parent directory, `docker compose config` without `--services` or a hook bypass is outside it. An approved secret operation runs through a registered script that never prints the value, or the user runs the command.
 - Whole-stack start (R150): the hookify rule sees only the command text; a profile list read from an environment file or a command built at run time is outside it.
 - Task forecasts (R151, R154, R155): no check is named; R152 and R153 are enforced by the store and the CLI.
 - Observation (R161, R162): no check is named; the report reads stores and the journal and changes nothing.
