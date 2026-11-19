@@ -222,7 +222,7 @@ class SecretCatalogContractTests(unittest.TestCase):
         return lanes if identifier in self.HELD_CONSUMER else (*lanes, "consumed")
 
     P06_TASK = (
-        "docs/03.specs/0204-service-integration-security-and-operations/tasks/"
+        "docs/03.specs/0204-service-integration-security-and-operations/01.tasks/"
         "tsk-0014-p06-openbao-consumer-migration.md"
     )
 

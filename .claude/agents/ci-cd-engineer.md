@@ -57,7 +57,7 @@ Stop when required credentials, remote authority, or runtime promotion evidence 
 
 ## Related Documents
 
-- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
 - [CI/CD patterns](../../.agents/skills/ci-cd-patterns/SKILL.md)
 - [Deployment pipeline design](../../.agents/skills/deployment-pipeline-design/SKILL.md)
 - [Subagent protocol](../../.agents/governance/agentic.md)

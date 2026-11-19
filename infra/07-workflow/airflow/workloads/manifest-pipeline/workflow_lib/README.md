@@ -1,10 +1,10 @@
 ---
 title: "Manifest Pipeline Library"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Manifest Pipeline Library
@@ -81,7 +81,7 @@ Content-Type은 key 확장자와 같은 `application/json`이며(SeaweedFS는 `.
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
+- RUN-0050: `docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md`
 
 #### Related Documents
 

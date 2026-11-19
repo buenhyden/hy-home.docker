@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "0.3.3"
+version: "0.3.4"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -165,10 +165,10 @@ secrets:                      # one entry per LAB secret file
   - row: LAB-001
     destination: secrets/data/valkey/password.txt
 documents:
-  guide: docs/05.operations/guides/15-labs/0022-valkey-cluster.md
-  runbook: docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md
-  guide_target: docs/05.operations/guides/05-databases-and-storage/
-  runbook_target: docs/05.operations/runbooks/05-databases-and-storage/
+  guide: docs/05.operations/01.guides/15.labs/0022-valkey-cluster.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0022-valkey-cluster.md
+  guide_target: docs/05.operations/01.guides/05.databases-and-storage/
+  runbook_target: docs/05.operations/03.runbooks/05.databases-and-storage/
 resources:
   services: {valkey-node-1: {cpus: 0.5, memory_mib: 512}}
   disk_gib: {data: 5, images: 1}
@@ -395,12 +395,12 @@ is `FAIL` when any criterion fails, and `NOT_RUN` in the remaining cases.
 **Files:**
 
 - **Create subject OPS-0107, `lab-promotion`.**
-  - `docs/05.operations/policies/15-labs/0107-lab-promotion.md` holds the
+  - `docs/05.operations/02.policies/15.labs/0107-lab-promotion.md` holds the
     layout, the manifest fields, the secret rules, the destination rules
     table (Spec section 4) and a two-column reserve table (`Resource`,
     `Reserve`) with the rows CPUs 2, Memory MiB 4096 and Disk percent 10.
 
-  - `docs/05.operations/runbooks/15-labs/0107-lab-promotion.md` holds the
+  - `docs/05.operations/03.runbooks/15.labs/0107-lab-promotion.md` holds the
     readiness check run and three procedures: `add`, `replace-same` and
     `replace-substitute`. Each replacement procedure has the consumer
     inventory, data migration (export, import, verify), cutover, rollback and
@@ -594,6 +594,6 @@ The LAB folder layout, manifest and promotion readiness contract live in `lab.py
 
 Owner @buenhyden. The receipts are TSK-0001, TSK-0002 and TSK-0003, named in the Work Breakdown Task column.
 
-- [Task](tasks/tsk-0001-lab-promotion-contract.md)
-- [Reservations Task](tasks/tsk-0002-lab-promotion-reservations.md)
-- [supabase LAB retirement Task](tasks/tsk-0003-retire-supabase-lab.md)
+- [Task](01.tasks/tsk-0001-lab-promotion-contract.md)
+- [Reservations Task](01.tasks/tsk-0002-lab-promotion-reservations.md)
+- [supabase LAB retirement Task](01.tasks/tsk-0003-retire-supabase-lab.md)

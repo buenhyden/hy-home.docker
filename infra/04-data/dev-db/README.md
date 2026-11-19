@@ -1,10 +1,10 @@
 ---
 title: "개발 데이터베이스 (dev-db)"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-02"
 ---
 
@@ -89,7 +89,7 @@ Selected Start의 정적 명령은 Compose 렌더와 provision·ACL 입력 검�
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0100: `docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md`
+- RUN-0100: `docs/05.operations/03.runbooks/05.databases-and-storage/0100-development-database.md`
 
 #### Related Documents
 

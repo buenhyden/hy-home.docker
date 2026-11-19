@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway)"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -99,11 +99,11 @@ created: "2025-11-12"
 #### Related Documents
 
 - [Agent 거버넌스](../../AGENTS.md)
-- 시스템 아키텍처 (`docs/02.architecture/descriptions/README.md`)
+- 시스템 아키텍처 (`docs/02.architecture/01.descriptions/README.md`)
 - [Secret 관리](../../secrets/README.md)
-- Gateway 가이드 (`docs/05.operations/guides/README.md`)
-- 운영 정책 (`docs/05.operations/policies/README.md`)
-- 비상 런북 (`docs/05.operations/runbooks/README.md`)
+- Gateway 가이드 (`docs/05.operations/01.guides/README.md`)
+- 운영 정책 (`docs/05.operations/02.policies/README.md`)
+- 비상 런북 (`docs/05.operations/03.runbooks/README.md`)
 - [문서 인덱스](../../docs/README.md)
 
 #### Observability and Recovery

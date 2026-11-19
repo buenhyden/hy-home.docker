@@ -1,10 +1,10 @@
 ---
 title: "Agent Prompts"
-version: "0.3.1"
+version: "0.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-09-06"
 ---
 
@@ -78,15 +78,15 @@ prompt는 작업 자체가 아니라 작업을 감싸는 envelope입니다. `ski
 #### Upstream and Downstream
 
 - [Knowledge index](../knowledge/README.md)
-- Canonical knowledge and prompt surfaces decision (`docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
+- Canonical knowledge and prompt surfaces decision (`docs/00.workspace/02.architecture/02.decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
 - [Documentation index](../../docs/README.md)
 
 #### Policy and Templates
 
 - [Agent governance index](../README.md)
 - [Agentic policy](../governance/agentic.md)
-- [문서 작성 계약](../../docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- README 템플릿 `docs/99.templates/templates/governance/prompt-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
+- [문서 작성 계약](../../docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- README 템플릿 `docs/99.templates/02.templates/91.agent-governance/prompt-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
 ### Checks
 
@@ -94,7 +94,7 @@ prompt는 작업 자체가 아니라 작업을 감싸는 envelope입니다. `ski
 
 1. 필요한 것이 절차가 아니라 input/output contract인지 확인합니다. 절차는
    skill에 속합니다.
-2. `docs/99.templates/templates/governance/prompt.template.md`를 복사하고
+2. `docs/99.templates/02.templates/91.agent-governance/prompt.template.md`를 복사하고
    등록된 섹션을 순서대로 유지합니다.
 3. 소유 skill과 role의 이름을 명시하고 둘 중 하나를 다시 서술하지
    않습니다.

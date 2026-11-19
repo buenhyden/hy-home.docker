@@ -1,10 +1,10 @@
 ---
 title: "Auth Tier (02-auth)"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -160,9 +160,9 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 
 - [Gateway](../01-gateway/README.md)
 - [Data](../04-data/README.md)
-- Keycloak 운영 문서: `docs/05.operations/guides/03-identity-and-access/0014-keycloak.md`, `docs/05.operations/policies/03-identity-and-access/0014-keycloak.md`, `docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md`
-- OAuth2 Proxy 운영 문서: `docs/05.operations/guides/03-identity-and-access/0015-oauth2-proxy.md`, `docs/05.operations/policies/03-identity-and-access/0015-oauth2-proxy.md`, `docs/05.operations/runbooks/03-identity-and-access/0015-oauth2-proxy.md`
-- 애플리케이션 인증 통합 가이드: `docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md`
+- Keycloak 운영 문서: `docs/05.operations/01.guides/03.identity-and-access/0014-keycloak.md`, `docs/05.operations/02.policies/03.identity-and-access/0014-keycloak.md`, `docs/05.operations/03.runbooks/03.identity-and-access/0014-keycloak.md`
+- OAuth2 Proxy 운영 문서: `docs/05.operations/01.guides/03.identity-and-access/0015-oauth2-proxy.md`, `docs/05.operations/02.policies/03.identity-and-access/0015-oauth2-proxy.md`, `docs/05.operations/03.runbooks/03.identity-and-access/0015-oauth2-proxy.md`
+- 애플리케이션 인증 통합 가이드: `docs/05.operations/01.guides/03.identity-and-access/0079-application-auth-integration.md`
 - [문서 인덱스](../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../tech-stack.versions.json)은 drift 검증을 제공합니다.

@@ -1,10 +1,10 @@
 ---
 title: "Manifest Publication SQL"
-version: "0.5.0"
+version: "0.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Manifest Publication SQL
@@ -126,7 +126,7 @@ receipt와 현재 schema fingerprint가 다르면 DDL 전에 실패합니다. �
 grant를 보존한 채 마지막 열에 `runs.raw_sha256 AS data_version`을 추가합니다.
 `publish_manifest`, claim/ack/retry/unknown/reconcile 함수와 outbox는 유지합니다.
 P05의 역사 version 3 영수증을 version 4 수용으로 고쳐 쓰지 않으며 실제 소비자의
-현재 호환과 수용은 P04 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md`)에서
+현재 호환과 수용은 P04 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0043-opsflow-data-path.md`)에서
 별도 인계합니다. 소스 revert는 실행한 schema rollback이 아닙니다.
 
 #### Version 5 operator recovery and checks
@@ -255,7 +255,7 @@ receipt가 아니며 기존 receipt를 자동 보정하지 않습니다.
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
+- RUN-0050: `docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md`
 
 #### Related Documents
 

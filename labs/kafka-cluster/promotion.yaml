@@ -23,10 +23,10 @@ integrations:
   owner: infra/05-messaging/kafka/
 secrets: []
 documents:
-  guide: docs/05.operations/guides/15-labs/0108-kafka-cluster.md
-  runbook: docs/05.operations/runbooks/15-labs/0108-kafka-cluster.md
-  guide_target: docs/05.operations/guides/06-messaging-and-cdc/
-  runbook_target: docs/05.operations/runbooks/06-messaging-and-cdc/
+  guide: docs/05.operations/01.guides/15.labs/0108-kafka-cluster.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0108-kafka-cluster.md
+  guide_target: docs/05.operations/01.guides/06.messaging-and-cdc/
+  runbook_target: docs/05.operations/03.runbooks/06.messaging-and-cdc/
 resources:
   services:
     lab-kafka-1:

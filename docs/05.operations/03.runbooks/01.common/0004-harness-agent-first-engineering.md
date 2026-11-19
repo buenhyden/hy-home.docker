@@ -1,0 +1,282 @@
+---
+title: "Harness / Agent-first Engineering Runbook"
+version: "1.5.1"
+type: "operation/runbook"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-11-18"
+layer: "operations"
+artifact_id: "RUN-0004"
+parent_ids:
+- "POL-0004"
+created: "2026-06-04"
+next_review_at: "2027-05-13"
+---
+# Harness / Agent-first Engineering Runbook
+
+## Trigger and Scope
+
+### Trigger
+
+이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
+
+다음 경우에 실행한다.
+
+- Root instruction 파일이 변경될 때
+- `.claude` 또는 `.codex` 파일이 변경될 때
+- `.agents/**`가 변경될 때
+- 새 stage doc이 추가될 때
+- harness 또는 Agent-first audit이 요청될 때
+
+### Targets
+
+- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`, retired)
+- 같은 주제: [Guide](../../01.guides/01.common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../../02.policies/01.common/0004-harness-agent-first-engineering.md) (`POL-0004`)
+
+- [Operations index](../../README.md)
+- [Agent Governance Hub](../../../../.agents/README.md)
+- [Subagent Protocol](../../../../.agents/governance/agentic.md)
+- 현재 승인된 Spec Package의 Plan과 Task evidence
+
+## Preflight
+
+### Authority
+
+승인 범위와 접근에 관한 확인:
+
+- [ ] bootstrap/provider와 승인 범위를 읽고 report가 존재하는 경우에만 읽는다.
+
+- [ ] 아래 적용 가능한 verification command의 입력·부작용·필요 도구를 먼저 확인한다. 공개/sanitized checkout이 없거나 private 접근·Docker 실행이 승인되지 않았으면 해당 검사를 BLOCKED/NOT_RUN으로 남긴다.
+
+### Environment
+
+시작 전 확인:
+
+- [ ] `git status --short --branch`를 확인한다.
+
+- [ ] Graphify를 탐색에 사용할 때만 health를 advisory로 확인한다.
+- [ ] 문서를 편집하기 전에 runtime policy 변경이 필요 없는지 확인한다.
+- [ ] 새 stage doc이 template을 사용하고 parent README 파일이 갱신되었는지 확인한다.
+- [ ] hook quoting/parsing 변경 후에는 hook payload simulation을 실행한다.
+
+## Procedure
+
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | workspace 상태와 Graphify report/health 확인 | Graphify report는 해당 탐색을 사용할 때만 읽는 advisory이며 필수 QA가 아니다 | report 부재 시 `NOT_RUN: Graphify report absent`로 남긴다 |
+| 2 | Graphify health 해석 | `status=clean` 또는 `status=advisory`로 판정하고 report는 count와 guidance만 출력한다 | advisory이면 tracked source / `.agents/` / active stage doc과 대조 검증한다 |
+| 3 | 변경 선택과 prerequisites 조회(`--explain`) | 실행하지 않는 계획 조회 결과이며 검증 PASS로 기록하지 않는다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | hook quoting/parsing simulation(Task에서 선택·승인된 경우만) | local script 동작과 JSON/system-message 출력을 검증한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | 선택된 infra 검사 수행(Compose / template security / hardening) | config PASS를 live readiness로 기록하지 않는다 | 도구·입력이 없으면 해당 lane을 BLOCKED/NOT_RUN으로 남기고 독립 작업을 계속한다 |
+| 6 | 등록된 content validator로 canonical owner와 retired-authority 재도입 방지 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | 변경 파일, command 결과, Graphify 유효성, 선택 범위, 범위 밖 infra 실패를 Task에 기록 | command 출력과 timestamp가 Task에 기록된다 | 실패를 지우기 위해 범위를 넓히거나 통제를 낮추지 않고 Stop Conditions에 따라 escalation |
+| 8 | Git push guard: `install-pre-push-guard.sh` 실행 후 합성 local bare remote로 확인 | feature 허용, 여러 ref의 main 차단, main 삭제 차단 | 알 수 없는 hook / legacy chain / `core.hooksPath`는 덮어쓰지 않고 소유자 조정을 요구한다 |
+| 9 | Git push guard: 승인된 복구(`pre-push.before-native` 대조 후 이전 source/config와 shim 복원) | 문서에 기록 없음 | 원본이 없던 설치는 별도 owner 판단으로 처리한다 |
+| 10 | CI quality-gate: workflow / contract / pre-commit 설정과 실패 job log 읽기 | event, revision, job, hook, image 또는 binary 참조, rule identifier를 기록한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 11 | CI quality-gate: pre-commit `rev`와 hook manifest 비교, Hadolint entry를 revision과 같은 release로 고정 | focused regression이 한쪽으로 치우친 변경을 거부한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 12 | CI quality-gate: release tag와 immutable digest 검토 | 문서에 기록 없음 | digest는 별도로 검토된 maintenance path에서만 고려한다 |
+| 13 | CI quality-gate: focused regression과 read-only style 검사 수행 | 원격 PR 후보가 selected changed aggregate를 한 번 실행한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 14 | CI quality-gate: `changed --explain`으로 선택과 도구·예산 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 15 | CI quality-gate: 불필요해진 QA 폐기와 보장 이전 | 현재 DAG와 정책에 보장이 계속된다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+
+1. workspace 상태를 확인한다. Graphify report와 health는 해당 탐색을 사용할 때만 읽는 advisory이며 필수 QA가 아니다.
+
+   ```bash
+   git status --short --branch
+   if [ -f graphify-out/GRAPH_REPORT.md ]; then sed -n '1,120p' graphify-out/GRAPH_REPORT.md; else echo 'NOT_RUN: Graphify report absent'; fi
+   bash scripts/knowledge/report-graphify-health.sh
+   ```
+
+2. Graphify health를 해석한다.
+
+   - `status=clean`: Graphify를 navigation aid로 사용할 수 있다.
+   - `status=advisory`: Graphify는 계속 읽을 수 있지만, architecture와 codebase 주장은 tracked source 파일, `.agents/`, 그리고 active stage doc과 대조 검증해야 한다.
+   - report는 count와 guidance만 출력해야 하며, source 파일 내용을 출력해서는 안 된다.
+
+3. 실제 변경의 선택과 prerequisites를 조회한다. 이 조회는 실행 결과가 아니다.
+
+   ```bash
+   python3 scripts/validation/run-ci-gate.py --profile changed --explain
+   python3 scripts/validation/run-ci-gate.py --profile changed --local-only --explain
+   ```
+
+   원격 후보는 등록된 문서 content와 변경 style 검사를 수행한다. 링크, 문서 library와
+   모의 실행 회귀는 [검증 정책](../../../00.workspace/04.quality/quality-standards.md#4-execution-boundary)의
+   로컬 전용 범위를 따른다. 변경 폴더와 검증 목적에 맞는 검사만 실행하고 동일 입력의 링크 결과를 재사용한다.
+
+4. hook quoting/parsing 자체를 변경했고 해당 수동 관측이 Task에 선택·승인된 경우에만 아래 simulation을 수행한다. 일반 문서 변경에는 적용하지 않는다.
+
+   ```bash
+   printf '{"tool_input":{"file_path":"labs/stalwart/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
+   CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
+   CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
+   printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
+   printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
+   ```
+
+   이 command들은 local script 동작과 JSON/system-message 출력을 검증한다. 외부 Claude/Codex platform의 event delivery를 증명하지는 않는다.
+
+5. 실제 infra 변경으로 선택된 검사만 수행한다. 아래는 각 owner의 진단 명령 예시이며, 후보 gate가 이미 실행한 같은 입력의 leaf를 다시 실행하는 절차가 아니다.
+
+   ```bash
+   bash scripts/validation/validate-docker-compose.sh
+   bash scripts/validation/check-template-security-baseline.sh
+   bash scripts/hardening/check-all-hardening.sh
+   ```
+
+   Compose validator의 기본 선택은 모든 선언 profile과 HOME이다.
+   `check-template-security-baseline.sh`는 profile과 무관하게 모든 root·LAB 서비스의
+   effective control을, `check-all-hardening.sh`는 인자가 없으면 모든 tier를 검사하고
+   tier 인자(예: `01-gateway`)로 좁힌다. `HYHOME_COMPOSE_PROFILES` override와 hardening의
+   실제 대상 범위를 각각 기록한다. selector별 합계는 중복 서비스가 포함될 수 있다.
+   [RUN-0086](../10.platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)의
+   입력·부작용 경계를 먼저 적용하며 config PASS를 live readiness로 기록하지 않는다.
+
+6. 현행 canonical owner와 retired-authority 재도입 방지는 등록된 content
+   validator의 결과로 확인한다. 과거 cutover의 고정 문자열 목록을 별도
+   반복 QA로 실행하지 않는다.
+
+7. 변경 파일, command 결과, Graphify 유효성, 실제 선택 범위와 범위 밖 infra 실패를 현재 Task에 기록한다. 실패를 지우기 위해 범위를 넓히거나 통제를 낮추지 않는다.
+
+#### Git push guard installation and recovery
+
+Git `pre-push`의 전체 ref 입력은
+[`pre-push-guard.sh`](../../../../scripts/hooks/pre-push-guard.sh)가 검사한다.
+pre-commit의 push stage는 첫 변경 ref만 선택하고 삭제를 건너뛰므로 이
+보호를 생산하지 않는다. `.pre-commit-config.yaml`은 commit/message stage만
+설치하며 같은 guard를 중복 호출하지 않는다.
+
+승인된 checkout에서 다음 명령을 실행한다. 이는 Git common directory의
+`hooks/pre-push`만 수정하며 global 설정·다른 stage hook을 변경하지 않는다.
+installer는 정확히 알려진 pre-commit shim만 교체하고 원본을
+`pre-push.before-native`로 보존한다. 알 수 없는 hook·기존 legacy chain·선택된
+`core.hooksPath`는 덮어쓰지 않고 소유자 조정을 요구한다.
+
+```bash
+bash scripts/hooks/install-pre-push-guard.sh
+```
+
+설치된 wrapper는 현재 worktree의 추적된 guard를 실행하므로 guard가 없거나
+실행 불가능하면 push가 실패한다. 합성 local bare remote의 실제 `git push`로
+feature 허용, 여러 ref의 main 차단과 main 삭제 차단을 확인한다. 실제 원격
+main push를 시험하지 않으며 합성 결과를 원격 보호나 editor sync 관측으로
+승격하지 않는다. `stop_hook_active: true`인 Stop 재진입은 추가 block·QA 없이
+반환하며 최초 미커밋 변경 진단은 유지한다.
+
+복구가 승인되면 보존한 `pre-push.before-native`와 현재 native wrapper를 먼저
+대조한다. 원본 shim은 당시 `.pre-commit-config.yaml`의 push guard 등록을
+소비하므로 승인된 이전 source/config를 함께 복원한 뒤 shim을 `pre-push`로
+복원한다. 현재 설정에서 shim만 복원하면 push 보호가 사라진다. 원본이 없던
+설치에는 복원할 shim도 없으므로 별도 owner 판단으로 처리한다.
+`pre-commit install --hook-type pre-push`를 다시 실행해 native guard를
+migration chain으로 이동시키지 않는다.
+
+#### CI quality-gate version alignment
+
+1. `.github/workflows/ci-quality.yml`, `.github/workflow-contract.yml`,
+   `.pre-commit-config.yaml`, 그리고 실패한 job log를 읽는다. event, revision,
+   job, hook, image 또는 binary 참조, rule identifier를 기록한다. local
+   명령은 자신이 사용한 executable만 증명한다.
+2. pre-commit repository의 `rev`를 hook manifest와 비교한다. upstream
+   `v2.14.0`의 Hadolint `hadolint-docker` hook은 `docker_image` hook이며
+   그 entry는 태그 없는 `ghcr.io/hadolint/hadolint hadolint`이다. 따라서
+   hook revision이 container image 버전을 선택하지 않는다. entry를
+   repository revision과 같은 release로 고정하고 focused regression으로
+   한쪽으로 치우친 변경을 거부한다. upstream
+   [v2.14.0 hook manifest](https://raw.githubusercontent.com/hadolint/hadolint/v2.14.0/.pre-commit-hooks.yaml)
+   가 이 동작의 authority이다.
+3. release tag는 선택된 Hadolint 버전을 정렬하지만 image byte까지 고정하지는
+   않는다. immutable digest는 별도로 검토된 maintenance path를 거칠 때만
+   고려한다. 이 path는 짝지어진 revision, tag, digest, update owner를 어떻게
+   최신 상태로 유지할지 명시한다.
+4. 변경된 동작의 focused regression과 등록된 read-only style 검사를 수행한다.
+   원격 PR 후보가 selected changed aggregate를 한 번 실행한다. 로컬 결과를
+   hosted 결과로 표시하거나 push 전·merge 후 같은 QA를 반복하지 않는다.
+5. `changed --explain`으로 선택과 도구·예산을 확인한다. `full`은 별도 승인된
+   전체 감사용이다. main push의 보안/SARIF는 merged revision의 다른 관측이다.
+   PR concurrency는 revision 변경만 대상으로 하며 title edited가 후보 증거를
+   대체하거나 취소하지 않는다.
+6. caller·등록·소유자 조사 후 필요 없어진 QA만 폐기한다. 현재 DAG와 정책에
+   계속되는 보장을 이전하고 전용 helper·fixture·test를 제거한다. 현재 관측과
+   과거 완료 사건의 고정 SHA·수량은 같은 보장이 아니다.
+
+QA 정의 자체를 바꾼 경우에는
+[정의 변경 신뢰 경계](../../../00.workspace/03.process/github-governance.md#53-qa-definition-trust-and-amendment)를
+따라 trusted base의 정의 출처·revision과 현재 소유자가 실제 검토·수용한
+diff·revision을 Task에 연결한다. 후보 workflow가 후보 controller와 설정을
+실행한 초록색 결과는 그 정의의 승인 증거가 아니다. 현재 원격에서 trusted
+정의 검증을 강제하는지 확인되지 않으면 그 주장만 미확인으로 남긴다.
+일반 문서 교정에 새로운 전체 QA나 반복 승인을 추가하지 않는다.
+
+#### Evaluation and QA Ownership
+
+agent 답변 점수와 완료된 Spec/Task 사건을 재증명하는 fixture는 정기 workspace
+QA가 아니다. 현재 [품질 정책](../../../00.workspace/04.quality/quality-standards.md)이
+허용하는 문서 형태·관계·상태·보존 및 Docker/Compose 보장만 선택한다. provider
+공식 사실·native envelope 검토와 live 실행 관측은 각각의 owner에 남기며,
+합성 점수나 소스 설정으로 실제 provider entitlement/runtime을 수용하지 않는다.
+`.agents/evaluations/README.md`는 별도 평가 주기의 동일 작업 baseline/Skill 출력과
+채점·집계의 소유 관계를 안내한다. 실제 원문과 시행·채점자·기준·보정 상태를
+보존하며 대표 결과를 전체 구성원 PASS로 확대하지 않는다.
+
+선택된 infrastructure leaf의 부작용은 먼저 확인한다. Compose render는 임시
+입력을 만들 수 있고 Conftest는 격리 Docker 컨테이너를 실행한다. 필요한 도구와
+입력이 없으면 해당 lane을 BLOCKED/NOT_RUN으로 남기고 독립적인 안전 작업을
+계속한다. static PASS를 HOME capacity·복구·배포 성공으로 확대하지 않는다.
+
+### Stop Conditions
+
+중단 조건은 두 곳에 있다. 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단한다(Recovery or Forward Repair), verification 실패·secret 노출 위험·파괴적 데이터 변경 필요·예상과 다른 상태는 작업을 중단하고 escalation한다(Escalation). private 접근이나 Docker 실행이 승인되지 않은 검사는 BLOCKED/NOT_RUN으로 남긴다(Environment).
+
+## Verification
+
+### Expected Results
+
+#### Service Checks
+
+`--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
+[quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix)의
+원격 PR 경로가 소유하며 조회 결과를 검증 PASS로 기록하지 않는다.
+
+이 runbook의 수용은 실제 변경에 선택된 현재 보장 검사와 독립 리뷰의 결과로 판단한다. 무관한 hook simulation·Graphify 보고·전체 QA를 모든 변경에 요구하지 않는다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
+
+#### Evidence
+
+증거 출처:
+
+- validation script의 command 출력.
+- `git diff --stat`.
+- `scripts/knowledge/report-graphify-health.sh`의 상태와 contamination count.
+- `scripts/validation/run-ci-gate.py`의 runtime agent/function catalog 섹션.
+- hook payload simulation 출력.
+- 새 구현 변경이 진행 중일 때의 현재 co-located Task.
+
+- 이 runbook을 실행할 때마다 command 출력, timestamp, operator 또는 agent 조치를 기록한다.
+- 실패한 check, 관찰된 증상, 최종 recovery 또는 escalation 상태를 관련 task 또는 incident evidence에 기록한다.
+
+### Unverified Conditions
+
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
+
+- 원격 PR 후보 aggregate QA와 `--explain` 이후의 실제 실행: 이 문서에는 `--explain`이 실행하지 않는 계획 조회라고만 기록되어 있고 실행 결과는 기록되어 있지 않다. 원격 PR 경로의 실행 결과로 검증한다.
+- hook simulation: Task에서 선택·승인된 경우에만 수행하는 수동 관측이며 이 문서에는 실행 결과가 기록되어 있지 않다. 출력 확인으로 검증하되 외부 Claude/Codex platform의 event delivery는 증명하지 않는다.
+- infra 진단 명령(Compose / template security / hardening): 이 문서에는 실행 결과가 기록되어 있지 않다. 실제 선택 범위의 command 출력으로 검증하며 static PASS를 live readiness로 확대하지 않는다.
+- Git push guard 설치와 복구: 승인된 checkout에서만 수행하며 이 문서에는 실행 결과가 기록되어 있지 않다. 합성 local bare remote의 push 결과로 검증하고, 실제 원격 main 보호는 관측하지 않았다.
+- trusted base의 QA 정의 검증 강제: 현재 원격에서 확인되지 않으면 미확인으로 남긴다고 문서에 기록되어 있다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 작업을 중단하고 @buenhyden에게 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
+
+### Recovery or Forward Repair
+
+- 이 runbook에 이미 문서화된 recovery/rollback 단계만 사용한다.
+- 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단하고 evidence를 보존한 뒤 Next Owner에 따라 escalation한다.
+- 문서 실수는 영향받은 stage doc 또는 README hunk만 되돌린다.
+- runtime catalog drift는 canonical agent governance role, skill, provider registry에서 provider projection을 다시 생성한다.
+- Compose validation 실패는 관련 없는 파일을 편집하기 전에 변경된 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 먼저 점검한다.
+- 영향받은 infra 실패가 승인된 범위 밖이면 별도 remediation으로 전달하며 실패/미실행 상태를 성공으로 바꾸지 않는다.

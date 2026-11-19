@@ -1,10 +1,10 @@
 ---
 title: "12 Analytics"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-01"
 ---
 
@@ -74,4 +74,4 @@ tier 정적 점검은 `bash scripts/hardening/check-all-hardening.sh 12-analytic
 
 #### Observability and Recovery
 
-없음: 이 tier에는 실행 서비스가 없다. LAB 운영은 [LAB Runbook 목록](../../docs/05.operations/runbooks/15-labs/README.md)을 따른다.
+없음: 이 tier에는 실행 서비스가 없다. LAB 운영은 [LAB Runbook 목록](../../docs/05.operations/03.runbooks/15.labs/README.md)을 따른다.

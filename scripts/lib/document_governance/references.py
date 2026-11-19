@@ -32,15 +32,17 @@ from scripts.lib.document_governance.registry import (
     load_registry,
 )
 
-CATEGORIES = ("audits", "data", "research")
-PREFIX_BY_CATEGORY = {"audits": "AUD-", "data": "DATA-", "research": "RES-"}
+CATEGORIES = ("01.research", "02.audits", "03.data")
+PREFIX_BY_CATEGORY = {"01.research": "RES-", "02.audits": "AUD-", "03.data": "DATA-"}
 PROFILE_BY_CATEGORY = {
-    "audits": "reference/audit-pack",
-    "data": "reference/data-pack",
-    "research": "reference/research-pack",
+    "01.research": "reference/research-pack",
+    "02.audits": "reference/audit-pack",
+    "03.data": "reference/data-pack",
 }
 DATA_PAYLOAD_NAME = "data.yaml"
-PACKAGE_PATH = re.compile(r"(?:audits|data|research)/[0-9]{4}-[a-z0-9][a-z0-9-]*")
+PACKAGE_PATH = re.compile(
+    r"(?:01\.research|02\.audits|03\.data)/[0-9]{4}-[a-z0-9][a-z0-9-]*"
+)
 _DATED_PACKAGE = re.compile(r"(?:^|/)[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-|$)")
 _RETIRED_ROOTS = ("learning", "llm-wiki")
 _NORMATIVE_STAGES = ("stage 00", "stage 01", "stage 02", "stage 03", "stage 05")
@@ -52,9 +54,9 @@ _ACTIVE_CONSUMER_PATHS = (
 _RETIRED_ACTIVE_PATHS = (
     "docs/90.references/learning",
     "docs/90.references/llm-wiki",
-    "docs/90.references/data/governance/",
-    "docs/90.references/data/knowledge/",
-    "docs/90.references/data/security/",
+    "docs/90.references/03.data/governance/",
+    "docs/90.references/03.data/knowledge/",
+    "docs/90.references/03.data/security/",
 )
 
 MAX_ROOT_ENTRIES = 8
@@ -108,7 +110,7 @@ class Finding:
 
 
 PROTECTED_RESEARCH_PACKAGE = pathlib.PurePosixPath(
-    "docs/90.references/research/0002-agentic-engineering-research-pack"
+    "docs/90.references/01.research/0002-agentic-engineering-research-pack"
 )
 _DECLARATION_HEADING = re.compile(r"^(#{2,6}) Preservation Declaration[ \t]*$", re.M)
 _DECLARED_LEAF = re.compile(r"^- `([^`/][^`]*)`$")
@@ -774,13 +776,14 @@ def _document_links(document: ReferenceDocument):
 
 def _is_retired_reference_target(target: pathlib.PurePosixPath) -> bool:
     if len(target.parts) >= 3 and target.parts[:2] == ("docs", "90.references"):
-        if target.parts[2] in _RETIRED_ROOTS:
+        if target.parts[2] in _RETIRED_ROOTS or target.parts[2] == "data":
+            # `data/` is the pre-SPEC-0212-TSK-0096 route of `03.data/`.
             return True
-        if target.parts[2] == "data" and len(target.parts) >= 4:
+        if target.parts[2] == "03.data" and len(target.parts) >= 4:
             package = target.parts[3]
             return (
                 package != "README.md"
-                and PACKAGE_PATH.fullmatch(f"data/{package}") is None
+                and PACKAGE_PATH.fullmatch(f"03.data/{package}") is None
             )
     return False
 
@@ -794,7 +797,7 @@ def _retired_links(document: ReferenceDocument) -> Sequence[str]:
 
 
 _REPOSITORY_MAP_PATH = pathlib.PurePosixPath(
-    "docs/90.references/data/0083-repository-map/README.md"
+    "docs/90.references/03.data/0083-repository-map/README.md"
 )
 
 
@@ -869,13 +872,13 @@ def generated_reference_owners(root: pathlib.Path) -> dict[str, str]:
         for output in outputs:
             if not isinstance(output, str):
                 raise ValueError("generated output must be a path")
-            if not output.startswith("docs/90.references/data/") or not output.endswith(
-                ".md"
-            ):
+            if not output.startswith(
+                "docs/90.references/03.data/"
+            ) or not output.endswith(".md"):
                 continue
             for path, prefix in (
                 (owner, "scripts/"),
-                (output, "docs/90.references/data/"),
+                (output, "docs/90.references/03.data/"),
             ):
                 if (
                     not isinstance(path, str)
@@ -971,7 +974,7 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     allowed_files.update(
         pathlib.PurePosixPath(item.relative_package) / DATA_PAYLOAD_NAME
         for item in corpus.packages
-        if item.category == "data"
+        if item.category == "03.data"
     )
     allowed_files.update(
         relative

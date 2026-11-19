@@ -30,7 +30,7 @@ class ReferencePackageTests(unittest.TestCase):
             "mutation": "check-write",
             "lifecycle": "active",
             "disposition": "retain",
-            "outputs": ["docs/90.references/data/0065-example/README.md"],
+            "outputs": ["docs/90.references/03.data/0065-example/README.md"],
         }
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -52,12 +52,12 @@ class ReferencePackageTests(unittest.TestCase):
                     elif mutation == "duplicate":
                         rows.append(row.copy())
                     elif mutation == "traversal":
-                        row["outputs"] = ["docs/90.references/data/../escape.md"]
+                        row["outputs"] = ["docs/90.references/03.data/../escape.md"]
                     elif mutation == "malformed":
                         rows = [None]
                     elif mutation == "oversize":
                         row["outputs"] = [
-                            f"docs/90.references/data/{number:04d}-example/README.md"
+                            f"docs/90.references/03.data/{number:04d}-example/README.md"
                             for number in range(129)
                         ]
                     manifest.write_text(json.dumps({"files": rows}), encoding="utf-8")
@@ -71,7 +71,7 @@ class ReferencePackageTests(unittest.TestCase):
                             self.references.generated_reference_owners(root)
 
     def test_delegation_validates_exact_members_and_their_content(self) -> None:
-        member = "docs/90.references/research/0002-agentic-engineering-research-pack/m0017-security-governance.md"
+        member = "docs/90.references/01.research/0002-agentic-engineering-research-pack/m0017-security-governance.md"
         for mutation, expected in (
             ("missing", "protected-research-missing"),
             ("extra", "unregistered-reference-file"),
@@ -119,7 +119,7 @@ class ReferencePackageTests(unittest.TestCase):
     def _mutable_research_package(
         self, root: pathlib.Path, *, readme: bool = False
     ) -> pathlib.Path:
-        research_root = root / "docs/90.references/research"
+        research_root = root / "docs/90.references/01.research"
         protected = root / self.references.PROTECTED_RESEARCH_PACKAGE
         candidates = sorted(
             path
@@ -139,7 +139,7 @@ class ReferencePackageTests(unittest.TestCase):
 
     def test_reference_roots_and_package_paths_are_exact(self) -> None:
         corpus = self.references.load_reference_packages(ROOT / "docs/90.references")
-        self.assertEqual(("audits", "data", "research"), corpus.category_names)
+        self.assertEqual(("01.research", "02.audits", "03.data"), corpus.category_names)
         # The three categories stay declared. `audits` remains empty, and
         # `data` is empty again since DATA-0096 retired on 2026-11-14.
         # An observed prefix therefore proves a package exists, and every
@@ -166,7 +166,7 @@ class ReferencePackageTests(unittest.TestCase):
         )
 
         member = pathlib.PurePosixPath(
-            "docs/90.references/research/"
+            "docs/90.references/01.research/"
             "0085-workspace-engineering-main-baseline-assessment/"
             "m0001-request-scope.md"
         )
@@ -187,7 +187,7 @@ class ReferencePackageTests(unittest.TestCase):
                 item for item in registry["profiles"] if item["id"] == "research-member"
             )
             profile["path_pattern"] = (
-                "docs/90.references/research/{number:4}-{slug}/"
+                "docs/90.references/01.research/{number:4}-{slug}/"
                 "x{member_number:4}-{slug}.md"
             )
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -204,7 +204,7 @@ class ReferencePackageTests(unittest.TestCase):
 
         context, root = self._fixture()
         with context:
-            (root / "docs/90.references/data/2026-08-23-empty").mkdir()
+            (root / "docs/90.references/03.data/2026-08-23-empty").mkdir()
             self.assertTrue(
                 {"package-path-invalid", "reference-corpus-invalid"}
                 & self.finding_codes(root)
@@ -237,7 +237,7 @@ class ReferencePackageTests(unittest.TestCase):
 
         context, root = self._fixture()
         with context:
-            unregistered = root / "docs/90.references/data/legacy/nested.md"
+            unregistered = root / "docs/90.references/03.data/legacy/nested.md"
             unregistered.parent.mkdir()
             unregistered.write_text("# Legacy inventory\n", encoding="utf-8")
             self.assertTrue(
@@ -249,7 +249,7 @@ class ReferencePackageTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             package = next(
-                (root / "docs/90.references/research").glob(
+                (root / "docs/90.references/01.research").glob(
                     "[0-9][0-9][0-9][0-9]-*/README.md"
                 )
             )
@@ -322,7 +322,7 @@ class ReferencePackageTests(unittest.TestCase):
             with self.subTest(unsafe=unsafe):
                 context, root = self._fixture()
                 with context:
-                    data = root / "docs/90.references/research"
+                    data = root / "docs/90.references/01.research"
                     if unsafe == "broken-symlink":
                         (data / "0099-broken").symlink_to(
                             data / "missing", target_is_directory=True
@@ -468,7 +468,7 @@ class ReferencePackageTests(unittest.TestCase):
         self.assertTrue(
             redirect(
                 "# Redirect\n\nMoved to "
-                "[current](docs/90.references/research/0002-agentic-engineering-research-pack/).\n"
+                "[current](docs/90.references/01.research/0002-agentic-engineering-research-pack/).\n"
             )
         )
         self.assertTrue(
@@ -479,7 +479,7 @@ class ReferencePackageTests(unittest.TestCase):
         self.assertTrue(
             redirect(
                 "# Moved\n\nReplaced by "
-                "docs/90.references/research/0002-agentic-engineering-research-pack/!\n"
+                "docs/90.references/01.research/0002-agentic-engineering-research-pack/!\n"
             )
         )
         self.assertFalse(
@@ -515,7 +515,7 @@ class ReferencePackageTests(unittest.TestCase):
             consumer = root / "scripts/validation/current.py"
             consumer.parent.mkdir(parents=True)
             consumer.write_text(
-                'CURRENT = "docs/90.references/data/governance/current.yaml"\n',
+                'CURRENT = "docs/90.references/03.data/governance/current.yaml"\n',
                 encoding="utf-8",
             )
             findings = self.references.validate_active_reference_consumers(
@@ -530,7 +530,7 @@ class ReferencePackageTests(unittest.TestCase):
 class ProtectedResearchDeclarationTests(unittest.TestCase):
     """The package README, not a transient Task, is the protection oracle."""
 
-    PACKAGE = "docs/90.references/research/0002-agentic-engineering-research-pack"
+    PACKAGE = "docs/90.references/01.research/0002-agentic-engineering-research-pack"
 
     def _references(self):
         return reference_api()

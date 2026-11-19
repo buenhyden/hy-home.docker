@@ -68,7 +68,7 @@ class OptionalIntegrationContractTests(unittest.TestCase):
 
         policy = (
             ROOT
-            / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+            / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
         ).read_text()
         for producer in pairs:
             match = re.search(

@@ -1195,7 +1195,7 @@
       },
       "year-directory": {
         "owner": "docs/99.templates/registry.json",
-        "delta": "The profile's path has a {year:4} directory level under docs/05.operations/incidents/.",
+        "delta": "The profile's path has a {year:4} directory level under docs/05.operations/04.incidents/.",
         "validation": "The profileException schema in document-profile.schema.json accepts the kind; no script reads it, and the profile's {year:4} path pattern enforces the directory.",
         "expiry_or_review": "No expiry is recorded; review when the Registry changes this profile's exceptions."
       },
@@ -1425,7 +1425,7 @@
             "ref": "plan:Promotion Map/Consumer Updates"
           }
         ],
-        "owner": "docs/00.workspace/02.process/sdlc.md",
+        "owner": "docs/00.workspace/03.process/sdlc.md",
         "reverse_lookup": "derived"
       },
       "supersession": {
@@ -1464,7 +1464,7 @@
             "ref": "rel.structural-ownership"
           }
         ],
-        "owner": "docs/00.workspace/02.process/documentation-protocol.md",
+        "owner": "docs/00.workspace/03.process/documentation-protocol.md",
         "reverse_lookup": "derived"
       }
     },
@@ -1473,7 +1473,7 @@
       "version": "3.0.1",
       "source_label": "3.0.1",
       "source_sha256": "a8f595f543f380f992a20a52886d0cc2b4f340c47a449537d2f90ec082f39dfb",
-      "glossary_path": ".agents/knowledge/glossary.md",
+      "glossary_path": "docs/00.workspace/01.project/glossary.md",
       "terms": [
         {
           "term_id": "TERM-AUTHORITY",
@@ -1652,8 +1652,8 @@
     "role_design_contract": {
       "contract_id": "workspace-document-role-design",
       "contract_version": "4.0.0",
-      "source_path": "docs/99.templates/contracts/document-role-design.json",
-      "schema_path": "docs/99.templates/contracts/document-role-design.schema.json",
+      "source_path": "docs/99.templates/01.contracts/document-role-design.json",
+      "schema_path": "docs/99.templates/01.contracts/document-role-design.schema.json",
       "source_sha256": "3ac2806ec2db8b9f7cd320faa1b5bfe36675624555e63269783be8cdc2039a0e",
       "schema_sha256": "a07b2f24bc9980bab04895128e4ddf3339a2d719485a6f48f49e7ba26e227ad2"
     }
@@ -1727,7 +1727,7 @@
       "type": "sdlc/architecture-description",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/02.architecture/descriptions/{number:4}-{slug}.md",
+      "path_pattern": "docs/02.architecture/01.descriptions/{number:4}-{slug}.md",
       "artifact_id_pattern": "AD-{number:4}",
       "identity_relation": "direct",
       "template_id": "sdlc/architecture-description",
@@ -1786,14 +1786,17 @@
           "Decisions",
           "Adoption Boundaries"
         ]
-      }
+      },
+      "additional_path_patterns": [
+        "docs/00.workspace/02.architecture/01.descriptions/{number:4}-{slug}.md"
+      ]
     },
     {
       "id": "adr",
       "type": "sdlc/architecture-decision",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/02.architecture/decisions/{number:4}-{slug}.md",
+      "path_pattern": "docs/02.architecture/02.decisions/{number:4}-{slug}.md",
       "artifact_id_pattern": "ADR-{number:4}",
       "identity_relation": "direct",
       "template_id": "sdlc/architecture-decision",
@@ -1848,7 +1851,10 @@
           "Impacts",
           "Follow-up"
         ]
-      }
+      },
+      "additional_path_patterns": [
+        "docs/00.workspace/02.architecture/02.decisions/{number:4}-{slug}.md"
+      ]
     },
     {
       "id": "spec",
@@ -1926,7 +1932,7 @@
       "type": "sdlc/data-model",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/data-model.md",
+      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/02.contracts/data-model.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "sdlc/data-model",
@@ -1971,7 +1977,7 @@
       "id": "openapi-contract",
       "type": "sdlc/openapi",
       "frontmatter_policy": "absent",
-      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/openapi.yaml",
+      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/02.contracts/openapi.yaml",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "sdlc/openapi",
@@ -1992,7 +1998,7 @@
       "id": "graphql-contract",
       "type": "sdlc/graphql",
       "frontmatter_policy": "absent",
-      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/schema.graphql",
+      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/02.contracts/schema.graphql",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "sdlc/graphql",
@@ -2013,7 +2019,7 @@
       "id": "proto-contract",
       "type": "sdlc/proto",
       "frontmatter_policy": "absent",
-      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/service.proto",
+      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/02.contracts/service.proto",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "sdlc/proto",
@@ -2109,7 +2115,7 @@
       "type": "sdlc/task",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
+      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/01.tasks/tsk-{task_number:4}-{slug}.md",
       "artifact_id_pattern": "SPEC-{package_number:4}-TSK-{task_number:4}",
       "identity_relation": "package-member",
       "template_id": "sdlc/task",
@@ -2185,7 +2191,7 @@
       "type": "operation/guide",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/guides/{number:4}-{slug}.md",
+      "path_pattern": "docs/05.operations/01.guides/{number:4}-{slug}.md",
       "artifact_id_pattern": "GDE-{number:4}",
       "identity_relation": "direct",
       "template_id": "operation/guide",
@@ -2235,21 +2241,21 @@
         ]
       },
       "additional_path_patterns": [
-        "docs/05.operations/guides/01-common/{number:4}-{slug}.md",
-        "docs/05.operations/guides/02-gateway-and-networking/{number:4}-{slug}.md",
-        "docs/05.operations/guides/03-identity-and-access/{number:4}-{slug}.md",
-        "docs/05.operations/guides/04-security-and-secrets/{number:4}-{slug}.md",
-        "docs/05.operations/guides/05-databases-and-storage/{number:4}-{slug}.md",
-        "docs/05.operations/guides/06-messaging-and-cdc/{number:4}-{slug}.md",
-        "docs/05.operations/guides/07-observability/{number:4}-{slug}.md",
-        "docs/05.operations/guides/08-workflows-and-automation/{number:4}-{slug}.md",
-        "docs/05.operations/guides/09-ai-and-search/{number:4}-{slug}.md",
-        "docs/05.operations/guides/10-platform-and-backup/{number:4}-{slug}.md",
-        "docs/05.operations/guides/11-mail-and-notifications/{number:4}-{slug}.md",
-        "docs/05.operations/guides/12-testing-and-quality/{number:4}-{slug}.md",
-        "docs/05.operations/guides/13-analytics-and-data-quality/{number:4}-{slug}.md",
-        "docs/05.operations/guides/14-design-system/{number:4}-{slug}.md",
-        "docs/05.operations/guides/15-labs/{number:4}-{slug}.md"
+        "docs/05.operations/01.guides/01.common/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/02.gateway-and-networking/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/03.identity-and-access/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/04.security-and-secrets/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/05.databases-and-storage/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/06.messaging-and-cdc/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/07.observability/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/08.workflows-and-automation/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/09.ai-and-search/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/10.platform-and-backup/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/11.mail-and-notifications/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/12.testing-and-quality/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/13.analytics-and-data-quality/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/14.design-system/{number:4}-{slug}.md",
+        "docs/05.operations/01.guides/15.labs/{number:4}-{slug}.md"
       ],
       "required_subsections": {
         "Purpose": [
@@ -2275,7 +2281,7 @@
       "type": "operation/policy",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/policies/{number:4}-{slug}.md",
+      "path_pattern": "docs/05.operations/02.policies/{number:4}-{slug}.md",
       "artifact_id_pattern": "POL-{number:4}",
       "identity_relation": "direct",
       "template_id": "operation/policy",
@@ -2325,21 +2331,21 @@
         ]
       },
       "additional_path_patterns": [
-        "docs/05.operations/policies/01-common/{number:4}-{slug}.md",
-        "docs/05.operations/policies/02-gateway-and-networking/{number:4}-{slug}.md",
-        "docs/05.operations/policies/03-identity-and-access/{number:4}-{slug}.md",
-        "docs/05.operations/policies/04-security-and-secrets/{number:4}-{slug}.md",
-        "docs/05.operations/policies/05-databases-and-storage/{number:4}-{slug}.md",
-        "docs/05.operations/policies/06-messaging-and-cdc/{number:4}-{slug}.md",
-        "docs/05.operations/policies/07-observability/{number:4}-{slug}.md",
-        "docs/05.operations/policies/08-workflows-and-automation/{number:4}-{slug}.md",
-        "docs/05.operations/policies/09-ai-and-search/{number:4}-{slug}.md",
-        "docs/05.operations/policies/10-platform-and-backup/{number:4}-{slug}.md",
-        "docs/05.operations/policies/11-mail-and-notifications/{number:4}-{slug}.md",
-        "docs/05.operations/policies/12-testing-and-quality/{number:4}-{slug}.md",
-        "docs/05.operations/policies/13-analytics-and-data-quality/{number:4}-{slug}.md",
-        "docs/05.operations/policies/14-design-system/{number:4}-{slug}.md",
-        "docs/05.operations/policies/15-labs/{number:4}-{slug}.md"
+        "docs/05.operations/02.policies/01.common/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/02.gateway-and-networking/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/03.identity-and-access/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/04.security-and-secrets/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/05.databases-and-storage/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/06.messaging-and-cdc/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/07.observability/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/08.workflows-and-automation/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/09.ai-and-search/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/10.platform-and-backup/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/11.mail-and-notifications/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/12.testing-and-quality/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/13.analytics-and-data-quality/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/14.design-system/{number:4}-{slug}.md",
+        "docs/05.operations/02.policies/15.labs/{number:4}-{slug}.md"
       ],
       "required_subsections": {
         "Purpose and Scope": [
@@ -2365,7 +2371,7 @@
       "type": "operation/runbook",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/runbooks/{number:4}-{slug}.md",
+      "path_pattern": "docs/05.operations/03.runbooks/{number:4}-{slug}.md",
       "artifact_id_pattern": "RUN-{number:4}",
       "identity_relation": "direct",
       "template_id": "operation/runbook",
@@ -2416,21 +2422,21 @@
         ]
       },
       "additional_path_patterns": [
-        "docs/05.operations/runbooks/01-common/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/02-gateway-and-networking/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/03-identity-and-access/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/04-security-and-secrets/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/05-databases-and-storage/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/06-messaging-and-cdc/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/07-observability/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/08-workflows-and-automation/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/09-ai-and-search/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/10-platform-and-backup/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/11-mail-and-notifications/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/12-testing-and-quality/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/13-analytics-and-data-quality/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/14-design-system/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/15-labs/{number:4}-{slug}.md"
+        "docs/05.operations/03.runbooks/01.common/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/02.gateway-and-networking/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/03.identity-and-access/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/04.security-and-secrets/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/05.databases-and-storage/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/06.messaging-and-cdc/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/07.observability/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/08.workflows-and-automation/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/09.ai-and-search/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/10.platform-and-backup/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/11.mail-and-notifications/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/12.testing-and-quality/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/13.analytics-and-data-quality/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/14.design-system/{number:4}-{slug}.md",
+        "docs/05.operations/03.runbooks/15.labs/{number:4}-{slug}.md"
       ],
       "required_subsections": {
         "Trigger and Scope": [
@@ -2460,7 +2466,7 @@
       "type": "operation/incident",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
+      "path_pattern": "docs/05.operations/04.incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
       "artifact_id_pattern": "inc-{year:4}-{number:4}",
       "identity_relation": "direct",
       "template_id": "operation/incident",
@@ -2530,7 +2536,7 @@
       "type": "operation/postmortem",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md",
+      "path_pattern": "docs/05.operations/04.incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md",
       "artifact_id_pattern": "inc-{year:4}-{number:4}-PM",
       "identity_relation": "package-member",
       "template_id": "operation/postmortem",
@@ -2645,7 +2651,7 @@
       "type": "reference/research-pack",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/90.references/research/{number:4}-{slug}/README.md",
+      "path_pattern": "docs/90.references/01.research/{number:4}-{slug}/README.md",
       "artifact_id_pattern": "RES-{number:4}",
       "identity_relation": "direct",
       "template_id": "reference/research-pack",
@@ -2715,7 +2721,7 @@
       "type": "reference/audit-pack",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/90.references/audits/{number:4}-{slug}/README.md",
+      "path_pattern": "docs/90.references/02.audits/{number:4}-{slug}/README.md",
       "artifact_id_pattern": "AUD-{number:4}",
       "identity_relation": "direct",
       "template_id": "reference/audit-pack",
@@ -2784,7 +2790,7 @@
       "type": "reference/data-pack",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/90.references/data/{number:4}-{slug}/README.md",
+      "path_pattern": "docs/90.references/03.data/{number:4}-{slug}/README.md",
       "artifact_id_pattern": "DATA-{number:4}",
       "identity_relation": "direct",
       "template_id": "reference/data-pack",
@@ -2854,7 +2860,7 @@
       "type": "reference/research",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/90.references/research/{number:4}-{slug}/m{member_number:4}-{slug}.md",
+      "path_pattern": "docs/90.references/01.research/{number:4}-{slug}/m{member_number:4}-{slug}.md",
       "artifact_id_pattern": "RES-{number:4}-m{member_number:4}",
       "identity_relation": "package-member",
       "template_id": "reference/research",
@@ -2927,7 +2933,7 @@
       "type": "reference/audit",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/90.references/audits/{number:4}-{slug}/m{member_number:4}-{slug}.md",
+      "path_pattern": "docs/90.references/02.audits/{number:4}-{slug}/m{member_number:4}-{slug}.md",
       "artifact_id_pattern": "AUD-{number:4}-m{member_number:4}",
       "identity_relation": "package-member",
       "template_id": "reference/audit",
@@ -3260,64 +3266,64 @@
       "additional_paths": [
         "docs/00.workspace/README.md",
         "docs/02.architecture/README.md",
-        "docs/02.architecture/decisions/README.md",
-        "docs/02.architecture/descriptions/README.md",
+        "docs/02.architecture/02.decisions/README.md",
+        "docs/02.architecture/01.descriptions/README.md",
         "docs/03.specs/README.md",
         "docs/05.operations/README.md",
-        "docs/05.operations/guides/README.md",
-        "docs/05.operations/policies/README.md",
-        "docs/05.operations/runbooks/README.md",
-        "docs/05.operations/incidents/README.md",
+        "docs/05.operations/01.guides/README.md",
+        "docs/05.operations/02.policies/README.md",
+        "docs/05.operations/03.runbooks/README.md",
+        "docs/05.operations/04.incidents/README.md",
         "docs/90.references/README.md",
         "docs/98.archive/README.md",
         "docs/99.templates/README.md",
-        "docs/99.templates/templates/README.md",
+        "docs/99.templates/02.templates/README.md",
         ".agents/README.md",
-        "docs/05.operations/guides/01-common/README.md",
-        "docs/05.operations/guides/02-gateway-and-networking/README.md",
-        "docs/05.operations/guides/03-identity-and-access/README.md",
-        "docs/05.operations/guides/04-security-and-secrets/README.md",
-        "docs/05.operations/guides/05-databases-and-storage/README.md",
-        "docs/05.operations/guides/06-messaging-and-cdc/README.md",
-        "docs/05.operations/guides/07-observability/README.md",
-        "docs/05.operations/guides/08-workflows-and-automation/README.md",
-        "docs/05.operations/guides/09-ai-and-search/README.md",
-        "docs/05.operations/guides/10-platform-and-backup/README.md",
-        "docs/05.operations/guides/11-mail-and-notifications/README.md",
-        "docs/05.operations/guides/12-testing-and-quality/README.md",
-        "docs/05.operations/guides/13-analytics-and-data-quality/README.md",
-        "docs/05.operations/guides/14-design-system/README.md",
-        "docs/05.operations/guides/15-labs/README.md",
-        "docs/05.operations/policies/01-common/README.md",
-        "docs/05.operations/policies/02-gateway-and-networking/README.md",
-        "docs/05.operations/policies/03-identity-and-access/README.md",
-        "docs/05.operations/policies/04-security-and-secrets/README.md",
-        "docs/05.operations/policies/05-databases-and-storage/README.md",
-        "docs/05.operations/policies/06-messaging-and-cdc/README.md",
-        "docs/05.operations/policies/07-observability/README.md",
-        "docs/05.operations/policies/08-workflows-and-automation/README.md",
-        "docs/05.operations/policies/09-ai-and-search/README.md",
-        "docs/05.operations/policies/10-platform-and-backup/README.md",
-        "docs/05.operations/policies/11-mail-and-notifications/README.md",
-        "docs/05.operations/policies/12-testing-and-quality/README.md",
-        "docs/05.operations/policies/13-analytics-and-data-quality/README.md",
-        "docs/05.operations/policies/14-design-system/README.md",
-        "docs/05.operations/policies/15-labs/README.md",
-        "docs/05.operations/runbooks/01-common/README.md",
-        "docs/05.operations/runbooks/02-gateway-and-networking/README.md",
-        "docs/05.operations/runbooks/03-identity-and-access/README.md",
-        "docs/05.operations/runbooks/04-security-and-secrets/README.md",
-        "docs/05.operations/runbooks/05-databases-and-storage/README.md",
-        "docs/05.operations/runbooks/06-messaging-and-cdc/README.md",
-        "docs/05.operations/runbooks/07-observability/README.md",
-        "docs/05.operations/runbooks/08-workflows-and-automation/README.md",
-        "docs/05.operations/runbooks/09-ai-and-search/README.md",
-        "docs/05.operations/runbooks/10-platform-and-backup/README.md",
-        "docs/05.operations/runbooks/11-mail-and-notifications/README.md",
-        "docs/05.operations/runbooks/12-testing-and-quality/README.md",
-        "docs/05.operations/runbooks/13-analytics-and-data-quality/README.md",
-        "docs/05.operations/runbooks/14-design-system/README.md",
-        "docs/05.operations/runbooks/15-labs/README.md"
+        "docs/05.operations/01.guides/01.common/README.md",
+        "docs/05.operations/01.guides/02.gateway-and-networking/README.md",
+        "docs/05.operations/01.guides/03.identity-and-access/README.md",
+        "docs/05.operations/01.guides/04.security-and-secrets/README.md",
+        "docs/05.operations/01.guides/05.databases-and-storage/README.md",
+        "docs/05.operations/01.guides/06.messaging-and-cdc/README.md",
+        "docs/05.operations/01.guides/07.observability/README.md",
+        "docs/05.operations/01.guides/08.workflows-and-automation/README.md",
+        "docs/05.operations/01.guides/09.ai-and-search/README.md",
+        "docs/05.operations/01.guides/10.platform-and-backup/README.md",
+        "docs/05.operations/01.guides/11.mail-and-notifications/README.md",
+        "docs/05.operations/01.guides/12.testing-and-quality/README.md",
+        "docs/05.operations/01.guides/13.analytics-and-data-quality/README.md",
+        "docs/05.operations/01.guides/14.design-system/README.md",
+        "docs/05.operations/01.guides/15.labs/README.md",
+        "docs/05.operations/02.policies/01.common/README.md",
+        "docs/05.operations/02.policies/02.gateway-and-networking/README.md",
+        "docs/05.operations/02.policies/03.identity-and-access/README.md",
+        "docs/05.operations/02.policies/04.security-and-secrets/README.md",
+        "docs/05.operations/02.policies/05.databases-and-storage/README.md",
+        "docs/05.operations/02.policies/06.messaging-and-cdc/README.md",
+        "docs/05.operations/02.policies/07.observability/README.md",
+        "docs/05.operations/02.policies/08.workflows-and-automation/README.md",
+        "docs/05.operations/02.policies/09.ai-and-search/README.md",
+        "docs/05.operations/02.policies/10.platform-and-backup/README.md",
+        "docs/05.operations/02.policies/11.mail-and-notifications/README.md",
+        "docs/05.operations/02.policies/12.testing-and-quality/README.md",
+        "docs/05.operations/02.policies/13.analytics-and-data-quality/README.md",
+        "docs/05.operations/02.policies/14.design-system/README.md",
+        "docs/05.operations/02.policies/15.labs/README.md",
+        "docs/05.operations/03.runbooks/01.common/README.md",
+        "docs/05.operations/03.runbooks/02.gateway-and-networking/README.md",
+        "docs/05.operations/03.runbooks/03.identity-and-access/README.md",
+        "docs/05.operations/03.runbooks/04.security-and-secrets/README.md",
+        "docs/05.operations/03.runbooks/05.databases-and-storage/README.md",
+        "docs/05.operations/03.runbooks/06.messaging-and-cdc/README.md",
+        "docs/05.operations/03.runbooks/07.observability/README.md",
+        "docs/05.operations/03.runbooks/08.workflows-and-automation/README.md",
+        "docs/05.operations/03.runbooks/09.ai-and-search/README.md",
+        "docs/05.operations/03.runbooks/10.platform-and-backup/README.md",
+        "docs/05.operations/03.runbooks/11.mail-and-notifications/README.md",
+        "docs/05.operations/03.runbooks/12.testing-and-quality/README.md",
+        "docs/05.operations/03.runbooks/13.analytics-and-data-quality/README.md",
+        "docs/05.operations/03.runbooks/14.design-system/README.md",
+        "docs/05.operations/03.runbooks/15.labs/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
@@ -3357,10 +3363,10 @@
         "docs/02.architecture/README.md": {
           "layer": "architecture"
         },
-        "docs/02.architecture/decisions/README.md": {
+        "docs/02.architecture/02.decisions/README.md": {
           "layer": "architecture"
         },
-        "docs/02.architecture/descriptions/README.md": {
+        "docs/02.architecture/01.descriptions/README.md": {
           "layer": "architecture"
         },
         "docs/03.specs/README.md": {
@@ -3369,151 +3375,151 @@
         "docs/05.operations/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/README.md": {
+        "docs/05.operations/01.guides/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/README.md": {
+        "docs/05.operations/02.policies/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/README.md": {
+        "docs/05.operations/03.runbooks/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/01-common/README.md": {
+        "docs/05.operations/01.guides/01.common/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/02-gateway-and-networking/README.md": {
+        "docs/05.operations/01.guides/02.gateway-and-networking/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/03-identity-and-access/README.md": {
+        "docs/05.operations/01.guides/03.identity-and-access/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/04-security-and-secrets/README.md": {
+        "docs/05.operations/01.guides/04.security-and-secrets/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/05-databases-and-storage/README.md": {
+        "docs/05.operations/01.guides/05.databases-and-storage/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/06-messaging-and-cdc/README.md": {
+        "docs/05.operations/01.guides/06.messaging-and-cdc/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/07-observability/README.md": {
+        "docs/05.operations/01.guides/07.observability/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/08-workflows-and-automation/README.md": {
+        "docs/05.operations/01.guides/08.workflows-and-automation/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/09-ai-and-search/README.md": {
+        "docs/05.operations/01.guides/09.ai-and-search/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/10-platform-and-backup/README.md": {
+        "docs/05.operations/01.guides/10.platform-and-backup/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/11-mail-and-notifications/README.md": {
+        "docs/05.operations/01.guides/11.mail-and-notifications/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/12-testing-and-quality/README.md": {
+        "docs/05.operations/01.guides/12.testing-and-quality/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/13-analytics-and-data-quality/README.md": {
+        "docs/05.operations/01.guides/13.analytics-and-data-quality/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/14-design-system/README.md": {
+        "docs/05.operations/01.guides/14.design-system/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/guides/15-labs/README.md": {
+        "docs/05.operations/01.guides/15.labs/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/01-common/README.md": {
+        "docs/05.operations/02.policies/01.common/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/02-gateway-and-networking/README.md": {
+        "docs/05.operations/02.policies/02.gateway-and-networking/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/03-identity-and-access/README.md": {
+        "docs/05.operations/02.policies/03.identity-and-access/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/04-security-and-secrets/README.md": {
+        "docs/05.operations/02.policies/04.security-and-secrets/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/05-databases-and-storage/README.md": {
+        "docs/05.operations/02.policies/05.databases-and-storage/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/06-messaging-and-cdc/README.md": {
+        "docs/05.operations/02.policies/06.messaging-and-cdc/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/07-observability/README.md": {
+        "docs/05.operations/02.policies/07.observability/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/08-workflows-and-automation/README.md": {
+        "docs/05.operations/02.policies/08.workflows-and-automation/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/09-ai-and-search/README.md": {
+        "docs/05.operations/02.policies/09.ai-and-search/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/10-platform-and-backup/README.md": {
+        "docs/05.operations/02.policies/10.platform-and-backup/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/11-mail-and-notifications/README.md": {
+        "docs/05.operations/02.policies/11.mail-and-notifications/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/12-testing-and-quality/README.md": {
+        "docs/05.operations/02.policies/12.testing-and-quality/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/13-analytics-and-data-quality/README.md": {
+        "docs/05.operations/02.policies/13.analytics-and-data-quality/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/14-design-system/README.md": {
+        "docs/05.operations/02.policies/14.design-system/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/policies/15-labs/README.md": {
+        "docs/05.operations/02.policies/15.labs/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/01-common/README.md": {
+        "docs/05.operations/03.runbooks/01.common/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/02-gateway-and-networking/README.md": {
+        "docs/05.operations/03.runbooks/02.gateway-and-networking/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/03-identity-and-access/README.md": {
+        "docs/05.operations/03.runbooks/03.identity-and-access/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/04-security-and-secrets/README.md": {
+        "docs/05.operations/03.runbooks/04.security-and-secrets/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/05-databases-and-storage/README.md": {
+        "docs/05.operations/03.runbooks/05.databases-and-storage/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/06-messaging-and-cdc/README.md": {
+        "docs/05.operations/03.runbooks/06.messaging-and-cdc/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/07-observability/README.md": {
+        "docs/05.operations/03.runbooks/07.observability/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/08-workflows-and-automation/README.md": {
+        "docs/05.operations/03.runbooks/08.workflows-and-automation/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/09-ai-and-search/README.md": {
+        "docs/05.operations/03.runbooks/09.ai-and-search/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/10-platform-and-backup/README.md": {
+        "docs/05.operations/03.runbooks/10.platform-and-backup/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/11-mail-and-notifications/README.md": {
+        "docs/05.operations/03.runbooks/11.mail-and-notifications/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/12-testing-and-quality/README.md": {
+        "docs/05.operations/03.runbooks/12.testing-and-quality/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/13-analytics-and-data-quality/README.md": {
+        "docs/05.operations/03.runbooks/13.analytics-and-data-quality/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/14-design-system/README.md": {
+        "docs/05.operations/03.runbooks/14.design-system/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/runbooks/15-labs/README.md": {
+        "docs/05.operations/03.runbooks/15.labs/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/incidents/README.md": {
+        "docs/05.operations/04.incidents/README.md": {
           "layer": "operations"
         },
         "docs/90.references/README.md": {
@@ -3528,7 +3534,7 @@
         "docs/99.templates/README.md": {
           "layer": "templates"
         },
-        "docs/99.templates/templates/README.md": {
+        "docs/99.templates/02.templates/README.md": {
           "layer": "templates"
         },
         ".agents/README.md": {
@@ -3557,7 +3563,7 @@
       "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/incidents/{year:4}/README.md",
+      "path_pattern": "docs/05.operations/04.incidents/{year:4}/README.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "common/incident-year-readme",
@@ -3641,19 +3647,19 @@
       "exceptions": [],
       "additional_paths": [
         ".agents/governance/agentic.md",
-        "docs/00.workspace/02.process/approval-boundaries.md",
-        "docs/00.workspace/02.process/documentation-protocol.md",
+        "docs/00.workspace/04.quality/approval-boundaries.md",
+        "docs/00.workspace/03.process/documentation-protocol.md",
         ".agents/governance/environment-constraints.md",
-        "docs/00.workspace/02.process/git-workflow.md",
-        "docs/00.workspace/02.process/github-governance.md",
+        "docs/00.workspace/03.process/git-workflow.md",
+        "docs/00.workspace/03.process/github-governance.md",
         ".agents/governance/output-style.md",
         ".agents/governance/persona.md",
         ".agents/governance/postflight-checklist.md",
         ".agents/governance/provider-capability-matrix.md",
-        "docs/00.workspace/03.quality/quality-standards.md",
+        "docs/00.workspace/04.quality/quality-standards.md",
         "docs/00.workspace/01.project/stage-authoring-matrix.md",
         ".agents/governance/standards.md",
-        "docs/00.workspace/03.quality/task-checklists.md"
+        "docs/00.workspace/04.quality/task-checklists.md"
       ],
       "required_frontmatter_by_status": {
         "superseded": [
@@ -4044,7 +4050,7 @@
       "type": "governance/workflow",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.workspace/02.process/sdlc.md",
+      "path_pattern": "docs/00.workspace/03.process/sdlc.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/sdlc",
@@ -4093,7 +4099,8 @@
       "frontmatter_policy": "required",
       "path_pattern": ".agents/knowledge/repository-map.md",
       "additional_paths": [
-        ".agents/knowledge/verification-surface-map.md"
+        ".agents/knowledge/verification-surface-map.md",
+        ".agents/knowledge/agent-glossary.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
@@ -4144,7 +4151,7 @@
       "type": "governance/vocabulary",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": ".agents/knowledge/glossary.md",
+      "path_pattern": "docs/00.workspace/01.project/glossary.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/vocabulary",
@@ -4335,7 +4342,7 @@
       "id": "runtime-projection-claude",
       "type": "governance/claude-agent",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/99.templates/templates/runtime/claude-agent.template.md",
+      "path_pattern": "docs/99.templates/02.templates/92.runtime/claude-agent.template.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/claude-agent",
@@ -4365,7 +4372,7 @@
       "id": "runtime-projection-codex",
       "type": "governance/codex-agent",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/99.templates/templates/runtime/codex-agent.template.toml",
+      "path_pattern": "docs/99.templates/02.templates/92.runtime/codex-agent.template.toml",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/codex-agent",
@@ -4392,7 +4399,7 @@
       "id": "template-source",
       "type": "common/template-source",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/99.templates/templates/{domain}/{slug}.template.md",
+      "path_pattern": "docs/99.templates/02.templates/{domain}/{slug}.template.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
@@ -4414,14 +4421,14 @@
       "exceptions": [],
       "free_form_sections": true,
       "additional_paths": [
-        "docs/99.templates/templates/specs/contracts/data-model.template.md"
+        "docs/99.templates/02.templates/03.specs/02.contracts/data-model.template.md"
       ]
     },
     {
       "id": "generated",
       "type": "reference/data",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-{slug}.md",
+      "path_pattern": "docs/90.references/03.data/{number:4}-{slug}/m{member_number:4}-{slug}.md",
       "artifact_id_pattern": "DATA-{number:4}-m{member_number:4}",
       "identity_relation": "package-member",
       "template_id": "reference/data",
@@ -4501,7 +4508,7 @@
   ],
   "template_roles": {
     "common/documentation-readme": {
-      "source": "docs/99.templates/templates/common/readme-documentation.template.md",
+      "source": "docs/99.templates/02.templates/93.common/readme-documentation.template.md",
       "profiles": [
         "documentation-readme"
       ],
@@ -4512,9 +4519,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4557,13 +4564,13 @@
       },
       "migration": {
         "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-documentation.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-documentation.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/93.common/readme-documentation.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/93.common/readme-documentation.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "common/package-readme": {
-      "source": "docs/99.templates/templates/common/readme-package.template.md",
+      "source": "docs/99.templates/02.templates/93.common/readme-package.template.md",
       "profiles": [
         "package-readme"
       ],
@@ -4574,9 +4581,9 @@
         "Holding operational procedures; a Guide or Runbook owns them."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4620,13 +4627,13 @@
       },
       "migration": {
         "meaning_map": "Commit 44801eb20 (profile, template and service READMEs, #986) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every package README took the core service README sections, the template carries the conditional interface table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/93.common/readme-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/93.common/readme-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "service-readme"
     },
     "common/readme": {
-      "source": "docs/99.templates/templates/common/readme-stage.template.md",
+      "source": "docs/99.templates/02.templates/93.common/readme-stage.template.md",
       "profiles": [
         "readme"
       ],
@@ -4637,16 +4644,16 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
         "TERM-PROFILE",
         "TERM-REGISTRY"
       ],
-      "applicability": "Applies to every file the readme profile owns: docs/01.requirements/README.md, docs/02.architecture/README.md, docs/02.architecture/decisions/README.md, docs/02.architecture/descriptions/README.md and 56 more registered paths.",
+      "applicability": "Applies to every file the readme profile owns: docs/01.requirements/README.md, docs/02.architecture/README.md, docs/02.architecture/02.decisions/README.md, docs/02.architecture/01.descriptions/README.md and 56 more registered paths.",
       "relationships": [
         "Lists the folder's current documents in the Path and Purpose table under Current Contents."
       ],
@@ -4687,13 +4694,13 @@
       },
       "migration": {
         "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-stage.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-stage.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/93.common/readme-stage.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/93.common/readme-stage.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "common/incident-year-readme": {
-      "source": "docs/99.templates/templates/common/readme-incident-year.template.md",
+      "source": "docs/99.templates/02.templates/93.common/readme-incident-year.template.md",
       "profiles": [
         "incident-year-readme"
       ],
@@ -4704,18 +4711,18 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
         "TERM-PROFILE",
         "TERM-REGISTRY"
       ],
-      "applicability": "Applies to every file the incident-year-readme profile owns: docs/05.operations/incidents/{year:4}/README.md.",
+      "applicability": "Applies to every file the incident-year-readme profile owns: docs/05.operations/04.incidents/{year:4}/README.md.",
       "relationships": [
-        "Lists the inc-####-<slug>/ folders of its docs/05.operations/incidents/<year>/ folder; each incident record owns its status and conclusions."
+        "Lists the inc-####-<slug>/ folders of its docs/05.operations/04.incidents/<year>/ folder; each incident record owns its status and conclusions."
       ],
       "consumer_paths": [
         "scripts/lib/document_governance/registry.py",
@@ -4754,13 +4761,13 @@
       },
       "migration": {
         "meaning_map": "The incident-year-readme profile had no template role and used the earlier common stage README sections. A later pull request gave it this role bound to its role design core role: the template, profile and its current README took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-incident-year.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-incident-year.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/93.common/readme-incident-year.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/93.common/readme-incident-year.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "common/repository-readme": {
-      "source": "docs/99.templates/templates/common/readme-repository.template.md",
+      "source": "docs/99.templates/02.templates/93.common/readme-repository.template.md",
       "profiles": [
         "repository-readme"
       ],
@@ -4771,9 +4778,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4818,13 +4825,13 @@
       },
       "migration": {
         "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core root README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-repository.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-repository.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/93.common/readme-repository.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/93.common/readme-repository.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "root-readme"
     },
     "common/runtime-governance-readme": {
-      "source": "docs/99.templates/templates/common/readme-runtime-governance.template.md",
+      "source": "docs/99.templates/02.templates/93.common/readme-runtime-governance.template.md",
       "profiles": [
         "runtime-governance-readme"
       ],
@@ -4835,9 +4842,9 @@
         "Being hand-edited; the renderer writes it."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language",
-        "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language",
+        "docs/00.workspace/04.quality/quality-standards.md#6-generated-artifact-freshness"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4881,13 +4888,13 @@
       },
       "migration": {
         "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, the profile and the provider renderer took the core root README sections, the renderer regenerated both READMEs, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-runtime-governance.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-runtime-governance.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/93.common/readme-runtime-governance.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/93.common/readme-runtime-governance.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "root-readme"
     },
     "common/agent-guide": {
-      "source": "docs/99.templates/templates/common/agent-guide.template.md",
+      "source": "docs/99.templates/02.templates/93.common/agent-guide.template.md",
       "profiles": [
         "folder-agent-guide"
       ],
@@ -4898,9 +4905,9 @@
         "Overriding canonical governance or a Stage contract."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
         ".agents/governance/bootstrap.md#canonical-load-order",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4947,13 +4954,13 @@
       },
       "migration": {
         "meaning_map": "Commit 4bb4add1f (folder agent guides) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every folder AGENTS.md took the core agent-instructions sections, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/agent-guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/agent-guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/93.common/agent-guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/93.common/agent-guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "agent-instructions"
     },
     "governance/claude-agent": {
-      "source": "docs/99.templates/templates/runtime/claude-agent.template.md",
+      "source": "docs/99.templates/02.templates/92.runtime/claude-agent.template.md",
       "profiles": [
         "runtime-projection-claude"
       ],
@@ -4965,7 +4972,7 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
+        "docs/00.workspace/04.quality/quality-standards.md#6-generated-artifact-freshness"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -4973,7 +4980,7 @@
         "TERM-REGISTRY",
         "TERM-PROJECTION"
       ],
-      "applicability": "Applies to the template docs/99.templates/templates/runtime/claude-agent.template.md, the only path the runtime-projection-claude profile registers, and describes the shape of every .claude/agents/<agent_id>.md that scripts/operations/provider_surface_renderer.py writes; no Registry profile classifies those generated files.",
+      "applicability": "Applies to the template docs/99.templates/02.templates/92.runtime/claude-agent.template.md, the only path the runtime-projection-claude profile registers, and describes the shape of every .claude/agents/<agent_id>.md that scripts/operations/provider_surface_renderer.py writes; no Registry profile classifies those generated files.",
       "relationships": [
         "Projected from one .agents/roles/<slug>.md by scripts/operations/provider_surface_renderer.py; model and permission come from the Provider Registry."
       ],
@@ -5004,8 +5011,8 @@
       },
       "migration": {
         "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/runtime/claude-agent.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/runtime/claude-agent.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/92.runtime/claude-agent.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/92.runtime/claude-agent.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "native",
@@ -5013,7 +5020,7 @@
       }
     },
     "governance/codex-agent": {
-      "source": "docs/99.templates/templates/runtime/codex-agent.template.toml",
+      "source": "docs/99.templates/02.templates/92.runtime/codex-agent.template.toml",
       "profiles": [
         "runtime-projection-codex"
       ],
@@ -5025,7 +5032,7 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
+        "docs/00.workspace/04.quality/quality-standards.md#6-generated-artifact-freshness"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5033,7 +5040,7 @@
         "TERM-REGISTRY",
         "TERM-PROJECTION"
       ],
-      "applicability": "Applies to the template docs/99.templates/templates/runtime/codex-agent.template.toml, the only path the runtime-projection-codex profile registers, and describes the shape of every .codex/agents/<agent_id>.toml that scripts/operations/provider_surface_renderer.py writes; no Registry profile classifies those generated files.",
+      "applicability": "Applies to the template docs/99.templates/02.templates/92.runtime/codex-agent.template.toml, the only path the runtime-projection-codex profile registers, and describes the shape of every .codex/agents/<agent_id>.toml that scripts/operations/provider_surface_renderer.py writes; no Registry profile classifies those generated files.",
       "relationships": [
         "Projected from one .agents/roles/<slug>.md by scripts/operations/provider_surface_renderer.py; model and permission come from the Provider Registry."
       ],
@@ -5063,8 +5070,8 @@
       },
       "migration": {
         "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/runtime/codex-agent.template.toml and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/runtime/codex-agent.template.toml; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/92.runtime/codex-agent.template.toml and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/92.runtime/codex-agent.template.toml; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "native",
@@ -5072,7 +5079,7 @@
       }
     },
     "governance/hook-policy": {
-      "source": "docs/99.templates/templates/governance/rule.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/rule.template.md",
       "profiles": [
         "governance-hook-policy"
       ],
@@ -5084,8 +5091,8 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5132,8 +5139,8 @@
       },
       "migration": {
         "meaning_map": "Commit b939b2994 (profiles) and 7b48b923a (governance rules, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/rule.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/rule.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/rule.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/rule.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "domain",
@@ -5141,7 +5148,7 @@
       }
     },
     "governance/knowledge": {
-      "source": "docs/99.templates/templates/governance/knowledge.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/knowledge.template.md",
       "profiles": [
         "governance-knowledge"
       ],
@@ -5153,8 +5160,8 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5197,8 +5204,8 @@
       },
       "migration": {
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/knowledge.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/knowledge.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/knowledge.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/knowledge.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "domain",
@@ -5206,7 +5213,7 @@
       }
     },
     "governance/knowledge-index": {
-      "source": "docs/99.templates/templates/governance/knowledge-index.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/knowledge-index.template.md",
       "profiles": [
         "governance-knowledge-index"
       ],
@@ -5217,9 +5224,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5267,17 +5274,17 @@
       },
       "migration": {
         "meaning_map": "The governance-knowledge-index profile had no template role and used the earlier common stage README sections. A later pull request gave it this role bound to its role design core role: the template, profile and its current README took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/knowledge-index.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/knowledge-index.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/knowledge-index.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/knowledge-index.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "governance/vocabulary": {
-      "source": "docs/99.templates/templates/governance/vocabulary.template.md",
+      "source": "docs/99.templates/02.templates/00.workspace/vocabulary.template.md",
       "profiles": [
         "governance-vocabulary"
       ],
-      "purpose": "English Repository Vocabulary at .agents/knowledge/glossary.md.",
+      "purpose": "English Repository Vocabulary at docs/00.workspace/01.project/glossary.md.",
       "responsibility": "Define each common term with its Term ID and policy owner, and local terms under Local Extensions.",
       "non_goals": [
         "Restating the policy owner's procedure.",
@@ -5285,8 +5292,8 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5296,7 +5303,7 @@
         "TERM-CANONICAL",
         "TERM-POLICY"
       ],
-      "applicability": "Applies to every file the governance-vocabulary profile owns: .agents/knowledge/glossary.md.",
+      "applicability": "Applies to every file the governance-vocabulary profile owns: docs/00.workspace/01.project/glossary.md.",
       "relationships": [
         "Each term names its policy owner under .agents/governance/; TemplateDefinition vocabulary_refs point here."
       ],
@@ -5334,8 +5341,8 @@
       },
       "migration": {
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/vocabulary.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/vocabulary.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/00.workspace/vocabulary.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/00.workspace/vocabulary.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "domain",
@@ -5343,7 +5350,7 @@
       }
     },
     "governance/policy": {
-      "source": "docs/99.templates/templates/governance/control.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/control.template.md",
       "profiles": [
         "governance-policy"
       ],
@@ -5355,8 +5362,8 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5366,7 +5373,7 @@
         "TERM-RULE",
         "TERM-EXCEPTION"
       ],
-      "applicability": "Applies to every file the governance-policy profile owns: .agents/governance/bootstrap.md, .agents/governance/agentic.md, docs/00.workspace/02.process/approval-boundaries.md, docs/00.workspace/02.process/documentation-protocol.md and 11 more registered paths.",
+      "applicability": "Applies to every file the governance-policy profile owns: .agents/governance/bootstrap.md, .agents/governance/agentic.md, docs/00.workspace/04.quality/approval-boundaries.md, docs/00.workspace/03.process/documentation-protocol.md and 11 more registered paths.",
       "relationships": [
         "Ranked under Authority and Precedence in bootstrap.md; roles, skills and folder guides route to it."
       ],
@@ -5406,13 +5413,13 @@
       },
       "migration": {
         "meaning_map": "Commit b939b2994 (profiles) and 7b48b923a (governance policies, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every governance policy took the core sections and rules table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/control.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/control.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/control.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/control.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "policy"
     },
     "governance/prompt": {
-      "source": "docs/99.templates/templates/governance/prompt.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/prompt.template.md",
       "profiles": [
         "governance-prompt"
       ],
@@ -5424,8 +5431,8 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5470,8 +5477,8 @@
       },
       "migration": {
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/prompt.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/prompt.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/prompt.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/prompt.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "domain",
@@ -5479,7 +5486,7 @@
       }
     },
     "governance/prompt-index": {
-      "source": "docs/99.templates/templates/governance/prompt-index.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/prompt-index.template.md",
       "profiles": [
         "governance-prompt-index"
       ],
@@ -5490,9 +5497,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5540,13 +5547,13 @@
       },
       "migration": {
         "meaning_map": "The governance-prompt-index profile had no template role and used the earlier common stage README sections. A later pull request gave it this role bound to its role design core role: the template, profile and its current README took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/prompt-index.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/prompt-index.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/prompt-index.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/prompt-index.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "governance/provider": {
-      "source": "docs/99.templates/templates/governance/provider.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/provider.template.md",
       "profiles": [
         "governance-provider"
       ],
@@ -5558,8 +5565,8 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5603,8 +5610,8 @@
       },
       "migration": {
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/provider.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/provider.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/provider.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/provider.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "domain",
@@ -5612,7 +5619,7 @@
       }
     },
     "governance/provider-index": {
-      "source": "docs/99.templates/templates/governance/provider-index.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/provider-index.template.md",
       "profiles": [
         "governance-provider-index"
       ],
@@ -5623,9 +5630,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5673,13 +5680,13 @@
       },
       "migration": {
         "meaning_map": "The governance-provider-index profile had no template role and used the earlier common stage README sections. A later pull request gave it this role bound to its role design core role: the template, profile and its current README took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/provider-index.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/provider-index.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/provider-index.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/provider-index.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "governance/role": {
-      "source": "docs/99.templates/templates/governance/role.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/role.template.md",
       "profiles": [
         "governance-role"
       ],
@@ -5691,8 +5698,8 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5739,8 +5746,8 @@
       },
       "migration": {
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/role.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/role.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/role.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/role.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "domain",
@@ -5748,19 +5755,19 @@
       }
     },
     "governance/sdlc": {
-      "source": "docs/99.templates/templates/governance/contract.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/contract.template.md",
       "profiles": [
         "governance-sdlc"
       ],
-      "purpose": "English SDLC workflow contract (docs/00.workspace/02.process/sdlc.md).",
+      "purpose": "English SDLC workflow contract (docs/00.workspace/03.process/sdlc.md).",
       "responsibility": "State the inputs, sequence, stop conditions and outputs of the delivery workflow.",
       "non_goals": [
         "Holding a Spec Package's execution state; the Task holds it."
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/sdlc.md#sequence",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/sdlc.md#sequence",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5770,7 +5777,7 @@
         "TERM-ACCEPTANCE",
         "TERM-PROMOTION"
       ],
-      "applicability": "Applies to every file the governance-sdlc profile owns: docs/00.workspace/02.process/sdlc.md, .agents/governance/workflows.md.",
+      "applicability": "Applies to every file the governance-sdlc profile owns: docs/00.workspace/03.process/sdlc.md, .agents/governance/workflows.md.",
       "relationships": [
         "Glossary terms for Execution, Verification, Acceptance and Promotion name it as policy owner."
       ],
@@ -5807,8 +5814,8 @@
       },
       "migration": {
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/contract.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/contract.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/contract.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/contract.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "domain",
@@ -5816,7 +5823,7 @@
       }
     },
     "governance/skill": {
-      "source": "docs/99.templates/templates/governance/skill.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/skill.template.md",
       "profiles": [
         "governance-skill"
       ],
@@ -5828,8 +5835,8 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5877,26 +5884,26 @@
       },
       "migration": {
         "meaning_map": "Commit b83c5a11e (profile) and f7f37d495 (the 24 skills, #981) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every canonical skill took the core skill sections, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/skill.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/skill.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/skill.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/skill.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "skill"
     },
     "operation/guide": {
-      "source": "docs/99.templates/templates/operations/guide.template.md",
+      "source": "docs/99.templates/02.templates/05.operations/guide.template.md",
       "profiles": [
         "guide"
       ],
-      "purpose": "Korean operations Guide (GDE-####) under docs/05.operations/guides/.",
+      "purpose": "Korean operations Guide (GDE-####) under docs/05.operations/01.guides/.",
       "responsibility": "State the reader need, prerequisites, procedure and checks for one task, with troubleshooting.",
       "non_goals": [
         "Holding a repeatable operator procedure; it hands off to a Runbook.",
         "Owning obligations; a Policy owns them."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language",
-        "docs/00.workspace/02.process/documentation-protocol.md#reference-framework-adoption"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language",
+        "docs/00.workspace/03.process/documentation-protocol.md#reference-framework-adoption"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5905,7 +5912,7 @@
         "local:Identity space",
         "local:Lifecycle"
       ],
-      "applicability": "Applies to every file the guide profile owns: docs/05.operations/guides/{number:4}-{slug}.md, docs/05.operations/guides/01-common/{number:4}-{slug}.md, docs/05.operations/guides/02-gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/guides/03-identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
+      "applicability": "Applies to every file the guide profile owns: docs/05.operations/01.guides/{number:4}-{slug}.md, docs/05.operations/01.guides/01.common/{number:4}-{slug}.md, docs/05.operations/01.guides/02.gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/01.guides/03.identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
       "relationships": [
         "parent_ids may name a Spec, Policy or Runbook; implementation_services maps Compose paths to owned services."
       ],
@@ -5945,25 +5952,25 @@
       },
       "migration": {
         "meaning_map": "Commit 089d4246d (profile) and c7ca7356e (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every guide took the core sections, a guide with an ordered procedure gained the core steps table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/05.operations/guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/05.operations/guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "guide"
     },
     "operation/incident": {
-      "source": "docs/99.templates/templates/operations/incident.template.md",
+      "source": "docs/99.templates/02.templates/05.operations/incident.template.md",
       "profiles": [
         "incident"
       ],
-      "purpose": "Korean Incident record (inc-<year>-<number>) under docs/05.operations/incidents/<year>/.",
+      "purpose": "Korean Incident record (inc-<year>-<number>) under docs/05.operations/04.incidents/<year>/.",
       "responsibility": "Record observed impact, timeline, mitigation, resolution and evidence of one incident.",
       "non_goals": [
         "Stating a confirmed root cause; the Postmortem owns it.",
         "Keeping a second current-state value beside frontmatter status."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -5972,7 +5979,7 @@
         "local:Identity space",
         "local:Lifecycle"
       ],
-      "applicability": "Applies to every file the incident profile owns: docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md.",
+      "applicability": "Applies to every file the incident profile owns: docs/05.operations/04.incidents/{year:4}/inc-{number:4}-{slug}/incident.md.",
       "relationships": [
         "parent_ids may name a Runbook; a Postmortem in the same packet names it as parent."
       ],
@@ -6012,25 +6019,25 @@
       },
       "migration": {
         "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. Commit 1a8fadde6 (#1060) then moved it to its role design core role: the template, profile and every incident took the core sections and Actions table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/incident.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/incident.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/05.operations/incident.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/05.operations/incident.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "incident"
     },
     "operation/policy": {
-      "source": "docs/99.templates/templates/operations/policy.template.md",
+      "source": "docs/99.templates/02.templates/05.operations/policy.template.md",
       "profiles": [
         "policy"
       ],
-      "purpose": "Korean Operations Policy (POL-####) under docs/05.operations/policies/.",
+      "purpose": "Korean Operations Policy (POL-####) under docs/05.operations/02.policies/.",
       "responsibility": "Own obligations, prohibitions, exceptions, accountable owners, enforcement and review cadence for one subject.",
       "non_goals": [
         "Holding command sequences.",
         "Redefining agent governance rules."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6041,7 +6048,7 @@
         "TERM-POLICY",
         "TERM-EXCEPTION"
       ],
-      "applicability": "Applies to every file the policy profile owns: docs/05.operations/policies/{number:4}-{slug}.md, docs/05.operations/policies/01-common/{number:4}-{slug}.md, docs/05.operations/policies/02-gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/policies/03-identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
+      "applicability": "Applies to every file the policy profile owns: docs/05.operations/02.policies/{number:4}-{slug}.md, docs/05.operations/02.policies/01.common/{number:4}-{slug}.md, docs/05.operations/02.policies/02.gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/02.policies/03.identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
       "relationships": [
         "parent_ids may name a Requirement Package, Architecture Description, ADR or Spec; Guides and Runbooks may name it as parent."
       ],
@@ -6081,13 +6088,13 @@
       },
       "migration": {
         "meaning_map": "Commit b939b2994 (profiles) and 9cd965911 (documents, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every operations policy took the core sections and rules table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/policy.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/policy.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/05.operations/policy.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/05.operations/policy.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "policy"
     },
     "operation/postmortem": {
-      "source": "docs/99.templates/templates/operations/postmortem.template.md",
+      "source": "docs/99.templates/02.templates/05.operations/postmortem.template.md",
       "profiles": [
         "postmortem"
       ],
@@ -6098,8 +6105,8 @@
         "Setting a completion deadline for corrective actions."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6108,7 +6115,7 @@
         "local:Identity space",
         "local:Lifecycle"
       ],
-      "applicability": "Applies to every file the postmortem profile owns: docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md.",
+      "applicability": "Applies to every file the postmortem profile owns: docs/05.operations/04.incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md.",
       "relationships": [
         "parent_ids may name only an Incident; the Postmortem sits in that Incident's packet folder."
       ],
@@ -6146,26 +6153,26 @@
       },
       "migration": {
         "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. Commit 1a8fadde6 (#1060) then moved it to its role design core role: the template, profile and every postmortem took the core sections and Owners and Checks table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/postmortem.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/postmortem.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/05.operations/postmortem.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/05.operations/postmortem.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "postmortem"
     },
     "operation/runbook": {
-      "source": "docs/99.templates/templates/operations/runbook.template.md",
+      "source": "docs/99.templates/02.templates/05.operations/runbook.template.md",
       "profiles": [
         "runbook"
       ],
-      "purpose": "Korean Runbook (RUN-####) under docs/05.operations/runbooks/.",
+      "purpose": "Korean Runbook (RUN-####) under docs/05.operations/03.runbooks/.",
       "responsibility": "State trigger, prerequisites, safety boundaries, ordered actions, verification, recovery and escalation for a repeatable operation.",
       "non_goals": [
         "Copying a past execution result into the instruction.",
         "Owning obligations; a Policy owns them."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language",
-        "docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language",
+        "docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6174,7 +6181,7 @@
         "local:Identity space",
         "local:Lifecycle"
       ],
-      "applicability": "Applies to every file the runbook profile owns: docs/05.operations/runbooks/{number:4}-{slug}.md, docs/05.operations/runbooks/01-common/{number:4}-{slug}.md, docs/05.operations/runbooks/02-gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/runbooks/03-identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
+      "applicability": "Applies to every file the runbook profile owns: docs/05.operations/03.runbooks/{number:4}-{slug}.md, docs/05.operations/03.runbooks/01.common/{number:4}-{slug}.md, docs/05.operations/03.runbooks/02.gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/03.runbooks/03.identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
       "relationships": [
         "parent_ids may name a Spec, Guide, Policy or Task; Incidents may name it as parent."
       ],
@@ -6214,13 +6221,13 @@
       },
       "migration": {
         "meaning_map": "Commit 662623dc9 (profile) and 8e430909b..436bcc974 (documents, #979) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. Pull request #1061 then moved it to its role design core role: the template, profile and every runbook took the core sections and steps table, the conditional Rollback unit was dropped because the core requires every H3, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/runbook.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/runbook.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/05.operations/runbook.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/05.operations/runbook.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "runbook"
     },
     "reference/audit": {
-      "source": "docs/99.templates/templates/references/audit.template.md",
+      "source": "docs/99.templates/02.templates/90.references/audit.template.md",
       "profiles": [
         "audit-member"
       ],
@@ -6231,9 +6238,9 @@
         "Holding the package index; the audit-pack README does."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6242,7 +6249,7 @@
         "TERM-EVIDENCE",
         "local:Identity space"
       ],
-      "applicability": "Applies to every file the audit-member profile owns: docs/90.references/audits/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
+      "applicability": "Applies to every file the audit-member profile owns: docs/90.references/02.audits/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
       "relationships": [
         "Lives inside one audit package whose README (reference/audit-pack) lists it."
       ],
@@ -6274,13 +6281,13 @@
       },
       "migration": {
         "meaning_map": "The role kept its registered sections until a later pull request moved it to its role design core role: the template and profile took the core sections and table; no audit member existed to move, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/audit.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/audit.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/90.references/audit.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/90.references/audit.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "audit"
     },
     "reference/audit-pack": {
-      "source": "docs/99.templates/templates/references/audit-pack.template.md",
+      "source": "docs/99.templates/02.templates/90.references/audit-pack.template.md",
       "profiles": [
         "audit"
       ],
@@ -6290,9 +6297,9 @@
         "Setting current policy."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6301,7 +6308,7 @@
         "TERM-EVIDENCE",
         "local:Identity space"
       ],
-      "applicability": "Applies to every file the audit profile owns: docs/90.references/audits/{number:4}-{slug}/README.md.",
+      "applicability": "Applies to every file the audit profile owns: docs/90.references/02.audits/{number:4}-{slug}/README.md.",
       "relationships": [
         "parent_ids may name a Spec, Task, Research or Audit package; its members are reference/audit documents."
       ],
@@ -6335,13 +6342,13 @@
       },
       "migration": {
         "meaning_map": "The role did not move to COMMON-DOC-FORM-1. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/audit-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/audit-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/90.references/audit-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/90.references/audit-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "reference/category-readme": {
-      "source": "docs/99.templates/templates/common/readme-category.template.md",
+      "source": "docs/99.templates/02.templates/93.common/readme-category.template.md",
       "profiles": [
         "reference-category-readme"
       ],
@@ -6352,9 +6359,9 @@
         "Owning a rule; it routes to the canonical owner instead."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd",
-        "docs/00.workspace/02.process/documentation-protocol.md#readme-navigation",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd",
+        "docs/00.workspace/03.process/documentation-protocol.md#readme-navigation",
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6398,13 +6405,13 @@
       },
       "migration": {
         "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-category.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-category.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/93.common/readme-category.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/93.common/readme-category.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "reference/data": {
-      "source": "docs/99.templates/templates/references/data.template.md",
+      "source": "docs/99.templates/02.templates/90.references/data.template.md",
       "profiles": [
         "generated"
       ],
@@ -6415,9 +6422,9 @@
         "Setting current policy."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
+        "docs/00.workspace/04.quality/quality-standards.md#6-generated-artifact-freshness"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6426,7 +6433,7 @@
         "TERM-EVIDENCE",
         "local:Identity space"
       ],
-      "applicability": "Applies to every file the generated profile owns: docs/90.references/data/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
+      "applicability": "Applies to every file the generated profile owns: docs/90.references/03.data/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
       "relationships": [
         "Lives inside one data package whose README (reference/data-pack) lists it."
       ],
@@ -6457,13 +6464,13 @@
       },
       "migration": {
         "meaning_map": "The role kept its registered sections until a later pull request moved it to its role design core role: the template and profile took the core sections and table; no data member existed to move, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/data.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/data.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/90.references/data.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/90.references/data.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "data-reference"
     },
     "reference/data-pack": {
-      "source": "docs/99.templates/templates/references/data-pack.template.md",
+      "source": "docs/99.templates/02.templates/90.references/data-pack.template.md",
       "profiles": [
         "data"
       ],
@@ -6473,9 +6480,9 @@
         "Setting current policy."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6484,7 +6491,7 @@
         "TERM-EVIDENCE",
         "local:Identity space"
       ],
-      "applicability": "Applies to every file the data profile owns: docs/90.references/data/{number:4}-{slug}/README.md.",
+      "applicability": "Applies to every file the data profile owns: docs/90.references/03.data/{number:4}-{slug}/README.md.",
       "relationships": [
         "parent_ids may name a Research, Audit, Spec or Task; its members are reference/data documents."
       ],
@@ -6522,13 +6529,13 @@
       },
       "migration": {
         "meaning_map": "The role did not move to COMMON-DOC-FORM-1. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/data-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/data-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/90.references/data-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/90.references/data-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "reference/research": {
-      "source": "docs/99.templates/templates/references/research.template.md",
+      "source": "docs/99.templates/02.templates/90.references/research.template.md",
       "profiles": [
         "research-member"
       ],
@@ -6539,9 +6546,9 @@
         "Holding the package index."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6550,7 +6557,7 @@
         "TERM-EVIDENCE",
         "local:Identity space"
       ],
-      "applicability": "Applies to every file the research-member profile owns: docs/90.references/research/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
+      "applicability": "Applies to every file the research-member profile owns: docs/90.references/01.research/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
       "relationships": [
         "Lives inside one research package whose README (reference/research-pack) lists it."
       ],
@@ -6586,13 +6593,13 @@
       },
       "migration": {
         "meaning_map": "The role kept its registered sections until a later pull request moved it to its role design core role: the template and profile took the core sections and table, every research member took them with its sources table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/research.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/research.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/90.references/research.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/90.references/research.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "research"
     },
     "reference/research-pack": {
-      "source": "docs/99.templates/templates/references/research-pack.template.md",
+      "source": "docs/99.templates/02.templates/90.references/research-pack.template.md",
       "profiles": [
         "research"
       ],
@@ -6602,9 +6609,9 @@
         "Setting current policy."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/documentation-protocol.md#document-language"
+        "docs/00.workspace/03.process/documentation-protocol.md#document-language"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6613,7 +6620,7 @@
         "TERM-EVIDENCE",
         "local:Identity space"
       ],
-      "applicability": "Applies to every file the research profile owns: docs/90.references/research/{number:4}-{slug}/README.md.",
+      "applicability": "Applies to every file the research profile owns: docs/90.references/01.research/{number:4}-{slug}/README.md.",
       "relationships": [
         "parent_ids may name a Requirement Package, Architecture Description, ADR, Spec or Research package; its members are reference/research documents."
       ],
@@ -6651,25 +6658,25 @@
       },
       "migration": {
         "meaning_map": "The role did not move to COMMON-DOC-FORM-1. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/research-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/research-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/90.references/research-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/90.references/research-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "stage-readme"
     },
     "sdlc/architecture-decision": {
-      "source": "docs/99.templates/templates/architecture/decision.template.md",
+      "source": "docs/99.templates/02.templates/02.architecture/decision.template.md",
       "profiles": [
         "adr"
       ],
-      "purpose": "English ADR (ADR-####) under docs/02.architecture/decisions/.",
+      "purpose": "English ADR (ADR-####) under docs/02.architecture/02.decisions/.",
       "responsibility": "Record one consequential decision with its context, alternatives and consequences.",
       "non_goals": [
         "Describing current structure; the Architecture Description does.",
         "Inferring approval from status alone."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6678,7 +6685,7 @@
         "TERM-SUPERSESSION",
         "TERM-APPROVAL"
       ],
-      "applicability": "Applies to every file the adr profile owns: docs/02.architecture/decisions/{number:4}-{slug}.md.",
+      "applicability": "Applies to every file the adr profile owns: docs/02.architecture/02.decisions/{number:4}-{slug}.md.",
       "relationships": [
         "parent_ids may name a Requirement Package or Architecture Description."
       ],
@@ -6716,25 +6723,25 @@
       },
       "migration": {
         "meaning_map": "Commit 009ced2c7 (profile and template) and 36e0dcf4f (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current ADR took the core sections and options table under an owner-directed in-place amendment that each ADR records in its Follow-up, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/architecture/decision.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/architecture/decision.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/02.architecture/decision.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/02.architecture/decision.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "decision"
     },
     "sdlc/architecture-description": {
-      "source": "docs/99.templates/templates/architecture/description.template.md",
+      "source": "docs/99.templates/02.templates/02.architecture/description.template.md",
       "profiles": [
         "architecture-description"
       ],
-      "purpose": "English Architecture Description (AD-####) under docs/02.architecture/descriptions/.",
+      "purpose": "English Architecture Description (AD-####) under docs/02.architecture/01.descriptions/.",
       "responsibility": "Describe current structure, context and constraints, interfaces and the decisions that shape it.",
       "non_goals": [
         "Restating an ADR; it links the ADR.",
         "Holding historical structure as authority."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6742,7 +6749,7 @@
         "TERM-REGISTRY",
         "TERM-CONTRACT"
       ],
-      "applicability": "Applies to every file the architecture-description profile owns: docs/02.architecture/descriptions/{number:4}-{slug}.md.",
+      "applicability": "Applies to every file the architecture-description profile owns: docs/02.architecture/01.descriptions/{number:4}-{slug}.md.",
       "relationships": [
         "parent_ids may name a Requirement Package; ADRs and Specs may name it as parent."
       ],
@@ -6780,13 +6787,13 @@
       },
       "migration": {
         "meaning_map": "Commit e3beaa9cd (profile) and 5dd0ce150 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current Architecture Description took the core sections, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/architecture/description.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/architecture/description.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/02.architecture/description.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/02.architecture/description.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "architecture"
     },
     "sdlc/data-model": {
-      "source": "docs/99.templates/templates/specs/contracts/data-model.template.md",
+      "source": "docs/99.templates/02.templates/03.specs/02.contracts/data-model.template.md",
       "profiles": [
         "data-model-contract"
       ],
@@ -6797,7 +6804,7 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6806,7 +6813,7 @@
         "TERM-CONTRACT",
         "local:Spec Package"
       ],
-      "applicability": "Applies to every file the data-model-contract profile owns: docs/03.specs/{package_number:4}-{slug}/contracts/data-model.md.",
+      "applicability": "Applies to every file the data-model-contract profile owns: docs/03.specs/{package_number:4}-{slug}/02.contracts/data-model.md.",
       "relationships": [
         "Belongs to the Spec of its package; parent may only be a Spec."
       ],
@@ -6838,8 +6845,8 @@
       },
       "migration": {
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/data-model.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/data-model.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/03.specs/02.contracts/data-model.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/03.specs/02.contracts/data-model.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_exception": {
         "kind": "domain",
@@ -6847,7 +6854,7 @@
       }
     },
     "sdlc/graphql": {
-      "source": "docs/99.templates/templates/specs/contracts/schema.template.graphql",
+      "source": "docs/99.templates/02.templates/03.specs/02.contracts/schema.template.graphql",
       "profiles": [
         "graphql-contract"
       ],
@@ -6858,7 +6865,7 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6867,7 +6874,7 @@
         "TERM-CONTRACT",
         "local:Spec Package"
       ],
-      "applicability": "Applies to every file the graphql-contract profile owns: docs/03.specs/{package_number:4}-{slug}/contracts/schema.graphql.",
+      "applicability": "Applies to every file the graphql-contract profile owns: docs/03.specs/{package_number:4}-{slug}/02.contracts/schema.graphql.",
       "relationships": [
         "Belongs to the Spec of its package; parent may only be a Spec."
       ],
@@ -6896,8 +6903,8 @@
       },
       "migration": {
         "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/schema.template.graphql and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/schema.template.graphql; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/03.specs/02.contracts/schema.template.graphql and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/03.specs/02.contracts/schema.template.graphql; load_registry and test_template_definition re-check the reverted Registry."
       },
       "conditional_units": {
         "type __OBJECT_TYPE__": "example object type returned by the template query; replace it with the contract's own types."
@@ -6908,7 +6915,7 @@
       }
     },
     "sdlc/openapi": {
-      "source": "docs/99.templates/templates/specs/contracts/openapi.template.yaml",
+      "source": "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml",
       "profiles": [
         "openapi-contract"
       ],
@@ -6919,7 +6926,7 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -6928,7 +6935,7 @@
         "TERM-CONTRACT",
         "local:Spec Package"
       ],
-      "applicability": "Applies to every file the openapi-contract profile owns: docs/03.specs/{package_number:4}-{slug}/contracts/openapi.yaml.",
+      "applicability": "Applies to every file the openapi-contract profile owns: docs/03.specs/{package_number:4}-{slug}/02.contracts/openapi.yaml.",
       "relationships": [
         "Belongs to the Spec of its package; parent may only be a Spec."
       ],
@@ -6957,8 +6964,8 @@
       },
       "migration": {
         "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/openapi.template.yaml and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/openapi.template.yaml; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml; load_registry and test_template_definition re-check the reverted Registry."
       },
       "conditional_units": {
         "paths": "OpenAPI 3.1 needs at least one of paths, components or webhooks; keep paths when the API exposes operations.",
@@ -6970,7 +6977,7 @@
       }
     },
     "sdlc/plan": {
-      "source": "docs/99.templates/templates/specs/plan.template.md",
+      "source": "docs/99.templates/02.templates/03.specs/plan.template.md",
       "profiles": [
         "plan"
       ],
@@ -6981,8 +6988,8 @@
         "Creating a second lifecycle or approval record."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7031,13 +7038,13 @@
       },
       "migration": {
         "meaning_map": "Commit dd8fe8a5b (profile) and d18403ccc (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text. Lifecycle generation 8 moved it to its role design core role: the template and profile took the core sections and tables for packages numbered from package_generations.first_package on, and the role was bound by core_role. Earlier packages keep the generation 7 form in package_generations.recorded_sections and none of their documents changed.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/plan.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/plan.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/03.specs/plan.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/03.specs/plan.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "plan"
     },
     "sdlc/proto": {
-      "source": "docs/99.templates/templates/specs/contracts/service.template.proto",
+      "source": "docs/99.templates/02.templates/03.specs/02.contracts/service.template.proto",
       "profiles": [
         "proto-contract"
       ],
@@ -7048,7 +7055,7 @@
       ],
       "policy_refs": [
         "docs/00.workspace/01.project/stage-authoring-matrix.md#document-type-families",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7057,7 +7064,7 @@
         "TERM-CONTRACT",
         "local:Spec Package"
       ],
-      "applicability": "Applies to every file the proto-contract profile owns: docs/03.specs/{package_number:4}-{slug}/contracts/service.proto.",
+      "applicability": "Applies to every file the proto-contract profile owns: docs/03.specs/{package_number:4}-{slug}/02.contracts/service.proto.",
       "relationships": [
         "Belongs to the Spec of its package; parent may only be a Spec."
       ],
@@ -7086,8 +7093,8 @@
       },
       "migration": {
         "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/service.template.proto and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/service.template.proto; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/03.specs/02.contracts/service.template.proto and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/03.specs/02.contracts/service.template.proto; load_registry and test_template_definition re-check the reverted Registry."
       },
       "conditional_units": {
         "message HealthRequest": "example request message of the template Health rpc; replace it with the service's own messages.",
@@ -7099,7 +7106,7 @@
       }
     },
     "sdlc/requirement": {
-      "source": "docs/99.templates/templates/requirements/requirement-package.template.md",
+      "source": "docs/99.templates/02.templates/01.requirements/requirement-package.template.md",
       "profiles": [
         "requirements-package"
       ],
@@ -7110,8 +7117,8 @@
         "Describing design; Architecture does."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7158,13 +7165,13 @@
       },
       "migration": {
         "meaning_map": "Commit 3e359935b moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current Requirement Package took the core sections and requirements table, and the role was bound by core_role.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/requirements/requirement-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/requirements/requirement-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/01.requirements/requirement-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/01.requirements/requirement-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "requirement"
     },
     "sdlc/spec": {
-      "source": "docs/99.templates/templates/specs/spec.template.md",
+      "source": "docs/99.templates/02.templates/03.specs/spec.template.md",
       "profiles": [
         "spec"
       ],
@@ -7174,8 +7181,8 @@
         "Recording approval, review or execution; those are separate facts in the Task."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/sdlc.md#sequence"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/sdlc.md#sequence"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7225,13 +7232,13 @@
       },
       "migration": {
         "meaning_map": "Commit 78475f8df moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text. Lifecycle generation 8 moved it to its role design core role: the template and profile took the core sections and tables for packages numbered from package_generations.first_package on, and the role was bound by core_role. Earlier packages keep the generation 7 form in package_generations.recorded_sections and none of their documents changed.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/spec.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/spec.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/03.specs/spec.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/03.specs/spec.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "spec"
     },
     "sdlc/task": {
-      "source": "docs/99.templates/templates/specs/task.template.md",
+      "source": "docs/99.templates/02.templates/03.specs/task.template.md",
       "profiles": [
         "task"
       ],
@@ -7242,9 +7249,9 @@
         "Copying the Plan's strategy."
       ],
       "policy_refs": [
-        "docs/00.workspace/02.process/documentation-protocol.md#role-specific-authoring",
-        "docs/00.workspace/02.process/sdlc.md#sequence",
-        "docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records"
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/sdlc.md#sequence",
+        "docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records"
       ],
       "vocabulary_refs": [
         "TERM-TEMPLATE",
@@ -7256,7 +7263,7 @@
         "TERM-ACCEPTANCE",
         "local:Promotion receipt"
       ],
-      "applicability": "Applies to every file the task profile owns: docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md.",
+      "applicability": "Applies to every file the task profile owns: docs/03.specs/{package_number:4}-{slug}/01.tasks/tsk-{task_number:4}-{slug}.md.",
       "relationships": [
         "parent_ids names exactly one Plan; Evidence rows cite Spec criteria and Plan work units."
       ],
@@ -7298,8 +7305,8 @@
       },
       "migration": {
         "meaning_map": "Commit 6e16c0c4d (profile) and ae4df1873 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text. Lifecycle generation 8 moved it to its role design core role: the template and profile took the core sections and tables for packages numbered from package_generations.first_package on, and the role was bound by core_role. Earlier packages keep the generation 7 form in package_generations.recorded_sections and none of their documents changed.",
-        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/task.template.md and of this Registry entry; no Stage 98 copy is kept.",
-        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/task.template.md; load_registry and test_template_definition re-check the reverted Registry."
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/03.specs/task.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/03.specs/task.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "task"
     }
@@ -8839,8 +8846,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 62,
-      "next_number": 63,
+      "high_water": 63,
+      "next_number": 64,
       "reserved_history": [
         3,
         5,
@@ -9894,8 +9901,8 @@
   },
   "indexes": {
     "docs/03.specs/README.md": "spec",
-    "docs/90.references/audits/README.md": "audit",
-    "docs/90.references/data/README.md": "data",
-    "docs/90.references/research/README.md": "research"
+    "docs/90.references/02.audits/README.md": "audit",
+    "docs/90.references/03.data/README.md": "data",
+    "docs/90.references/01.research/README.md": "research"
   }
 }

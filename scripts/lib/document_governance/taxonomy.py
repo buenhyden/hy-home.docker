@@ -17,7 +17,8 @@ _REQUIREMENT_PACKAGE_PATH_PATTERN = re.compile(
     r"docs/01\.requirements/(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
 )
 _ARCHITECTURE_PATH_PATTERN = re.compile(
-    r"docs/02\.architecture/(?P<directory>descriptions|decisions)/"
+    # Workspace-scope ADs and ADRs share the product namespace (SPEC-0212-TSK-0096).
+    r"docs/(?:00\.workspace/)?02\.architecture/(?P<directory>01\.descriptions|02\.decisions)/"
     r"(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
 )
 _REGISTERED_TOKEN_PATTERN = re.compile(
@@ -78,9 +79,18 @@ def _segment_nfa(
                 edge(branch, None, target)
             state = target
         else:
+            if token == "{domain}":
+                # An optional `NN.` classification prefix (SPEC-0212-TSK-0096).
+                first, second, dot = next_state, next_state + 1, next_state + 2
+                next_state += 3
+                edge(state, digits, first)
+                edge(first, digits, second)
+                edge(second, frozenset("."), dot)
             target = next_state
             next_state += 1
             edge(state, alphanumeric, target)
+            if token == "{domain}":
+                edge(dot, alphanumeric, target)
             edge(target, slug_characters, target)
             state = target
         cursor = match.end()
@@ -198,7 +208,7 @@ def architecture_identity(path: PurePosixPath) -> tuple[str, str] | None:
     match = _ARCHITECTURE_PATH_PATTERN.fullmatch(path.as_posix())
     if match is None:
         return None
-    if match.group("directory") == "descriptions":
+    if match.group("directory") == "01.descriptions":
         return "architecture-description", f"AD-{match.group('number')}"
     return "adr", f"ADR-{match.group('number')}"
 
@@ -209,7 +219,7 @@ def is_valid_incident_path(path: PurePosixPath) -> bool:
     parts = path.parts
     return (
         len(parts) == 6
-        and parts[:3] == ("docs", "05.operations", "incidents")
+        and parts[:3] == ("docs", "05.operations", "04.incidents")
         and _INCIDENT_YEAR_PATTERN.fullmatch(parts[3]) is not None
         and _INCIDENT_PACKET_PATTERN.fullmatch(parts[4]) is not None
         and parts[5] in {"incident.md", "postmortem.md"}
@@ -401,7 +411,7 @@ def validate_stable_identity(
             TaxonomyFinding(
                 "incident-path-invalid",
                 str(path),
-                "incident and postmortem files require docs/05.operations/incidents/"
+                "incident and postmortem files require docs/05.operations/04.incidents/"
                 "<year>/inc-####-<slug>/<role>.md",
             )
         )
@@ -410,7 +420,7 @@ def validate_stable_identity(
         "incident-year-readme",
         "operation/incident-year-readme",
     } and (
-        re.fullmatch(r"docs/05\.operations/incidents/\d{4}/README\.md", str(path))
+        re.fullmatch(r"docs/05\.operations/04\.incidents/\d{4}/README\.md", str(path))
         is not None
     )
     dated_parts = (

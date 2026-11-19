@@ -1,10 +1,10 @@
 ---
 title: "Traefik Edge Router"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -111,7 +111,7 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
 1. `config/traefik.yml`을 먼저 검토해 핵심 라우팅 entrypoint를 이해합니다.
 2. 새 서비스에 인증이나 rate-limiting을 추가할 때는 `dynamic/middleware.yml`을 확인합니다.
@@ -153,9 +153,9 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 #### Related Documents
 
 - [01-gateway 루트 README](../README.md)
-- Traefik 가이드 (`docs/05.operations/guides/02-gateway-and-networking/0013-traefik.md`)
-- 게이트웨이 운영 정책 (`docs/05.operations/policies/02-gateway-and-networking/0013-traefik.md`)
-- Traefik 런북 (`docs/05.operations/runbooks/02-gateway-and-networking/0013-traefik.md`)
+- Traefik 가이드 (`docs/05.operations/01.guides/02.gateway-and-networking/0013-traefik.md`)
+- 게이트웨이 운영 정책 (`docs/05.operations/02.policies/02.gateway-and-networking/0013-traefik.md`)
+- Traefik 런북 (`docs/05.operations/03.runbooks/02.gateway-and-networking/0013-traefik.md`)
 - [Traefik 대시보드](https://dashboard.${DEFAULT_URL:-localhost}) (내부용)
 - [문서 인덱스](../../../docs/README.md)
 
@@ -173,7 +173,7 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |
 | Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password`, `/run/secrets/traefik_prometheus_api_htpasswd`, `/run/secrets/traefik_searxng_api_htpasswd` |
 | Healthcheck | `traefik`에 Compose healthcheck 선언됨 |
-| Operations | Guide (`docs/05.operations/guides/02-gateway-and-networking/0013-traefik.md`), Policy (`docs/05.operations/policies/02-gateway-and-networking/0013-traefik.md`), Runbook (`docs/05.operations/runbooks/02-gateway-and-networking/0013-traefik.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/02.gateway-and-networking/0013-traefik.md`), Policy (`docs/05.operations/02.policies/02.gateway-and-networking/0013-traefik.md`), Runbook (`docs/05.operations/03.runbooks/02.gateway-and-networking/0013-traefik.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 루트 profile 검증과 게이트웨이 하드닝 검사부터 시작하고 Traefik runtime이 이미 승인되어 실행 중일 때만 서비스 로그를 확인함 |
 

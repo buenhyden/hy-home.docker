@@ -13,10 +13,10 @@ secrets:
 - row: LAB-036
   destination: secrets/communication/stalwart/password.txt
 documents:
-  guide: docs/05.operations/guides/15-labs/0070-mail.md
-  runbook: docs/05.operations/runbooks/15-labs/0070-mail.md
-  guide_target: docs/05.operations/guides/11-mail-and-notifications/
-  runbook_target: docs/05.operations/runbooks/11-mail-and-notifications/
+  guide: docs/05.operations/01.guides/15.labs/0070-mail.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0070-mail.md
+  guide_target: docs/05.operations/01.guides/11.mail-and-notifications/
+  runbook_target: docs/05.operations/03.runbooks/11.mail-and-notifications/
 resources:
   services:
     stalwart:

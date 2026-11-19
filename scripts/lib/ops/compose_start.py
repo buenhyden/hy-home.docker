@@ -19,7 +19,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.supply_chain.latest_version_gate import expected_from_root
 
-POLICY = "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+POLICY = "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
 COMMON = "infra/common-optimizations.yml"
 OBSERVABILITY_INPUTS = (
     "infra/06-observability/prometheus/config/prometheus.yml",

@@ -1,10 +1,10 @@
 ---
 title: "13 경험 자산"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-03"
 ---
 
@@ -85,8 +85,8 @@ python3 scripts/validation/check-operations-catalog.py
 - [상위 인프라](../README.md)
 - [서비스 패키지](storybook/README.md)
 - [문서 진입점](../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
-- [14-design-system runbooks](../../docs/05.operations/runbooks/14-design-system/README.md): RUN-0101 storybook
+- [14-design-system runbooks](../../docs/05.operations/03.runbooks/14.design-system/README.md): RUN-0101 storybook
 
 #### Observability and Recovery
 
-운영과 복구는 [14-design-system runbooks](../../docs/05.operations/runbooks/14-design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다. 정적 render는 HOME 기동을 증명하지 않으며 실제 기동·재시작은 별도 운영 승인 대상이다.
+운영과 복구는 [14-design-system runbooks](../../docs/05.operations/03.runbooks/14.design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다. 정적 render는 HOME 기동을 증명하지 않으며 실제 기동·재시작은 별도 운영 승인 대상이다.

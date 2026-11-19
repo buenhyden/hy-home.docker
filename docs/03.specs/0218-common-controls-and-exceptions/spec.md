@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0218"
 parent_ids:
@@ -158,10 +158,10 @@ function, backup and recovery evidence.
 ### Normative and Evidence
 
 - [Plan](plan.md)
-- [Task](tasks/tsk-0001-common-controls-and-exceptions.md)
-- [P07 root resource optimization](tasks/tsk-0002-p07-root-resource-optimization.md)
+- [Task](01.tasks/tsk-0001-common-controls-and-exceptions.md)
+- [P07 root resource optimization](01.tasks/tsk-0002-p07-root-resource-optimization.md)
 - [HOME development host requirement](../../01.requirements/0027-home-development-host.md)
-- [Exceptions policy](../../05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md)
+- [Exceptions policy](../../05.operations/02.policies/01.common/0001-common-optimizations-template-exceptions.md)
 
 ### Historical and Navigation
 

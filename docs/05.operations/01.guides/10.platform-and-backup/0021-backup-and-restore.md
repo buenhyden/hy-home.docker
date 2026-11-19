@@ -1,0 +1,183 @@
+---
+title: "Backup and Restore Guide"
+version: "1.4.0"
+type: "operation/guide"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-11-17"
+layer: "operations"
+artifact_id: "GDE-0021"
+parent_ids:
+- "POL-0021"
+implementation_services:
+  infra/09-platform-ops/restic/docker-compose.yml:
+  - restic
+  - restic-offsite
+  - backup-sqlite-export
+created: "2026-09-22"
+next_review_at: "2027-05-13"
+---
+
+# Backup and Restore Guide
+
+## Purpose
+
+### Audience
+
+백업을 운영하거나 복구 가능성을 판단하는 운영자와 검토자.
+
+### Outcome
+
+HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackRest, Restic, R2 오프사이트 사본, SQLite export, host orchestrator가 각각 무엇을 보호하고 무엇을 보호하지 않는지 설명한다.
+
+백업을 운영하거나 복구 가능성을 판단하는 운영자와 검토자를 위한 문서다. 목표는 도구별 소유 범위, 저장 위치, 일정과 부하, 용량 증가, 키 보관 규칙을 이해하고 정상 상태를 확인하는 것이다.
+
+#### Boundaries
+
+- Policy: [POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)
+- Implementation: [Restic Compose](../../../../infra/09-platform-ops/restic/docker-compose.yml),
+  [Restic package](../../../../infra/09-platform-ops/restic/README.md),
+  [pgBackRest image](../../../../infra/04-data/mng-db/pg/backup/Dockerfile)
+
+## Prerequisites
+
+### Environment
+
+#### What owns which copy
+
+| 도구 | 소유 범위 | 소유하지 않는 범위 |
+| --- | --- | --- |
+| `mng-pg` 내부 pgBackRest | management PostgreSQL cluster의 physical backup, 연속적인 WAL archive, point-in-time recovery | 다른 모든 engine; database별 logical export |
+| Restic (`restic` job) | `sets/state-include.txt`에 allowlist된 file-safe tree의 encrypted, deduplicated snapshot, consistent export, `secrets/`와 `.env` | allowlist되지 않은 모든 것, 특히 live engine directory(PostgreSQL, Valkey, Kafka, OpenBao Raft, TSDB, log, search, LAB store)와 ComfyUI model |
+| `restic-offsite` job | 로컬 Restic repository 두 개(state set의 `pgbackrest/`와 `dev-pgbackrest/` 포함)를 Cloudflare R2 repository 하나로 `restic copy`, 원격 `check` | 로컬 쓰기, 자동 원격 snapshot 삭제(owner-run 승인 prune는 RUN-0021) |
+| `backup-sqlite-export` job | Online Backup API를 통한 Grafana, Gatus SQLite database의 consistent copy(Open WebUI는 2026-11-10 LAB 이전으로 제외) | 다른 SQLite 파일 |
+| Host orchestrator `hyhome-backup.sh` | 순서, single-run lock, cross-disk preflight, PostgreSQL globals와 Valkey RDB export | retention delete (`forget-prune`) |
+
+실행 중인 PostgreSQL data directory의 복사본은 database backup이 아니다.
+구현된 자동 PostgreSQL 경로는 pgBackRest이며 database별 logical 복구 요구를 대체하지 않는다.
+
+### Authority
+
+암호화 키는 `secrets/backup/mng-pg/pgbackrest_cipher_pass.txt`(BKP-001)와 `secrets/backup/restic/restic_password.txt`(BKP-002)이며 값은 기록하지 않는다. 배포 전 두 repository 디렉터리와 용량·키 보관·일정 승인이 필요하다.
+
+## Procedure
+
+### Steps
+
+#### Destinations
+
+두 repository는 서로 다른 physical disk에 두어야 한다. source의 `st_dev` 비교는 filesystem 구분만 확인하며 별도 partition/LVM이 같은 physical disk일 가능성을 배제하지 못한다. 실제 disk mapping은 owner 확인이 필요하다.
+
+- `BACKUP_STATE_REPO_DIR` (system SSD): 관리 pgBackRest repository `pgbackrest/`, 개발 repository `dev-pgbackrest/`,
+  data-disk state용 Restic repository `restic/`, export staging `staging/`.
+  `BACKUP_STATE_MAX_GIB`(8)는 pgBackRest/export 후, Restic 전 검사 기준이다. quota나 실행 중 크기 제한이 아니며 이후 Restic 쓰기로 초과할 수 있다.
+- `BACKUP_HOST_REPO_DIR` (data disk): SSD에 있는 `secrets/`와 `.env`용 Restic
+  repository `restic/`.
+
+orchestrator는 자신이 보호하는 데이터와 같은 filesystem이나 그 내부에 있는
+repository를 거부한다. 오프사이트로는 로컬 Restic backup/check가 성공하면(앞선 export 실패 여부와 별개로)
+`restic-offsite`가 두 Restic repository(state set에 `pgbackrest/`와 `dev-pgbackrest/` 포함)를
+Cloudflare R2 repository 하나로 복사한다(ADR-0056). owner가
+[RUN-0021](../../03.runbooks/10.platform-and-backup/0021-backup-and-restore.md) 8단계의 R2 설정을 마치기
+전까지는 모든 복사본이 한 host에 있어 offsite recovery를 할 수 없다.
+
+#### Schedule and load
+
+`hyhome-backup.timer`는 매일 KST 03:30에 최대 30분의 random delay를 두고
+실행되며 4시간이 지나면 실행이 중단된다. pgBackRest는 일요일에 full backup을,
+다른 날에는 differential backup을 수행한다. `archive_timeout=300`은 WAL segment 전환을 유도하며 successful archive를 5분 이내로 보장하지 않는다. 4 GiB archive queue 한도 초과로 segment가 폐기되면 새 유효 backup 전 PITR chain이 끊긴다. unit은 idle I/O class와 `Nice=10`으로 실행되고
+Restic은 낮은 block-I/O weight를 받는다. Spark는 LAB(`labs/lakehouse/`)의 수동 `spark` job이며 workspace에 예약된 table maintenance가 없으므로, 운영자가 그 시간대에 직접 실행할 때만 겹친다. `Persistent=true`의 catch-up도 시간대를 바꾸며 `flock`은 backup끼리만 직렬화한다. Renovate/Spark와의 상호 배제는 구현되어 있지 않다.
+
+#### Capacity and growth (measured 2026-09-22)
+
+| 저장소 | 측정한 입력 | 범위·한계 |
+| --- | --- | --- |
+| pgBackRest (SSD) | 전체 database 96 MB; WAL 약 14 MB/h (압축 전 330 MB/day; `archive_timeout`마다 강제 전환되는 segment는 zstd가 제거하는 0으로 채워짐) | full backup 2개와 그 differential 및 WAL(약 2주); 계획 추정치는 2 GB 미만이며 기록된 크기로 대체될 예정 |
+| Restic state (SSD) | allowlist된 tree (Airflow DAG/config/plugin 등; loopback registry는 다시 pull·build할 수 있는 archive라 2026-10-20부터 제외) 및 export 약 10 MB | deduplicated; `forget-prune`까지 일일 변경분만큼 증가하며 2026-09-22 당시 연간 5 GB 미만 추정; 09-30 관측으로 폐기된 예측 |
+| Restic host (data disk) | `secrets/`와 `.env`, 수 킬로바이트 | 무시할 수준 |
+| Staging | 실행 중에만 export | 종료마다 비워짐 |
+
+증가율은 workload와 retention에 따라 달라진다. 동일 chunk는 deduplicate되지만 pgBackRest 변경 파일은 새 chunk가 될 수 있으며,
+orchestrator는 backup 대상 소스 내부의 repository를 거부한다. Airflow
+log(175 MB, 약 64 MB/day)와 cache는 의도적으로 allowlist에서 제외한다. 각
+실행은 세 repository 크기를 journal에 기록한다. 예산 검사는 다음 Restic 실행만 막는다. pgBackRest가
+오래된 backup을 만료시킨 후 orchestrator가 `BACKUP_STATE_REPO_DIR`을 측정하고
+`BACKUP_STATE_MAX_GIB` 이상이면 아무것도 삭제하지 않고 Restic 단계를
+건너뛰며 실행을 실패시킨다. 표의 2026-09-22 추정치는 현재 보장이 아니며 2026-09-23 429 MiB → 09-30 1679 MiB(약 180 MiB/day) state repository 기록으로 대체되었다. 20 GiB free-space floor는 state repository filesystem의 실행 전 검사이며 host repository·scratch·실행 중 여유를 보장하지 않는다.
+
+#### Development database handoff
+
+개발 repository는 별도 stanza `dev`와 `dev_pgbackrest_cipher_pass`를 사용하며
+관리 repository·PGDATA와 공유하지 않는다. Restic은 이 경로를 읽기 전용으로
+state set에 포함하여 기존 offsite copy와 전체 state 예산에 함께 계산합니다.
+배포 전 두 repository 디렉터리와 용량·키 보관·일정 승인이 필요합니다.
+개발 stanza `check`(300초), physical backup(1800초), globals/schema export(각
+300초)는 제한 시간 내 종료해야 합니다. 개발 서버 중단·check 실패·부분 export는
+unit 실패를 유지하고 성공 timestamp를 갱신하지 않습니다. 기존 동작대로 partial
+Restic snapshot/offsite copy는 남을 수 있으므로 전체 성공 실행과 구분합니다.
+
+schema export는 DB별 extension 선언과 권한을, physical backup의 catalog는
+설치된 extension version과 적용 migration 이력을 보존합니다. 별도 image ID와
+infra revision도 staging에 기록합니다. 외부 앱의 정확한 migration source revision과
+restore 후 역할/extension/migration 대조는 앱 소유자가 제공합니다. infra revision이
+앱 revision을 대신하지 않습니다. 소스는 `archive_mode=on`으로 연속 WAL을
+보내며, `dev` stanza가 먼저 있어야 합니다(RUN-0021). HOME stanza·WAL·첫 full backup·격리 restore canary는
+2026-10-08 통과했고 소유자가 2026-10-29 수용했습니다(SPEC-0213, 삭제됨). HOME PITR과
+R2 복구는 `NOT_RUN`이며, 남은 검증은
+[POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)이 소유합니다.
+2026-10-04 합성 offline full→현재 Restic state snapshot→선택한 snapshot의
+repository→새 빈 볼륨 복구에서 row·extension·migration·role 비교와 reader
+쓰기/DDL 거절은 통과했습니다. 이 격리 결과는 online WAL/PITR·HOME·R2 복구
+성공이나 운영 용량 실측을 뜻하지 않습니다.
+
+#### Keys
+
+`secrets/backup/mng-pg/pgbackrest_cipher_pass.txt`(BKP-001)는 pgBackRest repository를
+암호화하고, `secrets/backup/restic/restic_password.txt`(BKP-002)는 두 Restic
+repository를 암호화한다. 이 값들은 host repository 내부에도 backup되는데, 그
+repository를 열려면 같은 Restic password가 필요하므로 두 값의 offline
+복사본을 이 host 밖에 보관한다. 이를 잃으면 모든 backup을 읽을 수 없게 된다.
+
+#### Identity-specific behavior
+
+restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune 는 각각 다른 쓰기 효과다. SQLite helper는 Grafana와 Gatus의 Online Backup API와 integrity check로 staging을 만들며 원본 WAL/SHM 처리를 위해 source mount가 rw다. 공유 기억은 별도의 호스트 CLI가 내보낸다. local restic은 network none이고 offsite만 전용 outbound network를 쓴다. unit 종료와 timestamp를 보고 각 복구 대상의 export와 snapshot 포함 여부를 따로 확인한다. 공유 기억 export가 용량 제한으로 생략되어도 일일 unit은 성공할 수 있다. 복구·용량·custody는 RUN/POL-0021의 계약을 따른다.
+
+| 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
+| --- | --- | --- | --- |
+| `restic` | local snapshot/check job; 두 encrypted repository write | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
+| `restic-offsite` | remote copy/check/prune job; local repository read-only | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
+| `backup-sqlite-export` | Grafana·Gatus SQLite online export job; source WAL/SHM rw 예외 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
+
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+
+### Expected Results
+
+backup data를 변경하지 않는 점검이다(Restic은 여전히 짧게 유지되는 lock을 기록한다):
+
+```bash
+docker exec -u postgres mng-pg pgbackrest --stanza=mng info
+docker compose --profile backup run --rm --no-deps restic snapshots
+systemctl list-timers hyhome-backup.timer
+journalctl -u hyhome-backup.service -n 50 --no-pager
+```
+
+정상이면 output에 최근 backup과 WAL archive range가 담긴 `status: ok`,
+최근 `hyhome-state`와 `hyhome-host` snapshot, 성공한 마지막 실행이 나온다.
+
+## Troubleshooting
+
+### Symptoms
+
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../03.runbooks/10.platform-and-backup/0021-backup-and-restore.md)의 절차로 진단한다.
+
+#### Runbook Handoff
+
+초기 설정, manual 실행, restore, point-in-time recovery, retention delete
+절차는 [RUN-0021](../../03.runbooks/10.platform-and-backup/0021-backup-and-restore.md)에 있다.
+
+- [Management database runbook](../../03.runbooks/05.databases-and-storage/0028-management-database.md)
+- [Storage exhaustion runbook](../../03.runbooks/05.databases-and-storage/0035-storage-exhaustion.md)
+
+### Next Action
+
+Expected Results 점검이 실패하거나 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [RUN-0021](../../03.runbooks/10.platform-and-backup/0021-backup-and-restore.md)로 진단한다. 관련 Runbook은 [Management database](../../03.runbooks/05.databases-and-storage/0028-management-database.md)와 [Storage exhaustion](../../03.runbooks/05.databases-and-storage/0035-storage-exhaustion.md)이다.

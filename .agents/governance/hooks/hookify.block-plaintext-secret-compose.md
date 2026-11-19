@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: plaintext secrets"
-version: "1.0.6"
+version: "1.0.7"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -32,7 +32,7 @@ Owning policies:
 
 - [Agent Bootstrap Policy](../bootstrap.md#hard-constraints)
 - [Environment constraints](../environment-constraints.md)
-- [Quality standards](../../../docs/00.workspace/03.quality/quality-standards.md)
+- [Quality standards](../../../docs/00.workspace/04.quality/quality-standards.md)
 
 ## Scope
 
@@ -60,7 +60,7 @@ paths, and empty values are not flagged.
 > "Deliver credentials through Docker Secrets or `secrets/` mounts, never as
 > plaintext values."
 
-`docs/00.workspace/03.quality/quality-standards.md` — Requirements:
+`docs/00.workspace/04.quality/quality-standards.md` — Requirements:
 
 > "Never commit plaintext credentials."
 

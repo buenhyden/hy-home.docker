@@ -1267,7 +1267,7 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         paths = (
             ROOT / ".gitmessage",
-            ROOT / "docs/00.workspace/02.process/git-workflow.md",
+            ROOT / "docs/00.workspace/03.process/git-workflow.md",
             ROOT / ".agents/prompts/commit-message.md",
             ROOT / ".agents/governance/hooks/hookify.warn-conventional-commit.md",
         )

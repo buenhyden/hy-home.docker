@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "3.1.1"
+version: "3.1.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Agentic Engineering Policy
@@ -144,7 +144,7 @@ None: this document states no exclusion.
   skill states its own preconditions and does not restate this rule, because a
   copy that drifts is worse than a reference that cannot.
 - Record commands, results, recovery, skipped checks, and blockers in the Task.
-- Safety denials are owned by [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md) and
+- Safety denials are owned by [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md) and
   cannot be bypassed by a cost, token, or time budget. Before a required check,
   record its tool, environment, permission, and any applicable budget route. If
   an exact ceiling or supported native control is required but unavailable,
@@ -179,7 +179,7 @@ None: this document states no exclusion.
   A failure reaches the model as `additionalContext` with exit 0,
   because neither provider shows a hook's other non-zero exits to the model.
   `scripts/hooks/post-tool-validate.sh --write` is the explicit fix, under
-  [formatting ownership](../../docs/00.workspace/03.quality/quality-standards.md#10-formatting-and-linting-ownership).
+  [formatting ownership](../../docs/00.workspace/04.quality/quality-standards.md#10-formatting-and-linting-ownership).
 - Editor shortcuts, code actions, and inline edit are not repository surfaces.
   They are personal IDE settings, and `.vscode/` and `.idea/` stay out of Git;
   only `.editorconfig` is shared. No separate documentation hook is added,
@@ -219,7 +219,7 @@ The native event supplies the session identifier. Keep progress in the Task
 and treat the private hook binding as transient consistency state.
 
 The binding never grants permission. Resolve current authorization through
-[Approval Boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records).
+[Approval Boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records).
 A draft, a memory entry or a self-declared authority reference supplies no
 execution authority. A new user turn or resumed or compacted context requires
 reconciling an enrolled brief before the next covered action. Reuse current
@@ -256,7 +256,7 @@ the trusted origin or as unknown, authorization source, scope and current
 applicability, Task-declared request, token, time, concurrency and retry
 ceilings, and the shared-budget identity and remaining allocation. These are
 structural records. The controller resolves authority itself through
-[Approval Boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)
+[Approval Boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)
 on dispatch and resumption. A material mismatch or unresolved authority stops
 dependent mutation and additional spending until the controller reconciles it.
 Unsupported fields are recorded unknown. It refuses an unapproved fallback,
@@ -308,7 +308,7 @@ prompt-local policy.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -361,16 +361,16 @@ Only the BriefRecord validator and the delegation consistency check are tied to 
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
-- External catalog evidence (`docs/90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md`)
+- External catalog evidence (`docs/90.references/01.research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md`)
 - [Workflow supervisor](../roles/workflow-supervisor.md)
 - [Documentation index](../../docs/README.md)
 - [Bootstrap policy](bootstrap.md)
 - [Workflows](workflows.md)
-- [Task checklists](../../docs/00.workspace/03.quality/task-checklists.md)
+- [Task checklists](../../docs/00.workspace/04.quality/task-checklists.md)
 - [Provider registry](providers/registry.yaml)

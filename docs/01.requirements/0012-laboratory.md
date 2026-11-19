@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Requirements"
-version: "1.6.0"
+version: "1.6.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0012"
 created: "2026-03-26"
@@ -133,10 +133,10 @@ requirement once they are met.
 
 #### Downstream Links
 
-- **Architecture Description**: [Laboratory architecture](../02.architecture/descriptions/0011-laboratory-architecture.md)
+- **Architecture Description**: [Laboratory architecture](../02.architecture/01.descriptions/0011-laboratory-architecture.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
   and [SPEC-0263 LAB promotion contract](../03.specs/0263-lab-promotion-contract/spec.md)
-- **Policy**: [LAB promotion](../05.operations/policies/15-labs/0107-lab-promotion.md)
+- **Policy**: [LAB promotion](../05.operations/02.policies/15.labs/0107-lab-promotion.md)
 - **Retired ADR-0011** (laboratory services): deleted on 2026-11-04; its
   surviving tool selection is summarized in AD-0011 Traceability.
 - **Retired domain Spec SPEC-0012** (laboratory): replaced by the laboratory

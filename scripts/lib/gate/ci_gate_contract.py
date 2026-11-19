@@ -1539,7 +1539,7 @@ _SECURITY_DB_MARKER = re.compile(
 )
 _MAX_ENTRYPOINT_BYTES = 1024 * 1024
 _RULE_OWNER = re.compile(
-    r"(?:\.agents/governance|docs/00\.workspace/0[1-3]\.[a-z]+)/[a-z0-9-]+\.md#[a-z0-9-]+"
+    r"(?:\.agents/governance|docs/00\.workspace/(?:01\.project|03\.process|04\.quality))/[a-z0-9-]+\.md#[a-z0-9-]+"
 )
 
 

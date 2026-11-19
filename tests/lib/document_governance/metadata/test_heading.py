@@ -38,7 +38,7 @@ from tests.lib.gate.subprocess_support import gate_root_pass_fds
 GENERATION_8_PATHS = {
     "spec": "docs/03.specs/0271-fixture/spec.md",
     "plan": "docs/03.specs/0271-fixture/plan.md",
-    "task": "docs/03.specs/0271-fixture/tasks/tsk-0001-fixture.md",
+    "task": "docs/03.specs/0271-fixture/01.tasks/tsk-0001-fixture.md",
 }
 
 
@@ -241,7 +241,7 @@ class CurrentBodyContractTests(unittest.TestCase):
     def test_current_operations_policy_preserves_its_own_body_baseline(self) -> None:
         record = metadata.Record(
             pathlib.Path(
-                "docs/05.operations/policies/"
+                "docs/05.operations/02.policies/"
                 "0001-common-optimizations-template-exceptions.md"
             ),
             {
@@ -288,7 +288,7 @@ class CurrentBodyContractTests(unittest.TestCase):
         def findings(extra: dict[str, object]) -> list[object]:
             record = metadata.Record(
                 pathlib.Path(
-                    "docs/05.operations/policies/"
+                    "docs/05.operations/02.policies/"
                     "0001-common-optimizations-template-exceptions.md"
                 ),
                 {**base, **extra, "next_review_at": review},
@@ -387,8 +387,8 @@ class RegisteredSectionContractTests(unittest.TestCase):
         # The audit and data pack profiles own no current document; a path their
         # Registry pattern classifies stands in so their form is still checked.
         for profile_id, path in (
-            ("audit", "docs/90.references/audits/0001-fixture/README.md"),
-            ("data", "docs/90.references/data/0001-fixture/README.md"),
+            ("audit", "docs/90.references/02.audits/0001-fixture/README.md"),
+            ("data", "docs/90.references/03.data/0001-fixture/README.md"),
         ):
             if profile_id not in found:
                 assert classify_path(path, cls.registry) == profile_id, path
@@ -876,7 +876,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
         recorded_paths = {
             "spec": "docs/03.specs/0212-fixture/spec.md",
             "plan": "docs/03.specs/0212-fixture/plan.md",
-            "task": "docs/03.specs/0212-fixture/tasks/tsk-0001-fixture.md",
+            "task": "docs/03.specs/0212-fixture/01.tasks/tsk-0001-fixture.md",
         }
         for profile_id, path in recorded_paths.items():
             recorded = recorded_package_profile(
@@ -1153,7 +1153,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
             frontmatter_present=True,
         )
         cls.template_path = pathlib.Path(
-            "docs/99.templates/templates/specs/spec.template.md"
+            "docs/99.templates/02.templates/03.specs/spec.template.md"
         )
         cls.template_values = parse_frontmatter_text(
             (ROOT / cls.template_path).read_text(encoding="utf-8")
@@ -1181,7 +1181,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
 
     def test_incident_template_uses_registered_timestamp_placeholder(self) -> None:
         path = pathlib.Path(
-            "docs/99.templates/templates/operations/incident.template.md"
+            "docs/99.templates/02.templates/05.operations/incident.template.md"
         )
         values = parse_frontmatter_text((ROOT / path).read_text(encoding="utf-8"))
         self.assertEqual(
@@ -1197,7 +1197,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
 
     def test_shared_router_template_retains_registered_layer_placeholder(self) -> None:
         path = pathlib.Path(
-            "docs/99.templates/templates/common/readme-stage.template.md"
+            "docs/99.templates/02.templates/93.common/readme-stage.template.md"
         )
         values = parse_frontmatter_text((ROOT / path).read_text(encoding="utf-8"))
         self.assertEqual(
@@ -1335,7 +1335,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         self.assertNotIn("effective-body-placeholder", {item.code for item in findings})
 
     def test_active_policy_rejects_unresolved_prose(self) -> None:
-        path = pathlib.Path("docs/00.workspace/02.process/documentation-protocol.md")
+        path = pathlib.Path("docs/00.workspace/03.process/documentation-protocol.md")
         text = (ROOT / path).read_text(encoding="utf-8")
         record = metadata.Record(
             path,
@@ -1349,7 +1349,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         self.assertIn("effective-body-placeholder", {item.code for item in findings})
 
     def test_current_non_sdlc_authored_document_rejects_residue(self) -> None:
-        path = pathlib.Path("docs/00.workspace/02.process/documentation-protocol.md")
+        path = pathlib.Path("docs/00.workspace/03.process/documentation-protocol.md")
         text = (ROOT / path).read_text(encoding="utf-8")
         record = metadata.Record(
             path,
@@ -1372,7 +1372,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         self,
     ) -> None:
         registry = self.profiles["_registry"]
-        generated = "docs/90.references/data/0066-foundation-summary/README.md"
+        generated = "docs/90.references/03.data/0066-foundation-summary/README.md"
         # No tracked generator owns a Stage 90 body any more, so the generated
         # case supplies its own owner map instead of relying on the Registry.
         profiles = {
@@ -1383,8 +1383,8 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
             },
         }
         paths = (
-            "docs/99.templates/templates/runtime/claude-agent.template.md",
-            "docs/03.specs/0001-example/contracts/openapi.yaml",
+            "docs/99.templates/02.templates/92.runtime/claude-agent.template.md",
+            "docs/03.specs/0001-example/02.contracts/openapi.yaml",
             generated,
         )
         for relative in paths:
@@ -1459,7 +1459,7 @@ class RegistrySchemaBoundaryTests(unittest.TestCase):
         )
         schema = json.loads(
             (
-                ROOT / "docs/99.templates/contracts/document-profile.schema.json"
+                ROOT / "docs/99.templates/01.contracts/document-profile.schema.json"
             ).read_text(encoding="utf-8")
         )
         mutate(raw)
@@ -1520,7 +1520,7 @@ class SectionStructureTests(unittest.TestCase):
 
     def codes(self, body: str, profile: dict = _RUNBOOK_PROFILE) -> list[str]:
         record = metadata.Record(
-            pathlib.Path("docs/05.operations/runbooks/0001-example.md"),
+            pathlib.Path("docs/05.operations/03.runbooks/0001-example.md"),
             {"artifact_type": "runbook"},
             "runbook",
             frontmatter_present=True,
@@ -1864,12 +1864,13 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         self.assertEqual(
             [],
             self.findings(
-                "Document revision 7.8.9", "docs/05.operations/guides/0001-editing.md"
+                "Document revision 7.8.9",
+                "docs/05.operations/01.guides/0001-editing.md",
             ),
         )
 
     def test_operation_component_slug_uses_authored_source_authority(self) -> None:
-        path = "docs/05.operations/guides/0001-exampledb.md"
+        path = "docs/05.operations/01.guides/0001-exampledb.md"
         pointer = "[Runtime](/infra/04-data/exampledb/docker-compose.yml)\n"
         self.assertEqual([], self.findings(pointer + "Connection setup.", path))
         self.assertIn(
@@ -1893,7 +1894,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             registry = root / "infra/tech-stack.versions.json"
             registry.parent.mkdir(parents=True)
             registry.write_text(json.dumps({"entries": list(self.ENTRIES)}))
-            document = root / "docs/05.operations/policies/9999-exampledb.md"
+            document = root / "docs/05.operations/02.policies/9999-exampledb.md"
             document.parent.mkdir(parents=True)
             source = root / "infra/04-data/exampledb/docker-compose.yml"
             source.parent.mkdir(parents=True)
@@ -1987,8 +1988,8 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         for path in (
             "README.md",
             "docs/README.md",
-            "docs/02.architecture/descriptions/9999-exampledb.md",
-            "docs/02.architecture/decisions/9999-exampledb.md",
+            "docs/02.architecture/01.descriptions/9999-exampledb.md",
+            "docs/02.architecture/02.decisions/9999-exampledb.md",
         ):
             with self.subTest(path=path):
                 self.assertIn(
@@ -2007,7 +2008,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             },
         )
         record = metadata.Record(
-            pathlib.Path("docs/02.architecture/descriptions/9999-platform.md"),
+            pathlib.Path("docs/02.architecture/01.descriptions/9999-platform.md"),
             {},
             "architecture",
         )
@@ -2055,7 +2056,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             },
         )
         record = metadata.Record(
-            pathlib.Path("docs/02.architecture/descriptions/9999-platform.md"),
+            pathlib.Path("docs/02.architecture/01.descriptions/9999-platform.md"),
             {},
             "architecture",
         )
@@ -2082,7 +2083,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         )
         record = metadata.Record(
             pathlib.Path(
-                "docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md"
+                "docs/05.operations/01.guides/03.identity-and-access/0079-application-auth-integration.md"
             ),
             {},
             "operation/guide",
@@ -2246,12 +2247,12 @@ class RuntimeVersionBodyTests(unittest.TestCase):
 
             cases = (
                 (
-                    "docs/05.operations/policies/15-labs/0025-cassandra.md",
+                    "docs/05.operations/02.policies/15.labs/0025-cassandra.md",
                     "[Runtime](/infra/04-data/cassandra/docker-compose.yml)\n"
                     "Cassandra 5.0.8 compatibility boundary.\n",
                 ),
                 (
-                    "docs/05.operations/guides/0001-auth.md",
+                    "docs/05.operations/01.guides/0001-auth.md",
                     "[Runtime](/infra/04-data/mongodb/docker-compose.yml)\n"
                     "MongoDB 8.3.9 migration boundary.\n",
                 ),
@@ -2812,10 +2813,10 @@ class RegisteredTableContractTests(unittest.TestCase):
     """
 
     TARGETS: ClassVar[dict[str, str]] = {
-        "postmortem": "docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/postmortem.md",
-        "governance-vocabulary": ".agents/knowledge/glossary.md",
-        "incident": "docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md",
-        "runbook": "docs/05.operations/runbooks/12-testing-and-quality/0092-wiremock.md",
+        "postmortem": "docs/05.operations/04.incidents/2026/inc-0002-airflow-keycloak-native-auth/postmortem.md",
+        "governance-vocabulary": "docs/00.workspace/01.project/glossary.md",
+        "incident": "docs/05.operations/04.incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md",
+        "runbook": "docs/05.operations/03.runbooks/12.testing-and-quality/0092-wiremock.md",
     }
     HEADERS: ClassVar[dict[str, str]] = {
         "postmortem": "| Action | Owner | Condition | Evidence |",

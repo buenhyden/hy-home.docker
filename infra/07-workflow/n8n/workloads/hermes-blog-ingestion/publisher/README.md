@@ -1,10 +1,10 @@
 ---
 title: "Hermes 로컬 발행기"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Hermes 로컬 발행기
@@ -204,7 +204,7 @@ Gateway 전달은 검증되지 않았습니다. PR #695 병합 시점의 전체 
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0053: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`
+- RUN-0053: `docs/05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md`
 
 #### Related Documents
 

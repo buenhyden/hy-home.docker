@@ -1,10 +1,10 @@
 ---
 title: "Requirements Agent Guide"
-version: "0.4.1"
+version: "0.4.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Requirements Agent Guide
@@ -33,7 +33,7 @@ scope; they belong to Stage 02, Stage 03 and Stage 05.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -44,11 +44,11 @@ canonical governance or a Stage contract.
 
 - Load order and authority: [bootstrap](../../.agents/governance/bootstrap.md).
 - Authoring, identity, language and retirement rules:
-  [documentation protocol](../00.workspace/02.process/documentation-protocol.md).
+  [documentation protocol](../00.workspace/03.process/documentation-protocol.md).
 - Stage purposes and type families:
   [stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md).
 - Approval for Stage edits:
-  [approval boundaries](../00.workspace/02.process/approval-boundaries.md).
+  [approval boundaries](../00.workspace/04.quality/approval-boundaries.md).
 - Role: [`doc-writer`](../../.agents/roles/doc-writer.md). Skill:
   [`requirements-to-design-agent`](../../.agents/skills/requirements-to-design-agent/SKILL.md).
 - Edit-time warnings: the
@@ -63,7 +63,7 @@ canonical governance or a Stage contract.
 #### Inspect and Change
 
 - Create a package from the Requirement template
-  [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)
+  [`requirement-package.template.md`](../99.templates/02.templates/01.requirements/requirement-package.template.md)
   under the Registry `requirements-package` profile: `type:
   sdlc/requirement`, `artifact_id: REQ-####`; `parent_ids` is optional and,
   when present, records only Registry-required structural relations.
@@ -90,7 +90,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../00.workspace/02.process/approval-boundaries.md)
+[approval boundaries](../00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions
@@ -101,7 +101,7 @@ has not granted, or when a required check fails.
 ### Secrets and External Effects
 
 This guide adds no secret or external-effect rule;
-[approval boundaries](../00.workspace/02.process/approval-boundaries.md) owns both.
+[approval boundaries](../00.workspace/04.quality/approval-boundaries.md) owns both.
 
 ## Verification
 
@@ -129,4 +129,4 @@ Record progress, decisions and evidence in the current Task, and leave the
 next owner named there. Human-facing and related documents:
 
 - [Requirement Packages README](README.md)
-- [Requirement template](../99.templates/templates/requirements/requirement-package.template.md)
+- [Requirement template](../99.templates/02.templates/01.requirements/requirement-package.template.md)

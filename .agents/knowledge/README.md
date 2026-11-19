@@ -1,10 +1,10 @@
 ---
 title: "Agent Knowledge"
-version: "0.5.1"
+version: "0.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-09-06"
 ---
 
@@ -47,14 +47,14 @@ route하고 link를 남깁니다.
 
 | Path | Purpose |
 | --- | --- |
-| [glossary.md](glossary.md) | Repository Vocabulary: 공통 용어 정의와 정책 owner |
+| [agent-glossary.md](agent-glossary.md) | agent·provider 전용 용어; 공통 용어는 [Repository Vocabulary](../../docs/00.workspace/01.project/glossary.md)가 정의 |
 | [repository-map.md](repository-map.md) | 표면에서 canonical owner로의 경로 |
 | [verification-surface-map.md](verification-surface-map.md) | 검증 진입점과 suite 경로 |
 
 ```text
 .agents/knowledge/
 ├── README.md
-├── glossary.md
+├── agent-glossary.md
 ├── repository-map.md
 └── verification-surface-map.md
 ```
@@ -67,7 +67,7 @@ route하고 link를 남깁니다.
 
 #### Classification
 
-member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repository-map.md`는 표면에서 canonical owner로의 routing, `verification-surface-map.md`는 검증 진입점이며, 모두 authority가 아니라 owner로 route하는 지식입니다.
+member는 세 종류입니다. `agent-glossary.md`는 agent·provider 전용 용어(공통 용어는 `docs/00.workspace/01.project/glossary.md`), `repository-map.md`는 표면에서 canonical owner로의 routing, `verification-surface-map.md`는 검증 진입점이며, 모두 authority가 아니라 owner로 route하는 지식입니다.
 
 ### Owners
 
@@ -80,14 +80,14 @@ member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repositor
 #### Upstream and Downstream
 
 - [Prompt index](../prompts/README.md)
-- Canonical knowledge and prompt surfaces decision (`docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
+- Canonical knowledge and prompt surfaces decision (`docs/00.workspace/02.architecture/02.decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
 - [Documentation index](../../docs/README.md)
 
 #### Policy and Templates
 
 - [Agent governance index](../README.md)
-- [Documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)
-- README 템플릿 `docs/99.templates/templates/governance/knowledge-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
+- [Documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)
+- README 템플릿 `docs/99.templates/02.templates/91.agent-governance/knowledge-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
 ### Checks
 
@@ -95,9 +95,9 @@ member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repositor
 
 1. 기존 member가 이미 해당 내용을 소유하는지 확인합니다. 두 번째 owner를
    추가하는 대신 기존 member를 확장합니다.
-2. `docs/99.templates/templates/governance/knowledge.template.md`를 복사하고
-   등록된 섹션을 유지합니다. `glossary.md`는
-   `governance/vocabulary.template.md`를 따릅니다. 새 member 경로는
+2. `docs/99.templates/02.templates/91.agent-governance/knowledge.template.md`를 복사하고
+   등록된 섹션을 유지합니다. 공통 용어는 이 폴더가 아니라
+   `docs/00.workspace/01.project/glossary.md`가 정의합니다. 새 member 경로는
    Registry `governance-knowledge` profile의 `additional_paths`에 등록해야
    분류됩니다.
 3. 모든 claim을 tracked source에서 도출하고 그 source를 관찰 commit과
@@ -117,8 +117,8 @@ member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repositor
 | Retrieve | bootstrap order 또는 role의 관련 문서에서 진입함 | 모든 role |
 | Re-review | refresh trigger가 발동하거나 선언된 review cycle이 경과함 | `doc-writer` |
 | Expire | route된 owner가 더 이상 존재하지 않거나 claim이 더 이상 유효하지 않음 | `doc-writer` |
-| Archive | member가 `living` lifecycle을 통해 대체되거나 폐기됨 | [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md) |
-| Delete | age나 count로는 결코 삭제되지 않으며, 등록된 retirement route를 통해서만 삭제됨 | [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md) |
+| Archive | member가 `living` lifecycle을 통해 대체되거나 폐기됨 | [documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md) |
+| Delete | age나 count로는 결코 삭제되지 않으며, 등록된 retirement route를 통해서만 삭제됨 | [documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md) |
 
 age와 file count는 retention 기준이 아닙니다. member는 routing이 올바른 동안
 유지되며 여전히 유효한 의미가 canonical owner로 이동했을 때 폐기됩니다.

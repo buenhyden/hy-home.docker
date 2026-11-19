@@ -1,6 +1,6 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.4.2"
+version: "1.4.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -81,7 +81,7 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 `opsflow_capture_net`(Mailpit과만 공유, 둘 다 루트 Compose 선언)에도 붙습니다. `dev_data_net`에는 붙지 않습니다. 별도 overlay 없이 base 파일에 있습니다. 저장된 Ollama Credential·Node
 실행과 거부·복구는 별도이며 Cloud 호출·fallback은 추가하지 않습니다.
 정확한 선택과 인수 절차는
-[워크플로와 자동화 런북 목록](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
+[워크플로와 자동화 런북 목록](../../../docs/05.operations/03.runbooks/08.workflows-and-automation/README.md)의
 n8n Runbook 「선택형 공유 Valkey 계정과 Local Ollama」 절이 소유합니다.
 
 ### Interfaces
@@ -120,7 +120,7 @@ Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
 1. n8n 설정을 변경하기 전에 연결된 운영 가이드, 정책, 런북을 검토합니다.
 2. 외부 자격 증명은 n8n의 암호화된 Credentials 시스템이나 Docker Secrets에 보관합니다.
@@ -214,20 +214,20 @@ Airflow 게시 데이터의 실제 n8n 인계·combined E2E·HOME 복구는 미�
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0053: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`
+- RUN-0053: `docs/05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md`
 
 #### Traceability (Golden 5)
 
 - **PRD**: 07-workflow PRD (`docs/01.requirements/0008-workflow.md`)
-- **ARD**: 07-workflow Architecture Description (`docs/02.architecture/descriptions/0007-workflow-architecture.md`)
-- **ADR**: N8N Integration ADR (`docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md`)
+- **ARD**: 07-workflow Architecture Description (`docs/02.architecture/01.descriptions/0007-workflow-architecture.md`)
+- **ADR**: N8N Integration ADR (`docs/02.architecture/02.decisions/0007-airflow-n8n-hybrid-workflow.md`)
 - **Plan**: [Spec Package 탐색](../../../docs/03.specs/README.md)의 SPEC-0204 Task0017이 이번 버전 소스 준비를 담당합니다.
 
 #### Related Documents
 
-- [Guide 탐색](../../../docs/05.operations/guides/08-workflows-and-automation/README.md)
-- [Policy 탐색](../../../docs/05.operations/policies/08-workflows-and-automation/README.md)
-- [Runbook 탐색](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)
+- [Guide 탐색](../../../docs/05.operations/01.guides/08.workflows-and-automation/README.md)
+- [Policy 탐색](../../../docs/05.operations/02.policies/08.workflows-and-automation/README.md)
+- [Runbook 탐색](../../../docs/05.operations/03.runbooks/08.workflows-and-automation/README.md)
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.

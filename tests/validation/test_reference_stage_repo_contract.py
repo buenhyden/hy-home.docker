@@ -22,7 +22,7 @@ class ReferenceStageRepoContractTests(unittest.TestCase):
     def _fixture(self, directory: str) -> pathlib.Path:
         root = pathlib.Path(directory)
         stage = root / "docs/90.references"
-        for category in ("audits", "data", "research"):
+        for category in ("01.research", "02.audits", "03.data"):
             (stage / category).mkdir(parents=True, exist_ok=True)
             (stage / category / "README.md").write_text(
                 f"# {category.title()}\n", encoding="utf-8"
@@ -64,13 +64,13 @@ class ReferenceStageRepoContractTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as directory:
             root = self._fixture(directory)
-            category = root / "docs/90.references/data"
+            category = root / "docs/90.references/03.data"
             (category / "README.md").unlink()
             category.rmdir()
             category.write_text("not a directory\n", encoding="utf-8")
             with self.assertRaisesRegex(
                 ReferenceCorpusError,
-                "docs/90.references/data must be a category directory",
+                "docs/90.references/03.data must be a category directory",
             ):
                 load_reference_packages(root / "docs/90.references")
 
@@ -79,7 +79,7 @@ class ReferenceStageRepoContractTests(unittest.TestCase):
         selected = select_public_suites(
             contract,
             "changed",
-            ("docs/90.references/data/0082-llm-wiki-index/README.md",),
+            ("docs/90.references/03.data/0082-llm-wiki-index/README.md",),
         )
         self.assertEqual(
             (

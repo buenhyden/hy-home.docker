@@ -1,10 +1,10 @@
 ---
 title: "n8n 독립 워크로드"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # n8n 독립 워크로드
@@ -66,7 +66,7 @@ Airflow의 P04가 소유하며, 실제 import·예약·자격 증명 작업은 T
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0053: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`
+- RUN-0053: `docs/05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md`
 
 #### Related Documents
 

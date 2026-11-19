@@ -1,10 +1,10 @@
 ---
 title: "개발 Valkey"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-02"
 ---
 
@@ -119,9 +119,9 @@ Selected Start의 단위 검사는 ACL 생성 입력을 확인합니다. 실제 
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0076: `docs/05.operations/runbooks/05-databases-and-storage/0076-redisinsight.md`
-- RUN-0100: `docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md`
-- RUN-0021: `docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`
+- RUN-0076: `docs/05.operations/03.runbooks/05.databases-and-storage/0076-redisinsight.md`
+- RUN-0100: `docs/05.operations/03.runbooks/05.databases-and-storage/0100-development-database.md`
+- RUN-0021: `docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md`
 
 #### Related Documents
 

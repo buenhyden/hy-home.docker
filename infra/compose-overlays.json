@@ -6,14 +6,14 @@
       "base": "infra/08-ai/comfyui/docker-compose.yml",
       "purpose": "ComfyUI outbound network, maintenance only",
       "required_inputs": [],
-      "owner_doc": "docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md"
+      "owner_doc": "docs/05.operations/03.runbooks/09.ai-and-search/0081-comfyui.md"
     },
     {
       "file": "infra/01-gateway/traefik/compose.window-ca.override.yml",
       "base": "infra/01-gateway/traefik/docker-compose.yml",
       "purpose": "Traefik owner-window CA mount",
       "required_inputs": [],
-      "owner_doc": "docs/05.operations/runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md"
+      "owner_doc": "docs/05.operations/03.runbooks/04.security-and-secrets/0105-openbao-maintenance-window.md"
     }
   ]
 }

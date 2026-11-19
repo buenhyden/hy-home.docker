@@ -1,10 +1,10 @@
 ---
 title: "Scripts Agent Guide"
-version: "0.4.1"
+version: "0.4.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Scripts Agent Guide
@@ -32,7 +32,7 @@ becomes its owner.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -42,9 +42,9 @@ canonical governance or a Stage contract.
 ### Intake
 
 - [Bootstrap](../.agents/governance/bootstrap.md),
-  [quality standards](../docs/00.workspace/03.quality/quality-standards.md),
-  [approval boundaries](../docs/00.workspace/02.process/approval-boundaries.md),
-  [GitHub governance](../docs/00.workspace/02.process/github-governance.md).
+  [quality standards](../docs/00.workspace/04.quality/quality-standards.md),
+  [approval boundaries](../docs/00.workspace/04.quality/approval-boundaries.md),
+  [GitHub governance](../docs/00.workspace/03.process/github-governance.md).
 - Roles: [`qa-engineer`](../.agents/roles/qa-engineer.md),
   [`ci-cd-engineer`](../.agents/roles/ci-cd-engineer.md),
   [`hook-developer`](../.agents/roles/hook-developer.md).
@@ -80,7 +80,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../docs/00.workspace/02.process/approval-boundaries.md)
+[approval boundaries](../docs/00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 ### Secrets and External Effects
@@ -91,7 +91,7 @@ has not granted, or when a required check fails.
   `scripts/validation/run-ci-precommit.sh --mode local-staged` for the reviewed
   index, then commit normally. Never run `pre-commit run` directly.
 - An all-files run follows the
-  [execution boundary](../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary)
+  [execution boundary](../docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary)
   and its `scripts/validation/run-agent-precommit-all-files.sh` route.
 - Generated provider surfaces under `.claude/` and `.codex/`, and each folder
   `CLAUDE.md` import shim beside a folder `AGENTS.md`, come from

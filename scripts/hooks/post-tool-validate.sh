@@ -142,7 +142,7 @@ done
 
 # `.pre-commit-config.yaml` registers no shfmt hook, so shell files have no
 # registered formatting owner and this hook runs none. See
-# `docs/00.workspace/03.quality/quality-standards.md` section 10.
+# `docs/00.workspace/04.quality/quality-standards.md` section 10.
 if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]]; then
   if command -v shellcheck >/dev/null 2>&1; then
     # Severity is owned solely by the `shellcheck` hook arguments in

@@ -13,10 +13,10 @@ secrets:
 - row: LAB-034
   destination: secrets/tools/jupyterlab/token.txt
 documents:
-  guide: docs/05.operations/guides/15-labs/0089-jupyterlab.md
-  runbook: docs/05.operations/runbooks/15-labs/0089-jupyterlab.md
-  guide_target: docs/05.operations/guides/13-analytics-and-data-quality/
-  runbook_target: docs/05.operations/runbooks/13-analytics-and-data-quality/
+  guide: docs/05.operations/01.guides/15.labs/0089-jupyterlab.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0089-jupyterlab.md
+  guide_target: docs/05.operations/01.guides/13.analytics-and-data-quality/
+  runbook_target: docs/05.operations/03.runbooks/13.analytics-and-data-quality/
 resources:
   services:
     jupyterlab:

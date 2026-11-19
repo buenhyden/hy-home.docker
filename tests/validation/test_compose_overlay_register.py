@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = (
-    ROOT / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+    ROOT / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
 )
 MARKER = re.compile(r"^x-hyhome-overlay:", re.M)
 

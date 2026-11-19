@@ -1,10 +1,10 @@
 ---
 title: "09-platform-ops: Platform Operations Tier"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -131,11 +131,11 @@ Selected Start의 `check-all-hardening.sh 09-platform-ops`와 `HYHOME_COMPOSE_PR
 - [Documentation index](../../docs/README.md)
 - [Infrastructure index](../README.md)
 - Stage 05 Platform Operations 문서: `docs/05.operations/README.md`
-- 백업·복구 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`)
-- Registry 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0065-registry.md`)
-- Terrakube 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0069-terrakube.md`)
-- OpenTofu 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`)
-- Renovate 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0083-renovate.md`)
+- 백업·복구 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md`)
+- Registry 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0065-registry.md`)
+- Terrakube 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0069-terrakube.md`)
+- OpenTofu 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0082-opentofu.md`)
+- Renovate 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0083-renovate.md`)
 
 #### Observability and Recovery
 

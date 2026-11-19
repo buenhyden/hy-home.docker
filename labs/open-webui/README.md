@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -89,7 +89,7 @@ UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 808
 
 ### Selected Start
 
-1. Usage guide(`docs/05.operations/guides/15-labs/0057-open-webui.md`)와 LAB 승격 정책을 읽습니다.
+1. Usage guide(`docs/05.operations/01.guides/15.labs/0057-open-webui.md`)와 LAB 승격 정책을 읽습니다.
 2. `python3 scripts/operations/lab.py check open-webui`로 render와 충돌을 검사합니다.
 3. 실제 기동은 승인된 Ollama endpoint, LAB secret 사본과 lease가 있을 때만 `lab.py up`으로 합니다.
 
@@ -104,15 +104,15 @@ UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 808
 #### Runbook Links
 
 - [LAB 목록](../README.md)
-- Usage guide(`docs/05.operations/guides/15-labs/0057-open-webui.md`) (`GDE-0057`)
-- Operations policy(`docs/05.operations/policies/15-labs/0057-open-webui.md`) (`POL-0057`)
-- Runbook(`docs/05.operations/runbooks/15-labs/0057-open-webui.md`) (`RUN-0057`)
-- ADR-0062(`docs/02.architecture/decisions/0062-home-lab-membership.md`)
+- Usage guide(`docs/05.operations/01.guides/15.labs/0057-open-webui.md`) (`GDE-0057`)
+- Operations policy(`docs/05.operations/02.policies/15.labs/0057-open-webui.md`) (`POL-0057`)
+- Runbook(`docs/05.operations/03.runbooks/15.labs/0057-open-webui.md`) (`RUN-0057`)
+- ADR-0062(`docs/02.architecture/02.decisions/0062-home-lab-membership.md`)
 - [문서 인덱스](../../docs/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0107 lab-promotion
 
 #### Observability and Recovery
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`가 이 LAB의 native OIDC·no-route·bind 계약을 검사합니다.
 - 필수 입력이 비면 render가 거부됩니다.
-- 장애 대응과 HOME 퇴역 순서는 runbook(`docs/05.operations/runbooks/15-labs/0057-open-webui.md`)을 따릅니다.
+- 장애 대응과 HOME 퇴역 순서는 runbook(`docs/05.operations/03.runbooks/15.labs/0057-open-webui.md`)을 따릅니다.

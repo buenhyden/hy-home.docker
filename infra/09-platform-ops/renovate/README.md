@@ -1,10 +1,10 @@
 ---
 title: "Renovate Implementation"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Renovate
@@ -13,7 +13,7 @@ updated: "2026-11-17"
 
 ### Purpose
 
-HOME 호스트의 self-hosted 버전 업데이트 작업입니다. 설치된 주간 systemd timer가 기본 실행이고, 온디맨드 실행(rebase·재시도)은 `docker compose -p hy-home-infra --profile dependency-update run --rm --no-deps renovate`입니다. 업데이트 규칙은 `POL-0086`(`docs/05.operations/policies/10-platform-and-backup/0086-dependency-version-management.md`)이 소유합니다. 저장소 정책은 renovate.json5이며
+HOME 호스트의 self-hosted 버전 업데이트 작업입니다. 설치된 주간 systemd timer가 기본 실행이고, 온디맨드 실행(rebase·재시도)은 `docker compose -p hy-home-infra --profile dependency-update run --rm --no-deps renovate`입니다. 업데이트 규칙은 `POL-0086`(`docs/05.operations/02.policies/10.platform-and-backup/0086-dependency-version-management.md`)이 소유합니다. 저장소 정책은 renovate.json5이며
 config/config.js가 self-host 명령 allowlist를 소유합니다. renovate_token은
 Docker Secret으로 마운트됩니다. 캐시 볼륨은 일회용이며 게시되는 호스트 포트는
 없습니다.
@@ -24,7 +24,7 @@ Docker Secret으로 마운트됩니다. 캐시 볼륨은 일회용이며 게시�
 
 #### Scope
 
-Lifecycle: **DEV maintenance job**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/10-platform-and-backup/0083-renovate.md`, `docs/05.operations/policies/10-platform-and-backup/0083-renovate.md`, `docs/05.operations/runbooks/10-platform-and-backup/0083-renovate.md`(ID: `GDE-0083`, `POL-0083`, `RUN-0083`)가 담당합니다.
+Lifecycle: **DEV maintenance job**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/01.guides/10.platform-and-backup/0083-renovate.md`, `docs/05.operations/02.policies/10.platform-and-backup/0083-renovate.md`, `docs/05.operations/03.runbooks/10.platform-and-backup/0083-renovate.md`(ID: `GDE-0083`, `POL-0083`, `RUN-0083`)가 담당합니다.
 
 #### Structure
 
@@ -84,8 +84,8 @@ renovate/
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
-- [10-platform-and-backup runbooks](../../../docs/05.operations/runbooks/10-platform-and-backup/README.md): RUN-0083 renovate, RUN-0086 dependency-version-management
+- [10-platform-and-backup runbooks](../../../docs/05.operations/03.runbooks/10.platform-and-backup/README.md): RUN-0083 renovate, RUN-0086 dependency-version-management
 
 #### Observability and Recovery
 
-주간 systemd timer가 `hyhome-renovate.service`(oneshot)를 실행하므로 실행 결과는 해당 unit 상태로 확인한다. 실패 시 이전 검토된 이미지 고정으로 되돌리고 이미 생성된 원격 변경을 별도로 확인하며, 절차는 [10-platform-and-backup runbooks](../../../docs/05.operations/runbooks/10-platform-and-backup/README.md)의 RUN-0083 Renovate Runbook을 따른다.
+주간 systemd timer가 `hyhome-renovate.service`(oneshot)를 실행하므로 실행 결과는 해당 unit 상태로 확인한다. 실패 시 이전 검토된 이미지 고정으로 되돌리고 이미 생성된 원격 변경을 별도로 확인하며, 절차는 [10-platform-and-backup runbooks](../../../docs/05.operations/03.runbooks/10.platform-and-backup/README.md)의 RUN-0083 Renovate Runbook을 따른다.

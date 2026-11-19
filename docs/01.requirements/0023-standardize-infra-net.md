@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Requirements"
-version: "1.5.0"
+version: "1.5.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0023"
 created: "2026-04-01"
@@ -122,5 +122,5 @@ isolation exception. Record each observation in the applicable Task.
 
 #### Downstream Links
 
-- **Architecture Description**: [Compose network segmentation](../02.architecture/descriptions/0026-standardize-infra-net.md)
-- **ADR**: [ADR-0055 Segmented Per-Flow Networks](../02.architecture/decisions/0055-segmented-per-flow-networks.md)
+- **Architecture Description**: [Compose network segmentation](../02.architecture/01.descriptions/0026-standardize-infra-net.md)
+- **ADR**: [ADR-0055 Segmented Per-Flow Networks](../02.architecture/02.decisions/0055-segmented-per-flow-networks.md)

@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse LAB"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-11-05"
 ---
 
@@ -107,7 +107,7 @@ docker compose --env-file labs/.env.example -f labs/lakehouse/docker-compose.yml
 
 - [LAB 탐색](../README.md)
 - [운영 문서 색인](../../docs/05.operations/README.md) — `GDE-0094`, `POL-0094`, `RUN-0094`
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0094 lakehouse, RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0094 lakehouse, RUN-0107 lab-promotion
 
 #### Observability and Recovery
 

@@ -1,10 +1,10 @@
 ---
 title: "Kafka 메시징"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -101,13 +101,13 @@ Selected Start의 명령으로 정상 구성을 렌더합니다. 렌더 성공�
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0036: `docs/05.operations/runbooks/06-messaging-and-cdc/0036-kafka.md`
+- RUN-0036: `docs/05.operations/03.runbooks/06.messaging-and-cdc/0036-kafka.md`
 
 #### Related Documents
 
 [문서 진입점](../../../docs/README.md)을 사용해 Stage 05 subject
-`docs/05.operations/guides/06-messaging-and-cdc/0036-kafka.md`와 hardening subject
-`docs/05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md`을
+`docs/05.operations/01.guides/06.messaging-and-cdc/0036-kafka.md`와 hardening subject
+`docs/05.operations/01.guides/06.messaging-and-cdc/0037-messaging-optimization-hardening.md`을
 찾으십시오. 공식 문서: [Kafka operations](https://kafka.apache.org/documentation/#operations),
 [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html),
 [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control).

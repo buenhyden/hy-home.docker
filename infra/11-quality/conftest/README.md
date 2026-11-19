@@ -1,10 +1,10 @@
 ---
 title: "Conftest"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-23"
 ---
 
@@ -116,9 +116,9 @@ wrapper가 필요하다는 오류로 종료합니다.
 
 #### Runbook Links
 
-- **Guide**: Conftest Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`)
-- **Policy**: Conftest Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`)
-- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`)
+- **Guide**: Conftest Usage Guide (`docs/05.operations/01.guides/12.testing-and-quality/0095-conftest.md`)
+- **Policy**: Conftest Operations Policy (`docs/05.operations/02.policies/12.testing-and-quality/0095-conftest.md`)
+- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/03.runbooks/12.testing-and-quality/0095-conftest.md`)
 - [Documentation index](../../../docs/README.md)
 
 #### Observability and Recovery
@@ -140,6 +140,6 @@ wrapper가 필요하다는 오류로 종료합니다.
 | Labels | `hy-home.tier` |
 | Secret refs | 선언되지 않음 |
 | Healthcheck | 선언되지 않음 (1회성 작업) |
-| Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/12.testing-and-quality/0095-conftest.md`), Policy (`docs/05.operations/02.policies/12.testing-and-quality/0095-conftest.md`), Runbook (`docs/05.operations/03.runbooks/12.testing-and-quality/0095-conftest.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 작업을 실행하고 처음 실패한 선언을 수정합니다. 런북을 참고합니다. |

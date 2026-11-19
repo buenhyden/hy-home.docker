@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI 웹 크롤러"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-21"
 ---
 
@@ -89,7 +89,7 @@ Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포
 
 1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를 생성합니다.
 2. 승인된 대상으로만 시작합니다: `docker compose --profile crawl4ai up -d crawl4ai` (gateway가 healthy가 된 뒤 크롤러가 시작됩니다).
-3. 소비자는 Crawl4AI 정책(`docs/05.operations/policies/09-ai-and-search/0091-crawl4ai.md`)의 승인 변경으로만 `crawl4ai_net`에 추가합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.
+3. 소비자는 Crawl4AI 정책(`docs/05.operations/02.policies/09.ai-and-search/0091-crawl4ai.md`)의 승인 변경으로만 `crawl4ai_net`에 추가합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.
 
 ## Checks
 
@@ -103,11 +103,11 @@ Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포
 
 #### Runbook Links
 
-- **Guide**: Crawl4AI usage guide (`docs/05.operations/guides/09-ai-and-search/0091-crawl4ai.md`)
-- **Policy**: Crawl4AI operations policy (`docs/05.operations/policies/09-ai-and-search/0091-crawl4ai.md`)
-- **Runbook**: Crawl4AI recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md`)
+- **Guide**: Crawl4AI usage guide (`docs/05.operations/01.guides/09.ai-and-search/0091-crawl4ai.md`)
+- **Policy**: Crawl4AI operations policy (`docs/05.operations/02.policies/09.ai-and-search/0091-crawl4ai.md`)
+- **Runbook**: Crawl4AI recovery runbook (`docs/05.operations/03.runbooks/09.ai-and-search/0091-crawl4ai.md`)
 - [Documentation index](../../../docs/README.md)
 
 #### Observability and Recovery
 
-Compose 헬스체크가 `crawl4ai`(`GET /health`), loopback 전달 서비스(포트 11235 TCP 연결)와 `crawl4ai-egress`(`10.250.200.2:3128` TCP 연결)에 선언되어 있습니다. `/health`는 API 응답만 증명하고 브라우저 렌더링은 증명하지 않으며, 복구는 `docs/05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md`(RUN-0091)를 따릅니다.
+Compose 헬스체크가 `crawl4ai`(`GET /health`), loopback 전달 서비스(포트 11235 TCP 연결)와 `crawl4ai-egress`(`10.250.200.2:3128` TCP 연결)에 선언되어 있습니다. `/health`는 API 응답만 증명하고 브라우저 렌더링은 증명하지 않으며, 복구는 `docs/05.operations/03.runbooks/09.ai-and-search/0091-crawl4ai.md`(RUN-0091)를 따릅니다.

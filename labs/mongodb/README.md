@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Replica Set LAB"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -121,7 +121,7 @@ healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer는
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0027 mongodb, RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0027 mongodb, RUN-0107 lab-promotion
 
 #### Observability and Recovery
 

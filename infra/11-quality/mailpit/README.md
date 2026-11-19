@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Implementation"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Mailpit
@@ -25,7 +25,7 @@ updated: "2026-11-17"
 
 #### Scope
 
-Lifecycle: **DEV**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/11-mail-and-notifications/0084-mailpit.md`, `docs/05.operations/policies/11-mail-and-notifications/0084-mailpit.md`, `docs/05.operations/runbooks/11-mail-and-notifications/0084-mailpit.md`(ID: `GDE-0084`, `POL-0084`, `RUN-0084`)가 담당합니다.
+Lifecycle: **DEV**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/01.guides/11.mail-and-notifications/0084-mailpit.md`, `docs/05.operations/02.policies/11.mail-and-notifications/0084-mailpit.md`, `docs/05.operations/03.runbooks/11.mail-and-notifications/0084-mailpit.md`(ID: `GDE-0084`, `POL-0084`, `RUN-0084`)가 담당합니다.
 
 #### Structure
 
@@ -68,8 +68,8 @@ UI(`${MAILPIT_UI_HOST_PORT:-8025}`)와 SMTP(`${MAILPIT_SMTP_HOST_PORT:-1025}`)�
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
-- [11-mail-and-notifications runbooks](../../../docs/05.operations/runbooks/11-mail-and-notifications/README.md): RUN-0084 mailpit
+- [11-mail-and-notifications runbooks](../../../docs/05.operations/03.runbooks/11.mail-and-notifications/README.md): RUN-0084 mailpit
 
 #### Observability and Recovery
 
-Compose에 헬스체크가 선언되어 있으며 SMTP 캡처 확인과 복구는 [11-mail-and-notifications runbooks](../../../docs/05.operations/runbooks/11-mail-and-notifications/README.md)의 RUN-0084 Mailpit Runbook을 따른다.
+Compose에 헬스체크가 선언되어 있으며 SMTP 캡처 확인과 복구는 [11-mail-and-notifications runbooks](../../../docs/05.operations/03.runbooks/11.mail-and-notifications/README.md)의 RUN-0084 Mailpit Runbook을 따른다.

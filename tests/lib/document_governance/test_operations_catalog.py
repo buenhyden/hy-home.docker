@@ -30,24 +30,24 @@ from scripts.lib.document_governance.operations_catalog import (
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
-ROLE_DIRECTORIES = ("guides", "policies", "runbooks")
-ROLE_KINDS = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}
+ROLE_DIRECTORIES = ("01.guides", "02.policies", "03.runbooks")
+ROLE_KINDS = {"01.guides": "guide", "02.policies": "policy", "03.runbooks": "runbook"}
 NUMBERED_DOMAINS = (
-    "01-common",
-    "02-gateway-and-networking",
-    "03-identity-and-access",
-    "04-security-and-secrets",
-    "05-databases-and-storage",
-    "06-messaging-and-cdc",
-    "07-observability",
-    "08-workflows-and-automation",
-    "09-ai-and-search",
-    "10-platform-and-backup",
-    "11-mail-and-notifications",
-    "12-testing-and-quality",
-    "13-analytics-and-data-quality",
-    "14-design-system",
-    "15-labs",
+    "01.common",
+    "02.gateway-and-networking",
+    "03.identity-and-access",
+    "04.security-and-secrets",
+    "05.databases-and-storage",
+    "06.messaging-and-cdc",
+    "07.observability",
+    "08.workflows-and-automation",
+    "09.ai-and-search",
+    "10.platform-and-backup",
+    "11.mail-and-notifications",
+    "12.testing-and-quality",
+    "13.analytics-and-data-quality",
+    "14.design-system",
+    "15.labs",
 )
 
 
@@ -75,7 +75,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         root = pathlib.Path(directory.name)
         for source in (
             "docs/05.operations",
-            "docs/99.templates/templates/operations",
+            "docs/99.templates/02.templates/05.operations",
         ):
             shutil.copytree(ROOT / source, root / source)
         for source in ("docs/99.templates/registry.json",):
@@ -140,7 +140,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     self.assertIn("role-path-invalid", finding_codes(root))
 
     def _lab_fixture(
-        self, domain: str = "15-labs"
+        self, domain: str = "15.labs"
     ) -> tuple[contextlib.ExitStack, pathlib.Path]:
         context, root = self._fixture()
         for family in ROLE_DIRECTORIES:
@@ -191,20 +191,20 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     def test_registered_domain_folders_with_direct_child_indexes_are_accepted(
         self,
     ) -> None:
-        for domain in ("01-common", "04-security-and-secrets"):
+        for domain in ("01.common", "04.security-and-secrets"):
             with self.subTest(domain=domain):
                 context, root = self._lab_fixture(domain)
                 with context:
                     self.assertEqual(set(), finding_codes(root))
 
     def test_unknown_case_variant_and_deeper_domain_folders_are_rejected(self) -> None:
-        for domain in ("common", "99-unknown-domain", "15-Labs", "15-labs/nested"):
+        for domain in ("common", "99-unknown-domain", "15-Labs", "15.labs/nested"):
             with self.subTest(domain=domain):
                 context, root = self._lab_fixture()
                 with context:
-                    folder = root / "docs/05.operations/guides/15-labs"
+                    folder = root / "docs/05.operations/01.guides/15.labs"
                     target = folder.parent / domain
-                    if domain == "15-labs/nested":
+                    if domain == "15.labs/nested":
                         target.mkdir()
                         member = folder / "0999-lab-example.md"
                         member.rename(target / member.name)
@@ -218,7 +218,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             with self.subTest(mutation=mutation):
                 context, root = self._lab_fixture()
                 with context:
-                    index = root / "docs/05.operations/guides/15-labs/README.md"
+                    index = root / "docs/05.operations/01.guides/15.labs/README.md"
                     row = "[합성 예제](0999-lab-example.md)\n"
                     if mutation == "missing-readme":
                         index.unlink()
@@ -250,7 +250,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             with self.subTest(mutation=mutation):
                 context, root = self._lab_fixture()
                 with context:
-                    folder = root / "docs/05.operations/guides/15-labs"
+                    folder = root / "docs/05.operations/01.guides/15.labs"
                     if mutation == "directory-symlink":
                         target = root / "outside-domain"
                         folder.rename(target)
@@ -266,7 +266,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                         raw = json.loads(registry_path.read_text(encoding="utf-8"))
                         owner = next(p for p in raw["profiles"] if p["id"] == "readme")
                         owner["additional_paths"].remove(
-                            "docs/05.operations/guides/15-labs/README.md"
+                            "docs/05.operations/01.guides/15.labs/README.md"
                         )
                         registry_path.write_text(json.dumps(raw), encoding="utf-8")
                     else:
@@ -286,14 +286,14 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     def test_role_entry_budget_covers_parent_and_domains_together(self) -> None:
         context, root = self._lab_fixture()
         with context:
-            entries = len(list((root / "docs/05.operations/guides").iterdir()))
+            entries = len(list((root / "docs/05.operations/01.guides").iterdir()))
             with mock.patch.object(operations_catalog, "MAX_ROLE_ENTRIES", entries + 1):
                 self.assertIn("role-bounds", finding_codes(root))
 
     def test_lab_identity_is_unique_across_domains_within_its_family(self) -> None:
         context, root = self._lab_fixture()
         with context:
-            member = root / "docs/05.operations/guides/15-labs/0999-lab-example.md"
+            member = root / "docs/05.operations/01.guides/15.labs/0999-lab-example.md"
             duplicate = member.parent / "0999-other.md"
             duplicate.write_text(member.read_text(encoding="utf-8"), encoding="utf-8")
             index = duplicate.parent / "README.md"
@@ -550,7 +550,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         mutations = (
             (
                 "path_pattern",
-                "docs/05.operations/runbooks/{number:4}-{slug}.md",
+                "docs/05.operations/03.runbooks/{number:4}-{slug}.md",
                 "role-path-invalid",
             ),
             ("identity_relation", "package-member", "role-identity-relation-invalid"),
@@ -574,7 +574,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         mutations = (
             (
                 "path_pattern",
-                "docs/05.operations/incidents/{year:4}/incident-{number:4}-{slug}.md",
+                "docs/05.operations/04.incidents/{year:4}/incident-{number:4}-{slug}.md",
                 "incident-path-profile-mismatch",
             ),
             (
@@ -670,7 +670,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         profile = next(
             item for item in registry["profiles"] if item["id"] == "incident"
         )
-        packet = root / f"docs/05.operations/incidents/{year}/inc-0001-fixture"
+        packet = root / f"docs/05.operations/04.incidents/{year}/inc-0001-fixture"
         packet.mkdir(parents=True)
         metadata = (
             f"---\ntype: operation/incident\nstatus: {status}\n"
@@ -818,9 +818,9 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
 
     def test_incident_year_packet_and_roles_are_exact(self) -> None:
         mutations = (
-            "docs/05.operations/incidents/current/inc-0001-bad/incident.md",
-            "docs/05.operations/incidents/2026/incident-0001-bad/incident.md",
-            "docs/05.operations/incidents/2026/inc-0001-bad/notes.md",
+            "docs/05.operations/04.incidents/current/inc-0001-bad/incident.md",
+            "docs/05.operations/04.incidents/2026/incident-0001-bad/incident.md",
+            "docs/05.operations/04.incidents/2026/inc-0001-bad/notes.md",
         )
         for relative in mutations:
             with self.subTest(relative=relative):
@@ -840,7 +840,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     )
 
     def test_incident_year_readme_must_be_a_regular_file(self) -> None:
-        relative = "docs/05.operations/incidents/2026/README.md"
+        relative = "docs/05.operations/04.incidents/2026/README.md"
         for mutation in ("regular", "directory"):
             with self.subTest(mutation=mutation):
                 context, root = self._fixture()
@@ -874,7 +874,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         with context:
             source = (
                 root
-                / "docs/05.operations/guides/02-gateway-and-networking/0013-traefik.md"
+                / "docs/05.operations/01.guides/02.gateway-and-networking/0013-traefik.md"
             )
             target = source.with_name("0999-untracked.md")
             target.write_text(
@@ -894,8 +894,8 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             ("docs/05.operations/README.md", "operations-root-index-invalid"),
             ("docs/05.operations/AGENTS.md", "operations-root-guide-invalid"),
             ("docs/05.operations/CLAUDE.md", "operations-root-guide-invalid"),
-            ("docs/05.operations/incidents/README.md", "incident-index-invalid"),
-            ("docs/05.operations/guides/README.md", "role-index-invalid"),
+            ("docs/05.operations/04.incidents/README.md", "incident-index-invalid"),
+            ("docs/05.operations/01.guides/README.md", "role-index-invalid"),
         ):
             for mutation in ("symlink", "directory", "fifo"):
                 with self.subTest(relative=relative, mutation=mutation):
@@ -1142,10 +1142,10 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
         cases = (
             ("See docs/05.operations/catalog/00-workspace/0001-a/guide.md.", True),
             ("See docs/05.operations/catalog/README.md.", True),
-            ("See docs/05.operations/guides/0001-a.md.", False),
-            ("See docs/05.operations/runbooks/0009-release-management.md.", False),
+            ("See docs/05.operations/01.guides/0001-a.md.", False),
+            ("See docs/05.operations/03.runbooks/0009-release-management.md.", False),
             (
-                "See docs/05.operations/guides/01-common/0001-a.md.",
+                "See docs/05.operations/01.guides/01.common/0001-a.md.",
                 False,
             ),
             (
@@ -1199,7 +1199,9 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
 
 
 class ComposeProfileVocabularyTests(unittest.TestCase):
-    POLICY = "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+    POLICY = (
+        "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
+    )
     REQUIRED_HOME = (
         "core",
         "mng",
@@ -2732,10 +2734,10 @@ class ServiceInventoryTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         root = pathlib.Path(temporary.name)
         self.compose = "infra/04-data/example/docker-compose.yml"
-        domain = "" if flat else "/05-databases-and-storage"
-        self.guide = f"docs/05.operations/guides{domain}/0001-example.md"
-        self.policy = f"docs/05.operations/policies{domain}/0001-example.md"
-        self.runbook = f"docs/05.operations/runbooks{domain}/0001-example.md"
+        domain = "" if flat else "/05.databases-and-storage"
+        self.guide = f"docs/05.operations/01.guides{domain}/0001-example.md"
+        self.policy = f"docs/05.operations/02.policies{domain}/0001-example.md"
+        self.runbook = f"docs/05.operations/03.runbooks{domain}/0001-example.md"
         compose_link = (
             "../../../infra/04-data/example/docker-compose.yml"
             if flat
@@ -3203,7 +3205,7 @@ implementation_services:
     def test_duplicate_service_ownership_is_rejected(self):
         root = self._repo()
         duplicate = (
-            "docs/05.operations/guides/05-databases-and-storage/0002-duplicate.md"
+            "docs/05.operations/01.guides/05.databases-and-storage/0002-duplicate.md"
         )
         path = root / duplicate
         path.write_text((root / self.guide).read_text())

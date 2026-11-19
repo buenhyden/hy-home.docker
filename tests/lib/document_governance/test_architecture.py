@@ -102,19 +102,19 @@ def _write_document(
 def _write_minimal_corpus(stage_root: pathlib.Path) -> None:
     stage_root.mkdir(parents=True, exist_ok=True)
     (stage_root / "README.md").write_text("# Architecture\n", encoding="utf-8")
-    for directory in ("descriptions", "decisions"):
+    for directory in ("01.descriptions", "02.decisions"):
         child = stage_root / directory
         child.mkdir()
         (child / "README.md").write_text(f"# {directory}\n", encoding="utf-8")
     _write_document(
         stage_root,
-        "descriptions",
+        "01.descriptions",
         "0001-example.md",
         _document_text("architecture-description", "0001"),
     )
     _write_document(
         stage_root,
-        "decisions",
+        "02.decisions",
         "0001-example.md",
         _document_text("adr", "0001"),
     )
@@ -128,7 +128,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
             _write_minimal_corpus(stage_root)
             decision = _write_document(
                 stage_root,
-                "decisions",
+                "02.decisions",
                 "0029-successor.md",
                 _document_text("adr", "0029"),
             )
@@ -143,8 +143,8 @@ class ArchitectureDocumentTests(unittest.TestCase):
     def test_a_legacy_status_fails_closed_at_load(self) -> None:
         architecture = _architecture_module()
         for profile, directory_name in (
-            ("adr", "decisions"),
-            ("architecture-description", "descriptions"),
+            ("adr", "02.decisions"),
+            ("architecture-description", "01.descriptions"),
         ):
             for status in ("superseded", "deprecated", "retired"):
                 with self.subTest(profile=profile, status=status):
@@ -168,7 +168,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             stage_root = pathlib.Path(directory) / "docs/02.architecture"
             _write_minimal_corpus(stage_root)
-            target = stage_root / "descriptions/0001-example.md"
+            target = stage_root / "01.descriptions/0001-example.md"
             target.write_text(
                 _document_text(
                     "architecture-description", "0001", artifact_id="ad-0001"
@@ -185,7 +185,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             stage_root = pathlib.Path(directory) / "docs/02.architecture"
             _write_minimal_corpus(stage_root)
-            target = stage_root / "decisions/0001-example.md"
+            target = stage_root / "02.decisions/0001-example.md"
             target.write_text(_document_text("adr", "0002"), encoding="utf-8")
             with self.assertRaisesRegex(
                 architecture.ArchitectureDocumentError, "path|ADR-0001|mismatch"
@@ -199,7 +199,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
             _write_minimal_corpus(stage_root)
             _write_document(
                 stage_root,
-                "decisions",
+                "02.decisions",
                 "0001-duplicate.md",
                 _document_text("adr", "0001"),
             )
@@ -220,7 +220,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
             ):
                 stage_root = pathlib.Path(directory) / "docs/02.architecture"
                 _write_minimal_corpus(stage_root)
-                target = stage_root / "decisions/0001-example.md"
+                target = stage_root / "02.decisions/0001-example.md"
                 if mutation == "symlink":
                     source = stage_root / "outside.md"
                     source.write_text(_document_text("adr", "0001"), encoding="utf-8")
@@ -292,7 +292,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
                     _write_minimal_corpus(stage_root)
                     _write_document(
                         stage_root,
-                        "decisions",
+                        "02.decisions",
                         "0027-lineage.md",
                         _document_text("adr", "0027", **keys),
                     )
@@ -308,7 +308,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
             _write_minimal_corpus(stage_root)
             _write_document(
                 stage_root,
-                "decisions",
+                "02.decisions",
                 "0027-predecessor.md",
                 _document_text(
                     "adr",

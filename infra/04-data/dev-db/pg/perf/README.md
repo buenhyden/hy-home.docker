@@ -1,10 +1,10 @@
 ---
 title: "성능 시험 결과 데이터베이스"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # 성능 시험 결과 데이터베이스
@@ -122,7 +122,7 @@ python3 infra/04-data/dev-db/pg/perf/register.py \
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0100: `docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md`
+- RUN-0100: `docs/05.operations/03.runbooks/05.databases-and-storage/0100-development-database.md`
 
 #### Related Documents
 

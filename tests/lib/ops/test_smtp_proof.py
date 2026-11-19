@@ -365,7 +365,7 @@ class SMTPProofTests(unittest.TestCase):
     def test_runbook_uses_fresh_unpredictable_proof_directory(self):
         runbook = (
             ROOT
-            / "docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md"
+            / "docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md"
         ).read_text()
         self.assertIn("mktemp -d /tmp/smtp01.XXXXXXXX", runbook)
         self.assertNotIn("/tmp/smtp01-${task_run_id", runbook)

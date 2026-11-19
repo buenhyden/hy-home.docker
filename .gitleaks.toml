@@ -14,7 +14,7 @@ useDefault = true
 [[allowlists]]
 description = "Docker secret and env key names in the generated service inventory"
 condition = "AND"
-paths = ['''^docs/90\.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation\.md$''']
+paths = ['''^docs/90\.references/01\.research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation\.md$''']
 regexes = ['''^seaweedfs_s3_[a-z]+_secret_key$''', '''^N8N_VALKEY_SECRET$''']
 
 [[allowlists]]

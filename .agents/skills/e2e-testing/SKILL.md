@@ -3,11 +3,11 @@ name: "e2e-testing"
 description: "Use when approved acceptance criteria need reproducible end-to-end scenarios through public interfaces within an authorized runtime boundary."
 metadata:
   title: "e2e-testing"
-  version: "1.3.1"
+  version: "1.3.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "e2e-testing"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -62,7 +62,7 @@ Owning role, policies and related documents:
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [Test authoring](../test-authoring/SKILL.md)
-- [QA scope](../../../docs/00.workspace/03.quality/quality-standards.md)
+- [QA scope](../../../docs/00.workspace/04.quality/quality-standards.md)
 
 ## Verification
 

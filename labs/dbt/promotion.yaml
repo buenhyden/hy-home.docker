@@ -15,10 +15,10 @@ secrets:
 - row: LAB-029
   destination: secrets/tools/dbt/db_password.txt
 documents:
-  guide: docs/05.operations/guides/15-labs/0090-dbt.md
-  runbook: docs/05.operations/runbooks/15-labs/0090-dbt.md
-  guide_target: docs/05.operations/guides/13-analytics-and-data-quality/
-  runbook_target: docs/05.operations/runbooks/13-analytics-and-data-quality/
+  guide: docs/05.operations/01.guides/15.labs/0090-dbt.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0090-dbt.md
+  guide_target: docs/05.operations/01.guides/13.analytics-and-data-quality/
+  runbook_target: docs/05.operations/03.runbooks/13.analytics-and-data-quality/
 resources:
   services:
     dbt:

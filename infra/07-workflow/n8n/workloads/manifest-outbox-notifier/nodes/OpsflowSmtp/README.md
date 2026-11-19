@@ -1,10 +1,10 @@
 ---
 title: "Opsflow SMTP 개발 캡처 노드"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Opsflow SMTP 개발 캡처 노드
@@ -171,4 +171,4 @@ native 시험 전 별도로 입증해야 합니다.
 
 #### Observability and Recovery
 
-출력은 `{run_id,state}`뿐이며 상태는 `accepted_by_smtp`, `uncertain`, `cancelled`입니다. 연결·greeting 3초, socket 5초, 전체 send 15초 제한과 소유 socket 직접 destroy로 정리하며, uncertain·ack 유실은 workflow가 SQL004 unknown으로 격리합니다. 복구 절차는 [상위 workload README](../../README.md)와 RUN-0053(`docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`)을 따릅니다.
+출력은 `{run_id,state}`뿐이며 상태는 `accepted_by_smtp`, `uncertain`, `cancelled`입니다. 연결·greeting 3초, socket 5초, 전체 send 15초 제한과 소유 socket 직접 destroy로 정리하며, uncertain·ack 유실은 workflow가 SQL004 unknown으로 격리합니다. 복구 절차는 [상위 workload README](../../README.md)와 RUN-0053(`docs/05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md`)을 따릅니다.

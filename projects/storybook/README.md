@@ -1,10 +1,10 @@
 ---
 title: "Storybook Workspace"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-24"
 ---
 
@@ -67,8 +67,8 @@ UI 변경은 `nextjs/`에서 진행합니다. 외부 프로젝트는 검토된 �
 - [하위 Storybook 작업공간](nextjs/README.md)
 - [프로젝트 인덱스](../README.md)
 - [문서 인덱스](../../docs/README.md)
-- [14-design-system runbooks](../../docs/05.operations/runbooks/14-design-system/README.md): RUN-0101 storybook
+- [14-design-system runbooks](../../docs/05.operations/03.runbooks/14.design-system/README.md): RUN-0101 storybook
 
 #### Observability and Recovery
 
-없음: 소스 트리라 직접 관측 대상이 없다. 실행 중인 origin의 운영과 복구는 [14-design-system runbooks](../../docs/05.operations/runbooks/14-design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.
+없음: 소스 트리라 직접 관측 대상이 없다. 실행 중인 origin의 운영과 복구는 [14-design-system runbooks](../../docs/05.operations/03.runbooks/14.design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.

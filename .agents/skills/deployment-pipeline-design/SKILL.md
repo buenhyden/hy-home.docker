@@ -3,11 +3,11 @@ name: "deployment-pipeline-design"
 description: "Use when release requirements need a pipeline design with immutable artifacts, approval gates, rollout observations, and concrete rollback."
 metadata:
   title: "deployment-pipeline-design"
-  version: "1.3.1"
+  version: "1.3.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "deployment-pipeline-design"
   scope: "ops"
   owner_agent: "ci-cd-engineer"
@@ -62,7 +62,7 @@ Owning role, policies and related documents:
 
 - [CI/CD engineer](../../roles/ci-cd-engineer.md)
 - [CI/CD patterns](../ci-cd-patterns/SKILL.md)
-- [Approval boundaries](../../../docs/00.workspace/02.process/approval-boundaries.md)
+- [Approval boundaries](../../../docs/00.workspace/04.quality/approval-boundaries.md)
 
 ## Verification
 

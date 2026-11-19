@@ -1,10 +1,10 @@
 ---
 title: "Stalwart Mail Server"
-version: "2.2.0"
+version: "2.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-12-03"
 ---
 
@@ -77,7 +77,7 @@ Compose가 게시하는 호스트 포트는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LA
 
 ### Selected Start
 
-Guide `GDE-0070`(`docs/05.operations/guides/15-labs/0070-mail.md`), Policy `POL-0070`,
+Guide `GDE-0070`(`docs/05.operations/01.guides/15.labs/0070-mail.md`), Policy `POL-0070`,
 Runbook `RUN-0070`을 따른다. 명령은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/stalwart/docker-compose.yml --profile mail-server` 접두사로
 실행한다. `config`는 render만 하며, 컨테이너를 시작하는 명령은
@@ -105,7 +105,7 @@ python3 -m unittest tests.validation.test_lab_isolation
 - [LAB 탐색](../README.md)
 - [문서 인덱스](../../docs/README.md)
 - [Stalwart 공식 Docker 설치 문서](https://stalw.art/docs/install/platform/docker/).
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0070 mail, RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0070 mail, RUN-0107 lab-promotion
 
 #### Observability and Recovery
 

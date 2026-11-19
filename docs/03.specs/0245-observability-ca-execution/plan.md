@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Plan"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -120,4 +120,4 @@ The operating CA and recovery facts belong to the Prometheus and Gatus runbooks 
 
 Owner @buenhyden. The receipt is the sanitized evidence recorded in TSK-0001.
 
-- [Task](tasks/tsk-0001-observability-ca-execution.md)
+- [Task](01.tasks/tsk-0001-observability-ca-execution.md)

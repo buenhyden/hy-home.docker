@@ -28,15 +28,15 @@ class IdentityBehaviorTests(unittest.TestCase):
             root = pathlib.Path(directory)
             init_git(root)
             task_path = pathlib.Path(
-                "docs/03.specs/0172-recovery/tasks/tsk-0001-recovery.md"
+                "docs/03.specs/0172-recovery/01.tasks/tsk-0001-recovery.md"
             )
             carrier_path = pathlib.Path(
-                "docs/90.references/research/0085-workspace/m0001-request-scope.md"
+                "docs/90.references/01.research/0085-workspace/m0001-request-scope.md"
             )
             decision = {
                 "source_commit": "0" * 40,
                 "source_path": (
-                    "docs/90.references/research/0085-workspace/REQUEST-SCOPE.md"
+                    "docs/90.references/01.research/0085-workspace/REQUEST-SCOPE.md"
                 ),
                 "source_artifact_id": "RES-0085-SCOPE",
                 "target_path": carrier_path.as_posix(),
@@ -118,7 +118,7 @@ class IdentityBehaviorTests(unittest.TestCase):
             ),
             metadata.Record(
                 pathlib.Path(
-                    "docs/90.references/data/0001-generated/m0001-generated.md"
+                    "docs/90.references/03.data/0001-generated/m0001-generated.md"
                 ),
                 {
                     "title": "Generated Data Member",
@@ -164,7 +164,7 @@ class IdentityBehaviorTests(unittest.TestCase):
     def test_inventory_records_identity_relations_and_transition_evidence(self) -> None:
         profiles = current_profiles()
         parent = metadata.Record(
-            pathlib.Path("docs/02.architecture/descriptions/0123-parent.md"),
+            pathlib.Path("docs/02.architecture/01.descriptions/0123-parent.md"),
             {
                 "status": "active",
                 "artifact_id": "AD-0123",

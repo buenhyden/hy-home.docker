@@ -15,10 +15,10 @@ secrets:
 - row: LAB-037
   destination: secrets/auth/open-webui/openwebui_oidc_client_secret.txt
 documents:
-  guide: docs/05.operations/guides/15-labs/0057-open-webui.md
-  runbook: docs/05.operations/runbooks/15-labs/0057-open-webui.md
-  guide_target: docs/05.operations/guides/09-ai-and-search/
-  runbook_target: docs/05.operations/runbooks/09-ai-and-search/
+  guide: docs/05.operations/01.guides/15.labs/0057-open-webui.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0057-open-webui.md
+  guide_target: docs/05.operations/01.guides/09.ai-and-search/
+  runbook_target: docs/05.operations/03.runbooks/09.ai-and-search/
 resources:
   services:
     open-webui:

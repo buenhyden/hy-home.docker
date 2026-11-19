@@ -88,7 +88,7 @@ class OccupancyTests(unittest.TestCase):
             return occupancy.validate_active_stage_occupancy(root)
 
     def test_a_retired_standalone_document_cannot_stay_active(self) -> None:
-        guide = "docs/05.operations/guides/02-gateway-and-networking/0999-x.md"
+        guide = "docs/05.operations/01.guides/02.gateway-and-networking/0999-x.md"
         self.assertEqual((), self._tracked({guide: "active"}))
         self.assertEqual(
             (f"{guide}: retired document remains in an active stage",),

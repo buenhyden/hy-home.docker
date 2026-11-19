@@ -1,10 +1,10 @@
 ---
 title: "Examples Surface"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-03"
 ---
 
@@ -99,5 +99,5 @@ examples/
 - [Infrastructure surface](../infra/README.md)
 - [Sample web service seed](sample-web-service/README.md)
 - Operations (`docs/05.operations/README.md`)
-- README template (`docs/99.templates/templates/common/readme-repository.template.md`)
+- README template (`docs/99.templates/02.templates/93.common/readme-repository.template.md`)
 - [Documentation index](../docs/README.md)

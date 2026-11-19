@@ -1,10 +1,10 @@
 ---
 title: "Readiness matrix와 인계 경계"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Readiness matrix와 인계 경계
@@ -26,7 +26,7 @@ updated: "2026-11-17"
 | 실제 복원·native E2E·HOME | VERIFY_RUNTIME | 미래 Wiki exact Task의 backup/custody와 실제 대상; P10은 E2E 수용 기준 자산 |
 | 학습 앱/LAB runtime | OUT_OF_SCOPE | 조사·기획·생성·변경하지 않음 |
 
-P02에는 canonical SMTP secret catalog 경계만, P03에는 기존 서비스 endpoint·port 계약 조건만 인계합니다. 미래 Wiki의 namespace/권한, retention/RPO/RTO, delete-priority와 recovery는 별도 exact Task가 소유합니다. P04/P05에는 `fixtures/`의 합성 schema·semantic expectation 연결 자산, P08에는 이 패키지 README·링크와 당시 Stage05 LAB 이동 후보 목록, P10에는 미래 Wiki 구현자가 사용할 E2E 수용 기준과 NOT_RUN 조건을 인계했습니다. P10은 실제 Wiki E2E 구현을 소유하지 않습니다. 당시 목록에 있던 subject 0074의 현재 경로는 `docs/05.operations/guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md`, `docs/05.operations/policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md`, `docs/05.operations/runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md`입니다. P08의 경로 정리는 이미 반영되어 있으며, 이 P09는 당시 읽기·목록화만 수행했습니다. 이번에는 현재 경로 안내만 정정하며 새 이동을 수행하지 않습니다. 어떤 영역도 schema PASS를 실제 resource 생성·데이터 이관·복원 성공으로 바꾸어 보고하지 않습니다.
+P02에는 canonical SMTP secret catalog 경계만, P03에는 기존 서비스 endpoint·port 계약 조건만 인계합니다. 미래 Wiki의 namespace/권한, retention/RPO/RTO, delete-priority와 recovery는 별도 exact Task가 소유합니다. P04/P05에는 `fixtures/`의 합성 schema·semantic expectation 연결 자산, P08에는 이 패키지 README·링크와 당시 Stage05 LAB 이동 후보 목록, P10에는 미래 Wiki 구현자가 사용할 E2E 수용 기준과 NOT_RUN 조건을 인계했습니다. P10은 실제 Wiki E2E 구현을 소유하지 않습니다. 당시 목록에 있던 subject 0074의 현재 경로는 `docs/05.operations/01.guides/10.platform-and-backup/0074-laboratory-optimization-hardening.md`, `docs/05.operations/02.policies/10.platform-and-backup/0074-laboratory-optimization-hardening.md`, `docs/05.operations/03.runbooks/10.platform-and-backup/0074-laboratory-optimization-hardening.md`입니다. P08의 경로 정리는 이미 반영되어 있으며, 이 P09는 당시 읽기·목록화만 수행했습니다. 이번에는 현재 경로 안내만 정정하며 새 이동을 수행하지 않습니다. 어떤 영역도 schema PASS를 실제 resource 생성·데이터 이관·복원 성공으로 바꾸어 보고하지 않습니다.
 
 #### Audience
 
@@ -74,4 +74,4 @@ P02에는 canonical SMTP secret catalog 경계만, P03에는 기존 서비스 en
 
 #### Observability and Recovery
 
-없음: 실행되는 서비스가 아니므로 헬스체크·지표·로그가 없고, 이 패키지를 대상으로 하는 운영 런북도 `docs/05.operations/runbooks`에 없다. 계약 문서가 어긋나면 위 Checks의 단위 검사 실패로 드러나며, 복구는 Git 이력에서 해당 문서 변경을 되돌리는 것이다.
+없음: 실행되는 서비스가 아니므로 헬스체크·지표·로그가 없고, 이 패키지를 대상으로 하는 운영 런북도 `docs/05.operations/03.runbooks`에 없다. 계약 문서가 어긋나면 위 Checks의 단위 검사 실패로 드러나며, 복구는 Git 이력에서 해당 문서 변경을 되돌리는 것이다.

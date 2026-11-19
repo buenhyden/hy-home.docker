@@ -187,7 +187,7 @@ class RequirementPackageTests(unittest.TestCase):
         requirements = _requirements_module()
         template = (
             ROOT
-            / "docs/99.templates/templates/requirements/requirement-package.template.md"
+            / "docs/99.templates/02.templates/01.requirements/requirement-package.template.md"
         ).read_text(encoding="utf-8")
         filled = template.replace("REQ-####-FR-####", "REQ-0001-FR-0001").replace(
             "REQ-####-NFR-####", "REQ-0001-NFR-0002"

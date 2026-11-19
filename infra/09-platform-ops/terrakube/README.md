@@ -1,10 +1,10 @@
 ---
 title: "Terrakube IaC Automation Platform"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -112,9 +112,9 @@ Docker secret `terrakube_db_password`, `terrakube_valkey_password`, `terrakube_p
 #### Runbook Links
 
 - [Platform Operations tier README](../README.md)
-- Terrakube guide (`docs/05.operations/guides/10-platform-and-backup/0069-terrakube.md`)
-- Terrakube operations policy (`docs/05.operations/policies/10-platform-and-backup/0069-terrakube.md`)
-- Terrakube recovery runbook (`docs/05.operations/runbooks/10-platform-and-backup/0069-terrakube.md`)
+- Terrakube guide (`docs/05.operations/01.guides/10.platform-and-backup/0069-terrakube.md`)
+- Terrakube operations policy (`docs/05.operations/02.policies/10.platform-and-backup/0069-terrakube.md`)
+- Terrakube recovery runbook (`docs/05.operations/03.runbooks/10.platform-and-backup/0069-terrakube.md`)
 - [Root infra README](../../README.md)
 - [Documentation index](../../../docs/README.md)
 
@@ -134,7 +134,7 @@ Docker secret `terrakube_db_password`, `terrakube_valkey_password`, `terrakube_p
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.terrakube-api.rule`, `traefik.http.routers.terrakube-api.entrypoints`, `traefik.http.routers.terrakube-api.tls`, `traefik.http.routers.terrakube-api.middlewares`, `traefik.http.services.terrakube-api.loadbalancer.server.port`, `traefik.http.routers.terrakube-ui.rule` 외 다수 |
 | Secret refs | 이름: `terrakube_db_password`, `seaweedfs_s3_terrakube_secret_key`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`; 마운트: `/run/secrets/terrakube_db_password`, `/run/secrets/seaweedfs_s3_terrakube_secret_key`, `/run/secrets/terrakube_valkey_password`, `/run/secrets/terrakube_pat_secret`, `/run/secrets/terrakube_internal_secret` |
 | Healthcheck | `terrakube-api`, `terrakube-ui`, `terrakube-executor`에 Compose 헬스체크가 선언되어 있음 |
-| Operations | Guide (`docs/05.operations/guides/10-platform-and-backup/0069-terrakube.md`), Policy (`docs/05.operations/policies/10-platform-and-backup/0069-terrakube.md`), Runbook (`docs/05.operations/runbooks/10-platform-and-backup/0069-terrakube.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/10.platform-and-backup/0069-terrakube.md`), Policy (`docs/05.operations/02.policies/10.platform-and-backup/0069-terrakube.md`), Runbook (`docs/05.operations/03.runbooks/10.platform-and-backup/0069-terrakube.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 

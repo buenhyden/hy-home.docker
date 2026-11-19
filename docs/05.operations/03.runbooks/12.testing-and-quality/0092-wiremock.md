@@ -1,0 +1,154 @@
+---
+title: "WireMock Recovery Runbook"
+version: "1.1.0"
+type: "operation/runbook"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-11-17"
+layer: "operations"
+artifact_id: "RUN-0092"
+parent_ids:
+- "GDE-0092"
+created: "2026-09-23"
+next_review_at: "2027-05-13"
+---
+
+# WireMock Recovery Runbook
+
+## Trigger and Scope
+
+### Trigger
+
+WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 도달을 다루는 런북이다.
+
+기능 또는 load 모드가 비정상이거나, 스텁이 예상된 위치에서 요청이 404를 반환하거나,
+매핑 파일이 로드에 실패하거나, 컨테이너가 메모리 제한에 도달했을 때 사용한다.
+
+### Targets
+
+- [Guide](../../01.guides/12.testing-and-quality/0092-wiremock.md) (`GDE-0092`)
+- [Policy](../../02.policies/12.testing-and-quality/0092-wiremock.md) (`POL-0092`)
+- [WireMock Compose](../../../../infra/11-quality/wiremock/docker-compose.yml)
+
+- [WireMock 패키지 README](../../../../infra/11-quality/wiremock/README.md)
+- [WireMock admin API](https://wiremock.org/docs/standalone/admin-api-reference/)
+
+## Preflight
+
+### Authority
+
+mapping reset과 기동·재시작은 영향받는 테스트 소유자 승인을 확인한 뒤에만 실행하며, 메모리 제한 변경은 영향받는 테스트 소유자와 검토하고 승인한다.
+
+#### 변경 전제·복구·업그레이드
+
+기동·재시작·mapping reset 전에 영향받는
+테스트와 소유자 승인을 확인한다. reset은 기능 모드의 메모리 mapping을 바꾸므로 병행
+테스트를 중단·조정한 뒤 실행하고 추적된 합성 stub으로 확인한다. load 모드는 mapping
+reset 및 journal 조회 없이 새 Compose model로 시작한다. 실패하면 추가 reset을 멈추고
+검토된 mapping·이미지로 복원한다. 업그레이드는 공식 release와 매핑 호환성을 격리된
+합성 요청으로 검증한 뒤 승인한다. journal은 복원하지 않으며 필요한 정제된 집계만
+보존한 후 컨테이너를 제거한다.
+
+### Environment
+
+먼저 활성 mode를 확인한다. root의 `api-mock`은 기능 모드, root와 load
+override를 함께 지정한 `api-mock`은 journal 없는 부하 모드다. 두 mode를
+동시에 복구하지 않는다. 모든 명령은 저장소 루트에서 실행한다.
+
+## Procedure
+
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 기능 모드는 `config --quiet`/`ps wiremock`/`logs --tail=100 wiremock`/`__admin/health`로, load 모드는 root와 override를 함께 지정한 `config --quiet`/`ps wiremock`로 상태를 확인한다 | 기능 모드는 `__admin/health` 응답이 정상이고, load 모드는 공개 stub health(`GET /hyhome/ping`)가 정상이며 HTTP admin이 403으로 거부된다 | admin API를 loopback 밖으로 공개하는 요청 등은 Stop Conditions에 따라 중단 |
+| 2 | 파싱에 실패한 매핑은 시작 로그에서 확인하고 `mappings/`의 JSON을 수정한 뒤 `__admin/mappings/reset`으로 다시 로드한다 | `__admin/mappings` 개수가 정상이다 | 문서에 기록 없음 |
+| 3 | 예상치 못한 404는 기능 모드에서만 요청을 스텁과 비교하며 승인된 비공개 진단에서 필요한 항목만 본다 | 근거에는 개수/매핑 식별자/정제된 불일치 원인만 남긴다 | 승인된 비공개 진단이 아니면 요청 본문/헤더를 보지 않음 |
+| 4 | `OOMKilled`는 단일 원인의 증거가 아니므로 journal 크기(기능 모드), 동시 요청, JVM과 컨테이너 한도를 확인한다 | 문서에 기록 없음 | 필요한 제한 변경은 테스트 소유자와 검토/승인하고 템플릿을 즉시 늘리지 않음 |
+| 5 | 매핑 변경·기동·재적용: `mappings/`에 합성 데이터 매핑을 추가한 뒤 서비스를 재시작하거나 `POST /__admin/mappings/reset`으로 다시 로드한다 | 추적된 매핑이 다시 로드된다(메모리상 매핑은 삭제됨) | 실제 응답/토큰/개인정보 포함 요청이나 실제 업스트림 녹화 활성화는 중단 |
+
+1. 기능 모드만 다음 loopback 상태 확인을 실행한다.
+
+   ```bash
+   docker compose --profile api-mock config --quiet
+   docker compose --profile api-mock ps wiremock
+   docker compose --profile api-mock logs --tail=100 wiremock
+   curl -s http://127.0.0.1:${WIREMOCK_HOST_PORT:-18088}/__admin/health
+   ```
+
+   load 모드는 host port가 없으므로 다음처럼 root와 override를 함께 지정해
+   Compose 상태와 공개 stub readiness만 확인한다. HTTP admin은 403으로
+   거부되며 load healthcheck는 `GET /hyhome/ping`을 사용한다.
+
+   ```bash
+   docker compose -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock config --quiet
+   docker compose -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock ps wiremock
+   ```
+
+2. 파싱에 실패한 매핑은 시작할 때 로그에 나타난다.
+   `infra/11-quality/wiremock/mappings/`의 JSON을 수정하고
+   `curl -s -X POST http://127.0.0.1:${WIREMOCK_HOST_PORT:-18088}/__admin/mappings/reset`으로
+   다시 로드한다.
+3. 예상치 못한 404의 경우, 기능 모드에서만 요청을 스텁과 비교한다.
+   관리 API의 unmatched/near-misses 결과는 요청 본문·헤더를 포함할 수 있다.
+   승인된 비공개 진단에서만 필요한 항목을 제한해 보고, 근거에는 개수·매핑 식별자와
+   정제된 불일치 원인만 남긴다.
+4. `OOMKilled`는 메모리 종료 신호이지 단일 원인의 증거가 아니다. 기능 모드는 journal
+   크기, 본문·동시 요청, JVM과 컨테이너 한도를 확인한다. load 모드는 journal이 없으므로
+   동시 요청, JVM과 컨테이너 한도를 확인한다. 필요한 제한 변경은 영향받는 테스트
+   소유자와 검토하고 승인하며 템플릿을 즉시 늘리지 않는다.
+
+#### 매핑 변경·기동·재적용
+
+`mappings/` 아래에 매핑 파일을 추가한 다음 서비스를 재시작하거나
+`POST /__admin/mappings/reset`을 호출하면 파일이 다시 로드된다. 스텁
+본문은 합성 데이터로 유지한다. 매핑은 추적되는 파일이므로 운영 시스템에서
+캡처한 실제 응답, 토큰, 개인정보를 포함해서는 안 된다.
+
+| Command | Effect |
+| --- | --- |
+| `docker compose --profile api-mock up -d wiremock` | 기능 모드 스텁 서버 시작 |
+| `docker compose -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock up -d wiremock` | journal·host port 없는 load 모드 시작 |
+| `curl -s http://127.0.0.1:${WIREMOCK_HOST_PORT:-18088}/__admin/health` | 상태, 버전, 가동 시간 |
+| 요청 journal 조회 | 승인된 비공개 환경에서 필요한 항목만 확인하고 본문·헤더를 보고서에 출력하지 않음 |
+| `curl -s -X POST http://127.0.0.1:${WIREMOCK_HOST_PORT:-18088}/__admin/mappings/reset` | 추적된 매핑을 다시 로드하고 메모리상 매핑은 삭제 |
+
+### Stop Conditions
+
+admin API를 loopback 밖으로 공개하거나, 실제 업스트림에 대한 녹화를
+활성화하거나, 캡처된 프로덕션 응답을 커밋하라는 요청이 있으면 중단한다.
+
+## Verification
+
+### Expected Results
+
+#### Service Checks
+
+기능 모드는 `__admin/health` 응답과 `__admin/mappings` 개수가 정상이어야 하고, load 모드는 host port 없이 공개 stub health(`GET /hyhome/ping`)가 정상이며 HTTP admin이 403으로 거부되어야 한다.
+
+#### Evidence
+
+기능 모드는 health 응답, `__admin/mappings`의 매핑 개수, journal reset 종료 코드와
+소스 커밋을 기록한다. load 모드는 mode, no-journal/HTTP admin 거부 command, host port 없음, 공개 stub health와
+소스 커밋만 기록한다. journal의 요청 본문이나 헤더는 기록하지 않는다. 테스트가
+크리덴셜을 전송했을 수 있다.
+
+### Unverified Conditions
+
+이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
+
+- 기능 모드와 load 모드 상태 확인: 이 문서에는 실행 결과가 기록되어 있지 않다. 기능 모드의 `__admin/health`와 매핑 개수, load 모드의 `GET /hyhome/ping` 정상과 HTTP admin 403 거부가 검증 근거가 된다.
+- 매핑 reset과 서비스 재시작/기동: 이 문서에는 실행 결과가 기록되어 있지 않다. journal reset 종료 코드와 `__admin/mappings` 매핑 개수가 검증 근거가 된다.
+- `OOMKilled` 대응과 제한 변경: 영향받는 테스트 소유자의 검토와 승인이 필요하며 이 문서에는 기록이 없다.
+- 요청 journal/unmatched 진단: 승인된 비공개 환경에서만 수행하며 이 문서에는 실행 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
+### Recovery or Forward Repair
+
+서비스는 영속 상태를 갖지 않는다. 추적되는 이미지와 매핑에서 다시 만드는
+것이 완전한 복구이며 인메모리 스텁과 journal은 설계상 사라진다.

@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Korean text in governance documentation"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -28,7 +28,7 @@ Apply the declared `warn` action for warn-korean-in-governance.
 
 ### Authority
 
-Owning policy: `docs/00.workspace/02.process/documentation-protocol.md`.
+Owning policy: `docs/00.workspace/03.process/documentation-protocol.md`.
 
 ## Scope
 
@@ -48,7 +48,7 @@ It skips `README.md` files, whose language the documentation protocol owns; the 
 
 This hook is an advisory detector. Resolve the file's language through the sole
 document-role authority at
-`docs/00.workspace/02.process/documentation-protocol.md#document-language`;
+`docs/00.workspace/03.process/documentation-protocol.md#document-language`;
 the hook does not publish a second language table or exception rule.
 
 ### Enforcement

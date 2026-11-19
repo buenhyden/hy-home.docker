@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -135,12 +135,12 @@ backup·복원 절차가 필요합니다.
 
 #### Runbook Links
 
-- **Guide**: SonarQube Guide (`docs/05.operations/guides/15-labs/0066-sonarqube.md`)
-- **Policy**: SonarQube Operations (`docs/05.operations/policies/15-labs/0066-sonarqube.md`)
-- **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/15-labs/0066-sonarqube.md`)
+- **Guide**: SonarQube Guide (`docs/05.operations/01.guides/15.labs/0066-sonarqube.md`)
+- **Policy**: SonarQube Operations (`docs/05.operations/02.policies/15.labs/0066-sonarqube.md`)
+- **Runbook**: SonarQube Runbook (`docs/05.operations/03.runbooks/15.labs/0066-sonarqube.md`)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0107 lab-promotion
 
 #### Observability and Recovery
 
@@ -161,6 +161,6 @@ backup·복원 절차가 필요합니다.
 | Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
 | Secret refs | `${LAB_SECRET_DIR}/sonarqube/db_password.txt`의 `lab_sonarqube_db_password`; 마운트: `/run/secrets/sonarqube_db_password` |
 | Healthcheck | `/api/system/health` |
-| Operations | Guide (`docs/05.operations/guides/15-labs/0066-sonarqube.md`), Policy (`docs/05.operations/policies/15-labs/0066-sonarqube.md`), Runbook (`docs/05.operations/runbooks/15-labs/0066-sonarqube.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/15.labs/0066-sonarqube.md`), Policy (`docs/05.operations/02.policies/15.labs/0066-sonarqube.md`), Runbook (`docs/05.operations/03.runbooks/15.labs/0066-sonarqube.md`) |
 | Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
 | Troubleshooting | render로 시작한 뒤 활성 lease 안에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |

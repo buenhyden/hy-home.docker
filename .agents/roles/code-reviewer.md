@@ -1,10 +1,10 @@
 ---
 title: "code-reviewer"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 agent_id: "code-reviewer"
 scope: "common"
 tier: "worker"
@@ -55,7 +55,7 @@ If the review package is incomplete or policy conflicts with the approved plan, 
 
 ## Related Documents
 
-- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
 - [Code review dimensions](../skills/code-review-dimensions/SKILL.md)
 - [Change review execution](../skills/change-review-execution/SKILL.md)
 - [Subagent protocol](../governance/agentic.md)

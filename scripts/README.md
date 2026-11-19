@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.6.1"
+version: "1.6.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-02-21"
 ---
 
@@ -280,7 +280,7 @@ wrapper는 프로세스나 파일시스템 샌드박스가 아닙니다. Task ev
 
 provider 훅은 authoring/status 진단을 제공하며 후보 aggregate QA나 atomic
 validator 명령을 중복 실행하지 않습니다. 현재 품질 소유권은
-[단계 정책](../docs/00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix)을 따릅니다.
+[단계 정책](../docs/00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix)을 따릅니다.
 
 ---
 
@@ -319,10 +319,10 @@ python3 scripts/operations/provider_surface_renderer.py --write
 printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | bash scripts/hooks/agent-event-hook.sh PreToolUse
 
 # 포맷팅 쓰기 없이 provider-neutral post-edit 검증을 실행합니다 (기본값)
-printf '{"tool_input":{"file_path":"docs/00.workspace/03.quality/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh
+printf '{"tool_input":{"file_path":"docs/00.workspace/04.quality/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh
 
 # 보고된 줄 끝 공백과 마지막 줄바꿈을 명시적으로 고칩니다
-printf '{"tool_input":{"file_path":"docs/00.workspace/03.quality/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh --write
+printf '{"tool_input":{"file_path":"docs/00.workspace/04.quality/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh --write
 
 # 모든 tier 하드닝 baseline을 강제합니다
 ./scripts/hardening/check-all-hardening.sh
@@ -533,7 +533,7 @@ direct purpose folders so it does not duplicate that manifest.
 
 - [에이전트 작업 규칙](AGENTS.md)
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
-- 📘 Runbooks (`docs/05.operations/runbooks/README.md`)
+- 📘 Runbooks (`docs/05.operations/03.runbooks/README.md`)
 - [Public Suite Ownership Manifest](manifest.yaml)
 - [Evaluation navigation](../.agents/evaluations/README.md) - 폐기된 자동 점수 QA와 현재 수동 관측 경계를 안내합니다
 - [현재 워크스페이스 거버넌스](../.agents/README.md)

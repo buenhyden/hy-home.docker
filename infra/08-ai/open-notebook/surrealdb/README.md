@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Implementation"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # SurrealDB Implementation
@@ -115,7 +115,7 @@ v3 호환성 및 데이터 이전을 검증하고 별도 변경 승인을 받기
 
 #### Runbook Links
 
-- [05-databases-and-storage runbooks](../../../../docs/05.operations/runbooks/05-databases-and-storage/README.md): RUN-0080 SurrealDB
+- [05-databases-and-storage runbooks](../../../../docs/05.operations/03.runbooks/05.databases-and-storage/README.md): RUN-0080 SurrealDB
 - [Open Notebook README](../README.md)
 - [Documentation index](../../../../docs/README.md)
 - [Infrastructure index](../../../README.md)

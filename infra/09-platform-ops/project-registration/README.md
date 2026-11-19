@@ -1,10 +1,10 @@
 ---
 title: "외부 프로젝트 인프라 등록 계약"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # 외부 프로젝트 인프라 등록 계약
@@ -123,4 +123,4 @@ DB 권한의 POL-0100을 참조하십시오. 등록 필드의 기계 계약은
 
 #### Observability and Recovery
 
-없음: 실행되는 서비스가 아니라 헬스체크·지표·로그가 없고 이 계약을 대상으로 하는 운영 런북도 `docs/05.operations/runbooks`에 없습니다. 검증기·합성 검사 실패는 Checks 명령의 출력으로 확인하며, 복구는 Git 이력에서 문서·schema 변경을 되돌리는 것입니다.
+없음: 실행되는 서비스가 아니라 헬스체크·지표·로그가 없고 이 계약을 대상으로 하는 운영 런북도 `docs/05.operations/03.runbooks`에 없습니다. 검증기·합성 검사 실패는 Checks 명령의 출력으로 확인하며, 복구는 Git 이력에서 문서·schema 변경을 되돌리는 것입니다.

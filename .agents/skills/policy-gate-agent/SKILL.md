@@ -3,11 +3,11 @@ name: "policy-gate-agent"
 description: "Use when a governed change needs a read-only verdict on canonical ownership, typed contracts, protected-surface approval, and evidence. Reach for it when someone asks whether a change passes the gates, which gate failed and who owns the fix, what has not been checked yet, or whether a protected file needs approval before merge. Do NOT use it to run the fix, to review code quality, or to approve a protected surface; it reports the verdict and its owner, and changes nothing."
 metadata:
   title: "policy-gate-agent"
-  version: "1.5.1"
+  version: "1.5.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "policy-gate-agent"
   scope: "agentic"
   owner_agent: "rules-engineer"
@@ -49,7 +49,7 @@ The skill description states: "Do NOT use it to run the fix, to review code qual
 - Path authority, precedence, protected-surface approvals, and validation evidence.
 - The registered gates that decide the verdict this procedure reports. The typed
   gate DAG in `.github/workflow-contract.yml` owns which gates exist and how they
-  compose; the [execution boundary](../../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary)
+  compose; the [execution boundary](../../../docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary)
   owns which of them may run locally. Deriving that set by hand invites a verdict
   that no gate actually produced, so read `references/reading-the-gate-dag.md`
   for how to expand it into rows before filling any of them in.
@@ -73,7 +73,7 @@ Owning role, policies and related documents:
 
 - [Rules engineer](../../roles/rules-engineer.md)
 - Agent governance artifacts contract (`docs/99.templates/registry.json`)
-- [Approval boundaries](../../../docs/00.workspace/02.process/approval-boundaries.md)
+- [Approval boundaries](../../../docs/00.workspace/04.quality/approval-boundaries.md)
 - [Documentation index](../../../docs/README.md)
 
 ## Verification

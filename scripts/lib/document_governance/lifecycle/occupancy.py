@@ -136,7 +136,7 @@ def validate_active_stage_occupancy(
         task_statuses = {
             metadata.get("artifact_id", ""): metadata["status"]
             for relative, metadata in package_members.items()
-            if relative.startswith(f"{package}/tasks/")
+            if relative.startswith(f"{package}/01.tasks/")
         }
         for relative, metadata in sorted(package_members.items()):
             status = metadata["status"]

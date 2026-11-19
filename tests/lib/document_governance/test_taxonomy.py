@@ -15,13 +15,13 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         self.assertEqual(
             ("2026", "2026-08-09-audit.md"),
             find_dated_identity_parts(
-                PurePosixPath("docs/90.references/research/2026/2026-08-09-audit.md")
+                PurePosixPath("docs/90.references/01.research/2026/2026-08-09-audit.md")
             ),
         )
 
     def test_incident_year_navigation_uses_its_distinct_path_profile(self):
         findings = validate_stable_identity(
-            PurePosixPath("docs/05.operations/incidents/2026/README.md"),
+            PurePosixPath("docs/05.operations/04.incidents/2026/README.md"),
             {"type": "common/readme"},
             {
                 "incident-year-readme": {
@@ -40,7 +40,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         self.assertEqual([], findings)
 
     def test_accepts_architecture_description_identity(self):
-        path = PurePosixPath("docs/02.architecture/descriptions/0001-gateway.md")
+        path = PurePosixPath("docs/02.architecture/01.descriptions/0001-gateway.md")
         self.assertEqual(
             ("architecture-description", "AD-0001"),
             architecture_identity(path),
@@ -53,7 +53,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             },
             {
                 "architecture-description": {
-                    "path_pattern": "docs/02.architecture/descriptions/{number:4}-{slug}.md",
+                    "path_pattern": "docs/02.architecture/01.descriptions/{number:4}-{slug}.md",
                     "artifact_id_pattern": "AD-{number:4}",
                     "identity_relation": "direct",
                 }

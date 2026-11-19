@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Requirements"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0006"
 created: "2026-03-26"
@@ -48,7 +48,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 - **Approved placement**: The `kafka-cluster` LAB hosts the training topology,
   Schema Registry and Kafka Connect. The broker REST proxy was removed from
-  HOME under [ADR-0062](../02.architecture/decisions/0062-home-lab-membership.md).
+  HOME under [ADR-0062](../02.architecture/02.decisions/0062-home-lab-membership.md).
 - **Out of Scope**: Producer and consumer logic inside individual services,
   and external cloud messaging services.
 - **Non-goals**: Permanent data storage, which the data tier owns.
@@ -126,7 +126,7 @@ is met.
 
 #### Downstream Links
 
-- **Architecture Description**: [Messaging architecture](../02.architecture/descriptions/0005-messaging-architecture.md)
-- **ADR**: [ADR-0052 Kafka as the Only Messaging Broker](../02.architecture/decisions/0052-kafka-only-messaging-broker.md) (historical; RabbitMQ is not implemented)
+- **Architecture Description**: [Messaging architecture](../02.architecture/01.descriptions/0005-messaging-architecture.md)
+- **ADR**: [ADR-0052 Kafka as the Only Messaging Broker](../02.architecture/02.decisions/0052-kafka-only-messaging-broker.md) (historical; RabbitMQ is not implemented)
 - **Retired domain Spec SPEC-0006** (messaging): replaced by the messaging guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
 - **Retired requirement REQ-0017** (messaging optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the messaging operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

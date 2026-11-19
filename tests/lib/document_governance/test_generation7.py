@@ -154,7 +154,7 @@ class Generation7EvidenceTests(unittest.TestCase):
     def test_failed_observation_identity_excludes_only_resolves(self):
         registry = load_registry()
         path = pathlib.PurePosixPath(
-            "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/"
+            "docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/"
             "tsk-0040-workspace-inventory.md"
         )
         corrections = (
@@ -351,7 +351,7 @@ parent_ids:
             git("config", "user.email", "fixture@example.invalid")
             for relative in (
                 "docs/99.templates/registry.json",
-                "docs/99.templates/contracts/document-profile.schema.json",
+                "docs/99.templates/01.contracts/document-profile.schema.json",
             ):
                 target = root / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -391,7 +391,7 @@ parent_ids:
         repository = pathlib.Path(__file__).resolve().parents[3]
         registry_path = pathlib.Path("docs/99.templates/registry.json")
         schema_path = pathlib.Path(
-            "docs/99.templates/contracts/document-profile.schema.json"
+            "docs/99.templates/01.contracts/document-profile.schema.json"
         )
         current = json.loads((repository / registry_path).read_text())
         earlier = json.loads(json.dumps(current))

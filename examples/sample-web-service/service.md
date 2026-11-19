@@ -84,7 +84,7 @@ copyable scaffold를 설명하지만, accepted current SDLC truth나 active 서�
 - [Service README](./README.md)
 - retired Spec 0126 historical evidence
 - retired Spec 0127 historical evidence
-- Spec contract template (`docs/99.templates/templates/specs/spec.template.md`)
-- New-service onboarding guide (`docs/05.operations/guides/0008-new-service-onboarding.md`)
-- Release management runbook (`docs/05.operations/runbooks/0009-release-management.md`)
+- Spec contract template (`docs/99.templates/02.templates/03.specs/spec.template.md`)
+- New-service onboarding guide (`docs/05.operations/01.guides/0008-new-service-onboarding.md`)
+- Release management runbook (`docs/05.operations/03.runbooks/0009-release-management.md`)
 - [Documentation index](../../docs/README.md)

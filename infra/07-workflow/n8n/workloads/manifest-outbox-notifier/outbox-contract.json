@@ -5,7 +5,7 @@
     "sql_commit": "301e55f2b7f2e67aaf4d7916f96778a880e24f90",
     "sql_sha256": "82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f",
     "interface_version": 1,
-    "review_receipt": "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0012-p04-airflow-manifest-pipeline.md#restore-stable-source-handoff"
+    "review_receipt": "docs/03.specs/0204-service-integration-security-and-operations/01.tasks/tsk-0012-p04-airflow-manifest-pipeline.md#restore-stable-source-handoff"
   },
   "owner": "P04",
   "canonical_sql_path": "infra/07-workflow/airflow/workloads/manifest-pipeline/sql",
@@ -28,7 +28,7 @@
       "lease_token",
       "lease_until"
     ],
-    "safety_review_receipt": "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0018-workflow-lease-and-connect-safety.md"
+    "safety_review_receipt": "docs/03.specs/0204-service-integration-security-and-operations/01.tasks/tsk-0018-workflow-lease-and-connect-safety.md"
   },
   "draft": {
     "provenance": "P04 independently reviewed SQL v1 source at observed main; explicit five-field consumer projection. Native migration/role acceptance and transport targets remain unbound.",

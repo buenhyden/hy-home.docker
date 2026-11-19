@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.6.0"
+version: "1.6.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-24"
 ---
 
@@ -194,7 +194,7 @@ docker compose --env-file .env.example --profile '*' config --services
 
 프로파일 어휘와 목적은 POL-0078이 소유한다. [문서 인덱스](../docs/README.md)에서
 Compose Profile Vocabulary Policy로 이동한다. Canonical path는
-`docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md`다. 전수 분류와 관측 일자는 Stage 90의
+`docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md`다. 전수 분류와 관측 일자는 Stage 90의
 기존 local Docker service consolidation 연구에 기록한다.
 
 #### Tech Stack
@@ -234,7 +234,7 @@ projection이 그것들의 완전한 목록이라고 주장하지 않는다. REA
 
 - Official Guides (`docs/05.operations/README.md`)
 - Operation Specs (`docs/05.operations/README.md`)
-- Architecture Details (`docs/02.architecture/descriptions/README.md`)
+- Architecture Details (`docs/02.architecture/01.descriptions/README.md`)
 - [Secret Management](../secrets/README.md)
 - [Root Compose](../docker-compose.yml)
 - [Tech Stack Versions](./tech-stack.versions.json)

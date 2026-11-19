@@ -3,11 +3,11 @@ name: "ops-runbook-agent"
 description: "Use when implemented and verified operational behavior needs an executable runbook with expected signals, recovery, and escalation."
 metadata:
   title: "ops-runbook-agent"
-  version: "1.4.1"
+  version: "1.4.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "ops-runbook-agent"
   scope: "ops"
   owner_agent: "doc-writer"
@@ -42,7 +42,7 @@ Commands that are unimplemented, destructive without approval or unverifiable ar
 - Procedures are executable and expected outcomes are observable.
 - Rollback/recovery and escalation are explicit.
 - Recovery readiness, human approval, and operational evidence remain separate.
-- Incident packets use `docs/05.operations/incidents/<year>/inc-####-<slug>/`; the paired
+- Incident packets use `docs/05.operations/04.incidents/<year>/inc-####-<slug>/`; the paired
   postmortem filename is fixed: Filename: `postmortem.md`.
 
 #### Inputs
@@ -58,15 +58,15 @@ Do not publish commands that are unimplemented, destructive without approval, or
 
 ### Artifacts
 
-- One typed runbook at `docs/05.operations/runbooks/<NN-domain>/####-<slug>.md` with executable, topic-specific procedure.
+- One typed runbook at `docs/05.operations/03.runbooks/<NN-domain>/####-<slug>.md` with executable, topic-specific procedure.
 
 ### Handoff
 
 Owning role, policies and related documents:
 
 - [Documentation writer](../../roles/doc-writer.md)
-- [Operations scope](../../../docs/00.workspace/03.quality/quality-standards.md)
-- [Documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)
+- [Operations scope](../../../docs/00.workspace/04.quality/quality-standards.md)
+- [Documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)
 - [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
 
 ## Verification

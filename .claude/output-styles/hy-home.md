@@ -13,9 +13,9 @@ Code response is rendered, and it defines no policy of its own.
 
 - Reporting substance and language: `.agents/governance/output-style.md`.
 - Artifact language, template selection, and stage routing:
-  `docs/00.workspace/02.process/documentation-protocol.md#document-language`.
-- Completion and honesty obligations: `docs/00.workspace/03.quality/task-checklists.md`.
-- Approval boundaries: `docs/00.workspace/02.process/approval-boundaries.md`.
+  `docs/00.workspace/03.process/documentation-protocol.md#document-language`.
+- Completion and honesty obligations: `docs/00.workspace/04.quality/task-checklists.md`.
+- Approval boundaries: `docs/00.workspace/04.quality/approval-boundaries.md`.
 
 Where this file and a canonical policy appear to disagree, the policy wins and
 the disagreement is a defect in this file.

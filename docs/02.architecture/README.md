@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "architecture"
 ---
 
@@ -44,28 +44,28 @@ Architecture Description은 현재 구조를 설명하고 ADR은 선택, 대안,
 
 | Path | Purpose |
 | --- | --- |
-| [descriptions/](descriptions/README.md) | stakeholder concerns, boundaries, views, flows, quality scenarios, requirement disposition와 관련 결정 |
-| [decisions/](decisions/README.md) | 하나의 material choice, alternatives, rationale, consequences, confirmation과 supersession |
+| [01.descriptions/](01.descriptions/README.md) | stakeholder concerns, boundaries, views, flows, quality scenarios, requirement disposition와 관련 결정 |
+| [02.decisions/](02.decisions/README.md) | 하나의 material choice, alternatives, rationale, consequences, confirmation과 supersession |
 
 #### Current Items
 
 ```text
 docs/02.architecture/
-├── decisions/
-├── descriptions/
+├── 01.descriptions/
+├── 02.decisions/
 └── README.md
 ```
 
 #### Current Inventory
 
-- [`descriptions/`](descriptions/README.md): stakeholder concerns, boundaries,
+- [`01.descriptions/`](01.descriptions/README.md): stakeholder concerns, boundaries,
   views, flows, quality scenarios, requirement disposition와 관련 결정.
-- [`decisions/`](decisions/README.md): 하나의 material choice, alternatives,
+- [`02.decisions/`](02.decisions/README.md): 하나의 material choice, alternatives,
   rationale, consequences, confirmation과 supersession.
 
 #### Classification
 
-이 stage의 하위 유형은 둘이다. `descriptions/`의 Architecture Description은 현재 구조를 설명하는 정본이고 `decisions/`의 ADR은 선택과 근거를 기록한다. 비권위 기록용 하위 디렉터리는 없다.
+이 stage의 하위 유형은 둘이다. `01.descriptions/`의 Architecture Description은 현재 구조를 설명하는 정본이고 `02.decisions/`의 ADR은 선택과 근거를 기록한다. 비권위 기록용 하위 디렉터리는 없다.
 
 ### Owners
 
@@ -78,8 +78,8 @@ docs/02.architecture/
 #### Upstream and Downstream
 
 - [Product Requirements](../01.requirements/README.md)
-- [Architecture Descriptions](descriptions/README.md)
-- [Architecture Decisions](decisions/README.md)
+- [Architecture Descriptions](01.descriptions/README.md)
+- [Architecture Decisions](02.decisions/README.md)
 - [Specifications](../03.specs/README.md)
 - [Operations](../05.operations/README.md)
 
@@ -87,8 +87,8 @@ docs/02.architecture/
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Documentation Templates](../99.templates/README.md)
-- [문서 작성 계약](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+- [문서 작성 계약](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
 
@@ -96,8 +96,8 @@ docs/02.architecture/
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
 2. 새 설명은
-   [`description.template.md`](../99.templates/templates/architecture/description.template.md)를 사용한다.
-3. 새 결정은 [`decision.template.md`](../99.templates/templates/architecture/decision.template.md)를 사용한다.
+   [`description.template.md`](../99.templates/02.templates/02.architecture/description.template.md)를 사용한다.
+3. 새 결정은 [`decision.template.md`](../99.templates/02.templates/02.architecture/decision.template.md)를 사용한다.
 4. Description은 실제 상위 요구사항, ADR은 실제 Description을
    `parent_ids`로 연결한다.
 5. 구현과 운영 사실은 해당 Spec과 Operations 문서에서 확인하고 확인되지
@@ -111,7 +111,7 @@ docs/02.architecture/
   `type: sdlc/architecture-decision`을 일치시킨다.
 - 호환·redirect 문서나 병렬 용어 체계를 만들지 않는다.
 - 날짜는 경로가 아니라 typed metadata에 둔다.
-- View와 diagram은 [공통 Agent 거버넌스 작성 정책](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)을 적용하고 실제 이해에 필요한 수준만 사용한다.
+- View와 diagram은 [공통 Agent 거버넌스 작성 정책](../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)을 적용하고 실제 이해에 필요한 수준만 사용한다.
 
 #### Transition and Exit
 

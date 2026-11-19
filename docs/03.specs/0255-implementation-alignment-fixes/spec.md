@@ -1,10 +1,10 @@
 ---
 title: "Implementation Alignment Fixes Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0255"
 parent_ids:
@@ -104,7 +104,7 @@ opens the pull request, and the user merges.
 ### Normative and Evidence
 
 - [Plan](plan.md)
-- [Task](tasks/tsk-0001-implementation-alignment-fixes.md)
+- [Task](01.tasks/tsk-0001-implementation-alignment-fixes.md)
 
 ### Historical and Navigation
 

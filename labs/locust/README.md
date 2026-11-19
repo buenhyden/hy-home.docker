@@ -1,10 +1,10 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-03"
 ---
 
@@ -152,9 +152,9 @@ client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로
 
 - [LAB 탐색](../README.md)
 - [운영 문서 색인](../../docs/05.operations/README.md) — `GDE-0062`, `POL-0062`, `RUN-0062`
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0062 locust, RUN-0107 lab-promotion
-- [12-testing-and-quality runbooks](../../docs/05.operations/runbooks/12-testing-and-quality/README.md): RUN-0064 performance-testing
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0062 locust, RUN-0107 lab-promotion
+- [12-testing-and-quality runbooks](../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md): RUN-0064 performance-testing
 
 #### Observability and Recovery
 
-master와 worker 모두 Compose 헬스체크를 선언한다. 결과는 새 result directory의 CSV summary로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0062 Locust Runbook를 따른다.
+master와 worker 모두 Compose 헬스체크를 선언한다. 결과는 새 result directory의 CSV summary로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md)의 RUN-0062 Locust Runbook를 따른다.

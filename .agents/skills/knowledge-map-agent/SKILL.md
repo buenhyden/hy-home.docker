@@ -3,11 +3,11 @@ name: "knowledge-map-agent"
 description: "Use when tracked documentation navigation needs canonical ownership, safe source coverage, and corroboration of advisory graph output against tracked source."
 metadata:
   title: "knowledge-map-agent"
-  version: "2.2.1"
+  version: "2.2.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "knowledge-map-agent"
   scope: "docs"
   owner_agent: "doc-writer"
@@ -70,7 +70,7 @@ Exclude unsafe or unverifiable paths, record the omission, and stop if provenanc
 Owning role, policies and related documents:
 
 - [Documentation writer](../../roles/doc-writer.md)
-- [Documentation scope](../../../docs/00.workspace/02.process/documentation-protocol.md)
+- [Documentation scope](../../../docs/00.workspace/03.process/documentation-protocol.md)
 - [Environment constraints](../../governance/environment-constraints.md)
 
 ## Verification

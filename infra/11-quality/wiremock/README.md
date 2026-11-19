@@ -1,10 +1,10 @@
 ---
 title: "WireMock HTTP 모의 서비스"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-23"
 ---
 
@@ -134,8 +134,8 @@ DELETE reset 뒤 count 0을 확인했다. load 모드는 같은 stub GET 200과
 - [품질 tier](../README.md)
 - [WireMock standalone options](https://wiremock.org/docs/standalone/java-jar/)
 - [WireMock request journal configuration](https://wiremock.org/docs/configuration/#request-journal)
-- [12-testing-and-quality runbooks](../../../docs/05.operations/runbooks/12-testing-and-quality/README.md): RUN-0092 wiremock
+- [12-testing-and-quality runbooks](../../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md): RUN-0092 wiremock
 
 #### Observability and Recovery
 
-Compose에 헬스체크가 선언되어 있으며 복구와 장애 대응은 [12-testing-and-quality runbooks](../../../docs/05.operations/runbooks/12-testing-and-quality/README.md)의 RUN-0092 WireMock Runbook을 따른다.
+Compose에 헬스체크가 선언되어 있으며 복구와 장애 대응은 [12-testing-and-quality runbooks](../../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md)의 RUN-0092 WireMock Runbook을 따른다.

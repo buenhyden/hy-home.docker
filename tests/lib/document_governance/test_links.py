@@ -63,7 +63,7 @@ class DeclaredHistoricalLinkTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = pathlib.Path(self.temp.name)
         self.source = self.root / (
-            "docs/90.references/research/0001-fixture/m0001-source.md"
+            "docs/90.references/01.research/0001-fixture/m0001-source.md"
         )
         self.target = self.source.parent / "m0002-target.md"
         self.source.parent.mkdir(parents=True)
@@ -1316,16 +1316,16 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                 root = pathlib.Path(temp)
                 source = (
                     root
-                    / "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md"
+                    / "docs/05.operations/04.incidents/2026/inc-0001-example/postmortem.md"
                 )
                 if source_type == "sdlc/task":
                     source = (
                         root
-                        / "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0001-example.md"
+                        / "docs/03.specs/0204-service-integration-security-and-operations/01.tasks/tsk-0001-example.md"
                     )
                 target = (
                     root
-                    / "docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md"
+                    / "docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md"
                 )
                 source.parent.mkdir(parents=True)
                 target.parent.mkdir(parents=True)
@@ -1361,21 +1361,22 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                 root = pathlib.Path(temp)
                 source = (
                     root
-                    / "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md"
+                    / "docs/05.operations/04.incidents/2026/inc-0001-example/postmortem.md"
                 )
                 if mutation == "wrong-source-profile":
                     source = (
                         root
-                        / "docs/05.operations/guides/01-common/0099-system-operations.md"
+                        / "docs/05.operations/01.guides/01.common/0099-system-operations.md"
                     )
                 target = (
                     root
-                    / "docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md"
+                    / "docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md"
                 )
                 source.parent.mkdir(parents=True)
                 target.parent.mkdir(parents=True)
                 raw = os.path.relpath(
-                    root / "docs/05.operations/runbooks/0050-airflow.md", source.parent
+                    root / "docs/05.operations/03.runbooks/0050-airflow.md",
+                    source.parent,
                 )
                 source.write_text(
                     '---\ntype: "operation/postmortem"\nstatus: "published"\n---\n'
@@ -1402,7 +1403,7 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
             root = pathlib.Path(temp)
             source = (
                 root
-                / "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md"
+                / "docs/05.operations/04.incidents/2026/inc-0001-example/postmortem.md"
             )
             source.parent.mkdir(parents=True)
             source.write_text(
@@ -1415,7 +1416,9 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
             )
             targets = []
             for domain in ("08-workflows-and-automation", "09-ai-and-search"):
-                target = root / f"docs/05.operations/runbooks/{domain}/0050-airflow.md"
+                target = (
+                    root / f"docs/05.operations/03.runbooks/{domain}/0050-airflow.md"
+                )
                 target.parent.mkdir(parents=True)
                 target.write_text("# Airflow\n", encoding="utf-8")
                 targets.append(target)
@@ -1452,7 +1455,7 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                 root = pathlib.Path(temp)
                 source = (
                     root
-                    / "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md"
+                    / "docs/05.operations/04.incidents/2026/inc-0001-example/postmortem.md"
                 )
                 source.parent.mkdir(parents=True)
                 source.write_text(
@@ -1468,7 +1471,9 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                     if mutation == "symlink"
                     else "99-unregistered"
                 )
-                target = root / f"docs/05.operations/runbooks/{domain}/0050-airflow.md"
+                target = (
+                    root / f"docs/05.operations/03.runbooks/{domain}/0050-airflow.md"
+                )
                 target.parent.mkdir(parents=True)
                 if mutation == "symlink":
                     real = root / "real.md"
@@ -1499,7 +1504,7 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                     '{"common": {}}\n',
                     encoding="utf-8",
                 )
-            source = root / "docs/05.operations/incidents/0001-outage.md"
+            source = root / "docs/05.operations/04.incidents/0001-outage.md"
             target = root / f"docs/98.archive/{folder}/0001-record.md"
             source.parent.mkdir(parents=True)
             target.parent.mkdir(parents=True)
@@ -1528,7 +1533,7 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                 '{"common": {}}\n',
                 encoding="utf-8",
             )
-            source = root / "docs/05.operations/incidents/0001-outage.md"
+            source = root / "docs/05.operations/04.incidents/0001-outage.md"
             target = root / "docs/98.archive/README.md"
             source.parent.mkdir(parents=True)
             target.parent.mkdir(parents=True)
@@ -1667,17 +1672,17 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
             ops = root / "docs/05.operations/README.md"
             catalog = (
                 root
-                / "docs/05.operations/policies/01-common/0006-infrastructure-optimization-governance.md"
+                / "docs/05.operations/02.policies/01.common/0006-infrastructure-optimization-governance.md"
             )
-            guide = root / "docs/05.operations/guides/01-common/0001-subject.md"
-            runbook = root / "docs/05.operations/runbooks/01-common/0001-subject.md"
+            guide = root / "docs/05.operations/01.guides/01.common/0001-subject.md"
+            runbook = root / "docs/05.operations/03.runbooks/01.common/0001-subject.md"
             for path in (specs, ops, catalog, guide, runbook):
                 path.parent.mkdir(parents=True, exist_ok=True)
             specs.write_text("[Operations](../05.operations/README.md)\n")
             ops.write_text("[Specs](../03.specs/README.md)\n")
             catalog.write_text(
-                "[OPER](../../guides/01-common/0001-subject.md), "
-                "[RUN](../../runbooks/01-common/0001-subject.md)\n"
+                "[OPER](../../01.guides/01.common/0001-subject.md), "
+                "[RUN](../../03.runbooks/01.common/0001-subject.md)\n"
             )
             guide.write_text("# Guide\n")
             runbook.write_text("# Runbook\n")
@@ -1756,11 +1761,11 @@ class DocumentLinksCliTests(unittest.TestCase):
         )
 
         files = {
-            "infra/README.md": "[sdlc](../docs/00.workspace/02.process/sdlc.md)\n"
+            "infra/README.md": "[sdlc](../docs/00.workspace/03.process/sdlc.md)\n"
             "[spec](../docs/03.specs/0001-x/spec.md)\n",
             "docs/README.md": "# Docs\n\n[sdlc](00.workspace/02.process/sdlc.md)\n",
             "docs/00.workspace/README.md": "# W\n",
-            "docs/00.workspace/02.process/sdlc.md": "# SDLC\n",
+            "docs/00.workspace/03.process/sdlc.md": "# SDLC\n",
             "docs/03.specs/0001-x/spec.md": "# Spec\n",
         }
         with tempfile.TemporaryDirectory() as temp:
@@ -1902,7 +1907,7 @@ class DocumentLinksCliTests(unittest.TestCase):
                 "<!-- [history](docs/03.specs/example.md) -->\n"
                 "<!--\n[history](docs/03.specs/example.md)\n-->\n"
                 "Output example: `docs/03.specs/0001-example/spec.md`\n"
-                "Historical decision: ADR-0032 (`docs/02.architecture/decisions/0032-old.md`).\n"
+                "Historical decision: ADR-0032 (`docs/02.architecture/02.decisions/0032-old.md`).\n"
                 "```text\ndocs/03.specs/0001-example/tasks/tsk-0001-example.md\n```\n"
                 "[external](https://example.org/docs/03.specs/example.md)\n"
                 "<https://github.com/other/project/blob/main/docs/03.specs/example.md>\n"
@@ -1944,7 +1949,7 @@ class DocumentLinksCliTests(unittest.TestCase):
             root = pathlib.Path(temp)
             templates = root / "docs/99.templates"
             shutil.copytree(
-                ROOT / "docs/99.templates/contracts", templates / "contracts"
+                ROOT / "docs/99.templates/01.contracts", templates / "contracts"
             )
             shutil.copy2(ROOT / "docs/99.templates/registry.json", templates)
             readme = root / "docs/01.requirements/README.md"
@@ -2018,14 +2023,14 @@ class LinkSelectionScopeTests(unittest.TestCase):
         module = load_links_cli()
         with tempfile.TemporaryDirectory() as raw:
             root = pathlib.Path(raw)
-            self._tree(root, "docs/90.references/audits/0001-a/README.md")
+            self._tree(root, "docs/90.references/02.audits/0001-a/README.md")
             untracked = root / "projects/vendor/README.md"
             untracked.parent.mkdir(parents=True, exist_ok=True)
             untracked.write_text("# vendored\n", encoding="utf-8")
             selected = {
                 path.relative_to(root).as_posix() for path in module._paths(root)
             }
-        self.assertIn("docs/90.references/audits/0001-a/README.md", selected)
+        self.assertIn("docs/90.references/02.audits/0001-a/README.md", selected)
         self.assertNotIn("projects/vendor/README.md", selected)
 
     def test_selection_covers_every_tracked_documentation_root(self) -> None:
@@ -2033,10 +2038,10 @@ class LinkSelectionScopeTests(unittest.TestCase):
         expected = (
             ".agents/governance/x.md",
             "docs/01.requirements/0001-a.md",
-            "docs/02.architecture/decisions/0001-a.md",
+            "docs/02.architecture/02.decisions/0001-a.md",
             "docs/03.specs/0001-a/spec.md",
             "docs/05.operations/catalog/00-workspace/0001-a/guide.md",
-            "docs/90.references/audits/0001-a/README.md",
+            "docs/90.references/02.audits/0001-a/README.md",
             "docs/98.archive/migrations/0001-a.md",
             "docs/99.templates/README.md",
         )
@@ -2058,7 +2063,7 @@ class LinkSelectionScopeTests(unittest.TestCase):
                 ("b", "retired"),
                 ("c", "active"),
             ):
-                target = root / f"docs/90.references/audits/0001-{name}/README.md"
+                target = root / f"docs/90.references/02.audits/0001-{name}/README.md"
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text(
                     f"---\nstatus: {status}\n---\n\n# {name}\n", encoding="utf-8"
@@ -2067,9 +2072,9 @@ class LinkSelectionScopeTests(unittest.TestCase):
             selected = {
                 node.path.as_posix() for node in module._current_graph(root).nodes
             }
-            self.assertNotIn("docs/90.references/audits/0001-a/README.md", selected)
-            self.assertNotIn("docs/90.references/audits/0001-b/README.md", selected)
-            self.assertIn("docs/90.references/audits/0001-c/README.md", selected)
+            self.assertNotIn("docs/90.references/02.audits/0001-a/README.md", selected)
+            self.assertNotIn("docs/90.references/02.audits/0001-b/README.md", selected)
+            self.assertIn("docs/90.references/02.audits/0001-c/README.md", selected)
 
     def test_all_mode_reads_each_tracked_document_once(self) -> None:
         from scripts.lib.document_governance import links
@@ -2168,17 +2173,17 @@ class LinkSelectionScopeTests(unittest.TestCase):
             root = pathlib.Path(raw)
             self._tree(
                 root,
-                "docs/90.references/research/0001-agentic-research-pack-refresh/x.md",
-                "docs/90.references/research/0002-agentic-engineering-research-pack/x.md",
-                "docs/90.references/research/0084-github-actions-platform/README.md",
+                "docs/90.references/01.research/0001-agentic-research-pack-refresh/x.md",
+                "docs/90.references/01.research/0002-agentic-engineering-research-pack/x.md",
+                "docs/90.references/01.research/0084-github-actions-platform/README.md",
             )
             selected = {
                 path.relative_to(root).as_posix() for path in module._paths(root)
             }
             for relative in (
-                "docs/90.references/research/0001-agentic-research-pack-refresh/x.md",
-                "docs/90.references/research/0002-agentic-engineering-research-pack/x.md",
-                "docs/90.references/research/0084-github-actions-platform/README.md",
+                "docs/90.references/01.research/0001-agentic-research-pack-refresh/x.md",
+                "docs/90.references/01.research/0002-agentic-engineering-research-pack/x.md",
+                "docs/90.references/01.research/0084-github-actions-platform/README.md",
             ):
                 self.assertIn(relative, selected)
 
@@ -2365,23 +2370,23 @@ class LanguageModeTests(unittest.TestCase):
         """SPEC-0187: the whole corpus, not only READMEs, reads in its language."""
 
         self.assertEqual(
-            {"docs/05.operations/guides/0001-x.md": {"document-language-mismatch"}},
-            self._codes({"docs/05.operations/guides/0001-x.md": self.ENGLISH}),
+            {"docs/05.operations/01.guides/0001-x.md": {"document-language-mismatch"}},
+            self._codes({"docs/05.operations/01.guides/0001-x.md": self.ENGLISH}),
         )
         self.assertEqual(
             {
-                "docs/02.architecture/decisions/0001-x.md": {
+                "docs/02.architecture/02.decisions/0001-x.md": {
                     "document-language-mismatch"
                 }
             },
-            self._codes({"docs/02.architecture/decisions/0001-x.md": self.KOREAN}),
+            self._codes({"docs/02.architecture/02.decisions/0001-x.md": self.KOREAN}),
         )
         self.assertEqual(
             {},
             self._codes(
                 {
-                    "docs/05.operations/guides/0001-x.md": self.KOREAN,
-                    "docs/02.architecture/decisions/0001-x.md": self.ENGLISH,
+                    "docs/05.operations/01.guides/0001-x.md": self.KOREAN,
+                    "docs/02.architecture/02.decisions/0001-x.md": self.ENGLISH,
                 }
             ),
         )
@@ -2439,7 +2444,7 @@ class RetiredPackageLinkTests(unittest.TestCase):
 
     def _task(self, status: str, target: str) -> dict[str, str]:
         return {
-            "docs/03.specs/0002-live/tasks/tsk-0001-a.md": self.TASK.format(
+            "docs/03.specs/0002-live/01.tasks/tsk-0001-a.md": self.TASK.format(
                 status=status, target=target
             )
         }
@@ -2466,7 +2471,7 @@ class RetiredPackageLinkTests(unittest.TestCase):
             with self.subTest(status=status, target=target):
                 codes = self._codes(
                     {
-                        "docs/03.specs/0002-live/tasks/tsk-0001-a.md": (
+                        "docs/03.specs/0002-live/01.tasks/tsk-0001-a.md": (
                             self.DATA_TASK.format(status=status, target=target)
                         )
                     }
@@ -2488,7 +2493,7 @@ class RetiredPackageLinkTests(unittest.TestCase):
             with self.subTest(second=second):
                 codes = self._codes(
                     {
-                        "docs/03.specs/0002-live/tasks/tsk-0001-a.md": (
+                        "docs/03.specs/0002-live/01.tasks/tsk-0001-a.md": (
                             self.MULTI_ITEM.format(second=second)
                         )
                     }
@@ -2507,7 +2512,9 @@ class RetiredPackageLinkTests(unittest.TestCase):
         self.assertIsNone(registry)
         self.assertEqual(frozenset(), links._reserved_spec_numbers(registry))
         node = links.DocumentNode(
-            path=pathlib.PurePosixPath("docs/03.specs/0002-live/tasks/tsk-0001-a.md"),
+            path=pathlib.PurePosixPath(
+                "docs/03.specs/0002-live/01.tasks/tsk-0001-a.md"
+            ),
             text=self.TASK.format(status="completed", target="0001-gone"),
             metadata={"status": "completed"},
             headings=(),
@@ -2521,7 +2528,7 @@ class RetiredPackageLinkTests(unittest.TestCase):
             "no registry": (self._task("completed", "0001-gone"), False),
             "outside Stage 03": (
                 {
-                    "docs/03.specs/0002-live/tasks/tsk-0001-a.md": (
+                    "docs/03.specs/0002-live/01.tasks/tsk-0001-a.md": (
                         self.TASK.format(status="completed", target="../../0001-gone")
                     )
                 },
@@ -2547,14 +2554,14 @@ class RetiredPackageLinkTests(unittest.TestCase):
 class MovedWorkspacePolicyLinkTests(RetiredPackageLinkTests):
     """A terminal Task keeps a link to a policy that moved to docs/00.workspace."""
 
-    POLICY = "docs/00.workspace/02.process/sdlc.md"
+    POLICY = "docs/00.workspace/03.process/sdlc.md"
     LINK = "---\ntitle: Fixture\ntype: sdlc/task\nstatus: {status}\n---\n# Fixture\n\n[sdlc](../../../../.agents/governance/{name}.md{fragment})\n"
 
     def _moved(self, status: str, name: str = "sdlc", fragment: str = "") -> list[str]:
         return self._codes(
             {
                 self.POLICY: "# SDLC\n\n## Sequence\n",
-                "docs/03.specs/0002-live/tasks/tsk-0001-a.md": self.LINK.format(
+                "docs/03.specs/0002-live/01.tasks/tsk-0001-a.md": self.LINK.format(
                     status=status, name=name, fragment=fragment
                 ),
             }
@@ -2644,7 +2651,7 @@ class FencedCommandPathTests(unittest.TestCase):
                 findings = self._findings(
                     {
                         "scripts/keep.sh": "",
-                        "docs/03.specs/0001-a/tasks/tsk-0001-a.md": task.format(
+                        "docs/03.specs/0001-a/01.tasks/tsk-0001-a.md": task.format(
                             status=status
                         ),
                     }
@@ -2668,7 +2675,7 @@ class FencedCommandPathTests(unittest.TestCase):
                 findings = self._findings(
                     {
                         "scripts/keep.sh": "",
-                        "docs/03.specs/0001-a/tasks/tsk-0001-a.md": task.format(
+                        "docs/03.specs/0001-a/01.tasks/tsk-0001-a.md": task.format(
                             second=second
                         ),
                     }
@@ -3088,7 +3095,7 @@ class RelationLookupTests(unittest.TestCase):
                 sys.executable,
                 "scripts/validation/check-document-links.py",
                 "--impact",
-                "docs/00.workspace/02.process/sdlc.md",
+                "docs/00.workspace/03.process/sdlc.md",
             ],
             cwd=ROOT,
             capture_output=True,

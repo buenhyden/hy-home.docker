@@ -1,10 +1,10 @@
 ---
 title: "Provider Adapters"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Provider Adapters
@@ -62,8 +62,8 @@ Provider adapter는 공유 동작을 소유하지 않으며, `registry.yaml`은 
 #### Policy and Templates
 
 - [Governance hub](../../README.md)
-- [문서 작성 계약](../../../docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- README 템플릿 `docs/99.templates/templates/governance/provider-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
+- [문서 작성 계약](../../../docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- README 템플릿 `docs/99.templates/02.templates/91.agent-governance/provider-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
 ### Checks
 

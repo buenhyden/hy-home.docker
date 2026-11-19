@@ -1,10 +1,10 @@
 ---
 title: "security-auditor"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 agent_id: "security-auditor"
 scope: "security"
 tier: "worker"
@@ -55,7 +55,7 @@ Stop on sensitive payload exposure or missing authorization; redact evidence and
 
 ## Related Documents
 
-- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
 - [Container threat modeling](../skills/container-threat-modeling/SKILL.md)
 - [Security audit function](../skills/security-audit/SKILL.md)
-- [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md)
+- [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)

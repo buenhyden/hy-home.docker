@@ -1,10 +1,10 @@
 ---
 title: "Owned OpenBao Build"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Owned OpenBao build
@@ -171,7 +171,7 @@ P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증�
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0085: `docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md`
+- RUN-0085: `docs/05.operations/03.runbooks/04.security-and-secrets/0085-openbao.md`
 
 #### Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-03"
 ---
 
@@ -105,13 +105,13 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 #### Runbook Links
 
 - [Kafka LAB Compose](docker-compose.yml)
-- [운영 가이드 목록](../../docs/05.operations/guides/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0108 kafka-cluster, RUN-0107 lab-promotion
-- [06-messaging-and-cdc runbooks](../../docs/05.operations/runbooks/06-messaging-and-cdc/README.md): RUN-0036 kafka
+- [운영 가이드 목록](../../docs/05.operations/01.guides/README.md)
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0108 kafka-cluster, RUN-0107 lab-promotion
+- [06-messaging-and-cdc runbooks](../../docs/05.operations/03.runbooks/06.messaging-and-cdc/README.md): RUN-0036 kafka
 
 #### Observability and Recovery
 
-`lab-kafka-init`은 세 broker가 healthy일 때 topic `lab-events`, `lab-logs`를 만들며 생성 job 성공과 실제 topic 상태는 별개로 확인해야 한다. 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0108 Kafka cluster LAB Runbook를 따른다.
+`lab-kafka-init`은 세 broker가 healthy일 때 topic `lab-events`, `lab-logs`를 만들며 생성 job 성공과 실제 topic 상태는 별개로 확인해야 한다. 복구는 [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md)의 RUN-0108 Kafka cluster LAB Runbook를 따른다.
 
 복구에는 topic record/config, partition, consumer offset와 KRaft metadata를
 포함합니다. Schema Registry·Connect의 subject, connector 정의와

@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Implementation"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # OpenTofu
@@ -27,7 +27,7 @@ Lifecycle: **DEV job**. 루트 Compose가 이 정의를 include하며 명시적 
 
 #### Scope
 
-로컬 서비스 정의와 구현 탐색. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/10-platform-and-backup/0082-opentofu.md`, `docs/05.operations/policies/10-platform-and-backup/0082-opentofu.md`, `docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`(ID: `GDE-0082`, `POL-0082`, `RUN-0082`)가 담당합니다.
+로컬 서비스 정의와 구현 탐색. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/01.guides/10.platform-and-backup/0082-opentofu.md`, `docs/05.operations/02.policies/10.platform-and-backup/0082-opentofu.md`, `docs/05.operations/03.runbooks/10.platform-and-backup/0082-opentofu.md`(ID: `GDE-0082`, `POL-0082`, `RUN-0082`)가 담당합니다.
 
 #### Structure
 
@@ -93,8 +93,8 @@ CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버�
 - [Documentation index](../../../docs/README.md)
 - [Public secret contract](../../../secrets/README.md)
 
-- Runbook: `docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`(RUN-0082)
+- Runbook: `docs/05.operations/03.runbooks/10.platform-and-backup/0082-opentofu.md`(RUN-0082)
 
 #### Observability and Recovery
 
-`opentofu`는 `iac` 프로필의 운영자 트리거 CLI job이며 Compose 헬스체크가 선언되어 있지 않습니다. 복구와 backend·state 복원은 `docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`(RUN-0082)를 따르고, 새 버전 apply 뒤 이미지만 되돌리는 것은 복구로 보지 않습니다.
+`opentofu`는 `iac` 프로필의 운영자 트리거 CLI job이며 Compose 헬스체크가 선언되어 있지 않습니다. 복구와 backend·state 복원은 `docs/05.operations/03.runbooks/10.platform-and-backup/0082-opentofu.md`(RUN-0082)를 따르고, 새 버전 apply 뒤 이미지만 되돌리는 것은 복구로 보지 않습니다.

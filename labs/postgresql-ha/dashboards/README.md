@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL HA LAB 대시보드"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-11-05"
 ---
 
@@ -68,4 +68,4 @@ LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Prometheus·
 
 #### Observability and Recovery
 
-없음: HOME Prometheus가 LAB 서비스를 수집하지 않으므로 이 대시보드로 관측되는 데이터가 아직 없다. LAB 운영은 [상위 LAB README](../README.md)와 [15-labs runbooks](../../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0031 PostgreSQL 클러스터 Runbook를 따른다.
+없음: HOME Prometheus가 LAB 서비스를 수집하지 않으므로 이 대시보드로 관측되는 데이터가 아직 없다. LAB 운영은 [상위 LAB README](../README.md)와 [15-labs runbooks](../../../docs/05.operations/03.runbooks/15.labs/README.md)의 RUN-0031 PostgreSQL 클러스터 Runbook를 따른다.

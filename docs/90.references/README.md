@@ -1,10 +1,10 @@
 ---
 title: "References"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "references"
 ---
 
@@ -23,9 +23,9 @@ lifecycle stage가 사실을 평가하도록 돕지만 공통 Agent 거버넌스
 
 #### Inputs and Outputs
 
-- `research/`: 외부 증거와 출처 기반 분석(`RES-####`).
-- `audits/`: 특정 시점의 gap과 conformance 평가(`AUD-####`).
-- `data/`: 저장소 인벤토리와 구조화된 참고 데이터(`DATA-####`).
+- `01.research/`: 외부 증거와 출처 기반 분석(`RES-####`).
+- `02.audits/`: 특정 시점의 gap과 conformance 평가(`AUD-####`).
+- `03.data/`: 저장소 인벤토리와 구조화된 참고 데이터(`DATA-####`).
 
 ### Excluded Responsibilities
 
@@ -37,18 +37,18 @@ Stage 90은 공통 Agent 거버넌스 정책과 Stage 01 요구사항, Stage 02 
 
 | Path | Purpose |
 | --- | --- |
-| [research/](research/README.md) | 외부 증거와 출처 기반 분석(`RES-####`) |
-| [audits/](audits/README.md) | 특정 시점의 gap과 conformance 평가(`AUD-####`) |
-| [data/](data/README.md) | 저장소 인벤토리와 구조화된 참고 데이터(`DATA-####`) |
+| [01.research/](01.research/README.md) | 외부 증거와 출처 기반 분석(`RES-####`) |
+| [02.audits/](02.audits/README.md) | 특정 시점의 gap과 conformance 평가(`AUD-####`) |
+| [03.data/](03.data/README.md) | 저장소 인벤토리와 구조화된 참고 데이터(`DATA-####`) |
 
 #### Current Items
 
 ```text
 docs/90.references/
 ├── README.md
-├── research/####-<slug>/
-├── audits/####-<slug>/
-└── data/####-<slug>/
+├── 01.research/####-<slug>/
+├── 02.audits/####-<slug>/
+└── 03.data/####-<slug>/
 ```
 
 Package 경로는 번호만 사용하며 접두사와 날짜를 포함하지 않습니다. 안정 ID는
@@ -57,9 +57,9 @@ package는 `generated_by` provenance를 유지합니다.
 
 #### Current Categories
 
-- [Research packages](./research/README.md)
-- [Audit packages](./audits/README.md)
-- [Data packages](./data/README.md)
+- [Research packages](01.research/README.md)
+- [Audit packages](02.audits/README.md)
+- [Data packages](03.data/README.md)
 
 #### Authority Boundary
 
@@ -68,7 +68,7 @@ Stage 90은 비규범적입니다. 증거가 현재 owner와 충돌하면 현재
 supersede합니다. 실행 가능한 OpenAPI, GraphQL, Proto 계약은 해당 Stage 03
 Spec Package에 남습니다.
 
-[공통 Agent 거버넌스 작성 정책](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)이
+[공통 Agent 거버넌스 작성 정책](../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)이
 출처, 한계, 소비자, 신선도 기대치를 소유합니다. Diátaxis의 technical
 reference는 독자의 필요를 설명할 뿐이며 이것만으로 문서가 Stage 90 증거가
 되지는 않습니다. 생성된 데이터는 등록된 generator가 새로고침하며 손으로
@@ -96,18 +96,18 @@ reference는 독자의 필요를 설명할 뿐이며 이것만으로 문서가 S
 
 #### Upstream and Downstream
 
-이 stage는 [audits](audits/README.md), [data](data/README.md), [research](research/README.md) 세 범주 README로 이어지며, Stage 90 package는 현재 consumer가 존재하는 동안만 현재성을 유지합니다.
+이 stage는 [audits](02.audits/README.md), [data](03.data/README.md), [research](01.research/README.md) 세 범주 README로 이어지며, Stage 90 package는 현재 consumer가 존재하는 동안만 현재성을 유지합니다.
 
 #### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
-- [Documentation protocol](../00.workspace/02.process/documentation-protocol.md)
+- [Documentation protocol](../00.workspace/03.process/documentation-protocol.md)
 - [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)
-- [Research template](../99.templates/templates/references/research-pack.template.md)
-- [Audit template](../99.templates/templates/references/audit-pack.template.md)
-- [Data template](../99.templates/templates/references/data-pack.template.md)
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+- [Research template](../99.templates/02.templates/90.references/research-pack.template.md)
+- [Audit template](../99.templates/02.templates/90.references/audit-pack.template.md)
+- [Data template](../99.templates/02.templates/90.references/data-pack.template.md)
+- [README 템플릿](../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
 

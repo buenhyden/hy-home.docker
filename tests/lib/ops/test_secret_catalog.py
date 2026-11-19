@@ -24,7 +24,7 @@ PUBLIC = """| ID | Automation | Type | Value | Env | Path | Recorded | Purpose |
 | --- | --- |
 | COMM-003 | COMM-002 |
 """.encode()
-EVIDENCE = "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0010-p02-secret-catalog-and-views.md"
+EVIDENCE = "docs/03.specs/0204-service-integration-security-and-operations/01.tasks/tsk-0010-p02-secret-catalog-and-views.md"
 CLI = Path(__file__).resolve().parents[3] / "scripts/operations/secret-catalog.py"
 
 

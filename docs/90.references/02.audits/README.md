@@ -1,0 +1,107 @@
+---
+title: "Audit Packages"
+version: "2.1.1"
+type: "common/readme"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-11-18"
+layer: "references"
+created: "2026-07-02"
+---
+
+# Audit Packages
+
+## Responsibility
+
+### Purpose
+
+#### Purpose and Readers
+
+특정 시점의 gap, 구현, conformance 평가입니다. Audit package는 증거이며
+승인 gate가 아닙니다.
+
+Stage 90 authority boundary와 package lifecycle 규칙은
+[References index](../README.md)와 Stage 99 Registry가 정의합니다.
+
+#### Inputs and Outputs
+
+이 README는 현재 audit package 경로와 은퇴한 package의 번호 기록을 안내합니다. 평가의
+finding과 후속 조치는 해당 package 또는 이를 소유하는 Stage 03 Task에 남습니다.
+
+SPEC-0158이 이 범주를 은퇴시켰습니다. 현재 tree가 Stage 90 package 집합을
+정의합니다: package는 README가 존재하고 자신의 Stage 99 profile을 만족할 때
+존재합니다. package는 필요한 의미를 canonical owner로 옮기고 모든 inbound consumer를
+갱신하고 이 README의 package 목록에서 제거하는 같은 변경에서 제거되어 은퇴합니다.
+현재 tree가 membership을 결정합니다. 은퇴하는 package의 번호는
+[은퇴 전제 조건](../../00.workspace/03.process/documentation-protocol.md#retirement-preconditions)에 따라
+같은 변경에서 Stage 99 Registry의 `reserved_history`에 추가합니다.
+
+Stage 99 identity는 여전히 한 번만 소비됩니다. 은퇴한 package의 `AUD-`
+번호는 `identity-history-regression`이 재발급을 금지하므로 다시 사용하지
+않습니다.
+
+Stage 간 audit은 자신을 관장하는 Spec 아래의 Task에 둡니다. 이때 `task`는
+`package-member` profile이므로 전역 identity를 발급하지 않습니다.
+
+### Excluded Responsibilities
+
+평가의 finding과 후속 조치는 이 README가 아니라 해당 package 또는 이를 소유하는 Stage 03 Task에 남습니다. Audit package는 증거이며 승인 gate가 아닙니다.
+
+## Current Contents
+
+### Paths
+
+#### Current Items
+
+이 범주는 package를 보유하지 않습니다. SPEC-0158이 선언한 은퇴를
+완료한 상태입니다.
+
+열네 개 package가 2026-09-10에 은퇴했습니다. 각 package는 독자가 아니라
+등록된 consumer 덕분에 살아 있었습니다: 파일명을 매핑하던 criteria 계약,
+그 행을 단정하던 semantic-freshness checker, package 디렉터리를 읽던
+matrix generator, 그 경로를 이름 붙이던 metadata profile의 path
+allow-list입니다. 이 넷 모두 같은 변경에서 제거되었습니다. AUD-0019부터
+AUD-0032까지의 본문은 Git 이력에 있으며 그 번호는 Registry `reserved_history`가
+보관합니다. Registry는 AUD-0001부터 AUD-0097까지 발급된 모든 번호를
+`reserved_history`로 보관합니다.
+
+#### Dated Historical Snapshots
+
+은퇴한 audit snapshot은 metadata에 자신의 관찰 날짜를 유지하며 현재
+package 경로는 날짜를 포함하지 않습니다.
+
+AUD-0097은 2026-09-09에 은퇴했습니다. 네 결함 가운데 세 개는 tree에서
+수정되었지만 그동안 네 개의 운영 guide가 여전히 AUD-0097을 미해결 finding의
+owner로 링크하고 있었습니다. 남은 한 결함은 이를 소유하는 subject의
+guide로 옮겨졌습니다. 본문은 Git 이력에 있으며 그 번호는 Registry
+`reserved_history`가 보관합니다.
+
+### Owners
+
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [References index](../README.md)
+
+#### Policy and Templates
+
+- [Stage 99 Registry](../../99.templates/registry.json)
+- [문서 작성 계약](../../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/02.templates/93.common/readme-category.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
+
+#### Create and Review
+
+package는 `audits/####-<slug>/` 아래에만 만들고 대응하는 Stage 99
+템플릿을 사용합니다. 관찰 날짜, 인용, provenance, 활성 owner
+Traceability를 보존합니다.
+
+#### Transition and Exit
+
+같은 변경에서 inbound consumer와 목록을 갱신하고 은퇴 번호를 예약합니다.

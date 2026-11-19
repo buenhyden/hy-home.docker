@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster LAB"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -121,7 +121,7 @@ cluster 상태가 정상이 아니면 init job은 실패하며 자동 재초기�
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0022 valkey-cluster, RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0022 valkey-cluster, RUN-0107 lab-promotion
 
 #### Observability and Recovery
 

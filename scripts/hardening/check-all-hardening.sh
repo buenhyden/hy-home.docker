@@ -453,7 +453,7 @@ check_03_security() {
   check_contains "$agent_hcl" 'destination = "/openbao/out' "openbao-agent output destination missing"
   check_contains "$agent_hcl" 'static_secret_render_interval = "5m"' "openbao-agent static secret render interval mismatch"
   check_not_contains "$agent_hcl" "secret/data/example" "openbao-agent placeholder secret path"
-  check_contains "$requirement_file" "../02.architecture/descriptions/0003-security-architecture.md" "tier 03 requirement trace link missing"
+  check_contains "$requirement_file" "../02.architecture/01.descriptions/0003-security-architecture.md" "tier 03 requirement trace link missing"
 
   # hy-home.k8s policies stay read-only on secret/platform/*; no wildcard anywhere.
   local policy_file

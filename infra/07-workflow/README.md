@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -119,7 +119,7 @@ created: "2025-11-12"
 | Flower | opt-in(2026-11-10 owner 결정) | `airflow-flower` |
 | n8n core, workers, task runners | HOME | `workflow`, `workflow-n8n` |
 
-안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/08-workflows-and-automation/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
+안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/01.guides/08.workflows-and-automation/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/01.guides/08.workflows-and-automation/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
 
 ## Checks
 
@@ -139,7 +139,7 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 - [Data](../04-data/README.md)
 - [Observability](../06-observability/README.md)
 - [Gateway](../01-gateway/README.md)
-- **Auth Integration**: `docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md` (진입점: [docs/README.md](../../docs/README.md))
+- **Auth Integration**: `docs/05.operations/01.guides/03.identity-and-access/0079-application-auth-integration.md` (진입점: [docs/README.md](../../docs/README.md))
 - [Documentation index](../../docs/README.md)
 
 워크플로우 서비스는 소유자가 확인한 상시 HOME 역량입니다. 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../tech-stack.versions.json)으로 드리프트를 검증합니다.

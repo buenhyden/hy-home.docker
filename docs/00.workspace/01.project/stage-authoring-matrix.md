@@ -1,10 +1,10 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.5.0"
+version: "1.5.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Stage Authoring Matrix
@@ -87,8 +87,8 @@ The Stage 99 profile determines whether `layer` is required or omitted.
 Canonical governance paths state their authority outside the numbered stages;
 shared README profiles and native envelopes follow their registered exceptions.
 Document language and README navigation follow
-[documentation protocol](../02.process/documentation-protocol.md#document-language) and its
-[README navigation](../02.process/documentation-protocol.md#readme-navigation) rule.
+[documentation protocol](../03.process/documentation-protocol.md#document-language) and its
+[README navigation](../03.process/documentation-protocol.md#readme-navigation) rule.
 A template source declares the layer of its destination where the profile requires it.
 Stage ownership does not make an individual stage document a current instruction
 source for files outside docs. Use README navigation and canonical agent rules;
@@ -151,7 +151,7 @@ with their loaders.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](../02.process/approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../04.quality/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -180,13 +180,13 @@ The policy names no check that enforces or verifies any rule in this table; ever
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../02.process/approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../04.quality/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
-- [Documentation protocol](../02.process/documentation-protocol.md)
-- [SDLC](../02.process/sdlc.md)
+- [Documentation protocol](../03.process/documentation-protocol.md)
+- [SDLC](../03.process/sdlc.md)
 - Stage 99 registry (`docs/99.templates/registry.json`)
 - [Documentation index](../../README.md)

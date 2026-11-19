@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.9.1"
+version: "1.9.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
@@ -68,7 +68,7 @@ This package covers the governance model, canonical ownership, provider adapters
 | REQ-0024-FR-0014 | `.agents/`'s canonical categories are limited to governance, role, invocable skill, verified navigational knowledge, and reusable prompt contract, and paired Skill evaluation evidence; evaluation data is not loaded as execution instructions. Markdown instruction categories have a registered Stage 99 profile and canonical root inventory. Retired evaluator code, fixtures and event proofs must not remain recurring QA prerequisites. Knowledge and prompt content must not duplicate mandatory rules, detailed design, specifications, or runbook bodies, and must instead route to the canonical owner. No category owns execution progress state, and the current Spec Package Task remains the sole progress/handoff authority. Verified knowledge may preserve reusable durable domain facts with source, owner, validity, sensitivity, and invalidation; it remains navigation, not workflow authority. `.agents/evaluations/README.md` routes paired baseline/Skill task, raw output, scoring and aggregate evidence; representative results never imply all Skill membership or runtime acceptance. Current quality policy owns QA admission, agentic policy owns evaluation authority, and the active Task owns execution and acceptance. New evidence paths require bounded Stage 99 classification and canonical registration. | This package records no rationale for this requirement. | Every `.agents/` canonical category is one of the listed categories with a registered Stage 99 profile and root inventory for each Markdown instruction category; evaluation data is not loaded as execution instructions, and no category holds execution progress state. | must |
 | REQ-0024-FR-0015 | Claude and Codex must share one repository-local agent memory store that every worktree of a checkout reaches, in place of separate native provider memories. Updates must name the expected revision and never overwrite silently, and limits must be stated as what actually enforces them. What a record may hold is owned by the environment constraints policy, section 5. | This package records no rationale for this requirement. | Both providers read and revise the same memory record from different worktrees, and a stale revision changes nothing. | must |
 | REQ-0024-NFR-0009 | Rule interpretation and provider projection verification must be deterministic and fail closed, with no conflicting fallback; measure: the same tree yields the same projection verdict on every run. | The maintainer must be able to tell which document is canonical in a conflict, and a reviewer must be able to reproduce the projection difference and verification result. | The same tree yields the same projection verdict on every run, and an unknown or conflicting input fails instead of falling back. | must |
-| REQ-0024-NFR-0010 | Governance, role, skill, knowledge and prompt documents and the authored provider guidance are English, and every `README.md` is Korean; native keys, required headings, commands, quotations and preserved evidence retain their original syntax. Profile languages follow the [document language rule](../00.workspace/02.process/documentation-protocol.md#document-language). Provider adapters must not lose meaning; measure: registered metadata checks report no language-rule violation. | This package records no rationale for this requirement. | Registered metadata checks report no language-rule violation. | must |
+| REQ-0024-NFR-0010 | Governance, role, skill, knowledge and prompt documents and the authored provider guidance are English, and every `README.md` is Korean; native keys, required headings, commands, quotations and preserved evidence retain their original syntax. Profile languages follow the [document language rule](../00.workspace/03.process/documentation-protocol.md#document-language). Provider adapters must not lose meaning; measure: registered metadata checks report no language-rule violation. | This package records no rationale for this requirement. | Registered metadata checks report no language-rule violation. | must |
 | REQ-0024-NFR-0011 | Agent permissions must be minimum scope and must not expose or change secrets, credentials, private keys, tokens, or unapproved external state; measure: no tracked permission grants a write outside the approved scope. | An operator needs an explicit approval boundary so agent work does not expand into secrets, runtime, deployment or remote state. | No tracked permission grants a write outside the approved scope, and explicit skill invocation configuration does not expand permissions. | must |
 | REQ-0024-NFR-0012 | A verification failure must be able to identify its owner and the target to fix, and a duplicate aggregate gate must not own the same predicate more than once; measure: each failing check names one owner. | A reviewer must be able to reproduce the verification result. | Each failing check names one owner, and no predicate is owned by more than one aggregate gate. | must |
 | REQ-0024-NFR-0013 | The current document must match the tracked implementation, and legacy, deprecated, or conflicting rules must be removed from the current surface; measure: registered governance suites pass on the current tree. | The maintainer must be able to tell immediately which document is canonical in case of a conflict. | Registered governance suites pass on the current tree. | must |
@@ -155,7 +155,7 @@ This package covers the governance model, canonical ownership, provider adapters
   English, and every `README.md` is Korean; native keys, required headings,
   commands, quotations and preserved evidence retain their original syntax.
   Profile languages follow the
-  [document language rule](../00.workspace/02.process/documentation-protocol.md#document-language).
+  [document language rule](../00.workspace/03.process/documentation-protocol.md#document-language).
   Provider adapters must not lose meaning; measure: registered metadata
   checks report no language-rule violation.
 - **REQ-0024-NFR-0011 — Least privilege**: Agent permissions must be minimum scope and must not
@@ -230,10 +230,10 @@ Each condition is judged by running the registered governance and document suite
 
 #### Downstream Links
 
-- **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
+- **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../00.workspace/02.architecture/01.descriptions/0027-agent-governance-canonical-adapter.md)
 - **Historical implementation evidence**: SPEC-0158; SPEC-0264 (retired; version history) delivered folder guides; SPEC-0253 (retired; version history) removed the frozen archive payload boundary and the deleted-Task CI evidence owner from QA and CI; SPEC-0270 (retired; version history) delivered the 1 GiB shared memory capacity ledger, bounded read-only search and memory backup source
 - SPEC-0254 (retired; version history) delivered the plain-text stage identities in infra READMEs, the agent-governance suite selection for folder guide edits, the `common/agent-guide` type and the active folder guides.
 - SPEC-0251 (retired; version history) split folder README (people) from folder AGENTS.md (agents), added the placement rule and the nine first folder guides.
-- **Decision**: [ADR-0032 Canonical Agent Governance Home](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
-- **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
-- **Decision**: [ADR-0049 Shared Agent Memory Store](../02.architecture/decisions/0049-shared-agent-memory-store.md)
+- **Decision**: [ADR-0032 Canonical Agent Governance Home](../00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md)
+- **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../00.workspace/02.architecture/02.decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
+- **Decision**: [ADR-0049 Shared Agent Memory Store](../00.workspace/02.architecture/02.decisions/0049-shared-agent-memory-store.md)

@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL HA LAB"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -123,7 +123,7 @@ HAProxy stats password는 설정 문자를 검증하고 `/tmp`에 렌더합니�
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0031 postgresql-cluster, RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0031 postgresql-cluster, RUN-0107 lab-promotion
 
 #### Observability and Recovery
 

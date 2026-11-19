@@ -246,11 +246,11 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         postmortem = self.profiles["postmortem"]
         self.assertEqual("inc-{year:4}-{number:4}", incident["artifact_id_pattern"])
         self.assertEqual(
-            "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
+            "docs/05.operations/04.incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
             incident["path_pattern"],
         )
         self.assertEqual(
-            "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md",
+            "docs/05.operations/04.incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md",
             postmortem["path_pattern"],
         )
 
@@ -282,7 +282,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         self.assertTrue(
             is_valid_incident_path(
                 pathlib.PurePosixPath(
-                    "docs/05.operations/incidents/2026/"
+                    "docs/05.operations/04.incidents/2026/"
                     "inc-0001-control-plane-outage/incident.md"
                 )
             )
@@ -290,7 +290,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         self.assertTrue(
             is_valid_incident_path(
                 pathlib.PurePosixPath(
-                    "docs/05.operations/incidents/2026/"
+                    "docs/05.operations/04.incidents/2026/"
                     "inc-0001-control-plane-outage/postmortem.md"
                 )
             )
@@ -298,7 +298,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         self.assertFalse(
             is_valid_incident_path(
                 pathlib.PurePosixPath(
-                    "docs/05.operations/incidents/inc-0001-control-plane-outage/"
+                    "docs/05.operations/04.incidents/inc-0001-control-plane-outage/"
                     "incident.md"
                 )
             )
@@ -314,7 +314,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         metadata = {"type": "operation/incident", "artifact_id": "inc-2026-0001"}
         accepted = validate_stable_identity(
             pathlib.PurePosixPath(
-                "docs/05.operations/incidents/2026/"
+                "docs/05.operations/04.incidents/2026/"
                 "inc-0001-control-plane-outage/incident.md"
             ),
             metadata,
@@ -322,7 +322,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         )
         rejected = validate_stable_identity(
             pathlib.PurePosixPath(
-                "docs/05.operations/incidents/inc-0001-control-plane-outage/incident.md"
+                "docs/05.operations/04.incidents/inc-0001-control-plane-outage/incident.md"
             ),
             metadata,
             profiles,
@@ -332,7 +332,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         self.assertFalse(
             is_valid_incident_path(
                 pathlib.PurePosixPath(
-                    "docs/05.operations/incidents/2026/"
+                    "docs/05.operations/04.incidents/2026/"
                     "inc-001-control-plane-outage/incident.md"
                 )
             )
@@ -352,7 +352,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                 "identity_capture": "identity",
             },
         }
-        packet = "docs/05.operations/incidents/2026/inc-0001-outage"
+        packet = "docs/05.operations/04.incidents/2026/inc-0001-outage"
         swaps = (
             (
                 pathlib.PurePosixPath(f"{packet}/postmortem.md"),

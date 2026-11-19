@@ -621,7 +621,7 @@ class SpecPackageTests(unittest.TestCase):
     ) -> None:
         module = _spec_packages_module()
         task_path = pathlib.PurePosixPath(
-            "docs/03.specs/0001-example/tasks/tsk-0002-historical.md"
+            "docs/03.specs/0001-example/01.tasks/tsk-0002-historical.md"
         )
 
         def task_text(*, updated: str, parents: tuple[str, ...], newline: str = "\n"):
@@ -723,7 +723,7 @@ class SpecPackageTests(unittest.TestCase):
                 document(
                     integrated_text,
                     path=pathlib.PurePosixPath(
-                        "docs/03.specs/0001-example/tasks/tsk-0003-new.md"
+                        "docs/03.specs/0001-example/01.tasks/tsk-0003-new.md"
                     ),
                     artifact_id="SPEC-0001-TSK-0003",
                 ),
@@ -764,7 +764,7 @@ class SpecPackageTests(unittest.TestCase):
         )
         task = module.SpecDocument(
             pathlib.PurePosixPath(
-                "docs/03.specs/0001-example/tasks/tsk-0001-example.md"
+                "docs/03.specs/0001-example/01.tasks/tsk-0001-example.md"
             ),
             "task",
             "SPEC-0001-TSK-0001",
@@ -855,7 +855,7 @@ Narrative historical review without a structured acceptance table.
         )
         task = module.SpecDocument(
             pathlib.PurePosixPath(
-                "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+                "docs/03.specs/0001-example/01.tasks/tsk-0001-implement.md"
             ),
             "task",
             "SPEC-0001-TSK-0001",
@@ -906,7 +906,7 @@ Narrative historical review without a structured acceptance table.
         reassigned = dataclasses.replace(
             task,
             path=pathlib.PurePosixPath(
-                "docs/03.specs/0001-example/tasks/tsk-0002-implement.md"
+                "docs/03.specs/0001-example/01.tasks/tsk-0002-implement.md"
             ),
             artifact_id="SPEC-0001-TSK-0002",
         )
@@ -1088,7 +1088,7 @@ Narrative historical review without a structured acceptance table.
         unassigned_cancelled = dataclasses.replace(
             cancelled,
             path=pathlib.PurePosixPath(
-                "docs/03.specs/0001-example/tasks/tsk-0002-cancelled.md"
+                "docs/03.specs/0001-example/01.tasks/tsk-0002-cancelled.md"
             ),
             artifact_id="SPEC-0001-TSK-0002",
             cancellation={
@@ -1155,7 +1155,7 @@ No Plan work is assigned to this cancelled Task.
         registry = load_current_registry()
         plan_path = pathlib.PurePosixPath("docs/03.specs/0001-example/plan.md")
         task_path = pathlib.PurePosixPath(
-            "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+            "docs/03.specs/0001-example/01.tasks/tsk-0001-implement.md"
         )
         plan_header = (
             "| Work Unit | Criteria | Work | Dependencies | Task | Verification |\n"
@@ -1297,7 +1297,7 @@ Narrative after the registered table.
 """
         task = module.SpecDocument(
             pathlib.PurePosixPath(
-                "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+                "docs/03.specs/0001-example/01.tasks/tsk-0001-implement.md"
             ),
             "task",
             "SPEC-0001-TSK-0001",
@@ -1647,7 +1647,7 @@ Narrative after the registered table.
         mixed = (
             spec_packages.SpecDocument(
                 pathlib.PurePosixPath(
-                    "docs/03.specs/0001-fixture/tasks/tsk-0001-ready.md"
+                    "docs/03.specs/0001-fixture/01.tasks/tsk-0001-ready.md"
                 ),
                 "task",
                 "SPEC-0001-TSK-0001",
@@ -1656,7 +1656,7 @@ Narrative after the registered table.
             ),
             spec_packages.SpecDocument(
                 pathlib.PurePosixPath(
-                    "docs/03.specs/0001-fixture/tasks/tsk-0002-blocked.md"
+                    "docs/03.specs/0001-fixture/01.tasks/tsk-0002-blocked.md"
                 ),
                 "task",
                 "SPEC-0001-TSK-0002",
@@ -1696,7 +1696,7 @@ Narrative after the registered table.
         )
         task = spec_packages.SpecDocument(
             pathlib.PurePosixPath(
-                "docs/03.specs/0001-fixture/tasks/tsk-0001-fixture.md"
+                "docs/03.specs/0001-fixture/01.tasks/tsk-0001-fixture.md"
             ),
             "task",
             "SPEC-0001-TSK-0001",
@@ -1748,8 +1748,8 @@ Narrative after the registered table.
                     spec_packages.load_spec_packages(stage)
 
     ACTIVE_ROUTE_FILES = (
-        ROOT / "docs/00.workspace/02.process/documentation-protocol.md",
-        ROOT / "docs/00.workspace/03.quality/quality-standards.md",
+        ROOT / "docs/00.workspace/03.process/documentation-protocol.md",
+        ROOT / "docs/00.workspace/04.quality/quality-standards.md",
         ROOT / ".agents/skills/execution-plan-agent/SKILL.md",
         ROOT / ".claude/skills/execution-plan-agent/SKILL.md",
         ROOT / "README.md",
@@ -2218,7 +2218,7 @@ Narrative after the registered table.
                             "in-progress",
                         ),
                         (
-                            "docs/03.specs/0001-example/tasks/tsk-0001-implement.md",
+                            "docs/03.specs/0001-example/01.tasks/tsk-0001-implement.md",
                             "draft",
                             "in-progress",
                         ),
@@ -2815,7 +2815,7 @@ Narrative after the registered table.
 
         def task(text: str):
             return module.SpecDocument(
-                pathlib.PurePosixPath("docs/03.specs/0001-x/tasks/tsk-0001-x.md"),
+                pathlib.PurePosixPath("docs/03.specs/0001-x/01.tasks/tsk-0001-x.md"),
                 "task",
                 "SPEC-0001-TSK-0001",
                 "completed",
@@ -3473,7 +3473,7 @@ Narrative after the registered table.
             (
                 "in-progress",
                 "in-progress",
-                "docs/03.specs/0001-example/tasks/tsk-0001-implement.md",
+                "docs/03.specs/0001-example/01.tasks/tsk-0001-implement.md",
             ),
         ):
             with (
@@ -4438,7 +4438,7 @@ Narrative after the registered table.
         spec_path = pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")
         plan_path = pathlib.PurePosixPath("docs/03.specs/0001-example/plan.md")
         task_path = pathlib.PurePosixPath(
-            "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+            "docs/03.specs/0001-example/01.tasks/tsk-0001-implement.md"
         )
         prefix = (
             ("SPEC-0001", "draft", "review", "#spec-review"),
@@ -5213,7 +5213,7 @@ def _common_task_body(changes: dict[str, str] | None = None) -> str:
 class TerminalTaskBodyTests(unittest.TestCase):
     """A terminal Task body admits no change, not even a Resolves correction."""
 
-    PATH = pathlib.PurePosixPath("docs/03.specs/0001-example/tasks/tsk-0002-x.md")
+    PATH = pathlib.PurePosixPath("docs/03.specs/0001-example/01.tasks/tsk-0002-x.md")
     ROW = (
         "| Final hosted candidate recovery | 2, 3 | W70 | Actual PR candidate "
         "| PR 505 | PASS | Passed | required | {} |"
@@ -5259,7 +5259,7 @@ class TerminalTaskBodyTests(unittest.TestCase):
         )
 
     def test_correction_does_not_apply_to_another_task(self) -> None:
-        other = pathlib.PurePosixPath("docs/03.specs/0001-x/tasks/tsk-0001-x.md")
+        other = pathlib.PurePosixPath("docs/03.specs/0001-x/01.tasks/tsk-0001-x.md")
         before = self._task("2026-10-22", "Final hosted candidate", other)
         after = self._task(
             "2026-10-22",
@@ -6375,7 +6375,7 @@ class AcceptanceDecisionTests(unittest.TestCase):
         registry = load_current_registry()
         registry_path = pathlib.Path("docs/99.templates/registry.json")
         schema_path = pathlib.Path(
-            "docs/99.templates/contracts/document-profile.schema.json"
+            "docs/99.templates/01.contracts/document-profile.schema.json"
         )
         legacy = _generation6.generation6_registry()
         earlier = json.loads((ROOT / registry_path).read_text())
@@ -6717,7 +6717,7 @@ _PROMOTION_MAP = """
 
 ### Durable Meaning
 
-The contract lives in `docs/00.workspace/02.process/sdlc.md` and
+The contract lives in `docs/00.workspace/03.process/sdlc.md` and
 `docs/99.templates/registry.json`, the glossary and [the Task](tasks/tsk-0001-work.md).
 
 ### Owner and Receipt
@@ -6769,12 +6769,12 @@ class PromotionReadinessTests(unittest.TestCase):
                 "appears in no Promotion Receipt",
             ),
             self.readiness(
-                "Updated `docs/00.workspace/02.process/sdlc.md` in commit abc1234."
+                "Updated `docs/00.workspace/03.process/sdlc.md` in commit abc1234."
             ),
         )
         self.assertEqual(
             (
-                "Promotion Map target docs/00.workspace/02.process/sdlc.md "
+                "Promotion Map target docs/00.workspace/03.process/sdlc.md "
                 "appears in no Promotion Receipt",
                 "Promotion Map target docs/99.templates/registry.json "
                 "appears in no Promotion Receipt",
@@ -6784,7 +6784,7 @@ class PromotionReadinessTests(unittest.TestCase):
         # A longer file name does not stand for the target's own name.
         self.assertEqual(
             (
-                "Promotion Map target docs/00.workspace/02.process/sdlc.md "
+                "Promotion Map target docs/00.workspace/03.process/sdlc.md "
                 "appears in no Promotion Receipt",
             ),
             self.readiness("`docs/other-sdlc.md` and `registry.json`"),
@@ -6794,8 +6794,8 @@ class PromotionReadinessTests(unittest.TestCase):
         self,
     ) -> None:
         for receipt in (
-            "`docs/00.workspace/02.process/sdlc.md`, `docs/99.templates/registry.json` (abc1234)",
-            "Updated `docs/00.workspace/02.process/sdlc.md`; `registry.json` abbreviates its path.",
+            "`docs/00.workspace/03.process/sdlc.md`, `docs/99.templates/registry.json` (abc1234)",
+            "Updated `docs/00.workspace/03.process/sdlc.md`; `registry.json` abbreviates its path.",
             "Updated `sdlc.md`. No durable update to `registry.json` is needed: "
             "the change is read-only.",
         ):
@@ -6865,7 +6865,7 @@ Owner @owner.
         spec_packages = _spec_packages_module()
         receipt = (
             "\n## Handoff\n\n### Promotion Receipt\n\n"
-            "`docs/00.workspace/02.process/sdlc.md` and `docs/99.templates/registry.json`\n"
+            "`docs/00.workspace/03.process/sdlc.md` and `docs/99.templates/registry.json`\n"
             "\n### Next Owner\n\n@owner\n"
         )
         plan = dataclasses.replace(
@@ -7020,7 +7020,7 @@ class CorePackageGenerationTests(unittest.TestCase):
             7,
             package_generation(
                 common,
-                "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/x.md",
+                "docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/x.md",
             ),
         )
         self.assertEqual(7, package_generation(common, self.RECORDED / "spec.md"))
@@ -7261,7 +7261,7 @@ class CorePackageGenerationTests(unittest.TestCase):
         spec, plan, task = self.documents(
             self.CORE,
             _CORE_PLAN_TABLE + "\n## Promotion Map\n\n### Durable Owners\n\n"
-            "`docs/05.operations/guides/x.md` holds it.\n\n"
+            "`docs/05.operations/01.guides/x.md` holds it.\n\n"
             "### Consumer Updates\n\nNone.\n",
             "## Handoff\n\n### Promotion Receipt\n\nNothing yet.\n",
         )
@@ -7270,7 +7270,7 @@ class CorePackageGenerationTests(unittest.TestCase):
         )
         self.assertEqual(
             (
-                "Promotion Map target docs/05.operations/guides/x.md appears "
+                "Promotion Map target docs/05.operations/01.guides/x.md appears "
                 "in no Promotion Receipt",
             ),
             module._promotion_findings(package),

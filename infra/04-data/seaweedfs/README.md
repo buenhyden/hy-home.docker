@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-12-06"
 ---
 
@@ -94,12 +94,12 @@ HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0024: `docs/05.operations/runbooks/05-databases-and-storage/0024-seaweedfs.md`
+- RUN-0024: `docs/05.operations/03.runbooks/05.databases-and-storage/0024-seaweedfs.md`
 
 #### Related Documents
 
 [문서 진입점](../../../docs/README.md)에서 Stage 05 subject
-`docs/05.operations/guides/05-databases-and-storage/0024-seaweedfs.md`와 POL-0021을 찾으십시오. 공식 소스:
+`docs/05.operations/01.guides/05.databases-and-storage/0024-seaweedfs.md`와 POL-0021을 찾으십시오. 공식 소스:
 [data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup),
 [security](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration),
 [license](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE).

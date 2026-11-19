@@ -1,0 +1,162 @@
+---
+title: "Reference: GitHub Actions Platform Mechanics"
+version: "2.4.1"
+type: "reference/research-pack"
+status: "published"
+owner: "@buenhyden"
+updated: "2026-11-18"
+layer: "references"
+artifact_id: "RES-0084"
+created: "2026-07-05"
+observed_at: "2026-09-05"
+---
+
+# Reference: GitHub Actions Platform Mechanics
+
+## Responsibility
+
+### Purpose
+
+#### Overview
+
+이 저장소에 중요한 GitHub Actions 보안, 실행, 권한, identity,
+supply-chain, runner, remote-enforcement mechanics는 무엇이며, 그 가운데
+실제로 구성되었거나 실행되었거나 remote로 검증된 것은 무엇인가?
+
+세부 platform 분석은
+[RES-0084-m0001](m0001-platform-mechanics.md)이 소유합니다. 이 README는
+package question, 증거 경계, 결과 요약, navigation만 소유합니다.
+
+이 package는 [RES-0002](../0002-agentic-engineering-research-pack/README.md)의
+cross-package routing 아래에서 GitHub Actions 전문 증거를 소유합니다.
+경쟁하는 workspace baseline이나 일반 automation inventory가 아닙니다:
+현재 cross-category 결론은 RES-0002를 통해 route되고, 세부 workflow,
+Hosted, remote-control-plane 증거는 여기 남습니다.
+
+#### Scope
+
+- 저장소 baseline: `buenhyden/hy-home.docker`
+  `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+- 저장소와 외부 관찰 날짜: 2026-09-05.
+- 포함: workflow 권한, token/OIDC 모델, trigger, untrusted input, action
+  pinning, concurrency, runner, aggregate gate, ruleset, required check,
+  Hosted 증거, rollback.
+- 제외: secret 값, 승인된 read-back에 없는 조직 정책, environment/deployment
+  변경, artifact publication, 새 workflow dispatch, tag, release.
+- Stage 90은 증거와 implication을 기록합니다. Workflow/configuration
+  권위는 `.github/`에, 실행 증거는 소유 Task에, remote 사실은 날짜가 있는
+
+### Excluded Responsibilities
+
+- Remote protection은 2026-09-05 read-back 시점에만 검증되었습니다;
+  이후 상태는 다를 수 있습니다.
+- 이번 갱신에서는 secret, environment 값, artifact, raw log, 조직 수준
+  Actions 정책을 조회하지 않았습니다.
+- 새 workflow dispatch나 deployment, release, tag, provider 변경은
+  없었습니다.
+- Hosted CI 성공은 명명된 revision과 run만 증명하며, 미래 runner나 외부
+  서비스 가용성을 증명하지 않습니다.
+- GitHub platform 문서는 2026-09-05 이후 바뀔 수 있습니다.
+- 2026-09-05 이후의 required-check 대체(`validation-changed`/`validation-full`
+  → `candidate-quality`)와 rollback 기준은 이 package가 다시 평가하지 않았으며
+  [main protection record](../../../../.github/rulesets/main-protection.md)가
+  현재 기록을 소유합니다.
+
+## Current Contents
+
+### Paths
+
+| Path | Purpose |
+| --- | --- |
+| [m0001-platform-mechanics.md](m0001-platform-mechanics.md) | RES-0084-m0001: workflow 권한, OIDC, supply chain, runner, ruleset의 claim 단위 platform 분석 |
+
+### Owners
+
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 member의 소유자는 이 README가 따로 기록하지 않습니다.
+
+## Usage
+
+### Entry Points
+
+- 현재 required check와 그 rollback 기준은
+  [main protection record](../../../../.github/rulesets/main-protection.md)가
+  소유합니다. 이 package의 2026-09-05 aggregate-job 관찰에서 현재 remote
+  상태를 추론하지 않고, job 표시 이름에서 대체를 추론하지 않습니다.
+- 명시적 least-privilege 권한과 불변 action SHA를 계속 사용합니다.
+- OIDC, environment, promotion, deployment는 명명된 target, trust
+  boundary, 승인, 수용, rollback 계약이 생긴 뒤에만 도입합니다.
+- 어떤 구현이든 Requirement → Architecture/ADR → Spec → Plan → Task →
+  검증 → 독립 검토를 거쳐 route합니다.
+
+#### Related Documents
+
+- Member: [RES-0084-m0001](m0001-platform-mechanics.md).
+- Research index: [Research Packages](../README.md).
+- 관련 주제 연구: [automation](../0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md),
+  [quality](../0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md),
+  [security](../0002-agentic-engineering-research-pack/m0017-security-governance.md),
+  [verification](../0002-agentic-engineering-research-pack/m0019-verification-validation.md).
+- 과거 baseline 종합: [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md). 현재 검증 경로는 [검증 정책](../../../00.workspace/04.quality/quality-standards.md#4-execution-boundary)과 추적된 workflow에서 확인합니다.
+- 날짜가 있는 baseline/recovery 증거:
+  [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md).
+- Governance: [공통 Agent 거버넌스](../../../../.agents/README.md).
+- Requirement/Architecture: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
+  [AD-0027](../../../00.workspace/02.architecture/01.descriptions/0027-agent-governance-canonical-adapter.md),
+  [ADR-0032 Canonical Agent Governance Home](../../../00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md).
+- Implementation/evidence: 완료된 SPEC-0172 결과와
+  현재 lifecycle reconciliation.
+- Templates and Registry: [research-pack template](../../../99.templates/02.templates/90.references/research-pack.template.md),
+  [research-member template](../../../99.templates/02.templates/90.references/research.template.md),
+  [Registry](../../../99.templates/registry.json).
+
+### Checks
+
+#### Method
+
+1. 600줄짜리 package README를 남기거나 경쟁하는 research package를
+   만드는 대신, 기존 platform 분석을 구성원으로 보존합니다.
+2. 현재 workflow YAML과 typed workflow 계약을 2026-09-05에 다시 연 공식
+   GitHub 문서와 비교합니다.
+3. 추적된 configuration을 remote 증거로 취급하지 않고 SPEC-0172의 정확한
+   Hosted 실행과 remote protection 증거를 사용합니다.
+4. claim을 Configured, Repository-enforced, Hosted-executed,
+   Remote-verified, Unverified로 분류합니다.
+5. 분리 이후 구성원 identity, 링크, 생성된 index 신선도, public 저장소
+   gate를 검증합니다.
+
+#### Sources
+
+- [GitHub ruleset status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
+- [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use).
+- [GitHub Actions script injection](https://docs.github.com/en/actions/concepts/security/script-injections).
+- [GitHub Actions OIDC](https://docs.github.com/en/actions/reference/security/oidc).
+- [Workflow contract](../../../../.github/workflow-contract.yml)와
+  [CI Quality Gates](../../../../.github/workflows/ci-quality.yml).
+- [Main protection record](../../../../.github/rulesets/main-protection.md).
+- 완료된 SPEC-0172 결과.
+
+세부 source inventory와 claim 단위 분석은 구성원이 소유합니다.
+
+#### Findings
+
+아래 표는 2026-09-05의 관측입니다.
+
+| Category | Member | Repository state | Evidence depth | Priority |
+| --- | --- | --- | --- | --- |
+| Permissions, OIDC, reusable actions/workflows, untrusted input, supply chain, execution, rulesets, runners, and static analysis | [Platform mechanics](m0001-platform-mechanics.md) | workflow 여섯 개; CI aggregate job 두 개; full-SHA action pin; least-privilege 권한 | Configured, Repository-enforced, Hosted-executed | High |
+| Required status checks | [Platform mechanics](m0001-platform-mechanics.md) | `strict=true`; `validation-changed`와 `validation-full`이 app ID 15368에 결합됨 | 2026-09-05에 Remote-verified | High |
+| CD, OIDC, environment, deployment, release | [Platform mechanics](m0001-platform-mechanics.md) | 당시 확인된 운영 대상이나 발행 경로 없음 | Unverified / 채택되지 않음 | target이 생기면 High |
+
+이전 package revision 대비 가장 큰 변화는 구조적입니다: 세부 분석이
+구성원으로 옮겨졌습니다. 가장 큰 증거 변화는 Hosted aggregate job과
+remote required-check 대체를 관측했다는 점입니다. 해당 관측 범위에는 실제
+배포 및 제품 발행 실행이 포함되지 않았습니다.
+
+Revalidated 2026-11-06: `.github/workflows/`에는 이제 workflow 다섯 개
+(`ci-quality.yml`, `greetings.yml`, `pr-labeler.yml`, `publish-release.yml`,
+`stale.yml`)가 있습니다. `ci-quality.yml`은 PR 후보 집계 검사 `candidate-quality`와
+`main` 푸시 보안 검사 `main-security`를 분리합니다. `main`
+required check는 2026-10-07에 비워졌고 2026-10-16부터 App 15368의
+`candidate-quality` 하나입니다(`.github/rulesets/main-protection.md:53`, `:88`).
+`publish-release.yml`은 `main`에서 준비된 제품 버전을 수동으로 발행하는 경로를
+정의합니다. 이 설정 관측은 발행이나 배포 실행을 검증하지 않습니다.

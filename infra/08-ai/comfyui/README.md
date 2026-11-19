@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Implementation"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # ComfyUI
@@ -23,7 +23,7 @@ Lifecycle: **OPTIONAL** (소유자가 2026-11-09 HOME에서 제외). 루트 Comp
 
 #### Scope
 
-로컬 서비스 정의와 구현 탐색. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/09-ai-and-search/0081-comfyui.md`, `docs/05.operations/policies/09-ai-and-search/0081-comfyui.md`, `docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`(ID: `GDE-0081`, `POL-0081`, `RUN-0081`)가 담당합니다.
+로컬 서비스 정의와 구현 탐색. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/01.guides/09.ai-and-search/0081-comfyui.md`, `docs/05.operations/02.policies/09.ai-and-search/0081-comfyui.md`, `docs/05.operations/03.runbooks/09.ai-and-search/0081-comfyui.md`(ID: `GDE-0081`, `POL-0081`, `RUN-0081`)가 담당합니다.
 
 #### Structure
 
@@ -85,7 +85,7 @@ Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되�
 - Classification: **OPTIONAL**. Exact profile: `ai-image`.
 - Source authority: 이 패키지의 Compose와 선택된 이미지/빌드 입력. `infra/tech-stack.versions.json`은 파생 프로젝션입니다.
 - Root preflight: `docker compose --profile ai-image config --quiet`. Root targeted start: `docker compose --profile ai-image up -d comfyui`.
-- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/09-ai-and-search/0081-comfyui.md`; ID: `GDE-0081`, `POL-0081`, `RUN-0081`.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/01.guides/09.ai-and-search/0081-comfyui.md`; ID: `GDE-0081`, `POL-0081`, `RUN-0081`.
 - 해당 런북의 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다. 모델/콘텐츠 출처를 보존하고, 실행 중인 파일시스템 복사본을 복구 근거로 사용하지 않습니다.
 
 ## Checks
@@ -102,8 +102,8 @@ Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되�
 - [Documentation index](../../../docs/README.md)
 - [Public secret contract](../../../secrets/README.md)
 
-- Runbook: `docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`(RUN-0081)
+- Runbook: `docs/05.operations/03.runbooks/09.ai-and-search/0081-comfyui.md`(RUN-0081)
 
 #### Observability and Recovery
 
-`comfyui`에는 Compose 헬스체크가 선언되어 있으나 설정 검사 통과는 런타임 준비 상태를 증명하지 않습니다. 복구와 ComfyUI-Manager 보안 값 정정은 `docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`(RUN-0081)가 소유합니다.
+`comfyui`에는 Compose 헬스체크가 선언되어 있으나 설정 검사 통과는 런타임 준비 상태를 증명하지 않습니다. 복구와 ComfyUI-Manager 보안 값 정정은 `docs/05.operations/03.runbooks/09.ai-and-search/0081-comfyui.md`(RUN-0081)가 소유합니다.

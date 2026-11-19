@@ -1721,8 +1721,8 @@ def readiness_case(cpus=1.0, memory=GIB, **changes):
                 {"kind": "observability", "owner": "infra/06-observability/"}
             ],
             documents={
-                "guide": "docs/05.operations/guides/15-labs/0022-valkey-cluster.md",
-                "runbook": "docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md",
+                "guide": "docs/05.operations/01.guides/15.labs/0022-valkey-cluster.md",
+                "runbook": "docs/05.operations/03.runbooks/15.labs/0022-valkey-cluster.md",
             },
             resources={
                 "services": {
@@ -2401,7 +2401,7 @@ class ReadinessTests(unittest.TestCase):
 
     def test_allowance_matches_policy(self) -> None:
         policy = (
-            ROOT / "docs/05.operations/policies/15-labs/0107-lab-promotion.md"
+            ROOT / "docs/05.operations/02.policies/15.labs/0107-lab-promotion.md"
         ).read_text(encoding="utf-8")
         rows = {}
         for line in policy.splitlines():
@@ -2418,7 +2418,7 @@ class ReadinessTests(unittest.TestCase):
 
     def test_reserve_matches_policy(self) -> None:
         policy = (
-            ROOT / "docs/05.operations/policies/15-labs/0107-lab-promotion.md"
+            ROOT / "docs/05.operations/02.policies/15.labs/0107-lab-promotion.md"
         ).read_text(encoding="utf-8")
         rows = {}
         for line in policy.splitlines():

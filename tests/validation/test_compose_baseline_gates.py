@@ -61,7 +61,7 @@ class ComposeSelectionValidationTests(unittest.TestCase):
             existing_secret.write_text("existing-synthetic\n", encoding="utf-8")
             policy = (
                 root
-                / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+                / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
             )
             policy.parent.mkdir(parents=True)
             policy.write_text(
@@ -326,7 +326,7 @@ elif "--format" in args:
             (root / ".env.example").write_text("EXAMPLE=1\n", encoding="utf-8")
             policy = (
                 root
-                / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+                / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
             )
             policy.parent.mkdir(parents=True)
             policy.write_text(
@@ -5021,7 +5021,7 @@ def _canonical_corpus_fixture(root: Path) -> None:
         "docker-compose.yml": "include: [infra/app/docker-compose.yml]\n",
         "infra/app/docker-compose.yml": "services:\n  app: {profiles: [dev]}\n",
         "infra/app/Dockerfile": "FROM busybox:1.37\n",
-        "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md": "| Profile | Category | Purpose | Selected services |\n"
+        "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md": "| Profile | Category | Purpose | Selected services |\n"
         "| --- | --- | --- | --- |\n| `dev` | baseline | fixture | `app` |\n",
         ".gitignore": "/infra/cache/\n",
     }
@@ -5175,7 +5175,7 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             r"^\| HOME \| (.+?) \|",
             (
                 ROOT
-                / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+                / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
             ).read_text(encoding="utf-8"),
             re.M,
         )
@@ -6455,7 +6455,7 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
                         continue
                     url = rule["annotations"]["runbook_url"]
                     self.assertTrue(
-                        url.startswith(prefix + "docs/05.operations/runbooks/"),
+                        url.startswith(prefix + "docs/05.operations/03.runbooks/"),
                         rule["alert"],
                     )
                     self.assertFalse(url.endswith("README.md"), rule["alert"])

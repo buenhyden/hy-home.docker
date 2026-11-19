@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Implementation"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # OpenBao
@@ -184,11 +184,11 @@ Compose, build 소스, 공개 환경 키, secret 참조를 일관되게 유지�
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0085: `docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md`
-- RUN-0103: `docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md`
-- RUN-0104: `docs/05.operations/runbooks/04-security-and-secrets/0104-openbao-metrics-credential.md`
-- RUN-0105: `docs/05.operations/runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md`
-- RUN-0106: `docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md`
+- RUN-0085: `docs/05.operations/03.runbooks/04.security-and-secrets/0085-openbao.md`
+- RUN-0103: `docs/05.operations/03.runbooks/04.security-and-secrets/0103-openbao-renderer-delivery.md`
+- RUN-0104: `docs/05.operations/03.runbooks/04.security-and-secrets/0104-openbao-metrics-credential.md`
+- RUN-0105: `docs/05.operations/03.runbooks/04.security-and-secrets/0105-openbao-maintenance-window.md`
+- RUN-0106: `docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md`
 
 #### Related Documents
 

@@ -151,7 +151,7 @@ def _tracked_repository_markdown(root: pathlib.Path) -> list[pathlib.Path]:
 def _tracked_machine_templates(root: pathlib.Path) -> list[pathlib.Path]:
     result = _run_git(
         root,
-        ["ls-files", "-z", "--", "docs/99.templates/templates/"],
+        ["ls-files", "-z", "--", "docs/99.templates/02.templates/"],
         operation="machine template discovery",
     )
     if result.returncode != 0:

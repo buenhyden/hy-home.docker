@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions Plan"
-version: "1.0.5"
+version: "1.0.6"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0218-PLAN-0001"
 parent_ids:
@@ -131,5 +131,5 @@ Schema-v2 exceptions and effective-control validation (W1 to W8) and the P07 mea
 
 Owner @buenhyden. Receipts are in TSK-0001 (W1 to W8) and TSK-0002 (W9 to W16).
 
-- [Task](tasks/tsk-0001-common-controls-and-exceptions.md)
-- [P07 root resource optimization](tasks/tsk-0002-p07-root-resource-optimization.md)
+- [Task](01.tasks/tsk-0001-common-controls-and-exceptions.md)
+- [P07 root resource optimization](01.tasks/tsk-0002-p07-root-resource-optimization.md)

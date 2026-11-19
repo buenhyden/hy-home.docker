@@ -1,10 +1,10 @@
 ---
 title: "doc-writer"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 agent_id: "doc-writer"
 scope: "docs"
 tier: "worker"
@@ -56,7 +56,7 @@ Stop when ownership, source truth, language boundary, or archive provenance is a
 
 ## Related Documents
 
-- [Documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)
+- [Documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)
 - [ADR writing](../skills/adr-writing/SKILL.md)
 - [Knowledge map](../skills/knowledge-map-agent/SKILL.md)
 - [Operations runbook authoring](../skills/ops-runbook-agent/SKILL.md)

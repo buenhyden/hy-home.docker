@@ -1,10 +1,10 @@
 ---
 title: "WARNING: canonical governance root authority edit"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -25,7 +25,7 @@ Apply the declared `warn` action for warn-governance-memory-edit.
 
 ### Authority
 
-Watched authorities: `.agents/README.md` (governance inventory) and `docs/00.workspace/02.process/sdlc.md`.
+Watched authorities: `.agents/README.md` (governance inventory) and `docs/00.workspace/03.process/sdlc.md`.
 
 ## Scope
 

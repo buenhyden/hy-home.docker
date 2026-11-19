@@ -1,10 +1,10 @@
 ---
 title: "k6 성능 시험 인프라"
-version: "1.7.0"
+version: "1.7.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-03-26"
 ---
 
@@ -285,11 +285,11 @@ Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제
 
 #### Runbook Links
 
-- **Guide**: k6 Performance Testing Guide (`docs/05.operations/guides/12-testing-and-quality/0061-k6.md`)
-- **Policy**: k6 operations policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`)
-- **Runbook**: k6 recovery runbook (`docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md`)
+- **Guide**: k6 Performance Testing Guide (`docs/05.operations/01.guides/12.testing-and-quality/0061-k6.md`)
+- **Policy**: k6 operations policy (`docs/05.operations/02.policies/12.testing-and-quality/0061-k6.md`)
+- **Runbook**: k6 recovery runbook (`docs/05.operations/03.runbooks/12.testing-and-quality/0061-k6.md`)
 - [Documentation index](../../../docs/README.md)
-- [12-testing-and-quality runbooks](../../../docs/05.operations/runbooks/12-testing-and-quality/README.md): RUN-0061 k6, RUN-0064 performance-testing
+- [12-testing-and-quality runbooks](../../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md): RUN-0061 k6, RUN-0064 performance-testing
 
 #### Observability and Recovery
 
@@ -310,6 +310,6 @@ Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제
 | Labels | `hy-home.tier` |
 | Secret refs | 선언되지 않음 |
 | Healthcheck | 선언되지 않음; `k6`는 시나리오 하나를 실행하고 종료하므로 `restart`는 `no` |
-| Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0061-k6.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/12.testing-and-quality/0061-k6.md`), Policy (`docs/05.operations/02.policies/12.testing-and-quality/0061-k6.md`), Runbook (`docs/05.operations/03.runbooks/12.testing-and-quality/0061-k6.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |

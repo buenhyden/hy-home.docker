@@ -1,10 +1,10 @@
 ---
 title: "품질 계층 (11-quality)"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-01"
 ---
 
@@ -92,7 +92,7 @@ created: "2026-10-01"
 
 #### Runbook Links
 
-- [테스트·품질 Runbook 목록](../../docs/05.operations/runbooks/12-testing-and-quality/README.md)
+- [테스트·품질 Runbook 목록](../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md)
 - [독립 LAB 인덱스](../../labs/README.md)
 
 - [인프라 인덱스](../README.md)
@@ -102,4 +102,4 @@ created: "2026-10-01"
 
 #### Observability and Recovery
 
-없음: 인덱스 문서라 직접 관측 대상이 없다. 각 package의 Service Readiness와 [테스트·품질 Runbook 목록](../../docs/05.operations/runbooks/12-testing-and-quality/README.md)을 따른다.
+없음: 인덱스 문서라 직접 관측 대상이 없다. 각 package의 Service Readiness와 [테스트·품질 Runbook 목록](../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md)을 따른다.

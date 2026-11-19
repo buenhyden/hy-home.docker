@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-03-19"
 ---
 
@@ -112,9 +112,9 @@ registry/
 
 #### Runbook Links
 
-- **Guide**: Registry Guide (`docs/05.operations/guides/10-platform-and-backup/0065-registry.md`)
-- **Policy**: Registry Operations (`docs/05.operations/policies/10-platform-and-backup/0065-registry.md`)
-- **Runbook**: Registry Runbook (`docs/05.operations/runbooks/10-platform-and-backup/0065-registry.md`)
+- **Guide**: Registry Guide (`docs/05.operations/01.guides/10.platform-and-backup/0065-registry.md`)
+- **Policy**: Registry Operations (`docs/05.operations/02.policies/10.platform-and-backup/0065-registry.md`)
+- **Runbook**: Registry Runbook (`docs/05.operations/03.runbooks/10.platform-and-backup/0065-registry.md`)
 - [Documentation index](../../../docs/README.md)
 
 #### Observability and Recovery
@@ -136,6 +136,6 @@ registry/
 | Labels | `hy-home.tier` |
 | Secret refs | 선언되지 않음 |
 | Healthcheck | `registry`에 Compose 헬스체크가 선언되어 있음 |
-| Operations | Guide (`docs/05.operations/guides/10-platform-and-backup/0065-registry.md`), Policy (`docs/05.operations/policies/10-platform-and-backup/0065-registry.md`), Runbook (`docs/05.operations/runbooks/10-platform-and-backup/0065-registry.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/10.platform-and-backup/0065-registry.md`), Policy (`docs/05.operations/02.policies/10.platform-and-backup/0065-registry.md`), Runbook (`docs/05.operations/03.runbooks/10.platform-and-backup/0065-registry.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |

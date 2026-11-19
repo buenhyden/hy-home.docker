@@ -3,11 +3,11 @@ name: "infra-validate"
 description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 metadata:
   title: "infra-validate"
-  version: "1.6.1"
+  version: "1.6.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "infra-validate"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -63,7 +63,7 @@ The skill description states: "Do NOT use it to start, restart, or deploy servic
 - Expected rendered configuration, health behavior, and rollback boundary.
 - The registered validators that implement the checks below, named once in
   `scripts/manifest.yaml`; which of them this change type requires is owned by
-  the [verification matrix](../../../docs/00.workspace/03.quality/quality-standards.md#5-change-type-verification-matrix).
+  the [verification matrix](../../../docs/00.workspace/04.quality/quality-standards.md#5-change-type-verification-matrix).
   Naming a command here instead would copy both owners into a third place.
 
 ### Failure Handling

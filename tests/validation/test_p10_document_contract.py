@@ -47,7 +47,7 @@ class P10DocumentContractTests(unittest.TestCase):
         }
         for task_name, criterion_units in TASK_CONTRACTS:
             with self.subTest(task=task_name):
-                task_path = PACKAGE / "tasks" / task_name
+                task_path = PACKAGE / "01.tasks" / task_name
                 task = spec_packages._snapshot_document(
                     task_path,
                     (REPOSITORY / task_path).read_text(encoding="utf-8"),
