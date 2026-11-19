@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Continuous Profiling"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-03-19"
 ---
 
@@ -36,7 +36,7 @@ Pyroscope는 애플리케이션을 연속적으로 프로파일링하여 성능 
 ##### Out of Scope
 
 - 애플리케이션 수준 프로파일링 SDK/에이전트: Go pprof는 [Grafana Alloy](../alloy/README.md)가 가져옵니다. n8n(Node)·Python·Java 서비스는 SDK나 eBPF가 필요해 아직 수집하지 않으며 계획은 GDE-0047의 Open item에 있습니다.
-- 프로파일링 데이터의 장기 보관 (Retention Policy(`docs/05.operations/policies/07-observability/0047-pyroscope.md`)에서 관리).
+- 프로파일링 데이터의 장기 보관 (Retention Policy(`docs/05.operations/02.policies/07.observability/0047-pyroscope.md`)에서 관리).
 
 #### Structure
 
@@ -90,7 +90,7 @@ pyroscope/
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
 1. **Flamegraph Analysis**: Grafana의 Drilldown > Profiles 또는 `Observability / Pyroscope` 대시보드에서 서비스별 flamegraph를 봅니다. Tempo span 상세의 프로파일 링크는 같은 `service_name`의 시간창을 엽니다.
 2. **Resource Monitoring**: 프로파일링 수집은 CPU 사용량이 클 수 있으므로, 피크 부하 동안 `pyroscope` 컨테이너 통계를 모니터링합니다.
@@ -112,9 +112,9 @@ pyroscope/
 
 #### Related Documents
 
-- Usage guide (`docs/05.operations/guides/07-observability/0047-pyroscope.md`)
-- Operations policy (`docs/05.operations/policies/07-observability/0047-pyroscope.md`)
-- Recovery runbook (`docs/05.operations/runbooks/07-observability/0047-pyroscope.md`)
+- Usage guide (`docs/05.operations/01.guides/07.observability/0047-pyroscope.md`)
+- Operations policy (`docs/05.operations/02.policies/07.observability/0047-pyroscope.md`)
+- Recovery runbook (`docs/05.operations/03.runbooks/07.observability/0047-pyroscope.md`)
 - [Documentation index](../../../docs/README.md)
 
 #### Operational Status
@@ -136,5 +136,5 @@ pyroscope/
 - Classification: **HOME**. Exact profiles: `obs`, `profiling`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pyroscope`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0047-pyroscope.md`; ID: `GDE-0047`, `POL-0047`, `RUN-0047`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/01.guides/07.observability/0047-pyroscope.md`; ID: `GDE-0047`, `POL-0047`, `RUN-0047`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주합니다. 이 README에서는 운영 중인 상태를 변경하지 않습니다.

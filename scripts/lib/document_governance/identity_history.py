@@ -36,6 +36,7 @@ MAX_GIT_SCAN_SECONDS = 45
 MAX_IDENTITY_SOURCE_BYTES = 4 * 1024 * 1024
 IDENTITY_SOURCE_SUFFIXES = frozenset({".md", ".json", ".yaml", ".yml"})
 IDENTITY_SOURCE_PREFIXES = (
+    "docs/00.workspace/02.architecture/",
     "docs/01.requirements/",
     "docs/02.architecture/",
     "docs/03.specs/",
@@ -59,8 +60,26 @@ HISTORICAL_ID_PATTERN = re.compile(
 # Tombstone IDs embed the retired identity and carry no number of their own,
 # and incident IDs (inc-YYYY-NNNN) are handled separately in _record.
 IDENTITY_PREFIX_SPACES = (
-    ("ADR-", "adr", "docs/02.architecture/decisions/"),
-    ("AD-", "architecture-description", "docs/02.architecture/descriptions/"),
+    # Product and workspace architecture share one AD/ADR namespace; the
+    # unnumbered folders are the pre-SPEC-0212-TSK-0096 history paths.
+    (
+        "ADR-",
+        "adr",
+        (
+            "docs/02.architecture/02.decisions/",
+            "docs/00.workspace/02.architecture/02.decisions/",
+            "docs/02.architecture/decisions/",
+        ),
+    ),
+    (
+        "AD-",
+        "architecture-description",
+        (
+            "docs/02.architecture/01.descriptions/",
+            "docs/00.workspace/02.architecture/01.descriptions/",
+            "docs/02.architecture/descriptions/",
+        ),
+    ),
     ("SPEC-", "spec", "docs/03.specs/"),
     ("GDE-", "operations-subject", "docs/05.operations/"),
     ("POL-", "operations-subject", "docs/05.operations/"),
@@ -525,10 +544,22 @@ def _history_identity_group(path: str) -> tuple[str, bool] | None:
 
     if path.startswith("docs/01.requirements/"):
         return "docs/01.requirements/history.md", True
-    if path.startswith("docs/02.architecture/descriptions/"):
-        return "docs/02.architecture/descriptions/history.md", False
-    if path.startswith("docs/02.architecture/decisions/"):
-        return "docs/02.architecture/decisions/history.md", False
+    if path.startswith(
+        (
+            "docs/02.architecture/01.descriptions/",
+            "docs/00.workspace/02.architecture/01.descriptions/",
+            "docs/02.architecture/descriptions/",
+        )
+    ):
+        return "docs/02.architecture/01.descriptions/history.md", False
+    if path.startswith(
+        (
+            "docs/02.architecture/02.decisions/",
+            "docs/00.workspace/02.architecture/02.decisions/",
+            "docs/02.architecture/decisions/",
+        )
+    ):
+        return "docs/02.architecture/02.decisions/history.md", False
     for prefix in (
         "docs/03.specs/",
         "docs/05.operations/",
@@ -565,7 +596,8 @@ def _historical_objects(
             raise IdentityHistoryError("Git identity object name is malformed")
         if not path:
             continue
-        if path in {"docs", prefix}:
+        if path == prefix or prefix.startswith(f"{path}/"):
+            # The prefix itself and its ancestor trees carry no identity.
             continue
         if (
             not path.startswith(f"{prefix}/")

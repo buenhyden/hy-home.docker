@@ -161,7 +161,7 @@ class EvidenceStoreTests(unittest.TestCase):
 
         self.assertEqual(
             plan["owner"],
-            "docs/00.workspace/03.quality/quality-standards.md#7-local-qaci-orchestration",
+            "docs/00.workspace/04.quality/quality-standards.md#7-local-qaci-orchestration",
         )
         self.assertEqual(plan["retention_days"], 14)
         self.assertEqual([row["status"] for row in result["rows"]], ["PASS", "NOT_RUN"])

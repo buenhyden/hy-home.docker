@@ -1,10 +1,10 @@
 ---
 title: "개발 PostgreSQL"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-02"
 ---
 
@@ -37,7 +37,7 @@ created: "2026-10-02"
 
 `provision/monitor.py`는 `dev-pg-exporter` 전용 `dev_pg_monitor` role을 만듭니다. 이 role은 표식(comment)이 있고 `pg_read_all_stats`·`pg_read_all_settings`와 `pg_ls_waldir()` 실행 권한만 가지며(`pg_monitor`는 회수), 다른 권한·DB 소유가 없고 세션은 읽기 전용, 연결 예산은 3입니다. 프로젝트 DB는 PUBLIC의 CONNECT를 회수하므로 이 role은 `postgres` DB에만 접속합니다. 관리자와 같은 비밀과 base64 문자 집합(16자 이상)이 아닌 비밀은 role을 바꾸기 전에 거부합니다. postgres_exporter가 잘못된 DSN을 비밀번호째 로그에 남기기 때문입니다. 허용한 두 역할 밖의 멤버십이 있거나 다른 역할을 거쳐 `pg_monitor`를 가지면 job이 실패합니다. 실행할 때마다 비밀번호를 비밀 파일에 맞추므로 비밀 파일을 바꾸고 job을 다시 실행한 뒤 exporter를 재생성하면 회전됩니다.
 
-`platform_dev`은 승인된 시간 이력 테이블을 만들지 않습니다. 업무 migration은 외부 프로젝트 소유이며 UTC/단위/정밀도/NULL/중복/지연 도착, partition 차원을 포함한 유일키, chunk·index·continuous aggregate·refresh·raw retention과 백필/삭제 승인을 명시해야 합니다. 개발 DB 세부 운영 계약은 [운영 가이드 목록](../../../../docs/05.operations/guides/README.md)에서 확인합니다. 승인된 프로젝트 계약 전에는 hypertable과 retention 정책을 추가하지 않습니다.
+`platform_dev`은 승인된 시간 이력 테이블을 만들지 않습니다. 업무 migration은 외부 프로젝트 소유이며 UTC/단위/정밀도/NULL/중복/지연 도착, partition 차원을 포함한 유일키, chunk·index·continuous aggregate·refresh·raw retention과 백필/삭제 승인을 명시해야 합니다. 개발 DB 세부 운영 계약은 [운영 가이드 목록](../../../../docs/05.operations/01.guides/README.md)에서 확인합니다. 승인된 프로젝트 계약 전에는 hypertable과 retention 정책을 추가하지 않습니다.
 
 ### Interfaces
 
@@ -102,7 +102,7 @@ Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_passw
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0100: `docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md`
+- RUN-0100: `docs/05.operations/03.runbooks/05.databases-and-storage/0100-development-database.md`
 
 #### Related Documents
 

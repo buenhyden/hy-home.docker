@@ -55,9 +55,13 @@ _MEMBER = re.compile(r"(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)\.md")
 _YEAR = re.compile(r"[0-9]{4}")
 _INCIDENT = re.compile(r"inc-(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*")
 # Each role owns one directory; a subject is the slug its members share.
-_ROLE_DIRECTORY = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}
+_ROLE_DIRECTORY = {
+    "01.guides": "guide",
+    "02.policies": "policy",
+    "03.runbooks": "runbook",
+}
 _OPERATIONS_ROOT_ENTRIES = frozenset(
-    {"README.md", "AGENTS.md", "CLAUDE.md", "incidents", *_ROLE_DIRECTORY}
+    {"README.md", "AGENTS.md", "CLAUDE.md", "04.incidents", *_ROLE_DIRECTORY}
 )
 _OPERATIONS_PROFILE_IDS = ("guide", "policy", "runbook", "incident", "postmortem")
 _ROLE_SECTION_ALIASES = {
@@ -589,7 +593,7 @@ _RETIRED_ROUTE_RECORD_MARKER = "retired-route-record"
 def _active_reference_scan_excluded(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
     spec_execution_body = value.startswith("docs/03.specs/") and (
-        path.name == "plan.md" or "tasks" in path.parts
+        path.name == "plan.md" or "01.tasks" in path.parts
     )
     return (
         _excluded(path)
@@ -682,7 +686,7 @@ def validate_active_operations_references(
 
 COMPOSE_ROOT = pathlib.PurePosixPath("docker-compose.yml")
 PROFILE_VOCABULARY_POLICY = pathlib.PurePosixPath(
-    "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+    "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
 )
 _COMPOSE_FILE_NAME = re.compile(r"(?:docker-)?compose[^/]*\.ya?ml")
 # A profile row is a table row whose first cell is exactly one backticked name.
@@ -2084,7 +2088,7 @@ def _index_member_links(text: str) -> Counter[str]:
                 and href != "README.md"
                 and (
                     "/" not in href
-                    or re.fullmatch(r"[0-9]{2}-[a-z][a-z0-9-]*/README\.md", href)
+                    or re.fullmatch(r"[0-9]{2}\.[a-z][a-z0-9-]*/README\.md", href)
                 )
             ):
                 counts[href] += 1
@@ -2145,7 +2149,7 @@ def _validate_role_directory(
         for pattern in profile_path_patterns(profile)
         if len(parts := pattern.split("/")) == 5
         and parts[:3] == ["docs", "05.operations", directory]
-        and re.fullmatch(r"[0-9]{2}-[a-z][a-z0-9-]*", parts[3])
+        and re.fullmatch(r"[0-9]{2}\.[a-z][a-z0-9-]*", parts[3])
         and parts[4] == "{number:4}-{slug}.md"
     }
     readme_profiles = [
@@ -2352,7 +2356,7 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                     f"regular {guide_name} required",
                 )
             )
-    template = root / "docs/99.templates/templates/operations/release.template.md"
+    template = root / "docs/99.templates/02.templates/05.operations/release.template.md"
     if template.exists() or template.is_symlink():
         findings.append(
             _finding(
@@ -2374,7 +2378,7 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
             )
         )
 
-    incidents_relative = OPERATIONS_ROOT / "incidents"
+    incidents_relative = OPERATIONS_ROOT / "04.incidents"
     try:
         incident_entries = _directory_entries_bounded(
             root,
@@ -2635,7 +2639,7 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
 
 # Current service inventory is a joined source projection, not another authority.
 SERVICE_INVENTORY_PATH = pathlib.PurePosixPath(
-    "docs/90.references/research/0002-agentic-engineering-research-pack/"
+    "docs/90.references/01.research/0002-agentic-engineering-research-pack/"
     "m0021-local-docker-service-consolidation.md"
 )
 SERVICE_INVENTORY_COLUMNS = (
@@ -2812,7 +2816,7 @@ def _inventory_bindings(
     siblings = _role_siblings(paths)
     for guide in paths:
         match = _MEMBER.fullmatch(guide.name)
-        if _role_family(guide) != OPERATIONS_ROOT / "guides" or match is None:
+        if _role_family(guide) != OPERATIONS_ROOT / "01.guides" or match is None:
             continue
         text = _read_text(root, guide)
         metadata = _frontmatter(text, guide)
@@ -2919,9 +2923,9 @@ def _inventory_bindings(
                     owners[identity] = guide
         subject = siblings.get(match["slug"], {})
         for kind, directory in (
-            ("guide", "guides"),
-            ("policy", "policies"),
-            ("runbook", "runbooks"),
+            ("guide", "01.guides"),
+            ("policy", "02.policies"),
+            ("runbook", "03.runbooks"),
         ):
             member = subject.get(kind)
             if member is None:

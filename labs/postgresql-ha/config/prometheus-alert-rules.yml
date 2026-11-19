@@ -13,4 +13,4 @@ groups:
         annotations:
           summary: 'PostgreSQL 복제 지연: {{ $labels.instance }}'
           description: 'PostgreSQL 복제 지연이 30초를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/15-labs/0031-postgresql-cluster.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/15.labs/0031-postgresql-cluster.md'

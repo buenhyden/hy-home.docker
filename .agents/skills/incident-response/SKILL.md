@@ -3,11 +3,11 @@ name: "incident-response"
 description: "Use when an authorized incident owner needs a sanitized response timeline, bounded recovery actions, escalation, and postmortem handoff."
 metadata:
   title: "incident-response"
-  version: "1.5.1"
+  version: "1.5.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "incident-response"
   scope: "ops"
   owner_agent: "incident-responder"
@@ -45,7 +45,7 @@ None: this skill states no exclusion.
 - A cited preserved body is dated and named as preserved evidence, never as
   current state; the exception permits the citation, not the inference.
 - A paired postmortem is routed to
-  `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`.
+  `docs/05.operations/04.incidents/<year>/inc-####-<slug>/postmortem.md`.
 
 #### Inputs
 
@@ -53,7 +53,7 @@ None: this skill states no exclusion.
 - Affected services, timestamps, impact, authority, and escalation contacts.
 - Earlier evidence when reconstruction needs it, read from version history at
   the revision that last carried it; Stage 98 holds no records. The
-  [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md#document-retention-and-retirement)
+  [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md#document-retention-and-retirement)
   owns that rule.
 
 ### Failure Handling
@@ -71,8 +71,8 @@ Stop unsafe recovery, preserve metadata instead of prohibited payloads, and esca
 Owning role, policies and related documents:
 
 - [Incident responder](../../roles/incident-responder.md)
-- [Operations scope](../../../docs/00.workspace/03.quality/quality-standards.md)
-- [Approval boundaries](../../../docs/00.workspace/02.process/approval-boundaries.md)
+- [Operations scope](../../../docs/00.workspace/04.quality/quality-standards.md)
+- [Approval boundaries](../../../docs/00.workspace/04.quality/approval-boundaries.md)
 - [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
 
 ## Verification

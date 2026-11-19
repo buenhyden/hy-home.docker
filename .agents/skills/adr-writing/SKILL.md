@@ -3,11 +3,11 @@ name: "adr-writing"
 description: "Use when an approved material architecture choice needs one ADR with alternatives, consequences, and traceable decision status."
 metadata:
   title: "adr-writing"
-  version: "1.3.1"
+  version: "1.3.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "adr-writing"
   scope: "architecture"
   owner_agent: "doc-writer"
@@ -54,15 +54,15 @@ If the choice, authority, or alternatives are not decision-ready, return a decis
 
 ### Artifacts
 
-- One typed ADR in `docs/02.architecture/decisions/` with decision rationale and consequences.
+- One typed ADR in `docs/02.architecture/02.decisions/` with decision rationale and consequences.
 
 ### Handoff
 
 Owning role, policies and related documents:
 
 - [Documentation writer](../../roles/doc-writer.md)
-- [Documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)
-- [Documentation scope](../../../docs/00.workspace/02.process/documentation-protocol.md)
+- [Documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)
+- [Documentation scope](../../../docs/00.workspace/03.process/documentation-protocol.md)
 - [Agent catalog](../../README.md)
 
 ## Verification

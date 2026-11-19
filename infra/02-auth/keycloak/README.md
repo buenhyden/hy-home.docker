@@ -1,10 +1,10 @@
 ---
 title: "Keycloak IAM"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -163,10 +163,10 @@ bash scripts/hardening/check-all-hardening.sh 02-auth
 
 #### Related Documents
 
-- **Guide**: `docs/05.operations/guides/03-identity-and-access/0014-keycloak.md`
-- **Policy**: `docs/05.operations/policies/03-identity-and-access/0014-keycloak.md`
-- **Runbook**: `docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md`
-- **Integration**: `docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md`
+- **Guide**: `docs/05.operations/01.guides/03.identity-and-access/0014-keycloak.md`
+- **Policy**: `docs/05.operations/02.policies/03.identity-and-access/0014-keycloak.md`
+- **Runbook**: `docs/05.operations/03.runbooks/03.identity-and-access/0014-keycloak.md`
+- **Integration**: `docs/05.operations/01.guides/03.identity-and-access/0079-application-auth-integration.md`
 - [문서 인덱스](../../../docs/README.md)
 
 #### Service Readiness

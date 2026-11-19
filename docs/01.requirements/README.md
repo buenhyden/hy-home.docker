@@ -1,10 +1,10 @@
 ---
 title: "Requirement Packages"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "requirements"
 ---
 
@@ -128,22 +128,22 @@ Stage 03 Spec의 contract가 소유한다.
 #### Upstream and Downstream
 
 - [Architecture](../02.architecture/README.md)
-- [Architecture Descriptions](../02.architecture/descriptions/README.md)
-- [Architecture Decisions](../02.architecture/decisions/README.md)
+- [Architecture Descriptions](../02.architecture/01.descriptions/README.md)
+- [Architecture Decisions](../02.architecture/02.decisions/README.md)
 - [Specifications](../03.specs/README.md)
 - [Operations](../05.operations/README.md)
 
 #### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
-- [문서 작성 계약](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+- [문서 작성 계약](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
 
 #### Authoring Flow
 
-1. [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)를 사용한다.
+1. [`requirement-package.template.md`](../99.templates/02.templates/01.requirements/requirement-package.template.md)를 사용한다.
 2. 동일한 문제와 범위를 소유하는 Requirement Package가 있는지 먼저 확인한다.
 3. 패키지의 요구사항을 설명하는 Architecture Description과 중요한 선택을
    기록하는 ADR을 연결한다.
@@ -159,7 +159,7 @@ Stage 03 Spec의 contract가 소유한다.
   본문의 Traceability가 소유한다.
 - 구현 방법이나 실행 순서를 요구사항으로 복사하지 않는다.
 - 비어 있는 분류를 위해 별도 요구사항 문서를 만들지 않는다.
-- 작성 의미와 역할 경계는 [공통 Agent 거버넌스 작성 정책](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)을 따른다.
+- 작성 의미와 역할 경계는 [공통 Agent 거버넌스 작성 정책](../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)을 따른다.
 - solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
   Stage 03에 둔다.
 

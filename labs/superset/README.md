@@ -1,10 +1,10 @@
 ---
 title: "Superset"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-23"
 ---
 
@@ -150,12 +150,12 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 
 #### Runbook Links
 
-- **Guide**: Superset Usage Guide (`docs/05.operations/guides/15-labs/0097-superset.md`)
-- **Policy**: Superset Operations Policy (`docs/05.operations/policies/15-labs/0097-superset.md`)
-- **Runbook**: Superset Runbook (`docs/05.operations/runbooks/15-labs/0097-superset.md`)
+- **Guide**: Superset Usage Guide (`docs/05.operations/01.guides/15.labs/0097-superset.md`)
+- **Policy**: Superset Operations Policy (`docs/05.operations/02.policies/15.labs/0097-superset.md`)
+- **Runbook**: Superset Runbook (`docs/05.operations/03.runbooks/15.labs/0097-superset.md`)
 - [LAB 탐색](../README.md)
 - [문서 인덱스](../../docs/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0107 lab-promotion
 
 #### Observability and Recovery
 
@@ -177,6 +177,6 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 | Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
 | Secret refs | `lab_superset_secret_key`, `lab_superset_db_password`, `lab_superset_oidc_client_secret`, `lab_superset_mng_postgres_password`(provisioning 전용) |
 | Healthcheck | `curl -fsS http://localhost:8088/health` |
-| Operations | Guide (`docs/05.operations/guides/15-labs/0097-superset.md`), Policy (`docs/05.operations/policies/15-labs/0097-superset.md`), Runbook (`docs/05.operations/runbooks/15-labs/0097-superset.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/15.labs/0097-superset.md`), Policy (`docs/05.operations/02.policies/15.labs/0097-superset.md`), Runbook (`docs/05.operations/03.runbooks/15.labs/0097-superset.md`) |
 | Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
 | Troubleshooting | 활성 lease 안에서 `/health`와 init job 로그를 확인한 뒤 runbook을 따름 |

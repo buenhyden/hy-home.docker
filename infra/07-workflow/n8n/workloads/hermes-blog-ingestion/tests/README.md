@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 합성 시험"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Hermes 수집 전송 합성 시험
@@ -132,7 +132,7 @@ Gateway 컨테이너는 Compose에서 렌더링한 사용자·읽기 전용 루�
 
 - [수집 전송 소스](../README.md)
 - [로컬 발행기](../publisher/README.md)
-- n8n Runbook: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`(RUN-0053)
+- n8n Runbook: `docs/05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md`(RUN-0053)
 
 #### Observability and Recovery
 

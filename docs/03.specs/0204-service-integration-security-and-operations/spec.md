@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.12.3"
+version: "1.12.4"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -623,20 +623,20 @@ Missing permission or target defers only the dependent operation.
 
 ### Normative and Evidence
 
-- [Hermes transport Task](tasks/tsk-0022-hermes-blog-ingestion.md)
+- [Hermes transport Task](01.tasks/tsk-0022-hermes-blog-ingestion.md)
 
-- [P10 opsflow acceptance Task](tasks/tsk-0016-p10-opsflow-acceptance.md)
+- [P10 opsflow acceptance Task](01.tasks/tsk-0016-p10-opsflow-acceptance.md)
 
-- [P08 operations-document layout Task](tasks/tsk-0015-p08-operations-document-layout.md)
+- [P08 operations-document layout Task](01.tasks/tsk-0015-p08-operations-document-layout.md)
 
 - [Current request reconciliation](../0212-request-baseline-and-reconciliation/spec.md)
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
-- [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
-- [ADR-0062](../../02.architecture/decisions/0062-home-lab-membership.md)
+- [AD-0031](../../02.architecture/01.descriptions/0031-home-development-host.md)
+- [ADR-0062](../../02.architecture/02.decisions/0062-home-lab-membership.md)
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
-- [AD-0030](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0037](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [CLN01 material retirement Task](tasks/tsk-0007-cln01-material-retirement.md)
+- [AD-0030](../../00.workspace/02.architecture/01.descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0037](../../00.workspace/02.architecture/02.decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [CLN01 material retirement Task](01.tasks/tsk-0007-cln01-material-retirement.md)
 
 ### Historical and Navigation
 

@@ -7,7 +7,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Observation selection is unavailable"
           description: "Generate and apply a complete source-bound observation selection."
       - alert: ObservationSelectionInvalid
@@ -26,7 +26,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Observation selection is incomplete"
       - alert: ObservationTargetsMissing
         expr: |
@@ -36,7 +36,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Expected scrape targets are missing for {{ $labels.job }}"
       - alert: ObservationSamplesStale
         expr: |
@@ -46,7 +46,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Scrape samples are stale for {{ $labels.job }}"
       - alert: ObservationPostgresBackendMetricMissing
         expr: |
@@ -56,7 +56,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "PostgreSQL exporter backend status is missing"
       - alert: ObservationValkeyBackendMetricMissing
         expr: |
@@ -66,7 +66,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Valkey exporter backend status is missing"
       - alert: AlloyQualityRemoteWriteBacklog
         expr: |
@@ -80,7 +80,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Alloy quality metric delivery is stalled"
       - alert: AlloyQualityRemoteWriteProgressMetricMissing
         expr: |
@@ -91,7 +91,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Alloy quality delivery progress metric is missing"
       - alert: AlloyQualityRemoteWriteNeverSent
         expr: |
@@ -102,7 +102,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Alloy has queued quality samples with no successful send"
       - alert: AlloyQualityRemoteWriteFailed
         expr: |
@@ -110,5 +110,5 @@ groups:
         labels:
           severity: warning
         annotations:
-          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
           summary: "Alloy quality samples were permanently rejected"

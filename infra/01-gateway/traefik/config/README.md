@@ -1,10 +1,10 @@
 ---
 title: "Traefik Static Configuration"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Traefik Static Configuration
@@ -96,7 +96,7 @@ infra/01-gateway/traefik/config/
 
 - [infra/README.md](../../../README.md)
 - [Traefik 서비스 README](../README.md)
-- 게이트웨이 운영 가이드 (`docs/05.operations/guides/README.md`)
+- 게이트웨이 운영 가이드 (`docs/05.operations/01.guides/README.md`)
 - [문서 인덱스](../../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../../tech-stack.versions.json)으로 drift를 검증합니다.

@@ -29,4 +29,4 @@ tests:
       exp_annotations:
         summary: '컨테이너 CPU 쓰로틀링: starved'
         description: "컨테이너가 25% 이상 CPU 쓰로틀링되고 있습니다.\n  VALUE = 0.6666666666666666"
-        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0044-observability-optimization-hardening.md
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0044-observability-optimization-hardening.md

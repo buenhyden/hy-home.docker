@@ -23,6 +23,7 @@ from scripts.lib.document_governance.frontmatter import (
     frontmatter_record_from_text,
 )
 from scripts.lib.document_governance.language import language_mismatch
+from scripts.lib.document_governance.numbered_folders import numbered_path
 from scripts.lib.document_governance.operations_catalog import (
     OperationsAuthorityError,
     read_bounded_regular,
@@ -900,6 +901,26 @@ def _target_headings(
         return None, "link-target-unreadable"
 
 
+_EVIDENCE_SECTIONS = frozenset({"## Verification Evidence", "## Acceptance Decision"})
+
+
+def _is_evidence_row(text: str, line: int) -> bool:
+    """A table row under a Task's Verification Evidence or Acceptance Decision."""
+
+    lines = text.splitlines()
+    if not 0 < line <= len(lines) or not lines[line - 1].lstrip().startswith("|"):
+        return False
+    section = next(
+        (
+            candidate.rstrip()
+            for candidate in reversed(lines[: line - 1])
+            if candidate.startswith("## ")
+        ),
+        "",
+    )
+    return section in _EVIDENCE_SECTIONS
+
+
 def _historical_operations_target(
     graph: DocumentGraph,
     nodes: Mapping[pathlib.PurePosixPath, DocumentNode],
@@ -911,12 +932,26 @@ def _historical_operations_target(
     node = nodes.get(link.source)
     if node is None:
         return None
+    numbered = numbered_path(link.target)
+    if (
+        numbered != link.target
+        and classify_path(link.source, registry) == "task"
+        and _is_evidence_row(node.text, link.line)
+        and _regular_target(graph, numbered)[0] is not None
+    ):
+        # Task Evidence and Acceptance rows are immutable records, so a row
+        # written before the numbered folders keeps its original route.
+        return numbered
     source_profile = {
         ("operation/postmortem", "published"): "postmortem",
         ("sdlc/task", "completed"): "task",
+        ("sdlc/task", "cancelled"): "task",
     }.get((node.metadata.get("type"), node.metadata.get("status")))
     if source_profile is None or classify_path(link.source, registry) != source_profile:
         return None
+    numbered = numbered_path(link.target)
+    if numbered != link.target and _regular_target(graph, numbered)[0] is not None:
+        return numbered
     moved = _LEGACY_WORKSPACE_POLICY.fullmatch(link.target.as_posix())
     if moved is not None:
         if source_profile != "task":
@@ -934,7 +969,7 @@ def _historical_operations_target(
         return None
     family = matched.group("family")
     profile = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}[family]
-    role_root = pathlib.PurePosixPath("docs/05.operations") / family
+    role_root = numbered_path(pathlib.PurePosixPath("docs/05.operations") / family)
     candidates = [
         path
         for path in nodes
@@ -1257,9 +1292,9 @@ def _is_terminal_task(
 # Package roots whose numbered directories carry a Registry identity space.
 _PACKAGE_ROOTS = {
     ("docs", "03.specs"): "spec",
-    ("docs", "90.references", "data"): "data",
-    ("docs", "90.references", "research"): "research",
-    ("docs", "90.references", "audits"): "audit",
+    ("docs", "90.references", "03.data"): "data",
+    ("docs", "90.references", "01.research"): "research",
+    ("docs", "90.references", "02.audits"): "audit",
 }
 
 
@@ -1278,7 +1313,7 @@ def _reserved_package_numbers(registry) -> dict[str, frozenset[int]]:
 def _links_into_retired_package(
     link: DocumentLink, reserved: dict[str, frozenset[int]]
 ) -> bool:
-    parts = link.target.parts
+    parts = numbered_path(link.target).parts
     for root, space in _PACKAGE_ROOTS.items():
         if len(parts) > len(root) and parts[: len(root)] == root:
             match = _RETIRED_PACKAGE_DIRECTORY.fullmatch(parts[len(root)])
@@ -1552,7 +1587,7 @@ def _link_targets(graph: DocumentGraph, source: pathlib.PurePosixPath) -> set[st
 
 def traceability_pair_total(graph: DocumentGraph) -> int:
     catalog = pathlib.PurePosixPath(
-        "docs/05.operations/policies/01-common/0006-infrastructure-optimization-governance.md"
+        "docs/05.operations/02.policies/01.common/0006-infrastructure-optimization-governance.md"
     )
     node = _node_map(graph).get(catalog)
     return 0 if node is None else len(_CATALOG_PAIR.findall(node.text))
@@ -1575,7 +1610,7 @@ def check_traceability(graph: DocumentGraph) -> list[LinkFinding]:
     specs = pathlib.PurePosixPath("docs/03.specs/README.md")
     operations = pathlib.PurePosixPath("docs/05.operations/README.md")
     catalog = pathlib.PurePosixPath(
-        "docs/05.operations/policies/01-common/0006-infrastructure-optimization-governance.md"
+        "docs/05.operations/02.policies/01.common/0006-infrastructure-optimization-governance.md"
     )
     for path in (specs, operations, catalog):
         if path not in nodes:

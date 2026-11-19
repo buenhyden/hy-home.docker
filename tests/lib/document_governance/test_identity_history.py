@@ -112,6 +112,21 @@ def _registry_with_live_spec(number: int):
 
 
 class IdentityHistoryTests(unittest.TestCase):
+    def test_every_identity_route_is_scanned_as_an_identity_source(self) -> None:
+        """A route that may own an identity must also be read on the base side."""
+
+        from scripts.lib.document_governance import identity_history
+
+        for _prefix, _space, roots in identity_history.IDENTITY_PREFIX_SPACES:
+            for root in (roots,) if isinstance(roots, str) else roots:
+                with self.subTest(root=root):
+                    self.assertTrue(
+                        root.startswith(identity_history.IDENTITY_SOURCE_PREFIXES)
+                    )
+                    self.assertIsNotNone(
+                        identity_history._history_identity_group(root + "0001-x.md")
+                    )
+
     def test_incident_year_does_not_consume_allocation_numbers(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -123,7 +138,7 @@ class IdentityHistoryTests(unittest.TestCase):
                 ("2026/inc-0002-example/postmortem.md", "inc-2026-0002-PM"),
             )
             for relative, artifact in fixtures:
-                path = root / "docs/05.operations/incidents" / relative
+                path = root / "docs/05.operations/04.incidents" / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(f"---\nartifact_id: {artifact}\n---\n")
             self._git(root, "add", ".")
@@ -285,7 +300,7 @@ class IdentityHistoryTests(unittest.TestCase):
             source = root / "docs/99.templates/registry.json"
             source.parent.mkdir(parents=True)
             source.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
-            document = root / f"docs/02.architecture/decisions/{number:04d}-x.md"
+            document = root / f"docs/02.architecture/02.decisions/{number:04d}-x.md"
             document.parent.mkdir(parents=True)
             document.write_text(f'---\nartifact_id: "ADR-{number:04d}"\n---\n')
             self._git(root, "add", ".")
@@ -355,7 +370,7 @@ class IdentityHistoryTests(unittest.TestCase):
                 "docs/99.templates/registry.json": (
                     registry_module.DEFAULT_REGISTRY.read_text(encoding="utf-8")
                 ),
-                f"docs/02.architecture/decisions/{adr:04d}-old.md": (
+                f"docs/02.architecture/02.decisions/{adr:04d}-old.md": (
                     f'---\nartifact_id: "ADR-{adr:04d}"\n---\n'
                 ),
                 f"docs/03.specs/{spec:04d}-x/spec.md": (
@@ -377,7 +392,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "commit", "-qm", "base")
             base = self._git(root, "rev-parse", "HEAD").strip()
             current = {
-                f"docs/02.architecture/decisions/{adr:04d}-new.md": f"ADR-{adr:04d}",
+                f"docs/02.architecture/02.decisions/{adr:04d}-new.md": f"ADR-{adr:04d}",
                 f"docs/03.specs/{spec:04d}-x/spec.md": f"SPEC-{spec:04d}",
                 requirement_path: requirement_id,
             }
@@ -469,7 +484,7 @@ class IdentityHistoryTests(unittest.TestCase):
                     root,
                     registry,
                     {
-                        f"docs/02.architecture/decisions/{live_adr:04d}-x.md": (
+                        f"docs/02.architecture/02.decisions/{live_adr:04d}-x.md": (
                             f"ADR-{live_adr:04d}"
                         )
                     },
@@ -725,13 +740,15 @@ class IdentityHistoryTests(unittest.TestCase):
             registry_path = root / "docs/99.templates/registry.json"
             registry_path.parent.mkdir(parents=True)
             registry_path.write_bytes(_registry_bytes_with_live_spec(104))
-            decision = root / "docs/03.specs/0104-decision/tasks/tsk-0001-recovery.md"
+            decision = (
+                root / "docs/03.specs/0104-decision/01.tasks/tsk-0001-recovery.md"
+            )
             decision.parent.mkdir(parents=True)
             decision.write_text(
                 "---\nartifact_id: SPEC-0104-TSK-0001\n---\n", encoding="utf-8"
             )
             source = (
-                root / "docs/90.references/research/0085-workspace/REQUEST-SCOPE.md"
+                root / "docs/90.references/01.research/0085-workspace/REQUEST-SCOPE.md"
             )
             source.parent.mkdir(parents=True)
             source.write_text(
@@ -745,7 +762,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "commit", "-qm", "delete incomplete package")
             base = self._git(root, "rev-parse", "HEAD").strip()
             target_path = (
-                "docs/90.references/research/0085-workspace/m0001-request-scope.md"
+                "docs/90.references/01.research/0085-workspace/m0001-request-scope.md"
             )
             decision_path = decision.relative_to(root).as_posix()
             current = {
@@ -867,7 +884,7 @@ class IdentityHistoryTests(unittest.TestCase):
             )
             self.assertIn("identity-recovery-invalid", {item.code for item in findings})
 
-            untyped_decision_path = "docs/03.specs/0104-decision/tasks/tsk-0001.md"
+            untyped_decision_path = "docs/03.specs/0104-decision/01.tasks/tsk-0001.md"
             recovery[target_path]["decision_path"] = untyped_decision_path
             current[untyped_decision_path] = "SPEC-0104-TSK-0001"
             decision_evidence[untyped_decision_path] = decision_evidence[decision_path]
@@ -885,7 +902,7 @@ class IdentityHistoryTests(unittest.TestCase):
             decision_evidence.pop(untyped_decision_path)
 
             canonical_source = (
-                root / "docs/90.references/research/0085-workspace/README.md"
+                root / "docs/90.references/01.research/0085-workspace/README.md"
             )
             canonical_source.write_text(
                 "---\nartifact_id: RES-0085\n---\n", encoding="utf-8"
@@ -922,7 +939,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self.assertIn("identity-recovery-invalid", {item.code for item in findings})
 
             foreign_source = (
-                root / "docs/90.references/research/0084-other/REQUEST-SCOPE.md"
+                root / "docs/90.references/01.research/0084-other/REQUEST-SCOPE.md"
             )
             foreign_source.parent.mkdir(parents=True)
             foreign_source.write_text(
@@ -1036,8 +1053,8 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "init", "-q")
             self._git(root, "config", "user.name", "Registry Test")
             self._git(root, "config", "user.email", "registry@example.invalid")
-            audit = root / "docs/90.references/audits/ref-0023-fixture.md"
-            data = root / "docs/90.references/data/history/ref-0061-fixture.md"
+            audit = root / "docs/90.references/02.audits/ref-0023-fixture.md"
+            data = root / "docs/90.references/03.data/history/ref-0061-fixture.md"
             audit.parent.mkdir(parents=True)
             data.parent.mkdir(parents=True)
             audit.write_text("---\nartifact_id: AUD-0023\n---\n", encoding="utf-8")
@@ -1333,7 +1350,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "init", "-q")
             self._git(root, "config", "user.name", "Registry Test")
             self._git(root, "config", "user.email", "registry@example.invalid")
-            source = root / "docs/90.references/research/0099-example/README.md"
+            source = root / "docs/90.references/01.research/0099-example/README.md"
             source.parent.mkdir(parents=True)
             source.write_text(
                 "---\nartifact_id: RES-0099\n---\n",

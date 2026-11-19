@@ -1,10 +1,10 @@
 ---
 title: "Airflow Workloads"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Airflow Workloads
@@ -62,7 +62,7 @@ updated: "2026-11-17"
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
+- RUN-0050: `docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md`
 
 #### Related Documents
 

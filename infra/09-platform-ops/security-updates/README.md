@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # 보안 업데이트 조사 증거
@@ -345,7 +345,7 @@ TSK-0009의 latest/security gate와 review/delivery receipt가 결정합니다.
 #### Runbook Links
 
 - `infra/tech-stack.versions.json`: 기존 Compose image projection
-- `docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md`: 기존 현재 서비스 inventory
+- `docs/90.references/01.research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md`: 기존 현재 서비스 inventory
 - `scripts/security/verify-sample-service-supply-chain.sh`: 기존 sample 전용 Syft·Grype·Cosign 절차
 - `docs/03.specs/0204-service-integration-security-and-operations/`: owning Spec
 

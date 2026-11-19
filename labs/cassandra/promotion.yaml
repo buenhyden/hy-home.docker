@@ -9,10 +9,10 @@ integrations:
   owner: infra/06-observability/
 secrets: []
 documents:
-  guide: docs/05.operations/guides/15-labs/0025-cassandra.md
-  runbook: docs/05.operations/runbooks/15-labs/0025-cassandra.md
-  guide_target: docs/05.operations/guides/05-databases-and-storage/
-  runbook_target: docs/05.operations/runbooks/05-databases-and-storage/
+  guide: docs/05.operations/01.guides/15.labs/0025-cassandra.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0025-cassandra.md
+  guide_target: docs/05.operations/01.guides/05.databases-and-storage/
+  runbook_target: docs/05.operations/03.runbooks/05.databases-and-storage/
 resources:
   services:
     cassandra-node1:

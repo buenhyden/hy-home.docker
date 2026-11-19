@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Requirements"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0013"
 created: "2026-03-27"
@@ -119,7 +119,7 @@ every condition is judged met.
 
 #### Downstream Links
 
-- **Architecture Description**: [Open WebUI architecture](../02.architecture/descriptions/0013-open-webui-architecture.md)
-  and [AI architecture](../02.architecture/descriptions/0008-ai-architecture.md)
-- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../02.architecture/decisions/0059-native-oidc-open-webui-and-airflow.md)
-- **Current placement**: [ADR-0062 HOME and LAB Membership](../02.architecture/decisions/0062-home-lab-membership.md)
+- **Architecture Description**: [Open WebUI architecture](../02.architecture/01.descriptions/0013-open-webui-architecture.md)
+  and [AI architecture](../02.architecture/01.descriptions/0008-ai-architecture.md)
+- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../02.architecture/02.decisions/0059-native-oidc-open-webui-and-airflow.md)
+- **Current placement**: [ADR-0062 HOME and LAB Membership](../02.architecture/02.decisions/0062-home-lab-membership.md)

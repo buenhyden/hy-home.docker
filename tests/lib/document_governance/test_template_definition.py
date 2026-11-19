@@ -20,8 +20,10 @@ from scripts.lib.document_governance.registry import (
 )
 from scripts.lib.document_governance.template_definition import template_definition
 
-SCHEMA_PATH = ROOT / "docs/99.templates/contracts/template-definition.schema.json"
-GLOSSARY = ROOT / ".agents/knowledge/glossary.md"
+SCHEMA_PATH = ROOT / "docs/99.templates/01.contracts/template-definition.schema.json"
+GLOSSARY = ROOT / "docs/00.workspace/01.project/glossary.md"
+# Agent-only local terms moved out of the shared vocabulary (SPEC-0212-TSK-0096).
+AGENT_GLOSSARY = ROOT / ".agents/knowledge/agent-glossary.md"
 
 
 def _errors(definition: object) -> list[str]:
@@ -43,7 +45,9 @@ def _reference_failures(definition: dict) -> list[str]:
     """Return every authored reference that does not resolve."""
 
     failures = []
-    glossary = GLOSSARY.read_text(encoding="utf-8")
+    glossary = GLOSSARY.read_text(encoding="utf-8") + AGENT_GLOSSARY.read_text(
+        encoding="utf-8"
+    )
     for path in definition["consumer_paths"]:
         if not (ROOT / path).is_file():
             failures.append(path)
@@ -52,7 +56,7 @@ def _reference_failures(definition: dict) -> list[str]:
         target = ROOT / path
         if (
             not re.fullmatch(
-                r"(?:\.agents/governance|docs/00\.workspace/0[1-3]\.[a-z]+)/[a-z-]+\.md",
+                r"(?:\.agents/governance|docs/00\.workspace/(?:01\.project|03\.process|04\.quality))/[a-z-]+\.md",
                 path,
             )
             or not target.is_file()
@@ -381,7 +385,7 @@ class TemplateDefinitionTests(unittest.TestCase):
         definition = copy.deepcopy(self.definitions["sdlc/task"])
         definition["consumer_paths"] = ["scripts/does-not-exist.py"]
         definition["policy_refs"] = [
-            "docs/00.workspace/02.process/sdlc.md#no-such-anchor"
+            "docs/00.workspace/03.process/sdlc.md#no-such-anchor"
         ]
         definition["vocabulary_refs"] = ["TERM-NOT-A-TERM"]
         definition["validation"]["positive"] = [
@@ -889,7 +893,7 @@ class RoleDesignConformanceTests(unittest.TestCase):
             for relative in (
                 str(contract["source_path"]),
                 str(role["source"]),
-                "docs/99.templates/contracts/document-frontmatter.schema.json",
+                "docs/99.templates/01.contracts/document-frontmatter.schema.json",
             ):
                 (root / relative).parent.mkdir(parents=True, exist_ok=True)
                 (root / relative).write_bytes((ROOT / relative).read_bytes())

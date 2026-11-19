@@ -26,10 +26,10 @@ from scripts.lib.document_governance.taxonomy import (
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 DEFAULT_REGISTRY = ROOT / "docs/99.templates/registry.json"
 DEFAULT_PROFILE_SCHEMA = (
-    ROOT / "docs/99.templates/contracts/document-profile.schema.json"
+    ROOT / "docs/99.templates/01.contracts/document-profile.schema.json"
 )
 DEFAULT_FRONTMATTER_SCHEMA = (
-    ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
+    ROOT / "docs/99.templates/01.contracts/document-frontmatter.schema.json"
 )
 MAX_REGISTRY_BYTES = 1024 * 1024
 MAX_SCHEMA_BYTES = 256 * 1024
@@ -447,11 +447,23 @@ def validate_registry_at_revision(
     """Validate a Registry blob against the schema committed beside it."""
 
     raw = load_registry_document_at_revision(revision, root=root)
-    schema = _load_json_document_at_revision(
-        revision,
-        "docs/99.templates/contracts/document-profile.schema.json",
-        root=root,
-    )
+    try:
+        schema = _load_json_document_at_revision(
+            revision,
+            "docs/99.templates/01.contracts/document-profile.schema.json",
+            root=root,
+        )
+    except RegistryError as error:
+        # A revision before SPEC-0212-TSK-0096 keeps its schema in the
+        # unnumbered folder; only an absent numbered schema falls back, so a
+        # malformed one is still reported.
+        if str(error) != "trusted revision must contain one JSON blob":
+            raise
+        schema = _load_json_document_at_revision(
+            revision,
+            "docs/99.templates/contracts/document-profile.schema.json",
+            root=root,
+        )
 
     def owner_exists(path: str) -> bool:
         # A relation owner exists now or in the revision the Registry came from.
@@ -3068,7 +3080,11 @@ def _safe_artifact_pattern(value: str) -> bool:
 def _safe_template_source(value: str) -> bool:
     path = pathlib.PurePosixPath(value)
     return bool(
-        value.startswith("docs/99.templates/templates/")
+        # The unnumbered folder is the pre-SPEC-0212-TSK-0096 history route;
+        # the current schema pattern admits only the numbered one.
+        value.startswith(
+            ("docs/99.templates/02.templates/", "docs/99.templates/templates/")
+        )
         and not value.startswith("/")
         and "\\" not in value
         and ".." not in path.parts
@@ -3109,7 +3125,11 @@ def _path_regex(pattern: str) -> re.Pattern[str]:
                 r"(?:00\.agent-governance|01\.requirements|02\.architecture|03\.specs|05\.operations|90\.references|98\.archive|99\.templates)"
             )
         elif token == "{category}":
-            rendered.append(r"(?:audits|data|research)")
+            # The unnumbered names are the pre-SPEC-0212-TSK-0096 snapshot
+            # routes; the current corpus admits only the numbered folders.
+            rendered.append(
+                r"(?:01\.research|02\.audits|03\.data|audits|data|research)"
+            )
         elif token == "{archived_subpath}":
             # A preserved record keeps the name it had when it was live, so the
             # archive must express filenames current authoring patterns forbid:
@@ -3122,6 +3142,9 @@ def _path_regex(pattern: str) -> re.Pattern[str]:
             # One or more lowercase path segments, so one profile can own a
             # nested entrypoint tree without a profile per depth.
             rendered.append(r"(?:[a-z0-9][a-z0-9-]*/)*[a-z0-9][a-z0-9-]*")
+        elif token == "{domain}":
+            # A classification folder may be numbered `NN.name` (SPEC-0212-TSK-0096).
+            rendered.append(r"(?:[0-9]{2}\.)?[a-z0-9][a-z0-9-]*")
         else:
             rendered.append(r"[a-z0-9][a-z0-9-]*")
         cursor = match.end()

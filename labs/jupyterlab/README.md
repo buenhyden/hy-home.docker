@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Workspace"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-21"
 ---
 
@@ -109,14 +109,14 @@ root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traef
 
 #### Runbook Links
 
-- **Guide**: JupyterLab usage guide (`docs/05.operations/guides/15-labs/0089-jupyterlab.md`)
-- **Policy**: JupyterLab operations policy (`docs/05.operations/policies/15-labs/0089-jupyterlab.md`)
-- **Runbook**: JupyterLab recovery runbook (`docs/05.operations/runbooks/15-labs/0089-jupyterlab.md`)
+- **Guide**: JupyterLab usage guide (`docs/05.operations/01.guides/15.labs/0089-jupyterlab.md`)
+- **Policy**: JupyterLab operations policy (`docs/05.operations/02.policies/15.labs/0089-jupyterlab.md`)
+- **Runbook**: JupyterLab recovery runbook (`docs/05.operations/03.runbooks/15.labs/0089-jupyterlab.md`)
 - [MLflow package](../../infra/08-ai/mlflow/README.md)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0107 lab-promotion
 
 #### Observability and Recovery
 
-Compose 헬스체크는 인증이 필요 없는 `GET /api`이며 서버 응답만 증명하고 커널 상태는 증명하지 않는다. 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0089 JupyterLab Runbook을 따른다.
+Compose 헬스체크는 인증이 필요 없는 `GET /api`이며 서버 응답만 증명하고 커널 상태는 증명하지 않는다. 복구는 [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md)의 RUN-0089 JupyterLab Runbook을 따른다.

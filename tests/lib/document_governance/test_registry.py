@@ -264,17 +264,17 @@ class DocumentRegistryTests(unittest.TestCase):
     ) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         guide = next(profile for profile in raw["profiles"] if profile["id"] == "guide")
-        nested = "docs/05.operations/guides/15-labs/{number:4}-{slug}.md"
+        nested = "docs/05.operations/01.guides/15.labs/{number:4}-{slug}.md"
         guide["additional_path_patterns"] = [nested]
         self.assertEqual((), validate_registry(raw))
         primary = guide["path_pattern"]
-        self.assertEqual("docs/05.operations/guides/{number:4}-{slug}.md", primary)
+        self.assertEqual("docs/05.operations/01.guides/{number:4}-{slug}.md", primary)
         for value in (
             [],
             [nested, nested],
             [""],
             [None],
-            ["docs/05.operations/guides/../{slug}.md"],
+            ["docs/05.operations/01.guides/../{slug}.md"],
         ):
             with self.subTest(value=value):
                 candidate = json.loads(json.dumps(raw))
@@ -300,26 +300,26 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_registered_operations_domains_keep_the_typed_identity(self) -> None:
         registry = load_registry()
         for domain in (
-            "01-common",
-            "02-gateway-and-networking",
-            "03-identity-and-access",
-            "04-security-and-secrets",
-            "05-databases-and-storage",
-            "06-messaging-and-cdc",
-            "07-observability",
-            "08-workflows-and-automation",
-            "09-ai-and-search",
-            "10-platform-and-backup",
-            "11-mail-and-notifications",
-            "12-testing-and-quality",
-            "13-analytics-and-data-quality",
-            "14-design-system",
-            "15-labs",
+            "01.common",
+            "02.gateway-and-networking",
+            "03.identity-and-access",
+            "04.security-and-secrets",
+            "05.databases-and-storage",
+            "06.messaging-and-cdc",
+            "07.observability",
+            "08.workflows-and-automation",
+            "09.ai-and-search",
+            "10.platform-and-backup",
+            "11.mail-and-notifications",
+            "12.testing-and-quality",
+            "13.analytics-and-data-quality",
+            "14.design-system",
+            "15.labs",
         ):
             for family, profile, prefix in (
-                ("guides", "guide", "GDE"),
-                ("policies", "policy", "POL"),
-                ("runbooks", "runbook", "RUN"),
+                ("01.guides", "guide", "GDE"),
+                ("02.policies", "policy", "POL"),
+                ("03.runbooks", "runbook", "RUN"),
             ):
                 with self.subTest(domain=domain, family=family):
                     path = pathlib.PurePosixPath(
@@ -371,9 +371,9 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_typed_lab_readmes_are_governed_navigation(self) -> None:
         registry = load_registry()
         profiles = build_registry_profiles(registry)
-        for family in ("guides", "policies", "runbooks"):
+        for family in ("01.guides", "02.policies", "03.runbooks"):
             with self.subTest(family=family):
-                path = f"docs/05.operations/{family}/15-labs/README.md"
+                path = f"docs/05.operations/{family}/15.labs/README.md"
                 profile_id = classify_path(path, registry)
                 self.assertIsNotNone(profile_id)
                 self.assertEqual("common/readme", registry.profiles[profile_id]["type"])
@@ -387,30 +387,30 @@ class DocumentRegistryTests(unittest.TestCase):
             "unknown-domain/0099-lab-example.md",
             "unknown-domain/README.md",
             "Labs/0099-lab-example.md",
-            "15-labs/nested/0099-lab-example.md",
-            "15-labs/nested/README.md",
-            "15-labs/../0099-lab-example.md",
-            "15-labs//0099-lab-example.md",
-            "./15-labs/0099-lab-example.md",
-            "15-labs/0099-Lab-Example.md",
-            "15-labs/ops-0099-lab-example.md",
+            "15.labs/nested/0099-lab-example.md",
+            "15.labs/nested/README.md",
+            "15.labs/../0099-lab-example.md",
+            "15.labs//0099-lab-example.md",
+            "./15.labs/0099-lab-example.md",
+            "15.labs/0099-Lab-Example.md",
+            "15.labs/ops-0099-lab-example.md",
         ):
             with self.subTest(suffix=suffix):
                 self.assertIsNone(
-                    classify_path(f"docs/05.operations/guides/{suffix}", registry)
+                    classify_path(f"docs/05.operations/01.guides/{suffix}", registry)
                 )
 
     def test_typed_operations_lab_paths_keep_the_family_profile(self) -> None:
         registry = load_registry()
         profiles = build_registry_profiles(registry)
         for family, profile, prefix in (
-            ("guides", "guide", "GDE"),
-            ("policies", "policy", "POL"),
-            ("runbooks", "runbook", "RUN"),
+            ("01.guides", "guide", "GDE"),
+            ("02.policies", "policy", "POL"),
+            ("03.runbooks", "runbook", "RUN"),
         ):
             with self.subTest(family=family):
                 path = pathlib.PurePosixPath(
-                    f"docs/05.operations/{family}/15-labs/0099-lab-example.md"
+                    f"docs/05.operations/{family}/15.labs/0099-lab-example.md"
                 )
                 self.assertEqual(profile, classify_path(path, registry))
                 self.assertEqual(
@@ -431,11 +431,11 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_additional_pattern_safety_and_exact_route_collisions(self) -> None:
         for pattern in (
-            "docs/05.operations/guides/15-labs/*-example.md",
-            "docs/05.operations/guides/./{number:4}-{slug}.md",
-            "docs/05.operations/guides/15-labs/{unknown}.md",
-            "/docs/05.operations/guides/15-labs/{number:4}-{slug}.md",
-            "docs/05.operations/guides/15-labs/{number:4}-?.md",
+            "docs/05.operations/01.guides/15.labs/*-example.md",
+            "docs/05.operations/01.guides/./{number:4}-{slug}.md",
+            "docs/05.operations/01.guides/15.labs/{unknown}.md",
+            "/docs/05.operations/01.guides/15.labs/{number:4}-{slug}.md",
+            "docs/05.operations/01.guides/15.labs/{number:4}-?.md",
         ):
             with self.subTest(pattern=pattern):
                 raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
@@ -448,7 +448,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 profile = next(p for p in raw["profiles"] if p["id"] == owner)
                 profile["additional_paths"] = [
                     *profile.get("additional_paths", ()),
-                    "docs/05.operations/guides/15-labs/0099-example.md",
+                    "docs/05.operations/01.guides/15.labs/0099-example.md",
                 ]
                 self.assertIn(
                     "profile-path-overlap",
@@ -466,8 +466,8 @@ class DocumentRegistryTests(unittest.TestCase):
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         guide = next(p for p in raw["profiles"] if p["id"] == "guide")
         guide["additional_path_patterns"] = [
-            "docs/05.operations/guides/15-labs/{number:4}-{slug}.md",
-            "docs/05.operations/guides/{domain}/{number:4}-{slug}.md",
+            "docs/05.operations/01.guides/15.labs/{number:4}-{slug}.md",
+            "docs/05.operations/01.guides/{domain}/{number:4}-{slug}.md",
         ]
         self.assertIn(
             "profile-path-overlap", {finding.code for finding in validate_registry(raw)}
@@ -477,17 +477,17 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
         adapted = build_registry_profiles(registry)
         for role, family in (
-            ("guide", "guides"),
-            ("policy", "policies"),
-            ("runbook", "runbooks"),
+            ("guide", "01.guides"),
+            ("policy", "02.policies"),
+            ("runbook", "03.runbooks"),
         ):
             with self.subTest(role=role):
                 path = pathlib.PurePosixPath(
-                    f"docs/05.operations/{family}/15-labs/0099-example.md"
+                    f"docs/05.operations/{family}/15.labs/0099-example.md"
                 )
                 self.assertEqual(role, infer_artifact_type(pathlib.Path(path)))
                 self.assertIn(
-                    f"docs/05.operations/{family}/15-labs/[0-9][0-9][0-9][0-9]-*.md",
+                    f"docs/05.operations/{family}/15.labs/[0-9][0-9][0-9][0-9]-*.md",
                     adapted["template_roles"][f"operation/{role}"]["target_globs"],
                 )
 
@@ -501,7 +501,7 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
         adapted = build_registry_profiles(registry)
         path = pathlib.PurePosixPath(
-            "docs/05.operations/guides/15-labs/0099-example.md"
+            "docs/05.operations/01.guides/15.labs/0099-example.md"
         )
         self.assertEqual("guide", classify_taxonomy(path, registry.profiles))
         self.assertEqual("guide", classify_taxonomy(path, adapted["profiles"]))
@@ -511,13 +511,17 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual(
             "unsupported",
             infer_artifact_type(
-                pathlib.Path("docs/05.operations/guides/unknown-domain/0099-example.md")
+                pathlib.Path(
+                    "docs/05.operations/01.guides/unknown-domain/0099-example.md"
+                )
             ),
         )
         self.assertEqual(
             "unsupported",
             infer_artifact_type(
-                pathlib.Path("docs/05.operations/guides/15-labs/nested/0099-example.md")
+                pathlib.Path(
+                    "docs/05.operations/01.guides/15.labs/nested/0099-example.md"
+                )
             ),
         )
 
@@ -553,7 +557,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual((), validate_registry(raw))
         policy = next(p for p in raw["profiles"] if p["id"] == "policy")
         policy["additional_path_patterns"] = [
-            "docs/05.operations/guides/15-labs/{number:4}-{slug}.md",
+            "docs/05.operations/01.guides/15.labs/{number:4}-{slug}.md",
         ]
         self.assertIn(
             "profile-path-overlap", {finding.code for finding in validate_registry(raw)}
@@ -727,7 +731,7 @@ class DocumentRegistryTests(unittest.TestCase):
         from scripts.lib.document_governance.metadata import lifecycle
 
         profiles = build_registry_profiles(load_registry())
-        target = pathlib.Path("docs/00.workspace/02.process/sdlc.md")
+        target = pathlib.Path("docs/00.workspace/03.process/sdlc.md")
         source = '---\ntype: "governance/workflow"\nstatus: "active"\n---\n# SDLC\n'
         with (
             mock.patch.object(
@@ -765,7 +769,7 @@ class DocumentRegistryTests(unittest.TestCase):
             ".agents/roles/qa-engineer.md": "governance-role",
             ".agents/skills/test-authoring/SKILL.md": "governance-skill",
             ".agents/governance/providers/README.md": "governance-provider-index",
-            "docs/00.workspace/02.process/sdlc.md": "governance-sdlc",
+            "docs/00.workspace/03.process/sdlc.md": "governance-sdlc",
             ".claude/provider.md": "governance-provider",
             ".codex/provider.md": "governance-provider",
         }
@@ -993,7 +997,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
         profiles = build_registry_profiles(load_registry())
         target = pathlib.Path(
-            "docs/05.operations/policies/08-workflows-and-automation/"
+            "docs/05.operations/02.policies/08.workflows-and-automation/"
             "0052-airflow-dag-lifecycle.md"
         )
         source = pathlib.Path(
@@ -1023,7 +1027,7 @@ class DocumentRegistryTests(unittest.TestCase):
             renamed, _ = lifecycle._operations_moved_body_baseline(
                 ROOT,
                 pathlib.Path(
-                    "docs/05.operations/policies/05-databases-and-storage/"
+                    "docs/05.operations/02.policies/05.databases-and-storage/"
                     "0030-data-optimization-hardening.md"
                 ),
                 profiles,
@@ -1054,7 +1058,10 @@ class DocumentRegistryTests(unittest.TestCase):
                     (source, "POL-0052"), (source.with_name("runbook.md"), "POL-0052")
                 ),
                 base(
-                    (pathlib.Path("docs/05.operations/policies/0052-x.md"), "POL-0052")
+                    (
+                        pathlib.Path("docs/05.operations/02.policies/0052-x.md"),
+                        "POL-0052",
+                    )
                 ),
             ):
                 with self.subTest(records=records):
@@ -1070,7 +1077,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
         profiles = build_registry_profiles(load_registry())
         target = pathlib.Path(
-            "docs/05.operations/policies/08-workflows-and-automation/"
+            "docs/05.operations/02.policies/08.workflows-and-automation/"
             "0052-airflow-dag-lifecycle.md"
         )
         historical = (
@@ -1080,7 +1087,7 @@ class DocumentRegistryTests(unittest.TestCase):
         values = {"type": "operation/policy", "artifact_id": "POL-0052"}
         flat = target.parent.parent / target.name
         unnumbered = target.parent.parent / "workflows-and-automation" / target.name
-        sibling = target.parent.parent / "15-labs" / target.name
+        sibling = target.parent.parent / "15.labs" / target.name
 
         def base(path, metadata=values):
             return lifecycle.Record(path, metadata, "policy")
@@ -1103,11 +1110,11 @@ class DocumentRegistryTests(unittest.TestCase):
                 [base(flat.with_name("0052-another.md"))],
                 [base(flat, {**values, "artifact_id": "POL-0053"})],
                 [base(flat, {**values, "type": "operation/guide"})],
-                [base(pathlib.Path(str(flat).replace("/policies/", "/guides/")))],
+                [base(pathlib.Path(str(flat).replace("/02.policies/", "/01.guides/")))],
                 [base(unnumbered.parent.parent / "another" / target.name)],
                 [base(flat), base(unnumbered)],
                 [base(sibling), base(flat)],
-                [base(sibling.parent.parent / "15-labs" / "0052-another.md")],
+                [base(sibling.parent.parent / "15.labs" / "0052-another.md")],
             ):
                 with self.subTest(records=records):
                     self.assertEqual(
@@ -1123,7 +1130,7 @@ class DocumentRegistryTests(unittest.TestCase):
         from scripts.lib.document_governance.metadata.profile import TransitionOverride
 
         profiles = build_registry_profiles(load_registry())
-        path = "docs/02.architecture/decisions/0099-fixture.md"
+        path = "docs/02.architecture/02.decisions/0099-fixture.md"
         values = {
             "title": "Fixture",
             "version": "1.0.0",
@@ -1142,7 +1149,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 key = (evidence_path, "proposed", status)
                 overrides[key] = TransitionOverride(
                     *key,
-                    "docs/03.specs/0001-fixture/tasks/tsk-0001-review.md",
+                    "docs/03.specs/0001-fixture/01.tasks/tsk-0001-review.md",
                     "Fixture review approval",
                     "Reviewed transition within one uncommitted task",
                 )
@@ -1166,7 +1173,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIn("invalid-initial-status", codes("accepted"))
         self.assertIn(
             "invalid-initial-status",
-            codes("accepted", "docs/02.architecture/decisions/0098-other.md"),
+            codes("accepted", "docs/02.architecture/02.decisions/0098-other.md"),
         )
         self.assertIn("invalid-initial-status", codes("retired", path))
         self.assertNotIn("invalid-initial-status", codes("accepted", path))
@@ -1176,8 +1183,8 @@ class DocumentRegistryTests(unittest.TestCase):
         profiles = build_registry_profiles(registry)
         for path in (
             "docs/03.specs/README.md",
-            "docs/05.operations/guides/README.md",
-            "docs/90.references/research/README.md",
+            "docs/05.operations/01.guides/README.md",
+            "docs/90.references/01.research/README.md",
         ):
             with self.subTest(path=path):
                 source = (ROOT / path).read_text(encoding="utf-8")
@@ -1323,6 +1330,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 "git",
                 "show",
                 f"{PRE_SEMVER_WIDENING_COMMIT}:"
+                # The route that revision used, before SPEC-0212-TSK-0096.
                 "docs/99.templates/contracts/document-frontmatter.schema.json",
             ],
             cwd=ROOT,
@@ -1348,7 +1356,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 self.assertNotEqual((), validate_frontmatter({"version": value}))
 
     def test_every_schema_version_pattern_is_the_same_numeric_pattern(self) -> None:
-        contracts = ROOT / "docs/99.templates/contracts"
+        contracts = ROOT / "docs/99.templates/01.contracts"
         profile = json.loads(
             (contracts / "document-profile.schema.json").read_text(encoding="utf-8")
         )
@@ -1389,7 +1397,7 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         schema = json.loads(
             (
-                ROOT / "docs/99.templates/contracts/document-profile.schema.json"
+                ROOT / "docs/99.templates/01.contracts/document-profile.schema.json"
             ).read_text(encoding="utf-8")
         )
         validator = Draft202012Validator(schema)
@@ -1415,7 +1423,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 self.assertEqual(accepted, not errors)
 
     def test_template_optional_empty_value_uses_same_profile_guard(self) -> None:
-        path = pathlib.Path("docs/99.templates/templates/specs/spec.template.md")
+        path = pathlib.Path("docs/99.templates/02.templates/03.specs/spec.template.md")
         profiles = build_registry_profiles(load_registry())
         source = (ROOT / path).read_text(encoding="utf-8")
         source = source.replace(
@@ -1614,7 +1622,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_cancelled_task_template_needs_authored_cancellation(self) -> None:
         source = (
-            ROOT / "docs/99.templates/templates/specs/task.template.md"
+            ROOT / "docs/99.templates/02.templates/03.specs/task.template.md"
         ).read_text()
         self.assertNotIn("cancellation", _parse_frontmatter_text(source))
         values = {
@@ -1632,7 +1640,7 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         rendered = rendered.replace('status: "draft"', 'status: "cancelled"')
         profiles = build_registry_profiles(load_registry())
-        path = pathlib.Path("docs/03.specs/0001-fixture/tasks/tsk-0001-fixture.md")
+        path = pathlib.Path("docs/03.specs/0001-fixture/01.tasks/tsk-0001-fixture.md")
         manifest = {"SPEC-0001": path.parent.parent / "spec.md"}
         with tempfile.TemporaryDirectory() as temp:
             target = pathlib.Path(temp) / path
@@ -1907,7 +1915,7 @@ class DocumentRegistryTests(unittest.TestCase):
         # rule under test: a generated body must name its exact manifest owner.
         self.assertEqual({}, generated_reference_owners(ROOT))
         path = pathlib.Path(
-            "docs/90.references/data/0065-audit-implementation-matrix/README.md"
+            "docs/90.references/03.data/0065-audit-implementation-matrix/README.md"
         )
         owner = "scripts/validation/generate-audit-implementation-matrix.sh"
         profiles["common"]["generated_outputs"] = {path.as_posix(): owner}
@@ -1934,10 +1942,10 @@ class DocumentRegistryTests(unittest.TestCase):
 
         registry = load_registry()
         for path in (
-            "docs/02.architecture/decisions/README.md",
-            "docs/02.architecture/descriptions/README.md",
+            "docs/02.architecture/02.decisions/README.md",
+            "docs/02.architecture/01.descriptions/README.md",
             "docs/99.templates/README.md",
-            "docs/99.templates/templates/README.md",
+            "docs/99.templates/02.templates/README.md",
         ):
             with self.subTest(path=path):
                 self.assertEqual("readme", classify_path(path, registry))
@@ -2145,12 +2153,12 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
         self.assertEqual(
             "reference-category-readme",
-            classify_path("docs/90.references/research/README.md", registry),
+            classify_path("docs/90.references/01.research/README.md", registry),
         )
         self.assertEqual(
             "research",
             classify_path(
-                "docs/90.references/research/0002-agentic-engineering-research-pack/README.md",
+                "docs/90.references/01.research/0002-agentic-engineering-research-pack/README.md",
                 registry,
             ),
         )
@@ -2202,7 +2210,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_authored_frontmatter_schema_is_closed_and_unambiguous(self) -> None:
         schema_path = (
-            ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
+            ROOT / "docs/99.templates/01.contracts/document-frontmatter.schema.json"
         )
         self.assertTrue(schema_path.is_file())
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
@@ -2228,7 +2236,7 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_retired_branch_integration_receipt_is_rejected(self) -> None:
         registry = load_registry()
         schema_path = (
-            ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
+            ROOT / "docs/99.templates/01.contracts/document-frontmatter.schema.json"
         )
         self.assertTrue(
             all(
@@ -2258,11 +2266,11 @@ class DocumentRegistryTests(unittest.TestCase):
         profiles = build_registry_profiles(load_registry())
         for relative in (
             "docs/01.requirements/0012-laboratory.md",
-            "docs/02.architecture/descriptions/0011-laboratory-architecture.md",
-            "docs/02.architecture/decisions/0050-openbao-as-secrets-manager.md",
+            "docs/02.architecture/01.descriptions/0011-laboratory-architecture.md",
+            "docs/02.architecture/02.decisions/0050-openbao-as-secrets-manager.md",
             "docs/03.specs/0212-request-baseline-and-reconciliation/spec.md",
             "docs/03.specs/0212-request-baseline-and-reconciliation/plan.md",
-            "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/"
+            "docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/"
             "tsk-0065-w06-git-ci-release.md",
         ):
             source = (ROOT / relative).read_text(encoding="utf-8")
@@ -2339,7 +2347,7 @@ class DocumentRegistryTests(unittest.TestCase):
     ) -> None:
         registry = load_registry()
         schema_path = (
-            ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
+            ROOT / "docs/99.templates/01.contracts/document-frontmatter.schema.json"
         )
         guide = registry.profiles["guide"]
         self.assertIn("implementation_services", guide["optional_frontmatter"])
@@ -2382,14 +2390,16 @@ class DocumentRegistryTests(unittest.TestCase):
                 )
 
         template = (
-            ROOT / "docs/99.templates/templates/operations/guide.template.md"
+            ROOT / "docs/99.templates/02.templates/05.operations/guide.template.md"
         ).read_text(encoding="utf-8")
         self.assertIn("implementation_services", template)
         self.assertIn("Service Guides", template)
         self.assertIn("workspace and process Guides omit", template)
 
     def test_guide_lab_binding_is_the_lab_entrypoint_and_cannot_escape(self):
-        schema = ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
+        schema = (
+            ROOT / "docs/99.templates/01.contracts/document-frontmatter.schema.json"
+        )
         self.assertEqual(
             (),
             validate_frontmatter(
@@ -2451,7 +2461,7 @@ class DocumentRegistryTests(unittest.TestCase):
                     )
 
     def test_operations_templates_prompt_for_applicable_service_contracts(self) -> None:
-        template_root = ROOT / "docs/99.templates/templates/operations"
+        template_root = ROOT / "docs/99.templates/02.templates/05.operations"
         expected = {
             "guide.template.md": (
                 "actual implementation",
@@ -2539,13 +2549,13 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
 
         expected = {
-            "docs/90.references/audits/README.md": "reference-category-readme",
-            "docs/03.specs/0153-example/contracts/openapi.yaml": "openapi-contract",
-            "docs/03.specs/0153-example/contracts/schema.graphql": "graphql-contract",
-            "docs/03.specs/0153-example/contracts/service.proto": "proto-contract",
-            "docs/05.operations/guides/README.md": "readme",
-            "docs/05.operations/policies/README.md": "readme",
-            "docs/05.operations/runbooks/README.md": "readme",
+            "docs/90.references/02.audits/README.md": "reference-category-readme",
+            "docs/03.specs/0153-example/02.contracts/openapi.yaml": "openapi-contract",
+            "docs/03.specs/0153-example/02.contracts/schema.graphql": "graphql-contract",
+            "docs/03.specs/0153-example/02.contracts/service.proto": "proto-contract",
+            "docs/05.operations/01.guides/README.md": "readme",
+            "docs/05.operations/02.policies/README.md": "readme",
+            "docs/05.operations/03.runbooks/README.md": "readme",
         }
         for path, profile_id in expected.items():
             with self.subTest(path=path):
@@ -2554,7 +2564,7 @@ class DocumentRegistryTests(unittest.TestCase):
         guide = registry.profiles["guide"]
         self.assertEqual("GDE-{number:4}", guide["artifact_id_pattern"])
         self.assertEqual("direct", guide["identity_relation"])
-        member = pathlib.PurePosixPath("docs/05.operations/guides/0051-example.md")
+        member = pathlib.PurePosixPath("docs/05.operations/01.guides/0051-example.md")
         self.assertEqual(
             [],
             validate_stable_identity(
@@ -2594,7 +2604,7 @@ class DocumentRegistryTests(unittest.TestCase):
         profiles = load_registry().profiles
         examples = (
             (
-                pathlib.PurePosixPath("docs/05.operations/guides/10012-wrong.md"),
+                pathlib.PurePosixPath("docs/05.operations/01.guides/10012-wrong.md"),
                 {"type": "operation/guide", "artifact_id": "GDE-0012"},
             ),
             (
@@ -2674,7 +2684,7 @@ class DocumentRegistryTests(unittest.TestCase):
         }
         actual = {
             path.relative_to(ROOT)
-            for path in (ROOT / "docs/99.templates/templates").rglob("*")
+            for path in (ROOT / "docs/99.templates/02.templates").rglob("*")
             if path.is_file()
             and ".template." in path.name
             # Runtime projections are provider-owned bindings, not copy sources.
@@ -2722,7 +2732,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "template-source-traversal": lambda value: value["template_roles"][
                 "sdlc/requirement"
             ].update(
-                {"source": ("docs/99.templates/templates/../../outside.template.md")}
+                {"source": ("docs/99.templates/02.templates/../../outside.template.md")}
             ),
             "artifact-token-unknown": lambda value: value["profiles"][0].update(
                 {"artifact_id_pattern": "REQ-{bogus:4}"}
@@ -3224,7 +3234,7 @@ class DocumentRegistryTests(unittest.TestCase):
             **generated,
             "id": "generated-report",
             "path_pattern": (
-                "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-report.md"
+                "docs/90.references/03.data/{number:4}-{slug}/m{member_number:4}-report.md"
             ),
             "template_id": None,
         }
@@ -3237,14 +3247,14 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         self.assertTrue(
             _path_patterns_overlap(
-                "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-{slug}.md",
-                "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-report.md",
+                "docs/90.references/03.data/{number:4}-{slug}/m{member_number:4}-{slug}.md",
+                "docs/90.references/03.data/{number:4}-{slug}/m{member_number:4}-report.md",
             )
         )
         self.assertFalse(
             _path_patterns_overlap(
-                "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-report.md",
-                "docs/90.references/data/{number:4}-{slug}/summary.md",
+                "docs/90.references/03.data/{number:4}-{slug}/m{member_number:4}-report.md",
+                "docs/90.references/03.data/{number:4}-{slug}/summary.md",
             )
         )
 
@@ -3458,7 +3468,7 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_null_template_profile_enforces_registry_native_body_sections(self) -> None:
         registry = load_registry()
         adapted = build_registry_profiles(registry)
-        path = pathlib.Path("docs/00.workspace/02.process/sdlc.md")
+        path = pathlib.Path("docs/00.workspace/03.process/sdlc.md")
         valid = Record(
             path,
             {"profile_id": "governance-sdlc"},
@@ -3695,7 +3705,7 @@ class FreeFormProfileTests(unittest.TestCase):
         # The common form gives every governance policy one shared H2 set.
         codes = self._codes(
             "governance-policy",
-            "docs/00.workspace/03.quality/quality-standards.md",
+            "docs/00.workspace/04.quality/quality-standards.md",
             ("Anything At All", "Ownership"),
         )
         self.assertIn("body-heading-forbidden", codes)
@@ -3818,7 +3828,7 @@ class ExecutionLifecycleTests(unittest.TestCase):
 class ActualTaskLifecycleTransitionTests(unittest.TestCase):
     def test_exact_validated_current_event_path_satisfies_initial_guard(self) -> None:
         profiles = build_registry_profiles(load_registry())
-        path = pathlib.Path("docs/03.specs/9998-fixture/tasks/tsk-0001-implement.md")
+        path = pathlib.Path("docs/03.specs/9998-fixture/01.tasks/tsk-0001-implement.md")
         record = Record(
             path=path,
             metadata={
@@ -3987,7 +3997,9 @@ class ActualTaskLifecycleTransitionTests(unittest.TestCase):
     def test_current_task_parent_cardinality_is_registered(self) -> None:
         profiles = build_registry_profiles(load_registry())
         record = Record(
-            path=pathlib.Path("docs/03.specs/9998-fixture/tasks/tsk-0001-implement.md"),
+            path=pathlib.Path(
+                "docs/03.specs/9998-fixture/01.tasks/tsk-0001-implement.md"
+            ),
             metadata={
                 "title": "Fixture",
                 "version": "1.0.0",
@@ -4045,7 +4057,7 @@ class RepositoryVocabularyProfileTests(unittest.TestCase):
         registry = load_registry()
         self.assertEqual(
             "governance-vocabulary",
-            classify_path(".agents/knowledge/glossary.md", registry),
+            classify_path("docs/00.workspace/01.project/glossary.md", registry),
         )
         profile = registry.profiles["governance-vocabulary"]
         self.assertEqual(self.VOCABULARY_SECTIONS, tuple(profile["required_sections"]))

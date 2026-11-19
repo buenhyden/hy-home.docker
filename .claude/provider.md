@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.7.6"
+version: "1.7.7"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 runtime: "claude"
 ---
 
@@ -63,11 +63,11 @@ projection of either, and their absence under `.claude/` is not a defect.
   is \"block\""), while invalid JSON printed with exit 0 is not a failure
   and the tool ran, so the dispatcher must print a well-formed decision. The `permissions.deny` rules are native
   extra protection, not Registry translations: they back the
-  [secret boundary](../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records),
-  the [no-direct-push rule](../docs/00.workspace/02.process/github-governance.md#1-repository-protection-contract),
+  [secret boundary](../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records),
+  the [no-direct-push rule](../docs/00.workspace/03.process/github-governance.md#1-repository-protection-contract),
   and, for `docker system prune`, `docker compose down`, `docker volume rm`
   and `rm -rf`, the exact-target rule for live mutation and deletion in
-  [approval boundaries](../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records),
+  [approval boundaries](../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records),
   the [runtime mutation protocol](../.agents/governance/environment-constraints.md#21-approved-runtime-mutation-protocol)
   and the [pruning constraint](../.agents/governance/environment-constraints.md#2-infrastructure-constraints).
 - This `provider.md` is an authored input. `.claude/README.md` and
@@ -89,8 +89,8 @@ projection of either, and their absence under `.claude/` is not a defect.
 
 ## Limitations
 
-Select checks through the [shared verification matrix](../docs/00.workspace/03.quality/quality-standards.md#5-change-type-verification-matrix)
-and [completion checklist](../docs/00.workspace/03.quality/task-checklists.md#before-completion).
+Select checks through the [shared verification matrix](../docs/00.workspace/04.quality/quality-standards.md#5-change-type-verification-matrix)
+and [completion checklist](../docs/00.workspace/04.quality/task-checklists.md#before-completion).
 The shared policy and approved Task determine scope; this adapter adds no gate.
 Hook behavior remains subject to shared policy and workflow-contract-owned public suites.
 The [shared output contract](../.agents/governance/output-style.md) keeps

@@ -1,10 +1,10 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-12-03"
 ---
 
@@ -76,7 +76,7 @@ provision job은 실행할 때마다 비밀번호를 비밀 파일에 맞추므�
 기존 ACL 교체 전에 거부합니다. `db=0`과 `n8n:*` key/channel에 한정한 명시 command
 목록은 소스 후보이며 실제 Bull queue·Retry·회전·AOF 복원은 아직 인수하지 않았습니다.
 기존 default 계정과 큐 데이터는 보존합니다. 선택·복구 절차는
-[워크플로와 자동화 런북 목록](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)에서
+[워크플로와 자동화 런북 목록](../../../docs/05.operations/03.runbooks/08.workflows-and-automation/README.md)에서
 n8n Runbook의 「선택형 공유 Valkey 계정과 Local Ollama」 절을 확인합니다.
 PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포트를
 게시하고, Valkey는 루트 `VALKEY_MNG_HOST_PORT` 키로
@@ -138,12 +138,12 @@ docker compose --env-file .env.example --profile mng config --services
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0028: `docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md`
+- RUN-0028: `docs/05.operations/03.runbooks/05.databases-and-storage/0028-management-database.md`
 
 #### Related Documents
 
 [문서 진입점](../../../docs/README.md)을 사용해 Stage 05 subject
-`docs/05.operations/guides/05-databases-and-storage/0028-management-database.md`, 백업 subject `docs/05.operations/guides/10-platform-and-backup/0021-backup-and-restore.md`
+`docs/05.operations/01.guides/05.databases-and-storage/0028-management-database.md`, 백업 subject `docs/05.operations/01.guides/10.platform-and-backup/0021-backup-and-restore.md`
 (POL/GDE/RUN-0021)을 찾으십시오. 공식 소스:
 [PostgreSQL backup](https://www.postgresql.org/docs/current/backup.html),
 [upgrade](https://www.postgresql.org/docs/current/upgrading.html),

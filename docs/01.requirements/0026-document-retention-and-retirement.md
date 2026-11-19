@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.2.1"
+version: "3.2.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -148,7 +148,7 @@ This package covers how documents are retained, retired and summarized into a cu
 
 ### Sources
 
-- [Documentation protocol](../00.workspace/02.process/documentation-protocol.md)
+- [Documentation protocol](../00.workspace/03.process/documentation-protocol.md)
 - [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)
 
@@ -197,10 +197,10 @@ Each condition is judged by running the registered metadata, lifecycle, link and
 
 #### Downstream Links
 
-- [Document lifecycle architecture](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0051 Summarize-and-delete retirement](../02.architecture/decisions/0051-summarize-and-delete-retirement.md)
-- [ADR-0037 Package waiting and Task cancellation](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
+- [Document lifecycle architecture](../00.workspace/02.architecture/01.descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0051 Summarize-and-delete retirement](../00.workspace/02.architecture/02.decisions/0051-summarize-and-delete-retirement.md)
+- [ADR-0037 Package waiting and Task cancellation](../00.workspace/02.architecture/02.decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [ADR-0048 Authority parents and criterion acceptance](../00.workspace/02.architecture/02.decisions/0048-authority-parents-and-criterion-acceptance.md)
 - ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
 - SPEC-0257 and SPEC-0261 (retired; version history) delivered the second implementation-alignment corrections of paths, links, Registry exceptions and secret names, and the REQ-0027 approval with the promotion of its dependent documents.
 - SPEC-0259 (retired; version history) delivered the third implementation-alignment corrections: Stage 02 labels that named deleted Spec paths, the OpenBao audit wording, the ADR-0038 acceptance and the promotion of matching Stage 05 documents.

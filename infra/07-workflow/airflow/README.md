@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -176,15 +176,15 @@ docker compose exec airflow-apiserver airflow dags list
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
+- RUN-0050: `docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md`
 
 #### Related Documents
 
-- [Architecture 탐색](../../../docs/02.architecture/descriptions/README.md)
-- [Guide 탐색](../../../docs/05.operations/guides/08-workflows-and-automation/README.md)
-- [Policy 탐색](../../../docs/05.operations/policies/08-workflows-and-automation/README.md)
-- [Runbook 탐색](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)
-- [Incident 탐색](../../../docs/05.operations/incidents/2026/README.md)
+- [Architecture 탐색](../../../docs/02.architecture/01.descriptions/README.md)
+- [Guide 탐색](../../../docs/05.operations/01.guides/08.workflows-and-automation/README.md)
+- [Policy 탐색](../../../docs/05.operations/02.policies/08.workflows-and-automation/README.md)
+- [Runbook 탐색](../../../docs/05.operations/03.runbooks/08.workflows-and-automation/README.md)
+- [Incident 탐색](../../../docs/05.operations/04.incidents/2026/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
@@ -262,7 +262,7 @@ Dockerfile lint에서 pipeline shell의 명시 선언 누락을 확인해 upstre
 ERROR였으며 게시·복원 성공 증거는 없습니다. 자동 cleanup FAIL과 후속 정확한 대상의
 reconciliation PASS는 별도로 보존합니다. 새 실행은 source 수정과 fresh admission을
 다시 확인한 뒤에만 선택합니다. 실행 선택자·자원·capture·
-cleanup 조건은 [워크플로 Runbook 탐색](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
+cleanup 조건은 [워크플로 Runbook 탐색](../../../docs/05.operations/03.runbooks/08.workflows-and-automation/README.md)의
 RUN-0053, 워크로드 소스는 [manifest pipeline](workloads/manifest-pipeline/README.md)을 따릅니다.
 Airflow가 만든 같은 outbox 데이터를 n8n이 소비하는 통합 인계는 아직 검증되지 않았습니다.
 후속 전체 실행도 8개 role 기동 뒤 scheduler의 migration 명령에서 ERROR였습니다.

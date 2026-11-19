@@ -17,7 +17,7 @@ The contract is JSON with four parts that matter here.
 ## Turning it into rows
 
 1. Resolve the profile the change requires. The
-   [execution boundary](../../../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary)
+   [execution boundary](../../../../docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary)
    owns which profiles may run locally; the contract owns what each contains.
 2. Expand each suite root through its aggregates until only leaves remain. An
    aggregate is not a result; only its leaves produce one.

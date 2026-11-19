@@ -9,10 +9,10 @@ integrations:
   owner: infra/06-observability/
 secrets: []
 documents:
-  guide: docs/05.operations/guides/15-labs/0062-locust.md
-  runbook: docs/05.operations/runbooks/15-labs/0062-locust.md
-  guide_target: docs/05.operations/guides/12-testing-and-quality/
-  runbook_target: docs/05.operations/runbooks/12-testing-and-quality/
+  guide: docs/05.operations/01.guides/15.labs/0062-locust.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0062-locust.md
+  guide_target: docs/05.operations/01.guides/12.testing-and-quality/
+  runbook_target: docs/05.operations/03.runbooks/12.testing-and-quality/
 resources:
   services:
     lab-locust-master:

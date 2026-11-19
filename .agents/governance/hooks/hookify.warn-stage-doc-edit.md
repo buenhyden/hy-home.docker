@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Stage document edit"
-version: "1.1.5"
+version: "1.1.6"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -62,7 +62,7 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 ```
 
 The plan inspection does not execute QA. Follow the current
-[quality policy](../../../docs/00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix) for
+[quality policy](../../../docs/00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix) for
 focused authoring checks and remote PR candidate validation.
 
 ### Enforcement

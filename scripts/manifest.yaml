@@ -2,7 +2,7 @@ schema_version: 1
 files:
 - path: .agents/evaluations/README.md
   kind: contract
-  authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
+  authority: docs/00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
@@ -12,7 +12,7 @@ files:
   tests: []
 - path: scripts/AGENTS.md
   kind: contract
-  authority: docs/00.workspace/02.process/documentation-protocol.md
+  authority: docs/00.workspace/03.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -22,7 +22,7 @@ files:
   tests: []
 - path: scripts/CLAUDE.md
   kind: contract
-  authority: docs/00.workspace/02.process/documentation-protocol.md
+  authority: docs/00.workspace/03.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -32,7 +32,7 @@ files:
   tests: []
 - path: scripts/README.md
   kind: contract
-  authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
+  authority: docs/00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
@@ -47,7 +47,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/guides/02-gateway-and-networking/0012-edge-routing-stack.md
+  - docs/05.operations/01.guides/02.gateway-and-networking/0012-edge-routing-stack.md
   disposition: retain
   successor: null
   tests:
@@ -66,7 +66,7 @@ files:
   - .claude/hooks/stop.sh
   - .claude/hooks/user-prompt-submit.sh
   - .codex/hooks.json
-  - docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  - docs/05.operations/03.runbooks/01.common/0004-harness-agent-first-engineering.md
   disposition: retain
   successor: null
   tests:
@@ -84,11 +84,11 @@ files:
   tests: []
 - path: scripts/hooks/install-pre-push-guard.sh
   kind: operations
-  authority: docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  authority: docs/05.operations/03.runbooks/01.common/0004-harness-agent-first-engineering.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  - docs/05.operations/03.runbooks/01.common/0004-harness-agent-first-engineering.md
   disposition: retain
   successor: null
   tests:
@@ -99,7 +99,7 @@ files:
   lifecycle: active
   mutation: check-write
   consumers:
-  - docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  - docs/05.operations/03.runbooks/01.common/0004-harness-agent-first-engineering.md
   - scripts/hooks/agent-event-hook.sh
   disposition: retain
   successor: null
@@ -112,7 +112,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  - docs/05.operations/03.runbooks/01.common/0004-harness-agent-first-engineering.md
   - scripts/hooks/install-pre-push-guard.sh
   disposition: retain
   successor: null
@@ -120,20 +120,20 @@ files:
   - tests/validation/test_agent_governance_ci_routing.py
 - path: scripts/knowledge/report-graphify-health.sh
   kind: generator
-  authority: docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  authority: docs/05.operations/03.runbooks/01.common/0004-harness-agent-first-engineering.md
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/guides/01-common/0004-harness-agent-first-engineering.md
-  - docs/05.operations/policies/01-common/0004-harness-agent-first-engineering.md
-  - docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  - docs/05.operations/01.guides/01.common/0004-harness-agent-first-engineering.md
+  - docs/05.operations/02.policies/01.common/0004-harness-agent-first-engineering.md
+  - docs/05.operations/03.runbooks/01.common/0004-harness-agent-first-engineering.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/README.md
   kind: contract
-  authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
+  authority: docs/00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
@@ -212,7 +212,7 @@ files:
   - tests/lib/document_governance/test_identity_history.py
 - path: scripts/lib/document_governance/language.py
   kind: library
-  authority: docs/00.workspace/02.process/documentation-protocol.md
+  authority: docs/00.workspace/03.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -259,7 +259,7 @@ files:
   - tests/validation/lifecycle/test_public.py
 - path: scripts/lib/document_governance/links.py
   kind: library
-  authority: docs/00.workspace/02.process/documentation-protocol.md
+  authority: docs/00.workspace/03.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -367,6 +367,18 @@ files:
   tests:
   - tests/lib/document_governance/metadata/test_reference.py
   - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/numbered_folders.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/links.py
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_numbered_folders.py
 - path: scripts/lib/document_governance/operations_catalog.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -433,7 +445,7 @@ files:
   - tests/lib/document_governance/test_requirements.py
 - path: scripts/lib/document_governance/semver.py
   kind: library
-  authority: docs/00.workspace/02.process/documentation-protocol.md
+  authority: docs/00.workspace/03.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -575,7 +587,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   - scripts/hooks/agent-event-hook.sh
   disposition: retain
   successor: null
@@ -595,7 +607,7 @@ files:
   - tests/lib/hooks/test_tool_payload.py
 - path: scripts/lib/ops/README.md
   kind: contract
-  authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
+  authority: docs/00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
@@ -605,7 +617,7 @@ files:
   tests: []
 - path: scripts/lib/ops/_notebook_models_http.py
   kind: library
-  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  authority: docs/05.operations/03.runbooks/09.ai-and-search/0073-open-notebook.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -629,7 +641,7 @@ files:
   - tests/lib/ops/test_openbao_copy_runtime.py
 - path: scripts/lib/ops/_openbao_copy_transport.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -640,7 +652,7 @@ files:
   - tests/lib/ops/test_openbao_copy_runtime.py
 - path: scripts/lib/ops/_secret_catalog_io.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: check-write
   consumers:
@@ -707,7 +719,7 @@ files:
   - tests/lib/ops/test_workspace_services.py
 - path: scripts/lib/ops/compose-core-readiness.sh
   kind: library
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: none
   consumers:
@@ -718,7 +730,7 @@ files:
   - tests/lib/ops/test_compose_core_readiness.py
 - path: scripts/lib/ops/compose_observation.py
   kind: library
-  authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  authority: docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -729,7 +741,7 @@ files:
   - tests/lib/ops/test_compose_observation.py
 - path: scripts/lib/ops/compose_start.py
   kind: library
-  authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  authority: docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -740,7 +752,7 @@ files:
   - tests/lib/ops/test_compose_start.py
 - path: scripts/lib/ops/memory_capacity.py
   kind: library
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -753,7 +765,7 @@ files:
   - tests/validation/test_agent_memory_capacity.py
 - path: scripts/lib/ops/memory_cli.py
   kind: library
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -786,7 +798,7 @@ files:
   - tests/lib/hooks/test_agent_memory.py
 - path: scripts/lib/ops/notebook_models.py
   kind: library
-  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  authority: docs/05.operations/03.runbooks/09.ai-and-search/0073-open-notebook.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -799,7 +811,7 @@ files:
   - tests/validation/test_p03_notebook_models.py
 - path: scripts/lib/ops/openbao_consumer_migration.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -826,7 +838,7 @@ files:
   - tests/validation/test_port_contract.py
 - path: scripts/lib/ops/retire_materials.py
   kind: library
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: none
   consumers:
@@ -851,7 +863,7 @@ files:
   - tests/validation/test_root_resource_contract.py
 - path: scripts/lib/ops/secret_catalog.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: check-write
   consumers:
@@ -863,7 +875,7 @@ files:
   - tests/validation/test_secret_catalog_contract.py
 - path: scripts/lib/ops/secret_structure.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: none
   consumers:
@@ -874,7 +886,7 @@ files:
   - tests/lib/ops/test_secret_structure.py
 - path: scripts/lib/ops/smtp_contract.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -889,7 +901,7 @@ files:
   - tests/validation/test_smtp_lock_inheritance.py
 - path: scripts/lib/ops/smtp_public_source.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: none
   consumers:
@@ -949,7 +961,7 @@ files:
   - tests/lib/ops/test_workspace_inventory.py
 - path: scripts/lib/supply_chain/grype_db_seed.py
   kind: validator
-  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
+  authority: docs/02.architecture/02.decisions/0028-local-isolated-readiness-evidence.md
   lifecycle: active
   mutation: none
   consumers:
@@ -997,7 +1009,7 @@ files:
   - tests/lib/supply_chain/test_update_gates.py
 - path: scripts/manifest.yaml
   kind: contract
-  authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
+  authority: docs/00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
@@ -1008,12 +1020,12 @@ files:
   - tests/validation/test_script_manifest.py
 - path: scripts/operations/agent_memory.py
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
   mutation: runtime
   consumers:
   - .agents/governance/environment-constraints.md
-  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   disposition: retain
   successor: null
   tests:
@@ -1021,45 +1033,45 @@ files:
   - tests/validation/test_agent_memory_capacity.py
 - path: scripts/operations/check-compose-core-readiness.sh
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_compose_core_readiness.py
 - path: scripts/operations/check-config-mount-hashes.py
   kind: operations
-  authority: docs/05.operations/policies/01-common/0006-infrastructure-optimization-governance.md
+  authority: docs/05.operations/02.policies/01.common/0006-infrastructure-optimization-governance.md
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0086-dependency-version-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0086-dependency-version-management.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_config_mount_hashes.py
 - path: scripts/operations/compose-start.py
   kind: operations
-  authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  authority: docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  - docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
   disposition: retain
   successor: null
   tests:
   - tests/lib/ops/test_compose_start.py
 - path: scripts/operations/gen-secrets.sh
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
-  - docs/05.operations/runbooks/10-platform-and-backup/0096-k8s-integration.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0096-k8s-integration.md
   disposition: retain
   successor: null
   tests:
@@ -1069,7 +1081,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/lab.py
   kind: operations
-  authority: docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md
+  authority: docs/05.operations/03.runbooks/15.labs/0022-valkey-cluster.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -1081,33 +1093,33 @@ files:
   - tests/validation/test_lab_layout.py
 - path: scripts/operations/mng-pg-immediate-restore-rehearsal.py
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_mng_pg_immediate_restore_rehearsal.py
 - path: scripts/operations/notebook-models.py
   kind: operations
-  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  authority: docs/05.operations/03.runbooks/09.ai-and-search/0073-open-notebook.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  - docs/05.operations/03.runbooks/09.ai-and-search/0073-open-notebook.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_p03_notebook_models.py
 - path: scripts/operations/observe.py
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   disposition: retain
   successor: null
   tests:
@@ -1147,11 +1159,11 @@ files:
   - tests/validation/test_prepare_openbao_materials.py
 - path: scripts/operations/prometheus-isolated-restore.py
   kind: operations
-  authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  authority: docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  - docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
   disposition: retain
   successor: null
   tests:
@@ -1170,23 +1182,23 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/rehearse-sample-service-delivery.sh
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_sample_service_delivery_rehearsal.py
 - path: scripts/operations/release.py
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
   - .github/workflows/publish-release.yml
-  - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   - scripts/README.md
   disposition: retain
   successor: null
@@ -1194,11 +1206,11 @@ files:
   - tests/validation/test_release.py
 - path: scripts/operations/retire-materials.py
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   disposition: retain
   successor: null
   tests:
@@ -1217,11 +1229,11 @@ files:
   - tests/validation/test_root_resource_contract.py
 - path: scripts/operations/secret-catalog.py
   kind: operations
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: check-write
   consumers:
-  - docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  - docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   - tests/lib/ops/test_secret_catalog.py
   disposition: retain
   successor: null
@@ -1229,22 +1241,22 @@ files:
   - tests/lib/ops/test_secret_catalog.py
 - path: scripts/operations/secret-structure.py
   kind: operations
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  - docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md
   disposition: retain
   successor: null
   tests:
   - tests/lib/ops/test_secret_structure.py
 - path: scripts/operations/session_analysis.py
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   disposition: retain
   successor: null
   tests:
@@ -1262,22 +1274,22 @@ files:
   - tests/lib/ops/test_storage_write_rate.py
 - path: scripts/operations/storybook_design_export.py
   kind: operations
-  authority: docs/05.operations/runbooks/14-design-system/0101-storybook.md
+  authority: docs/05.operations/03.runbooks/14.design-system/0101-storybook.md
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/runbooks/14-design-system/0101-storybook.md
+  - docs/05.operations/03.runbooks/14.design-system/0101-storybook.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_storybook_image.py
 - path: scripts/operations/storybook_image.py
   kind: operations
-  authority: docs/05.operations/runbooks/14-design-system/0101-storybook.md
+  authority: docs/05.operations/03.runbooks/14.design-system/0101-storybook.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/14-design-system/0101-storybook.md
+  - docs/05.operations/03.runbooks/14.design-system/0101-storybook.md
   disposition: retain
   successor: null
   tests:
@@ -1307,11 +1319,11 @@ files:
   - tests/lib/supply_chain/test_ledger_rebind.py
 - path: scripts/operations/task_forecast.py
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   disposition: retain
   successor: null
   tests:
@@ -1330,11 +1342,11 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/work_dispatch.py
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
   disposition: retain
   successor: null
   tests:
@@ -1393,22 +1405,22 @@ files:
   tests: []
 - path: scripts/security/seed-grype-db-cache.sh
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   disposition: retain
   successor: null
   tests:
   - tests/lib/supply_chain/test_grype_db_seed.py
 - path: scripts/security/verify-sample-service-supply-chain.sh
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   disposition: retain
   successor: null
   tests:
@@ -1594,7 +1606,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md
+  - docs/05.operations/02.policies/01.common/0001-common-optimizations-template-exceptions.md
   disposition: retain
   successor: null
   tests:
@@ -1633,7 +1645,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md
+  - docs/05.operations/02.policies/01.common/0001-common-optimizations-template-exceptions.md
   - scripts/validation/check-template-security-baseline.sh
   disposition: retain
   successor: null
@@ -1642,7 +1654,7 @@ files:
   - tests/validation/test_p09_compose_controls.py
 - path: scripts/validation/run-agent-precommit-all-files.sh
   kind: runner
-  authority: docs/00.workspace/03.quality/quality-standards.md
+  authority: docs/00.workspace/04.quality/quality-standards.md
   lifecycle: active
   mutation: check-write
   consumers:
@@ -1676,12 +1688,12 @@ files:
   - tests/validation/test_run_ci_precommit.sh
 - path: scripts/validation/validate-docker-compose.sh
   kind: operations
-  authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
+  - docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md
   disposition: retain
   successor: null
   tests:

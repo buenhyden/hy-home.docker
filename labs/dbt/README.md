@@ -1,10 +1,10 @@
 ---
 title: "분석 dbt 변환 작업"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-21"
 ---
 
@@ -119,13 +119,13 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 
 #### Runbook Links
 
-- **Guide**: dbt usage guide (`docs/05.operations/guides/15-labs/0090-dbt.md`)
-- **Policy**: dbt operations policy (`docs/05.operations/policies/15-labs/0090-dbt.md`)
-- **Runbook**: dbt recovery runbook (`docs/05.operations/runbooks/15-labs/0090-dbt.md`)
+- **Guide**: dbt usage guide (`docs/05.operations/01.guides/15.labs/0090-dbt.md`)
+- **Policy**: dbt operations policy (`docs/05.operations/02.policies/15.labs/0090-dbt.md`)
+- **Runbook**: dbt recovery runbook (`docs/05.operations/03.runbooks/15.labs/0090-dbt.md`)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0107 lab-promotion
 
 #### Observability and Recovery
 
-없음: 1회성 작업이라 장기 실행 컨테이너와 헬스체크가 없다. 실패는 명령 종료 코드로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0090 dbt Runbook을 따른다.
+없음: 1회성 작업이라 장기 실행 컨테이너와 헬스체크가 없다. 실패는 명령 종료 코드로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md)의 RUN-0090 dbt Runbook을 따른다.

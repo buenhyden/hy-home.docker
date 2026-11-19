@@ -3,7 +3,7 @@
 A `template_roles` entry holds only the authored fields the Registry has no
 other source for. Everything else is derived here from the bound profile, the
 template file and the shared `common` dictionaries, so no fact is held twice.
-The record shape is `docs/99.templates/contracts/template-definition.schema.json`.
+The record shape is `docs/99.templates/01.contracts/template-definition.schema.json`.
 """
 
 from __future__ import annotations
@@ -170,7 +170,7 @@ def _template_outline(
 @functools.lru_cache(maxsize=4)
 def _frontmatter_properties(root: pathlib.Path) -> Mapping[str, Mapping[str, object]]:
     schema = _parse_json(
-        root / "docs/99.templates/contracts/document-frontmatter.schema.json",
+        root / "docs/99.templates/01.contracts/document-frontmatter.schema.json",
         MAX_SCHEMA_BYTES,
     )
     if not isinstance(schema, Mapping) or not isinstance(

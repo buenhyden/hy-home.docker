@@ -164,7 +164,7 @@ def guide_bound_labs() -> set[str]:
     import yaml
 
     bound: set[str] = set()
-    for guide in (ROOT / "docs/05.operations/guides").rglob("*.md"):
+    for guide in (ROOT / "docs/05.operations/01.guides").rglob("*.md"):
         text = guide.read_text(encoding="utf-8")
         if not text.startswith("---\n"):
             continue
@@ -267,7 +267,7 @@ class LabInventoryAndSelectionTests(RenderedModels):
 
         policy = (
             ROOT
-            / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+            / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
         ).read_text(encoding="utf-8")
         row = next(line for line in policy.splitlines() if line.startswith("| HOME |"))
         profiles = re.findall(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`", row)

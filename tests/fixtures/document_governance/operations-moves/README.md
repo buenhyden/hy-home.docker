@@ -1,10 +1,10 @@
 ---
 title: "Operations move synthetic fixtures"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-11"
 ---
 
@@ -23,8 +23,8 @@ P08 문서 계약 구현자와 코드·보안 검토 담당자입니다.
 
 #### Scope
 
-허용된 LAB 문서 목적지는 `docs/05.operations/guides/labs/`,
-`docs/05.operations/policies/labs/`, `docs/05.operations/runbooks/labs/`입니다.
+허용된 LAB 문서 목적지는 `docs/05.operations/01.guides/labs/`,
+`docs/05.operations/02.policies/labs/`, `docs/05.operations/03.runbooks/labs/`입니다.
 저장소 루트 `labs/`와 LAB 런타임·비밀값·데이터는 시험의 이동 대상에서 제외합니다.
 학습 앱·Wiki 앱 구현·서비스 실행은 포함하지 않습니다.
 

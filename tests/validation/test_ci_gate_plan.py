@@ -488,7 +488,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         )
 
     def test_operations_doc_plan_keeps_catalog(self) -> None:
-        paths = ("docs/05.operations/guides/0001-example.md",)
+        paths = ("docs/05.operations/01.guides/0001-example.md",)
         plan = build_public_plan(
             "changed",
             runner.ExecutionContext.PULL_REQUEST,
@@ -559,7 +559,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ("docs/README.md", set()),
             ("docs/99.templates/registry.json", document_tests),
             (
-                "docs/99.templates/contracts/document-profile.schema.json",
+                "docs/99.templates/01.contracts/document-profile.schema.json",
                 document_tests,
             ),
         ):
@@ -748,7 +748,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         # candidate preflight locally, which hosted runs never execute twice.
         service_change = (
             "infra/08-ai/crawl4ai/docker-compose.yml",
-            "docs/05.operations/guides/09-ai-and-search/0091-crawl4ai.md",
+            "docs/05.operations/01.guides/09.ai-and-search/0091-crawl4ai.md",
         )
         service_plan = build_public_plan(
             "changed", runner.ExecutionContext.LOCAL, service_change

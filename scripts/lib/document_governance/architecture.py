@@ -29,12 +29,12 @@ _DECISION_ID = re.compile(r"ADR-[0-9]{4}")
 _REQUIREMENT_ID = re.compile(r"REQ-[0-9]{4}")
 _EXPECTED_PROFILE_CONTRACTS = {
     "architecture-description": (
-        "docs/02.architecture/descriptions/{number:4}-{slug}.md",
+        "docs/02.architecture/01.descriptions/{number:4}-{slug}.md",
         "AD-{number:4}",
         "architecture-description",
     ),
     "adr": (
-        "docs/02.architecture/decisions/{number:4}-{slug}.md",
+        "docs/02.architecture/02.decisions/{number:4}-{slug}.md",
         "ADR-{number:4}",
         "architecture-decision",
     ),
@@ -202,20 +202,21 @@ def parse_architecture_document(
     path: pathlib.Path,
     *,
     registry: DocumentRegistry | None = None,
+    relative_root: str = "docs/02.architecture",
 ) -> ArchitectureDocument:
     """Parse one registered prefixless Architecture Description or ADR."""
 
     path = pathlib.Path(path)
     directory = path.parent.name
-    if directory == "descriptions":
+    if directory == "01.descriptions":
         artifact_type = "architecture-description"
         path_pattern = _DESCRIPTION_PATH
-    elif directory == "decisions":
+    elif directory == "02.decisions":
         artifact_type = "adr"
         path_pattern = _DECISION_PATH
     else:
         raise ArchitectureDocumentError(
-            "architecture document parent must be descriptions or decisions"
+            "architecture document parent must be 01.descriptions or 02.decisions"
         )
     match = path_pattern.fullmatch(path.name)
     if match is None:
@@ -229,7 +230,7 @@ def parse_architecture_document(
         raise ArchitectureDocumentError(
             f"architecture document has the wrong type: {artifact_type}"
         )
-    relative_path = pathlib.PurePosixPath("docs/02.architecture", directory, path.name)
+    relative_path = pathlib.PurePosixPath(relative_root, directory, path.name)
     owned_identity = architecture_identity(relative_path)
     if owned_identity is None or owned_identity[0] != artifact_type:
         raise ArchitectureDocumentError(
@@ -270,6 +271,53 @@ def parse_architecture_document(
     )
 
 
+_WORKSPACE_ROOT = "00.workspace/02.architecture"
+
+
+def _load_workspace_architecture(
+    root: pathlib.Path, registry: DocumentRegistry
+) -> tuple[ArchitectureDocument, ...]:
+    """Load workspace-scope ADs and ADRs (SPEC-0212-TSK-0096); none is required."""
+
+    if not (root.exists() or root.is_symlink()):
+        return ()
+    _require_directory(root, "workspace architecture")
+    unexpected = sorted(
+        entry.name
+        for entry in root.iterdir()
+        if entry.name not in {"01.descriptions", "02.decisions"}
+    )
+    if unexpected:
+        raise ArchitectureDocumentError(
+            f"unregistered workspace architecture entry: {', '.join(unexpected)}"
+        )
+    paths: list[pathlib.Path] = []
+    for directory, pattern in (
+        ("01.descriptions", _DESCRIPTION_PATH),
+        ("02.decisions", _DECISION_PATH),
+    ):
+        child_root = root / directory
+        if not (child_root.exists() or child_root.is_symlink()):
+            continue
+        _require_directory(child_root, f"workspace architecture {directory}")
+        for entry in sorted(child_root.iterdir(), key=lambda item: item.name):
+            if pattern.fullmatch(entry.name) is None:
+                raise ArchitectureDocumentError(
+                    f"unregistered workspace architecture entry: {directory}/{entry.name}"
+                )
+            paths.append(entry)
+            if len(paths) > MAX_ARCHITECTURE_DOCUMENTS:
+                raise ArchitectureDocumentError(
+                    "workspace architecture exceeds the architecture document limit"
+                )
+    return tuple(
+        parse_architecture_document(
+            path, registry=registry, relative_root="docs/" + _WORKSPACE_ROOT
+        )
+        for path in paths
+    )
+
+
 def load_architecture_documents(
     stage_root: pathlib.Path,
     *,
@@ -284,7 +332,7 @@ def load_architecture_documents(
         raise ArchitectureDocumentError(
             "docs/02.architecture/requirements is forbidden"
         )
-    allowed_root_entries = {"README.md", "descriptions", "decisions"}
+    allowed_root_entries = {"README.md", "01.descriptions", "02.decisions"}
     root_names = {entry.name for entry in stage_root.iterdir()}
     if "CLAUDE.md" in root_names and "AGENTS.md" not in root_names:
         raise ArchitectureDocumentError(
@@ -304,7 +352,7 @@ def load_architecture_documents(
     active_registry = load_registry() if registry is None else registry
     _validate_registry_contract(active_registry)
     paths: list[pathlib.Path] = []
-    for directory in ("descriptions", "decisions"):
+    for directory in ("01.descriptions", "02.decisions"):
         child_root = stage_root / directory
         _require_directory(child_root, f"Stage 02 {directory}")
         has_index = False
@@ -314,7 +362,7 @@ def load_architecture_documents(
                 has_index = True
                 continue
             pattern = (
-                _DESCRIPTION_PATH if directory == "descriptions" else _DECISION_PATH
+                _DESCRIPTION_PATH if directory == "01.descriptions" else _DECISION_PATH
             )
             if pattern.fullmatch(entry.name) is None:
                 raise ArchitectureDocumentError(
@@ -329,7 +377,10 @@ def load_architecture_documents(
             raise ArchitectureDocumentError(f"Stage 02 {directory} index is missing")
     documents = tuple(
         parse_architecture_document(path, registry=active_registry) for path in paths
+    ) + _load_workspace_architecture(
+        stage_root.parent / _WORKSPACE_ROOT, active_registry
     )
+    # Product and workspace architecture share one AD/ADR namespace.
     identities = tuple(document.artifact_id for document in documents)
     if len(identities) != len(set(identities)):
         duplicate = next(

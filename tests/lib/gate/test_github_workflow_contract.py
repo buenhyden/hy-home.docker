@@ -1129,7 +1129,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(9, len(contract.actions))
         self.assertEqual(1, contract.execution_evidence.schema_version)
         self.assertEqual(
-            "docs/00.workspace/03.quality/quality-standards.md#7-local-qaci-orchestration",
+            "docs/00.workspace/04.quality/quality-standards.md#7-local-qaci-orchestration",
             contract.execution_evidence.owner,
         )
         self.assertEqual("ci-gate-evidence", contract.execution_evidence.directory_name)

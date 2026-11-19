@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.92.0"
+version: "1.93.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -469,7 +469,7 @@ activity remains a handoff fact rather than an inferred lock release.
    `RECOVERY` and `DELIVERY` separate. Secret path migration, source creation,
    reference wiring, actual consumption, rotation, recovery and merge are
    distinct states. Local PASS never means native service or remote CI PASS.
-7. Registry profiles and the [documentation protocol](../../00.workspace/02.process/documentation-protocol.md#document-language) govern authoring language.
+7. Registry profiles and the [documentation protocol](../../00.workspace/03.process/documentation-protocol.md#document-language) govern authoring language.
    Preserve issued IDs, created dates and historical completed Task bodies.
    Reuse an existing owner; allocate a new Spec only through the actual Registry
    when new acceptance ownership is necessary, never reserve future numbers.
@@ -1207,6 +1207,16 @@ target, backup, recovery boundary, and action-specific authorization.
      criterion carries the owner's decision, runtime remainders are listed
      with their evidence kind, next check and the claim they limit, and the
      cutover is shown ready by a read-only allocation rehearsal.
+152. TSK-0096 applies the owner's 2026-11-19 choice to run the numbered
+     docs folder cutover now, ahead of Q07 and without resetting identities:
+     every classification folder under `docs/` is numbered `NN.name`, the
+     workspace takes its six classes with the workspace ADs and ADRs, the
+     shared vocabulary and approval boundaries, every parser, schema, route
+     and link reads the new paths, immutable history resolves through one
+     route map, and product runtime rules move from the workspace quality
+     policy to their product owners with unchanged meaning. It lifts
+     criterion 144's wait for Q07 for the folder moves only; identity
+     renumbering and allocator resets still wait for Q07.
 
 ### Evidence Requirements
 
@@ -1218,40 +1228,40 @@ target, backup, recovery boundary, and action-specific authorization.
 
 ### Normative and Evidence
 
-- [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
-- [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
-- [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
-- [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
+- [Master workspace reconciliation](01.tasks/tsk-0053-master-workspace-reconciliation.md)
+- [v14.7 W00 intake](01.tasks/tsk-0059-w00-v14-7-intake.md)
+- [v14.7 W01 governance](01.tasks/tsk-0060-w01-v14-7-governance.md)
+- [Existing supply-chain evidence owner](01.tasks/tsk-0052-supply-chain-evidence.md)
 
-- [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
-- [Service connection contracts Task](tasks/tsk-0041-service-connection-contracts.md)
-- [Models, runners and Wiki preparation Task](tasks/tsk-0042-models-runners-wiki.md)
-- [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
-- [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
-- [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
-- [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
-- [Image, supply-chain and Storybook compatibility Task](tasks/tsk-0047-image-supply-chain-storybook.md)
-- [Role, resource and retirement Task](tasks/tsk-0048-role-resource-retirement.md)
-- [Documentation, governance, QA and CI Task](tasks/tsk-0049-document-governance-qa-ci.md)
-- [Hermes provenance, trust and export Task](tasks/tsk-0050-hermes-provenance-trust-export.md)
-- [Opsflow first HOME installation Task](tasks/tsk-0051-opsflow-home-installation.md)
+- [Workspace inventory Task](01.tasks/tsk-0040-workspace-inventory.md)
+- [Service connection contracts Task](01.tasks/tsk-0041-service-connection-contracts.md)
+- [Models, runners and Wiki preparation Task](01.tasks/tsk-0042-models-runners-wiki.md)
+- [Opsflow data path Task](01.tasks/tsk-0043-opsflow-data-path.md)
+- [Opsflow notifier recovery Task](01.tasks/tsk-0044-opsflow-notifier-recovery.md)
+- [Secret structure and OpenBao contract Task](01.tasks/tsk-0045-secret-structure-openbao.md)
+- [Exporter and observability contracts Task](01.tasks/tsk-0046-exporter-observability.md)
+- [Image, supply-chain and Storybook compatibility Task](01.tasks/tsk-0047-image-supply-chain-storybook.md)
+- [Role, resource and retirement Task](01.tasks/tsk-0048-role-resource-retirement.md)
+- [Documentation, governance, QA and CI Task](01.tasks/tsk-0049-document-governance-qa-ci.md)
+- [Hermes provenance, trust and export Task](01.tasks/tsk-0050-hermes-provenance-trust-export.md)
+- [Opsflow first HOME installation Task](01.tasks/tsk-0051-opsflow-home-installation.md)
 
 - [Plan](plan.md)
-- [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
-- [Infrastructure audit execution Task](tasks/tsk-0008-infra-audit-execution.md)
-- [Historical link classification Task](tasks/tsk-0010-historical-link-classification.md)
-- [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
-- [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
-- [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
+- [R10 reconciliation Task](01.tasks/tsk-0007-r10-reconciliation.md)
+- [Infrastructure audit execution Task](01.tasks/tsk-0008-infra-audit-execution.md)
+- [Historical link classification Task](01.tasks/tsk-0010-historical-link-classification.md)
+- [SMTP01 request contract Task](01.tasks/tsk-0005-smtp01-request-contract.md)
+- [Current coordination audit Task](01.tasks/tsk-0006-current-coordination-audit.md)
+- [Completed P00 Task](01.tasks/tsk-0003-active-contract-and-exclusions.md)
 
 - [Integration owner](../0204-service-integration-security-and-operations/spec.md)
 - [Request precedence owner](../../../.agents/governance/bootstrap.md#authority-and-precedence)
 - [Home host requirement](../../01.requirements/0027-home-development-host.md)
-- [Home host architecture](../../02.architecture/descriptions/0031-home-development-host.md)
+- [Home host architecture](../../02.architecture/01.descriptions/0031-home-development-host.md)
 
 ### Historical and Navigation
 
 The following completed Tasks are historical records and non-authoritative history.
 
-- [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
-- [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
+- [Historical baseline Task](01.tasks/tsk-0001-request-baseline-and-inventory.md)
+- [Historical twenty-item Task](01.tasks/tsk-0002-twenty-item-reconciliation.md)

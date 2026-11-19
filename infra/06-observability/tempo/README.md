@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-01-12"
 ---
 
@@ -38,7 +38,7 @@ Tempo는 S3 호환 백엔드(SeaweedFS)에 트레이스 데이터를 저장합�
 ##### Out of Scope
 
 - 애플리케이션 수준 계측 (OpenTelemetry SDK에서 처리).
-- 장기 트레이스 아카이빙 (Retention Policy(`docs/05.operations/policies/07-observability/0049-tempo.md`)에서 관리).
+- 장기 트레이스 아카이빙 (Retention Policy(`docs/05.operations/02.policies/07.observability/0049-tempo.md`)에서 관리).
 
 #### Structure
 
@@ -95,7 +95,7 @@ Compose가 참조하는 secret은 `seaweedfs_s3_tempo_secret_key`이며 값은 �
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
 1. **TraceQL Analysis**: TraceQL로 지연 시간이 높은 span을 특정 서비스명과 상태 코드와 연관 짓습니다.
 2. **Service Graphs**: Grafana에서 서비스 의존성 맵을 시각화하려면 `metrics_generator`가 활성 상태인지 확인합니다.
@@ -135,9 +135,9 @@ vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 �
 
 #### Related Documents
 
-- Usage guide (`docs/05.operations/guides/07-observability/0049-tempo.md`)
-- Operations policy (`docs/05.operations/policies/07-observability/0049-tempo.md`)
-- Recovery runbook (`docs/05.operations/runbooks/07-observability/0049-tempo.md`)
+- Usage guide (`docs/05.operations/01.guides/07.observability/0049-tempo.md`)
+- Operations policy (`docs/05.operations/02.policies/07.observability/0049-tempo.md`)
+- Recovery runbook (`docs/05.operations/03.runbooks/07.observability/0049-tempo.md`)
 - [Documentation index](../../../docs/README.md)
 
 #### Operational Status
@@ -159,7 +159,7 @@ vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 �
 - Classification: **HOME**. Exact profiles: `obs`, `tracing`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d tempo`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0049-tempo.md`; ID: `GDE-0049`, `POL-0049`, `RUN-0049`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/01.guides/07.observability/0049-tempo.md`; ID: `GDE-0049`, `POL-0049`, `RUN-0049`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주합니다. 이 README에서는 운영 중인 상태를 변경하지 않습니다.
 
 #### Service Readiness
@@ -176,6 +176,6 @@ vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 �
 | Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |
 | Secret refs | `seaweedfs_s3_tempo_secret_key` |
 | Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
-| Operations | Guide (`docs/05.operations/guides/07-observability/0049-tempo.md`), Policy (`docs/05.operations/policies/07-observability/0049-tempo.md`), Runbook (`docs/05.operations/runbooks/07-observability/0049-tempo.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/07.observability/0049-tempo.md`), Policy (`docs/05.operations/02.policies/07.observability/0049-tempo.md`), Runbook (`docs/05.operations/03.runbooks/07.observability/0049-tempo.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `docker compose --profile obs config --quiet`로 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |

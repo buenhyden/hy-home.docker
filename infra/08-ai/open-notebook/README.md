@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-05-09"
 ---
 
@@ -146,12 +146,12 @@ Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`,
 
 #### Runbook Links
 
-- **Guide**: Open Notebook usage guide (`docs/05.operations/guides/09-ai-and-search/0073-open-notebook.md`)
-- **Policy**: Open Notebook operations policy (`docs/05.operations/policies/09-ai-and-search/0073-open-notebook.md`)
-- **Runbook**: Open Notebook recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md`)
-- **SurrealDB Guide**: SurrealDB usage guide (`docs/05.operations/guides/05-databases-and-storage/0080-surrealdb.md`)
-- **SurrealDB Policy**: SurrealDB operations policy (`docs/05.operations/policies/05-databases-and-storage/0080-surrealdb.md`)
-- **SurrealDB Runbook**: SurrealDB recovery runbook (`docs/05.operations/runbooks/05-databases-and-storage/0080-surrealdb.md`)
+- **Guide**: Open Notebook usage guide (`docs/05.operations/01.guides/09.ai-and-search/0073-open-notebook.md`)
+- **Policy**: Open Notebook operations policy (`docs/05.operations/02.policies/09.ai-and-search/0073-open-notebook.md`)
+- **Runbook**: Open Notebook recovery runbook (`docs/05.operations/03.runbooks/09.ai-and-search/0073-open-notebook.md`)
+- **SurrealDB Guide**: SurrealDB usage guide (`docs/05.operations/01.guides/05.databases-and-storage/0080-surrealdb.md`)
+- **SurrealDB Policy**: SurrealDB operations policy (`docs/05.operations/02.policies/05.databases-and-storage/0080-surrealdb.md`)
+- **SurrealDB Runbook**: SurrealDB recovery runbook (`docs/05.operations/03.runbooks/05.databases-and-storage/0080-surrealdb.md`)
 - [Image tag exceptions](../../image-tag-policy.exceptions.json)
 - [Documentation index](../../../docs/README.md)
 - [Infrastructure index](../../README.md)
@@ -180,6 +180,6 @@ Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`,
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-notebook.rule`, `traefik.http.routers.open-notebook.entrypoints`, `traefik.http.routers.open-notebook.tls`, `traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.open-notebook.middlewares`, `traefik.http.services.open-notebook.loadbalancer.server.port` |
 | Secret refs | 이름: `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key`; 마운트: `/run/secrets/surreal_db_password`, `/run/secrets/open_notebook_password`, `/run/secrets/open_notebook_encryption_key` |
 | Healthcheck | `open_notebook`은 제한된 Python 요청으로 `127.0.0.1:5055/health`의 HTTP 200을 검사함. 이는 API/startup readiness이며 DB·모델 등록·사용자 기능 완료 증거가 아님 |
-| Operations | Guide (`docs/05.operations/guides/09-ai-and-search/0073-open-notebook.md`), Policy (`docs/05.operations/policies/09-ai-and-search/0073-open-notebook.md`), Runbook (`docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/09.ai-and-search/0073-open-notebook.md`), Policy (`docs/05.operations/02.policies/09.ai-and-search/0073-open-notebook.md`), Runbook (`docs/05.operations/03.runbooks/09.ai-and-search/0073-open-notebook.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `08-ai` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `notebook` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |

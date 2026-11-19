@@ -505,7 +505,7 @@ def _authored_residue_findings(record: Record, text: str) -> list[Finding]:
 def _machine_template_path(path: pathlib.Path) -> bool:
     normalized = path.as_posix()
     return normalized.startswith(
-        "docs/99.templates/templates/"
+        "docs/99.templates/02.templates/"
     ) and normalized.endswith(MACHINE_TEMPLATE_SUFFIXES)
 
 
@@ -1289,9 +1289,9 @@ def _runtime_image_parts(entry: Mapping[str, object]) -> tuple[tuple[str, str], 
 
 # ADR-0057: an Operations member is `<role directory>/####-<slug>.md`.
 _OPERATIONS_ROLE_ROOTS = (
-    "docs/05.operations/guides/",
-    "docs/05.operations/policies/",
-    "docs/05.operations/runbooks/",
+    "docs/05.operations/01.guides/",
+    "docs/05.operations/02.policies/",
+    "docs/05.operations/03.runbooks/",
 )
 
 
@@ -1488,8 +1488,10 @@ def _runtime_version_findings(
         or (
             path.startswith(
                 (
-                    "docs/02.architecture/descriptions/",
-                    "docs/02.architecture/decisions/",
+                    "docs/02.architecture/01.descriptions/",
+                    "docs/02.architecture/02.decisions/",
+                    "docs/00.workspace/02.architecture/01.descriptions/",
+                    "docs/00.workspace/02.architecture/02.decisions/",
                 )
             )
             and record.path.suffix == ".md"
@@ -1880,7 +1882,7 @@ def validate_body_contract(
 
     source_roles = _source_roles_for_path(record.path, profiles)
     is_markdown_source = record.path.as_posix().startswith(
-        "docs/99.templates/templates/"
+        "docs/99.templates/02.templates/"
     ) and record.path.name.endswith(".template.md")
     role_name: str | None = None
     role: dict[str, object] | None = None
@@ -2103,7 +2105,7 @@ def _body_deficit_multiset(
     # role claims it, as the provider-owned projection sources do. Scanning one
     # as a target reports its own render tokens as unresolved.
     is_template_source = bool(source_roles) or (
-        record.path.as_posix().startswith("docs/99.templates/templates/")
+        record.path.as_posix().startswith("docs/99.templates/02.templates/")
         and record.path.name.endswith(".template.md")
     )
     if is_template_source:

@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Governance"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "agent-governance"
 ---
 
@@ -120,7 +120,7 @@ surface가 도입되지 않습니다.
 - `governance/sdlc.md` (SDLC)
 - `governance/bootstrap.md` (Bootstrap)
 - `governance/providers/registry.yaml` (Provider registry)
-- Canonical-home decision (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
+- Canonical-home decision (`docs/00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md`)
 - `governance/documentation-protocol.md`의 `#readme-and-agentsmd`: README와 AGENTS.md의 역할 구분
 - [README 템플릿 폴더](../docs/99.templates/README.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 

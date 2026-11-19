@@ -1,10 +1,10 @@
 ---
 title: "공유 Storybook 정적 origin"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-03"
 ---
 
@@ -118,8 +118,8 @@ project, port, network, volume, resource와 정리 범위를 확인한다.
 - [13 경험 자산](../README.md)
 - [인프라 인덱스](../../README.md)
 - [문서 진입점](../../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
-- [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md): RUN-0101 storybook
+- [14-design-system runbooks](../../../docs/05.operations/03.runbooks/14.design-system/README.md): RUN-0101 storybook
 
 #### Observability and Recovery
 
-두 서비스 모두 `wget` 기반 Compose 헬스체크를 선언한다. 복구와 장애 대응은 [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.
+두 서비스 모두 `wget` 기반 Compose 헬스체크를 선언한다. 복구와 장애 대응은 [14-design-system runbooks](../../../docs/05.operations/03.runbooks/14.design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.

@@ -1,0 +1,167 @@
+---
+title: "Admin and Experiment Tools Hardening Runbook"
+version: "1.4.0"
+type: "operation/runbook"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-11-17"
+layer: "operations"
+artifact_id: "RUN-0074"
+parent_ids:
+- "GDE-0074"
+created: "2026-05-17"
+next_review_at: "2027-05-13"
+---
+
+# Admin and Experiment Tools Hardening Runbook
+
+## Trigger and Scope
+
+### Trigger
+
+관리·실험 기능 하드닝 항목의 회귀를 복구하는 절차다. direct 노출 복원, allowlist/SSO/gateway 체인 누락,
+네트워크 경계 드리프트, CI 게이트 실패를 점검하고 복구한다. 관리 UI 보안 경계와 운영 안정성 기준을
+빠르게 되돌리고, compose/script/CI 회귀를 표준 절차로 차단하는 것이 목표다.
+
+다음 중 하나일 때 사용한다.
+
+- `infrastructure-hardening` CI가 실패할 때
+- dozzle/redisinsight/open-notebook 접근 경계가 비정상일 때
+- dashboard direct 접근 경로가 다시 노출되었을 때
+- dozzle socket 권한 드리프트가 발생했을 때
+
+### Targets
+
+- 상위 문서: [Admin and Experiment Tools Hardening Usage Guide](../../01.guides/10.platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`)
+- 설계 근거: [Administration and Experimentation Architecture Description](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- 동일 주제 문서: [Guide](../../01.guides/10.platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Policy](../../02.policies/10.platform-and-backup/0074-laboratory-optimization-hardening.md) (`POL-0074`)
+
+- 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../01.guides/10.platform-and-backup/0074-laboratory-optimization-hardening.md)
+- [Operations policy](../../02.policies/10.platform-and-backup/0074-laboratory-optimization-hardening.md)
+
+## Preflight
+
+### Authority
+
+저장소 루트에서 작업한다. 파일 되돌림이나 runtime 재시작이 필요하면 승인자와 영향 범위를 먼저 기록한다.
+
+### Environment
+
+- [ ] 실패 항목(middleware, allowlist, network, direct exposure, socket 권한, script, docs) 식별
+- [ ] 최근 변경 커밋 및 영향 범위 확인
+- [ ] 운영 영향도(관리 UI 접근/보안/감사) 평가
+
+## Procedure
+
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Steps: `HYHOME_COMPOSE_PROFILES=admin,notebook`으로 정적 구성 점검을 실행한다 | 관리·실험 기능 compose static validation 통과 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 2 | Steps: `check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`로 하드닝 기준을 점검한다 | 관리·실험 기능 hardening script 실패 0건 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 3 | Steps: middleware/allowlist, network, dashboard 노출, dozzle 권한, open-notebook route/secret 드리프트를 증상별로 복구한다 | 문서에 기록 없음 | 검증 실패, 비밀 노출 의심, 파괴적 변경 필요, 예상과 다른 결과면 중단하고 Escalation을 따른다 |
+| 4 | Steps: hardening, template security baseline, traceability 링크 검사를 재검증한다 | optimization-hardening 문서 링크/README 인덱스 최신화를 확인한다 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 5 | Steps: 카탈로그 확장 항목을 Policy의 확장 게이트에 따라 Task로 넘긴다 | 문서에 기록 없음 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+
+절차는 아래 항목에 따른다.
+
+#### Steps
+
+1. 정적 구성 점검
+   - `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
+2. 하드닝 기준 점검
+   - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
+3. 증상별 복구
+   - middleware/allowlist 회귀:
+     - 각 서비스의 승인된 체인을 복원한다. Dozzle native OIDC 및 Open Notebook의 공유 SSO 제외 예외를 일괄 덮어쓰지 않는다. Open Notebook은 upload 경계를 위해 `large-body@file`을 유지한다
+   - 네트워크 드리프트:
+     - root 선언된 network context에 합류하는 service network block 복원
+   - dashboard direct 노출:
+     - `ports` 제거, `expose`만 유지
+   - dozzle 권한 드리프트:
+     - `/var/run/docker.sock` 마운트를 `:ro`로 복원
+   - open-notebook route/secret 드리프트:
+     - route chain을 `gateway-standard-chain + open-notebook-admin-ip + large-body`로 복원
+     - `OPEN_NOTEBOOK_PASSWORD_FILE`과 `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE` secret-file 주입을 복원
+4. 재검증
+   - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
+5. 카탈로그 확장 항목(dozzle 로그 제한, redisinsight 감사 정책, open-notebook data retention/direct-port review)은
+   [Policy](../../02.policies/10.platform-and-backup/0074-laboratory-optimization-hardening.md)의 확장 게이트에 따라 Task로 넘긴다.
+
+#### 적용 범위와 검증 한계
+
+이 주제는 Data·Observability·AI·Analytics로 나뉜 관리·실험 기능의 공통 통제를
+소유한다. Dozzle·RedisInsight는 OPTIONAL, JupyterLab은 독립 LAB(SPEC-0262)이며 tier나 프로필은 격리
+수단이 아니다. socket `:ro`는 Docker API 호출을 제한하지 않는다. Open Notebook의
+secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 Compose·로그·근거에
+노출되지 않도록 하고, mutable 이미지의 FILE 옵션 지원은 별도로 검증한다.
+정적 gate 통과는 직접 peer 접근 차단·인증·복구 성공을 증명하지 않는다. 승인된
+예외, 월별 검토와 같은 릴리스 안의 임시 예외 종료·재검증 조건은 유지한다.
+
+### Stop Conditions
+
+검증 실패, 비밀 노출 의심, 파괴적 변경 필요, 예상과 다른 결과가 나타나면 중단한다.
+
+검증 실패, 비밀 노출 의심, 파괴적 변경 필요, 예상과 다른 결과는 Escalation에 기록한 중단 조건이다.
+
+## Verification
+
+### Expected Results
+
+#### Service Checks
+
+서비스 점검은 아래 항목에 따른다.
+
+#### Verification Steps
+
+- [ ] 관리·실험 기능 compose static validation 통과
+- [ ] 관리·실험 기능 hardening script 실패 0건
+- [ ] optimization-hardening 문서 링크/README 인덱스 최신화 확인
+
+#### Evidence
+
+- 이 런북 실행의 명령 결과·시각과 운영자 또는 agent의 조치를 기록한다.
+- 실패 검사·관측 증상·최종 복구 또는 보고 상태를 해당 Task나 사고 근거에 기록한다.
+
+#### 증거 출처
+
+- **Signals**: CI `infrastructure-hardening` 결과와 정제된 ingress·서비스 로그
+- **Evidence to Capture**:
+  - 변경 전후 hardening check 결과
+  - compose config 결과
+  - 관련 compose/script/docs diff
+
+### Unverified Conditions
+
+이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 정적 gate 통과가 직접 peer 접근 차단, 인증, 복구 성공을 증명하지 않는다고 밝힌다.
+
+- 직접 peer 접근 차단, 인증, 복구 성공: 정적 gate 밖의 별도 관찰이 필요하다.
+- Open Notebook의 mutable 이미지의 FILE 옵션 지원: 문서는 별도 검증이 필요하다고 기록하며 검증 결과는 없다.
+- 3단계 증상별 복구 이후 재검증: hardening, template security baseline, traceability 명령의 실행 결과가 필요하다.
+- 승인된 예외와 월별 검토, 임시 예외의 종료/재검증 조건: 이 문서에는 실행 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
+검증 실패·비밀 노출 의심·파괴적 변경 필요·예상과 다른 결과가 나타나면 중단하고 책임자에게 보고한다. 근거, 시도한 단계와 현재 복구 상태를 함께 남긴다.
+
+### Recovery or Forward Repair
+
+- 이 런북에 정의된 복구·rollback 단계만 사용한다.
+- 관측 실패가 절차와 맞지 않으면 변경을 멈추고 근거를 보존한 뒤 `Escalation`을 따른다.
+
+- [ ] 롤백 대상 파일
+  - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`; JupyterLab LAB은 `labs/jupyterlab/docker-compose.yml`과 `labs/jupyterlab/`
+  - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
+  - `.github/workflows/ci-quality.yml`
+- [ ] 파일 되돌림이나 runtime 재시작이 필요하면 승인자와 영향 범위를 기록한 뒤 수행
+- [ ] 복구 후 정적 검증 재실행
+- [ ] 정책/가이드/태스크 문서 링크 재확인

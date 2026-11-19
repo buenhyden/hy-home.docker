@@ -1,10 +1,10 @@
 ---
 title: "Prometheus"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-01-12"
 ---
 
@@ -103,18 +103,18 @@ Compose가 참조하는 secret은 `grafana_metrics_password`, `openbao_token`, `
 
 ##### 2. Traceability
 
-- **System Guide**: `docs/05.operations/guides/07-observability/0045-prometheus.md`
-- **Operations Policy**: `docs/05.operations/policies/07-observability/0045-prometheus.md`
-- **Runbook**: `docs/05.operations/runbooks/07-observability/0045-prometheus.md`
+- **System Guide**: `docs/05.operations/01.guides/07.observability/0045-prometheus.md`
+- **Operations Policy**: `docs/05.operations/02.policies/07.observability/0045-prometheus.md`
+- **Runbook**: `docs/05.operations/03.runbooks/07.observability/0045-prometheus.md`
 
 #### Usage
 
 `scripts/operations/compose-start.py plan`은 공개 설정의 선택 및 companion을
 확인하는 소비자다. 운영자가 계획을 따로 검토하고 승인·복구 조건을 확인하기 전에는
 `up --plan`을 실행하지 않는다. 기대 대상의 갱신과 문제 해결은
-Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus.md`)을 따른다.
+Prometheus runbook(`docs/05.operations/03.runbooks/07.observability/0045-prometheus.md`)을 따른다.
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
 1. **PromQL Optimization**: 비용이 큰 대시보드 쿼리에는 Recording Rules를 사용합니다.
 2. **Rule Management**: 변경 사항을 적용하기 전에 항상 `promtool`로 검증합니다.
@@ -140,9 +140,9 @@ Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus
 
 - [infra/README.md](../../README.md)
 - `docs/05.operations/README.md`
-- Prometheus usage guide (`docs/05.operations/guides/07-observability/0045-prometheus.md`)
-- Prometheus operations policy (`docs/05.operations/policies/07-observability/0045-prometheus.md`)
-- Prometheus recovery runbook (`docs/05.operations/runbooks/07-observability/0045-prometheus.md`)
+- Prometheus usage guide (`docs/05.operations/01.guides/07.observability/0045-prometheus.md`)
+- Prometheus operations policy (`docs/05.operations/02.policies/07.observability/0045-prometheus.md`)
+- Prometheus recovery runbook (`docs/05.operations/03.runbooks/07.observability/0045-prometheus.md`)
 - [Documentation index](../../../docs/README.md)
 
 #### Troubleshooting
@@ -158,5 +158,5 @@ Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus
 - Classification: **HOME**. Exact profiles: `obs`, `obs-core`, `dev`, `alerting`, `batch-metrics`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d prometheus`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0045-prometheus.md`; ID: `GDE-0045`, `POL-0045`, `RUN-0045`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/01.guides/07.observability/0045-prometheus.md`; ID: `GDE-0045`, `POL-0045`, `RUN-0045`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.

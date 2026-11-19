@@ -124,38 +124,38 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     ".env.example",
     ".pre-commit-config.yaml",
     ".prettierignore",
-    "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
-    "docs/00.workspace/02.process/documentation-protocol.md",
+    "docs/03.specs/0153-workspace-governance-simplification/01.tasks/tsk-0004-stage00.md",
+    "docs/00.workspace/03.process/documentation-protocol.md",
     "docs/00.workspace/01.project/stage-authoring-matrix.md",
-    "docs/00.workspace/03.quality/task-checklists.md",
+    "docs/00.workspace/04.quality/task-checklists.md",
     "docs/01.requirements/005-data-analytics.md",
-    "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
+    "docs/02.architecture/02.decisions/0015-analytics-engine-selection.md",
     "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
     "docs/03.specs/0005-data-analytics/README.md",
     "docs/03.specs/0005-data-analytics/spec.md",
     "docs/03.specs/README.md",
-    "docs/05.operations/guides/04-data/analytics/README.md",  # retired-route-record
-    "docs/05.operations/guides/04-data/analytics/influxdb.md",  # retired-route-record
-    "docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md",  # retired-route-record
-    "docs/05.operations/guides/09-tooling/k6.md",  # retired-route-record
-    "docs/05.operations/guides/09-tooling/locust.md",  # retired-route-record
-    "docs/05.operations/guides/09-tooling/performance-testing.md",  # retired-route-record
-    "docs/05.operations/policies/04-data/analytics/influxdb.md",  # retired-route-record
-    "docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md",  # retired-route-record
-    "docs/05.operations/policies/09-tooling/k6.md",  # retired-route-record
-    "docs/05.operations/policies/09-tooling/locust.md",  # retired-route-record
-    "docs/05.operations/policies/09-tooling/performance-testing.md",  # retired-route-record
-    "docs/05.operations/runbooks/04-data/analytics/influxdb.md",  # retired-route-record
-    "docs/05.operations/runbooks/09-tooling/k6.md",  # retired-route-record
-    "docs/05.operations/runbooks/09-tooling/locust.md",  # retired-route-record
-    "docs/05.operations/runbooks/09-tooling/performance-testing.md",  # retired-route-record
-    "docs/90.references/research/ref-0039-readme.md",
-    "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
-    "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
-    "docs/90.references/research/ref-0045-document-metadata-lifecycle.md",
-    "docs/90.references/research/ref-0053-quality-ci-formatting.md",
-    "docs/90.references/research/ref-0056-security-governance.md",
-    "docs/90.references/research/ref-0058-workspace-baseline.md",
+    "docs/05.operations/01.guides/04.data/analytics/README.md",  # retired-route-record
+    "docs/05.operations/01.guides/04.data/analytics/influxdb.md",  # retired-route-record
+    "docs/05.operations/01.guides/04.data/lake-and-object/seaweedfs.md",  # retired-route-record
+    "docs/05.operations/01.guides/09.tooling/k6.md",  # retired-route-record
+    "docs/05.operations/01.guides/09.tooling/locust.md",  # retired-route-record
+    "docs/05.operations/01.guides/09.tooling/performance-testing.md",  # retired-route-record
+    "docs/05.operations/02.policies/04.data/analytics/influxdb.md",  # retired-route-record
+    "docs/05.operations/02.policies/04.data/lake-and-object/seaweedfs.md",  # retired-route-record
+    "docs/05.operations/02.policies/09.tooling/k6.md",  # retired-route-record
+    "docs/05.operations/02.policies/09.tooling/locust.md",  # retired-route-record
+    "docs/05.operations/02.policies/09.tooling/performance-testing.md",  # retired-route-record
+    "docs/05.operations/03.runbooks/04.data/analytics/influxdb.md",  # retired-route-record
+    "docs/05.operations/03.runbooks/09.tooling/k6.md",  # retired-route-record
+    "docs/05.operations/03.runbooks/09.tooling/locust.md",  # retired-route-record
+    "docs/05.operations/03.runbooks/09.tooling/performance-testing.md",  # retired-route-record
+    "docs/90.references/01.research/ref-0039-readme.md",
+    "docs/90.references/01.research/ref-0043-automation-pipeline-workflow.md",
+    "docs/90.references/01.research/ref-0044-docker-compose-infrastructure.md",
+    "docs/90.references/01.research/ref-0045-document-metadata-lifecycle.md",
+    "docs/90.references/01.research/ref-0053-quality-ci-formatting.md",
+    "docs/90.references/01.research/ref-0056-security-governance.md",
+    "docs/90.references/01.research/ref-0058-workspace-baseline.md",
     "docs/99.templates/support/README.md",
     "docs/99.templates/support/archive-retention-contract.md",
     "docs/99.templates/support/common-document-contract.md",
@@ -164,10 +164,12 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/99.templates/support/document-metadata-profiles.yaml",
     "docs/99.templates/support/frontmatter-contract.md",
     "docs/99.templates/support/readme-profile-contract.md",
-    "docs/99.templates/templates/README.md",
-    "docs/99.templates/templates/common/README.md",
-    "docs/99.templates/templates/common/archive.template.md",
+    "docs/99.templates/02.templates/README.md",
+    "docs/99.templates/02.templates/93.common/README.md",
+    "docs/99.templates/02.templates/93.common/archive.template.md",
 )
+_WORKSPACE_DESCRIPTIONS = "docs/00.workspace/02.architecture/01.descriptions/"
+_WORKSPACE_DECISIONS = "docs/00.workspace/02.architecture/02.decisions/"
 EXPECTED_PROFILE_TYPES = {
     "adr",
     "archive",
@@ -426,7 +428,7 @@ def infer_artifact_type(
         return "generated"
     if name == "README.md":
         return "readme"
-    if normalized.startswith("docs/99.templates/templates/") and name.endswith(
+    if normalized.startswith("docs/99.templates/02.templates/") and name.endswith(
         ".template.md"
     ):
         return "template-source"
@@ -438,9 +440,13 @@ def infer_artifact_type(
         return "archive"
     if normalized.startswith("docs/01.requirements/"):
         return "requirements-package"
-    if normalized.startswith("docs/02.architecture/descriptions/"):
+    if normalized.startswith(
+        ("docs/02.architecture/01.descriptions/", _WORKSPACE_DESCRIPTIONS)
+    ):
         return "architecture-description"
-    if normalized.startswith("docs/02.architecture/decisions/"):
+    if normalized.startswith(
+        ("docs/02.architecture/02.decisions/", _WORKSPACE_DECISIONS)
+    ):
         return "adr"
     if normalized.startswith("docs/03.specs/"):
         if name == "plan.md":
@@ -449,16 +455,18 @@ def infer_artifact_type(
             return "task"
         return "spec"
     if normalized.startswith("docs/05.operations/"):
-        role = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}.get(
-            pathlib.PurePosixPath(normalized).parts[2]
-        )
+        role = {
+            "01.guides": "guide",
+            "02.policies": "policy",
+            "03.runbooks": "runbook",
+        }.get(pathlib.PurePosixPath(normalized).parts[2])
         if role is not None and classify_registered_path(normalized) != role:
             return "unsupported"
         if role is not None:
             return role
-    if normalized.startswith("docs/05.operations/incidents/"):
+    if normalized.startswith("docs/05.operations/04.incidents/"):
         return "postmortem" if name == "postmortem.md" else "incident"
-    if normalized.startswith("docs/90.references/audits/"):
+    if normalized.startswith("docs/90.references/02.audits/"):
         return "audit"
     if normalized.startswith("docs/90.references/"):
         return "reference"

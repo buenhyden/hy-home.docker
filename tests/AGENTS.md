@@ -1,10 +1,10 @@
 ---
 title: "Tests Agent Guide"
-version: "0.4.1"
+version: "0.4.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Tests Agent Guide
@@ -31,7 +31,7 @@ Package-local tests under `projects/` belong to their package.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -41,8 +41,8 @@ canonical governance or a Stage contract.
 ### Intake
 
 - [Bootstrap](../.agents/governance/bootstrap.md),
-  [quality standards](../docs/00.workspace/03.quality/quality-standards.md),
-  [task checklists](../docs/00.workspace/03.quality/task-checklists.md).
+  [quality standards](../docs/00.workspace/04.quality/quality-standards.md),
+  [task checklists](../docs/00.workspace/04.quality/task-checklists.md).
 - Role: [`qa-engineer`](../.agents/roles/qa-engineer.md).
 - Skills: [`test-authoring`](../.agents/skills/test-authoring/SKILL.md),
   [`e2e-testing`](../.agents/skills/e2e-testing/SKILL.md).
@@ -79,7 +79,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../docs/00.workspace/02.process/approval-boundaries.md)
+[approval boundaries](../docs/00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions
@@ -90,7 +90,7 @@ has not granted, or when a required check fails.
 ### Secrets and External Effects
 
 This guide adds no secret or external-effect rule;
-[approval boundaries](../docs/00.workspace/02.process/approval-boundaries.md) owns both.
+[approval boundaries](../docs/00.workspace/04.quality/approval-boundaries.md) owns both.
 
 ## Verification
 

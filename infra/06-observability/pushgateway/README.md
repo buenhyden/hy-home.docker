@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-01-12"
 ---
 
@@ -101,7 +101,7 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
 1. **PromQL Optimization**: Pushgateway에서 메트릭을 쿼리할 때는 서로 다른 배치 실행을 구분할 수 있도록 항상 `job` 레이블을 포함합니다.
 2. **Maintenance**: 갱신되지 않은 오래된 메트릭이 있는지 주기적으로 확인합니다.
@@ -122,9 +122,9 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 #### Related Documents
 
-- Usage guide (`docs/05.operations/guides/07-observability/0046-pushgateway.md`)
-- Operations policy (`docs/05.operations/policies/07-observability/0046-pushgateway.md`)
-- Recovery runbook (`docs/05.operations/runbooks/07-observability/0046-pushgateway.md`)
+- Usage guide (`docs/05.operations/01.guides/07.observability/0046-pushgateway.md`)
+- Operations policy (`docs/05.operations/02.policies/07.observability/0046-pushgateway.md`)
+- Recovery runbook (`docs/05.operations/03.runbooks/07.observability/0046-pushgateway.md`)
 - [Documentation index](../../../docs/README.md)
 
 #### Operational Status
@@ -146,5 +146,5 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 - Classification: **OPTIONAL**. Exact profiles: `obs`, `batch-metrics`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pushgateway`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0046-pushgateway.md`; ID: `GDE-0046`, `POL-0046`, `RUN-0046`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/01.guides/07.observability/0046-pushgateway.md`; ID: `GDE-0046`, `POL-0046`, `RUN-0046`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.

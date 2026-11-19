@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB source"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-12"
 ---
 
@@ -130,7 +130,7 @@ Compose는 상대 경로와 `LAB_SECRET_DIR`를 `labs/<name>/` 기준으로 해�
 
 #### Observability and Recovery
 
-이 디렉터리는 인덱스라 직접 관측 대상이 없고 복구 경계는 아래와 같다. LAB 운영은 [LAB Runbook 목록](../docs/05.operations/runbooks/15-labs/README.md)을 따른다.
+이 디렉터리는 인덱스라 직접 관측 대상이 없고 복구 경계는 아래와 같다. LAB 운영은 [LAB Runbook 목록](../docs/05.operations/03.runbooks/15.labs/README.md)을 따른다.
 
 같은 호스트의 복제 노드는 호스트 장애를 격리하지 않습니다. HOME 단일 인스턴스와
 LAB 클러스터를 구분하고 성능·HA를 측정 없이 보장하지 않습니다. Valkey LAB 복구에는

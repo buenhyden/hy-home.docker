@@ -10,7 +10,7 @@ tests:
         exp_alerts:
           - exp_labels: {severity: warning}
             exp_annotations:
-              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
               summary: Observation selection is unavailable
               description: Generate and apply a complete source-bound observation selection.
       # A missing selection is one alert, not also an invalid one.
@@ -32,7 +32,7 @@ tests:
         exp_alerts:
           - exp_labels: {job: example, severity: warning}
             exp_annotations:
-              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
               summary: Expected scrape targets are missing for example
   - name: idle-is-not-backlog
     interval: 1m
@@ -57,7 +57,7 @@ tests:
         alertname: AlloyQualityRemoteWriteNeverSent
         exp_alerts:
           - exp_labels: {instance: a, severity: warning}
-            exp_annotations: {summary: Alloy has queued quality samples with no successful send, runbook_url: "https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md"}
+            exp_annotations: {summary: Alloy has queued quality samples with no successful send, runbook_url: "https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md"}
   - name: fully-missing-and-recovery
     interval: 1m
     input_series:
@@ -73,7 +73,7 @@ tests:
         exp_alerts:
           - exp_labels: {job: example, severity: warning}
             exp_annotations:
-              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
               summary: Expected scrape targets are missing for example
       - eval_time: 9m
         alertname: ObservationTargetsMissing
@@ -98,7 +98,7 @@ tests:
         exp_alerts:
           - exp_labels: {job: manage-postgres, instance: p, expected_state: "on", severity: warning}
             exp_annotations:
-              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
               summary: PostgreSQL exporter backend status is missing
   - name: backend-zero-is-present
     interval: 1m
@@ -128,11 +128,11 @@ tests:
         exp_alerts:
           - exp_labels: {severity: warning}
             exp_annotations:
-              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
               summary: Observation selection is incomplete
           - exp_labels: {job: example, severity: warning}
             exp_annotations:
-              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
               summary: Observation selection is incomplete
   - name: old-timestamps-but-sending
     interval: 1m
@@ -160,7 +160,7 @@ tests:
         exp_alerts:
           - exp_labels: {instance: a, severity: warning}
             exp_annotations:
-              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
               summary: Alloy quality metric delivery is stalled
   - name: progress-stops-at-two-minutes
     interval: 1m
@@ -178,7 +178,7 @@ tests:
         exp_alerts:
           - exp_labels: {instance: a, severity: warning}
             exp_annotations:
-              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/07.observability/0045-prometheus.md
               summary: Alloy quality metric delivery is stalled
   - name: alloy-off-suppresses-backlog
     interval: 1m

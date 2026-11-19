@@ -84,10 +84,10 @@ def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
     values = json.loads(REGISTRY.read_text(encoding="utf-8"))
     relative_paths = {
         pathlib.Path("README.md"),
-        pathlib.Path("docs/05.operations/incidents/README.md"),
+        pathlib.Path("docs/05.operations/04.incidents/README.md"),
         pathlib.Path("docs/99.templates/registry.json"),
-        pathlib.Path("docs/99.templates/contracts/document-profile.schema.json"),
-        pathlib.Path("docs/99.templates/contracts/document-frontmatter.schema.json"),
+        pathlib.Path("docs/99.templates/01.contracts/document-profile.schema.json"),
+        pathlib.Path("docs/99.templates/01.contracts/document-frontmatter.schema.json"),
         *(pathlib.Path(role["source"]) for role in values["template_roles"].values()),
         *(
             pathlib.Path(values["common"]["role_design_contract"][key])

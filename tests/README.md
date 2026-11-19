@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-02-21"
 ---
 
@@ -151,5 +151,5 @@ builder 모듈이며, 테스트가 필요한 최소 입력만 만들어 씁니�
 - [에이전트 작업 규칙](AGENTS.md)
 - [Root README](../README.md)
 - [Scripts README](../scripts/README.md)
-- [Documentation protocol](../docs/00.workspace/02.process/documentation-protocol.md)
-- [Task checklists](../docs/00.workspace/03.quality/task-checklists.md)
+- [Documentation protocol](../docs/00.workspace/03.process/documentation-protocol.md)
+- [Task checklists](../docs/00.workspace/04.quality/task-checklists.md)

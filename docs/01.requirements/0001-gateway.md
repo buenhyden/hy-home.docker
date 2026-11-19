@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway) Requirements"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0001"
 created: "2026-03-26"
@@ -117,8 +117,8 @@ Each condition is judged by a runtime observation of the live gateway: an HTTP r
 
 #### Downstream Links
 
-- [Gateway architecture description](../02.architecture/descriptions/0001-gateway-architecture.md)
-- [Traefik policy](../05.operations/policies/02-gateway-and-networking/0013-traefik.md)
-- [ADR-0001: Traefik and Nginx hybrid gateway](../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
+- [Gateway architecture description](../02.architecture/01.descriptions/0001-gateway-architecture.md)
+- [Traefik policy](../05.operations/02.policies/02.gateway-and-networking/0013-traefik.md)
+- [ADR-0001: Traefik and Nginx hybrid gateway](../02.architecture/02.decisions/0001-traefik-nginx-hybrid.md)
 - Retired domain Spec SPEC-0001 (gateway): replaced by the gateway guides,
   policies and runbooks under `docs/05.operations/`.

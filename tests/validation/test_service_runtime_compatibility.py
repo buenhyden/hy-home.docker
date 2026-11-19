@@ -193,7 +193,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
     def test_documented_renderer_delivery_names_exact_stopped_agent(self):
         runbook = (
             ROOT
-            / "docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md"
+            / "docs/05.operations/03.runbooks/04.security-and-secrets/0103-openbao-renderer-delivery.md"
         ).read_text()
         image = compose("infra/03-security/openbao/docker-compose.yml")["services"][
             "openbao"
@@ -712,7 +712,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
 
         policy = (
             ROOT
-            / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+            / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
         ).read_text(encoding="utf-8")
         home_row = next(x for x in policy.splitlines() if x.startswith("| HOME |"))
         home = set(re.findall(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`", home_row))

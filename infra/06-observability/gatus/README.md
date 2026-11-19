@@ -1,10 +1,10 @@
 ---
 title: "Gatus Implementation"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Gatus
@@ -28,7 +28,7 @@ Keycloak OIDC 설정을 선택합니다. 네이티브 로그인 승인이 기록
 
 #### Scope
 
-Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/07-observability/0087-gatus.md`, `docs/05.operations/policies/07-observability/0087-gatus.md`, `docs/05.operations/runbooks/07-observability/0087-gatus.md`(ID: `GDE-0087`, `POL-0087`, `RUN-0087`)가 담당합니다.
+Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/01.guides/07.observability/0087-gatus.md`, `docs/05.operations/02.policies/07.observability/0087-gatus.md`, `docs/05.operations/03.runbooks/07.observability/0087-gatus.md`(ID: `GDE-0087`, `POL-0087`, `RUN-0087`)가 담당합니다.
 
 #### Structure
 
@@ -119,7 +119,7 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`이며 값은 저장
 - Classification: **HOME**. Exact profiles: `obs`, `availability`, `dev`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d gatus`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0087-gatus.md`; ID: `GDE-0087`, `POL-0087`, `RUN-0087`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/01.guides/07.observability/0087-gatus.md`; ID: `GDE-0087`, `POL-0087`, `RUN-0087`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
 
 ## Checks

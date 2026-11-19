@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -111,7 +111,7 @@ Selected Start의 Compose 렌더를 정적으로 확인합니다. 이미지 빌�
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0019: `docs/05.operations/runbooks/05-databases-and-storage/0019-opensearch.md`
+- RUN-0019: `docs/05.operations/03.runbooks/05.databases-and-storage/0019-opensearch.md`
 
 #### Related Documents
 

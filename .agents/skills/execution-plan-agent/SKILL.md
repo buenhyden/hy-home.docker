@@ -3,11 +3,11 @@ name: "execution-plan-agent"
 description: "Use when an approved specification needs an executable plan mapping acceptance criteria to exact files, ordered work, risks, and checks."
 metadata:
   title: "execution-plan-agent"
-  version: "1.4.1"
+  version: "1.4.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "execution-plan-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -67,7 +67,7 @@ Owning role, policies and related documents:
 
 - [Workflow supervisor](../../roles/workflow-supervisor.md)
 - [Task breakdown](../task-breakdown-agent/SKILL.md)
-- [Task checklists](../../../docs/00.workspace/03.quality/task-checklists.md)
+- [Task checklists](../../../docs/00.workspace/04.quality/task-checklists.md)
 
 ## Verification
 

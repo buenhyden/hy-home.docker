@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Specification"
-version: "0.4.2"
+version: "0.4.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0263"
 parent_ids:
@@ -350,7 +350,7 @@ change to `secrets/SENSITIVE_ENV_VARS.md.example`.
 
 ### Normative and Evidence
 
-- [LAB operations guides](../../05.operations/guides/15-labs/README.md)
+- [LAB operations guides](../../05.operations/01.guides/15.labs/README.md)
 - [Analytics LAB migration](../0262-analytics-labs-migration/spec.md)
 
 ### Historical and Navigation

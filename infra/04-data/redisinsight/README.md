@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-03-26"
 ---
 
@@ -121,9 +121,9 @@ Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_i
 
 #### Related Documents
 
-- **Guide**: RedisInsight usage guide (`docs/05.operations/guides/05-databases-and-storage/0076-redisinsight.md`)
-- **Policy**: RedisInsight operations policy (`docs/05.operations/policies/05-databases-and-storage/0076-redisinsight.md`)
-- **Runbook**: RedisInsight recovery runbook (`docs/05.operations/runbooks/05-databases-and-storage/0076-redisinsight.md`)
+- **Guide**: RedisInsight usage guide (`docs/05.operations/01.guides/05.databases-and-storage/0076-redisinsight.md`)
+- **Policy**: RedisInsight operations policy (`docs/05.operations/02.policies/05.databases-and-storage/0076-redisinsight.md`)
+- **Runbook**: RedisInsight recovery runbook (`docs/05.operations/03.runbooks/05.databases-and-storage/0076-redisinsight.md`)
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
@@ -142,7 +142,7 @@ Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_i
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.redisinsight-static.rule`, `traefik.http.routers.redisinsight-static.entrypoints`, `traefik.http.routers.redisinsight-static.tls`, `traefik.http.routers.redisinsight-static.priority`, `traefik.http.routers.redisinsight-static.service`, `traefik.http.routers.redisinsight.rule`, 외 7개 |
 | Secret refs | `dev_valkey_inspector_password`, `mng_valkey_inspector_password`, `redisinsight_encryption_key` |
 | Healthcheck | `/api/health/`의 `{"status":"up"}`(UI 상태만, DB 접속은 별도 확인) |
-| Operations | Guide (`docs/05.operations/guides/05-databases-and-storage/0076-redisinsight.md`), Policy (`docs/05.operations/policies/05-databases-and-storage/0076-redisinsight.md`), Runbook (`docs/05.operations/runbooks/05-databases-and-storage/0076-redisinsight.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/05.databases-and-storage/0076-redisinsight.md`), Policy (`docs/05.operations/02.policies/05.databases-and-storage/0076-redisinsight.md`), Runbook (`docs/05.operations/03.runbooks/05.databases-and-storage/0076-redisinsight.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `04-data` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `admin` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 

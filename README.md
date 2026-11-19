@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.5.1"
+version: "1.5.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -51,7 +51,7 @@ created: "2025-11-12"
 - 문서 작성 작업은 가능한 경우 `docs/99.templates`의 템플릿을 출발점으로 사용합니다.
 - 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
 
-문서 언어는 [문서 언어 규칙](docs/00.workspace/02.process/documentation-protocol.md#document-language)이 정합니다.
+문서 언어는 [문서 언어 규칙](docs/00.workspace/03.process/documentation-protocol.md#document-language)이 정합니다.
 
 #### Documentation Lifecycle
 
@@ -82,9 +82,9 @@ created: "2025-11-12"
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
-3. 새 문서나 루트 문서를 갱신할 때는 `docs/99.templates/templates/common/readme-repository.template.md` 같은 승인된 템플릿과 [`docs/00.workspace/02.process/documentation-protocol.md`](docs/00.workspace/02.process/documentation-protocol.md)을 기준으로 삼습니다.
+3. 새 문서나 루트 문서를 갱신할 때는 `docs/99.templates/02.templates/93.common/readme-repository.template.md` 같은 승인된 템플릿과 [`docs/00.workspace/03.process/documentation-protocol.md`](docs/00.workspace/03.process/documentation-protocol.md)을 기준으로 삼습니다.
 4. Docker image runtime pin을 바꿀 때는 해당 Compose/Dockerfile 선언을 먼저 바꾸고, [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) 파생 projection과 동기화 검사를 함께 점검합니다. Dockerfile `FROM`/`ARG` pin은 Compose image projection과 별도 authority입니다.
-5. GitHub workflow를 바꿀 때는 [`docs/00.workspace/02.process/github-governance.md`](docs/00.workspace/02.process/github-governance.md)와 [`docs/00.workspace/02.process/git-workflow.md`](docs/00.workspace/02.process/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
+5. GitHub workflow를 바꿀 때는 [`docs/00.workspace/03.process/github-governance.md`](docs/00.workspace/03.process/github-governance.md)와 [`docs/00.workspace/03.process/git-workflow.md`](docs/00.workspace/03.process/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
 
 #### 1. 저장소 클론
@@ -142,7 +142,7 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 재현합니다. 이 명령은 배포 승인이나 용량·복구 증명이 아닙니다. profile 어휘, 구성원, 제외 규칙은
 [문서 인덱스](./docs/README.md)의 Compose Profile Vocabulary Policy
 (POL-0078)가 소유합니다. Canonical path는
-`docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
+`docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
 `iac`은 OpenTofu와 Terrakube의 명시적 운영 작업에만 사용합니다. Renovate는
 `dependency-update` 전용 job이며 `tooling`이나 HOME 선택에 포함되지 않습니다.
 
@@ -177,7 +177,7 @@ GitHub Actions의 PR 후보 job이 public `changed` profile의 aggregate QA를 �
 향후 릴리스는 main의 준비 PR에서 `CHANGELOG.md`를 작성한 뒤, 승인된 정확한
 revision/version에 대해 단일 수동 workflow가 SemVer tag와 완성된 draft Release를
 게시합니다. 개발 push의 changelog 생성이나 moving tag 생산자는 없습니다.
-실제 릴리스 절차인 `RUN-0009`은 [운영 Runbook 색인](docs/05.operations/runbooks/README.md#cross-cutting-workspace)에서 찾습니다.
+실제 릴리스 절차인 `RUN-0009`은 [운영 Runbook 색인](docs/05.operations/03.runbooks/README.md#cross-cutting-workspace)에서 찾습니다.
 
 `main-security` job은 main push의 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
 `pr-labeler` workflow는 triage/community 자동화이며 필수 품질 게이트에는 들지 않습니다.
@@ -257,7 +257,7 @@ hy-home.docker/
 - 활성화되는 서비스 목록과 HOME/DEV/OPTIONAL/LAB/MIGRATE 분류 근거: [`infra/README.md`](./infra/README.md)의 Compose Inventory Snapshot
 - 루트 `docker-compose.yml`의 secret 선언과 등록된 secret file path: [`secrets/README.md`](./secrets/README.md)
 - tracked README 파일 수: `git ls-files '*README.md' | wc -l`
-- README 최신화 기준: `docs/99.templates/templates/common/readme-repository.template.md`의 공통 구조와 경로별 snippet
+- README 최신화 기준: `docs/99.templates/02.templates/93.common/readme-repository.template.md`의 공통 구조와 경로별 snippet
 
 위 항목의 모든 수치는 추적 트리와 명령 실행에서 재현할 수 있어야 합니다. `secrets/`의 값과 인증서 파일은 추적 대상이 아니므로 개수를 기록하지 않습니다. 추적되지 않는 로컬 상태는 저장소가 재현할 수 없고, 기록하면 검증 없이 낡습니다.
 
@@ -273,7 +273,7 @@ hy-home.docker/
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
 - [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
 - [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
-- `docs/90.references/data` - Docker image/version drift의 관찰 시점이 명시된 참고 자료
+- `docs/90.references/03.data` - Docker image/version drift의 관찰 시점이 명시된 참고 자료
 
 ### Owners
 
@@ -289,13 +289,13 @@ hy-home.docker/
 
 - [`docs/README.md`](./docs/README.md)
 - [`.agents/README.md`](.agents/README.md)
-- [`docs/00.workspace/02.process/documentation-protocol.md`](docs/00.workspace/02.process/documentation-protocol.md)
-- [`docs/00.workspace/02.process/github-governance.md`](docs/00.workspace/02.process/github-governance.md)
-- [`docs/00.workspace/02.process/git-workflow.md`](docs/00.workspace/02.process/git-workflow.md)
+- [`docs/00.workspace/03.process/documentation-protocol.md`](docs/00.workspace/03.process/documentation-protocol.md)
+- [`docs/00.workspace/03.process/github-governance.md`](docs/00.workspace/03.process/github-governance.md)
+- [`docs/00.workspace/03.process/git-workflow.md`](docs/00.workspace/03.process/git-workflow.md)
 - [`docs/00.workspace/01.project/stage-authoring-matrix.md`](docs/00.workspace/01.project/stage-authoring-matrix.md)
 - `docs/05.operations/README.md`
 - `docs/90.references/README.md`
-- `docs/90.references/data/README.md`
+- `docs/90.references/03.data/README.md`
 - [`llms.txt`](./llms.txt)
 - Historical execution evidence: `plan-0028` (retained through the typed change ledger)
 - [`infra/README.md`](./infra/README.md)

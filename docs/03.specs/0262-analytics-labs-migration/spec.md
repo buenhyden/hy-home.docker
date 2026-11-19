@@ -1,6 +1,6 @@
 ---
 title: "Analytics Labs Migration Specification"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -112,7 +112,7 @@ This Task pushes, merges and starts nothing.
 ### Normative and Evidence
 
 - [Plan](plan.md)
-- [Task](tasks/tsk-0001-analytics-labs-migration.md)
+- [Task](01.tasks/tsk-0001-analytics-labs-migration.md)
 
 ### Historical and Navigation
 

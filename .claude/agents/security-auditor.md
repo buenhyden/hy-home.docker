@@ -54,7 +54,7 @@ Stop on sensitive payload exposure or missing authorization; redact evidence and
 
 ## Related Documents
 
-- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
 - [Container threat modeling](../../.agents/skills/container-threat-modeling/SKILL.md)
 - [Security audit function](../../.agents/skills/security-audit/SKILL.md)
-- [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md)
+- [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)

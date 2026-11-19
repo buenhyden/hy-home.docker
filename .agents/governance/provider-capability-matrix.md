@@ -1,6 +1,6 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.4.0"
+version: "1.4.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -92,7 +92,7 @@ canonical files are never deleted or quarantined as stale projections.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -126,7 +126,7 @@ The policy names no check for any rule in Requirements.
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 

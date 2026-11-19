@@ -181,7 +181,7 @@ class TransitionOverrideEvidencePathTests(unittest.TestCase):
         witness.write_text("# Task\n", encoding="utf-8")
 
     def test_co_located_task_evidence_is_accepted(self) -> None:
-        evidence = "docs/03.specs/0001-fixture/tasks/tsk-0001-fixture.md"
+        evidence = "docs/03.specs/0001-fixture/01.tasks/tsk-0001-fixture.md"
         with tempfile.TemporaryDirectory() as raw:
             root = pathlib.Path(raw)
             self._tree(root, evidence)
@@ -212,7 +212,7 @@ class RetiredStatusMigrationTests(unittest.TestCase):
     def codes(self, previous: str, status: str) -> set[str]:
         profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
         record = metadata.Record(
-            pathlib.Path("docs/02.architecture/descriptions/0031-fixture.md"),
+            pathlib.Path("docs/02.architecture/01.descriptions/0031-fixture.md"),
             {
                 "artifact_id": "AD-0031",
                 "type": "sdlc/architecture-description",
@@ -287,7 +287,7 @@ class CurrentSpecRelationTests(unittest.TestCase):
         )
         profiles = metadata.build_registry_profiles(registry)
         record = metadata.Record(
-            pathlib.Path("docs/02.architecture/decisions/0032-fixture.md"),
+            pathlib.Path("docs/02.architecture/02.decisions/0032-fixture.md"),
             {
                 "artifact_id": "ADR-0032",
                 "type": "sdlc/architecture-decision",
@@ -476,7 +476,7 @@ class OperationsCurrencyTests(unittest.TestCase):
     def codes(self, document_type: str = "operation/runbook", **extra: str) -> set[str]:
         profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
         record = metadata.Record(
-            pathlib.Path("docs/05.operations/runbooks/01-common/0004-fixture.md"),
+            pathlib.Path("docs/05.operations/03.runbooks/01.common/0004-fixture.md"),
             {
                 "artifact_id": "RUN-0004",
                 "type": document_type,
@@ -513,7 +513,7 @@ class OperationsCurrencyTests(unittest.TestCase):
     def messages(self, document_type: str, **extra: str) -> set[str]:
         profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
         record = metadata.Record(
-            pathlib.Path("docs/05.operations/runbooks/01-common/0004-fixture.md"),
+            pathlib.Path("docs/05.operations/03.runbooks/01.common/0004-fixture.md"),
             {
                 "artifact_id": "RUN-0004",
                 "type": document_type,
@@ -586,7 +586,7 @@ class OperationsCurrencyTests(unittest.TestCase):
 class VersionChangeTests(unittest.TestCase):
     """A changed document's `version` against the same path at the merge base."""
 
-    DOC = pathlib.Path("docs/90.references/research/0001-x/note.md")
+    DOC = pathlib.Path("docs/90.references/01.research/0001-x/note.md")
     BASE_BODY = "# Fixture\n"
 
     def test_exact_base_text_avoids_individual_git_reads(self):

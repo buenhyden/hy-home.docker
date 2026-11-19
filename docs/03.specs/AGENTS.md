@@ -1,10 +1,10 @@
 ---
 title: "Specifications Agent Guide"
-version: "0.4.1"
+version: "0.4.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Specifications Agent Guide
@@ -19,7 +19,7 @@ Stage 03 holds Spec Packages: a Spec contracts the change, a Plan sequences
 it, and Tasks record execution and evidence. This guide routes an agent that
 creates or executes a package. The human guide is [README.md](README.md).
 
-`####-<slug>/spec.md`, `plan.md`, `tasks/tsk-####-<slug>.md`, `contracts/` and
+`####-<slug>/spec.md`, `plan.md`, `01.tasks/tsk-####-<slug>.md`, `02.contracts/` and
 this folder's README.
 
 #### Non-goals
@@ -31,7 +31,7 @@ Long-lived requirements, architecture and operating procedures belong to Stage
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -41,11 +41,11 @@ canonical governance or a Stage contract.
 ### Intake
 
 - [Bootstrap](../../.agents/governance/bootstrap.md),
-  [SDLC](../00.workspace/02.process/sdlc.md),
+  [SDLC](../00.workspace/03.process/sdlc.md),
   [workflows](../../.agents/governance/workflows.md),
-  [documentation protocol](../00.workspace/02.process/documentation-protocol.md),
-  [task checklists](../00.workspace/03.quality/task-checklists.md),
-  [quality standards](../00.workspace/03.quality/quality-standards.md).
+  [documentation protocol](../00.workspace/03.process/documentation-protocol.md),
+  [task checklists](../00.workspace/04.quality/task-checklists.md),
+  [quality standards](../00.workspace/04.quality/quality-standards.md).
 - Roles: [`workflow-supervisor`](../../.agents/roles/workflow-supervisor.md),
   [`code-reviewer`](../../.agents/roles/code-reviewer.md).
 - Skills: [`execution-plan-agent`](../../.agents/skills/execution-plan-agent/SKILL.md),
@@ -62,19 +62,19 @@ canonical governance or a Stage contract.
 - Load the governing Spec, Plan and current Task before any repository change,
   and record progress, decisions and evidence in that Task.
 - Create documents from
-  [`spec.template.md`](../99.templates/templates/specs/spec.template.md),
-  [`plan.template.md`](../99.templates/templates/specs/plan.template.md) and
-  [`task.template.md`](../99.templates/templates/specs/task.template.md).
+  [`spec.template.md`](../99.templates/02.templates/03.specs/spec.template.md),
+  [`plan.template.md`](../99.templates/02.templates/03.specs/plan.template.md) and
+  [`task.template.md`](../99.templates/02.templates/03.specs/task.template.md).
   Allocate the next Spec number from the Registry `spec` space and advance its
   high-water mark in the same change.
 - Record each check as an Evidence row with an honest result from the
   Registry `result_domain` in [`registry.json`](../99.templates/registry.json)
   and the revision it examined. What a row may
-  `Resolve` is defined by the [SDLC](../00.workspace/02.process/sdlc.md#sequence)
+  `Resolve` is defined by the [SDLC](../00.workspace/03.process/sdlc.md#sequence)
   and the Registry `evidence_columns` contract.
 - Remove a package only as the
-  [retirement preconditions](../00.workspace/02.process/documentation-protocol.md#retirement-preconditions)
-  and the [SDLC](../00.workspace/02.process/sdlc.md#sequence) readiness and
+  [retirement preconditions](../00.workspace/03.process/documentation-protocol.md#retirement-preconditions)
+  and the [SDLC](../00.workspace/03.process/sdlc.md#sequence) readiness and
   approval sequence define it.
 
 #### Local Obligations
@@ -89,7 +89,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../00.workspace/02.process/approval-boundaries.md)
+[approval boundaries](../00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions
@@ -100,7 +100,7 @@ has not granted, or when a required check fails.
 ### Secrets and External Effects
 
 This guide adds no secret or external-effect rule;
-[approval boundaries](../00.workspace/02.process/approval-boundaries.md) owns both.
+[approval boundaries](../00.workspace/04.quality/approval-boundaries.md) owns both.
 
 ## Verification
 
@@ -125,4 +125,4 @@ Record progress, decisions and evidence in the current Task, and leave the
 next owner named there. Human-facing and related documents:
 
 - [Specifications README](README.md)
-- [Task template](../99.templates/templates/specs/task.template.md)
+- [Task template](../99.templates/02.templates/03.specs/task.template.md)

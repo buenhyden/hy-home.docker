@@ -1,10 +1,10 @@
 ---
 title: "Commit Message Prompt"
-version: "0.2.2"
+version: "0.2.3"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-09-06"
 ---
 
@@ -26,7 +26,7 @@ produces a draft, never a commit.
 - The governing Plan work unit this commit closes.
 - The current worktree and staged-set digest, plus current approval validity.
 - The commit conventions in
-  [git workflow](../../docs/00.workspace/02.process/git-workflow.md), which governs commit usage.
+  [git workflow](../../docs/00.workspace/03.process/git-workflow.md), which governs commit usage.
   `.cz.toml` owns the type vocabulary and descriptions, message grammar,
   and header length.
 
@@ -99,6 +99,6 @@ rule; never disable the validation.
 ## Related Documents
 
 - [Prompt index](README.md)
-- [Git workflow](../../docs/00.workspace/02.process/git-workflow.md)
-- [Task checklists](../../docs/00.workspace/03.quality/task-checklists.md)
+- [Git workflow](../../docs/00.workspace/03.process/git-workflow.md)
+- [Task checklists](../../docs/00.workspace/04.quality/task-checklists.md)
 - [Postflight routing](../governance/postflight-checklist.md)

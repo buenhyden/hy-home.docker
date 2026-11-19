@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.11.1"
+version: "2.11.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "templates"
 ---
 
@@ -18,7 +18,7 @@ layer: "templates"
 
 Stage 99는 문서 경로, profile, identifier, section, lifecycle 상태와 전이,
 traceability 형태, 복사용 template의 유일한 권위입니다. machine authority는
-[`registry.json`](./registry.json)이며, `contracts/` 아래 두 schema가
+[`registry.json`](./registry.json)이며, `01.contracts/` 아래 두 schema가
 registry와 문서 frontmatter를 검증합니다. 사람과 AI agent를 위한 정책은
 공통 Agent 거버넌스에 남고, 실행 가능한 gate 동작은 등록된 `scripts/`
 모듈에 남습니다.
@@ -47,12 +47,12 @@ Stage 99가 소유하는 것:
 | Surface | Authority | Purpose |
 | :--- | :--- | :--- |
 | [`registry.json`](./registry.json) | machine | profiles, paths, identities, lifecycle, traceability, template registration |
-| [`contracts/document-profile.schema.json`](./contracts/document-profile.schema.json) | machine | registry shape |
-| [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
-| [`contracts/template-definition.schema.json`](./contracts/template-definition.schema.json) | machine | TemplateDefinition 출력 계약 2.0.0. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
-| [`contracts/document-role-design.json`](./contracts/document-role-design.json) | machine | 공통 문서 역할 설계 core `workspace-document-role-design`. 거버넌스 패키지 원본과 같은 바이트이며 판본과 SHA-256은 Registry `common.role_design_contract`가 고정합니다 |
-| [`contracts/document-role-design.schema.json`](./contracts/document-role-design.schema.json) | machine | 위 core의 구조 schema. Registry가 이 파일도 SHA-256으로 고정합니다 |
-| [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
+| [`contracts/document-profile.schema.json`](01.contracts/document-profile.schema.json) | machine | registry shape |
+| [`contracts/document-frontmatter.schema.json`](01.contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
+| [`contracts/template-definition.schema.json`](01.contracts/template-definition.schema.json) | machine | TemplateDefinition 출력 계약 2.0.0. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
+| [`contracts/document-role-design.json`](01.contracts/document-role-design.json) | machine | 공통 문서 역할 설계 core `workspace-document-role-design`. 거버넌스 패키지 원본과 같은 바이트이며 판본과 SHA-256은 Registry `common.role_design_contract`가 고정합니다 |
+| [`contracts/document-role-design.schema.json`](01.contracts/document-role-design.schema.json) | machine | 위 core의 구조 schema. Registry가 이 파일도 SHA-256으로 고정합니다 |
+| [`02.templates/`](02.templates/) | copy source | profile-referenced authoring forms |
 
 TemplateDefinition의 `contract_id`는 적용 양식을 식별하고
 `contract_version`은 그 양식의 숫자 판본을 나타냅니다. Profile이
@@ -94,33 +94,33 @@ reference finding을 소유하지 않습니다.
 | Path | Purpose |
 | --- | --- |
 | [registry.json](registry.json) | 문서 profile과 lifecycle machine 권위 |
-| [contracts/](contracts/) | Registry와 frontmatter 값 schema |
-| [templates/](templates/) | 등록된 복사용 작성 source |
+| [01.contracts/](01.contracts/) | Registry와 frontmatter 값 schema |
+| [02.templates/](02.templates/) | 등록된 복사용 작성 source |
 
 ```text
 docs/99.templates/
 ├── README.md
 ├── registry.json
-├── contracts/
+├── 01.contracts/
 │   ├── document-frontmatter.schema.json
 │   ├── document-profile.schema.json
 │   └── template-definition.schema.json
-└── templates/
-    ├── governance/
-    ├── runtime/
-    ├── requirements/
-    ├── architecture/
-    ├── specs/
-    │   └── contracts/
-    ├── operations/
-    ├── references/
-    └── common/
+└── 02.templates/
+    ├── 01.requirements/
+    ├── 02.architecture/
+    ├── 03.specs/
+    │   └── 02.contracts/
+    ├── 05.operations/
+    ├── 90.references/
+    ├── 91.agent-governance/
+    ├── 92.runtime/
+    └── 93.common/
 ```
 
 #### Common Role Forms
 
 공통 역할 16개를 공통 절 계약 `COMMON-DOC-FORM-1` 1.0.0으로 옮기는 규칙은
-[문서 프로토콜](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)이
+[문서 프로토콜](../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)이
 정한다. 옮기는 단위, 구 양식과 빈 절의 거부, 아직 옮기지 않은 역할의 양식,
 예외 조건이 모두 그곳에 있다. 역할별 절 이름은 Registry가 선언하며, 진행
 상황은 SPEC-0212 TSK-0059가 기록한다. 이 표기는 네 저장소 공동 채택을 뜻하지
@@ -151,7 +151,7 @@ lifecycle generation 8부터는 Registry `package_generations.first_package` 이
 그대로 유지하며 옮기지 않습니다.
 Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
 승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
-[SDLC](../00.workspace/02.process/sdlc.md)가 소유합니다.
+[SDLC](../00.workspace/03.process/sdlc.md)가 소유합니다.
 
 #### Registered Identity Shapes
 
@@ -164,10 +164,10 @@ Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 �
 profile의 `required_frontmatter`와 `optional_frontmatter`는 문서가
 선언해야 하는 key를, `common.frontmatter_order`는 순서를,
 `frontmatter_values`는 profile별 literal 제약을,
-[`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json)은
+[`contracts/document-frontmatter.schema.json`](01.contracts/document-frontmatter.schema.json)은
 각 값의 형태를 명시합니다. 작성 행동, 콘텐츠 버전, envelope의 의미는
 공통 Agent 거버넌스
-[문서화 정책](../00.workspace/02.process/documentation-protocol.md#authoring-rules)이
+[문서화 정책](../00.workspace/03.process/documentation-protocol.md#authoring-rules)이
 소유합니다.
 
 Canonical skill은 최상위에 정확히 `name`, `description`, `metadata`만 갖는
@@ -240,10 +240,10 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 #### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
-- [Template catalog](./templates/README.md)
-- [Canonical agent governance home ADR](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
-- [문서 작성 계약](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [README 템플릿](templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+- [Template catalog](02.templates/README.md)
+- [Canonical agent governance home ADR](../00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md)
+- [문서 작성 계약](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
 

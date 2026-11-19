@@ -50,6 +50,10 @@ GIT_REAP_TIMEOUT_SECONDS = 1.0
 GIT_STREAM_CHUNK_BYTES = 64 * 1024
 
 _PACKAGE_PATH = re.compile(r"(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)")
+_TASKS_DIRECTORY = "01.tasks"
+_CONTRACTS_DIRECTORY = "02.contracts"
+# A base snapshot before SPEC-0212-TSK-0096 keeps Tasks in the unnumbered folder.
+_SNAPSHOT_TASK_DIRECTORIES = frozenset({_TASKS_DIRECTORY, "tasks"})
 _TASK_PATH = re.compile(r"tsk-(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)\.md")
 _SPEC_ID = re.compile(r"SPEC-[0-9]{4}")
 _PLAN_ID = re.compile(r"SPEC-[0-9]{4}-PLAN-[0-9]{4}")
@@ -88,7 +92,7 @@ _EXPECTED_PROFILES = {
         "plan",
     ),
     "task": (
-        "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
+        "docs/03.specs/{package_number:4}-{slug}/01.tasks/tsk-{task_number:4}-{slug}.md",
         "SPEC-{package_number:4}-TSK-{task_number:4}",
         "package-member",
         "task",
@@ -596,6 +600,14 @@ def _core_table_rows(
     return tuple(projected)
 
 
+def _snapshot_folder_pattern(path_pattern: str) -> str:
+    """The same profile route as a pre-SPEC-0212-TSK-0096 Registry wrote it."""
+
+    return path_pattern.replace(f"/{_TASKS_DIRECTORY}/", "/tasks/").replace(
+        f"/{_CONTRACTS_DIRECTORY}/", "/contracts/"
+    )
+
+
 def _validate_registry_contract(registry: DocumentRegistry) -> None:
     for profile_id, expected in _EXPECTED_PROFILES.items():
         profile = registry.profiles.get(profile_id)
@@ -603,7 +615,8 @@ def _validate_registry_contract(registry: DocumentRegistry) -> None:
             raise SpecPackageError(f"Stage 99 profile is missing: {profile_id}")
         path_pattern, artifact_pattern, identity_relation, lifecycle_id = expected
         if (
-            profile.get("path_pattern") != path_pattern
+            profile.get("path_pattern")
+            not in {path_pattern, _snapshot_folder_pattern(path_pattern)}
             or profile.get("artifact_id_pattern") != artifact_pattern
             or profile.get("identity_relation") != identity_relation
             or profile.get("lifecycle_id") != lifecycle_id
@@ -616,10 +629,13 @@ def _validate_registry_contract(registry: DocumentRegistry) -> None:
             raise SpecPackageError(f"Stage 99 lifecycle is missing: {lifecycle_id}")
     for filename, profile_id in _CONTRACT_PROFILES.items():
         profile = registry.profiles.get(profile_id)
-        expected_path = "docs/03.specs/{package_number:4}-{slug}/contracts/" + filename
+        expected_path = (
+            "docs/03.specs/{package_number:4}-{slug}/02.contracts/" + filename
+        )
         if (
             not isinstance(profile, Mapping)
-            or profile.get("path_pattern") != expected_path
+            or profile.get("path_pattern")
+            not in {expected_path, _snapshot_folder_pattern(expected_path)}
             or profile.get("frontmatter_policy") != "absent"
         ):
             raise SpecPackageError(
@@ -2223,7 +2239,7 @@ def _v6_cancelled_task(
 # A repository path in a code span. Promotion Map prose that names a target
 # without one ("the glossary") and a package-local link are not read.
 _PROMOTION_TARGET = re.compile(
-    r"`((?!tasks/|contracts/)[^`\s]+/[^`\s/]+\.(?:md|json|ya?ml|py|sh|toml))`"
+    r"`((?!01\.tasks/|02\.contracts/)[^`\s]+/[^`\s/]+\.(?:md|json|ya?ml|py|sh|toml))`"
 )
 
 
@@ -2773,7 +2789,7 @@ def _load_contracts(
 ) -> tuple[tuple[pathlib.PurePosixPath, ...], _LoadBudget]:
     descriptor, snapshot = _open_directory_at(
         package_descriptor,
-        "contracts",
+        _CONTRACTS_DIRECTORY,
         "Stage 03 contracts",
     )
     try:
@@ -2794,10 +2810,10 @@ def _load_contracts(
                 "Stage 03 executable contract",
                 current,
             )
-            contracts.append(relative_package / "contracts" / name)
+            contracts.append(relative_package / _CONTRACTS_DIRECTORY / name)
         _verify_directory_entry(
             package_descriptor,
-            "contracts",
+            _CONTRACTS_DIRECTORY,
             descriptor,
             snapshot,
             "Stage 03 contracts",
@@ -2818,7 +2834,7 @@ def _load_tasks(
 ) -> tuple[tuple[SpecDocument, ...], _LoadBudget]:
     descriptor, snapshot = _open_directory_at(
         package_descriptor,
-        "tasks",
+        _TASKS_DIRECTORY,
         "Stage 03 tasks",
     )
     try:
@@ -2841,11 +2857,11 @@ def _load_tasks(
                     f"duplicate Task number in Stage 03 package: {task_number}"
                 )
             seen_numbers.add(task_number)
-            relative = relative_package / "tasks" / name
+            relative = relative_package / _TASKS_DIRECTORY / name
             task, current = _parse_document(
                 descriptor,
                 name,
-                package_path / "tasks" / name,
+                package_path / _TASKS_DIRECTORY / name,
                 relative,
                 profile_id="task",
                 expected_artifact_id=f"SPEC-{package_number}-TSK-{task_number}",
@@ -2855,7 +2871,7 @@ def _load_tasks(
             tasks.append(task)
         _verify_directory_entry(
             package_descriptor,
-            "tasks",
+            _TASKS_DIRECTORY,
             descriptor,
             snapshot,
             "Stage 03 tasks",
@@ -2891,7 +2907,13 @@ def _load_package(
             limit_message="Stage 03 package contains too many entries",
             budget=budget,
         )
-        allowed = {"README.md", "spec.md", "plan.md", "tasks", "contracts"}
+        allowed = {
+            "README.md",
+            "spec.md",
+            "plan.md",
+            _TASKS_DIRECTORY,
+            _CONTRACTS_DIRECTORY,
+        }
         for name in entries:
             if name in _FORBIDDEN_PACKAGE_ROLES:
                 raise SpecPackageError(f"forbidden Stage 03 package role: {name}")
@@ -2931,7 +2953,7 @@ def _load_package(
             )
             _validate_plan_parents(plan, spec.artifact_id)
         tasks: tuple[SpecDocument, ...] = ()
-        if "tasks" in entries:
+        if _TASKS_DIRECTORY in entries:
             tasks, current = _load_tasks(
                 descriptor,
                 package,
@@ -2987,7 +3009,7 @@ def _load_package(
                 current_contracts=current_contracts,
             )
         contracts: tuple[pathlib.PurePosixPath, ...] = ()
-        if "contracts" in entries:
+        if _CONTRACTS_DIRECTORY in entries:
             contracts, current = _load_contracts(
                 descriptor,
                 package,
@@ -3960,7 +3982,7 @@ def _snapshot_document(
     elif len(path.parts) == 4 and path.name == "plan.md":
         profile_id = "plan"
         artifact_id = f"SPEC-{number}-PLAN-0001"
-    elif len(path.parts) == 5 and path.parts[3] == "tasks":
+    elif len(path.parts) == 5 and path.parts[3] in _SNAPSHOT_TASK_DIRECTORIES:
         match = _TASK_PATH.fullmatch(path.name)
         if match is None:
             raise SpecPackageError(f"base Task path is not canonical: {path}")
@@ -4002,6 +4024,10 @@ def _snapshot_document(
     parent_ids = tuple(parent for parent in parents if isinstance(parent, str))
     if len(parent_ids) != len(parents):
         raise SpecPackageError(f"base Spec Package parents are malformed: {path}")
+    if profile_id == "task" and path.parts[3] != _TASKS_DIRECTORY:
+        # A pre-SPEC-0212-TSK-0096 snapshot keeps the Task under `tasks/`; it is
+        # compared with the same Task at its current numbered path.
+        path = pathlib.PurePosixPath(*path.parts[:3], _TASKS_DIRECTORY, *path.parts[4:])
     return SpecDocument(
         path,
         profile_id,
@@ -4070,7 +4096,9 @@ def _load_base_spec_packages(
             and _PACKAGE_PATH.fullmatch(path.parts[2]) is not None
             and (
                 path.name in {"spec.md", "plan.md"}
-                or (len(path.parts) == 5 and path.parts[3] == "tasks")
+                or (
+                    len(path.parts) == 5 and path.parts[3] in _SNAPSHOT_TASK_DIRECTORIES
+                )
             )
         ):
             continue
@@ -5141,18 +5169,35 @@ def _require_first_parent_order(
         )
 
 
+def _snapshot_member_path(path: pathlib.PurePosixPath) -> pathlib.PurePosixPath:
+    """The same package member as a pre-SPEC-0212-TSK-0096 commit stored it."""
+
+    parts = path.parts
+    if len(parts) == 5 and parts[3] in {_TASKS_DIRECTORY, _CONTRACTS_DIRECTORY}:
+        folder = "tasks" if parts[3] == _TASKS_DIRECTORY else "contracts"
+        return pathlib.PurePosixPath(*parts[:3], folder, parts[4])
+    return path
+
+
 def _git_reconciliation_document(
     root: pathlib.Path, commit: str, path: pathlib.PurePosixPath
 ) -> SpecDocument:
-    try:
-        payload = _bounded_git(
-            root, "show", f"{commit}:{path.as_posix()}", byte_limit=MAX_SPEC_FILE_BYTES
-        )
-        text = payload.decode("utf-8")
-    except (SpecPackageError, UnicodeDecodeError) as error:
-        raise SpecPackageError(
-            "lifecycle reconciliation commit tree is incomplete"
-        ) from error
+    text = None
+    for candidate in dict.fromkeys((path, _snapshot_member_path(path))):
+        try:
+            payload = _bounded_git(
+                root,
+                "show",
+                f"{commit}:{candidate.as_posix()}",
+                byte_limit=MAX_SPEC_FILE_BYTES,
+            )
+            text = payload.decode("utf-8")
+        except (SpecPackageError, UnicodeDecodeError):
+            continue
+        path = candidate
+        break
+    if text is None:
+        raise SpecPackageError("lifecycle reconciliation commit tree is incomplete")
     document = _snapshot_document(
         path,
         text,
@@ -5168,6 +5213,17 @@ def _git_reconciliation_document(
 def _git_optional_reconciliation_document(
     root: pathlib.Path, commit: str, path: pathlib.PurePosixPath
 ) -> SpecDocument | None:
+    # A pre-SPEC-0212-TSK-0096 commit keeps the member under its unnumbered
+    # folder; the document is still read and reported by its current path.
+    for candidate in dict.fromkeys((path, _snapshot_member_path(path))):
+        if _git_reconciliation_member_exists(root, commit, candidate):
+            return _git_reconciliation_document(root, commit, path)
+    return None
+
+
+def _git_reconciliation_member_exists(
+    root: pathlib.Path, commit: str, path: pathlib.PurePosixPath
+) -> bool:
     try:
         listing = _bounded_git(
             root,
@@ -5184,7 +5240,7 @@ def _git_optional_reconciliation_document(
         ) from error
     rows = tuple(row for row in listing.split(b"\0") if row)
     if not rows:
-        return None
+        return False
     if len(rows) != 1:
         raise SpecPackageError("lifecycle reconciliation commit tree is malformed")
     try:
@@ -5202,7 +5258,7 @@ def _git_optional_reconciliation_document(
         or _RECOVERY_COMMIT.fullmatch(object_name) is None
     ):
         raise SpecPackageError("lifecycle reconciliation commit tree is malformed")
-    return _git_reconciliation_document(root, commit, path)
+    return True
 
 
 def _require_reconciliation_task_identity(task: SpecDocument, artifact_id: str) -> None:

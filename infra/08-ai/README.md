@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -94,12 +94,12 @@ Ollama와 ComfyUI는 소유자가 확인한 상시 HOME 역량입니다. 런타�
 
 ### Selected Start
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
-1. Ollama Usage Guide(`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)를 읽습니다.
-2. RAG Workflow Guide(`docs/05.operations/guides/09-ai-and-search/0059-rag-workflow.md`)를 따릅니다. Open WebUI LAB은 `docs/05.operations/guides/15-labs/0057-open-webui.md`가 다룹니다.
-3. GPU, 모델, 접근, 로깅 통제는 운영 정책 색인(`docs/05.operations/policies/README.md`)에서 확인합니다.
-4. NVIDIA 드라이버와 OOM 트러블슈팅은 AI Runbooks(`docs/05.operations/runbooks/README.md`)를 참고합니다.
+1. Ollama Usage Guide(`docs/05.operations/01.guides/09.ai-and-search/0056-ollama.md`)를 읽습니다.
+2. RAG Workflow Guide(`docs/05.operations/01.guides/09.ai-and-search/0059-rag-workflow.md`)를 따릅니다. Open WebUI LAB은 `docs/05.operations/01.guides/15.labs/0057-open-webui.md`가 다룹니다.
+3. GPU, 모델, 접근, 로깅 통제는 운영 정책 색인(`docs/05.operations/02.policies/README.md`)에서 확인합니다.
+4. NVIDIA 드라이버와 OOM 트러블슈팅은 AI Runbooks(`docs/05.operations/03.runbooks/README.md`)를 참고합니다.
 
 5. RAG에서 참조하기 전에는 항상 `ollama pull <model>`로 모델을 명시적으로 내려받습니다.
 6. 동시 추론 중 OOM을 방지하기 위해 `ollama-exporter`로 VRAM 사용량을 모니터링합니다.
@@ -130,7 +130,7 @@ docker compose exec ollama ollama list
 | `ollama`, `ollama-exporter` | HOME | `ai`, `ai-llm`, `ollama` |
 | `comfyui` | HOME | `ai`, `ai-image` |
 
-안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)입니다. 정확한 Stage 05 대상은 `docs/05.operations/guides/09-ai-and-search/0056-ollama.md`의 `GDE/POL/RUN-0056`, `.../0081-comfyui/`의 `GDE/POL/RUN-0081`입니다.
+안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)입니다. 정확한 Stage 05 대상은 `docs/05.operations/01.guides/09.ai-and-search/0056-ollama.md`의 `GDE/POL/RUN-0056`, `.../0081-comfyui/`의 `GDE/POL/RUN-0081`입니다.
 
 #### 선택적 지식·실험 관리
 
@@ -151,16 +151,16 @@ provider 자격 증명을 읽지 못할 수 있습니다. provider egress는 별
 #### Runbook Links
 
 - [infra/README.md](../README.md)
-- Operations guides - 08-ai (`docs/05.operations/guides/README.md`)
-- Operations policies - 08-ai (`docs/05.operations/policies/README.md`)
-- Operations runbooks - 08-ai (`docs/05.operations/runbooks/README.md`)
-- GPU 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0055-gpu-recovery.md`)
-- Ollama 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`, RUN-0056)
-- ComfyUI 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`, RUN-0081)
-- Open Notebook 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md`, RUN-0073)
-- Crawl4AI 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md`, RUN-0091)
-- SearXNG 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0110-searxng.md`, RUN-0110)
-- MLflow 복구 런북 (`docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`, RUN-0088)
+- Operations guides - 08-ai (`docs/05.operations/01.guides/README.md`)
+- Operations policies - 08-ai (`docs/05.operations/02.policies/README.md`)
+- Operations runbooks - 08-ai (`docs/05.operations/03.runbooks/README.md`)
+- GPU 복구 런북 (`docs/05.operations/03.runbooks/09.ai-and-search/0055-gpu-recovery.md`)
+- Ollama 복구 런북 (`docs/05.operations/03.runbooks/09.ai-and-search/0056-ollama.md`, RUN-0056)
+- ComfyUI 복구 런북 (`docs/05.operations/03.runbooks/09.ai-and-search/0081-comfyui.md`, RUN-0081)
+- Open Notebook 복구 런북 (`docs/05.operations/03.runbooks/09.ai-and-search/0073-open-notebook.md`, RUN-0073)
+- Crawl4AI 복구 런북 (`docs/05.operations/03.runbooks/09.ai-and-search/0091-crawl4ai.md`, RUN-0091)
+- SearXNG 복구 런북 (`docs/05.operations/03.runbooks/09.ai-and-search/0110-searxng.md`, RUN-0110)
+- MLflow 복구 런북 (`docs/05.operations/03.runbooks/13.analytics-and-data-quality/0088-mlflow.md`, RUN-0088)
 - [Documentation index](../../docs/README.md)
 
 #### Observability and Recovery

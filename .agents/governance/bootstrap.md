@@ -1,10 +1,10 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.10.0"
+version: "1.10.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Agent Bootstrap Policy
@@ -99,7 +99,7 @@ None: this document states no exclusion.
    Spec Package plus its current Task. Before changing a file in a folder or
    below it, read the nearest ancestor folder `AGENTS.md`; it routes to the
    canonical owners above and adds no authority. The
-   [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)
+   [documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd)
    decides which folders carry one.
 5. Execute the applicable registered gates and record evidence in that Task.
 
@@ -113,7 +113,7 @@ Loading governing stage documents and the current Task is scoped execution
 context, not permission for outside-docs instructions to depend on an individual
 stage document. Current agent rules live in their canonical governance owner;
 README navigation, historical provenance and typed machine inputs follow the
-[documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md#entry-point-for-documents-outside-docs).
+[documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs).
 
 #### Authority and Precedence
 
@@ -150,7 +150,7 @@ history is the record of what was removed.
   guidance are written in English; every `README.md` is Korean. Native
   syntax, quotations, and preserved evidence keep their form, and each
   document's language follows the
-  [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md#document-language).
+  [documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md#document-language).
 - Stage documents are read-only unless the request authorizes change.
 - Keep root shims concise.
 - Never write plaintext credentials or secret values.
@@ -162,7 +162,7 @@ history is the record of what was removed.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -174,8 +174,8 @@ None: no exception exists to approve.
 
 #### Verification Routing
 
-Use [task-checklists.md](../../docs/00.workspace/03.quality/task-checklists.md) for completion and
-[approval-boundaries.md](../../docs/00.workspace/02.process/approval-boundaries.md) for protected surfaces. Stage
+Use [task-checklists.md](../../docs/00.workspace/04.quality/task-checklists.md) for completion and
+[approval-boundaries.md](../../docs/00.workspace/04.quality/approval-boundaries.md) for protected surfaces. Stage
 99 owns document shapes; registered scripts own executable checks.
 
 ### Limits
@@ -193,13 +193,13 @@ The Requirements prose ties no named check, gate or review to any of its rules.
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
 - [Governance navigation](../README.md)
-- [Completion checklist](../../docs/00.workspace/03.quality/task-checklists.md)
-- [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md)
-- [Documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)
+- [Completion checklist](../../docs/00.workspace/04.quality/task-checklists.md)
+- [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)
+- [Documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)

@@ -1,10 +1,10 @@
 ---
 title: "Operations Agent Guide"
-version: "0.4.1"
+version: "0.4.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Operations Agent Guide
@@ -19,7 +19,7 @@ Stage 05 holds operator knowledge: Guides, Policies, Runbooks and incident
 packets. This guide routes an agent that authors them or responds to an
 incident. The human guide is [README.md](README.md).
 
-`guides/`, `policies/`, `runbooks/` (by numbered family), `incidents/<year>/`
+`01.guides/`, `02.policies/`, `03.runbooks/` (by numbered family), `04.incidents/<year>/`
 and their READMEs.
 
 #### Non-goals
@@ -31,7 +31,7 @@ execution belongs to the Stage 03 Task.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -41,8 +41,8 @@ canonical governance or a Stage contract.
 ### Intake
 
 - [Bootstrap](../../.agents/governance/bootstrap.md),
-  [documentation protocol](../00.workspace/02.process/documentation-protocol.md),
-  [approval boundaries](../00.workspace/02.process/approval-boundaries.md),
+  [documentation protocol](../00.workspace/03.process/documentation-protocol.md),
+  [approval boundaries](../00.workspace/04.quality/approval-boundaries.md),
   [environment constraints](../../.agents/governance/environment-constraints.md).
 - Roles: [`doc-writer`](../../.agents/roles/doc-writer.md),
   [`incident-responder`](../../.agents/roles/incident-responder.md).
@@ -58,14 +58,14 @@ canonical governance or a Stage contract.
 #### Inspect and Change
 
 - Author from the operations templates:
-  [guide](../99.templates/templates/operations/guide.template.md),
-  [policy](../99.templates/templates/operations/policy.template.md),
-  [runbook](../99.templates/templates/operations/runbook.template.md),
-  [incident](../99.templates/templates/operations/incident.template.md),
-  [postmortem](../99.templates/templates/operations/postmortem.template.md).
+  [guide](../99.templates/02.templates/05.operations/guide.template.md),
+  [policy](../99.templates/02.templates/05.operations/policy.template.md),
+  [runbook](../99.templates/02.templates/05.operations/runbook.template.md),
+  [incident](../99.templates/02.templates/05.operations/incident.template.md),
+  [postmortem](../99.templates/02.templates/05.operations/postmortem.template.md).
   Identities are `GDE-####`, `POL-####`, `RUN-####` and `inc-YYYY-####`.
 - Store incident packets only at
-  `incidents/<year>/inc-####-<slug>/incident.md` and `postmortem.md`.
+  `04.incidents/<year>/inc-####-<slug>/incident.md` and `postmortem.md`.
 
 #### Local Obligations
 
@@ -82,7 +82,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../00.workspace/02.process/approval-boundaries.md)
+[approval boundaries](../00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions
@@ -118,4 +118,4 @@ Record progress, decisions and evidence in the current Task, and leave the
 next owner named there. Human-facing and related documents:
 
 - [Operations README](README.md)
-- [Runbook template](../99.templates/templates/operations/runbook.template.md)
+- [Runbook template](../99.templates/02.templates/05.operations/runbook.template.md)

@@ -1,10 +1,10 @@
 ---
 title: "sample-web-service"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # sample-web-service
@@ -120,10 +120,10 @@ sample-web-service/
 
 #### Related Documents
 
-- README template (`docs/99.templates/templates/common/readme-package.template.md`)
-- Spec contract template (`docs/99.templates/templates/specs/spec.template.md`)
-- New-service onboarding guide (`docs/05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md`)
-- Release management runbook (`docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md`)
+- README template (`docs/99.templates/02.templates/93.common/readme-package.template.md`)
+- Spec contract template (`docs/99.templates/02.templates/03.specs/spec.template.md`)
+- New-service onboarding guide (`docs/05.operations/01.guides/10.platform-and-backup/0008-new-service-onboarding.md`)
+- Release management runbook (`docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md`)
 - [Documentation index](../../docs/README.md)
 
 #### Service Readiness

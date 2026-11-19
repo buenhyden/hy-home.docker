@@ -1,10 +1,10 @@
 ---
 title: "Analytics Services Requirements"
-version: "1.6.0"
+version: "1.6.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0005"
 created: "2026-03-26"
@@ -124,9 +124,9 @@ Each condition is judged by reviewing the documented engine boundaries and the a
 
 #### Downstream Links
 
-- **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
+- **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/01.descriptions/0012-data-analytics-architecture.md)
 - **Spec**: [SPEC-0262 analytics LAB migration](../03.specs/0262-analytics-labs-migration/spec.md); SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks) is retired and its body is in version history.
-- **Guide**: [Operations guides](../05.operations/guides/README.md)
-- **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/decisions/0062-home-lab-membership.md) (supersedes ADR-0015), [0047-dev-timescale-influx-retirement-and-load-tools.md](../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
+- **Guide**: [Operations guides](../05.operations/01.guides/README.md)
+- **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/02.decisions/0062-home-lab-membership.md) (supersedes ADR-0015), [0047-dev-timescale-influx-retirement-and-load-tools.md](../02.architecture/02.decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
 - **SPEC-0265** (retired; version history) captured the Hermes report source; ADR-0060 holds the contract.
 - **Retired domain Spec SPEC-0005** (data-analytics): replaced by the data-analytics guides, policies and runbooks in the operations catalog under `docs/05.operations/`.

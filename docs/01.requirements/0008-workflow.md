@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Requirements"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0008"
 created: "2026-03-26"
@@ -114,10 +114,10 @@ Rendered-configuration conditions (REQ-0008-FR-0001, REQ-0008-FR-0002, the task-
 
 #### Downstream Links
 
-- **Architecture Description**: [0007-workflow-architecture.md](../02.architecture/descriptions/0007-workflow-architecture.md)
-- **Guide**: [airflow.md](../05.operations/guides/08-workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/guides/08-workflows-and-automation/0053-n8n.md)
-- **Policy**: [airflow.md](../05.operations/policies/08-workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/policies/08-workflows-and-automation/0053-n8n.md)
-- **Runbook**: [airflow.md](../05.operations/runbooks/08-workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md)
-- **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
+- **Architecture Description**: [0007-workflow-architecture.md](../02.architecture/01.descriptions/0007-workflow-architecture.md)
+- **Guide**: [airflow.md](../05.operations/01.guides/08.workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/01.guides/08.workflows-and-automation/0053-n8n.md)
+- **Policy**: [airflow.md](../05.operations/02.policies/08.workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/02.policies/08.workflows-and-automation/0053-n8n.md)
+- **Runbook**: [airflow.md](../05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md)
+- **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../02.architecture/02.decisions/0007-airflow-n8n-hybrid-workflow.md)
 - **Retired domain Spec SPEC-0008** (workflow): replaced by the workflow guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
 - **Retired requirement REQ-0019** (workflow optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the workflow operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

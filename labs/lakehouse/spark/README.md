@@ -1,10 +1,10 @@
 ---
 title: "Spark (Iceberg)"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-23"
 ---
 
@@ -128,9 +128,9 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 
 #### Runbook Links
 
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/01.guides/15.labs/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/02.policies/15.labs/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/03.runbooks/15.labs/0094-lakehouse.md`)
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
 
@@ -153,6 +153,6 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 | Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
 | Secret refs | `lab_lakehouse_s3_lakehouse_secret_key` -> `seaweedfs_s3_lakehouse_secret_key` |
 | Healthcheck | 선언되지 않음(one-shot job) |
-| Operations | Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`), Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`) |
+| Operations | Guide (`docs/05.operations/01.guides/15.labs/0094-lakehouse.md`), Policy (`docs/05.operations/02.policies/15.labs/0094-lakehouse.md`), Runbook (`docs/05.operations/03.runbooks/15.labs/0094-lakehouse.md`) |
 | Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
 | Troubleshooting | 활성 lease 안에서 기본 명령으로 catalog 접근을 확인한 뒤 runbook을 따름 |

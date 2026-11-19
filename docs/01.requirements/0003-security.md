@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security) Requirements"
-version: "1.5.0"
+version: "1.5.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0003"
 created: "2026-03-26"
@@ -165,11 +165,11 @@ consumer owner sets any unspecified threshold before measurement.
 
 #### Downstream Links
 
-- [Security architecture description](../02.architecture/descriptions/0003-security-architecture.md)
+- [Security architecture description](../02.architecture/01.descriptions/0003-security-architecture.md)
 - [SPEC-0204: Service integration and security](../03.specs/0204-service-integration-security-and-operations/spec.md)
-- [OpenBao policy](../05.operations/policies/04-security-and-secrets/0085-openbao.md)
-- [OpenBao runbook](../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
-- [ADR-0050: OpenBao as secrets manager](../02.architecture/decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0003
+- [OpenBao policy](../05.operations/02.policies/04.security-and-secrets/0085-openbao.md)
+- [OpenBao runbook](../05.operations/03.runbooks/04.security-and-secrets/0085-openbao.md)
+- [ADR-0050: OpenBao as secrets manager](../02.architecture/02.decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0003
 - Retired domain Spec SPEC-0003 (security): replaced by the security guides,
   policies and runbooks under `docs/05.operations/`.
 - Retired requirement REQ-0015 (security optimization hardening): retired under

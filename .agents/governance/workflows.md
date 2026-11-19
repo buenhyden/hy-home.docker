@@ -1,6 +1,6 @@
 ---
 title: "Workflows"
-version: "1.7.0"
+version: "1.8.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -35,18 +35,14 @@ Every repository change follows one lifecycle:
    routine human approval. Required approval and read-only `rules-engineer`
    policy review are resolved before a protected mutation begins. The
    authorization source is owned by
-   [approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records);
+   [approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records);
    Task records describe evidence and never authenticate it.
 4. **Implement** — the assigned contributor changes only approved scope.
 5. **Validate** — `qa-engineer` runs focused checks and any applicable
    repository Gate; a configured hook is supporting evidence, not approval.
-6. **Review by risk** — a high-risk change gets an independent review: a
-   read-only reviewer who did not implement it evaluates the exact diff and
-   verification evidence. A medium-risk change gets one primary review by
-   a read-only reviewer in a fresh context who did not write it. A low-risk
-   change closes with the focused checks and an author check recorded in the
-   Task; it needs no second reviewer. [Review risk](#review-risk) defines
-   the three classes.
+6. **Review by risk** — the change gets the review its class requires under
+   the [review risk standard](../../docs/00.workspace/04.quality/quality-standards.md#11-review-risk);
+   [Review risk](#review-risk) below is how an agent runs it.
 7. **Evidence** — the Task records commands, results, recovery, skipped checks
    with rationale, review disposition, and remaining uncertainty.
 8. **Handoff** — `workflow-supervisor` reports the next owner or completion
@@ -66,28 +62,14 @@ cannot broaden it.
 
 ### Review Risk
 
-A change is high-risk when it touches a
-[protected surface](../../docs/00.workspace/02.process/approval-boundaries.md#enforcement), changes a policy, role, skill,
-shared contract or Registry rule, changes validator, gate or hook behavior,
-or performs a security, secret, remote, runtime or data action. A change
-that meets none of those but changes executable code or tests, such as a
-new operations command or its tests, is medium-risk. Every other change is
-low-risk: an ordinary document or README edit, a Task evidence or
-acceptance record, or a Stage 01 to 05 prose correction that changes no
-rule.
-
-A high-risk change gets one independent review as below, with any boundary
-specialist review it needs. A medium-risk change gets one primary review: a
-read-only reviewer in a fresh context who did not write it reviews the diff,
-the governing criteria and the recorded check results against the
-[diff review checklist](../prompts/diff-review.md), with no specialist
-unless an actual boundary appears. A low-risk change closes with its focused
-checks and an author check in the Task that names what was compared and
-what was not checked; the author check is not called independent review.
-When the class is unclear, take the higher class. A reviewer does not rerun
-a check whose input is unchanged, and an evidence-only commit after review
-needs no new review. A review run after merge is recorded as such, and its
-findings are fixed or recorded in the owning Task.
+The [review risk standard](../../docs/00.workspace/04.quality/quality-standards.md#11-review-risk)
+owns the three classes and the review each requires. An agent applies it
+this way: `workflow-supervisor` takes the higher class when unsure, assigns a
+high-risk independent reviewer or a medium-risk primary reviewer who did not
+write the change, and hands the reviewer the exact diff, the governing
+criteria and the recorded check results with the
+[diff review checklist](../prompts/diff-review.md). A low-risk author check
+is recorded in the Task and is not called independent review.
 
 A reviewer counts as read-only only where its runtime enforces it. When a
 spawned reviewer would run with its parent's write access, or enforcement
@@ -139,7 +121,7 @@ current operation.
 
 ### SDLC Workflow
 
-The [SDLC sequence](../../docs/00.workspace/02.process/sdlc.md#sequence) owns the stage order. `sdlc.md` owns stage boundaries, the Stage 99 registry owns document shapes
+The [SDLC sequence](../../docs/00.workspace/03.process/sdlc.md#sequence) owns the stage order. `sdlc.md` owns stage boundaries, the Stage 99 registry owns document shapes
 and lifecycle values, and `scripts/` owns executable validation.
 
 ### Supporting Workflows
@@ -151,7 +133,7 @@ and lifecycle values, and `scripts/` owns executable validation.
 - Incident: response record -> corrective Task routed to its canonical stage.
 - Governance: source change -> validation -> regeneration -> independent review.
 
-The [execution boundary](../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary) owns the
+The [execution boundary](../../docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary) owns the
 only approved all-files pre-commit route and its clean linked-worktree,
 Task, prefix, and Git-visible-state conditions. Workflows does not create a
 second local invocation path.
@@ -172,7 +154,7 @@ Task-owned commands, results, review disposition, sanitized evidence, and the ne
 
 ## Related Documents
 
-- [SDLC](../../docs/00.workspace/02.process/sdlc.md)
+- [SDLC](../../docs/00.workspace/03.process/sdlc.md)
 - [Agentic policy](agentic.md)
 - [Stage authoring matrix](../../docs/00.workspace/01.project/stage-authoring-matrix.md)
 - [Provider capability matrix](provider-capability-matrix.md)

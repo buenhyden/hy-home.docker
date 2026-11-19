@@ -1,10 +1,10 @@
 ---
 title: "Cassandra LAB"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -119,7 +119,7 @@ host-level HA를 증명하지 않습니다. 정적 render 통과는 실행·인�
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
-- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0025 cassandra, RUN-0107 lab-promotion
+- [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0025 cassandra, RUN-0107 lab-promotion
 
 #### Observability and Recovery
 

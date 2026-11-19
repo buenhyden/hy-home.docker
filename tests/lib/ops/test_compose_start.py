@@ -26,7 +26,7 @@ class ComposeStartTests(unittest.TestCase):
         (scripts / "start.sh").write_text("#!/bin/sh\n", encoding="utf-8")
         policy = (
             self.root
-            / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+            / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
         )
         policy.parent.mkdir(parents=True)
         policy.write_text(

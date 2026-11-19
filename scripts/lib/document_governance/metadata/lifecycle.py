@@ -61,6 +61,7 @@ from scripts.lib.document_governance.metadata.profile import (
     infer_artifact_type,
     registered_generated_owner,
 )
+from scripts.lib.document_governance.numbered_folders import pre_numbered_path
 from scripts.lib.document_governance.operations_catalog import (
     OperationsAuthorityError,
     read_bounded_regular,
@@ -1071,6 +1072,30 @@ def _verified_moved_baseline(
     return Record(target, previous, profile_id, frontmatter_present=True), text
 
 
+def _numbered_folder_moved_baseline(
+    root: pathlib.Path,
+    target: pathlib.Path,
+    profiles: Mapping[str, object],
+    base_ref: str | None,
+) -> tuple[Record | None, str | None]:
+    """Recover a document moved by the numbered-folder cutover (SPEC-0212-TSK-0096).
+
+    The predecessor is the same basename at the pre-numbering route; its type
+    and identity must match, as for every other verified move.
+    """
+
+    registry = profiles.get("_registry")
+    if not isinstance(registry, DocumentRegistry) or not base_ref:
+        return None, None
+    source = pathlib.Path(pre_numbered_path(pathlib.PurePosixPath(target.as_posix())))
+    profile_id = classify_registered_path(target.as_posix(), registry)
+    if source.as_posix() == target.as_posix() or profile_id is None:
+        return None, None
+    return _verified_moved_baseline(
+        root, target, source, profiles, registry, profile_id, base_ref
+    )
+
+
 # ADR-0057 moved every Operations member out of the domain catalog.
 _OPERATIONS_ROLE_PROFILES = frozenset({"guide", "policy", "runbook"})
 _RETIRED_OPERATIONS_CATALOG = "docs/05.operations/catalog/"  # retired-route-record
@@ -1131,7 +1156,7 @@ def _operations_moved_body_baseline(
                 and record.path != target
                 and record.path.name == target.name
                 and record.path.parent.parent == target.parent.parent
-                and re.fullmatch(r"[0-9]{2}-[a-z0-9-]+", record.path.parent.name)
+                and re.fullmatch(r"[0-9]{2}[.-][a-z0-9-]+", record.path.parent.name)
                 is not None
             )
             or (
@@ -1478,7 +1503,7 @@ def collect_records(
 
 CO_LOCATED_TASK_PATH = re.compile(
     r"docs/03\.specs/[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?"
-    r"/tasks/tsk-[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?\.md"
+    r"/01\.tasks/tsk-[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?\.md"
 )
 
 

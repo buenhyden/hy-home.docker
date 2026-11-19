@@ -1,10 +1,10 @@
 ---
 title: "Native Memory Controlled Verification"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0244"
 parent_ids:
@@ -150,10 +150,10 @@ separately scoped authorization.
 ### Normative and Evidence
 
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
-- [AD-0027](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
-- [ADR-0049](../../02.architecture/decisions/0049-shared-agent-memory-store.md)
+- [AD-0027](../../00.workspace/02.architecture/01.descriptions/0027-agent-governance-canonical-adapter.md)
+- [ADR-0049](../../00.workspace/02.architecture/02.decisions/0049-shared-agent-memory-store.md)
 - [Plan](plan.md)
-- [Task](tasks/tsk-0001-native-memory-controlled-verification.md)
+- [Task](01.tasks/tsk-0001-native-memory-controlled-verification.md)
 
 ### Historical and Navigation
 

@@ -1,10 +1,10 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.4.2"
+version: "0.4.3"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Architecture Agent Guide
@@ -31,7 +31,7 @@ Stage 03 and Stage 05.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -41,9 +41,9 @@ canonical governance or a Stage contract.
 ### Intake
 
 - [Bootstrap](../../.agents/governance/bootstrap.md),
-  [documentation protocol](../00.workspace/02.process/documentation-protocol.md),
+  [documentation protocol](../00.workspace/03.process/documentation-protocol.md),
   [stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md),
-  [approval boundaries](../00.workspace/02.process/approval-boundaries.md).
+  [approval boundaries](../00.workspace/04.quality/approval-boundaries.md).
 - Roles: [`doc-writer`](../../.agents/roles/doc-writer.md),
   [`rules-engineer`](../../.agents/roles/rules-engineer.md) for governance
   review.
@@ -59,19 +59,19 @@ canonical governance or a Stage contract.
 #### Inspect and Change
 
 - Create a Description from
-  [`description.template.md`](../99.templates/templates/architecture/description.template.md)
+  [`description.template.md`](../99.templates/02.templates/02.architecture/description.template.md)
   and an ADR from
-  [`decision.template.md`](../99.templates/templates/architecture/decision.template.md),
+  [`decision.template.md`](../99.templates/02.templates/02.architecture/decision.template.md),
   under the `architecture-description` and `adr` profiles.
 - A new ADR enters as `proposed`, the initial status of the
   `architecture-decision` lifecycle in the [Registry](../99.templates/registry.json);
-  the [SDLC](../00.workspace/02.process/sdlc.md) owns the ADR states.
+  the [SDLC](../00.workspace/03.process/sdlc.md) owns the ADR states.
 - Replace an accepted ADR only through a separately approved new ADR. Do not
   rewrite an accepted decision body, except when the owner directs an in-place
   amendment; that amendment bumps `version` and records the date and direction
   in the ADR's Follow-up. Per
-  [ADR-0051](decisions/0051-summarize-and-delete-retirement.md) and the
-  [documentation protocol](../00.workspace/02.process/documentation-protocol.md),
+  [ADR-0051](../00.workspace/02.architecture/02.decisions/0051-summarize-and-delete-retirement.md) and the
+  [documentation protocol](../00.workspace/03.process/documentation-protocol.md),
   the new ADR summarizes the replaced decision under a `Supersession`
   heading in Decision `Authority and Effect`, the old
   ADR is deleted in the same change, and its number goes into the Registry
@@ -86,7 +86,7 @@ canonical governance or a Stage contract.
 - ADR-0002's `AI Agent Guidance` subsection is part of that accepted decision
   record, kept as written; current agent working rules come from this guide
   and canonical governance, not from that subsection.
-- Keep the root to `README.md`, `AGENTS.md`, `descriptions/`, `decisions/`
+- Keep the root to `README.md`, `AGENTS.md`, `01.descriptions/`, `02.decisions/`
   and the generated `CLAUDE.md` import shim; the Stage 02 loader rejects any
   other root entry.
 - Do not link a retired identity.
@@ -100,7 +100,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../00.workspace/02.process/approval-boundaries.md)
+[approval boundaries](../00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions
@@ -135,5 +135,5 @@ Record progress, decisions and evidence in the current Task, and leave the
 next owner named there. Human-facing and related documents:
 
 - [Architecture README](README.md)
-- [Description template](../99.templates/templates/architecture/description.template.md)
-- [Decision template](../99.templates/templates/architecture/decision.template.md)
+- [Description template](../99.templates/02.templates/02.architecture/description.template.md)
+- [Decision template](../99.templates/02.templates/02.architecture/decision.template.md)

@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.6.0"
+version: "0.6.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Hermes 수집 전송 소스
@@ -522,13 +522,13 @@ Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습�
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0053: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`
+- RUN-0053: `docs/05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md`
 
 #### Related Documents
 
 - [워크로드 목록](../README.md)
 - [작업 탐색](../../../../../docs/03.specs/README.md): `SPEC-0204-TSK-0022`가 정본입니다.
-- [운영 절차 탐색](../../../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md): `RUN-0053`의 소스 검증·복구 범위를 확인합니다.
+- [운영 절차 탐색](../../../../../docs/05.operations/03.runbooks/08.workflows-and-automation/README.md): `RUN-0053`의 소스 검증·복구 범위를 확인합니다.
 
 #### 상태 대응과 관측
 

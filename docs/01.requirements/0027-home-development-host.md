@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -186,6 +186,6 @@ SPEC-0204, SPEC-0212 and SPEC-0218 list this requirement as a parent.
 
 #### Downstream Links
 
-- [Home and Development Host Architecture](../02.architecture/descriptions/0031-home-development-host.md)
+- [Home and Development Host Architecture](../02.architecture/01.descriptions/0031-home-development-host.md)
 - SPEC-0261 (retired; version history) approved this Requirement and promoted its dependent documents.
 - SPEC-0270 (retired; version history) delivered the shared memory capacity ledger, search and backup source.

@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "2.3.1"
+version: "2.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "operations"
 ---
 
@@ -24,7 +24,7 @@ layer: "operations"
 먼저 무엇이 필요한지로 찾는다. 맥락과 전제를 이해하려면 Guide, 허용 여부와
 승인·보안·예외 경계를 확인하려면 Policy, 실행할 명령 흐름이 필요하면
 Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이다.
-구조 결정은 [ADR-0057](../02.architecture/decisions/0057-operations-role-and-domain-folders.md)이
+구조 결정은 [ADR-0057](../00.workspace/02.architecture/02.decisions/0057-operations-role-and-domain-folders.md)이
 소유한다.
 
 #### Audience
@@ -61,19 +61,19 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 
 | Path | Purpose |
 | --- | --- |
-| [Guides](./guides/README.md) | 정상 운영 이해와 전제 |
-| [Policies](./policies/README.md) | 허용·금지, 승인, 보안, 예외, 검토 |
-| [Runbooks](./runbooks/README.md) | 실행할 명령 흐름, 검증, 복구, 에스컬레이션 |
-| [Incidents](./incidents/README.md) | 사건 사실 기록과 같은 묶음의 Postmortem |
+| [Guides](01.guides/README.md) | 정상 운영 이해와 전제 |
+| [Policies](02.policies/README.md) | 허용·금지, 승인, 보안, 예외, 검토 |
+| [Runbooks](03.runbooks/README.md) | 실행할 명령 흐름, 검증, 복구, 에스컬레이션 |
+| [Incidents](04.incidents/README.md) | 사건 사실 기록과 같은 묶음의 Postmortem |
 
 #### Find by operating scope
 
 | 탐색 범위 | 시작 경로 | 다음 선택 |
 | --- | --- | --- |
-| 전체 시스템 | [Guide 공통 분류](guides/README.md#cross-cutting-system-and-lifecycle) | 시스템 운영 설명, 백업·복구, 업데이트 이해 |
-| 공통 통제 | [Policy 공통 분류](policies/README.md#cross-cutting-system-and-lifecycle) | profile 선택, 자원·보안, 백업, 버전 변경의 허용 경계 |
-| 시스템 절차 | [Runbook 공통 분류](runbooks/README.md#cross-cutting-system-and-lifecycle) | 기동·재부팅, 여러 서비스 동시 장애 진단, 용량·복구·업데이트 |
-| 티어 | [Guide](guides/README.md), [Policy](policies/README.md), [Runbook](runbooks/README.md)의 01–15 분류 | 해당 티어 서비스 subject와 역할별 책임 |
+| 전체 시스템 | [Guide 공통 분류](01.guides/README.md#cross-cutting-system-and-lifecycle) | 시스템 운영 설명, 백업·복구, 업데이트 이해 |
+| 공통 통제 | [Policy 공통 분류](02.policies/README.md#cross-cutting-system-and-lifecycle) | profile 선택, 자원·보안, 백업, 버전 변경의 허용 경계 |
+| 시스템 절차 | [Runbook 공통 분류](03.runbooks/README.md#cross-cutting-system-and-lifecycle) | 기동·재부팅, 여러 서비스 동시 장애 진단, 용량·복구·업데이트 |
+| 티어 | [Guide](01.guides/README.md), [Policy](02.policies/README.md), [Runbook](03.runbooks/README.md)의 01–15 분류 | 해당 티어 서비스 subject와 역할별 책임 |
 | 개별 서비스 | 각 역할 인덱스의 subject 행 | 구현 소유 Guide → 적용 Policy → 실행 Runbook |
 | 작업 공간·공통 연결 | 각 역할 인덱스의 공통 분류 | 개발·운영 도구, network·외부 연계 |
 
@@ -81,10 +81,10 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 도구, 10은 운영 메일, 11은 Quality이며 관리·실험 도구는 기능별 tier에서 찾는다. 13은 공유 UI 검토 자산이며 HOME 기본 선택에 포함되지 않는다. 티어 번호는
 기동 순서가 아니며 공통 주제를 임의 티어에 넣지 않는다. 인증 장애는 시스템
 진단에서 앱 자체 로그인과 proxy 인증으로 나누고, 실제 복구는 해당 서비스
-절차로 넘긴다. 사건 기록은 [Incidents](incidents/README.md)를 사용한다.
+절차로 넘긴다. 사건 기록은 [Incidents](04.incidents/README.md)를 사용한다.
 
 `####`는 문서 자신의 artifact 번호다(`GDE-####`, `POL-####`, `RUN-####`).
-같은 slug는 역할 디렉터리를 넘어 같은 subject를 가리킨다. 도메인은 각 역할 아래의 의미 기반 폴더다. `01`–`15` 접두사는 기존 분류 이름을 유지한 탐색 순서다. LAB 문서는 각 역할의 `15-labs/`에 있고,
+같은 slug는 역할 디렉터리를 넘어 같은 subject를 가리킨다. 도메인은 각 역할 아래의 의미 기반 폴더다. `01`–`15` 접두사는 기존 분류 이름을 유지한 탐색 순서다. LAB 문서는 각 역할의 `15.labs/`에 있고,
 서비스 구현을 소유하는 저장소 루트 `labs/`와 구분한다.
 
 #### Artifact Boundaries
@@ -96,14 +96,14 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 - Incident는 특정 사건의 관찰·영향·대응 타임라인을, Postmortem은 원인·교훈·
   재발 방지 조치를 소유한다.
 - 독자 목적, 역할별 작성 기준, Incident/Postmortem 후속 조치 기준은
-  [공통 Agent 거버넌스 작성 정책](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)이 소유한다.
+  [공통 Agent 거버넌스 작성 정책](../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)이 소유한다.
   Guide의 주된 독자 필요를 본문에 명시하며 Diátaxis의 technical reference를
   Stage 90의 증거 분류와 혼동하지 않는다.
 
 #### External Release Evidence
 
-이 저장소는 [공통 Agent 거버넌스의 external-release-evidence 정책](../00.workspace/02.process/documentation-protocol.md#release-evidence-boundary)을
-사용한다. [runbook 색인](runbooks/README.md)의 platform and backup 항목에 있는 Release Runbook(`RUN-0009`)은
+이 저장소는 [공통 Agent 거버넌스의 external-release-evidence 정책](../00.workspace/03.process/documentation-protocol.md#release-evidence-boundary)을
+사용한다. [runbook 색인](03.runbooks/README.md)의 platform and backup 항목에 있는 Release Runbook(`RUN-0009`)은
 반복 절차를, 현재 Task는 특정 실행의 검증과 결과를 소유한다. CHANGELOG, tag,
 CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
 별도 Release 문서 프로필은 도입하지 않는다.
@@ -126,29 +126,29 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 #### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
-- [Template catalog](../99.templates/templates/README.md)
-- [Documentation protocol](../00.workspace/02.process/documentation-protocol.md)
+- [Template catalog](../99.templates/02.templates/README.md)
+- [Documentation protocol](../00.workspace/03.process/documentation-protocol.md)
 - [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+- [README 템플릿](../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
 
 #### Create and Review
 
-1. 필요한 역할의 인덱스([Guides](./guides/README.md),
-   [Policies](./policies/README.md), [Runbooks](./runbooks/README.md))에서
+1. 필요한 역할의 인덱스([Guides](01.guides/README.md),
+   [Policies](02.policies/README.md), [Runbooks](03.runbooks/README.md))에서
    도메인 분류로 문서를 찾는다.
-2. 정상 운영 맥락과 공통 점검은 `guides/`에 둔다.
-3. 필수·금지 통제, 승인, 예외, 검토 주기는 `policies/`에 둔다.
+2. 정상 운영 맥락과 공통 점검은 `01.guides/`에 둔다.
+3. 필수·금지 통제, 승인, 예외, 검토 주기는 `02.policies/`에 둔다.
 4. 순서 있는 절차, 기대 증거, rollback 또는 recovery, escalation은
-   `runbooks/`에 둔다.
+   `03.runbooks/`에 둔다.
 5. Guide의 `### Runbook Handoff`는 실제 Runbook이 있고 그 절차로 넘겨야 할
    때만 작성한다.
 6. Compose 서비스가 연결된 subject는 Guide/Policy/Runbook 세 역할을 모두
    유지한다. 서비스 연결이 없는 시스템·공통·작업 공간 subject는 필요한 역할만
    등록하고 빈 문서를 만들지 않는다. 공통 내용은 소유 문서로 연결하고 각 서비스의
    적용 조건·예외·차이는 해당 역할 문서에 남긴다.
-7. 사고는 `incidents/<year>/inc-####-<slug>/` 아래에 기록한다.
+7. 사고는 `04.incidents/<year>/inc-####-<slug>/` 아래에 기록한다.
 8. 문서를 추가, 이동, 삭제하면 해당 역할 인덱스와 관련 inbound link를 함께
    갱신한다.
 
@@ -163,4 +163,4 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 
 #### Transition and Exit
 
-Guide·Policy·Runbook은 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따르고, Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태이다. superseded 또는 retired에 이른 Guide·Policy·Runbook은 [은퇴 전제 조건](../00.workspace/02.process/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가하며 해당 역할 인덱스와 inbound link를 같은 변경에서 갱신한다.
+Guide·Policy·Runbook은 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따르고, Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태이다. superseded 또는 retired에 이른 Guide·Policy·Runbook은 [은퇴 전제 조건](../00.workspace/03.process/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가하며 해당 역할 인덱스와 inbound link를 같은 변경에서 갱신한다.

@@ -3,11 +3,11 @@ name: "stateful-recovery-contract-review"
 description: "Use when an explicitly supplied sanitized stateful recovery contract needs read-only production readiness review or a bounded first isolated restoreability evidence-generation review before any recovery action."
 metadata:
   title: "stateful-recovery-contract-review"
-  version: "1.3.1"
+  version: "1.3.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-18"
+  updated: "2026-11-19"
   function_id: "stateful-recovery-contract-review"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -177,7 +177,7 @@ Owning role, policies and related documents:
 
 - [IaC reviewer](../../roles/iac-reviewer.md)
 - [Infrastructure cross-validation](../infra-cross-validate/SKILL.md)
-- [Approval boundaries](../../../docs/00.workspace/02.process/approval-boundaries.md)
+- [Approval boundaries](../../../docs/00.workspace/04.quality/approval-boundaries.md)
 
 ## Verification
 

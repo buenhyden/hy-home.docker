@@ -1,10 +1,10 @@
 ---
 title: "Verification Surface Map"
-version: "0.9.1"
+version: "0.9.2"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-09-06"
 observed_at: "2026-10-07"
 review_cycle: "on-gate-change"
@@ -47,7 +47,7 @@ remote protection and runtime observations require their own receipts.
 - The machine [workflow contract](../../.github/workflow-contract.yml) owns suite,
   leaf, dependency, prefix and prerequisite selection. Inspect its actual plan;
   this map deliberately maintains no second transcribed inventory.
-- The [quality policy](../../docs/00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix)
+- The [quality policy](../../docs/00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix)
   owns authoring/commit/push/PR/main/release responsibility and check admissibility.
 - Ordinary authored documents select content/form checks. Their implementation
   suites are selected only for relevant validator/contract changes. Frontend QA
@@ -91,5 +91,5 @@ execution-context boundary, test location or release producer changes.
 
 - [Knowledge index](README.md)
 - [Repository authority map](repository-map.md)
-- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
 - [Environment constraints](../governance/environment-constraints.md)

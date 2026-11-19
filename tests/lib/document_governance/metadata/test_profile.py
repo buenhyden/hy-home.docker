@@ -187,7 +187,7 @@ class TemplateMetadataTests(unittest.TestCase):
             role["source"] for role in roles.values() if "task" in role["profiles"]
         ]
         self.assertEqual(
-            ["docs/99.templates/templates/specs/task.template.md"],
+            ["docs/99.templates/02.templates/03.specs/task.template.md"],
             task_sources,
         )
 
@@ -198,7 +198,7 @@ class TemplateMetadataTests(unittest.TestCase):
             profile["required_sections"],
         )
         self.assertFalse(profile["free_form_sections"])
-        path = pathlib.Path("docs/00.workspace/02.process/approval-boundaries.md")
+        path = pathlib.Path("docs/00.workspace/04.quality/approval-boundaries.md")
         record = metadata.Record(
             path,
             {"artifact_type": "governance-policy", "status": "active"},
@@ -312,7 +312,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 )
 
     def test_readme_template_uses_registered_minimum_envelope(self) -> None:
-        path_text = "docs/99.templates/templates/common/readme-stage.template.md"
+        path_text = "docs/99.templates/02.templates/93.common/readme-stage.template.md"
         values = metadata.parse_frontmatter(ROOT / path_text)
         self.assertEqual(
             {
@@ -329,7 +329,9 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_governance_template_source_rejects_typed_leaf_metadata(self) -> None:
         record = metadata.Record(
-            pathlib.Path("docs/99.templates/templates/governance/README.md"),
+            pathlib.Path(
+                "docs/99.templates/02.templates/91.agent-governance/README.md"
+            ),
             {
                 "status": "draft",
                 "artifact_id": "template-source:invalid",

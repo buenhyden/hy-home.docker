@@ -48,6 +48,7 @@ from scripts.lib.document_governance.metadata.identity import (
 )
 from scripts.lib.document_governance.metadata.lifecycle import (
     _governance_moved_body_baseline,
+    _numbered_folder_moved_baseline,
     _operations_moved_body_baseline,
     _record_from_text,
     _text_at_ref,
@@ -749,7 +750,7 @@ def _validate_repository_contracts(
         else [
             path
             for path in tracked_markdown
-            if path.as_posix().startswith("docs/99.templates/templates/")
+            if path.as_posix().startswith("docs/99.templates/02.templates/")
             and path.name != "README.md"
             and (root / path).is_file()
         ]
@@ -1543,7 +1544,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         assert registry is not None
         contract_findings: list[Finding] = []
         template_schema = (
-            root / "docs/99.templates/contracts/document-frontmatter.schema.json"
+            root / "docs/99.templates/01.contracts/document-frontmatter.schema.json"
         )
         template_validator = (
             frontmatter_validator
@@ -1815,6 +1816,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             if governance_record is not None and governance_text is not None:
                 base_records_by_path[path_text] = governance_record
                 governance_move_texts[path_text] = governance_text
+                continue
+            numbered_record, numbered_text = _numbered_folder_moved_baseline(
+                root, pathlib.Path(path_text), profiles, base.merge_base
+            )
+            if numbered_record is not None and numbered_text is not None:
+                base_records_by_path[path_text] = numbered_record
+                governance_move_texts[path_text] = numbered_text
     try:
         records = collect_records(
             root,

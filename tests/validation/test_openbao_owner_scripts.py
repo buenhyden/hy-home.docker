@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WINDOW = ROOT / "infra/03-security/openbao/scripts/owner-window.sh"
 K8S = ROOT / "infra/03-security/openbao/scripts/k8s-writers.sh"
 OIDC = ROOT / "infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh"
-RUNBOOKS = ROOT / "docs/05.operations/runbooks/04-security-and-secrets"
+RUNBOOKS = ROOT / "docs/05.operations/03.runbooks/04.security-and-secrets"
 RUNBOOK = RUNBOOKS / "0105-openbao-maintenance-window.md"
 
 

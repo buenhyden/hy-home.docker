@@ -943,7 +943,7 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
         )
         policy = (
             repo
-            / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+            / "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md"
         )
         policy.parent.mkdir(parents=True)
         policy.write_text(
@@ -2122,7 +2122,7 @@ class QaCiToolEnvironmentTests(unittest.TestCase):
 class PostToolFormattingOwnershipTests(unittest.TestCase):
     """The hook may format only in agreement with the registered owner.
 
-    `docs/00.workspace/03.quality/quality-standards.md` section 10 makes
+    `docs/00.workspace/04.quality/quality-standards.md` section 10 makes
     `.pre-commit-config.yaml` the sole place a formatting owner is named. These
     cases pin the three ways this hook previously disagreed with it.
     """
@@ -2257,7 +2257,7 @@ class RequestPrecedenceContractTests(unittest.TestCase):
         self.assertEqual([], agc._validate_request_precedence(ROOT))
         files = (
             ".agents/governance/bootstrap.md",
-            "docs/00.workspace/02.process/approval-boundaries.md",
+            "docs/00.workspace/04.quality/approval-boundaries.md",
         )
         with tempfile.TemporaryDirectory() as directory:
             copy = pathlib.Path(directory)

@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2025-11-12"
 ---
 
@@ -111,12 +111,12 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`, `grafana_admin_pas
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
-1. LGTM 스택 가이드(`docs/05.operations/guides/07-observability/0042-lgtm-stack.md`)를 따릅니다.
-2. 데이터 파이핑은 Alloy 수집기 가이드(`docs/05.operations/guides/07-observability/0040-alloy.md`)를 참고합니다.
-3. 보존 정책은 Operations Policy(`docs/05.operations/policies/README.md`)에서 확인합니다.
-4. 복구 절차는 Observability Runbook(`docs/05.operations/runbooks/README.md`)을 참고합니다.
+1. LGTM 스택 가이드(`docs/05.operations/01.guides/07.observability/0042-lgtm-stack.md`)를 따릅니다.
+2. 데이터 파이핑은 Alloy 수집기 가이드(`docs/05.operations/01.guides/07.observability/0040-alloy.md`)를 참고합니다.
+3. 보존 정책은 Operations Policy(`docs/05.operations/02.policies/README.md`)에서 확인합니다.
+4. 복구 절차는 Observability Runbook(`docs/05.operations/03.runbooks/README.md`)을 참고합니다.
 5. 텔레메트리 데이터(OTLP)의 기본 진입점으로는 항상 `Alloy`를 사용합니다.
 6. 대시보드는 반드시 `grafana/`의 프로비저닝 설정을 통해 코드로 관리해야 합니다. 세부 경로는 [grafana/README.md](grafana/README.md)를 참고합니다.
 7. 레코딩 규칙과 알림 규칙은 반드시 `prometheus/`의 설정에서 정의해야 합니다. 세부 경로는 [prometheus/README.md](prometheus/README.md)를 참고합니다.
@@ -151,7 +151,7 @@ docker exec alloy alloy run --test /etc/alloy/config.alloy
 
 #### Runbook Links
 
-- [관측성 Runbook 목록](../../docs/05.operations/runbooks/07-observability/README.md)
+- [관측성 Runbook 목록](../../docs/05.operations/03.runbooks/07.observability/README.md)
 
 #### Related Documents
 

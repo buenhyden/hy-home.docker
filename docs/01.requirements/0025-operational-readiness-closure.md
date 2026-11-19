@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.4.1"
+version: "1.4.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -173,7 +173,7 @@ document governs it.
 #### Verification Method
 
 Select registered checks that exercise the condition and follow the execution
-scope in [Quality Standards](../00.workspace/03.quality/quality-standards.md#4-execution-boundary).
+scope in [Quality Standards](../00.workspace/04.quality/quality-standards.md#4-execution-boundary).
 Run the full profile when the applicable verification scope calls for it.
 [SPEC-0212](../03.specs/0212-request-baseline-and-reconciliation/spec.md#acceptance-criteria)
 criterion 114 covers the mapping of requirements to acceptance conditions.
@@ -184,14 +184,14 @@ requirement once every condition is met.
 
 #### Downstream Links
 
-- **Architecture Description**: [AD-0028 Operational Readiness Closure](../02.architecture/descriptions/0028-operational-readiness-closure.md)
+- **Architecture Description**: [AD-0028 Operational Readiness Closure](../02.architecture/01.descriptions/0028-operational-readiness-closure.md)
 - **Implementation**: `scripts/operations/check-compose-core-readiness.sh`,
   `scripts/security/verify-sample-service-supply-chain.sh`,
   `scripts/validation/check-supply-chain-policy.py`,
   `scripts/operations/rehearse-sample-service-delivery.sh`
 - **Sample artifact**: `examples/sample-web-service/`
-- **Operations**: [Release management runbook](../05.operations/runbooks/10-platform-and-backup/0009-release-management.md)
-- **Decision**: [ADR-0028 Local-Isolated Readiness Evidence](../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **Operations**: [Release management runbook](../05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md)
+- **Decision**: [ADR-0028 Local-Isolated Readiness Evidence](../02.architecture/02.decisions/0028-local-isolated-readiness-evidence.md)
 - **Retired**: REQ-0025-FR-0003 required a synthetic PostgreSQL 17 to 18
   logical backup, restore, upgrade, and integrity rehearsal, implemented by
   `rehearse-postgres-logical-upgrade.sh` and runbook RUN-0032. Both were

@@ -156,7 +156,7 @@ settings by itself.
 - Do not enforce squash/rebase-only or linear-history settings that would
   discard referenced objects, so delivered history can keep them.
 - Recovery-commit preservation and branch deletion are stated once, in
-  `docs/00.workspace/02.process/github-governance.md` section 3. This file records the
+  `docs/00.workspace/03.process/github-governance.md` section 3. This file records the
   settings that support those rules, not the rules themselves.
 
 ## Required Status Checks

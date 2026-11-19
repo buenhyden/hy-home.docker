@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Identity Routing"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # AI Agent Identity Routing
@@ -55,7 +55,7 @@ high-risk work, separates implementation from independent review.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -79,7 +79,7 @@ This policy states no separate check, so none of its rules is mechanically enfor
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 

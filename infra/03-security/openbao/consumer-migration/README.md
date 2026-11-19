@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-10-11"
 ---
 
@@ -20,9 +20,9 @@ created: "2026-10-11"
 형식과 선택 거부 조건만 검증합니다. 별도 Python API에는 보호 파일과 실제 HTTPS를
 사용하는 제한된 KV-v2 복사 실행기가 있습니다. 일반 복사 API에 연결할 실제 catalog
 승인 adapter와 현재 운영 입력은 공급되지 않았습니다. 별도 owner 절차로 수행한
-이전 소비자 전환·복구 기록은 기존 P06 Task(`docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md`)에
+이전 소비자 전환·복구 기록은 기존 P06 Task(`docs/03.specs/0204-service-integration-security-and-operations/01.tasks/tsk-0014-p06-openbao-consumer-migration.md`)에
 있으며 이 API의 새 실행 영수증이 아닙니다. 새 실행의 선행 조건은
-현재 P06 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md`)를 따릅니다.
+현재 P06 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0045-secret-structure-openbao.md`)를 따릅니다.
 
 #### Audience
 
@@ -474,7 +474,7 @@ Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0106: `docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md`
+- RUN-0106: `docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md`
 
 #### Related Documents
 

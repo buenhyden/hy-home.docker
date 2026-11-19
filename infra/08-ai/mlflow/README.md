@@ -1,10 +1,10 @@
 ---
 title: "MLflow Tracking Server"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-09-21"
 ---
 
@@ -119,11 +119,11 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
 
 #### Runbook Links
 
-- **Guide**: MLflow usage guide (`docs/05.operations/guides/13-analytics-and-data-quality/0088-mlflow.md`)
-- **Policy**: MLflow operations policy (`docs/05.operations/policies/13-analytics-and-data-quality/0088-mlflow.md`)
-- **Runbook**: MLflow recovery runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`)
+- **Guide**: MLflow usage guide (`docs/05.operations/01.guides/13.analytics-and-data-quality/0088-mlflow.md`)
+- **Policy**: MLflow operations policy (`docs/05.operations/02.policies/13.analytics-and-data-quality/0088-mlflow.md`)
+- **Runbook**: MLflow recovery runbook (`docs/05.operations/03.runbooks/13.analytics-and-data-quality/0088-mlflow.md`)
 - [Documentation index](../../../docs/README.md)
 
 #### Observability and Recovery
 
-`mlflow`에는 Compose 헬스체크(`GET /health`)가 있으며 DB/버킷 쓰기 접근은 증명하지 않습니다. 복구와 추적 DB schema 업그레이드는 `docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`(RUN-0088)를 따릅니다.
+`mlflow`에는 Compose 헬스체크(`GET /health`)가 있으며 DB/버킷 쓰기 접근은 증명하지 않습니다. 복구와 추적 DB schema 업그레이드는 `docs/05.operations/03.runbooks/13.analytics-and-data-quality/0088-mlflow.md`(RUN-0088)를 따릅니다.

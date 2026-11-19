@@ -1,10 +1,10 @@
 ---
 title: "Manifest Pipeline DAG"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 ---
 
 # Manifest Pipeline DAG
@@ -66,7 +66,7 @@ XCom에는 run ID·원본 SHA-256인 data_version·status·행수만 전달합�
 
 이 서비스의 런북은 다음과 같다.
 
-- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
+- RUN-0050: `docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md`
 
 #### Related Documents
 

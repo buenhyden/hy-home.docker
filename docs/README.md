@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # docs
@@ -154,8 +154,8 @@ Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴
 
 - [Agent governance README](../.agents/README.md)
 - [99.templates/README.md](99.templates/README.md)
-- [문서 작성 계약](00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [문서 언어 규칙](00.workspace/02.process/documentation-protocol.md#document-language): README 본문 언어
+- [문서 작성 계약](00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 언어 규칙](00.workspace/03.process/documentation-protocol.md#document-language): README 본문 언어
 - 양식 원본은 `99.templates/templates/common/readme-documentation.template.md`이며, 형식은 [Stage 99 Registry 계약](99.templates/README.md)의 `documentation-readme` profile이 소유합니다.
 
 ### Checks
@@ -174,7 +174,7 @@ Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴
 - 기존 SSoT 문서를 중복 생성하지 않습니다.
 - 제목과 구조는 사람과 AI Agent 모두가 해석할 수 있도록 명시적으로 작성합니다.
 - 상위 문서와 하위 산출물 간 추적성을 유지합니다.
-- 문서 언어는 [문서 언어 규칙](00.workspace/02.process/documentation-protocol.md#document-language)이
+- 문서 언어는 [문서 언어 규칙](00.workspace/03.process/documentation-protocol.md#document-language)이
   정하며, 각 Registry profile의 `language`가 그 결과를 소유합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
 
@@ -183,8 +183,8 @@ Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴
 - 새 문서와 갱신 문서는 하나의 `## Related Documents` 섹션을 유지합니다.
 - 상대 링크는 현재 파일 위치 기준으로 계산합니다.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
-- README가 무엇을 목록으로 가질 수 있는지는 [README 탐색 규칙](00.workspace/02.process/documentation-protocol.md#readme-navigation)을 따릅니다.
-- Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](00.workspace/02.process/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
+- README가 무엇을 목록으로 가질 수 있는지는 [README 탐색 규칙](00.workspace/03.process/documentation-protocol.md#readme-navigation)을 따릅니다.
+- Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](00.workspace/04.quality/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
 
 #### Template Usage
 
@@ -205,7 +205,7 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
-정확한 검사 선택과 실행 단계는 [quality policy](00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix)와
+정확한 검사 선택과 실행 단계는 [quality policy](00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix)와
 [workflow contract](../.github/workflow-contract.yml)가 소유합니다.
 `check-document-links.py --mode alignment`는 현재 문서의 링크와 anchor를 확인합니다.
 

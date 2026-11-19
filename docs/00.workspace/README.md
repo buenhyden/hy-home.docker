@@ -1,10 +1,10 @@
 ---
 title: "00.workspace"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-11-18"
 layer: "workspace"
 ---
@@ -42,13 +42,21 @@ agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)�
 | Path | Purpose |
 | --- | --- |
 | `01.project/stage-authoring-matrix.md` | 책임 계층과 Stage별 소유자 |
-| `02.process/sdlc.md` | 요구에서 인수까지의 공통 수명주기 |
-| `02.process/documentation-protocol.md` | 문서 권위, 언어, 링크, 은퇴 |
-| `02.process/git-workflow.md` | 브랜치, 커밋, 통합 |
-| `02.process/github-governance.md` | 저장소 보호와 GitHub 운영 |
-| `02.process/approval-boundaries.md` | 사람·agent 공통 승인 범위 |
-| `03.quality/quality-standards.md` | 품질 게이트와 검증 매트릭스 |
-| `03.quality/task-checklists.md` | 시작·완료 점검 |
+| `01.project/glossary.md` | 사람과 agent가 함께 쓰는 공통 용어(Repository Vocabulary) |
+| `02.architecture/01.descriptions/` | workspace 구조 설명(AD-0027 agent governance, AD-0030 문서 생명주기) |
+| `02.architecture/02.decisions/` | workspace 구조 결정(ADR-0032·0034·0037·0044·0048·0049·0051·0057·0063) |
+| `03.process/sdlc.md` | 요구에서 인수까지의 공통 수명주기 |
+| `03.process/documentation-protocol.md` | 문서 권위, 언어, 링크, 은퇴 |
+| `03.process/git-workflow.md` | 브랜치, 커밋, 통합 |
+| `03.process/github-governance.md` | 저장소 보호와 GitHub 운영 |
+| `04.quality/approval-boundaries.md` | 사람·agent 공통 승인 범위와 보호 표면 |
+| `04.quality/quality-standards.md` | 품질 게이트, 위험별 리뷰, 검증 매트릭스 |
+| `04.quality/task-checklists.md` | 시작·완료 점검 |
+
+`05.environment`와 `06.maintenance`는 내용이 생길 때 만듭니다. 제품 AD·ADR은
+[Stage 02](../02.architecture/README.md)에 있고, workspace AD·ADR과 같은 번호 공간을
+씁니다. agent·provider 전용 용어는
+[agent glossary](../../.agents/knowledge/agent-glossary.md)에 있습니다.
 
 ### Owners
 

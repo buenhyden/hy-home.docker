@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -143,12 +143,12 @@ replacement claim.
 ### Normative and Evidence
 
 - [REQ-0003](../../01.requirements/0003-security.md)
-- [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
-- [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)
-- [Prometheus Runbook](../../05.operations/runbooks/07-observability/0045-prometheus.md)
-- [Gatus Runbook](../../05.operations/runbooks/07-observability/0087-gatus.md)
+- [AD-0003](../../02.architecture/01.descriptions/0003-security-architecture.md)
+- [ADR-0042](../../02.architecture/02.decisions/0042-openbao-unseal-method.md)
+- [Prometheus Runbook](../../05.operations/03.runbooks/07.observability/0045-prometheus.md)
+- [Gatus Runbook](../../05.operations/03.runbooks/07.observability/0087-gatus.md)
 - [Plan](plan.md)
-- [Task](tasks/tsk-0001-observability-ca-execution.md)
+- [Task](01.tasks/tsk-0001-observability-ca-execution.md)
 
 ### Historical and Navigation
 

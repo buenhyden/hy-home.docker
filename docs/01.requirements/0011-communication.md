@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication) Requirements"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0011"
 created: "2026-03-26"
@@ -131,10 +131,10 @@ and accepts the requirement once they are met.
 
 #### Downstream Links
 
-- **Architecture Description**: [0010-communication-architecture.md](../02.architecture/descriptions/0010-communication-architecture.md)
+- **Architecture Description**: [0010-communication-architecture.md](../02.architecture/01.descriptions/0010-communication-architecture.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
   and [SPEC-0263 LAB promotion contract](../03.specs/0263-lab-promotion-contract/spec.md)
-- **ADR**: [ADR-0054 Mailpit in HOME and Stalwart as a LAB](../02.architecture/decisions/0054-mailpit-home-stalwart-lab.md)
+- **ADR**: [ADR-0054 Mailpit in HOME and Stalwart as a LAB](../02.architecture/02.decisions/0054-mailpit-home-stalwart-lab.md)
 - **Retired domain Spec SPEC-0011** (communication): replaced by the
   communication guides, policies and runbooks in the operations catalog under
   `docs/05.operations/`.

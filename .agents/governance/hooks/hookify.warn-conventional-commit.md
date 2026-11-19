@@ -1,10 +1,10 @@
 ---
 title: "WARNING: non-Conventional Commit message"
-version: "1.0.9"
+version: "1.0.10"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 action: "warn"
 enabled: true
 event: "bash"
@@ -22,7 +22,7 @@ Apply the declared `warn` action for warn-conventional-commit.
 
 ### Authority
 
-Owning policy: [Git workflow](../../../docs/00.workspace/02.process/git-workflow.md).
+Owning policy: [Git workflow](../../../docs/00.workspace/03.process/git-workflow.md).
 
 ## Scope
 
@@ -41,7 +41,7 @@ The `warn-conventional-commit` rule applies on the `bash` event and matches Bash
 **Non-Conventional Commit message detected (project rule)**
 
 The message does not follow Commit Standards in
-`docs/00.workspace/02.process/git-workflow.md`.
+`docs/00.workspace/03.process/git-workflow.md`.
 
 **Required format:**
 

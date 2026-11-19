@@ -38,7 +38,7 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
             init_git(root)
             paths = (
                 pathlib.Path(".agents/governance/bootstrap.md"),
-                pathlib.Path("docs/00.workspace/03.quality/quality-standards.md"),
+                pathlib.Path("docs/00.workspace/04.quality/quality-standards.md"),
             )
             for relative in paths:
                 target = root / relative
@@ -257,7 +257,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             transitions = frozenset(
                 {
                     (
-                        "docs/03.specs/0001-fixture/tasks/tsk-0001-work.md",
+                        "docs/03.specs/0001-fixture/01.tasks/tsk-0001-work.md",
                         "draft",
                         "in-progress",
                     )
@@ -328,7 +328,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root, registry = self.fixture(directory)
             finding = reference_module.Finding(
-                "docs/90.references/research/README.md",
+                "docs/90.references/01.research/README.md",
                 "version-unchanged",
                 "fixture",
             )
@@ -494,9 +494,11 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_terminal_task_body_baseline_requires_exact_generation_blob(self) -> None:
         profiles = current_profiles()
-        relative = pathlib.Path("docs/03.specs/0001-example/tasks/tsk-0001-example.md")
+        relative = pathlib.Path(
+            "docs/03.specs/0001-example/01.tasks/tsk-0001-example.md"
+        )
         missing_relative = pathlib.Path(
-            "docs/03.specs/0001-example/tasks/tsk-0002-missing-at-source.md"
+            "docs/03.specs/0001-example/01.tasks/tsk-0002-missing-at-source.md"
         )
         text = (
             "---\nartifact_id: SPEC-0001-TSK-0001\ntype: sdlc/task\n"
@@ -611,7 +613,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             index_row: str,
         ) -> None:
             package = root / package_relative
-            tasks = package / "tasks"
+            tasks = package / "01.tasks"
             tasks.mkdir(parents=True, exist_ok=True)
             package.joinpath("spec.md").write_text(
                 """---
@@ -679,7 +681,7 @@ A detached Evidence row is rejected.
 ### Normative and Evidence
 
 - [Plan](plan.md)
-- [Task](tasks/tsk-0001-task-evidence-table-integrity.md)
+- [Task](01.tasks/tsk-0001-task-evidence-table-integrity.md)
 
 ### Historical and Navigation
 
@@ -725,7 +727,7 @@ The temporary repository is discarded after the test.
 ## Related Documents
 
 - [Specification](spec.md)
-- [Task](tasks/tsk-0001-task-evidence-table-integrity.md)
+- [Task](01.tasks/tsk-0001-task-evidence-table-integrity.md)
 """,
                 encoding="utf-8",
             )
@@ -890,7 +892,7 @@ This synthetic fixture names no next owner.
                 root / "scripts/lib/document_governance/spec_packages.py",
             )
             corrected_task = pathlib.Path(
-                "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/"
+                "docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/"
                 "tsk-0040-workspace-inventory.md"
             )
             shutil.copy2(ROOT / corrected_task, root / corrected_task)
@@ -943,7 +945,7 @@ This synthetic fixture names no next owner.
             task = (
                 root
                 / package_relative
-                / ("tasks/tsk-0001-task-evidence-table-integrity.md")
+                / ("01.tasks/tsk-0001-task-evidence-table-integrity.md")
             )
             marker = "\n### Resolution Links\n"
             source = task.read_text(encoding="utf-8")
@@ -970,7 +972,7 @@ This synthetic fixture names no next owner.
 
     def test_repository_contracts_enforce_machine_source_safety(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
+            "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml"
         )
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
@@ -990,9 +992,7 @@ This synthetic fixture names no next owner.
             )
 
     def test_registry_contracts_parse_profile_and_section_contracts(self) -> None:
-        relative_path = (
-            "docs/99.templates/templates/requirements/requirement-package.template.md"
-        )
+        relative_path = "docs/99.templates/02.templates/01.requirements/requirement-package.template.md"
         cases = (
             (
                 "profile",
@@ -1023,7 +1023,7 @@ This synthetic fixture names no next owner.
         self,
     ) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
+            "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml"
         )
         cases = (
             (
@@ -1064,7 +1064,7 @@ This synthetic fixture names no next owner.
 
     def test_repository_contracts_bound_openapi_credential_value_keywords(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
+            "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml"
         )
         values = {
             "default": "fixture-default-leak",
@@ -1122,7 +1122,7 @@ This synthetic fixture names no next owner.
         self,
     ) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
+            "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml"
         )
         cases = {
             "scalar": "fixture-scalar-cli-private",
@@ -1157,7 +1157,7 @@ This synthetic fixture names no next owner.
         self,
     ) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
+            "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml"
         )
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
@@ -1182,7 +1182,7 @@ This synthetic fixture names no next owner.
 
     def test_repository_contracts_accept_safe_openapi_credential_shapes(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
+            "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml"
         )
         cases = (
             (
@@ -1260,7 +1260,7 @@ class IndexMembershipTests(unittest.TestCase):
 
     def _findings(self, index_body: str) -> list[object]:
         registry = metadata.load_registry()
-        member = "docs/90.references/research/0002-agentic-engineering-research-pack/README.md"
+        member = "docs/90.references/01.research/0002-agentic-engineering-research-pack/README.md"
         self.assertEqual(
             "research",
             classify_registered_path(member, registry),
@@ -1268,7 +1268,7 @@ class IndexMembershipTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            index = root / "docs/90.references/research/README.md"
+            index = root / "docs/90.references/01.research/README.md"
             index.parent.mkdir(parents=True)
             index.write_text(index_body, encoding="utf-8")
             record = metadata.Record(pathlib.Path(member), {}, "research")
@@ -1281,7 +1281,7 @@ class IndexMembershipTests(unittest.TestCase):
         return [
             finding
             for finding in findings
-            if finding.path == "docs/90.references/research/README.md"
+            if finding.path == "docs/90.references/01.research/README.md"
             and finding.code != "index-unreadable"
         ]
 
@@ -1397,6 +1397,6 @@ class TemplateRoutingTests(unittest.TestCase):
             check_navigation,
         )
 
-        readme = ROOT / "docs/99.templates/templates/README.md"
+        readme = ROOT / "docs/99.templates/02.templates/README.md"
         findings = check_navigation(build_document_graph([readme], repo_root=ROOT))
         self.assertEqual([], findings)

@@ -1,10 +1,10 @@
 ---
 title: "Repository Authority Map"
-version: "0.5.3"
+version: "0.5.4"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-09-06"
 observed_at: "2026-10-07"
 review_cycle: "on-surface-change"
@@ -138,6 +138,6 @@ then refreshed or retired rather than copied.
 
 - [Knowledge index](README.md)
 - [Bootstrap policy](../governance/bootstrap.md)
-- [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md)
-- [Documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)
+- [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)
+- [Documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)
 - [Stage authoring matrix](../../docs/00.workspace/01.project/stage-authoring-matrix.md)

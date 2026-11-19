@@ -22,8 +22,8 @@ from scripts.lib.document_governance.taxonomy import (
 )
 
 _ROOT = ("docs", "05.operations")
-_FAMILIES = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}
-_DOMAIN = re.compile(r"[0-9]{2}-[a-z0-9][a-z0-9-]*")
+_FAMILIES = {"01.guides": "guide", "02.policies": "policy", "03.runbooks": "runbook"}
+_DOMAIN = re.compile(r"[0-9]{2}\.[a-z0-9][a-z0-9-]*")
 
 
 class MoveError(ValueError):
@@ -153,7 +153,7 @@ def _review_rows(
             raise MoveError("review-source-not-operation", row.source)
         if row.domain not in domains:
             raise MoveError("unknown-domain", row.source)
-        if not isinstance(row.lab, bool) or row.lab != (row.domain == "15-labs"):
+        if not isinstance(row.lab, bool) or row.lab != (row.domain == "15.labs"):
             raise MoveError("lab-domain-mismatch", row.source)
         result[row.source] = row
     return result

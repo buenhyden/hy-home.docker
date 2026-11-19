@@ -82,7 +82,7 @@ REQUIRED_LOCAL_PATHS = frozenset(
 )
 APPROVED_TEST_PREFIXES = ("tests/lib/", "tests/validation/")
 RUNBOOK_AUTHORITY = re.compile(
-    r"docs/05\.operations/runbooks/[0-9]{2}-[a-z0-9][a-z0-9-]*/"
+    r"docs/05\.operations/03\.runbooks/[0-9]{2}\.[a-z0-9][a-z0-9-]*/"
     r"[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
 )
 MACHINE_AUTHORITIES = frozenset(

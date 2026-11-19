@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.92.0"
+version: "1.93.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -123,10 +123,10 @@ outside the authorized local source and owned-isolation scope.
 
 W108 records D12, the first Opsflow installation in HOME, in TSK-0051; its
 results and acceptance are in the
-[2026-11-10 owner acceptance](tasks/tsk-0051-opsflow-home-installation.md#owner-acceptance-2026-11-10).
+[2026-11-10 owner acceptance](01.tasks/tsk-0051-opsflow-home-installation.md#owner-acceptance-2026-11-10).
 Earlier unrun/open-item text in that terminal Task is historical; it does not
 reopen installation. The decisions for criteria 66 to 71 are in
-[TSK-0043 final acceptance](tasks/tsk-0043-opsflow-data-path.md#criterion-acceptance).
+[TSK-0043 final acceptance](01.tasks/tsk-0043-opsflow-data-path.md#criterion-acceptance).
 Terminal bodies stay unchanged; this is the current correction route.
 
 W111 in TSK-0053 assesses the108 master requirements and supplements and
@@ -412,6 +412,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W165 | 149 | Add a read-only HOME start check that expands the dependency closure and refuses an empty or whole-project start, and record the LAB sandbox and Kubernetes context boundaries | W164 | TSK-0093 | Select RED and GREEN, a real select run, a closure oracle over every HOME service, the profile control and the boundary observations |
 | W166 | 150 | Prove the canonical commands and checks run without the 4.2.0 package or staging content, list staging owners and delete only an owner-approved leftover | W165 | TSK-0094 | Package reference scan, clean-worktree suites, checks and commands, and the approved deletion |
 | W167 | 151 | Judge every prerequisite criterion with the owner, list runtime remainders and rehearse the cutover allocation read only | W166 | TSK-0095 | Acceptance ledger, journal reconciliation and cutover rehearsal |
+| W168 | 152 | Move every classification folder to `NN.name`, move workspace architecture, vocabulary and approval boundaries into the workspace classes, convert every consumer and test, and move product runtime rules to their product owners | W160 | TSK-0096 | Link, corpus, metadata, catalog, contract, manifest and renderer checks; governance and validation test modules against a clean `main` baseline |
 
 #### Current v30 continuation and delivery
 
@@ -472,7 +473,7 @@ immutable-binding rule.
 
 W25's doc-writer exception owns only
 `.agents/governance/environment-constraints.md` and
-`docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`.
+`docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md`.
 After an actual required-check readback and scoped review, it also owns only
 `.github/rulesets/main-protection.md` for that canonical observation. These
 exceptions clarify the full-commit/current-byte source-pin contract and the
@@ -776,21 +777,21 @@ The durable contract is the current request baseline and reconciliation recorded
 
 The owner is @buenhyden; the receipts are the Tasks named in the Work Breakdown.
 
-W121 promotes to `docs/00.workspace/02.process/sdlc.md` (promotion owners, state axes,
+W121 promotes to `docs/00.workspace/03.process/sdlc.md` (promotion owners, state axes,
 transition events, acceptance and readiness rules),
-`docs/00.workspace/02.process/documentation-protocol.md` (operations currency, version
-boundary), `docs/00.workspace/02.process/github-governance.md` (Issue closure),
+`docs/00.workspace/03.process/documentation-protocol.md` (operations currency, version
+boundary), `docs/00.workspace/03.process/github-governance.md` (Issue closure),
 `docs/99.templates/registry.json` (`common.section_forms`), the Task and Plan
 templates, and the glossary. The handoff condition is the merge of its pull
 request; TSK-0063's Promotion Receipt records each target.
 
 W122 promotes to `docs/99.templates/registry.json`
 (`common.archive_retention`, `common.vocabulary_contract`), the profile
-schema, `docs/00.workspace/02.process/documentation-protocol.md` (the enforcement it now
+schema, `docs/00.workspace/03.process/documentation-protocol.md` (the enforcement it now
 has) and the glossary Provenance. The handoff condition is the merge of its
 pull request; TSK-0064's Promotion Receipt records each target.
 
-W123 promotes to `docs/00.workspace/02.process/documentation-protocol.md` (the
+W123 promotes to `docs/00.workspace/03.process/documentation-protocol.md` (the
 Relations derivation and the Change Impact row). The handoff condition is the
 merge of its pull request; TSK-0064's Promotion Receipt records the target.
 
@@ -801,14 +802,14 @@ TSK-0064's Promotion Receipt names the target, phrase and commit per package;
 the handoff condition is the merge of its pull request.
 
 W125 promotes to `.github/workflow-contract.yml` (`guarantee`, `security_db`),
-`docs/99.templates/contracts/document-frontmatter.schema.json` and
-`docs/99.templates/contracts/document-profile.schema.json` (SemVer patterns)
-and `docs/00.workspace/02.process/documentation-protocol.md` (Version objects). The
+`docs/99.templates/01.contracts/document-frontmatter.schema.json` and
+`docs/99.templates/01.contracts/document-profile.schema.json` (SemVer patterns)
+and `docs/00.workspace/03.process/documentation-protocol.md` (Version objects). The
 handoff condition is the merge of each pull request; TSK-0064's Promotion
 Receipt records each target.
 
-W126 promotes to `docs/00.workspace/02.process/git-workflow.md` (Git action stages,
-merge subjects), `docs/00.workspace/02.process/github-governance.md` (review path, SHA
+W126 promotes to `docs/00.workspace/03.process/git-workflow.md` (Git action stages,
+merge subjects), `docs/00.workspace/03.process/github-governance.md` (review path, SHA
 pinning, CI shards, immutable releases), `.agents/governance/agentic.md`
 (no-model-API scope), `.github/workflow-contract.yml` and
 `.github/workflows/ci-quality.yml` (shards and aggregate) and `.cz.toml`. The
@@ -827,37 +828,37 @@ document and candidate gate owners. TSK-0076 records the measured limits.
 W138 promotes exact candidate selection and checkout rules in the delivery
 runner and workflow. TSK-0077 records native, fixture and hosted boundaries.
 
-- [W06 delivery](tasks/tsk-0077-w06-delivery-3-0-0.md)
-- [W05 quality gates](tasks/tsk-0076-w05-gates-3-0-0.md)
+- [W06 delivery](01.tasks/tsk-0077-w06-delivery-3-0-0.md)
+- [W05 quality gates](01.tasks/tsk-0076-w05-gates-3-0-0.md)
 
-- [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
-- [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
-- [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
-- [v14.7 W04 SDLC and promotion](tasks/tsk-0063-w04-sdlc-promotion.md)
-- [v14.7 W05 validator alignment](tasks/tsk-0064-w05-validator-alignment.md)
-- [v14.7 W06 Git, CI and release](tasks/tsk-0065-w06-git-ci-release.md)
-- [3.0.1 W00 delta](tasks/tsk-0066-w00-delta-3-0-1.md)
-- [3.0.1 W00 delta gap closure](tasks/tsk-0067-w00-delta-gap-closure.md)
-- [3.0.1 W01 contract](tasks/tsk-0068-w01-contract-3-0-1.md)
-- [3.0.1 W01 gap closure](tasks/tsk-0069-w01-gap-closure.md)
-- [3.0.1 W02 disposition](tasks/tsk-0070-w02-disposition-3-0-1.md)
-- [Root network subnets](tasks/tsk-0071-root-network-subnets.md)
-- [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
-- [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
-- [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
-- [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
-- [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
-- [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
-- [Image, supply-chain and Storybook compatibility Task](tasks/tsk-0047-image-supply-chain-storybook.md)
-- [Role, resource and retirement input Task](tasks/tsk-0048-role-resource-retirement.md)
-- [Documentation, governance, QA and CI contract Task](tasks/tsk-0049-document-governance-qa-ci.md)
-- [Hermes provenance, trust and export Task](tasks/tsk-0050-hermes-provenance-trust-export.md)
-- [Opsflow first HOME installation Task](tasks/tsk-0051-opsflow-home-installation.md)
-- [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
-- [Infrastructure audit execution Task](tasks/tsk-0008-infra-audit-execution.md)
-- [Historical link classification Task](tasks/tsk-0010-historical-link-classification.md)
-- [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
-- [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
-- [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
-- [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
-- [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
+- [Master workspace reconciliation](01.tasks/tsk-0053-master-workspace-reconciliation.md)
+- [v14.7 W00 intake](01.tasks/tsk-0059-w00-v14-7-intake.md)
+- [v14.7 W01 governance](01.tasks/tsk-0060-w01-v14-7-governance.md)
+- [v14.7 W04 SDLC and promotion](01.tasks/tsk-0063-w04-sdlc-promotion.md)
+- [v14.7 W05 validator alignment](01.tasks/tsk-0064-w05-validator-alignment.md)
+- [v14.7 W06 Git, CI and release](01.tasks/tsk-0065-w06-git-ci-release.md)
+- [3.0.1 W00 delta](01.tasks/tsk-0066-w00-delta-3-0-1.md)
+- [3.0.1 W00 delta gap closure](01.tasks/tsk-0067-w00-delta-gap-closure.md)
+- [3.0.1 W01 contract](01.tasks/tsk-0068-w01-contract-3-0-1.md)
+- [3.0.1 W01 gap closure](01.tasks/tsk-0069-w01-gap-closure.md)
+- [3.0.1 W02 disposition](01.tasks/tsk-0070-w02-disposition-3-0-1.md)
+- [Root network subnets](01.tasks/tsk-0071-root-network-subnets.md)
+- [Existing supply-chain evidence owner](01.tasks/tsk-0052-supply-chain-evidence.md)
+- [Workspace inventory Task](01.tasks/tsk-0040-workspace-inventory.md)
+- [Opsflow data path Task](01.tasks/tsk-0043-opsflow-data-path.md)
+- [Opsflow notifier recovery Task](01.tasks/tsk-0044-opsflow-notifier-recovery.md)
+- [Secret structure and OpenBao contract Task](01.tasks/tsk-0045-secret-structure-openbao.md)
+- [Exporter and observability contracts Task](01.tasks/tsk-0046-exporter-observability.md)
+- [Image, supply-chain and Storybook compatibility Task](01.tasks/tsk-0047-image-supply-chain-storybook.md)
+- [Role, resource and retirement input Task](01.tasks/tsk-0048-role-resource-retirement.md)
+- [Documentation, governance, QA and CI contract Task](01.tasks/tsk-0049-document-governance-qa-ci.md)
+- [Hermes provenance, trust and export Task](01.tasks/tsk-0050-hermes-provenance-trust-export.md)
+- [Opsflow first HOME installation Task](01.tasks/tsk-0051-opsflow-home-installation.md)
+- [R10 reconciliation Task](01.tasks/tsk-0007-r10-reconciliation.md)
+- [Infrastructure audit execution Task](01.tasks/tsk-0008-infra-audit-execution.md)
+- [Historical link classification Task](01.tasks/tsk-0010-historical-link-classification.md)
+- [SMTP01 request contract Task](01.tasks/tsk-0005-smtp01-request-contract.md)
+- [Current coordination audit Task](01.tasks/tsk-0006-current-coordination-audit.md)
+- [Completed P00 Task](01.tasks/tsk-0003-active-contract-and-exclusions.md)
+- [Historical baseline Task](01.tasks/tsk-0001-request-baseline-and-inventory.md)
+- [Historical twenty-item Task](01.tasks/tsk-0002-twenty-item-reconciliation.md)

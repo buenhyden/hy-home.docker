@@ -1,10 +1,10 @@
 ---
 title: "Analytics Labs Migration Plan"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0262-PLAN-0001"
 parent_ids:
@@ -90,4 +90,4 @@ The LAB entrypoints and the Stage 05 documents under `15-labs` hold the durable 
 
 Owner @buenhyden. The receipt is TSK-0001, named in the Work Breakdown Task column.
 
-- [Task](tasks/tsk-0001-analytics-labs-migration.md)
+- [Task](01.tasks/tsk-0001-analytics-labs-migration.md)

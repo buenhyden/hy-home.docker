@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: prints a secret to logs"
-version: "1.0.6"
+version: "1.0.7"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -28,7 +28,7 @@ Apply the declared `block` action for block-gha-secrets-in-run.
 
 ### Authority
 
-Owning policy: [GitHub governance](../../../docs/00.workspace/02.process/github-governance.md).
+Owning policy: [GitHub governance](../../../docs/00.workspace/03.process/github-governance.md).
 
 ## Scope
 
@@ -46,7 +46,7 @@ None.
 
 **GitHub Actions secret exposure pattern blocked (project rule)**
 
-`docs/00.workspace/02.process/github-governance.md` — GitHub Actions Security Contract: this pattern can expose secrets in workflow logs.
+`docs/00.workspace/03.process/github-governance.md` — GitHub Actions Security Contract: this pattern can expose secrets in workflow logs.
 
 **Detected risky patterns:**
 

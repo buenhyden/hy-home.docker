@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.26.0"
+version: "1.26.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -200,7 +200,7 @@ None: this document states no exclusion.
   raw logs, auth files, tokens, credentials, private keys, shell history, or
   secret values.
 - Resolve the authority for every protected operation through
-  [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records).
+  [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records).
   This policy supplies environment-specific protocols; its Task evidence fields
   do not authenticate an approval.
 - Session bootstrap is repository-context inspection only. It must not run
@@ -479,11 +479,11 @@ This project has a graphify knowledge graph at `graphify-out/`.
 
 #### Exception Conditions
 
-Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations wait for their exact target under [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
+Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations wait for their exact target under [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
 #### Approval and Review
 
-Separately authorized operations follow the [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md) policy.
+Separately authorized operations follow the [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md) policy.
 
 ## Enforcement
 
@@ -493,11 +493,11 @@ Separately authorized operations follow the [Approval boundaries](../../docs/00.
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
 - For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all`.
-- The [execution boundary](../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary) owns the
+- The [execution boundary](../../docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary) owns the
   local, CI-only, and approved all-files pre-commit route. Its wrapper limits
   remain Git-visible repository evidence only; this environment policy does not
   authorize direct invocation, ignored/outside writes, or a sandbox bypass.
-- Run the completion checklist in `docs/00.workspace/03.quality/task-checklists.md` before declaring done.
+- Run the completion checklist in `docs/00.workspace/04.quality/task-checklists.md` before declaring done.
 
 ### Limits
 
@@ -534,7 +534,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
@@ -543,5 +543,5 @@ Changes land in place with Task evidence; related documents:
 - [Governance navigation](../README.md)
 - [Bootstrap policy](bootstrap.md)
 - [Agentic policy](agentic.md)
-- [GitHub governance](../../docs/00.workspace/02.process/github-governance.md)
-- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
+- [GitHub governance](../../docs/00.workspace/03.process/github-governance.md)
+- [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)

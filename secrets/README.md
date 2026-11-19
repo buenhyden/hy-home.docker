@@ -1,10 +1,10 @@
 ---
 title: "비밀 파일 관리"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 created: "2026-02-23"
 ---
 
@@ -95,6 +95,6 @@ HOME 전환 전에는 실행 중 소비자가 사용하는 옛 경로에 동일 
 ### Related Documentation
 
 - [문서 인덱스](../docs/README.md): 아래 단계 문서는 이 인덱스에서 찾는다.
-- 민감 변수 비교: `docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md`
-- 백업·복구 정책: `docs/05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md`
-- README 양식: `docs/99.templates/templates/common/readme-repository.template.md`
+- 민감 변수 비교: `docs/05.operations/01.guides/04.security-and-secrets/0010-sensitive-env-vars-comparison.md`
+- 백업·복구 정책: `docs/05.operations/02.policies/10.platform-and-backup/0021-backup-and-restore.md`
+- README 양식: `docs/99.templates/02.templates/93.common/readme-repository.template.md`

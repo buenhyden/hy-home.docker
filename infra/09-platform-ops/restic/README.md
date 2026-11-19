@@ -1,10 +1,10 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.5.1"
+version: "1.5.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 ---
 
 # Restic Backup Jobs
@@ -143,10 +143,10 @@ systemd-analyze verify infra/09-platform-ops/restic/systemd/hyhome-backup.servic
 
 [documentation entry point](../../../docs/README.md)를 통해 Stage 05 대상
 `04-data/0021-backup-and-restore`(GDE/POL/RUN-0021)로 이동합니다. 오프사이트
-대상 결정은 `docs/02.architecture/decisions/0056-offsite-backup-target-and-size-cap.md`(ADR-0056)를 참고합니다.
+대상 결정은 `docs/02.architecture/02.decisions/0056-offsite-backup-target-and-size-cap.md`(ADR-0056)를 참고합니다.
 
-- [10-platform-and-backup runbooks](../../../docs/05.operations/runbooks/10-platform-and-backup/README.md): RUN-0021 backup-and-restore
+- [10-platform-and-backup runbooks](../../../docs/05.operations/03.runbooks/10.platform-and-backup/README.md): RUN-0021 backup-and-restore
 
 #### Observability and Recovery
 
-오케스트레이터는 run이 실패해도 `hyhome_backup_offsite_repo_bytes`를 기록하고, 저장소가 소스와 같은 파일시스템이면 종료 코드 64, 잠금 사용 중이면 75, 원격 용량 초과 위험이면 66으로 중단한다. 복구 절차는 [10-platform-and-backup runbooks](../../../docs/05.operations/runbooks/10-platform-and-backup/README.md)의 RUN-0021 백업·복구 Runbook을 따른다.
+오케스트레이터는 run이 실패해도 `hyhome_backup_offsite_repo_bytes`를 기록하고, 저장소가 소스와 같은 파일시스템이면 종료 코드 64, 잠금 사용 중이면 75, 원격 용량 초과 위험이면 66으로 중단한다. 복구 절차는 [10-platform-and-backup runbooks](../../../docs/05.operations/03.runbooks/10.platform-and-backup/README.md)의 RUN-0021 백업·복구 Runbook을 따른다.

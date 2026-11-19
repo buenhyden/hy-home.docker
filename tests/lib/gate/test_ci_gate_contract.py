@@ -256,7 +256,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         selected = contract.select_public_suites(
             public,
             "changed",
-            ("docs/05.operations/guides/README.md",),
+            ("docs/05.operations/01.guides/README.md",),
         )
         self.assertIn("document-contract", selected)
         self.assertIn("document-graph", selected)
@@ -267,7 +267,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             contract.public_root_gate_ids(
                 public,
                 selected,
-                changed_paths=("docs/05.operations/guides/README.md",),
+                changed_paths=("docs/05.operations/01.guides/README.md",),
             ),
         )
         with self.assertRaises(contract.GateContractError) as raised:
@@ -304,7 +304,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
 
         known_paths = {
             "docs/03.specs/0173-governance-qa-surface-convergence/plan.md": set(),
-            "docs/00.workspace/02.process/sdlc.md": set(),
+            "docs/00.workspace/03.process/sdlc.md": set(),
             "infra/monitoring/config.yml": {
                 "leaf.local-tech-stack-version-drift",
                 "leaf.repository-integrity-regressions",
@@ -340,7 +340,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             "projects/storybook/nextjs/src/app/page.tsx": frontend
             | {"leaf.storybook-contract"},
             "scripts/lib/document_governance/spec_packages.py": document,
-            "docs/05.operations/guides/0001-example.md": catalog,
+            "docs/05.operations/01.guides/0001-example.md": catalog,
             "scripts/lib/document_governance/operations_catalog.py": document | catalog,
             "scripts/validation/ci_gate_runner.py": {"local.workflow-harness"},
             "tests/validation/test_ci_gate_plan.py": {"local.workflow-harness"},
@@ -640,7 +640,7 @@ def leaf(gate_id: str, suite_key: str) -> contract.GateNode:
         timeout_minutes=10,
         opaque=True,
         children=(),
-        rule_owner="docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary",
+        rule_owner="docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary",
     )
 
 
@@ -848,7 +848,7 @@ class CiGateContractTests(unittest.TestCase):
                         "suite_key": f"over-{index}",
                         "guarantee": "none",
                         "rule_owner": (
-                            "docs/00.workspace/03.quality/quality-standards.md"
+                            "docs/00.workspace/04.quality/quality-standards.md"
                             "#4-execution-boundary"
                         ),
                         "entrypoint": "scripts/check.py",
@@ -878,7 +878,7 @@ class CiGateContractTests(unittest.TestCase):
             "kind": "leaf",
             "suite_key": "invalid",
             "guarantee": "none",
-            "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary",
+            "rule_owner": "docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary",
             "entrypoint": "scripts/check.py",
             "argv": [],
             "cwd": ".",
@@ -1402,7 +1402,7 @@ class CiGateContractTests(unittest.TestCase):
             "kind": "leaf",
             "suite_key": "safe",
             "guarantee": "none",
-            "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary",
+            "rule_owner": "docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary",
             "entrypoint": "scripts/check.py",
             "argv": [],
             "cwd": ".",
@@ -1483,7 +1483,7 @@ class DocumentGovernanceSelectionTests(unittest.TestCase):
         document_suites = {"document-contract", "document-graph", "document-lifecycle"}
         for path in (
             "docs/99.templates/registry.json",
-            "docs/00.workspace/03.quality/quality-standards.md",
+            "docs/00.workspace/04.quality/quality-standards.md",
         ):
             with self.subTest(path=path):
                 selected = contract.select_public_suites(public, "changed", (path,))
@@ -1501,7 +1501,7 @@ class DocumentGovernanceSelectionTests(unittest.TestCase):
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
-        path = "docs/00.workspace/02.process/approval-boundaries.md"
+        path = "docs/00.workspace/04.quality/approval-boundaries.md"
         selected = contract.select_public_suites(public, "changed", (path,))
         self.assertIn("agent-governance", selected)
         roots = contract.public_root_gate_ids(public, selected, changed_paths=(path,))
@@ -1535,7 +1535,7 @@ class GateCrosswalkTests(unittest.TestCase):
         self.assertIn("local.workflow-harness", row.consumers)
         self.assertIn("tests.lib.gate.test_github_workflow_contract", row.test_modules)
         self.assertEqual(
-            "docs/00.workspace/02.process/github-governance.md"
+            "docs/00.workspace/03.process/github-governance.md"
             "#4-github-actions-security-contract",
             row.owner,
         )
@@ -1588,7 +1588,7 @@ class GateCrosswalkTests(unittest.TestCase):
 
     def test_unknown_rule_owner_document_or_anchor_is_rejected(self) -> None:
         for owner in (
-            "docs/00.workspace/03.quality/quality-standards.md#no-such-heading",
+            "docs/00.workspace/04.quality/quality-standards.md#no-such-heading",
             ".agents/governance/no-such-policy.md#4-execution-boundary",
         ):
             with self.subTest(owner=owner):

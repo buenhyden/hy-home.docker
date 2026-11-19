@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Software Verification Requirements"
-version: "2.4.0"
+version: "2.4.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-19"
 layer: "requirements"
 artifact_id: "REQ-0010"
 created: "2026-03-26"
@@ -142,10 +142,10 @@ Render and policy conditions (REQ-0010-FR-0003, REQ-0010-FR-0007, the rendering,
 
 #### Downstream Links
 
-- **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
+- **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/01.descriptions/0009-tooling-architecture.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
   and [SPEC-0263 LAB promotion contract](../03.specs/0263-lab-promotion-contract/spec.md)
-- **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/decisions/0062-home-lab-membership.md)
+- **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/02.decisions/0062-home-lab-membership.md)
 - **Retired domain Spec SPEC-0010** (tooling): replaced by the tooling guides,
   policies and runbooks in the operations catalog under `docs/05.operations/`.
 - **Retired requirement REQ-0021** (tooling optimization hardening): retired

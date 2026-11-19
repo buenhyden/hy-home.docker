@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: floating reference"
-version: "1.0.6"
+version: "1.0.7"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -28,7 +28,7 @@ Apply the declared `block` action for block-unpinned-gha-action.
 
 ### Authority
 
-Owning policy: [GitHub governance](../../../docs/00.workspace/02.process/github-governance.md).
+Owning policy: [GitHub governance](../../../docs/00.workspace/03.process/github-governance.md).
 
 ## Scope
 
@@ -46,7 +46,7 @@ None.
 
 **Floating GitHub Actions reference blocked (project rule)**
 
-`docs/00.workspace/02.process/github-governance.md` — GitHub Actions Security Contract: the workflow uses a floating branch or tag reference.
+`docs/00.workspace/03.process/github-governance.md` — GitHub Actions Security Contract: the workflow uses a floating branch or tag reference.
 
 **Detected pattern:** `uses: owner/action@latest` / `@main` / `@master` / `@develop`
 

@@ -24,7 +24,7 @@ LAUNCHER_PATHS = (
     "scripts/lib/ops/compose_start.py",
     "tests/lib/ops/test_compose_start.py",
     "tests/validation/test_p07_ci_routing.py",
-    "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md",
+    "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md",
 )
 OBSERVATION_MODULES = (
     "tests.lib.ops.test_compose_observation",
@@ -94,7 +94,7 @@ class P07RoutingTests(unittest.TestCase):
         for path in (
             "infra/06-observability/grafana/dashboards/Observability/prometheus-overview.json",
             "tests/validation/fixtures/p07-observation/dashboards.test.yml",
-            "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md",
+            "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md",
         ):
             with self.subTest(path=path):
                 changed = (path,)

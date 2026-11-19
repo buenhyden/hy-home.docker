@@ -31,10 +31,10 @@ secrets:
 - row: LAB-006
   destination: secrets/db/valkey-cluster/password.txt
 documents:
-  guide: docs/05.operations/guides/15-labs/0022-valkey-cluster.md
-  runbook: docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md
-  guide_target: docs/05.operations/guides/05-databases-and-storage/
-  runbook_target: docs/05.operations/runbooks/05-databases-and-storage/
+  guide: docs/05.operations/01.guides/15.labs/0022-valkey-cluster.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0022-valkey-cluster.md
+  guide_target: docs/05.operations/01.guides/05.databases-and-storage/
+  runbook_target: docs/05.operations/03.runbooks/05.databases-and-storage/
 resources:
   services:
     valkey-cluster-exporter:
