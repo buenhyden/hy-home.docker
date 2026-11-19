@@ -1,6 +1,6 @@
 ---
 title: "W10 Infrastructure Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -135,9 +135,11 @@ Select GREEN resolves Select RED, and Follow-up GREEN resolves Follow-up RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 149 | pending | Host survey, Profile control, LAB concurrency, Kubernetes boundary, Select GREEN, Real select, Closure oracle, Select review, Follow-up GREEN | Awaits the owner's decision | @buenhyden |
+| 149 | accepted | Host survey, Profile control, LAB concurrency, Kubernetes boundary, Select GREEN, Real select, Closure oracle, Select review, Follow-up GREEN | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 149 on 2026-11-19.
 
 The live LAB run stays runtime-only by the owner's choice.
 

@@ -1,6 +1,6 @@
 ---
 title: "W10 Observe Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -180,9 +180,13 @@ Observe review, and Follow-up GREEN resolves Follow-up RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 148 | pending | Scheduled analysis, Grouping GREEN, Prune after fix, Observe GREEN, Real observe report | Awaits the next backup run and the owner's decision | @buenhyden |
+| 148 | pending | Scheduled analysis, Grouping GREEN, Prune after fix, Observe GREEN, Real observe report | On 2026-11-19 the owner chose to accept once the open required rows are resolved; they stay required and open | @buenhyden |
 
 ### Remaining Conditions
+
+On 2026-11-19 the owner kept criterion 148 pending: the SDLC accepts it only
+after its open required rows are resolved; TSK-0095 lists them with their
+next check.
 
 The 2026-11-20 daily backup must show the state repository under budget;
 with about 330 MiB of headroom the budget decision may return.

@@ -1,10 +1,10 @@
 ---
 title: "W08 Session Capture Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0084"
 parent_ids:
@@ -151,9 +151,11 @@ Test isolation GREEN resolves Test isolation RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 140 | pending | Capture GREEN, System turn GREEN, Native Claude capture, Native Codex capture observed, Test isolation GREEN | Awaits the owner's decision | @buenhyden |
+| 140 | accepted | Capture GREEN, System turn GREEN, Native Claude capture, Native Codex capture observed, Test isolation GREEN | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 140 on 2026-11-19.
 
 None in W154 or W155. W08-ANALYSIS owns scheduled analysis of the captured
 events.

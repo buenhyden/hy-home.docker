@@ -1,10 +1,10 @@
 ---
 title: "W10 Forecast Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0089"
 parent_ids:
@@ -121,9 +121,11 @@ outcome. Failed and bound GREEN resolves Failed and bound RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 145 | pending | Forecast GREEN, Real store immutability, Real outcome observed, Failed and bound GREEN | Awaits the owner's decision | @buenhyden |
+| 145 | accepted | Forecast GREEN, Real store immutability, Real outcome observed, Failed and bound GREEN | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 145 on 2026-11-19.
 
 Calibration needs at least 20 completed tasks of one type.
 

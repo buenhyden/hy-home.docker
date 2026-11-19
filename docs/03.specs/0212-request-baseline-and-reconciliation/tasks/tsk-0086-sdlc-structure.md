@@ -1,10 +1,10 @@
 ---
 title: "SDLC Structure Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0086"
 parent_ids:
@@ -144,6 +144,7 @@ correct titles; Claude cited BOOTSTRAP-R16 as its route.
 | Workspace link GREEN | 142 | W158 | `test_workspace_policy_links_are_canonical_not_stage_links` | Link rule change | PASS | Only the Stage 03 link is flagged; the docs router may name a policy | required | Workspace link RED |
 | Document checks | 142 | W158 | link alignment and commands, changed metadata, corpus lifecycle | Staged change | PASS | 0 failures; metadata 210 selected, 0 violations | required | - |
 | All link modes | 142 | W158 | `check-document-links.py --mode all` | Staged change and an `origin/main` worktree | FAIL | 5 `stage-link-outside-docs` findings in the n8n and SearXNG READMEs, identical on `main`; none from this change | required | - |
+| All link modes after fix | 142 | W158 | `check-document-links.py --mode all` | The n8n and SearXNG READMEs with the five 0110 links replaced by their IDs, 2026-11-19 | PASS | 907 documents, 0 failures | required | All link modes |
 | Contract and renderer | 142 | W158 | agent governance contract, renderer check | Staged change | PASS | contract 0 failures; renderer drift 0 | required | - |
 | Focused suites | 142 | W158 | links, relations, registry, gate contract, workflow contract, CI routing, script manifest, surface ownership, entrypoint and gate plan modules | Staged change, controller Python 3.14.8 | PASS | 666 tests; metadata modules 297 tests | required | - |
 | Hosted candidate RED | 142 | W158 | PR 1096 candidate-documents | Commit `75a98d6c1` | FAIL | 46: template policy references pinned to `.agents/governance/`; generation-7 fixtures whose committed Registry names owners only the working tree holds | required | - |
@@ -169,9 +170,11 @@ failure predates this Task and stays with the SearXNG owner.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 142 | pending | Moved link GREEN, Relation owner GREEN, Moved baseline GREEN, Document checks, Contract and renderer, Native loading observed | Awaits the owner's decision | @buenhyden |
+| 142 | accepted | Moved link GREEN, Relation owner GREEN, Moved baseline GREEN, Document checks, Contract and renderer, Native loading observed, All link modes after fix | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 142 on 2026-11-19.
 
 Five outside-docs links in the n8n and SearXNG READMEs fail on `main` too and
 are not this Task's change.

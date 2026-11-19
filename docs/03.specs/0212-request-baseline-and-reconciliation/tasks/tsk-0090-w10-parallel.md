@@ -1,10 +1,10 @@
 ---
 title: "W10 Parallel Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0090"
 parent_ids:
@@ -129,9 +129,11 @@ tamper RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 146 | pending | Dispatch GREEN, Patch tamper GREEN, Real parallel run, Real cancel | Awaits the owner's decision | @buenhyden |
+| 146 | accepted | Dispatch GREEN, Patch tamper GREEN, Real parallel run, Real cancel | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 146 on 2026-11-19.
 
 A provider worker run and a larger sample of parallel gains remain open.
 

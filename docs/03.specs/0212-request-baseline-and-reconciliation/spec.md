@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.91.0"
+version: "1.92.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1203,6 +1203,10 @@ target, backup, recovery boundary, and action-specific authorization.
      content is listed with its owner and kept while in use, and only the
      owner-approved one-off folder is deleted; the package itself goes in
      Q07-CUTOVER.
+151. TSK-0095 applies the 4.2.0 W11-ACCEPT design: every prerequisite's
+     criterion carries the owner's decision, runtime remainders are listed
+     with their evidence kind, next check and the claim they limit, and the
+     cutover is shown ready by a read-only allocation rehearsal.
 
 ### Evidence Requirements
 

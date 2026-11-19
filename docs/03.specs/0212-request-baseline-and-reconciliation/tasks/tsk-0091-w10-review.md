@@ -1,6 +1,6 @@
 ---
 title: "W10 Review Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -176,9 +176,11 @@ resolves Dispatcher fix RED, and each re-review resolves its first review.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 147 | pending | Policy checks, Forecast re-review, Dispatcher re-review, Forecast fix GREEN, Dispatcher fix GREEN, Real dispatch after fixes | Awaits the owner's decision | @buenhyden |
+| 147 | accepted | Policy checks, Forecast re-review, Dispatcher re-review, Forecast fix GREEN, Dispatcher fix GREEN, Real dispatch after fixes | Owner @buenhyden accepted on 2026-11-19 in this chat (W11-ACCEPT) | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 147 on 2026-11-19.
 
 None beyond the owner's decision; the advisory items above are recorded.
 

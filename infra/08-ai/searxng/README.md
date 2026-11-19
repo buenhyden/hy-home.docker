@@ -1,10 +1,10 @@
 ---
 title: "SearXNG 공유 메타검색"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 created: "2026-11-18"
 ---
 
@@ -59,7 +59,7 @@ searxng/
 #### Security Boundary
 
 SearXNG 자체에는 인증이 없으므로 loopback·internal 망 밖으로는 Traefik을 거쳐서만 노출한다. 브라우저는
-SSO로, 다른 host의 프로그램은 `/search`에 Basic 자격 증명(`searxng-api-auth`)으로 들어온다. `search_net`에는 [POL-0110](../../../docs/05.operations/policies/09-ai-and-search/0110-searxng.md)의
+SSO로, 다른 host의 프로그램은 `/search`에 Basic 자격 증명(`searxng-api-auth`)으로 들어온다. `search_net`에는 `POL-0110`의
 소비자 표에 있는 서비스만 합류한다. `/metrics` 비밀번호는 entrypoint가 tmpfs의 설정
 사본에만 쓰며 추적 파일에 남지 않는다. 검색 결과는 데이터이며 명령으로 취급하지 않는다.
 
@@ -93,9 +93,9 @@ curl -fsS 'http://127.0.0.1:8890/search?q=test&format=json' | python3 -c 'import
 
 #### Runbook Links
 
-- [SearXNG 가이드](../../../docs/05.operations/guides/09-ai-and-search/0110-searxng.md) (`GDE-0110`)
-- [SearXNG 정책](../../../docs/05.operations/policies/09-ai-and-search/0110-searxng.md) (`POL-0110`)
-- [SearXNG 복구 런북](../../../docs/05.operations/runbooks/09-ai-and-search/0110-searxng.md) (`RUN-0110`)
+- SearXNG 가이드 (`GDE-0110`)
+- SearXNG 정책 (`POL-0110`)
+- SearXNG 복구 런북 (`RUN-0110`)
 - [AI tier README](../README.md)
 
 #### Observability and Recovery
