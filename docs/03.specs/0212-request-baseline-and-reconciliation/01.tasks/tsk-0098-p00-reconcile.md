@@ -1,6 +1,6 @@
 ---
 title: "P00 Current Workspace Reconciliation Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -72,6 +72,9 @@ Fresh version reads still report Codex CLI 0.169.0 and Claude Code 2.1.328.
 Codex warned that PATH aliases could not be created in the restricted read-only
 location but returned its version with exit 0; no native feature success or
 trust state is inferred from either version command.
+After commit `51d0c460f15b89ca994d61814766a3c2d8f3e680`, brief revision 2
+binds a result-only update to this Task. The reviewed Spec/Plan and all runtime
+source are unchanged; no parallel writer or temporary progress file exists.
 
 ## Execution Log
 
@@ -302,6 +305,8 @@ exit and observation method are retained in Location for this package.
 | E23 | 154 | W170 | .venv/bin/python scripts/validation/check-document-corpus-lifecycle.py --readiness | P00 1.1.0 current corpus | PASS | Exit0; corpus/occupancy violations0. SPEC0204/0212/0218/0263 remain not-ready with existing obligations and missing receipts; not retirement, service or owner acceptance | required | - |
 | E24 | 154 | W170 | Independent review of P00 1.1.0 logical diff | Three owned files over b8ddeee6 and matching decisions | PASS | Fresh-context read-only review: specification/quality PASS, no actionable finding, one logical review round. Dispatch/return clock times and internal wait were not captured. Behavioral read-only investigation is not a P06 native permission probe | required | - |
 | E25 | 154 | W170 | .venv/bin/python scripts/validation/run-ci-gate.py --profile changed --explain; git diff --check | Three-file P00 documentation diff | PASS | Both exit0; metadata/preflight/changed-links/lifecycle selected, no irrelevant Hermes or full repository regression. Explanation executes no leaf. No unowned file edit | required | - |
+| E26 | 154 | W170 | Hosted P00 candidate-quality and current PR read-back | Commit51d0c460; authenticated merge candidate66faa102; PR1128 run44585803946 | PASS | Routing/core/required aggregate succeeded; documents regression shard correctly unselected/skipped, not executed PASS. Current PR head/base read-back matches51d0c460/b8ddeee6. This is P00's new hosted observation, separate from reused P01 evidence and owner acceptance | required | - |
+| E27 | 154 | W170 | Matching tools/next_prompt.py plan with in-memory evidence-backed results | Current P00 comparison/checks complete and P01 retained; no other stage marked performed | PASS | Python exit0; NEXT prompts/P02-LOCAL-FEEDBACK.md, with no earlier entered/runtime-deferral workaround. P00 has actual decision_revision2026-11-20; P01 reuse cites TSK0099/PR1126/1127. No progress file, package mutation or next-prompt execution | required | - |
 
 ### Resolution Links
 
@@ -313,6 +318,9 @@ E20 resolves E19's diagnostic error for the declared future path. E17–E25
 describe the current 1.1.0 comparison/checks; older rows remain dated evidence.
 P01's actual hosted PASS is reused for unchanged implementation, not relabelled
 as a new P00 run or a new native observation.
+E26 is the observed PR check of the frozen three-file reconciliation unit;
+the result-only receipt receives ordinary document/PR checks without replaying
+unchanged implementation tests or independent review.
 
 ## Acceptance Decision
 
@@ -320,14 +328,14 @@ as a new P00 run or a new native observation.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 154 | pending | E17, E18, E20, E21, E22, E23, E24, E25 | P00 1.1.0 reconciliation and focused verification complete; owner acceptance has not been supplied | @buenhyden |
+| 154 | pending | E17, E18, E20, E21, E22, E23, E24, E25, E26, E27 | P00 1.1.0 reconciliation/local and hosted verification complete; owner acceptance has not been supplied | @buenhyden |
 
 ### Remaining Conditions
 
 The earlier P00 documentation and focused checks remain dated evidence. This
-1.1.0 pass implements only the three owned reconciliation documents and its
-focused checks are complete; requested hosted checks/delivery require their
-own observations. Criterion 154
+1.1.0 pass implements only the three owned reconciliation documents; focused
+and hosted verification are complete as recorded above. The final delivery
+state is read from PR1128 rather than inferred from this receipt. Criterion 154
 still awaits owner acceptance. F003/P01 implementation and hosted verification
 are maintained, with criterion 155 acceptance separately pending. Confirmed
 cursor/provenance and forecast-axis defects remain P10/P11 repair work, not
@@ -345,6 +353,15 @@ current applicability/criterion 154, Plan W170 and this Task's finding,
 decision and follow-up map. Requested delivery is a checked Conventional
 Commit, push, PR and merge for these three files only. Actual outcomes are
 reported separately; no owner acceptance is inferred from delivery.
+
+Current delivery receipt: source commit `51d0c460` is published in
+[PR1128](https://github.com/buenhyden/hy-home.docker/pull/1128), with actual
+required-check success in
+[run44585803946](https://github.com/buenhyden/hy-home.docker/actions/runs/44585803946).
+The final result-only receipt uses that same PR. Read back its current-head
+checks and merge result at delivery; this does not create another approval
+ledger or infer owner acceptance. No one-off progress/QA file was persisted;
+the matching package remains available for P02 through final P17.
 
 There is no new runtime or permanent policy body to promote from P00. The
 ordered follow-up identifies existing workspace, agent, product and Stage 99
