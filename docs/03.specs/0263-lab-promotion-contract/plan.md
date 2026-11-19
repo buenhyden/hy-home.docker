@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "0.3.2"
+version: "0.3.3"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0263-PLAN-0001"
 parent_ids:
@@ -18,14 +18,13 @@ created: "2026-11-05"
 
 ### Goal and Boundary
 
-The plan has six steps:
+The plan has five steps:
 
 1. Teach `scripts/operations/lab.py` the folder layout and the manifest.
 2. Move the 15 LABs into that layout.
-3. Move supabase to LAB secret copies.
-4. Add the promotion readiness check.
-5. Write the promotion operations documents.
-6. Record the checks.
+3. Add the promotion readiness check.
+4. Write the promotion operations documents.
+5. Record the checks.
 
 Every step extends `lab.py`, its tests and the existing catalogs. No new
 controller is added. W7 then sizes reservations, and W8 retires the supabase
@@ -81,7 +80,7 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
 | --- | --- | --- | --- | --- | --- |
 | W1 | 2, 3 | `lab.py` resolves `labs/<name>/docker-compose.yml`, validates `promotion.yaml`, and refuses every Docker socket bind | None | TSK-0001 | `test_lab_controller.py` |
 | W2 | 1, 2 | Move the 15 LABs, their assets and dashboards into `labs/<name>/`, fix relative paths, write each manifest, reconcile active references | W1 | TSK-0001 | `compose config` per LAB; `lab.py check` render; unit suite; hardening |
-| W3 | 3 | supabase reads only `secrets/labs/supabase/`; catalog rows, the new SMTP copy row and tests follow; prepare the registry edits for the owner | W2 | TSK-0001 | `test_secret_metadata_sync.py`; `test_supabase_smtp_rehearsal.py`; `lab.py check` |
+| W3 | 3 | Withdrawn: W8 retired the supabase LAB instead of moving it onto LAB secret copies | W2 | TSK-0001 | - |
 | W4 | 5 | `lab.py readiness <name>` writes the section 5 report from measured host values, with the reserve from the promotion policy | W1, W2 | TSK-0001 | `test_lab_controller.py`; one read-only run on HOME |
 | W5 | 4, 6 | Promotion policy (destination rules, reserve) and Runbook (three procedures); Kafka and OpenSearch cluster Guides and Runbooks | W2, W4 | TSK-0001 | operations catalog; metadata; links |
 | W6 | 7 | Record local and hosted CI results | W1-W5 | TSK-0001 | the checks in the Verification Plan |
@@ -126,7 +125,7 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
 
 ---
 
-#### W1: `lab.py` layout, manifest and socket exception
+#### W1: `lab.py` layout, manifest and socket refusal
 
 **Files:**
 
@@ -205,11 +204,7 @@ phrase:**
   - `test_manifest_resources_disagree_with_render`. It renders a service with
     `cpus: 1` and has the manifest declare `0.5`;
   - `test_manifest_valid_passes`, which expects `== []`;
-  - `test_socket_allowed_only_for_supabase_vector_read_only`, with four cases:
-    1. supabase `vector` with `read_only: true` is allowed;
-    2. the same bind with `read_only: false` is refused;
-    3. a supabase service `kong` with the read-only bind is refused;
-    4. `vector` with source `/run/user/1000/docker.sock` is refused.
+  - a socket test that refuses every Docker socket bind, read-only or not.
 
   Build fixtures with the module's existing helpers
   (`footprint` over a dict model, `tmp_path` repos).
@@ -218,10 +213,8 @@ phrase:**
   Expected: FAIL, because `load_manifest`, `manifest_problems` and folder
   resolution are not defined yet.
 - [ ] **Step 3: Implement.**
-  - **Socket exception.** It is decided in `source_allowlist_problems`: when
-    `name == "supabase"`, the service is `vector`, the source and target are
-    both `/var/run/docker.sock` and the bind is read-only, the source is
-    allowed. Anything else stays refused.
+  - **Socket refusal.** `source_allowlist_problems` refuses every Docker
+    socket bind.
   - **Catalog ids.** They come from
     `infra/03-security/openbao/secret-catalog.json`.
 - [ ] **Step 4: Run the whole controller module.**
@@ -317,59 +310,8 @@ in the Task:
 
 #### W3: supabase on LAB secret copies
 
-**Files:**
-
-- Modify: `labs/supabase/docker-compose.yml`. Point the eleven secret
-  `file:` entries at `${LAB_SECRET_DIR:-../../secrets/labs}/supabase/<same
-  file name>`. The SMTP file is `smtp_password.txt`, and the mng-pg password
-  is `supabase_db_password.txt`.
-- Modify: `infra/03-security/openbao/secret-catalog.json`:
-  - **SUPA-002..011 and AI-001.** Set `source_path` to
-    `secrets/labs/supabase/<file>` and consumers to
-    `labs/supabase/docker-compose.yml`.
-  - **COMM-002.** Remove the `labs/supabase.yml` consumer.
-  - **LAB-037 (new).** Model it on LAB-036: `source_path`
-    `secrets/labs/supabase/smtp_password.txt`, scope `lab`, classification
-    `lab_excluded`, purpose "Supabase LAB SMTP 비밀번호 (HOME COMM-002 값
-    복사본)".
-- Modify: `tests/validation/test_secret_metadata_sync.py`. Delete
-  `SUPABASE_CANONICAL_SECRET_PATHS` and the `shared_supabase` branch; supabase
-  then follows the general LAB rule.
-- Modify: `tests/validation/test_supabase_smtp_rehearsal.py`, the supabase
-  Guide `docs/05.operations/guides/15-labs/0029-supabase.md`, and its Runbook.
-- Task only: the owner checklist and the prepared registry rows.
-
-**Owner checklist.** The agent writes it in the Task and does not run it:
-
-1. Copy `secrets/communication/smtp/smtp_password.txt` to
-   `secrets/labs/supabase/smtp_password.txt`.
-2. Copy `secrets/db/mng-pg/supabase_password.txt` to
-   `secrets/labs/supabase/supabase_db_password.txt`. HOME mng-pg keeps its
-   copy because HOME provisions that role.
-3. Move the nine `secrets/data/supabase/*.txt` files to
-   `secrets/labs/supabase/`.
-4. Apply the prepared rows to `secrets/SENSITIVE_ENV_VARS.md.example`.
-
-The copy-or-move split for steps 2 and 3 is confirmed by
-`git grep supabase_password -- infra scripts` during W3. If mng-pg does not
-use the password, step 2 becomes a move.
-
-- [ ] **Step 1: Make the tests fail.**
-  - Remove the W2 `xfail` on `test_lab_secret_paths_use_lab_root[supabase]`.
-  - Add `test_supabase_reads_no_home_secret` to `test_secret_metadata_sync.py`.
-    No rendered supabase secret path is outside `secrets/labs/supabase/`.
-- [ ] **Step 2: Run them and confirm they fail.**
-  `pytest tests/validation/test_lab_layout.py tests/validation/test_secret_metadata_sync.py -k supabase -v`.
-  Expected: FAIL on the eleven HOME paths.
-- [ ] **Step 3: Implement.** Apply the Compose, catalog, test and document
-  edits listed above.
-- [ ] **Step 4: Run the checks.** Run
-  `pytest tests/validation/test_secret_metadata_sync.py tests/validation/test_supabase_smtp_rehearsal.py tests/validation/test_lab_layout.py tests/lib/ops -v`.
-  Expected: PASS. Then run
-  `lab.py check supabase --env-file labs/.env.example` in render-only form.
-  Expected: no secret or socket problem. A missing secret file is the owner's
-  step 1-3 and is recorded as `NOT_RUN` until it is done.
-- [ ] **Step 5: Commit.** `fix: Move supabase onto LAB secret copies`.
+Withdrawn. The owner retired the supabase LAB on 2026-11-06, and W8 removed
+it, so its secrets were never moved to LAB copies.
 
 #### W4: Promotion readiness check
 

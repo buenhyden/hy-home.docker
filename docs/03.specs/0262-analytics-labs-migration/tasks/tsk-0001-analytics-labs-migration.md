@@ -1,10 +1,10 @@
 ---
 title: "Analytics Labs Migration Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0262-TSK-0001"
 parent_ids:
@@ -64,6 +64,12 @@ Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI passed on PR #747, merged as
 `729d16da7`.
 
+#### Owner decisions 2026-11-19
+
+In this chat the owner accepted criterion 2 on the E2, E3, E17, E20, E22,
+E23 and E24 PASS rows; E16, E19 and E21 are resolved by E17, E23 and E22,
+and E4 is optional. Every criterion is accepted, so this Task closes.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -72,6 +78,7 @@ progress under the approved parents. Hosted CI passed on PR #747, merged as
 | SPEC-0262-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0262-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0262-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0262-TSK-0001 | in-progress | completed | #owner-decisions-2026-11-19 |
 
 #### Decisions
 
@@ -286,14 +293,13 @@ The real budget is an operator input.
 - Residual: lab.py does not check container-escape options (`devices`,
   `volumes_from`, host `pid`/`network_mode`, `cap_add`, a privileged
   service named `cadvisor`).
-- supabase: move its 11 secrets to `LAB_SECRET_DIR` copies (owner decision).
-  Its Docker socket bind stays BLOCKED until an exception is approved.
 
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
 
 - On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the SPEC-0215 reference (now POL-0107).
+- On 2026-11-19 the owner directed that Stage 03 passages conflicting with the current implementation be deleted. The Spec no longer says LAB secrets keep their canonical root paths as the Supabase LAB does: LAB secrets are `LAB_SECRET_DIR` copies, and the Supabase LAB was retired under SPEC-0263 TSK-0003, so its open issue is gone too. E24 rechecked criterion 2 on current `main`.
 
 ## Verification Evidence
 
@@ -324,6 +330,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | E21 | 2 | W1 | lab-root-coverage-tests | The three `c94497269` tests (HOME secret/root env/Docker root, source-tree tracked non-env, `.env` sensitivity) replayed against the pre-fix `lab.py` at `dad8b32c6` | FAIL | `root_footprint()` rejects `env_file` (TypeError: no HOME secret, root env or Docker root footprint); gitignored `.env` and untracked source-tree files not refused (`[] is not true` x2); `labs/.env` not sensitive | required | - |
 | E22 | 2 | W1 | lab-root-coverage-tests | same three tests, `test_lab_controller` and `test_lab_isolation` on `1279b4ed0` (`origin/main`, includes `c94497269`) | PASS | 3 tests OK; 111 tests OK in the two modules | required | E21 |
 | E23 | 2 | W1 | security-review | Fix verification of E19 on `1279b4ed0`: fix `c94497269` plus later hardening through `6f4eb08dc` are on `origin/main`; E21 and E22 replay | PASS | Important 1 fixed: compose secret files are sensitive inputs, the root env file and `DockerRootDir` are HOME state, so a LAB that mounts or declares them collides. Important 2 fixed: `.env` files are sensitive and only git-tracked, unmodified paths qualify for the source-tree exemption. Minor fixed: the replayed tests cover each item. The Minor's full text is not recorded, so this reading is an assumption. No source change was needed; this review is a replay, not a new independent review | required | E19 |
+| E24 | 2 | W1 | lab-controller | `lab.py --env-file <synthetic> --root-env-file .env.example check <lab>` for the six LABs, with the `compose_controls.LAB_INPUTS` and `test_lab_isolation` synthetic inputs, plus `test_lab_isolation`, `test_infra_tier_layout` and `test_lab_controller` on `f4dc70905` | PASS | 130 tests OK; every LAB rendered with no overlap problem; only the absent synthetic secret and CA files, the ignored local `labs/lakehouse/great-expectations/__pycache__/` the tracked-only rule refuses, and the existing `jupyterlab-work` volume record pointing at the real data root remain | required | - |
 
 ### Resolution Links
 
@@ -336,16 +343,16 @@ None: nothing was recorded here before this Task moved to the common form.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | accepted | E1 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
+| 2 | accepted | E2, E3, E17, E20, E22, E23, E24 | Owner @buenhyden decided on 2026-11-19 in chat; no unresolved required row. | @buenhyden |
 | 3 | accepted | E5, E8, E14 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
 | 4 | accepted | E9 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
 | 5 | accepted | E10, E11, E12, E15 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
 
 ### Remaining Conditions
 
-Local checks and hosted CI for PR #747 are recorded above. The LAB check
-follow-up awaits independent review and its own hosted CI. On 2026-11-06 the owner
-@buenhyden accepted criteria 1, 3, 4 and 5; criterion 2 stays pending.
+Every criterion is accepted. The open issues above (owner `LAB_*` inputs
+and budgets, the container-escape residual) belong to later LAB work, not to
+this migration.
 
 ## Handoff
 

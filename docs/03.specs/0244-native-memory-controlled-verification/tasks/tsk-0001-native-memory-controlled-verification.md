@@ -1,10 +1,10 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0244-TSK-0001"
 parent_ids:
@@ -563,6 +563,14 @@ memory off, on Claude 2.1.312. Foreign user-level hook calls and an absent
 `is_error` are excluded. ECC or Codex hooks, OS isolation and other provider
 versions are not covered.
 
+#### Owner decisions 2026-11-19
+
+In this chat the owner accepted criteria 1, 5 and 6, which have no
+unresolved required row, and recorded criterion 2 as not-required: no Codex
+CLI observation was recorded here, and the provider capability matrix now
+records Codex runtime behavior. Every criterion is accepted or not-required,
+so this Task closes.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -571,12 +579,14 @@ versions are not covered.
 | SPEC-0244-PLAN-0001 | draft | approved | #plan-approval |
 | SPEC-0244-TSK-0001 | draft | ready | #ready-transition |
 | SPEC-0244-TSK-0001 | ready | in-progress | #in-progress-observation |
+| SPEC-0244-TSK-0001 | in-progress | completed | #owner-decisions-2026-11-19 |
 
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
 
 - On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the earlier-observation recap, the SPEC-0236 references and the Durable Meaning retention claim.
+- On 2026-11-19 the owner directed that Stage 03 passages conflicting with the current implementation be deleted. Remaining Conditions no longer list criterion 4 as pending, since the owner accepted it on 2026-10-30.
 
 ## Verification Evidence
 
@@ -633,22 +643,18 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | Await W1 control record | @buenhyden |
-| 2 | pending | - | Await W2 observation | @buenhyden |
+| 1 | accepted | Ready security plan review | Owner @buenhyden decided on 2026-11-19 in chat; no unresolved required row. | @buenhyden |
+| 2 | not-required | - | Not required: owner @buenhyden withdrew it on 2026-11-19; the provider capability matrix records Codex runtime behavior. | @buenhyden |
 | 3 | accepted | Normal settings memory-control query result | Normal non-mutating effective-memory-off proof and independent security review passed | @buenhyden |
 | 4 | accepted | Native PostToolUse attempt 08 | Owner accepted on 2026-10-30: PostToolUse delivery verified with normal merged memory off on Claude 2.1.312, within the two stated scope exclusions; earlier unresolved rows superseded by owner decision. | @buenhyden |
-| 5 | pending | - | Await W5 boundary and cleanup record | @buenhyden |
-| 6 | pending | - | Await W6 review and gates | @buenhyden |
+| 5 | accepted | Local marker cleanup, Global marker cleanup | Owner @buenhyden decided on 2026-11-19 in chat; both FAIL rows are resolved. | @buenhyden |
+| 6 | accepted | Metadata validation after native contract alignment | Owner @buenhyden decided on 2026-11-19 in chat; no unresolved required row. | @buenhyden |
 
 ### Remaining Conditions
 
-Criterion 3 is accepted for the recorded normal-session effective-memory-off
-query and independent security review. Criteria 1, 2 and 4–6 remain pending;
-that bounded result does not prove hook delivery or authorize another native
-attempt. This 2026-10-22 summary correction reuses the existing receipt and
-performs no provider action. Completion is limited to the source
-verification contract in SPEC-0244; it does not accept provider-global state,
-individual hook delivery without a receipt, or shared-memory implementation.
+Every criterion is accepted or not-required. Completion is limited to the
+source verification contract in SPEC-0244; it does not accept provider-global
+state or shared-memory implementation.
 
 ## Handoff
 

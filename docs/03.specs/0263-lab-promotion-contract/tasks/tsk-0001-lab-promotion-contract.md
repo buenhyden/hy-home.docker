@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0263-TSK-0001"
 parent_ids:
@@ -58,6 +58,17 @@ registry file for this work. The agent's permission settings still deny
 The owner approved SPEC-0263 on 2026-11-05. The Plan waits for the owner's
 review.
 
+#### Owner decisions 2026-11-19
+
+Criterion 3 was already recorded as not-required in TSK-0003 on 2026-11-15,
+because its supabase rows (E6, E12, E58, E68, E70) can never pass after that
+LAB was removed. In this chat the owner recorded criterion 7 as not-required,
+because hosted CI passed (E59)
+while E39 fails only on inputs `labs/.env.example` leaves empty by design and
+E47's old command no longer runs without `--profile`. E71 reran the W2 manifest
+tests on current `main`. Every criterion is now accepted or not-required, so
+this Task closes.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -66,6 +77,7 @@ review.
 | SPEC-0263-PLAN-0001 | draft | approved | #owner-acceptance-and-status |
 | SPEC-0263-TSK-0001 | draft | ready | #owner-acceptance-and-status |
 | SPEC-0263-TSK-0001 | ready | in-progress | #owner-acceptance-and-status |
+| SPEC-0263-TSK-0001 | in-progress | completed | #owner-decisions-2026-11-19 |
 
 #### Owner acceptance and status
 
@@ -404,6 +416,7 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 None: nothing was recorded here before this Task moved to the common form.
 
 - On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the observed-state snapshot, the superseded supabase/Docker-socket statements and the BLOCKED CI note.
+- On 2026-11-19 the owner directed that Stage 03 passages conflicting with the current implementation be deleted. The Plan lost the W3 move of supabase onto LAB secret copies and the W1 `vector` socket exception: W8 retired the supabase LAB, and `lab.py` refuses every Docker socket bind. Remaining Conditions no longer say that no criterion is accepted or that hosted CI waits for a push.
 
 ## Verification Evidence
 
@@ -481,6 +494,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | E68 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs (`labs/.env.example`, `.env.example`, empty scratch `LAB_DATA_DIR`, synthetic budgets) at `961b5d475` | FAIL | exit 3; the only problems are the ten untracked seed files (`db/*.sql`, `api/kong.yml`, `pooler/pooler.exs`, `logs/vector.yml`) | required | - |
 | E69 | 6 | W5 | HOME render of the cluster LABs | `docker compose --env-file labs/.env -f labs/<name>/docker-compose.yml config -q` for kafka-cluster and opensearch-cluster, after the owner set `LAB_KAFKA_CLUSTER_ID` and the host budget, at `339a6d7be` | PASS | both exit 0; `lab.py check` reports no cluster ID or certificate problem, only the budget and the one-LAB limit for this pair | required | E35 |
 | E70 | 3 | W3 | `lab.py check supabase` render-only | `python3 scripts/operations/lab.py check supabase` at `8f2d5aecc`, after TSK-0003 removed the supabase LAB | NOT_APPLICABLE | `lab.py: unknown LAB 'supabase'`, exit 2; the target no longer exists, so E6, E12, E68 and E58 can never pass and stay unresolved | required | - |
+| E71 | 2 | W2 | layout and manifest tests | `test_lab_layout` and `test_lab_controller` on `f4dc70905`, with 15 `labs/*/promotion.yaml` files | PASS | 113 tests OK | required | - |
 
 ### Resolution Links
 
@@ -497,58 +511,13 @@ None: nothing was recorded here before this Task moved to the common form.
 | 4 | accepted | E28, E29, E30, E31, E32, E33, E37, E67 | owner request 2026-11-05; PASS, E27 resolved by E67 | @buenhyden |
 | 5 | not-required | E13, E15, E18, E19, E20, E22, E24, E26, E52, E63, E64, E65, E66 | Not required: owner @buenhyden withdrew this criterion on 2026-11-15 (SPEC-0212 TSK-0070), because the owner decided on 2026-11-06 that no LAB is promoted. E25 and E54 stay recorded as resource measurements, not as a promotion request | @buenhyden |
 | 6 | accepted | E29, E30, E31, E32, E33, E34, E37, E69 | owner request 2026-11-05; PASS, E35 resolved by E69 | @buenhyden |
-| 7 | pending | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | open: E39 (example inputs empty by owner decision), E47 (local CI gate, Python 3.14.8) | @buenhyden |
+| 7 | not-required | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | Not required: owner @buenhyden decided on 2026-11-19 in chat; hosted CI passed (E59), E39 refuses empty example inputs by design and E47's command is obsolete. | @buenhyden |
 
 ### Remaining Conditions
 
-On 2026-11-15 E70 showed the supabase LAB check cannot run any more, so its
-required rows E6, E12, E68 and E58 stay unresolved and criterion 3 cannot be
-accepted; only an owner decision can close it (SDLC: only `not-required`
-closes a criterion without PASS).
-
-On 2026-11-15 the owner withdrew criterion 5 as not-required, citing the
-2026-11-06 decision that no LAB is promoted (SPEC-0212 TSK-0070). Criterion
-7 and the owner items below stay open.
-
-The final review fix wave (E49 to E58) re-ran the checks at `4bec12fa2`.
-Readiness now shows the unmeasured section 5 sub-checks as `NOT_RUN`, a
-narrowing that awaits the owner's acceptance. Hosted CI stays NOT_RUN (E48)
-until the controller pushes.
-
-All work units W1 to W6 are done. W6 ran the Verification Plan at
-`b79bd797a` (E38 to E48): the unit suite, hardening, metadata, links, lifecycle,
-catalog and manifest checks pass, and 7 of 15 LABs render from
-`labs/.env.example` as is. The other 8 need owner inputs that the example
-leaves empty (E39; they render with synthetic inputs, E40). The local full CI
-gate is BLOCKED by the host Python (E47) and hosted CI is NOT_RUN until the
-branch is pushed (E48). No criterion is accepted.
-
-Owner decisions on 2026-11-06:
-
-- **Resource rule:** judge the declared `deploy.resources.reservations`
-  instead of limits. This needs a Spec amendment, reservations on the HOME
-  services and a readiness change. That is a follow-up Task under this Spec;
-  E53 and E54 keep refusing on resources until it lands.
-- **Section 5 narrowing:** accepted as owner check items. Groups and file
-  modes, and profile and consumer clashes, become checklist items in each
-  promotion Task. The follow-up Task amends the Spec and makes those
-  readiness entries owner-judgment, non-blocking.
-- **Secret-name uniqueness:** the dropped root/LAB name uniqueness is
-  accepted, because the per-LAB path rule keeps the copies apart.
-- **Delivery:** push the branch and open a PR; the owner merges after
-  hosted CI.
-
-Open owner items:
-
-- `labs/.env` `LAB_HOST_BUDGET_*` for `lab.py check` (E58): provided by the owner;
-  on 2026-11-15 `LAB_HOST_BUDGET_CPUS` and `LAB_HOST_BUDGET_MEMORY_MIB` are
-  present in the git-ignored `labs/.env` (key names checked, values not read);
-- `labs/.env` `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR` (E35);
-- SMTP01 removing COMM-003;
-- retiring the unused `secrets/db/mng-pg/supabase_password.txt`: closed on
-  2026-11-15. The owner approved its deletion, and the file was already
-  absent (`test -e` false; the owner's `rm` reported no such file), so nothing
-  was deleted. No tracked file references it.
+Every criterion is accepted or not-required. The open owner items above
+(`labs/.env` inputs, SMTP01 removing COMM-003) stay with their own owners and
+do not hold this Task.
 
 ## Handoff
 

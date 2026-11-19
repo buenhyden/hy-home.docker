@@ -1,10 +1,10 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.22"
+version: "1.0.23"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
@@ -1312,6 +1312,8 @@ The blocker stays as recorded; earlier entries are unchanged.
 
 None: nothing was recorded here before this Task moved to the common form.
 
+- On 2026-11-19 the owner directed that Stage 03 passages conflicting with the current implementation be deleted. Remaining Conditions no longer say the old review worktree and branches remain; only the main checkout exists. The Plan also lost the SEC01 2.7.1 OpenBao version, the 2.42.6 n8n and 1.31.4 Mailpit source selection and the retired worker branches, worktrees and SMTP duplicate target; HOME declares OpenBao 2.7.2, n8n 2.46.6 and Mailpit 1.33.0.
+
 ## Verification Evidence
 
 ### Results
@@ -1515,8 +1517,8 @@ PR354 aggregate head5821e257324815acfd2cf08b1bf4c277f5e7546d passed required
 run37176029838 and merged as7209cde8b0a2bb18e9d2b7779fca29bb4528844b;
 main-security/channel run37176771913 passed. PR353 and PR355 were automatically
 reported MERGED and their original heads were verified as main ancestors.
-Four independently reviewed clean owned temporary worktrees were removed;
-all branch references, the old dirty review worktree and pending work remain.
+Four independently reviewed clean owned temporary worktrees were removed.
+By 2026-11-19 no worktree other than the main checkout remains.
 
 PR357 delivered only Spec review to approved as
 0e792cdff4e13b17af0e514b5519c56c501f04d8, after required run37176990885
