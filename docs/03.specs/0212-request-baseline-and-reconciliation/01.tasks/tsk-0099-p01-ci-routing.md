@@ -1,6 +1,6 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -54,6 +54,9 @@ After link correction commit `2bcc4436f2bff883fc79754b954e059367488a94`,
 brief revision 8 rebinds only the runner, its two existing Hermes contract
 test consumers and this Task. The prior test writer has handed back those
 files; no parallel writer remains on this delta.
+Brief revision 9 binds this result-only update to merged baseline
+`16d2be3f6c4c9a8b0de69e0224b5b6c6727432df` on
+`codex/p01-ci-evidence`. Implementation source is frozen and reused.
 
 ## Execution Log
 
@@ -86,6 +89,7 @@ reads each document once for link modes; preserve that shared graph.
 | Document writer | `scripts/lib/document_governance/spec_packages.py`, `metadata/reference.py`, `links.py`, `lifecycle/public.py`; `scripts/validation/check-document-links.py`; existing `test_spec_packages.py`, `test_metadata_validator.py`, `test_links.py` under `tests/lib/document_governance/`; `tests/validation/lifecycle/test_public.py` |
 | Coordinator | This Task and the same-package Spec and Plan |
 | Coordinator regression correction | `tests/lib/document_governance/metadata/test_reference.py`: retain native findings and assert that main does not repeat the native record-validation pass |
+| Coordinator delivery correction | Existing `tests/lib/gate/test_p03_workflow_contract.py` and `test_p11_workflow_contract.py`: preserve exact optional bindings, mutation rejection, routing and all five contexts |
 
 Each writer checks the prepared request/brief and owns only these paths.
 Independent reviewers do not edit the implementation. No new wrapper,
@@ -163,6 +167,38 @@ of eight calls, N=5, were 0.030122–0.045809 seconds before and
 0.000070–0.000079 after. These are in-process parse observations under local
 Python 3.12.3 and concurrent host load, not a disk-cold or hosted p95 claim.
 
+#### Hosted delivery result
+
+Final run [44576522487](https://github.com/buenhyden/hy-home.docker/actions/runs/44576522487)
+examined head `a6e797d0bfb99fb515012c4da0fd65b3450f1b4f` against base
+`ef7b6eed51de19da72fb2c8230b02428333218dc` and authenticated merge candidate
+`0704be89ef613ecfcac278b9c4fe588db93bc410`. Routing, core, documents and
+required `candidate-quality` all succeeded. CodeQL and GitGuardian also
+succeeded; `main-security` is correctly not applicable to this PR event.
+
+This N=1 run took 24 minutes 27 seconds (17:22:41–17:47:08 UTC).
+Run creation to routing start was 3 seconds; routing's job envelope was
+15 seconds, with plan computation below whole-second timestamp resolution.
+Both shards started 2 seconds after routing completed. Core setup before
+validation was 18 seconds, validation 257 seconds and afterward 5 seconds.
+Document setup was 19 seconds, validation 1419 seconds and afterward
+4 seconds. Aggregate scheduling took 2 seconds after documents completed;
+its job took 2 seconds, with the predicate below whole-second resolution.
+Hosted logs report 404 tests across 11 core modules and 1142 across 29
+document modules; these observations are not standing corpus-count checks.
+The Spec Package module passed 162 tests in 452.040 seconds. This broad
+26-file P01 diff differs from PR1125's two-helper change, so neither total
+speedup nor equivalent-input regression or p95 is established by comparing
+those runs. The same-input selection and parse measurements above remain
+the bounded performance evidence.
+
+[PR1126](https://github.com/buenhyden/hy-home.docker/pull/1126) was merged
+at 2026-11-19 17:49:04 UTC as
+`16d2be3f6c4c9a8b0de69e0224b5b6c6727432df`, after read-back showed
+the current head, all required results and a clean merge state. No protection
+or hook was bypassed. This result-only receipt is delivered through a
+separate ordinary PR, without repeating the source implementation.
+
 ### Blockers and Decisions
 
 No Q-01–Q-04 decision blocks P01. Permission, privacy, native provider,
@@ -182,6 +218,9 @@ Execution, checks, merge and owner acceptance are separate axes.
 The Registry's recorded generation 7 applies to SPEC-0212: use its existing
 nine-column Evidence and five-column Criterion Decisions forms. Future
 expanded templates do not change this package's consumer contract.
+E10 and E18 describe their original frozen implementation snapshots, not
+newly calculated coverage totals after hosted corrections. The unchanged
+statements retain that evidence; E23/E26/E30/E31 verify the corrections.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -216,6 +255,10 @@ expanded templates do not change this package's consumer contract.
 | E29 | 155 | W171 | Optional Hermes binding and regression ownership | Hosted run 44574168668 candidate-core; existing P03/P11 tests and adapted mutation cases | FAIL | Four obsolete mandatory-validator lookups fail after optional routing. Adapted eight tests expose 12 accepted cross-script or unknown-ID cases; an intermediate binding fix still accepts two substitutions with another generic admitted checker. These are correction work, not waived old requirements | required | - |
 | E30 | 155 | W171 | Optional Hermes binding and regression ownership | Immutable gate-ID to exact script/argv mapping before generic admission; updated existing P03/P11 tests; unchanged selection scopes | PASS | Direct combined P03/P11/model: 27 tests PASS in 3.710 seconds. Real adapter separately runs P03 four PASS in 0.535 seconds, P11 four PASS in 1.087 seconds, model 19 PASS in 2.390 seconds. All five contexts preserve exact checks; missing nodes, swapped/other checkers, bad argv and unknown identities are refused. Ruff and diff checks PASS | required | E29 |
 | E31 | 155 | W171 | Independent review of optional Hermes correction | Final immutable binding and existing P03/P11 regression delta | PASS | Reviewer approved source/security and preserved obligations; independently ran eight tests PASS in 1.455 seconds and 150 exact/malformed binding assertions across five contexts. Generic/adapter substitutions and unknown IDs are refused; no files edited by reviewer | required | - |
+| E32 | 155 | W171 | Hosted candidate-quality aggregate | Earlier runs 44572365371 and 44574168668 | FAIL | Both required aggregates failed; first documents job was cancelled after core failure, second core/documents failed. No cancellation or missing success was presented as PASS. Defects are recorded and corrected above | required | - |
+| E33 | 155 | W171 | Hosted candidate-quality aggregate | Final head a6e797d0; authenticated candidate 0704be89; run 44576522487 | PASS | Routing/core/documents/aggregate success; 404 core and 1142 document tests in this run; GitHub read-back confirms current-head checks and clean merge state. Exact time boundaries above; unchanged earlier review evidence reused | required | E32 |
+| E34 | 155 | W171 | Authorized P01 implementation delivery | PR1126 current head a6e797d0 after required checks | PASS | GitHub merge and read-back confirm merge commit 16d2be3f6c4c9a8b0de69e0224b5b6c6727432df at 2026-11-19 17:49:04 UTC. Fast-forward local reconciliation preserved a clean tree; owner acceptance is not inferred | required | - |
+| E35 | 155 | W171 | Result-only receipt authoring checks | This Task delta against 16d2be3f | PASS | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 16d2be3f: selected one record, zero violations; .venv/bin/python scripts/validation/check-document-links.py --mode all --changed --base-ref 16d2be3f: two selected documents, zero failures/warnings; .venv/bin/python scripts/validation/check-document-corpus-lifecycle.py: zero corpus/occupancy violations. All three commands exited 0; selected-plan explanation and diff check passed | required | - |
 
 ### Resolution Links
 
@@ -224,13 +267,16 @@ actual metadata correction and independent delta review, reusing unchanged
 slices. E21 resolves the obsolete duplicate-call expectation in E20 while
 retaining native findings and actual-flow coverage. No failure is waived by
 acceptance prose or an unrelated security verdict.
-E23 resolves the hosted fixture failure in E22; the updated PR still requires
-its own successful hosted aggregate before merge.
+E23 resolves the hosted fixture failure in E22; the updated PR's own
+successful hosted aggregate is subsequently recorded by E33.
 E26 resolves the actual link CLI import regression; E28 resolves test-order
-contamination discovered during review. Neither result stands in for the
-uncompleted hosted document job.
+contamination discovered during review. Those local results did not stand in
+for the interrupted hosted document job; E33 records the completed candidate.
 E30 resolves the optional-binding defect and migrates its existing contract
 tests without dropping routing, context or fail-closed obligations.
+E33 resolves the earlier hosted aggregate failures in E32 for the corrected
+candidate. The local correction checks and the actual hosted aggregate are
+different observations; neither substitutes for owner acceptance.
 
 ## Acceptance Decision
 
@@ -238,15 +284,16 @@ tests without dropping routing, context or fail-closed obligations.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 155 | pending | E01 | Owner acceptance is separate from implementation and delivery | @buenhyden |
+| 155 | pending | E16, E17, E19, E21, E23, E26, E28, E30, E31, E33, E34 | Implementation, verification and merge complete; owner acceptance remains separate | @buenhyden |
 
 ### Remaining Conditions
 
 Local implementation, focused RED/GREEN checks, scoped added-statement
 coverage, same-input timing and independent review are complete. Hosted PR
-required checks and delivery remain to be observed; owner acceptance remains
-separate. No full repository suite or live service was run. Existing P00
-operational conditions are not closed by this CI task.
+required checks and requested implementation delivery are complete; owner
+acceptance remains pending. No known P01 implementation defect is deferred
+as runtime observation. No full repository suite or live service was run.
+Existing P00 operational conditions are not closed by this CI task.
 
 ## Handoff
 
@@ -255,6 +302,17 @@ operational conditions are not closed by this CI task.
 Durable selection behavior belongs to the workflow contract and gate library;
 parse/scope behavior belongs to the existing document libraries. Their tests
 and actual consumers change with them. This Task is the only execution record.
+Criterion 155/W171 is implemented by `59623b56`, corrected by `97cadafa`,
+`2bcc4436` and `a6e797d0`, and integrated by `16d2be3f`. The workflow contract,
+workflow, gate/document libraries and existing regression consumers listed
+above are the durable targets. E33 verifies the actual hosted consumer and
+E34 records delivery; the Criterion Decisions row deliberately remains pending.
+
+P01-owned one-off timing and review prompt/result/log files were removed;
+inline probes and temporary fixture directories left no tracked artifact.
+The matching input package remains for P02 through P17. Persistent regression
+tests, private request state, dependency caches and advisory Graphify output
+are not cleanup candidates. No unrelated active work was deleted.
 
 ### Next Owner
 
