@@ -1,10 +1,10 @@
 ---
 title: "Analytics Labs Migration Specification"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0262"
 parent_ids:
@@ -65,7 +65,7 @@ This Spec makes concrete REQ-0005, REQ-0010, REQ-0011 and REQ-0012 and the Archi
 Each LAB is its own Compose project `hy-home-lab-<name>`, labelled
 `hy-home.tier: lab`, with no Traefik route and only LAB networks, as POL-0107
 and the LAB isolation tests require. A HOME dependency is a required `LAB_*` endpoint input. Secret files
-keep their canonical root paths, as the Supabase LAB does. Data binds under
+are read-only LAB copies under `LAB_SECRET_DIR`. Data binds under
 `LAB_DATA_DIR`.
 
 Static rendering proves declaration only. A LAB that needs a HOME service is

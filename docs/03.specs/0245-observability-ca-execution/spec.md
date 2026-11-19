@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0245"
 parent_ids:
@@ -22,9 +22,8 @@ created: "2026-10-16"
 
 The owner authorized backup and isolated-restore validation followed by a
 bounded CA application and recreation for the current host's Prometheus and
-Gatus services. Prometheus stays on its installed
-`prom/prometheus:v3.15.0` (digest `efd719c9`) image, the owner's 2026-10-21 choice; no further version change
-is included. Gatus needs a smallest-delta
+Gatus services. The Prometheus image version is outside this package. Gatus
+needs a smallest-delta
 image from its exact current immutable identity that copies the tracked
 CA-aware entrypoint, because the current entrypoint cannot be trusted to
 establish the required CA bundle.
@@ -48,7 +47,6 @@ In scope:
 - one service at a time for service-specific consistent backup and isolated
   restore rehearsal; both services pass those recovery gates before either CA
   application or recreation, which then proceeds Prometheus before Gatus;
-- preserving Prometheus on the installed `prom/prometheus:v3.15.0` (digest `efd719c9`) image;
 - building a Gatus delta from the exact current immutable image identity,
   copying only the reviewed tracked CA-aware entrypoint without a network or
   pull, recording a unique tag and immutable image ID/digest, and retaining
@@ -63,7 +61,7 @@ Out of scope:
 
 - an OpenBao maintenance window, OpenBao unseal, secret reads, renderer-role
   operations, certificate/key rotation, or CA content capture;
-- a Prometheus version change beyond the installed v3.15.0, manual TSDB/WAL manipulation, volume deletion,
+- a Prometheus version change, manual TSDB/WAL manipulation, volume deletion,
   data migration or replacement, or an unreviewed image pull;
 - recreating a service before its own backup and isolated restore pass;
 - any unlisted service, stack-wide restart, deployment, or restoration of a
@@ -77,7 +75,7 @@ Out of scope:
    Compose files, source commit, running image identity, declared image,
    persistent-data boundary, and CA mount without retaining credentials,
    secrets, raw configuration, or database contents.
-2. Prometheus remains on the installed v3.15.0 image. Before its recreation, a
+2. Before Prometheus recreation, a
    reviewed service-specific procedure produces a consistent backup and proves
    that backup in an isolated, egress-disabled restore environment. A source
    render or a volume copy alone is not sufficient.
@@ -121,8 +119,7 @@ replacement claim.
 1. The Task records the exact two-service target and value-free preflight
    identity for the current host.
 2. Prometheus has a reviewed consistent backup and isolated restore rehearsal
-   that passes before any Prometheus recreation, while retaining the installed
-   v3.15.0 image.
+   that passes before any Prometheus recreation.
 3. Gatus has a reviewed consistent SQLite backup and isolated restore rehearsal
    that passes before any Gatus recreation.
 4. The Gatus delta image is traceable to the exact current running immutable

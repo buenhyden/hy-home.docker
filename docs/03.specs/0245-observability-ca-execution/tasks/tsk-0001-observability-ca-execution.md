@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0245-TSK-0001"
 parent_ids:
@@ -345,6 +345,18 @@ recreating it again there is harmless. Criteria 2 and 3: restore steps PASS
 (Prometheus as a deviation), Gatus CA application done, consumer verification
 after the window.
 
+#### Owner decisions 2026-11-19
+
+In this chat the owner accepted criteria 3 to 6 and recorded criteria 1
+and 7 as not-required. The later Gatus copy and isolated SQLite check
+supersede the four earlier Gatus rows, as the later Prometheus restore did
+for criterion 2; the superseded rows resolve them. On 2026-11-19 HOME showed the
+`openbao` target up over https, Prometheus restarted on 2026-11-18 with
+restart count 0 and its oldest TSDB sample from 2026-11-03, so data survived
+recreation, and Gatus healthy since 2026-11-11 with restart count 26; no W4 or
+W5 gate failed, so no rollback was needed. Every criterion is now
+accepted or not-required, so this Task closes.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -353,6 +365,7 @@ after the window.
 | SPEC-0245-PLAN-0001 | draft | approved | #plan-approval |
 | SPEC-0245-TSK-0001 | draft | ready | #ready-transition |
 | SPEC-0245-TSK-0001 | ready | in-progress | #in-progress-transition |
+| SPEC-0245-TSK-0001 | in-progress | completed | #owner-decisions-2026-11-19 |
 
 #### Later-result reconciliation — 2026-10-22
 
@@ -415,6 +428,7 @@ Alertmanager delivery (RUN-0045). Criteria 1 and 3 to 7 stay pending.
 None: nothing was recorded here before this Task moved to the common form.
 
 - On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the earlier-observation sentence and the SPEC-0243 references.
+- On 2026-11-19 the owner directed that Stage 03 passages conflicting with the current implementation be deleted. Prometheus now runs `v3.15.1`, adopted under SPEC-0204 TSK-0021, so the Spec and Plan lost the statements that keep it on `v3.15.0`; the execution record above keeps the version it observed.
 
 ## Verification Evidence
 
@@ -462,6 +476,13 @@ None: nothing was recorded here before this Task moved to the common form.
 | Isolated restore attempt 01 superseded | 2 | W2 | Released synthetic-ownership probe for the first isolated restore attempt | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore attempt 01 |
 | Isolated restore attempt 02 superseded | 2 | W2 | Released synthetic-owner stage for the second isolated restore attempt | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore attempt 02 |
 | Isolated restore attempt 03 superseded | 2 | W2 | Released Prometheus isolated restore through offline preflight | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore attempt 03 |
+| Gatus backup integrity rehash superseded | 3 | W3 | Independent rehash of the captured Gatus archive | Owner decision 2026-11-19: superseded by Later Gatus backup and isolated restore (archive SHA-256 prefix `c1e5cdcc…`, integrity_check ok) | PASS | Owner decisions 2026-11-19 | required | Gatus backup integrity rehash |
+| Gatus isolated restore superseded | 3 | W3 | Isolated restoration and validation of the captured Gatus archive | Owner decision 2026-11-19: superseded by Later Gatus backup and isolated restore (archive SHA-256 prefix `c1e5cdcc…`, integrity_check ok) | PASS | Owner decisions 2026-11-19 | required | Gatus isolated restore |
+| Initial Gatus isolated restore plan binding superseded | 3 | W3 | Bind the initial isolated-mode Gatus restore packet to its frozen contract and script | Owner decision 2026-11-19: superseded by Later Gatus backup and isolated restore (archive SHA-256 prefix `c1e5cdcc…`, integrity_check ok) | PASS | Owner decisions 2026-11-19 | required | Initial Gatus isolated restore plan binding |
+| Intermediate Gatus restore candidate superseded | 3 | W3 | Record the reblessed candidate before the final immutable-tree release candidate | Owner decision 2026-11-19: superseded by Later Gatus backup and isolated restore (archive SHA-256 prefix `c1e5cdcc…`, integrity_check ok) | PASS | Owner decisions 2026-11-19 | required | Intermediate Gatus restore candidate |
+| Prometheus CA consumer on HOME | 5 | W4 | Prometheus active-target health read from its API inside the container | HOME 2026-11-19, `prom/prometheus:v3.15.1` | PASS | Owner decisions 2026-11-19 | required | - |
+| Prometheus data across recreation | 6 | W4 | `prometheus_tsdb_lowest_timestamp_seconds` against the container start time | HOME 2026-11-19 | PASS | Owner decisions 2026-11-19 | required | - |
+| Gatus recreation outcome | 6 | W5 | Reuse the documented bounded Gatus recreation and the current container state | Recorded recreation at main `5c77e8681`; `docker inspect` on 2026-11-19 | PASS | Owner decisions 2026-11-19 | required | - |
 
 ### Resolution Links
 
@@ -473,20 +494,18 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | Await W1 preflight | @buenhyden |
+| 1 | not-required | - | Not required: owner @buenhyden decided on 2026-11-19 in chat; the backup capture receipts already identify each service. | @buenhyden |
 | 2 | accepted | Later Prometheus isolated restore | Owner accepted on 2026-10-30: the later cold-copy restore supersedes the earlier unresolved rows, and the pre-recreation ordering is a recorded deviation; rule health and Alertmanager delivery are not covered. | @buenhyden |
-| 3 | pending | Later Gatus backup and isolated restore | Later consistent copy and isolated integrity check are recorded PASS; owner acceptance and exact post-window consumer verification remain outstanding. | @buenhyden |
-| 4 | pending | Later Gatus delta image | Minimal delta build identity is recorded; final owner acceptance remains outstanding. | @buenhyden |
-| 5 | pending | Later Gatus CA application | Gatus CA application is recorded; bind the later OpenBao TLS consumer results and required service checks before acceptance. | @buenhyden |
-| 6 | pending | - | Await W6 outcome if a gate fails | @buenhyden |
-| 7 | pending | - | Await W7 reviews and checks | @buenhyden |
+| 3 | accepted | Later Gatus backup and isolated restore | Owner @buenhyden decided on 2026-11-19 in chat; the earlier Gatus rows are superseded. | @buenhyden |
+| 4 | accepted | Later Gatus delta image | Owner @buenhyden decided on 2026-11-19 in chat. | @buenhyden |
+| 5 | accepted | Later Gatus CA application, OpenBao TLS consumer result, Prometheus CA consumer on HOME | Owner @buenhyden decided on 2026-11-19 in chat. | @buenhyden |
+| 6 | accepted | Isolated restore attempt 01 containment, Isolated restore attempt 02 containment, Isolated restore attempt 03 containment, Prometheus data across recreation, Gatus recreation outcome | Owner @buenhyden decided on 2026-11-19 in chat; every failed attempt left production data untouched. | @buenhyden |
+| 7 | not-required | Backup phase independent reviews | Not required: owner @buenhyden decided on 2026-11-19 in chat; the backup-phase reviews passed and later steps were recorded receipts. | @buenhyden |
 
 ### Remaining Conditions
 
-This Task has no accepted criterion. Completion requires the service-specific
-execution evidence listed in SPEC-0245; a source-only check, image build, or
-Compose render does not prove a production backup, isolated restore, or CA
-application.
+Every criterion is accepted or not-required. The Prometheus image version
+is outside this package.
 
 ## Handoff
 
