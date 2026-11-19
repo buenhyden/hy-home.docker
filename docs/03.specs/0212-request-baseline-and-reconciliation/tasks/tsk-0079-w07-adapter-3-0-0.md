@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -362,6 +362,27 @@ failure but does not cover invalid output on exit 0, which the dispatcher
 avoids by always printing a well-formed decision. `.claude/provider.md`
 now states this. Timeout behavior remains unobserved.
 
+#### Criterion 135 root-cause analysis on 2026-11-19
+
+Two probes tested whether the deprecated V1 multi-agent path, which the
+user configuration still enables, causes a spawned reviewer to keep its
+parent's sandbox. With `--enable multi_agent_v2`, and again with
+`--disable multi_agent --enable multi_agent_v2`, a `workspace-write`
+parent's spawned `code-reviewer` still wrote the synthetic file. So in
+Codex 0.169.0 a spawned subagent runs in its parent's sandbox under both
+paths, and its own `sandbox_mode` is not applied. No repository setting
+changes that; the control is the read-only parent Workflows 1.7.0
+requires, which passed on 2026-11-19. The three `workspace-write` FAIL
+rows remain true observations of that Codex behavior.
+
+The Codex malformed-output control did not run because Codex trusts each
+project hook separately: `~/.codex/config.toml` keeps a `hooks.state` entry
+with a `trusted_hash` per approved hook, and a non-interactive `codex exec`
+skips an unapproved one. Trusting the project and adding a project config
+layer did not change that. The hash was not forged, because that would
+bypass the trust control. The control needs the owner to approve the
+disposable hook in an interactive Codex session.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -465,6 +486,9 @@ project trust before it can supply the missing delivery evidence.
 | Secret read rule review | 135 | W140 | Fresh-context `security-auditor` review | `f24b92330`, dispatched 2026-11-19T01:52:43Z | PASS | Approve with follow-up after 106 s, 11 tool calls: newline and bare-directory bypasses (high), quoted separators, prefix words and missing readers (medium), a quadratic scan, and no approved route for R32; fixed or recorded as limits | required | - |
 | Secret read follow-up RED | 135 | W140 | `test_secret_read_rule` | 19 new review cases on `e14abc696` | FAIL | 14 failures | required | - |
 | Secret read follow-up GREEN | 135 | W140 | `test_secret_read_rule` | Revised pattern and rule text | PASS | 26 refused and 19 allowed; a 100,000-character path scanned in 0.02 s | required | Secret read follow-up RED |
+| Native reviewer boundaries observed | 135 | W140 | shell write and sensitive path denial | Claude `code-reviewer` on 2026-11-18 (RUNTIME-CLOSE Claude reviewer) and Codex `code-reviewer` from a read-only parent on 2026-11-19 (Codex reviewer from a read-only parent) | PASS | Both review roles refused the write and the sensitive read on their governed routes | required | Native reviewer boundaries |
+| Codex V2 subagent sandbox | 135 | W140 | shell write and sensitive path denial | `codex exec --sandbox workspace-write` with `--enable multi_agent_v2`, then with `--disable multi_agent` as well, spawning `code-reviewer`, 2026-11-19 | FAIL | The subagent wrote the synthetic file in both runs; 63 s and 41,232 tokens, 87 s and 49,856 tokens; fixture removed | required | - |
+| Codex malformed control with config layer | 135 | W140 | native unsupported-pretool-output control case | The disposable project with a `.codex/config.toml` added and a temporary trust entry, 2026-11-19 | NOT_RUN | The project hook again did not run; Codex keeps a per-hook `trusted_hash` and skips an unapproved hook in `codex exec`; the trust entry was removed | required | - |
 
 ### Resolution Links
 
