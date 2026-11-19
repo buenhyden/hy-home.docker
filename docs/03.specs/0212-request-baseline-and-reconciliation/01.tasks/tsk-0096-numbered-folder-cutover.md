@@ -137,9 +137,12 @@ choice.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baseline checks | 152 | W168 | links `--mode all`, corpus lifecycle, operations catalog, agent governance contract, script manifest, renderer `--check`, metadata `check-active` and `check-contracts` | `main` at `aeaa8aa86` before any change | PASS | All eight exit 0 | required | - |
 | Cutover checks | 152 | W168 | The same eight plus metadata `check-changed --base-ref main` | Final working tree | PASS | All nine exit 0; links 0 failures over 910 documents; check-changed 0 violations over 792 | required | - |
-| Unit tests | 152 | W168 | `python3 -m unittest` per module over `tests/lib` and `tests/validation` (210 modules) | Final working tree, compared with the same modules on a clean `main` worktree | FAIL | 201 pass; 9 fail with the identical failing tests on `main` (missing `referencing` module and other host prerequisites). `metadata.test_reference` clones committed `HEAD`, so it passed only after commit `1f106e463` and the fixture fix in `91342a5eb` | required | - |
+| Unit tests | 152 | W168 | `python3 -m unittest` per module over `tests/lib` and `tests/validation` (210 modules) | Final working tree, compared with the same modules on a clean `main` worktree | FAIL | 200 pass; 9 fail with the identical failing tests on `main` (missing `referencing` module and other host prerequisites); `test_spec_packages` also failed (51 failures, 41 errors): an earlier version of this row said 201 pass because the count was read before the run finished | required | - |
 | Lint and format | 152 | W168 | `ruff check`, `ruff format --check` on changed Python | Final working tree; every file was ruff-clean on `main` | PASS | All checks passed | required | - |
 | Gate selection | 152 | W168 | `run-ci-gate.py --profile changed --local-only --explain` | Final working tree | PASS | Five local-only leaves listed; not executed | optional | - |
+| Independent review | 152 | W168 | Read-only `code-reviewer` in a fresh context over the code and contract diff; dispatched and returned in this session, one round, times not observed | `0e30b9f09` | FAIL | 1 critical (workspace AD/ADR numbers missing from the base identity scan), 4 important, 6 minor | required | - |
+| Review fixes | 152 | W168 | Identity allocation transition with base `HEAD`, the new identity-route and evidence-row tests, the converted Spec Package fixtures, links and corpus lifecycle | `51de9e1d9` and `e8c22f215` | PASS | Allocation 2 findings before, 0 after; `test_identity_history`, `test_links`, `test_references`, `test_registry`, `test_generation6`, `test_spec_packages` and `metadata.test_reference` OK; links and corpus PASS | required | Unit tests, Independent review |
+| Hosted candidate | 152 | W168 | Pull request #1124 checks | `0e30b9f09` | FAIL | `candidate-documents` failed on an undeclared skip from a rewritten historical schema path; CodeQL reported 3 ReDoS alerts already open on `main` at the same lines; `candidate-quality` (the only required check) failed with it | required | - |
 
 ### Resolution Links
 
@@ -155,8 +158,7 @@ None.
 
 ### Remaining Conditions
 
-Independent review (high risk: protected surfaces `.agents/**`,
-`scripts/**`, `docs/99.templates/**`), the owner's acceptance of ADR-0063,
+Review findings left open: I3 (`{category}` also matches the old Stage 90 names; the corpus loader still rejects an unknown category folder) and M1 to M5 (old Spec Package routes accepted in the contract check, snapshot with both Task folders, intermediate routes in the route map, no index files under workspace architecture, unpinned AD/ADR additional routes). The owner's acceptance of ADR-0063,
 and hosted CI on the pull request. On 2026-11-19 the owner asked in this
 chat to commit, push, open the pull request and merge it.
 
