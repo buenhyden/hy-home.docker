@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.97.0"
+version: "1.98.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1265,6 +1265,23 @@ target, backup, recovery boundary, and action-specific authorization.
      cold/warm, queue/setup/plan/check/aggregate boundaries. Existing completed
      work is reused; only P01 is delivered through reviewed local commits and
      its checked pull request, without executing P02 or later prompts.
+
+156. TSK-0100 applies P02-LOCAL-FEEDBACK 1.1.0 to the current Docker
+     workspace. Observe the installed hook chain and bounded same-input
+     local timings before attributing latency; distinguish first process,
+     prepared-cache warm runs, installation and normal push transport.
+     Preserve narrow staged checks, message validation, inherited hooks and
+     the main remote-ref guard. The diagnostic local-staged controller reads
+     an isolated index/config snapshot, supports an unborn repository and
+     reports valid empty input as not applicable; corrupt input and source
+     index drift never reuse PASS. Every push record, including a final
+     record without a newline, is inspected; malformed input fails closed.
+     Keep mixed staged/unstaged bytes and settings untouched, propagate
+     checker errors and clean owned temporary resources. Use existing
+     regression consumers, no full QA at push, no automatic installation,
+     cache deletion, global hook replacement or remote timing probes.
+     Record normal authorized delivery separately from fixture evidence and
+     leave owner acceptance explicit. No later prompt executes in this unit.
 
 ### Evidence Requirements
 

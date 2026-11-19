@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.97.0"
+version: "1.98.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -416,6 +416,29 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W169 | 153 | Triage CodeQL, rerun the venv-only test modules, record the owner's acceptances, add the environment and maintenance guides and move the RUN-0021 workspace sections | W168 | TSK-0097 | Alert triage, venv test run, link, metadata, catalog, corpus, manifest and contract checks |
 | W170 | 154 | Reconcile the current Docker workspace with remediation 1.1.0 and confirmed Q-01–Q-04; preserve matching completed work, map owners/consumers, and route actual defects, observations and changed decisions | None | TSK-0098 | Finding/path/decision-delta coverage; changed metadata, links, corpus lifecycle, changed-selector explanation, diff check and required PR checks |
 | W171 | 155 | Split document regressions by actual consumers, restrict content validation to changed/inbound scope, share immutable parsing/history inputs and preserve fail-closed candidate aggregation | W170 | TSK-0099 | RED/GREEN gate and document tests; same-input timing; workflow/manifest/ownership/document checks; independent review and hosted PR checks |
+| W172 | 156 | Observe installed local hooks and timings; repair source-index drift, unborn/empty staged diagnostics and complete fail-closed push records while retaining narrow checks | W171 | TSK-0100 | Same-input offline timing; RED/GREEN existing shell and installed-guard regressions; scoped syntax, document and manifest checks; independent delta review; normal hooks and hosted candidate |
+
+#### Current P02 local feedback implementation
+
+The direct P02 1.1.0 request authorizes only this local-feedback unit and its
+normal commit, push, PR and merge. [TSK-0100](01.tasks/tsk-0100-p02-local-feedback.md)
+owns criterion 156/W172, actual installed-chain observations and timing,
+implementation and delivery evidence. P00/P01 and the previous completed
+areas are prerequisites retained by evidence, not prompts to replay.
+
+One coordinator owns `scripts/validation/run-ci-precommit.sh`,
+`scripts/hooks/pre-push-guard.sh`, their existing
+`tests/validation/test_run_ci_precommit.sh` and
+`test_agent_governance_ci_routing.py` consumers, the local workflow guidance,
+and this Spec/Plan/Task. Inspectors have no write assignment. Reproduce the
+specific input failures before changing production code, keep installed
+pre-commit and message hooks intact, and measure prepared-cache runs without
+resetting caches or creating network probe refs. Remote timing comes only
+from the requested normal delivery. A missing environment remains an error,
+not a reason to bypass a guard. Review the logical code delta independently
+before ordinary hooks and remote candidate checks. Revert this unit's files
+to reverse it; no product runtime or user data changes. P03 is the next
+input only after this result is recorded, and never runs automatically.
 
 #### Current P01 routing implementation
 

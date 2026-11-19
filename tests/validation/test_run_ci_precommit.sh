@@ -66,7 +66,9 @@ printf '%s\n' \
   'grep -A8 "id: mixed-line-ending" "$readonly_config" | grep -q -- "--fix=no"' \
   'grep -A8 "id: markdownlint-cli2" "$readonly_config" | grep -q "$markdown_config"' \
   'grep -q "^fix: false$" "$markdown_config"' \
-  'case "${FAKE_PRECOMMIT_MUTATION:-}" in worktree) printf "%s\n" changed >interaction.md ;; index) printf "%s\n" changed >interaction.md; git add interaction.md ;; esac' \
+  'case "${FAKE_PRECOMMIT_MUTATION:-}" in worktree) printf "%s\n" changed >interaction.md ;; index) printf "%s\n" changed >interaction.md; git add interaction.md ;; source-index) printf "%s\n" concurrent >"$EXPECTED_LOCAL_REPO/interaction.md"; git -C "$EXPECTED_LOCAL_REPO" add interaction.md ;; esac' \
+  'if [[ "${FAKE_PRECOMMIT_SIGNAL:-}" == TERM ]]; then kill -TERM "$PPID"; fi' \
+  'if [[ "${FAKE_PRECOMMIT_SIGNAL:-}" == TERM_HANG ]]; then trap "" TERM; printf "%s\n" "$$" >"$FAKE_PRECOMMIT_CALL_FILE.pid"; kill -TERM "$PPID"; while :; do sleep 1; done; fi' \
   "printf \"%s\\n\" \"CALL\" \"PWD=\$PWD\" \"SKIP=\${SKIP-}\" \"\$@\" >>\"\${FAKE_PRECOMMIT_CALL_FILE:?}\"" \
   "exit \"\${FAKE_PRECOMMIT_EXIT:-0}\"" \
   >"$FAKE_BIN/pre-commit"
@@ -371,6 +373,79 @@ for mutation in worktree index; do
   [[ "$(cat "$CANDIDATE_REPO/untracked.txt")" == "untracked" ]] || fail "$mutation mutation escaped into untracked source bytes"
 done
 
+# Cancellation retains a distinct exit and removes the owned temporary worktree.
+worktrees_before="$(git -C "$CANDIDATE_REPO" worktree list --porcelain)"
+set +e
+(
+  cd "$CANDIDATE_REPO"
+  env PATH="$FAKE_BIN:$PATH" FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
+    FAKE_PRECOMMIT_SIGNAL=TERM EXPECTED_STYLE_MODE=local-staged \
+    EXPECTED_LOCAL_REPO="$CANDIDATE_REPO" "$WRAPPER" --mode local-staged
+)
+cancelled_exit=$?
+set -e
+[[ "$cancelled_exit" -eq 143 ]] || fail "cancellation was not reported as signal exit 143"
+[[ "$(git -C "$CANDIDATE_REPO" worktree list --porcelain)" == "$worktrees_before" ]] || \
+  fail "cancelled run left an owned worktree"
+
+# A controller-only signal must also stop a checker that stays alive.
+set +e
+env PATH="$FAKE_BIN:$PATH" FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
+  FAKE_PRECOMMIT_SIGNAL=TERM_HANG EXPECTED_STYLE_MODE=local-staged \
+  EXPECTED_LOCAL_REPO="$CANDIDATE_REPO" \
+  python3 - "$WRAPPER" "$CANDIDATE_REPO" <<'PY'
+import os
+import pathlib
+import signal
+import subprocess
+import sys
+
+child = subprocess.Popen(
+    [sys.argv[1], "--mode", "local-staged"], cwd=sys.argv[2], start_new_session=True
+)
+try:
+    code = child.wait(timeout=5)
+except subprocess.TimeoutExpired:
+    # The checker may own a different group within this fixture's session.
+    marker = pathlib.Path(os.environ["FAKE_PRECOMMIT_CALL_FILE"] + ".pid")
+    try:
+        checker = int(marker.read_text())
+        if os.getsid(checker) == child.pid:
+            os.killpg(os.getpgid(checker), signal.SIGKILL)
+    except (OSError, ValueError):
+        pass
+    try:
+        os.killpg(child.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    child.wait()
+    raise SystemExit(124) from None
+raise SystemExit(code)
+PY
+hanging_exit=$?
+set -e
+[[ "$hanging_exit" -eq 143 ]] || fail "cancellation waited for a hanging checker"
+checker_pid="$(cat "$CALL_FILE.pid")"
+! kill -0 "$checker_pid" 2>/dev/null || fail "cancelled checker remains alive"
+[[ "$(git -C "$CANDIDATE_REPO" worktree list --porcelain)" == "$worktrees_before" ]] || \
+  fail "hanging checker cancellation left an owned worktree"
+
+# An external source-index change invalidates a successful snapshot verdict.
+source_tree="$(git -C "$CANDIDATE_REPO" write-tree)"
+set +e
+(
+  cd "$CANDIDATE_REPO"
+  env PATH="$FAKE_BIN:$PATH" FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
+    FAKE_PRECOMMIT_MUTATION=source-index EXPECTED_STYLE_MODE=local-staged \
+    EXPECTED_LOCAL_REPO="$CANDIDATE_REPO" "$WRAPPER" --mode local-staged
+)
+source_race_exit=$?
+set -e
+[[ "$source_race_exit" -eq 2 ]] || fail "concurrent source index change reused snapshot PASS"
+[[ "$(git -C "$CANDIDATE_REPO" show :interaction.md)" == concurrent ]] || fail "controller overwrote concurrent staged bytes"
+git -C "$CANDIDATE_REPO" read-tree "$source_tree"
+printf '%s\n' unstaged-side >"$CANDIDATE_REPO/interaction.md"
+
 # Exercise real pre-commit staged semantics with a local, network-free hook.
 git init -q -b main "$REAL_REPO"
 git -C "$REAL_REPO" config user.name Diagnostic
@@ -409,6 +484,18 @@ printf '%s\n' unstaged >"$REAL_REPO/candidate.txt"
 [[ "$(cat "$REAL_REPO/candidate.txt")" == "unstaged" ]] || fail "pre-commit did not restore unstaged bytes"
 [[ "$(git -C "$REAL_REPO" show :candidate.txt)" == "staged" ]] || fail "pre-commit changed staged bytes"
 
+# An alternate source index must never become the isolated worktree's index.
+alternate_index="$TMP_ROOT/alternate-index"
+cp "$REAL_REPO/.git/index" "$alternate_index"
+source_tree="$(git -C "$REAL_REPO" write-tree)"
+(
+  cd "$REAL_REPO"
+  env GIT_INDEX_FILE="$alternate_index" "$WRAPPER" --mode local-staged
+)
+[[ "$(git -C "$REAL_REPO" write-tree)" == "$source_tree" ]] || fail "alternate run changed the default source index"
+[[ "$(GIT_INDEX_FILE="$alternate_index" git -C "$REAL_REPO" write-tree)" == "$source_tree" ]] || fail "alternate run changed its source index"
+[[ "$(cat "$REAL_REPO/candidate.txt")" == unstaged ]] || fail "alternate run changed source working bytes"
+
 # Characterization: a bad staged version stays rejected when the worktree copy
 # was fixed afterwards, because the hook sees the index, not the worktree.
 printf '%s\n' bad >"$REAL_REPO/candidate.txt"
@@ -426,8 +513,11 @@ set -e
 [[ "$(cat "$REAL_REPO/candidate.txt")" == "staged" ]] || fail "rejected run changed the fixed worktree bytes"
 
 git -C "$REAL_REPO" reset -q --hard HEAD
-expect_rejected "local mode without staged paths" \
-  env -C "$REAL_REPO" "$WRAPPER" --mode local-staged
+rm -f "$CALL_FILE"
+empty_output="$(env -C "$REAL_REPO" "$WRAPPER" --mode local-staged)"
+grep -q 'NOT_APPLICABLE: local staged input is empty' <<<"$empty_output" || \
+  fail "valid empty index was not explicitly not applicable"
+[[ ! -e "$CALL_FILE" ]] || fail "empty index invoked pre-commit"
 printf '%s\n' invalid-index >"$REAL_REPO/corrupt-index"
 set +e
 inspection_error="$(
@@ -442,5 +532,21 @@ set -e
 [[ "$inspection_exit" -eq 2 ]] || fail "index inspection error did not fail closed"
 grep -q "local staged input could not be inspected" <<<"$inspection_error" || \
   fail "index inspection error was misclassified"
+
+unborn="$TMP_ROOT/unborn"
+mkdir -p "$unborn/scripts"
+git init -q -b main "$unborn"
+cp "$REAL_REPO/.pre-commit-config.yaml" "$REAL_REPO/.markdownlint-cli2.yaml" \
+  "$REAL_REPO/verify.py" "$unborn/"
+cp "$REPO_ROOT/scripts/requirements-pre-commit.txt" "$unborn/scripts/"
+printf '%s\n' staged >"$unborn/candidate.txt"
+git -C "$unborn" add .
+unborn_tree="$(git -C "$unborn" write-tree)"
+(
+  cd "$unborn"
+  "$WRAPPER" --mode local-staged
+)
+[[ "$(git -C "$unborn" write-tree)" == "$unborn_tree" ]] || fail "unborn source index changed"
+! git -C "$unborn" rev-parse --verify HEAD >/dev/null 2>&1 || fail "controller created an unborn source commit"
 
 echo "PASS: CI pre-commit wrapper contract"

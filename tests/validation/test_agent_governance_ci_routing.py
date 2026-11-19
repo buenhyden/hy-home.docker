@@ -2842,6 +2842,43 @@ class InstalledPrePushGuardTests(unittest.TestCase):
         self.assertEqual(["pre-commit", "commit-msg"], types)
         self.assertFalse([t for t in types if t.startswith("post-")])
 
+    def test_guard_checks_unterminated_records_and_rejects_malformed_input(
+        self,
+    ) -> None:
+        guard = ROOT / "scripts/hooks/pre-push-guard.sh"
+        oid, zero = "a" * 40, "0" * 40
+        for payload, expected in (
+            ("", 0),
+            (f"HEAD {oid} refs/heads/feature {zero}", 0),
+            (
+                f"HEAD {oid} refs/heads/feature {zero}\nHEAD {oid} refs/heads/main {oid}",
+                1,
+            ),
+            (f"(delete) {zero} refs/heads/main {oid}", 1),
+            (f"HEAD {oid} refs/heads/feature", 2),
+            (f"HEAD {oid} refs/heads/feature {zero} extra\n", 2),
+            (f"HEAD invalid refs/heads/feature {zero}\n", 2),
+            (f"HEAD {oid} invalid {zero}\n", 2),
+            (f"HEAD {oid} refs/heads/feature..bad {zero}\n", 2),
+            (f"HEAD {oid} refs/heads/feature.lock {zero}\n", 2),
+            (f"HEAD {'a' * 64} refs/heads/feature {'0' * 64}\n", 0),
+            ("\n", 2),
+        ):
+            with self.subTest(payload=payload):
+                result = subprocess.run(
+                    ["bash", str(guard)],
+                    input=payload,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    env={
+                        k: v
+                        for k, v in os.environ.items()
+                        if k != "PRE_COMMIT_REMOTE_BRANCH"
+                    },
+                )
+                self.assertEqual(expected, result.returncode, result.stderr)
+
     def _check_hooks(self, repo: pathlib.Path) -> subprocess.CompletedProcess[str]:
         script = ROOT / "scripts/hooks/install-pre-push-guard.sh"
         return subprocess.run(
@@ -3415,8 +3452,8 @@ class HookOutputAndMainPushTests(unittest.TestCase):
     def test_pre_push_guard_refuses_main(self) -> None:
         guard = ROOT / "scripts/hooks/pre-push-guard.sh"
         cases = (
-            ({}, "refs/heads/x a refs/heads/main b\n", 1),
-            ({}, "refs/heads/x a refs/heads/claude/x b\n", 0),
+            ({}, f"refs/heads/x {'a' * 40} refs/heads/main {'b' * 40}\n", 1),
+            ({}, f"refs/heads/x {'a' * 40} refs/heads/claude/x {'b' * 40}\n", 0),
             ({"PRE_COMMIT_REMOTE_BRANCH": "refs/heads/main"}, "", 1),
         )
         for extra, stdin, expected in cases:
