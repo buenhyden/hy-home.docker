@@ -3452,8 +3452,8 @@ class HookOutputAndMainPushTests(unittest.TestCase):
     def test_pre_push_guard_refuses_main(self) -> None:
         guard = ROOT / "scripts/hooks/pre-push-guard.sh"
         cases = (
-            ({}, "refs/heads/x a refs/heads/main b\n", 1),
-            ({}, "refs/heads/x a refs/heads/claude/x b\n", 0),
+            ({}, f"refs/heads/x {'a' * 40} refs/heads/main {'b' * 40}\n", 1),
+            ({}, f"refs/heads/x {'a' * 40} refs/heads/claude/x {'b' * 40}\n", 0),
             ({"PRE_COMMIT_REMOTE_BRANCH": "refs/heads/main"}, "", 1),
         )
         for extra, stdin, expected in cases:

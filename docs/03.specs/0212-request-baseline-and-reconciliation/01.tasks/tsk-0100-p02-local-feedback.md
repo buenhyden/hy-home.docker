@@ -1,6 +1,6 @@
 ---
 title: "P02 Local Feedback Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -136,7 +136,33 @@ were not instrumented; no zero durations are invented for those subphases.
 One earlier attempt stopped before measurement because an index lock existed.
 Read-only inspection found it had disappeared and no lock owner remained;
 no manual lock deletion or ownership attribution was made. The retry above
-succeeded. Normal commit/push timing is recorded separately at delivery.
+succeeded. Normal commit/push timing is recorded separately below.
+
+#### Normal delivery observation
+
+Source commit `5ea3e3282db0115349d6b631960a7eb3e48607a9` took 3.086800
+seconds: installed pre-commit 2.389560, commit-msg 0.654410, remaining
+Git/measurement wall time about 0.042830. Normal push to the new authorized
+`codex/p02-local-feedback-1-1-0` ref took 2.311073 seconds: native pre-push
+0.010340 and remaining 2.300733. The remainder combines Git packing,
+credential, network and server activity, not pure wire latency. Both exited0,
+with no observed installation. Each is N=1, not p95 or an equivalent-input
+performance comparison. Trace2 events were filtered through an owned FIFO
+in memory; no raw transport trace was persisted and the FIFO was removed.
+
+[PR1130](https://github.com/buenhyden/hy-home.docker/pull/1130) carries this
+source and its later result-only receipt. Brief revision2 binds only this
+Task after the source commit; reviewed production files are frozen. Hosted
+results and merge are separate observations, never inferred from push.
+
+Run44596374627 exposed two old control fixtures in the separate
+`HookOutputAndMainPushTests` consumer that still supplied single-character
+OID placeholders. Their expected main refusal and feature allowance did
+not change; migrate the fixture values to actual 40-character shapes and
+retain malformed-input tests separately. Brief revision3 binds this existing
+test file and Task only. The production guard/controller remain frozen.
+The reproduced focused failures and full-module correction are recorded
+below; a local correction does not resolve the failed hosted aggregate.
 
 ### Blockers and Decisions
 
@@ -172,6 +198,11 @@ Criterion Decisions forms. Observations and acceptance are separate.
 | E17 | 156 | W172 | Independent code/spec/security review | Corrected fixture-only timeout handler; unchanged approved production slices reused | PASS | Separate nonimplementer inspection approves owned PID/session check, checker-group termination, controller kill/reap and timeout124 handling; no new runtime isolation claim. Final shell test passes. Earlier code/spec/security review positives retained | required | E11, E16 |
 | E18 | 156 | W172 | Installed current-index timing and final same-input ref comparison | Bound staged tree above and identical synthetic feature ref | PASS | Three native runs exit0 with stable index, eleven selected style/secret checks pass and no install observed; final ref samples above. Initial lock conflict ended before sampling; retry followed disappearance, not manual deletion | required | - |
 | E19 | 156 | W172 | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 043585e5; .venv/bin/python scripts/validation/check-document-links.py --mode all --changed --base-ref 043585e5; .venv/bin/python scripts/validation/check-document-corpus-lifecycle.py | Final eight-path staged source, including the new Task | PASS | All exit0: 102 selected metadata records, zero violations/overrides; 128 selected link documents, zero failures/warnings; corpus/occupancy violations zero. Counts are observations, not gates. Manifest and repository/all agent contract passed; Ruff format/check and Bash syntax passed. Graphify AST-only update completed without new installs, remains advisory | required | - |
+| E20 | 156 | W172 | Normal git commit and git push with in-memory Trace2 hook timing | Source head 5ea3e3282; ordinary installed hooks; authorized P02 remote ref | PASS | Both exit0, normal timing boundaries above. No probe ref, cache deletion, protection bypass or raw trace file. Commit style/message/secret hooks and native ref guard actually executed; this does not establish hosted checks or owner acceptance | required | - |
+| E21 | 156 | W172 | Hosted candidate-quality aggregate | PR1130 head 5ea3e3282, run44596374627 | FAIL | Routing passed; core and aggregate failed on two legacy short-OID fixture cases in the 94-test agent-routing module. Other completed selected modules passed; documents unselected. A new successful current candidate must resolve this hosted observation | required | - |
+| E22 | 156 | W172 | .venv/bin/python -m unittest tests.validation.test_agent_governance_ci_routing.HookOutputAndMainPushTests.test_pre_push_guard_refuses_main | Same legacy fixture before correction | FAIL | Exit1, two witnessed failures: one-character OIDs now correctly return malformed-input error2 instead of intended valid-input main1/feature0 | required | - |
+| E23 | 156 | W172 | .venv/bin/python -m unittest tests.validation.test_agent_governance_ci_routing.HookOutputAndMainPushTests.test_pre_push_guard_refuses_main | Existing cases with full-length hexadecimal OIDs, assertions unchanged | PASS | Exit0, 0.023 seconds. Complete affected tests.validation.test_agent_governance_ci_routing module passed 94 tests in 55.387 seconds. Nonimplementer narrow inspection approves the two-line correction; earlier source review retained | required | E22 |
+| E24 | 156 | W172 | In-memory added-shell-executable-anchor exercise using Bash xtrace and installed tree-sitter-bash AST | Final production diff from 043585e5; existing controller regression and focused guard input test | PASS | Both instrumented consumers exit0: controller 38/43 added command/assignment/test anchors (88.37 percent), guard8/8 (100 percent). Not full-module or branch coverage. No dependency installed; owned trace/environment shim/fixtures deleted | required | - |
 
 ### Resolution Links
 
@@ -182,6 +213,9 @@ E07 integration result does not erase its witnessed failure.
 E14 and E15 resolve the witnessed review-derived REDs E13 and E12. E17
 resolves E11/E16 only after actual production corrections and the owned
 fixture cleanup correction; a security verdict does not erase another axis.
+E23 resolves E22 through valid control data while retaining every refusal
+assertion. E21 remains an actual failed hosted candidate until an equivalent
+successful current-head aggregate is observed; no local row resolves it.
 
 ## Acceptance Decision
 
