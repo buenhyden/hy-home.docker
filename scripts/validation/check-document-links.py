@@ -25,14 +25,6 @@ from scripts.lib.document_governance.links import (  # noqa: E402
     select_changed_documents,
     traceability_pair_total,
 )
-from scripts.lib.document_governance.metadata.identity import (  # noqa: E402
-    _decode_git_paths,
-    _run_git,
-)
-from scripts.lib.document_governance.metadata.lifecycle import (  # noqa: E402
-    resolve_base_selection,
-)
-from scripts.lib.document_governance.metadata.profile import ProfileError  # noqa: E402
 from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     OperationsAuthorityError,
     tracked_paths,
@@ -110,6 +102,15 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _changed_paths(root: pathlib.Path, base_ref: str | None) -> set[str]:
+    from scripts.lib.document_governance.metadata.identity import (
+        _decode_git_paths,
+        _run_git,
+    )
+    from scripts.lib.document_governance.metadata.lifecycle import (
+        resolve_base_selection,
+    )
+    from scripts.lib.document_governance.metadata.profile import ProfileError
+
     base = resolve_base_selection(
         root, base_ref or os.environ.get("TEMPLATE_GATE_BASE")
     )
@@ -207,7 +208,6 @@ def main(argv: list[str] | None = None) -> int:
         TypeError,
         KeyError,
         OperationsAuthorityError,
-        ProfileError,
     ):
         print(
             "document-link-input-invalid: bounded document or Registry input is invalid",

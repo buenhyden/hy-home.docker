@@ -2006,6 +2006,11 @@ class DocumentLinksCliTests(unittest.TestCase):
                 subprocess.run(
                     [sys.executable, str(CLI), "--root", str(root), "--mode", "all"],
                     cwd=ROOT,
+                    # Regular modes do not adopt the metadata gate's descriptor.
+                    env={
+                        **os.environ,
+                        "HYHOME_CI_GATE_ROOT": "/proc/self/fd/2147483647",
+                    },
                     text=True,
                     check=False,
                     capture_output=True,
@@ -2240,9 +2245,13 @@ class ChangedDocumentScopeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as raw:
             root = pathlib.Path(raw)
             base = self.committed_tree(root, {"docs/source.md": "# Source\n"})
+            self.assertEqual(set(), module._changed_paths(root, base))
             failure = subprocess.CompletedProcess(["git", "diff"], 1, b"", b"failed")
             with (
-                mock.patch.object(module, "_run_git", return_value=failure),
+                mock.patch(
+                    "scripts.lib.document_governance.metadata.identity._run_git",
+                    return_value=failure,
+                ),
                 mock.patch("sys.stderr", io.StringIO()),
                 mock.patch("sys.stdout", io.StringIO()) as output,
             ):

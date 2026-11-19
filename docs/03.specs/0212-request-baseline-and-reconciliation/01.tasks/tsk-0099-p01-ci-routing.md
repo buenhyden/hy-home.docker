@@ -1,6 +1,6 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -46,6 +46,10 @@ After context recovery, request revision `ae5db1914fee1a47af68a46609a21ab6`
 and brief revision 5 bind only this Task and the CLI regression fixture.
 The clean baseline is `59623b56da169281103453c7e9fa2f34916bdaf8`;
 the P01 delivery authorization and exclusive writer boundary are unchanged.
+Brief revisions 6 and 7 extend this same P01 correction to the link CLI and
+its existing regression module, then the optional Hermes invocation bindings
+and the existing P03/P11 workflow-contract tests. No service implementation
+or earlier prompt is reopened.
 
 ## Execution Log
 
@@ -201,6 +205,10 @@ expanded templates do not change this package's consumer contract.
 | E22 | 155 | W171 | Shared-plan CLI tests through the hosted adapter boundary | PR 1126 head 59623b56; run 44572365371 candidate-core | FAIL | Two new CLI tests inherited the adapter's descriptor root instead of their canonical fixture root. Local open-directory-descriptor reproduction: 11 tests, two identical noncanonical-root failures. Actual routing producer passed; no production boundary is relaxed | required | - |
 | E23 | 155 | W171 | Shared-plan CLI tests through the hosted adapter boundary | Canonical fixture scoped with enterContext/patch.dict; existing run_adapter API, run-unittest tests.validation.test_ci_gate_model -v; PATH-only child environment | PASS | 19 tests PASS in 2.308 seconds through the real descriptor-adopting adapter; direct descriptor reproduction also passes 19 tests and asserts restoration of inherited environment. Tamper, stale, missing-plan and single-plan assertions remain intact; production source unchanged | required | E22 |
 | E24 | 155 | W171 | Independent review of hosted fixture correction | Three-line test-only delta after 59623b56 | PASS | Read-only reviewer approved; independently reproduced both affected tests with inherited descriptor root: two PASS in 0.381 seconds, environment restored; no production or security boundary changed | required | - |
+| E25 | 155 | W171 | Ordinary link CLI behavior through the adapter boundary | Cancelled first hosted document job 135730769559; local inherited descriptor reproduction | FAIL | Three existing ordinary/impact subprocess tests fail because P01's eager metadata imports validate a descriptor not inherited by the child. Local reproduction confirms three failures in 1.048 seconds; cancellation is not a successful document result | required | - |
+| E26 | 155 | W171 | Ordinary link CLI behavior through the adapter boundary | Metadata imports scoped to changed discovery; unchanged metadata guards; run_adapter run-unittest tests.lib.document_governance.test_links -v | PASS | Full existing links module: 151 tests PASS in 153.105 seconds through the real adapter. Subsequent clean-fixture assertion checked by ChangedDocumentScopeTests: 13 PASS in 6.544 seconds. Persistent ordinary-mode fixture carries a closed descriptor; changed Git/base failures remain errors. Script Manifest PASS | required | E25 |
+| E27 | 155 | W171 | Independent review of late-import correction | First link CLI delta and Git-failure mock | FAIL | Reviewer found that mocking identity._run_git before lifecycle's first import can retain the mock in lifecycle; three-test order yielded two PASS and one FAIL. Production import boundary itself approved | required | - |
+| E28 | 155 | W171 | Independent review of late-import correction | Added clean-fixture discovery assertion before injecting Git failure | PASS | Same reviewer reran the previously failing order: three tests PASS in 2.080 seconds; normal empty diff verified and real helper initialized before mocking; production/security verdict approved | required | E27 |
 
 ### Resolution Links
 
@@ -211,6 +219,9 @@ retaining native findings and actual-flow coverage. No failure is waived by
 acceptance prose or an unrelated security verdict.
 E23 resolves the hosted fixture failure in E22; the updated PR still requires
 its own successful hosted aggregate before merge.
+E26 resolves the actual link CLI import regression; E28 resolves test-order
+contamination discovered during review. Neither result stands in for the
+uncompleted hosted document job.
 
 ## Acceptance Decision
 
