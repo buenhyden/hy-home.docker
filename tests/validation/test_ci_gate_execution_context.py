@@ -55,7 +55,7 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
             "leaf.ci-gate-contract-regressions",
             "leaf.ci-gate-runner-regressions",
             "leaf.compose-baseline-regressions",
-            "leaf.document-governance-library-regressions",
+            *contract.DOCUMENT_REGRESSION_GATE_IDS,
             "leaf.local-document-corpus-lifecycle-tests",
             "leaf.local-document-metadata-tests",
             "leaf.release-regressions",

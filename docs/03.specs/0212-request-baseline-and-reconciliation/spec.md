@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.94.0"
+version: "1.96.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -262,6 +262,12 @@ The direct W07-ADAPTER 3.0.0 request adds criterion 135 and W140 in
 TSK-0079 for native hook compatibility and evidence boundaries.
 
 ### Owning Requirements
+
+The direct P00-RECONCILE 1.0.0 request on 2026-11-20 adds criterion 154
+and W170 in TSK-0098. It reconciles this Docker workspace against the
+matching remediation package, excludes evidenced completed work and routes
+remaining changes to P01–P17. The new sequence does not reopen historical
+acceptances or authorize another workspace, paid execution or external deletion.
 
 This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005, REQ-0024 and REQ-0027 together with AD-0004 and AD-0031. The body also cites REQ-0003 (the ISO/IEC measurement wording in the acceptance text, and criterion 114), REQ-0025 and REQ-0026 (criterion 114) and ADR-0050, ADR-0003 and ADR-0018 (the Vault ADR acceptance and archival recorded for criterion 49/W54); it cites no REQ-####-FR or REQ-####-NFR identifier.
 
@@ -1225,6 +1231,31 @@ target, backup, recovery boundary, and action-specific authorization.
      `06.maintenance/harness-maintenance.md`, which takes over the workspace
      tool sections of RUN-0021 with unchanged commands and limits while
      RUN-0021 keeps product backup and restore.
+
+154. TSK-0098 fixes the observed root, Git common directory, branch, HEAD
+     and dirty state; reconciles every Docker finding with current source,
+     consumers, existing verification and current PR state; and assigns each
+     remaining change or observation to its owner and next stage. Completed
+     matching implementation is excluded from rebuilding. Existing obligations
+     and user decisions are preserved or explicitly routed to their successor;
+     prompt receipt, merge, implementation, runtime verification and owner
+     acceptance remain separate. Questions are limited to applicable Q-01–Q-04.
+     The matching package stays available through P17, without a second
+     completion ledger or a per-task SHA approval gate.
+
+155. TSK-0099 implements P01-CI-ROUTING 1.0.0 for this Docker workspace:
+     changed documents and changed validators select their actual content,
+     inbound and regression consumers, while shared schema/helper changes
+     expand to their real consumers. A valid empty diff selects no checks;
+     unknown paths, unreadable bases and selected missing, failed, erroneous
+     or cancelled results never pass. Preserve complete event-specific diffs,
+     candidate trust, staged-byte boundaries, the candidate-quality name and
+     separate security lane. Share immutable parse/index/Git inputs within
+     an invocation without caching stale working content or verdicts. Compare
+     equivalent selected inputs before and after, reporting sample size,
+     cold/warm, queue/setup/plan/check/aggregate boundaries. Existing completed
+     work is reused; only P01 is delivered through reviewed local commits and
+     its checked pull request, without executing P02 or later prompts.
 
 ### Evidence Requirements
 

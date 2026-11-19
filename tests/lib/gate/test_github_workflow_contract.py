@@ -412,7 +412,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     else "github.event_name == 'pull_request'",
                     candidate["if"],
                 )
-                self.assertNotIn("env", candidate)
+                self.assertEqual(
+                    {
+                        "CI_GATE_REQUIRE_PREPARED_PLAN": "true",
+                        "CI_GATE_PREPARED_PLAN": "${{ needs.candidate-routing.outputs.plan }}",
+                        "CI_GATE_PREPARED_PLAN_SHA256": "${{ needs.candidate-routing.outputs.plan-sha256 }}",
+                    },
+                    candidate["env"],
+                )
                 steps = candidate["steps"]
                 capture = next(
                     step
@@ -1494,7 +1501,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ["Checkout repository", "Select document shard"],
             [step["name"] for step in routing["steps"]],
         )
-        self.assertFalse(jobs["candidate-core"].get("needs"))
+        self.assertEqual(["candidate-routing"], jobs["candidate-core"]["needs"])
         self.assertEqual(["candidate-routing"], jobs["candidate-documents"]["needs"])
         self.assertIn(
             "needs.candidate-routing.outputs.selected == 'true'",
@@ -1574,7 +1581,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         security = jobs["main-security"]
         candidate = jobs["candidate-core"]
         self.assertNotIn("needs", security)
-        self.assertNotIn("needs", candidate)
+        self.assertEqual(["candidate-routing"], candidate["needs"])
         self.assertEqual(
             {"contents": "read", "security-events": "write"}, security["permissions"]
         )
@@ -1973,7 +1980,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ("candidate-quality", "needs", list(SHARD_JOBS)),
             ("candidate-documents", "needs", []),
             ("candidate-documents", "condition", "github.event_name == 'pull_request'"),
-            ("candidate-core", "needs", ["candidate-routing"]),
+            ("candidate-core", "needs", []),
             ("candidate-routing", "permissions", {"contents": "write"}),
         ):
             with (

@@ -4,14 +4,17 @@ from __future__ import annotations
 
 import contextlib
 import io
+import pathlib
 import sys
+import tempfile
 import unittest
+from unittest import mock
 
 # Imported for its side effect and as the script manifest's evidence that this
 # test covers that module. The entrypoint re-exports its names, so the module
 # must be loaded before those attributes resolve. Not dead code.
 from scripts.lib.document_governance.lifecycle import (
-    public as public_module,  # noqa: F401
+    public as public_module,
 )
 from tests.validation.lifecycle._support import (
     REGISTRY,
@@ -23,6 +26,32 @@ from tests.validation.lifecycle._support import (
 
 
 class CurrentPublicContractTests(unittest.TestCase):
+    def test_public_route_shares_one_snapshot_context_with_lifecycle(self) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            (root / "docs/03.specs").mkdir(parents=True)
+            registry = load_registry(REGISTRY)
+            with (
+                mock.patch.object(
+                    public_module, "load_spec_packages", return_value=()
+                ) as load,
+                mock.patch.object(
+                    public_module,
+                    "validate_repository_spec_package_lifecycle",
+                    return_value=(),
+                ) as validate,
+            ):
+                self.assertEqual(
+                    [],
+                    public_module._spec_package_lifecycle_findings(
+                        root, {"_registry": registry}
+                    ),
+                )
+            context = load.call_args.kwargs["_historical_context"]
+            self.assertIs(context, validate.call_args.kwargs["_historical_context"])
+
     def test_cli_defaults_to_the_registry_and_has_no_mode_inventory(self) -> None:
         parser = lifecycle._parser()
         self.assertEqual(REGISTRY.resolve(), parser.parse_args([]).profiles.resolve())

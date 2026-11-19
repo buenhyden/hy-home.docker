@@ -75,6 +75,13 @@ _TOP_LEVEL_FIELDS = frozenset(
         "actions",
     }
 )
+DOCUMENT_REGRESSION_GATE_IDS = (
+    "leaf.document-governance-structure-regressions",
+    "leaf.document-governance-links-regressions",
+    "leaf.document-governance-lifecycle-regressions",
+    "leaf.document-governance-contract-regressions",
+    "leaf.document-governance-operations-regressions",
+)
 _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "ci.dependency-vulnerability-audit",
     "ci.frontend-quality",
@@ -84,8 +91,10 @@ _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "leaf.compose-baseline-regressions",
     "leaf.local-document-corpus-lifecycle-tests",
     "leaf.local-document-metadata-tests",
-    "leaf.document-governance-library-regressions",
+    *DOCUMENT_REGRESSION_GATE_IDS,
     "leaf.operations-catalog",
+    "leaf.p03-hermes",
+    "leaf.p11-hermes",
     "leaf.release-regressions",
     "leaf.local-script-manifest",
     "leaf.local-shell-syntax",
@@ -102,7 +111,7 @@ HOSTED_UNIT_GATE_IDS = frozenset(
         "leaf.ci-gate-contract-regressions",
         "leaf.ci-gate-runner-regressions",
         "leaf.compose-baseline-regressions",
-        "leaf.document-governance-library-regressions",
+        *DOCUMENT_REGRESSION_GATE_IDS,
         "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-document-metadata-tests",
         "leaf.release-regressions",
@@ -370,7 +379,13 @@ def validate_public_execution_argv(
         expects_value = False
 
     complete = _COMPLETE_CAPABILITY_ARGV.get(path.name)
-    if complete is not None and argv != complete:
+    if (
+        complete is not None
+        and argv != complete
+        and not (
+            path.name == "check-document-links.py" and argv == (*complete, "--changed")
+        )
+    ):
         raise GateContractError(
             "ci-gate-validator-arguments",
             path.as_posix(),
@@ -431,6 +446,7 @@ class ChangedSuiteRule:
 class ChangedRootRule:
     prefixes: tuple[str, ...]
     root_gate_ids: tuple[str, ...]
+    exclude_prefixes: tuple[str, ...] = ()
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -1003,7 +1019,7 @@ def parse_public_gate_contract(
         fields = frozenset({"prefixes", "root_gate_ids"})
         _require_fields(
             record,
-            fields,
+            fields | {"exclude_prefixes"},
             fields,
             "ci-gate-changed-root-rules",
             rule_path,
@@ -1018,6 +1034,11 @@ def parse_public_gate_contract(
             "ci-gate-changed-root-rules",
             f"{rule_path}/root_gate_ids",
         )
+        excluded = _strings(
+            record.get("exclude_prefixes", []),
+            "ci-gate-changed-root-rules",
+            f"{rule_path}/exclude_prefixes",
+        )
         expected_root_order = tuple(
             gate_id
             for gate_id in _OPTIONAL_CHANGED_ROOT_GATE_IDS
@@ -1029,6 +1050,15 @@ def parse_public_gate_contract(
             or seen_root_prefixes.intersection(prefixes)
             or root_gate_ids != expected_root_order
             or any(not _valid_changed_prefix(prefix) for prefix in prefixes)
+            or any(
+                not _valid_changed_prefix(prefix)
+                or not any(
+                    _matches_changed_prefix(prefix.removesuffix("/"), owner)
+                    and prefix.removesuffix("/") != owner.removesuffix("/")
+                    for owner in prefixes
+                )
+                for prefix in excluded
+            )
             or any(
                 not any(
                     _matches_changed_prefix(prefix.removesuffix("/"), known)
@@ -1044,7 +1074,22 @@ def parse_public_gate_contract(
             )
         seen_root_prefixes.update(prefixes)
         covered_optional_roots.update(root_gate_ids)
-        root_rules.append(ChangedRootRule(prefixes, root_gate_ids))
+        root_rules.append(ChangedRootRule(prefixes, root_gate_ids, excluded))
+    for rule in root_rules:
+        if any(
+            not any(
+                prefix == owner
+                for other in root_rules
+                if other is not rule
+                for owner in other.prefixes
+            )
+            for prefix in rule.exclude_prefixes
+        ):
+            raise GateContractError(
+                "ci-gate-changed-root-rules",
+                "public_gate/changed_root_rules",
+                "excluded prefixes require their own explicit consumer rule",
+            )
     if covered_optional_roots != set(_OPTIONAL_CHANGED_ROOT_GATE_IDS):
         raise GateContractError(
             "ci-gate-changed-root-rules",
@@ -1150,6 +1195,8 @@ def select_public_suites(
     if profile == "full":
         return contract.suite_names
     _require_mapped_paths(contract, changed_paths)
+    if not changed_paths:
+        return ()
     selected = set(contract.changed_fallback_suites)
     for rule in contract.changed_rules:
         if any(
@@ -1190,6 +1237,10 @@ def public_root_gate_ids(
         for rule in contract.changed_root_rules
         if any(
             _matches_changed_prefix(path, prefix)
+            and not any(
+                _matches_changed_prefix(path, excluded)
+                for excluded in rule.exclude_prefixes
+            )
             for path in changed_paths
             for prefix in rule.prefixes
         )
@@ -1460,10 +1511,8 @@ def expand_public_gate_ids(
     registry: GateRegistry,
     root_gate_ids: tuple[str, ...],
 ) -> tuple[str, ...]:
-    if (
-        not root_gate_ids
-        or len(root_gate_ids) != len(set(root_gate_ids))
-        or any(gate_id not in registry.public_roots for gate_id in root_gate_ids)
+    if len(root_gate_ids) != len(set(root_gate_ids)) or any(
+        gate_id not in registry.public_roots for gate_id in root_gate_ids
     ):
         raise GateContractError(
             "ci-gate-public-roots",

@@ -42,7 +42,16 @@ _PR_CONDITION: Final = "github.event_name == 'pull_request'"
 _DOCUMENTS_CONDITION: Final = (
     f"{_PR_CONDITION} && needs.{ROUTING_JOB}.outputs.selected == 'true'"
 )
-_ROUTING_OUTPUTS: Final = {"selected": "${{ steps.route.outputs.selected }}"}
+_ROUTING_OUTPUTS: Final = {
+    "selected": "${{ steps.route.outputs.selected }}",
+    "plan": "${{ steps.route.outputs.plan }}",
+    "plan-sha256": "${{ steps.route.outputs.plan-sha256 }}",
+}
+_CANDIDATE_PLAN_ENV: Final = {
+    "CI_GATE_REQUIRE_PREPARED_PLAN": "true",
+    "CI_GATE_PREPARED_PLAN": "${{ needs.candidate-routing.outputs.plan }}",
+    "CI_GATE_PREPARED_PLAN_SHA256": "${{ needs.candidate-routing.outputs.plan-sha256 }}",
+}
 _ROUTE_STEP: Final = {
     "name": "Select document shard",
     "id": "route",
@@ -922,14 +931,14 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         or jobs[ROUTING_JOB].timeout_minutes != 5
         or jobs[DOCUMENTS_JOB].needs != (ROUTING_JOB,)
         or jobs[DOCUMENTS_JOB].condition != _DOCUMENTS_CONDITION
-        or any(jobs[job].needs for job in shard_jobs if job != DOCUMENTS_JOB)
+        or any(jobs[job].needs != (ROUTING_JOB,) for job in shard_jobs)
         or aggregate.needs != (*shard_jobs, ROUTING_JOB)
         or aggregate.condition != f"always() && {_PR_CONDITION}"
     ):
         raise WorkflowContractError(
             "contract-required-quality-invalid",
             WORKFLOW_CONTRACT.as_posix(),
-            "routing must gate only the document job and the aggregate must need every candidate job even on failure",
+            "every candidate must consume routing and the aggregate must need every job even on failure",
         )
     return WorkflowContract(
         schema_version=2,
@@ -1132,6 +1141,16 @@ def _workflow_projection_findings(
                         "workflow-gate-projection-mismatch",
                         path,
                         f"job {raw_job_id} must expose typed selection and execution outcomes",
+                    )
+                )
+        if is_candidate:
+            admitted_keys.add("env")
+            if raw_job.get("env") != _CANDIDATE_PLAN_ENV:
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-mismatch",
+                        path,
+                        "candidate jobs must consume the fixed routing plan outputs",
                     )
                 )
         if set(raw_job) != admitted_keys:

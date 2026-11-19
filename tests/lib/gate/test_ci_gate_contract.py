@@ -42,7 +42,7 @@ class RetiredNpmAuditAcceptanceTests(unittest.TestCase):
 
 class HostedJobAssignmentTests(unittest.TestCase):
     DOCUMENT_LEAVES = (
-        "leaf.document-governance-library-regressions",
+        *contract.DOCUMENT_REGRESSION_GATE_IDS,
         "leaf.local-document-metadata-tests",
         "leaf.local-document-corpus-lifecycle-tests",
     )
@@ -283,7 +283,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         document = {
             "leaf.local-document-corpus-lifecycle-tests",
             "leaf.local-document-metadata-tests",
-            "leaf.document-governance-library-regressions",
+            *contract.DOCUMENT_REGRESSION_GATE_IDS,
         }
         catalog = {"leaf.operations-catalog"}
         release = {"leaf.release-regressions"}
@@ -544,7 +544,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             "leaf.ci-gate-contract-regressions",
             "leaf.ci-gate-runner-regressions",
             "leaf.compose-baseline-regressions",
-            "leaf.document-governance-library-regressions",
+            *contract.DOCUMENT_REGRESSION_GATE_IDS,
             "leaf.local-document-corpus-lifecycle-tests",
             "leaf.local-document-metadata-tests",
             "leaf.release-regressions",
@@ -1169,8 +1169,8 @@ class CiGateContractTests(unittest.TestCase):
             set(reachable),
         )
         self.assertEqual((), contract.validate_gate_registry(ROOT, candidate))
+        self.assertEqual((), contract.expand_public_gate_ids(candidate, ()))
         for roots in (
-            (),
             (candidate.public_roots[0], candidate.public_roots[0]),
             ("leaf.docs-traceability",),
         ):
@@ -1473,8 +1473,102 @@ class CiGateContractTests(unittest.TestCase):
 
 
 class DocumentGovernanceSelectionTests(unittest.TestCase):
-    """QA-C07 characterization (behavior pre-existed): a registry-only or
-    policy-only diff still selects the document-governance suites."""
+    """Check document consumers, bounded fallbacks and explicit nonselection."""
+
+    def test_unmapped_helper_and_mixed_global_change_keep_subsystem_regressions(
+        self,
+    ) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        groups = {
+            "leaf.document-governance-structure-regressions",
+            "leaf.document-governance-links-regressions",
+            "leaf.document-governance-lifecycle-regressions",
+            "leaf.document-governance-contract-regressions",
+            "leaf.document-governance-operations-regressions",
+        }
+        for paths in (
+            ("scripts/lib/document_governance/future_helper.py",),
+            (
+                "scripts/lib/document_governance/links.py",
+                "docs/99.templates/registry.json",
+            ),
+        ):
+            with self.subTest(paths=paths):
+                suites = contract.select_public_suites(public, "changed", paths)
+                roots = set(
+                    contract.public_root_gate_ids(public, suites, changed_paths=paths)
+                )
+                self.assertLessEqual(groups, roots)
+
+    def test_root_rule_exclusions_are_safe_and_owned(self) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        for exclusions in (
+            ["../outside"],
+            ["/outside"],
+            ["scripts/lib/document_governance/links.py"] * 2,
+            ["unrelated/path.py"],
+            ["scripts/lib/document_governance/unowned_helper.py"],
+        ):
+            with self.subTest(exclusions=exclusions):
+                candidate = json.loads(json.dumps(baseline))
+                rule = next(
+                    item
+                    for item in candidate["public_gate"]["changed_root_rules"]
+                    if "scripts/lib/document_governance/" in item["prefixes"]
+                )
+                rule["exclude_prefixes"] = exclusions
+                with self.assertRaises(contract.GateContractError):
+                    contract.parse_public_gate_contract(candidate)
+
+    def test_empty_diff_selects_no_suites_or_roots(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        suites = contract.select_public_suites(public, "changed", ())
+        self.assertEqual((), suites)
+        self.assertEqual(
+            (), contract.public_root_gate_ids(public, suites, changed_paths=())
+        )
+
+    def test_link_change_selects_consumers_without_lifecycle_library_batch(
+        self,
+    ) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        paths = ("scripts/lib/document_governance/links.py",)
+        suites = contract.select_public_suites(public, "changed", paths)
+        roots = set(contract.public_root_gate_ids(public, suites, changed_paths=paths))
+        self.assertIn("leaf.document-governance-links-regressions", roots)
+        self.assertIn("leaf.local-document-metadata-tests", roots)
+        self.assertNotIn("leaf.document-governance-lifecycle-regressions", roots)
+        self.assertFalse({"leaf.p03-hermes", "leaf.p11-hermes"} & roots)
+
+    def test_document_content_omits_hermes_but_hermes_changes_keep_their_gates(
+        self,
+    ) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        for path, expected in (
+            ("docs/00.workspace/03.process/sdlc.md", set()),
+            ("scripts/validation/check-p03-hermes.py", {"leaf.p03-hermes"}),
+            ("scripts/validation/check-p11-hermes.py", {"leaf.p11-hermes"}),
+            (
+                "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py",
+                {"leaf.p03-hermes", "leaf.p11-hermes"},
+            ),
+        ):
+            with self.subTest(path=path):
+                suites = contract.select_public_suites(public, "changed", (path,))
+                roots = set(
+                    contract.public_root_gate_ids(public, suites, changed_paths=(path,))
+                )
+                self.assertEqual(
+                    expected, roots & {"leaf.p03-hermes", "leaf.p11-hermes"}
+                )
 
     def test_registry_and_policy_only_diffs_select_document_governance(self) -> None:
         public = contract.parse_public_gate_contract(

@@ -22,6 +22,7 @@ import tempfile
 import threading
 import time
 from collections.abc import Mapping
+from types import MappingProxyType
 
 if __package__ in {None, ""}:
     _BOOTSTRAP_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -84,6 +85,7 @@ _MAX_PROC_STAT_BYTES = 4_096
 _PROC_ROOT = pathlib.Path("/proc")
 _MAX_CHANGED_PATH_BYTES = 1024 * 1024
 _MAX_CHANGED_PATHS = 10_000
+_MAX_PREPARED_PLAN_BYTES = 120_000
 _FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
 _LOCAL_EXCLUDED_GATE_IDS = frozenset(
     {
@@ -226,6 +228,15 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
         ("tests/validation/test_run_ci_precommit.sh", ()),
     )
 )
+_OPTIONAL_CHECK_INVOCATIONS = MappingProxyType(
+    {
+        f"leaf.{name}-hermes": (
+            pathlib.PurePosixPath(f"scripts/validation/check-{name}-hermes.py"),
+            (),
+        )
+        for name in ("p03", "p11")
+    }
+)
 
 
 def _is_admitted_internal_invocation(
@@ -235,6 +246,9 @@ def _is_admitted_internal_invocation(
         tuple[str, pathlib.PurePosixPath, tuple[str, ...]], ...
     ],
 ) -> bool:
+    identity = (invocation.entrypoint, invocation.argv)
+    if invocation.gate_id in _OPTIONAL_CHECK_INVOCATIONS:
+        return identity == _OPTIONAL_CHECK_INVOCATIONS[invocation.gate_id]
     if invocation.entrypoint == _INTERNAL_ADAPTER_PATH:
         if (
             context is ExecutionContext.PULL_REQUEST
@@ -248,7 +262,6 @@ def _is_admitted_internal_invocation(
         return ci_gate_adapters.admits_adapter_invocation(
             invocation.argv, context.value
         )
-    identity = (invocation.entrypoint, invocation.argv)
     if identity == _PR_STYLE_INVOCATION:
         return context is ExecutionContext.PULL_REQUEST
     return identity in _INTERNAL_CHECK_INVOCATIONS
@@ -587,11 +600,19 @@ def build_public_validation_plan(
             allowed_env_keys=(
                 ("TEMPLATE_GATE_BASE",)
                 if item.entrypoint.name
-                in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+                in {
+                    "check-document-metadata.py",
+                    "check-document-corpus-lifecycle.py",
+                    "check-document-links.py",
+                }
                 and context in {ExecutionContext.PULL_REQUEST, ExecutionContext.PUSH}
                 else ()
                 if item.entrypoint.name
-                in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+                in {
+                    "check-document-metadata.py",
+                    "check-document-corpus-lifecycle.py",
+                    "check-document-links.py",
+                }
                 else template.allowed_env_keys
                 if template is not None
                 else ()
@@ -769,7 +790,199 @@ def _context_validator_argv(
             ExecutionContext.WORKFLOW_DISPATCH,
         }:
             return ("--mode", "check-active")
+    if item.entrypoint.name == "check-document-links.py" and profile == "full":
+        return ("--mode", "all")
     return item.argv
+
+
+def _candidate_input_identity(
+    root: pathlib.Path, document: dict[str, object], environ: Mapping[str, str]
+) -> dict[str, str]:
+    root_fd = parent_fd = descriptor = -1
+    try:
+        root_fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        parent_fd = _open_directory_at(
+            root_fd, pathlib.PurePosixPath("scripts"), code="ci-gate-prepared-plan"
+        )
+        descriptor = os.open(
+            "manifest.yaml",
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+            dir_fd=parent_fd,
+        )
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > 1_048_576:
+            raise ValueError("invalid manifest")
+        manifest_digest = _descriptor_sha256(descriptor, metadata.st_size)
+    except (OSError, ValueError):
+        raise GateContractError(
+            "ci-gate-prepared-plan", "manifest", "candidate plan inputs are unavailable"
+        ) from None
+    finally:
+        _close(descriptor)
+        _close(parent_fd)
+        _close(root_fd)
+    return {
+        "merge_sha": environ.get("GITHUB_SHA", ""),
+        "base_sha": environ.get("PR_BASE_SHA", ""),
+        "head_sha": environ.get("PR_HEAD_SHA", ""),
+        "contract_sha256": hashlib.sha256(
+            json.dumps(document, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest(),
+        "manifest_sha256": manifest_digest,
+    }
+
+
+def _invocation_record(invocation: GateInvocation) -> dict[str, object]:
+    return {
+        **dataclasses.asdict(invocation),
+        "entrypoint": invocation.entrypoint.as_posix(),
+        "cwd": invocation.cwd.as_posix(),
+        "argv": list(invocation.argv),
+        "allowed_env_keys": list(invocation.allowed_env_keys),
+    }
+
+
+def prepare_candidate_plan(
+    root: pathlib.Path,
+    document: dict[str, object],
+    environ: Mapping[str, str],
+    changed_paths: tuple[str, ...],
+    selected_suites: tuple[str, ...],
+    selected_roots: tuple[str, ...],
+    plan: tuple[GateInvocation, ...],
+) -> tuple[str, str]:
+    """Serialize one candidate plan; its digest is integrity, not authorization."""
+    payload = json.dumps(
+        {
+            **_candidate_input_identity(root, document, environ),
+            "changed_paths": changed_paths,
+            "selected_suites": selected_suites,
+            "selected_roots": selected_roots,
+            "plan": [_invocation_record(item) for item in plan],
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    if len(payload.encode()) > _MAX_PREPARED_PLAN_BYTES:
+        raise GateContractError(
+            "ci-gate-prepared-plan", "plan", "candidate plan is too large"
+        )
+    return payload, hashlib.sha256(payload.encode()).hexdigest()
+
+
+def restore_candidate_plan(
+    root: pathlib.Path,
+    document: dict[str, object],
+    registry: GateRegistry,
+    public: PublicGateContract,
+    environ: Mapping[str, str],
+    payload: str,
+    digest: str,
+) -> tuple[
+    tuple[str, ...], tuple[str, ...], tuple[str, ...], tuple[GateInvocation, ...]
+]:
+    """Validate producer output against current candidate inputs, then reuse it."""
+    try:
+        if (
+            not payload
+            or len(payload.encode()) > _MAX_PREPARED_PLAN_BYTES
+            or not re.fullmatch(r"[0-9a-f]{64}", digest)
+            or hashlib.sha256(payload.encode()).hexdigest() != digest
+        ):
+            raise ValueError("invalid transport")
+        record = json.loads(payload)
+        identity = _candidate_input_identity(root, document, environ)
+        fields = {
+            *identity,
+            "changed_paths",
+            "selected_suites",
+            "selected_roots",
+            "plan",
+        }
+        if not isinstance(record, dict) or record.keys() != fields:
+            raise ValueError("invalid fields")
+        if json.dumps(record, sort_keys=True, separators=(",", ":")) != payload:
+            raise ValueError("noncanonical transport")
+        if any(record[key] != value for key, value in identity.items()):
+            raise ValueError("stale candidate or configuration")
+        for key in ("changed_paths", "selected_suites", "selected_roots"):
+            if not isinstance(record[key], list) or not all(
+                isinstance(x, str) for x in record[key]
+            ):
+                raise ValueError("invalid selection")
+        paths = tuple(record["changed_paths"])
+        # Revalidate input completeness; a self-rehashed empty diff is no authority.
+        if paths != collect_changed_paths(root, environ):
+            raise ValueError("candidate diff changed")
+        suites = select_public_suites(public, "changed", paths)
+        roots = public_root_gate_ids(public, suites, changed_paths=paths)
+        if (
+            tuple(record["selected_suites"]) != suites
+            or tuple(record["selected_roots"]) != roots
+        ):
+            raise ValueError("selection changed")
+        ownership = {
+            item.gate_id: item
+            for item in public.validators
+            if item.suite in suites and "pull_request" in item.contexts
+        }
+        validator_ids = {item.gate_id for item in public.validators}
+        expected_ids = [
+            gate_id
+            for gate_id in expand_public_gate_ids(registry, roots)
+            if gate_id not in public.local_only_gate_ids
+            and (gate_id not in validator_ids or gate_id in ownership)
+        ]
+        expected_ids.extend(
+            gate_id for gate_id in ownership if gate_id not in expected_ids
+        )
+        rows = record["plan"]
+        if (
+            not isinstance(rows, list)
+            or [row.get("gate_id") for row in rows if isinstance(row, dict)]
+            != expected_ids
+        ):
+            raise ValueError("missing or reordered invocation")
+        nodes = {node.gate_id: node for node in registry.nodes}
+        plan = []
+        for gate_id, row in zip(expected_ids, rows, strict=True):
+            node = nodes[gate_id]
+            route = ownership.get(gate_id)
+            invocation = GateInvocation(
+                gate_id=gate_id,
+                entrypoint=route.entrypoint if route else node.entrypoint,
+                argv=_context_validator_argv(
+                    route, ExecutionContext.PULL_REQUEST, "changed"
+                )
+                if route
+                else node.argv,
+                cwd=node.cwd,
+                allowed_env_keys=("TEMPLATE_GATE_BASE",)
+                if route
+                and route.entrypoint.name
+                in {
+                    "check-document-metadata.py",
+                    "check-document-corpus-lifecycle.py",
+                    "check-document-links.py",
+                }
+                else node.allowed_env_keys,
+                timeout_seconds=node.timeout_minutes * 60,
+                security_db=node.security_db,
+            )
+            if row != _invocation_record(invocation):
+                raise ValueError("invocation changed")
+            plan.append(invocation)
+        restored = tuple(plan)
+        validate_public_execution_parity(
+            public, suites, restored, ExecutionContext.PULL_REQUEST
+        )
+        return paths, suites, roots, restored
+    except (ValueError, TypeError, KeyError, AttributeError, RecursionError):
+        raise GateContractError(
+            "ci-gate-prepared-plan",
+            "plan",
+            "prepared candidate plan is invalid or stale",
+        ) from None
 
 
 def validate_public_execution_parity(
@@ -1560,34 +1773,79 @@ def main(argv: list[str] | None = None) -> int:
                 "local-only",
                 "local-only gates require the unauthenticated local execution context",
             )
-        changed_paths = (
-            ()
-            if arguments.profile == "full"
-            else collect_changed_paths(root, execution_environment)
-        )
-        selected_suites = select_public_suites(
-            public_contract,
-            arguments.profile,
-            changed_paths,
-        )
-        selected_root_gate_ids = public_root_gate_ids(
-            public_contract,
-            selected_suites,
-            changed_paths=(changed_paths if arguments.profile == "changed" else None),
-        )
-        plan = build_public_validation_plan(
-            registry,
-            selected_root_gate_ids,
-            public_contract,
-            selected_suites,
-            context,
-            profile=arguments.profile,
-            root=root,
-        )
+        prepared = execution_environment.get("CI_GATE_PREPARED_PLAN", "")
+        prepared_digest = execution_environment.get("CI_GATE_PREPARED_PLAN_SHA256", "")
+        if (
+            execution_environment.get("CI_GATE_REQUIRE_PREPARED_PLAN") == "true"
+            and not prepared
+        ):
+            raise GateContractError(
+                "ci-gate-prepared-plan", "plan", "required producer plan is missing"
+            )
+        if prepared or prepared_digest:
+            if (
+                context is not ExecutionContext.PULL_REQUEST
+                or arguments.profile != "changed"
+                or not arguments.job
+                or arguments.routing
+            ):
+                raise GateContractError(
+                    "ci-gate-prepared-plan",
+                    "context",
+                    "prepared plans require a candidate consumer job",
+                )
+            changed_paths, selected_suites, selected_root_gate_ids, plan = (
+                restore_candidate_plan(
+                    root,
+                    document,
+                    registry,
+                    public_contract,
+                    execution_environment,
+                    prepared,
+                    prepared_digest,
+                )
+            )
+        else:
+            changed_paths = (
+                ()
+                if arguments.profile == "full"
+                else collect_changed_paths(root, execution_environment)
+            )
+            selected_suites = select_public_suites(
+                public_contract,
+                arguments.profile,
+                changed_paths,
+            )
+            selected_root_gate_ids = public_root_gate_ids(
+                public_contract,
+                selected_suites,
+                changed_paths=(
+                    changed_paths if arguments.profile == "changed" else None
+                ),
+            )
+            plan = build_public_validation_plan(
+                registry,
+                selected_root_gate_ids,
+                public_contract,
+                selected_suites,
+                context,
+                profile=arguments.profile,
+                root=root,
+            )
         full_plan = plan
         if arguments.job:
             plan = select_job_plan(plan, public_contract, arguments.job)
         if arguments.routing:
+            payload, digest = prepare_candidate_plan(
+                root,
+                document,
+                execution_environment,
+                changed_paths,
+                selected_suites,
+                selected_root_gate_ids,
+                full_plan,
+            )
+            print(f"plan={payload}\nplan-sha256={digest}")
             print("selected=true" if plan else "selected=false")
             return 0
         if arguments.local_only:

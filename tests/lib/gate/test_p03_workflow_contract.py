@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import json
 import unittest
 
@@ -11,85 +12,74 @@ from tests.lib.gate.test_github_workflow_contract import ROOT
 class P03WorkflowContractTests(unittest.TestCase):
     def test_p03_hermes_validator_mutations_fail_closed(self) -> None:
         baseline = gate_contract.load_contract_document(ROOT)
-        public = gate_contract.parse_public_gate_contract(baseline)
-        registry = gate_contract.parse_gate_registry(
-            baseline, ".github/workflow-contract.yml"
-        )
         changed_paths = ("scripts/validation/check-p03-hermes.py",)
-        selected = gate_contract.select_public_suites(public, "changed", changed_paths)
-        roots = gate_contract.public_root_gate_ids(
-            public, selected, changed_paths=changed_paths
-        )
-        actual_plan = gate_runner.build_public_validation_plan(
-            registry,
-            roots,
-            public,
-            selected,
-            gate_runner.ExecutionContext.WORKFLOW_DISPATCH,
-            profile="changed",
-            root=ROOT,
-        )
-        cases: list[tuple[str, dict[str, object], str]] = []
+        cases: list[tuple[str, dict[str, object]]] = []
 
         missing = json.loads(json.dumps(baseline))
-        missing["public_gate"]["validators"] = [
-            row
-            for row in missing["public_gate"]["validators"]
-            if row["gate_id"] != "leaf.p03-hermes"
+        missing["gate_nodes"] = [
+            row for row in missing["gate_nodes"] if row["gate_id"] != "leaf.p03-hermes"
         ]
-        cases.append(("missing", missing, "ci-gate-public-execution-parity"))
+        cases.append(("missing", missing))
 
-        for field, value, expected_code in (
-            ("suite", "operations", "ci-gate-public-execution-parity"),
+        for field, value in (
+            ("suite", "operations"),
             (
                 "entrypoint",
-                "scripts/validation/check-release.py",
-                "ci-gate-public-validators",
+                "scripts/validation/check-p11-hermes.py",
             ),
-            ("argv", ["--mode", "weakened"], "ci-gate-public-validators"),
+            ("entrypoint", "scripts/validation/check-script-manifest.py"),
+            ("argv", ["--mode", "weakened"]),
             (
                 "contexts",
                 ["local", "pull_request", "push"],
-                "ci-gate-public-execution-parity",
             ),
         ):
             candidate = json.loads(json.dumps(baseline))
-            validator = next(
+            gate = next(
                 row
-                for row in candidate["public_gate"]["validators"]
+                for row in candidate["gate_nodes"]
                 if row["gate_id"] == "leaf.p03-hermes"
             )
-            validator[field] = value
-            cases.append((field, candidate, expected_code))
+            gate[field] = value
+            cases.append((field, candidate))
 
-        for label, document, expected_code in cases:
+        for label, document in cases:
             with self.subTest(label=label):
-                with self.assertRaises(gate_contract.GateContractError) as raised:
-                    mutated = gate_contract.parse_public_gate_contract(document)
-                    gate_runner.validate_public_execution_parity(
-                        mutated,
+                with self.assertRaises(gate_contract.GateContractError):
+                    public = gate_contract.parse_public_gate_contract(document)
+                    registry = gate_contract.parse_gate_registry(
+                        document, ".github/workflow-contract.yml"
+                    )
+                    selected = gate_contract.select_public_suites(
+                        public, "changed", changed_paths
+                    )
+                    roots = gate_contract.public_root_gate_ids(
+                        public, selected, changed_paths=changed_paths
+                    )
+                    gate_runner.build_public_validation_plan(
+                        registry,
+                        roots,
+                        public,
                         selected,
-                        actual_plan,
                         gate_runner.ExecutionContext.WORKFLOW_DISPATCH,
                         profile="changed",
+                        root=ROOT,
                     )
-                self.assertEqual(expected_code, raised.exception.code)
 
     def test_p03_hermes_validator_has_exact_public_context_ownership(self) -> None:
         document = gate_contract.load_contract_document(ROOT)
         public = gate_contract.parse_public_gate_contract(document)
-        validator = next(
-            item for item in public.validators if item.gate_id == "leaf.p03-hermes"
+        self.assertNotIn(
+            "leaf.p03-hermes", {item.gate_id for item in public.validators}
         )
-        self.assertEqual("repository-integrity", validator.suite)
+        self.assertIn("leaf.p03-hermes", gate_contract._OPTIONAL_CHANGED_ROOT_GATE_IDS)
         self.assertEqual(
-            "scripts/validation/check-p03-hermes.py",
-            validator.entrypoint.as_posix(),
-        )
-        self.assertEqual((), validator.argv)
-        self.assertEqual(
-            ("local", "pull_request", "push", "workflow_dispatch"),
-            validator.contexts,
+            ["repository-integrity"],
+            [
+                route.name
+                for route in public.suites
+                if "leaf.p03-hermes" in route.root_gate_ids
+            ],
         )
 
         registry = gate_contract.parse_gate_registry(
@@ -119,8 +109,18 @@ class P03WorkflowContractTests(unittest.TestCase):
                 )
                 matches = [item for item in plan if item.gate_id == "leaf.p03-hermes"]
                 self.assertEqual(1, len(matches))
-                self.assertEqual(validator.entrypoint, matches[0].entrypoint)
-                self.assertEqual(validator.argv, matches[0].argv)
+                self.assertEqual(
+                    "scripts/validation/check-p03-hermes.py",
+                    matches[0].entrypoint.as_posix(),
+                )
+                self.assertEqual((), matches[0].argv)
+                self.assertFalse(
+                    gate_runner._is_admitted_internal_invocation(
+                        dataclasses.replace(matches[0], gate_id="leaf.unknown-hermes"),
+                        context,
+                        public.hosted_unit_bindings,
+                    )
+                )
 
     def test_p03_hermes_gate_is_closed_and_exactly_routed(self) -> None:
         document = gate_contract.load_contract_document(ROOT)

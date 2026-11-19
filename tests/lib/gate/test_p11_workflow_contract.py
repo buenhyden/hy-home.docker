@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import dataclasses
 import unittest
 
 from scripts.lib.gate import ci_gate_contract as gate_contract
@@ -69,15 +70,15 @@ class P11WorkflowContractTests(unittest.TestCase):
         )
 
     def test_p11_validator_has_exact_public_context_ownership(self) -> None:
-        validator = next(
-            item for item in self.public.validators if item.gate_id == GATE_ID
-        )
-        self.assertEqual("repository-integrity", validator.suite)
-        self.assertEqual(ENTRYPOINT, validator.entrypoint.as_posix())
-        self.assertEqual((), validator.argv)
+        self.assertNotIn(GATE_ID, {item.gate_id for item in self.public.validators})
+        self.assertIn(GATE_ID, gate_contract._OPTIONAL_CHANGED_ROOT_GATE_IDS)
         self.assertEqual(
-            ("local", "pull_request", "push", "workflow_dispatch"),
-            validator.contexts,
+            ["repository-integrity"],
+            [
+                route.name
+                for route in self.public.suites
+                if GATE_ID in route.root_gate_ids
+            ],
         )
 
         for context in (
@@ -97,8 +98,15 @@ class P11WorkflowContractTests(unittest.TestCase):
                 plan = self._plan(self.document, context)
                 matches = [item for item in plan if item.gate_id == GATE_ID]
                 self.assertEqual(1, len(matches))
-                self.assertEqual(validator.entrypoint, matches[0].entrypoint)
-                self.assertEqual(validator.argv, matches[0].argv)
+                self.assertEqual(ENTRYPOINT, matches[0].entrypoint.as_posix())
+                self.assertEqual((), matches[0].argv)
+                self.assertFalse(
+                    gate_runner._is_admitted_internal_invocation(
+                        dataclasses.replace(matches[0], gate_id="leaf.unknown-hermes"),
+                        context,
+                        self.public.hosted_unit_bindings,
+                    )
+                )
                 gate_runner.validate_public_execution_parity(
                     self.public,
                     selected,
@@ -109,49 +117,32 @@ class P11WorkflowContractTests(unittest.TestCase):
 
     def test_p11_validator_mutations_fail_closed(self) -> None:
         context = gate_runner.ExecutionContext.WORKFLOW_DISPATCH
-        changed_paths = (ENTRYPOINT,)
-        selected = gate_contract.select_public_suites(
-            self.public,
-            "changed",
-            changed_paths,
-        )
-        baseline_plan = self._plan(self.document, context)
         cases: list[tuple[str, dict[str, object]]] = []
 
         missing = copy.deepcopy(self.document)
-        missing["public_gate"]["validators"] = [
-            row
-            for row in missing["public_gate"]["validators"]
-            if row["gate_id"] != GATE_ID
+        missing["gate_nodes"] = [
+            row for row in missing["gate_nodes"] if row["gate_id"] != GATE_ID
         ]
         cases.append(("missing", missing))
 
         for field, value in (
             ("suite", "operations"),
             ("entrypoint", "scripts/validation/check-p03-hermes.py"),
+            ("entrypoint", "scripts/validation/check-script-manifest.py"),
             ("argv", ["--weaken"]),
             ("contexts", ["local"]),
         ):
             candidate = copy.deepcopy(self.document)
-            validator = next(
-                row
-                for row in candidate["public_gate"]["validators"]
-                if row["gate_id"] == GATE_ID
+            gate = next(
+                row for row in candidate["gate_nodes"] if row["gate_id"] == GATE_ID
             )
-            validator[field] = value
+            gate[field] = value
             cases.append((field, candidate))
 
         for label, candidate in cases:
             with self.subTest(label=label):
                 with self.assertRaises(gate_contract.GateContractError):
-                    mutated = gate_contract.parse_public_gate_contract(candidate)
-                    gate_runner.validate_public_execution_parity(
-                        mutated,
-                        selected,
-                        baseline_plan,
-                        context,
-                        profile="changed",
-                    )
+                    self._plan(candidate, context)
 
     def test_all_hermes_sources_and_gate_files_route_to_p11(self) -> None:
         for path in (
