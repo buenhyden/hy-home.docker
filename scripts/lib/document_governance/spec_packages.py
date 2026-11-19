@@ -5213,17 +5213,17 @@ def _git_reconciliation_document(
 def _git_optional_reconciliation_document(
     root: pathlib.Path, commit: str, path: pathlib.PurePosixPath
 ) -> SpecDocument | None:
-    snapshot_path = _snapshot_member_path(path)
-    if snapshot_path != path:
-        return _git_optional_reconciliation_document_at(
-            root, commit, path
-        ) or _git_optional_reconciliation_document_at(root, commit, snapshot_path)
-    return _git_optional_reconciliation_document_at(root, commit, path)
+    # A pre-SPEC-0212-TSK-0096 commit keeps the member under its unnumbered
+    # folder; the document is still read and reported by its current path.
+    for candidate in dict.fromkeys((path, _snapshot_member_path(path))):
+        if _git_reconciliation_member_exists(root, commit, candidate):
+            return _git_reconciliation_document(root, commit, path)
+    return None
 
 
-def _git_optional_reconciliation_document_at(
+def _git_reconciliation_member_exists(
     root: pathlib.Path, commit: str, path: pathlib.PurePosixPath
-) -> SpecDocument | None:
+) -> bool:
     try:
         listing = _bounded_git(
             root,
@@ -5240,7 +5240,7 @@ def _git_optional_reconciliation_document_at(
         ) from error
     rows = tuple(row for row in listing.split(b"\0") if row)
     if not rows:
-        return None
+        return False
     if len(rows) != 1:
         raise SpecPackageError("lifecycle reconciliation commit tree is malformed")
     try:
@@ -5258,7 +5258,7 @@ def _git_optional_reconciliation_document_at(
         or _RECOVERY_COMMIT.fullmatch(object_name) is None
     ):
         raise SpecPackageError("lifecycle reconciliation commit tree is malformed")
-    return _git_reconciliation_document(root, commit, path)
+    return True
 
 
 def _require_reconciliation_task_identity(task: SpecDocument, artifact_id: str) -> None:

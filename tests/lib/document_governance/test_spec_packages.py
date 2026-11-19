@@ -235,7 +235,7 @@ def _write_package(
             encoding="utf-8",
         )
     if task:
-        tasks = package / "tasks"
+        tasks = package / "01.tasks"
         tasks.mkdir()
         parents = task_parent_ids or (
             (f"SPEC-{number}-PLAN-0001",) if plan else (f"SPEC-{number}",)
@@ -290,7 +290,7 @@ def _set_item_rows(
 ) -> pathlib.Path:
     spec = package / "spec.md"
     plan = package / "plan.md"
-    task = package / "tasks/tsk-0001-implement.md"
+    task = package / "01.tasks/tsk-0001-implement.md"
     if len(rows) > 1:
         spec.write_text(
             spec.read_text(encoding="utf-8")
@@ -420,7 +420,7 @@ def _generation_event_fixture(module, carrier_count: int):
     tasks = []
     for index in range(1, carrier_count + 1):
         task_path = pathlib.PurePosixPath(
-            f"{package_path.as_posix()}/tasks/tsk-{index:04d}-carrier.md"
+            f"{package_path.as_posix()}/01.tasks/tsk-{index:04d}-carrier.md"
         )
         body = _generation_event_body()
         tasks.append(
@@ -514,7 +514,7 @@ def _branch_handoff_fixture(
         plan=True,
         task=True,
     )
-    contracts = source / "contracts"
+    contracts = source / "02.contracts"
     contracts.mkdir()
     contracts.joinpath("openapi.yaml").write_text(
         "openapi: 3.1.0\ninfo: {title: source, version: 1.0.0}\npaths: {}\n",
@@ -588,14 +588,14 @@ def _branch_handoff_fixture(
     }
     receipt.update(receipt_updates or {})
     if carrier == "current":
-        task = target / "tasks/tsk-0001-implement.md"
+        task = target / "01.tasks/tsk-0001-implement.md"
     elif carrier == "completed":
         archived_target = root / "docs/98.archive/completed/03.specs/0002-target"
         archived_target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(target, archived_target)
         _set_status(archived_target / "spec.md", "in-progress", "completed")
         _set_status(archived_target / "plan.md", "in-progress", "completed")
-        task = archived_target / "tasks/tsk-0001-implement.md"
+        task = archived_target / "01.tasks/tsk-0001-implement.md"
         _set_status(task, "in-progress", "completed")
         task.write_text(
             task.read_text(encoding="utf-8").replace(
@@ -1494,7 +1494,7 @@ Narrative after the registered table.
                     plan_status="completed",
                     task_status="completed",
                 )
-                task = package / "tasks/tsk-0001-implement.md"
+                task = package / "01.tasks/tsk-0001-implement.md"
                 text = task.read_text(encoding="utf-8")
                 current = (
                     "| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |\n"
@@ -1887,7 +1887,7 @@ Narrative after the registered table.
                 + "\n2. W2: Validate the blocked fixture item.\n",
                 encoding="utf-8",
             )
-            task = package / "tasks/tsk-0001-implement.md"
+            task = package / "01.tasks/tsk-0001-implement.md"
             item_table = (
                 "| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |\n"
                 "| --- | --- | --- | --- | --- |\n"
@@ -1926,7 +1926,7 @@ Narrative after the registered table.
         with tempfile.TemporaryDirectory() as directory:
             stage = pathlib.Path(directory) / "docs/03.specs"
             package = _write_package(stage, plan=True, task=True)
-            task = package / "tasks/tsk-0001-implement.md"
+            task = package / "01.tasks/tsk-0001-implement.md"
             task.write_text(
                 task.read_text(encoding="utf-8").replace(
                     "| 1 | W1 | PASS | N/A: local validation only |",
@@ -1954,7 +1954,7 @@ Narrative after the registered table.
                 task=True,
                 task_status="completed",
             )
-            task = package / "tasks/tsk-0001-implement.md"
+            task = package / "01.tasks/tsk-0001-implement.md"
             task.write_text(
                 task.read_text(encoding="utf-8").replace(
                     "| 1 | W1 | PASS | N/A: local validation only |",
@@ -2005,7 +2005,7 @@ Narrative after the registered table.
                 package,
                 (("1", "W1", "blocked", "DEFER", "Task owner"),),
             )
-            second = package / "tasks/tsk-0002-legacy.md"
+            second = package / "01.tasks/tsk-0002-legacy.md"
             second.write_text(
                 _document_text(
                     "task",
@@ -2107,7 +2107,7 @@ Narrative after the registered table.
         with tempfile.TemporaryDirectory() as directory:
             stage = pathlib.Path(directory) / "docs/03.specs"
             package = _write_package(stage, plan=True, task=True)
-            task = package / "tasks/tsk-0001-implement.md"
+            task = package / "01.tasks/tsk-0001-implement.md"
             task.write_text(
                 task.read_text(encoding="utf-8").replace(
                     "| Acceptance criterion | Plan work unit | Task result | Durable owner |",
@@ -2158,7 +2158,7 @@ Narrative after the registered table.
                 task=True,
                 task_status="in-progress",
             )
-            task = package / "tasks/tsk-0001-implement.md"
+            task = package / "01.tasks/tsk-0001-implement.md"
             _add_lifecycle_events(
                 task,
                 (
@@ -2305,7 +2305,7 @@ Narrative after the registered table.
                     task=True,
                     task_status="in-progress",
                 )
-                task = package / "tasks/tsk-0001-implement.md"
+                task = package / "01.tasks/tsk-0001-implement.md"
                 _add_lifecycle_events(task, rows)
                 if label == "missing-anchor":
                     task.write_text(
@@ -2361,7 +2361,7 @@ Narrative after the registered table.
                 task=True,
                 task_status="in-progress",
             )
-            task = package / "tasks/tsk-0001-implement.md"
+            task = package / "01.tasks/tsk-0001-implement.md"
             _add_lifecycle_events(
                 task,
                 (("SPEC-0001", "draft", "in-review", "#spec-review"),),
@@ -2404,7 +2404,7 @@ Narrative after the registered table.
                     task=True,
                     task_status="completed",
                 )
-                task = package / "tasks/tsk-0001-implement.md"
+                task = package / "01.tasks/tsk-0001-implement.md"
                 task.write_text(
                     task.read_text()
                     .replace("PASS", result)
@@ -2441,7 +2441,11 @@ Narrative after the registered table.
                     task=True,
                     task_status="completed",
                 )
-                for relative in ("spec.md", "plan.md", "tasks/tsk-0001-implement.md"):
+                for relative in (
+                    "spec.md",
+                    "plan.md",
+                    "01.tasks/tsk-0001-implement.md",
+                ):
                     path = package / relative
                     path.write_text(
                         path.read_text().replace(
@@ -2563,7 +2567,7 @@ Narrative after the registered table.
             with self.assertRaisesRegex(module.SpecPackageError, "cancellation"):
                 module.load_spec_packages(stage)
             _set_frontmatter_value(
-                package / "tasks/tsk-0001-implement.md",
+                package / "01.tasks/tsk-0001-implement.md",
                 "cancellation",
                 {
                     "reason": "Withdrawn",
@@ -2956,7 +2960,7 @@ Narrative after the registered table.
             )
             spec = package / "spec.md"
             spec.write_text(spec.read_text() + "2. Still requires PASS.\n")
-            task = package / "tasks/tsk-0002-cancelled.md"
+            task = package / "01.tasks/tsk-0002-cancelled.md"
             task.write_text(
                 re.sub(
                     r"(?m)^\|.*\n?",
@@ -3000,11 +3004,11 @@ Narrative after the registered table.
                 ("SPEC-0001-PLAN-0001",),
                 status="cancelled",
             )
-            (package / "tasks/tsk-0002-cancelled.md").write_text(
+            (package / "01.tasks/tsk-0002-cancelled.md").write_text(
                 re.sub(r"(?m)^\|.*\n?", "", cancelled)
             )
             _set_frontmatter_value(
-                package / "tasks/tsk-0002-cancelled.md",
+                package / "01.tasks/tsk-0002-cancelled.md",
                 "cancellation",
                 {
                     "reason": "No assigned criteria",
@@ -3026,7 +3030,7 @@ Narrative after the registered table.
                 rows.replace("PASS", "SKIP: runtime unavailable"),
             ),
             "draft-unreceipted-task": ("extra-task", "draft"),
-            "commented-task": ("comment", "tasks/tsk-0001-implement.md"),
+            "commented-task": ("comment", "01.tasks/tsk-0001-implement.md"),
             "commented-spec": ("comment", "spec.md"),
             "commented-plan": ("comment", "plan.md"),
             "unknown-work": ("row", rows.replace("W1", "W9")),
@@ -3055,11 +3059,11 @@ Narrative after the registered table.
                     task=True,
                     task_status="completed",
                 )
-                task = package / "tasks/tsk-0001-implement.md"
+                task = package / "01.tasks/tsk-0001-implement.md"
                 if surface == "row":
                     task.write_text(task.read_text().replace(rows, value))
                 elif surface == "extra-task":
-                    (package / "tasks/tsk-0002-follow-up.md").write_text(
+                    (package / "01.tasks/tsk-0002-follow-up.md").write_text(
                         re.sub(
                             r"(?m)^\|.*\n?",
                             "",
@@ -3095,7 +3099,7 @@ Narrative after the registered table.
         with tempfile.TemporaryDirectory() as directory:
             stage = pathlib.Path(directory) / "docs/03.specs"
             package_path = _write_package(stage, plan=True, task=True)
-            contracts = package_path / "contracts"
+            contracts = package_path / "02.contracts"
             contracts.mkdir()
             contracts.joinpath("openapi.yaml").write_text(
                 "openapi: 3.1.0\ninfo: {title: fixture, version: 1.0.0}\npaths: {}\n",
@@ -3175,7 +3179,7 @@ Narrative after the registered table.
                 stage = root / "docs/03.specs"
                 package = _write_package(stage, task=surface == "tasks")
                 if surface == "contracts":
-                    contracts = package / "contracts"
+                    contracts = package / "02.contracts"
                     contracts.mkdir()
                     contracts.joinpath("openapi.yaml").write_text(
                         "openapi: 3.1.0\ninfo: {title: fixture, version: 1.0.0}\npaths: {}\n",
@@ -3184,8 +3188,8 @@ Narrative after the registered table.
                 target = {
                     "stage": stage,
                     "package": package,
-                    "tasks": package / "tasks",
-                    "contracts": package / "contracts",
+                    "tasks": package / "01.tasks",
+                    "contracts": package / "02.contracts",
                 }[surface]
                 target_call = {"stage": 1, "package": 2, "tasks": 3, "contracts": 3}[
                     surface
@@ -3323,7 +3327,7 @@ Narrative after the registered table.
         with tempfile.TemporaryDirectory() as directory:
             stage = pathlib.Path(directory) / "docs/03.specs"
             package = _write_package(stage)
-            tasks = package / "tasks"
+            tasks = package / "01.tasks"
             tasks.mkdir()
             tasks.joinpath("task-0001.md").write_text(
                 _document_text("task", "SPEC-0001-TSK-0001", ("SPEC-0001",)),
@@ -3335,7 +3339,7 @@ Narrative after the registered table.
         with tempfile.TemporaryDirectory() as directory:
             stage = pathlib.Path(directory) / "docs/03.specs"
             package = _write_package(stage, task=True)
-            task = package / "tasks/tsk-0001-implement.md"
+            task = package / "01.tasks/tsk-0001-implement.md"
             task.write_text(
                 _document_text("task", "SPEC-0002-TSK-0001", ("SPEC-0001",)),
                 encoding="utf-8",
@@ -4415,7 +4419,7 @@ Narrative after the registered table.
             self.assertIsNone(result.generation_source)
             self.assertEqual(frozenset(), result.actual_normalizations)
 
-            terminal_task = terminal_package / "tasks/tsk-0001-implement.md"
+            terminal_task = terminal_package / "01.tasks/tsk-0001-implement.md"
             terminal_task.write_text(
                 terminal_task.read_text(encoding="utf-8") + "\nChanged body.\n",
                 encoding="utf-8",
@@ -4708,7 +4712,7 @@ Narrative after the registered table.
 
         host = (
             "docs/03.specs/0204-service-integration-security-and-operations/"
-            "tasks/tsk-0008-llm-wiki-preparation.md"
+            "01.tasks/tsk-0008-llm-wiki-preparation.md"
         )
         self.assertEqual(
             frozenset(
@@ -5013,7 +5017,7 @@ Narrative after the registered table.
             registry.profiles["plan"]["path_pattern"],
         )
         self.assertEqual(
-            "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
+            "docs/03.specs/{package_number:4}-{slug}/01.tasks/tsk-{task_number:4}-{slug}.md",
             registry.profiles["task"]["path_pattern"],
         )
         self.assertEqual([], violations)
@@ -5115,7 +5119,7 @@ class HistoricalSpecSnapshotReuseTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             stage = pathlib.Path(directory) / "docs/03.specs"
             package = _write_package(stage, plan=True, task=True)
-            task = package / "tasks/tsk-0001-implement.md"
+            task = package / "01.tasks/tsk-0001-implement.md"
             task.write_text(
                 task.read_text().replace(
                     "| Acceptance criterion | Plan work unit | Task result | Durable owner |",
@@ -6077,7 +6081,7 @@ def _handoff_task(
     cancellation: object = None,
 ):
     return _spec_packages_module().SpecDocument(
-        _HANDOFF_ROOT / f"tasks/tsk-000{number}-work.md",
+        _HANDOFF_ROOT / f"01.tasks/tsk-000{number}-work.md",
         "task",
         f"SPEC-0001-TSK-000{number}",
         status,
@@ -6577,7 +6581,7 @@ class ParentAuthorityBranchTests(unittest.TestCase):
             ),
             tuple(
                 spec_packages.SpecDocument(
-                    _HANDOFF_ROOT / f"tasks/tsk-000{number}-work.md",
+                    _HANDOFF_ROOT / f"01.tasks/tsk-000{number}-work.md",
                     "task",
                     f"SPEC-0001-TSK-000{number}",
                     status,
@@ -6718,7 +6722,7 @@ _PROMOTION_MAP = """
 ### Durable Meaning
 
 The contract lives in `docs/00.workspace/03.process/sdlc.md` and
-`docs/99.templates/registry.json`, the glossary and [the Task](tasks/tsk-0001-work.md).
+`docs/99.templates/registry.json`, the glossary and [the Task](01.tasks/tsk-0001-work.md).
 
 ### Owner and Receipt
 
@@ -6810,7 +6814,7 @@ class PromotionReadinessTests(unittest.TestCase):
 ### Durable Meaning
 
 The glossary and the Task and Plan templates hold it, per
-[the Task](tasks/tsk-0001-work.md) and `tasks/tsk-0001-work.md`.
+[the Task](01.tasks/tsk-0001-work.md) and `01.tasks/tsk-0001-work.md`.
 
 ### Owner and Receipt
 
@@ -6973,7 +6977,7 @@ class CorePackageGenerationTests(unittest.TestCase):
             plan_body,
         )
         task = module.SpecDocument(
-            root / "tasks/tsk-0001-work.md",
+            root / "01.tasks/tsk-0001-work.md",
             "task",
             f"SPEC-{number}-TSK-0001",
             "in-progress",
@@ -7245,7 +7249,7 @@ class CorePackageGenerationTests(unittest.TestCase):
         )
         module = _spec_packages_module()
         rows = module._execution_item_rows(
-            body, load_current_registry(), self.CORE / "tasks/tsk-0001-work.md"
+            body, load_current_registry(), self.CORE / "01.tasks/tsk-0001-work.md"
         )
         self.assertEqual(
             [("First", "W1", "completed"), ("Second", "W2", "in-progress")],
@@ -7253,7 +7257,7 @@ class CorePackageGenerationTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(module.SpecPackageError, "malformed headers"):
             module._execution_item_rows(
-                body, load_current_registry(), self.RECORDED / "tasks/tsk-0001-x.md"
+                body, load_current_registry(), self.RECORDED / "01.tasks/tsk-0001-x.md"
             )
 
     def test_a_core_plan_promotion_map_reaches_the_receipt(self) -> None:

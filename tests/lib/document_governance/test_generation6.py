@@ -86,7 +86,7 @@ def task(
     items: tuple[tuple[str, ...], ...] = (),
 ) -> module.SpecDocument:
     return module.SpecDocument(
-        ROOT / "tasks/tsk-0001-work.md",
+        ROOT / "01.tasks/tsk-0001-work.md",
         "task",
         "SPEC-0001-TSK-0001",
         status,
@@ -116,7 +116,7 @@ SPLIT_PLAN = dataclasses.replace(
 def second_task(evidence: str, acceptance: str) -> module.SpecDocument:
     return dataclasses.replace(
         task(evidence, acceptance),
-        path=ROOT / "tasks/tsk-0002-work.md",
+        path=ROOT / "01.tasks/tsk-0002-work.md",
         artifact_id="SPEC-0001-TSK-0002",
     )
 
@@ -393,7 +393,7 @@ created: "2026-10-13"
                         parent,
                         path.name,
                         path,
-                        ROOT / "tasks" / path.name,
+                        ROOT / "01.tasks" / path.name,
                         profile_id="task",
                         expected_artifact_id="SPEC-0001-TSK-0001",
                         registry=self.registry,
@@ -416,7 +416,7 @@ class Generation6ParentTests(unittest.TestCase):
             ),
             tuple(
                 module.SpecDocument(
-                    ROOT / f"tasks/tsk-{index:04d}-x.md",
+                    ROOT / f"01.tasks/tsk-{index:04d}-x.md",
                     "task",
                     f"SPEC-0001-TSK-{index:04d}",
                     status,
@@ -438,7 +438,7 @@ class Generation6ParentTests(unittest.TestCase):
             ("B", "W2", "Second", "@owner", "blocked", "Waiting on review"),
         )
         running = module.SpecDocument(
-            ROOT / "tasks/tsk-0001-x.md",
+            ROOT / "01.tasks/tsk-0001-x.md",
             "task",
             "SPEC-0001-TSK-0001",
             "blocked",
