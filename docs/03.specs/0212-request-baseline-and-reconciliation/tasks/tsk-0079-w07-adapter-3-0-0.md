@@ -510,9 +510,12 @@ Edit resolves the missing project PostToolUse exit-status witness.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 135 | pending | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation, Trusted Claude manual PreCompact completion, Trusted Claude project Stop retry completion, Trusted Claude project PostToolUse exit | On 2026-11-19 the owner chose to accept once the Codex reviewer and sandbox rows are resolved; they stay required and open | @buenhyden |
+| 135 | not-required | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation, Trusted Claude manual PreCompact completion, Trusted Claude project Stop retry completion, Trusted Claude project PostToolUse exit, Codex reviewer from a read-only parent, Native reviewer boundaries observed, Secret read rule GREEN, RUNTIME-CLOSE Codex sandbox observed | Not required: owner @buenhyden withdrew this criterion on 2026-11-19 in this chat, because a spawned Codex subagent keeps its parent's sandbox in Codex 0.169.0 and the Codex malformed control needs an interactive hook approval; the read-only parent and the secret read rule are the recorded controls, and spawned-reviewer self-isolation and Codex invalid-output handling are not claimed | @buenhyden |
 
 ### Remaining Conditions
+
+On 2026-11-19 the owner withdrew criterion 135 as not-required after the
+root-cause analysis above; the open rows stay recorded as observations.
 
 On 2026-11-19 the owner kept criterion 135 pending: the SDLC accepts it only after the unresolved required Codex reviewer and sandbox rows below are resolved; TSK-0095 lists them with their next check. The read-only sandbox row is now resolved; the CLI rerun shows a spawned
 reviewer still runs with its parent's write access, so WORKFLOWS 1.7.0 has a

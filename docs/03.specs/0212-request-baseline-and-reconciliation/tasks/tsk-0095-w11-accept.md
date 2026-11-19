@@ -1,6 +1,6 @@
 ---
 title: "W11 Acceptance Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -50,7 +50,7 @@ TSK-0080.
 | --- | --- | --- | --- |
 | W00-DELTA to W06-DELIVERY, T99-CONFORMANCE | TSK-0066 to TSK-0077, TSK-0080, TSK-0081 | 122 to 133, 136, 137 | accepted before 2026-11-19 |
 | W07-BRIEF | TSK-0078 | 134 | accepted 2026-11-19 |
-| W07-ADAPTER | TSK-0079 | 135 | pending: unresolved required Codex rows |
+| W07-ADAPTER | TSK-0079 | 135 | not-required 2026-11-19: spawned Codex reviewer isolation not claimed |
 | W08-MEMORY | TSK-0082 | 138 | pending: open required rows |
 | W08-ANALYSIS | TSK-0085 | 141 | accepted 2026-11-19 after the catch-up was observed |
 | W08-RETRIEVAL, CAPTURE | TSK-0083, TSK-0084 | 139, 140 | accepted 2026-11-19 |
@@ -75,7 +75,6 @@ Each remainder blocks only the claim named; none blocks Q07.
 
 | Criterion | Remainder | Evidence kind | Next check | Claim it limits |
 | --- | --- | --- | --- | --- |
-| 135 (pending) | Required rows open in TSK-0079: Codex desktop reviewer write-open and reviewer subagent boundary (FAIL, reproduced on the CLI on 2026-11-19), native malformed output and reviewer boundaries (NOT_RUN); the Codex sandbox row passed on 2026-11-19 | native | A spawned Codex reviewer that keeps its own read-only sandbox; until then reviews run from a read-only parent (WORKFLOWS 1.7.0) | Codex reviewer isolation; criterion 135 |
 | 138 (pending) | 30 R2 copies of the memory export: a removal attempt on 2026-11-19 was refused by the lock, which counts from upload; 2 unlock about 20:30 KST on 2026-11-19 and 28 one a day until about 2026-12-10; a Restic snapshot without memory | authorized-live | A confirmed rewrite and prune as the copies unlock, and the next successful daily backup | Memory absent from backups |
 | 148 (pending) | State repository under budget on a daily run | authorized-live | The 2026-11-20 03:42 KST backup | Daily backup succeeds |
 | 144 (pending) | Rehearsal link and reader FAILs in TSK-0088 | local-execution | The Q07 cutover candidate after its consumer conversion | Folder moves keep every link and reader |
@@ -101,7 +100,7 @@ whole-stack start ban stays.
 
 ### Blockers and Decisions
 
-Criteria 135, 138, 144 and 148 stay pending; 144's rehearsal rows
+Criteria 138, 144 and 148 stay pending, and 135 is not required; 144's rehearsal rows
 are Q07 inputs, and the owner decides whether Q07 waits for the others. The remainders above stay with their
 Tasks.
 
@@ -111,7 +110,7 @@ Tasks.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Acceptance ledger | 151 | W167 | Criterion Decisions of TSK-0066 to TSK-0094 | `main` at `d4f94d1be` and the owner's 2026-11-19 choices | PASS | Criteria 122 to 134, 136, 137, 139, 140, 142, 143, 145 to 147, 149 and 150 accepted, and 141 after its catch-up on 2026-11-19; 135, 138, 144 and 148 pending on open required rows; W10-BLOG and W10-TEMPLATE not applicable | required | - |
+| Acceptance ledger | 151 | W167 | Criterion Decisions of TSK-0066 to TSK-0094 | `main` at `d4f94d1be` and the owner's 2026-11-19 choices | PASS | Criteria 122 to 134, 136, 137, 139, 140, 142, 143, 145 to 147, 149 and 150 accepted, and 141 after its catch-up on 2026-11-19; 135 not-required; 138, 144 and 148 pending on open required rows; W10-BLOG and W10-TEMPLATE not applicable | required | - |
 | Journal reconciliation | 151 | W167 | `journalctl` for the backup and analysis units | 2026-11-16 to 19 | PASS | Memory lines 2, 2, 2 then 0; analysis finished at 03:00:22 KST | required | - |
 | Cutover rehearsal | 151 | W167 | `cutover_findings`, `rehearse_allocation`, `allocate_identity` on the real Registry | `baseline-2`, read only | PASS | No finding; `SPEC-0001` rehearsed; real allocation refused before Q07; Registry unchanged | required | - |
 
