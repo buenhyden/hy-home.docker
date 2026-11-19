@@ -19,13 +19,40 @@ mode="$2"
 repository_root="$(git rev-parse --show-toplevel)" || die "repository root unavailable"
 scratch="$(mktemp -d "${TMPDIR:-/tmp}/ci-style.XXXXXX")"
 checkout=""
+checker_pid=""
 cleanup() {
+  if [[ -n "$checker_pid" ]]; then
+    # The checker owns this process group; never signal the caller's group.
+    kill -TERM -- "-$checker_pid" 2>/dev/null || true
+    sleep 0.1
+    kill -KILL -- "-$checker_pid" 2>/dev/null || true
+    wait "$checker_pid" 2>/dev/null || true
+  fi
   if [[ -n "$checkout" ]]; then
     git -C "$repository_root" worktree remove --force "$checkout" >/dev/null 2>&1 || true
   fi
   rm -rf -- "$scratch"
 }
-trap cleanup EXIT HUP INT TERM
+trap cleanup EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+run_pre_commit() {
+  local child_exit
+  # Job control gives only this background checker its own process group.
+  set -m
+  (
+    cd "$checkout"
+    exec pre-commit "$@"
+  ) &
+  checker_pid=$!
+  set +m
+  wait "$checker_pid"
+  child_exit=$?
+  checker_pid=""
+  return "$child_exit"
+}
 
 render_readonly_config() {
   local source_config="$1"
@@ -183,11 +210,8 @@ run_pr_merge() {
   snapshot_candidate_state before
 
   set +e
-  (
-    cd "$checkout"
-    pre-commit run --config "$scratch/pre-commit-check.yaml" \
-      --from-ref "$merge_base" --to-ref "$merge_sha" --show-diff-on-failure
-  )
+  run_pre_commit run --config "$scratch/pre-commit-check.yaml" \
+    --from-ref "$merge_base" --to-ref "$merge_sha" --show-diff-on-failure
   local child_exit=$?
   set -e
 
@@ -224,23 +248,37 @@ run_local_staged() {
   [[ -z "${CI+x}" ]] || die "CI is not accepted locally"
   [[ -z "${PR_BASE_SHA+x}" ]] || die "PR_BASE_SHA is not accepted locally"
   [[ -z "${PR_HEAD_SHA+x}" ]] || die "PR_HEAD_SHA is not accepted locally"
-  git -C "$repository_root" rev-parse --verify HEAD >/dev/null 2>&1 || \
-    die "local HEAD is unavailable"
+  local candidate_tree source_index source_head base_ref empty_tree current_head current_tree
+  source_head="$(git -C "$repository_root" rev-parse --verify HEAD 2>/dev/null)" || source_head=""
   set +e
-  git -C "$repository_root" diff --cached --quiet HEAD --
+  git -C "$repository_root" diff --cached --quiet --
   local staged_exit=$?
   set -e
   case "$staged_exit" in
-    0) die "local staged input is empty" ;;
+    0) echo 'NOT_APPLICABLE: local staged input is empty'; return 0 ;;
     1) ;;
     *) die "local staged input could not be inspected" ;;
   esac
 
-  local candidate_tree
   candidate_tree="$(git -C "$repository_root" write-tree)" || \
     die "local staged tree is unavailable"
+  source_index="$(git -C "$repository_root" rev-parse --path-format=absolute --git-path index)" || \
+    die "local index path is unavailable"
+  base_ref="$source_head"
+  if [[ -z "$base_ref" ]]; then
+    git -C "$repository_root" symbolic-ref --quiet HEAD >/dev/null || \
+      die "local HEAD is unavailable"
+    empty_tree="$(git -C "$repository_root" hash-object -w -t tree --stdin </dev/null)" || \
+      die "empty base tree is unavailable"
+    # No branch is created or advanced; only the temporary worktree uses this base.
+    base_ref="$(printf '%s\n' 'Local style empty base' | git -C "$repository_root" \
+      -c user.name='Local style snapshot' -c user.email=local-style@example.invalid \
+      commit-tree "$empty_tree")" || die "empty base commit is unavailable"
+  fi
+  # A caller-selected index belongs to the source, never the isolated worktree.
+  unset GIT_INDEX_FILE
   checkout="$scratch/repository"
-  git -C "$repository_root" worktree add --quiet --detach "$checkout" HEAD || \
+  git -C "$repository_root" worktree add --quiet --detach "$checkout" "$base_ref" || \
     die "isolated local style checkout failed"
   git -C "$checkout" read-tree --reset -u "$candidate_tree" || \
     die "isolated staged tree checkout failed"
@@ -251,15 +289,17 @@ run_local_staged() {
   snapshot_candidate_state before
 
   set +e
-  (
-    cd "$checkout"
-    pre-commit run --config "$scratch/pre-commit-check.yaml" \
-      --hook-stage pre-commit --show-diff-on-failure
-  )
+  run_pre_commit run --config "$scratch/pre-commit-check.yaml" \
+    --hook-stage pre-commit --show-diff-on-failure
   local child_exit=$?
   set -e
 
   require_unchanged_candidate "$child_exit" "local style validation"
+  current_tree="$(GIT_INDEX_FILE="$source_index" git -C "$repository_root" write-tree)" || \
+    die "local source index could not be rechecked"
+  current_head="$(git -C "$repository_root" rev-parse --verify HEAD 2>/dev/null)" || current_head=""
+  [[ "$candidate_tree" == "$current_tree" && "$source_head" == "$current_head" ]] || \
+    die "local source index or HEAD changed; rerun validation on the current candidate"
   return "$child_exit"
 }
 

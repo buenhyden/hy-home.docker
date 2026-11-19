@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.9.0"
+version: "1.10.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-20"
 ---
 
 # Git Workflow Governance
@@ -114,6 +114,8 @@ None: this document states no exclusion.
 | GIT-WORKFLOW-R79 | Repository-modifying agent work | Required: leave unrelated untracked files and user changes untouched | none | none |
 | GIT-WORKFLOW-R80 | The user asks not to commit, the work is exploratory or incomplete, required checks or approvals are missing, or the commit would include secrets or unrelated changes | Forbidden: committing | none | none |
 | GIT-WORKFLOW-R81 | A commit is withheld | Required: report the reason and remaining state | none | none |
+| GIT-WORKFLOW-R82 | Local staged diagnosis | Required: support an unborn index, report a valid empty index as NOT_APPLICABLE, and reject changed source index/HEAD or cancelled execution instead of reusing its result | `run-ci-precommit.sh --mode local-staged` | none |
+| GIT-WORKFLOW-R83 | Native pre-push ref input | Required: inspect every update including an unterminated final record; reject malformed records and any main target update while retaining the empty-update no-op | `pre-push-guard.sh` | none |
 
 #### 1. Commit Standards
 
@@ -156,6 +158,15 @@ installs no hook and keeps the effective secret guard. On failure, fix,
 review the diff, restage, and commit normally; when the index changes, an
 earlier PASS is not reused. It never replaces a user-global hook or claims
 automatic enforcement from configuration alone.
+
+The diagnostic accepts the first staged tree before any branch commit and
+reports an empty staged scope as `NOT_APPLICABLE`, without invoking checks.
+It rechecks the source index tree and HEAD after inspecting the isolated
+candidate; drift requires a new run against the current input. Cancellation
+returns a signal exit and cleans its own temporary worktree. An unborn
+diagnosis uses an unreferenced empty base for that worktree and does not
+create or advance a source branch. These diagnostic results do not replace
+the installed normal commit or remote candidate checks.
 
 #### 2. Branching Strategy
 
