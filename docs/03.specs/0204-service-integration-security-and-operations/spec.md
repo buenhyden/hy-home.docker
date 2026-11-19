@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.12.2"
+version: "1.12.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -404,8 +404,7 @@ Missing permission or target defers only the dependent operation.
 11. P01 completes one coherent native TLS endpoint/CA contract for OpenBao,
     Agent, metrics, operational clients and Traefik backend; bootstrap trust
     and the server key are provisioned independently of that OpenBao. Final verification uses SEC01's
-    current stable server/Agent/snapshot CLI contract (2.7.1 at the current
-    assessment), with fresh input binding. The tests exercise wrong CA/SAN,
+    current stable server/Agent/snapshot CLI contract, with fresh input binding. The tests exercise wrong CA/SAN,
     expiry/denial, sealing, fresh
     Agent process/cold start, wrapped SecretID reissue, restricted snapshot
     issuance/renewal/save/empty Raft restore/unseal, HMAC audit and audit failure.

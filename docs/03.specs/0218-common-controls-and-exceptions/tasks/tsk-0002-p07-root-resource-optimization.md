@@ -1,10 +1,10 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -663,6 +663,7 @@ its inputs.
 None: nothing was recorded here before this Task moved to the common form.
 
 - On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the W1-W8 history notes, the admission-baseline and ComposeControlsTests paragraphs and the delivery-ordering sentences.
+- On 2026-11-19 the owner directed that Stage 03 passages conflicting with the current implementation be deleted. Remaining Conditions no longer say the manifest and workflow edits are unlanded proposals or that manifest registration fails; `check-script-manifest.py` passed on `f4dc70905` (`PASS: script manifest is valid`). This Task's legacy Evidence table is frozen, so the earlier W10 manifest integration FAIL row stays as recorded.
 
 ## Verification Evidence
 
@@ -719,8 +720,9 @@ The changed tracked paths are this Task, the resource-optimization README and
 measurement schema, its fixtures README and two synthetic JSON files, the
 assessment library and CLI, and the two dedicated test modules. Source-only
 preparation adds no inventory copy, operational data, runtime configuration,
-image change, secret consumer change or deletion decision. All shared
-manifest/workflow/README edits above remain coordinator-only proposals.
+image change, secret consumer change or deletion decision. The shared
+manifest and workflow-contract records landed later (W10 manifest
+integration on main).
 
 The final dedicated command was
 `rtk proxy env COVERAGE_FILE=.agent-work/p07-coverage-data
@@ -762,8 +764,7 @@ immediately before the logical commit. `git diff --cached --check` passed.
 The document-link command `check-document-links.py --mode all` exited0 with
 zero failures and one existing historical-capture warning (2870 legacy links).
 The unchanged workflow validator passed; `run-ci-gate.py --profile changed
---explain` exited0 but did not select the new tests. Manifest registration
-still fails with exactly two missing records. No full aggregate or remote
+--explain` exited0 but did not select the new tests. No full aggregate or remote
 CI acceptance is claimed.
 
 Two metadata runs failed before local corrections: the first reported 150

@@ -1,10 +1,10 @@
 ---
 title: "Traefik and Prometheus Fixed Image Pins Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0021"
 parent_ids:
@@ -102,87 +102,12 @@ dated "Superseded" paragraph. TSK-0009 is untouched.
 
 #### Owner steps — NOT_RUN
 
-Every step below needs a separate owner approval for its named target. None
-ran here, so no scan, applicability, boot, recreation or rollback result exists
-for the adopted images.
-
-1. Pull and offline scan, with an independent applicability review. The
-   approval line for one Grype DB update is on file in
-   `infra/supply-chain.network-approvals.md` for 2026-10-15; this pull and any
-   new DB seed need a fresh approval.
-
-   ```bash
-   docker pull traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65
-   docker pull prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2
-   # In a new mode-0700 directory $SCAN: save each archive, then run both tools offline.
-   docker save traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65 -o "$SCAN/traefik.tar"
-   docker save prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2 -o "$SCAN/prometheus.tar"
-   docker run --pull=never --rm --network none -v "$SCAN:/scan" \
-     anchore/syft@sha256:3eb5379ba7b409c3f4069b686110527af0c47df993fa5c10d13e7cf34f49b1aa \
-     docker-archive:/scan/traefik.tar -o syft-json=/scan/traefik.sbom.json
-   docker run --pull=never --rm --network none -v "$SCAN:/scan" -v "$GRYPE_DB:/db:ro" \
-     -e GRYPE_DB_CACHE_DIR=/db -e GRYPE_DB_AUTO_UPDATE=false \
-     anchore/grype@sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe \
-     sbom:/scan/traefik.sbom.json -o json > "$SCAN/traefik.grype.json"
-   ```
-
-   Repeat the Syft and Grype runs for `prometheus.tar`. `$GRYPE_DB` is the
-   path printed by `python3 scripts/lib/supply_chain/grype_db_seed.py --resolve-current . _workspace/repo-support/task-2026-07-23-security-supply-chain-runtime-closure/grype-db-seed`
-   (reseed first with `bash scripts/security/seed-grype-db-cache.sh --seed`
-   only under the fresh approval). A `security-auditor` then reviews each match
-   against the primary sources, as the 2026-10-15 review did. Record archive,
-   SBOM and Grype SHA-256 values, counts and the reviewed applicability here.
-
-2. Config checks on the pulled images, `--network none`, nothing mounted
-   except read-only repository config. Traefik static and dynamic config must
-   boot with the same expected errors as v3.7.14 (no Docker socket, no
-   certificate mount); Prometheus runs both checks on both config files and
-   the 13 rule files:
-
-   ```bash
-   docker run --pull=never --rm --network none -v "$PWD/infra/01-gateway/traefik/config:/etc/traefik:ro" \
-     traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65 --configFile=/etc/traefik/traefik.yml
-   docker run --pull=never --rm --network none --entrypoint promtool -v "$PWD/infra/06-observability/prometheus:/etc/prometheus:ro" \
-     prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2 \
-     check config --syntax-only /etc/prometheus/prometheus.yml
-   docker run --pull=never --rm --network none --entrypoint /bin/sh -v "$PWD/infra/06-observability/prometheus:/etc/prometheus:ro" \
-     prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2 \
-     -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
-   ```
-
-   Repeat `check config --syntax-only` for `prometheus.dev.yml`. Adjust the
-   mount sources to the actual config paths first; a path error is a failure
-   of the check, not a pass.
-
-3. HOME recreation with rollback, run by the owner from the HOME checkout
-   after the scan and checks pass. Record the running image identity first
-   (`docker inspect --format '{{.Image}} {{.Config.Image}}' traefik prometheus`);
-   the expected rollback targets are the previous pins above. Follow RUN-0013
-   (Startup, shutdown and apply) and RUN-0045.
-
-   ```bash
-   # Traefik: back up nothing stateful (no ACME storage). Apply, then verify.
-   docker compose --profile core up -d --no-deps --no-build --pull never --force-recreate traefik
-   docker compose ps traefik
-   docker compose exec -T traefik traefik healthcheck --ping
-   # Prometheus: first a consistent TSDB backup and isolated restore (SPEC-0245
-   # procedure). Then apply and verify.
-   docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus
-   docker exec prometheus wget -qO- http://localhost:9090/-/healthy
-   docker exec prometheus promtool check config /etc/prometheus/prometheus.yml
-   docker exec prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
-   ```
-
-   Verify Traefik by healthy state, dashboard BasicAuth success and denial,
-   one ForwardAuth and one native-OIDC route, and internal metrics scrape;
-   verify Prometheus by `up` for every job, rule loading and a TSDB head
-   time that did not move backwards. Rollback restores the previous image
-   with the Compose edit reverted in a scratch copy or with
-   `docker compose ... up -d --no-deps --no-build --pull never --force-recreate`
-   against the previous digest (Traefik may use the SPEC-0243
-   `compose.window-ca.override.yml` overlay only for the older v3.7.13). A
-   tag change does not reverse a TSDB or schema change, so a failed Prometheus
-   start after a data-affecting step goes to the SPEC-0245 restore.
+The owner pull, scan, config-boot and recreation steps for `traefik:v3.7.16`
+and `prom/prometheus:v3.15.1` never ran here. The Traefik pin was superseded by
+v3.7.17 (see the supersession note), so its steps no longer apply. On
+2026-11-19 HOME runs `prom/prometheus:v3.15.1` and `traefik:v3.7.17`, both
+healthy (HOME running images row); that observation is not a scan,
+applicability review or rollback result.
 
 #### Lifecycle Events
 
@@ -200,6 +125,7 @@ Prometheus pin is unchanged. Earlier entries are unchanged.
 ### Blockers and Decisions
 
 - On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; removed from spec.md and plan.md: retired-package owners, archive preservation, restated Task results, acceptance and status, local-main delivery and non-Registry results (`BLOCKED`, `DEFER`).
+- On 2026-11-19 the owner directed that Stage 03 passages conflicting with the current implementation be deleted. The owner-step commands that pull `traefik:v3.7.16` were removed, because v3.7.17 superseded that pin and HOME runs it.
 
 ## Verification Evidence
 
@@ -212,6 +138,7 @@ Prometheus pin is unchanged. Earlier entries are unchanged.
 | Image pull and offline scan | 15 | W76 | Syft and Grype on `--network none`, independent applicability review | Adopted digests; owner approval absent | NOT_RUN | Owner steps | optional | - |
 | Config boot and promtool checks | 15 | W76 | Traefik config boot, `check config`, `check rules` | Adopted images; no pull | NOT_RUN | Owner steps | optional | - |
 | HOME recreation and rollback | 15 | W76 | Recreate, health, route and scrape checks, rollback | Named HOME target and backup absent | NOT_RUN | Owner steps | optional | - |
+| HOME running images | 15 | W76 | `docker ps` image and health for `prometheus` and `traefik` | HOME on 2026-11-19, `main` at `f4dc70905` | PASS | Owner steps | optional | - |
 
 ### Resolution Links
 
@@ -227,10 +154,10 @@ the latest and security gates still exit 2 for other open evidence.
 
 ### Remaining Conditions
 
-In progress. Source pins, ledger and policy text are done; the owner steps
-above remain `NOT_RUN`. Close this Task only after the scan, applicability
-review, config checks and HOME recreation (or an owner decision to defer them)
-are recorded. Source rollback is a logical revert of this unit; it does not
+In progress. Source pins, ledger and policy text are done. HOME already runs
+the Prometheus pin and Traefik's later v3.7.17; the scan, applicability and
+config-check steps stay `NOT_RUN`. Close this Task only on an owner decision
+to accept or defer them. Source rollback is a logical revert of this unit; it does not
 revert a recreated container or its data.
 
 ## Handoff

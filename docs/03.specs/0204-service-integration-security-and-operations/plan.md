@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.12.4"
+version: "1.12.5"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -319,19 +319,17 @@ records each downstream contract and exact final SHA.
 
 #### P05 parallel preparation and single SQL owner
 
-TSK-0013 uses `codex/p05-n8n-outbox-notifier` and
-`.worktrees/p05-n8n-outbox-notifier`. No second
-implementation chat or operational resource is created by issuance.
+No second implementation chat or operational resource is created by issuance.
 
 W40/W41 may proceed on explicitly provisional interface fixtures. W42 waits
 for P04 W36's reviewed SQL version/hash. P04 remains the only canonical SQL
-and provisioning writer in `airflow/workloads/manifest-pipeline/sql`; P05 does
+and provisioning writer in `infra/07-workflow/airflow/workloads/manifest-pipeline/sql`; P05 does
 not copy the supplied DAG/SQL or create a second schema/provisioner. The prompt's
 standalone provisioning fallback is routed through that existing writer; a
 necessary reassignment requires a recorded exact handover, never concurrent
 writing. P05 native W43 follows P04 W38's real publication/outbox proof.
 
-Source selects n8n/core/runners2.42.6 and Mailpit1.31.4. SEC01 supplies the selected compatible immutable
+SEC01 supplies the selected compatible immutable
 images and security receipt, not a source-tag-only waiver. P03 supplies exact
 DEV/Mailpit endpoints, worker execution/network and UID/mode boundaries; P02
 reviews credential references. P05 uses only notifier credentials and encrypted
@@ -428,7 +426,7 @@ worker handoff and exact acceptance/evidence map.
 
 #### P02 parallel start and shared ownership
 
-P02 uses its own worktree and `codex/p02-secret-catalog` branch. Integrated
+Integrated
 SMTP01 permits public classification and provisional mapping now; P01's final
 OpenBao image, authentication and recovery evidence still gate final runtime
 destinations and P06 migration. This narrows the historical P01-before-P02
@@ -449,16 +447,13 @@ unused. Current remote synchronization does not certify operational acceptance.
 
 #### SMTP01 sequence and private-operation boundary
 
-Work is isolated
-in `/tmp/hy-home-smtp01` on `codex/smtp01-canonical`; concurrent root edits are
-preserved. The integration order is SEC01, SMTP01, then CLN01, subject to actual
+The integration order is SEC01, SMTP01, then CLN01, subject to actual
 owning-Spec dependencies. Current implementation and tests do not change HOME,
 private metadata or either real SMTP file. Image tags/projections remain SEC01
 ownership; exact digests belong only to the isolated test fixture here.
 
-The private duplicate deletion target is exactly
-`/home/hyunyoun/data/hy-home.docker/secrets/communication/supabase/supabase_smtp_password.txt`.
-Canonical `secrets/communication/smtp/smtp_password.txt`, username, host and
+The private duplicate `secrets/communication/supabase/supabase_smtp_password.txt`
+no longer exists, so no duplicate deletion remains. Canonical `secrets/communication/smtp/smtp_password.txt`, username, host and
 account remain protected. CLN01/the coordinator verifies all consumers and
 backup/restore facts, records a sanitized audit receipt, switches any old inode
 consumer by selected recreation and then releases SMTP01’s sole narrow retirement executor. Separate CLN01
@@ -470,7 +465,7 @@ private comparison, unlink, broad sync/prune, rotation or HOME deployment.
 #### P01 current continuation ownership and sequence
 
 The 2026-10-11 assessment continues existing [TSK-0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md)/W19-W23;
-it allocates no new Task or Spec. Server/Agent declaration is SEC01's exact 2.7.1 contract. Historical source and isolated receipts are retained.
+it allocates no new Task or Spec. Historical source and isolated receipts are retained.
 Task-0006's current continuation section owns the exact worker instructions.
 
 One P01 writer owns OpenBao scripts/config except P02's catalog/schema,
