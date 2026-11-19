@@ -1,6 +1,6 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -50,6 +50,10 @@ Brief revisions 6 and 7 extend this same P01 correction to the link CLI and
 its existing regression module, then the optional Hermes invocation bindings
 and the existing P03/P11 workflow-contract tests. No service implementation
 or earlier prompt is reopened.
+After link correction commit `2bcc4436f2bff883fc79754b954e059367488a94`,
+brief revision 8 rebinds only the runner, its two existing Hermes contract
+test consumers and this Task. The prior test writer has handed back those
+files; no parallel writer remains on this delta.
 
 ## Execution Log
 
@@ -209,6 +213,9 @@ expanded templates do not change this package's consumer contract.
 | E26 | 155 | W171 | Ordinary link CLI behavior through the adapter boundary | Metadata imports scoped to changed discovery; unchanged metadata guards; run_adapter run-unittest tests.lib.document_governance.test_links -v | PASS | Full existing links module: 151 tests PASS in 153.105 seconds through the real adapter. Subsequent clean-fixture assertion checked by ChangedDocumentScopeTests: 13 PASS in 6.544 seconds. Persistent ordinary-mode fixture carries a closed descriptor; changed Git/base failures remain errors. Script Manifest PASS | required | E25 |
 | E27 | 155 | W171 | Independent review of late-import correction | First link CLI delta and Git-failure mock | FAIL | Reviewer found that mocking identity._run_git before lifecycle's first import can retain the mock in lifecycle; three-test order yielded two PASS and one FAIL. Production import boundary itself approved | required | - |
 | E28 | 155 | W171 | Independent review of late-import correction | Added clean-fixture discovery assertion before injecting Git failure | PASS | Same reviewer reran the previously failing order: three tests PASS in 2.080 seconds; normal empty diff verified and real helper initialized before mocking; production/security verdict approved | required | E27 |
+| E29 | 155 | W171 | Optional Hermes binding and regression ownership | Hosted run 44574168668 candidate-core; existing P03/P11 tests and adapted mutation cases | FAIL | Four obsolete mandatory-validator lookups fail after optional routing. Adapted eight tests expose 12 accepted cross-script or unknown-ID cases; an intermediate binding fix still accepts two substitutions with another generic admitted checker. These are correction work, not waived old requirements | required | - |
+| E30 | 155 | W171 | Optional Hermes binding and regression ownership | Immutable gate-ID to exact script/argv mapping before generic admission; updated existing P03/P11 tests; unchanged selection scopes | PASS | Direct combined P03/P11/model: 27 tests PASS in 3.710 seconds. Real adapter separately runs P03 four PASS in 0.535 seconds, P11 four PASS in 1.087 seconds, model 19 PASS in 2.390 seconds. All five contexts preserve exact checks; missing nodes, swapped/other checkers, bad argv and unknown identities are refused. Ruff and diff checks PASS | required | E29 |
+| E31 | 155 | W171 | Independent review of optional Hermes correction | Final immutable binding and existing P03/P11 regression delta | PASS | Reviewer approved source/security and preserved obligations; independently ran eight tests PASS in 1.455 seconds and 150 exact/malformed binding assertions across five contexts. Generic/adapter substitutions and unknown IDs are refused; no files edited by reviewer | required | - |
 
 ### Resolution Links
 
@@ -222,6 +229,8 @@ its own successful hosted aggregate before merge.
 E26 resolves the actual link CLI import regression; E28 resolves test-order
 contamination discovered during review. Neither result stands in for the
 uncompleted hosted document job.
+E30 resolves the optional-binding defect and migrates its existing contract
+tests without dropping routing, context or fail-closed obligations.
 
 ## Acceptance Decision
 

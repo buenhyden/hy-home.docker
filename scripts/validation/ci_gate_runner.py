@@ -22,6 +22,7 @@ import tempfile
 import threading
 import time
 from collections.abc import Mapping
+from types import MappingProxyType
 
 if __package__ in {None, ""}:
     _BOOTSTRAP_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -220,14 +221,21 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
         ("scripts/operations/sync-tech-stack-versions.sh", ("--check",)),
         ("scripts/validation/check-github-workflow-contract.py", ()),
         ("scripts/validation/check-operations-catalog.py", ()),
-        ("scripts/validation/check-p03-hermes.py", ()),
-        ("scripts/validation/check-p11-hermes.py", ()),
         ("scripts/validation/check-script-manifest.py", ()),
         ("scripts/validation/check-storybook-contract.sh", ()),
         ("scripts/validation/validate-docker-compose.sh", ()),
         ("scripts/validation/run-ci-precommit.sh", ("--mode", "pr-merge")),
         ("tests/validation/test_run_ci_precommit.sh", ()),
     )
+)
+_OPTIONAL_CHECK_INVOCATIONS = MappingProxyType(
+    {
+        f"leaf.{name}-hermes": (
+            pathlib.PurePosixPath(f"scripts/validation/check-{name}-hermes.py"),
+            (),
+        )
+        for name in ("p03", "p11")
+    }
 )
 
 
@@ -238,6 +246,9 @@ def _is_admitted_internal_invocation(
         tuple[str, pathlib.PurePosixPath, tuple[str, ...]], ...
     ],
 ) -> bool:
+    identity = (invocation.entrypoint, invocation.argv)
+    if invocation.gate_id in _OPTIONAL_CHECK_INVOCATIONS:
+        return identity == _OPTIONAL_CHECK_INVOCATIONS[invocation.gate_id]
     if invocation.entrypoint == _INTERNAL_ADAPTER_PATH:
         if (
             context is ExecutionContext.PULL_REQUEST
@@ -251,7 +262,6 @@ def _is_admitted_internal_invocation(
         return ci_gate_adapters.admits_adapter_invocation(
             invocation.argv, context.value
         )
-    identity = (invocation.entrypoint, invocation.argv)
     if identity == _PR_STYLE_INVOCATION:
         return context is ExecutionContext.PULL_REQUEST
     return identity in _INTERNAL_CHECK_INVOCATIONS
