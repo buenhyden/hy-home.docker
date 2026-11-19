@@ -1,8 +1,8 @@
 ---
 title: "Traefik and Prometheus Fixed Image Pins Task"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-19"
 layer: "specs"
@@ -109,12 +109,22 @@ v3.7.17 (see the supersession note), so its steps no longer apply. On
 healthy (HOME running images row); that observation is not a scan,
 applicability review or rollback result.
 
+#### Owner decisions 2026-11-19
+
+In this chat the owner deferred the image pull and offline scan, the
+config boot and promtool checks, and the recreation and rollback steps,
+because HOME already runs `prom/prometheus:v3.15.1` and Traefik's later
+`v3.7.17` healthy (HOME running images). Those three optional rows stay
+`NOT_RUN`; the deferral is not a scan or applicability result. The required
+source rows pass, so this Task closes.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0021 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0021 | ready | in-progress | #source-pins-2026-10-30 |
+| SPEC-0204-TSK-0021 | in-progress | completed | #owner-decisions-2026-11-19 |
 
 #### Supersession note 2026-11-10
 
@@ -154,11 +164,8 @@ the latest and security gates still exit 2 for other open evidence.
 
 ### Remaining Conditions
 
-In progress. Source pins, ledger and policy text are done. HOME already runs
-the Prometheus pin and Traefik's later v3.7.17; the scan, applicability and
-config-check steps stay `NOT_RUN`. Close this Task only on an owner decision
-to accept or defer them. Source rollback is a logical revert of this unit; it does not
-revert a recreated container or its data.
+None for this Task. The deferred scan, applicability review and config
+checks stay `NOT_RUN`; criterion 15 keeps its decision in TSK-0009.
 
 ## Handoff
 
