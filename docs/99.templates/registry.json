@@ -4100,7 +4100,9 @@
       "path_pattern": ".agents/knowledge/repository-map.md",
       "additional_paths": [
         ".agents/knowledge/verification-surface-map.md",
-        ".agents/knowledge/agent-glossary.md"
+        ".agents/knowledge/agent-glossary.md",
+        "docs/00.workspace/05.environment/onboarding.md",
+        "docs/00.workspace/06.maintenance/harness-maintenance.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",

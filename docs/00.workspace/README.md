@@ -1,6 +1,6 @@
 ---
 title: "00.workspace"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -52,8 +52,10 @@ agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)�
 | `04.quality/approval-boundaries.md` | 사람·agent 공통 승인 범위와 보호 표면 |
 | `04.quality/quality-standards.md` | 품질 게이트, 위험별 리뷰, 검증 매트릭스 |
 | `04.quality/task-checklists.md` | 시작·완료 점검 |
+| `05.environment/onboarding.md` | 개발 환경 준비와 첫 점검, 환경 경계 |
+| `06.maintenance/harness-maintenance.md` | agent 도구(memory, 수집, 분석, 예측, 병렬 실행, 관측) 유지보수 |
 
-`05.environment`와 `06.maintenance`는 내용이 생길 때 만듭니다. 제품 AD·ADR은
+제품 AD·ADR은
 [Stage 02](../02.architecture/README.md)에 있고, workspace AD·ADR과 같은 번호 공간을
 씁니다. agent·provider 전용 용어는
 [agent glossary](../../.agents/knowledge/agent-glossary.md)에 있습니다.

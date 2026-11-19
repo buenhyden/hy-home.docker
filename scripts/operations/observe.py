@@ -42,14 +42,14 @@ WATCHED = {
     ),
     "hy-home-session-analysis.service": (
         "user",
-        "ENVIRONMENT-CONSTRAINTS session analysis / @buenhyden",
+        "HARNESS-MAINTENANCE scheduled session analysis / @buenhyden",
         "journalctl --user -u hy-home-session-analysis.service;"
         " session_analysis.py status",
     ),
 }
-CAPTURE_OWNER = "ENVIRONMENT-CONSTRAINTS session capture / @buenhyden"
+CAPTURE_OWNER = "HARNESS-MAINTENANCE session capture / @buenhyden"
 ANALYSIS_OWNER = WATCHED["hy-home-session-analysis.service"][1]
-DISPATCH_OWNER = "TSK-0090 dispatcher"
+DISPATCH_OWNER = "HARNESS-MAINTENANCE parallel work dispatch / @buenhyden"
 TASK_REF = re.compile(r"SPEC-\d{4}-TSK-\d{4}")
 RUN_ID = re.compile(r"\d{8}T\d{6}-[0-9a-f]{6}")
 RUN_STATES = ("succeeded", "failed", "cancelled")
