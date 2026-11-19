@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.93.0"
+version: "1.94.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1217,6 +1217,14 @@ target, backup, recovery boundary, and action-specific authorization.
      policy to their product owners with unchanged meaning. It lifts
      criterion 144's wait for Q07 for the folder moves only; identity
      renumbering and allocator resets still wait for Q07.
+153. TSK-0097 completes the 2026-11-19 follow-up the owner asked for: the
+     open CodeQL alerts are triaged with evidence, the test modules that
+     failed only outside the hash-locked venv pass inside it, ADR-0063 and
+     criteria 144 and 152 carry the owner's acceptance, and the workspace
+     gains `05.environment/onboarding.md` and
+     `06.maintenance/harness-maintenance.md`, which takes over the workspace
+     tool sections of RUN-0021 with unchanged commands and limits while
+     RUN-0021 keeps product backup and restore.
 
 ### Evidence Requirements
 

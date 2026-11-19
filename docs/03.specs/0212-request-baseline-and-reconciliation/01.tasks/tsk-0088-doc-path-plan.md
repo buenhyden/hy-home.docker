@@ -1,8 +1,8 @@
 ---
 title: "Document Path Plan Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-19"
 layer: "specs"
@@ -127,6 +127,7 @@ and Tasks, as the refresh rule expects.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0088 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0088 | ready | in-progress | #move-plan |
+| SPEC-0212-TSK-0088 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -145,6 +146,8 @@ other open obligation and acceptance closed first.
 | Rehearsal readers | 144 | W160 | operations catalog, changed metadata, corpus lifecycle | Same rehearsal | FAIL | 267 catalog findings; architecture parent check; Spec package rule; consumers listed above | required | - |
 | Plan recheck | 144 | W160 | source, target, collision, package-set and pin rescan | 19 planned moves at `548b42ecb` | PASS | 545 files; no issue; pins unchanged; two digests refreshed by new work | required | - |
 | Real tree unchanged | 144 | W160 | `git status`, Spec high-water mark | Real checkout after the rehearsal | PASS | No change; high-water 270 | required | - |
+| Cutover links | 144 | W160 | `check-document-links.py --mode alignment` in the rehearsal | The real tree after TSK-0096 applied the moves, `main` at `eadd81adc` plus TSK-0097 | PASS | 0 failures; terminal Task links resolve through `numbered_folders.py` | required | Rehearsal links |
+| Cutover readers | 144 | W160 | operations catalog, changed metadata, corpus lifecycle | Same tree | PASS | Catalog PASS, check-changed 0 violations, corpus lifecycle 0 violations | required | Rehearsal readers |
 
 ### Resolution Links
 
@@ -156,23 +159,19 @@ None: the rehearsal failures are the plan's findings, which Q07 resolves.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 144 | pending | Collision review, Rehearsal contracts, Real tree unchanged | On 2026-11-19 the owner chose to accept once the open required rows are resolved; they stay required and open | @buenhyden |
+| 144 | accepted | Collision review, Rehearsal contracts, Real tree unchanged, Cutover links, Cutover readers | Owner @buenhyden accepted on 2026-11-19 in this chat after TSK-0096 applied the moves | @buenhyden |
 
 ### Remaining Conditions
 
-On 2026-11-19 the owner kept criterion 144 pending: the SDLC accepts it only
-after its open required rows are resolved; TSK-0095 lists them with their
-next check.
-
-Q07-CUTOVER converts the listed consumers, moves the 19 folders, and
-decides how terminal Task links resolve.
+None. The moves ran ahead of Q07 in TSK-0096 by the owner's 2026-11-19
+choice; identity renumbering and allocator resets stay with Q07.
 
 ## Handoff
 
 ### Promotion Receipt
 
-None yet: no current meaning changes until Q07 applies the plan.
+The numbered layout is promoted to ADR-0063 (accepted 2026-11-19) through TSK-0096; this plan adds no other lasting meaning.
 
 ### Next Owner
 
-Q07-CUTOVER owns the moves. The owner decides criterion 144.
+None; criterion 144 is accepted.

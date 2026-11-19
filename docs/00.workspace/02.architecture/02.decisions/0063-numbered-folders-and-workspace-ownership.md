@@ -1,8 +1,8 @@
 ---
 title: "Numbered Classification Folders and Workspace Ownership"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-11-19"
 layer: "architecture"
@@ -96,8 +96,9 @@ architecture documents and the shared vocabulary. Native provider paths,
 
 ### Authority and Effect
 
-Proposed by the owner's 2026-11-19 request for the full cutover, executed by
-SPEC-0212 TSK-0096. It becomes effective when the owner accepts it.
+Decided by the owner, @buenhyden, who accepted it in this chat on 2026-11-19
+after PR #1124 merged; status `accepted`, effective from 2026-11-19. Executed
+by SPEC-0212 TSK-0096 and TSK-0097.
 
 #### Supersession
 
@@ -114,9 +115,11 @@ ADR-0057's role-and-domain layout carries forward; only its folder names
 
 ### Follow-up
 
-The workspace sections of RUN-0021 and the harness subject 0004 stay in Stage
-05 until a workspace maintenance form and a runtime-authority route outside
-Stage 05 are registered; TSK-0096 records the condition.
+TSK-0097 moved the workspace sections of RUN-0021 to
+`docs/00.workspace/06.maintenance/harness-maintenance.md` and added
+`05.environment/onboarding.md`; RUN-0021 stays the registered runtime
+authority of those scripts until the maintenance guide is active. The harness
+subject 0004 stays in Stage 05.
 
 #### Compliance
 
