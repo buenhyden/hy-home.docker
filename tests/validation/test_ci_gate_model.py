@@ -17,6 +17,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 class PreparedCandidatePlanTests(unittest.TestCase):
     def setUp(self) -> None:
+        self.enterContext(
+            mock.patch.dict("os.environ", {"HYHOME_CI_GATE_ROOT": str(ROOT)})
+        )
         self.document = contract.load_contract_document(ROOT)
         self.gates = contract.parse_gate_registry(self.document, "contract")
         self.public = contract.parse_public_gate_contract(self.document)

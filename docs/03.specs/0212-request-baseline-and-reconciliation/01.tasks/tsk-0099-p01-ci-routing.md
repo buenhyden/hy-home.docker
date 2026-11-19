@@ -1,6 +1,6 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -42,6 +42,10 @@ Request revision `7104090df9b44e56c15d0e0a28a49a1d`, session
 `01a1f47d-2e14-7c32-b0f7-008007421623`, brief `P01-CI-ROUTING-docker`
 revision 4 records the final exact writer paths. Binding and dispatch checks passed;
 native authorization and the user's requested delivery remain separate facts.
+After context recovery, request revision `ae5db1914fee1a47af68a46609a21ab6`
+and brief revision 5 bind only this Task and the CLI regression fixture.
+The clean baseline is `59623b56da169281103453c7e9fa2f34916bdaf8`;
+the P01 delivery authorization and exclusive writer boundary are unchanged.
 
 ## Execution Log
 
@@ -194,6 +198,9 @@ expanded templates do not change this package's consumer contract.
 | E19 | 155 | W171 | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 5b02e40df --changed-path docs/03.specs/0212-request-baseline-and-reconciliation/spec.md --changed-path docs/03.specs/0212-request-baseline-and-reconciliation/plan.md --changed-path docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0099-p01-ci-routing.md | Final metadata source; real global controls retained alongside explicit docs | PASS | Exit 0; selected 849 managed records, violations 0, overrides 0. Global expansion was observed, not inferred from local runner mode | required | - |
 | E20 | 155 | W171 | Metadata contract/CLI regression invariants | Final production source; existing metadata validator/reference modules | FAIL | .venv/bin/python -m unittest tests.lib.document_governance.test_metadata_validator tests.lib.document_governance.metadata.test_reference: 49/50 passed, 255.572 seconds. One old test mocked the native pass then required main to repeat validate_record | required | - |
 | E21 | 155 | W171 | Metadata contract/CLI regression invariants | Unchanged production; corrected duplicate-call expectation and actual native flow | PASS | Reused unaffected 49 PASS results; reran test_changed_mode_retains_repository_contract_findings plus ChangedMetadataClosureTests: five tests PASS in 2.312 seconds. Native error retention remains asserted; main must not repeat validation. This is scoped resolution, not a claimed 50-test rerun | required | E20 |
+| E22 | 155 | W171 | Shared-plan CLI tests through the hosted adapter boundary | PR 1126 head 59623b56; run 44572365371 candidate-core | FAIL | Two new CLI tests inherited the adapter's descriptor root instead of their canonical fixture root. Local open-directory-descriptor reproduction: 11 tests, two identical noncanonical-root failures. Actual routing producer passed; no production boundary is relaxed | required | - |
+| E23 | 155 | W171 | Shared-plan CLI tests through the hosted adapter boundary | Canonical fixture scoped with enterContext/patch.dict; existing run_adapter API, run-unittest tests.validation.test_ci_gate_model -v; PATH-only child environment | PASS | 19 tests PASS in 2.308 seconds through the real descriptor-adopting adapter; direct descriptor reproduction also passes 19 tests and asserts restoration of inherited environment. Tamper, stale, missing-plan and single-plan assertions remain intact; production source unchanged | required | E22 |
+| E24 | 155 | W171 | Independent review of hosted fixture correction | Three-line test-only delta after 59623b56 | PASS | Read-only reviewer approved; independently reproduced both affected tests with inherited descriptor root: two PASS in 0.381 seconds, environment restored; no production or security boundary changed | required | - |
 
 ### Resolution Links
 
@@ -202,6 +209,8 @@ actual metadata correction and independent delta review, reusing unchanged
 slices. E21 resolves the obsolete duplicate-call expectation in E20 while
 retaining native findings and actual-flow coverage. No failure is waived by
 acceptance prose or an unrelated security verdict.
+E23 resolves the hosted fixture failure in E22; the updated PR still requires
+its own successful hosted aggregate before merge.
 
 ## Acceptance Decision
 
