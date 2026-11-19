@@ -1360,6 +1360,8 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
             ("## Verification Evidence", True),
             ("## Acceptance Decision", True),
             ("## Scope", False),
+            # A fenced heading is example text and opens no evidence section.
+            ("## Scope\n\n```markdown\n## Verification Evidence\n```", False),
         ):
             with (
                 self.subTest(section=section),

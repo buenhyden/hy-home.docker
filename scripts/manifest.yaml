@@ -587,7 +587,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  - docs/00.workspace/06.maintenance/harness-maintenance.md
   - scripts/hooks/agent-event-hook.sh
   disposition: retain
   successor: null

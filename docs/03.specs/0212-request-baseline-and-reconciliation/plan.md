@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.93.0"
+version: "1.94.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -413,6 +413,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W166 | 150 | Prove the canonical commands and checks run without the 4.2.0 package or staging content, list staging owners and delete only an owner-approved leftover | W165 | TSK-0094 | Package reference scan, clean-worktree suites, checks and commands, and the approved deletion |
 | W167 | 151 | Judge every prerequisite criterion with the owner, list runtime remainders and rehearse the cutover allocation read only | W166 | TSK-0095 | Acceptance ledger, journal reconciliation and cutover rehearsal |
 | W168 | 152 | Move every classification folder to `NN.name`, move workspace architecture, vocabulary and approval boundaries into the workspace classes, convert every consumer and test, and move product runtime rules to their product owners | W160 | TSK-0096 | Link, corpus, metadata, catalog, contract, manifest and renderer checks; governance and validation test modules against a clean `main` baseline |
+| W169 | 153 | Triage CodeQL, rerun the venv-only test modules, record the owner's acceptances, add the environment and maintenance guides and move the RUN-0021 workspace sections | W168 | TSK-0097 | Alert triage, venv test run, link, metadata, catalog, corpus, manifest and contract checks |
 
 #### Current v30 continuation and delivery
 

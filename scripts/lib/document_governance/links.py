@@ -910,14 +910,13 @@ def _is_evidence_row(text: str, line: int) -> bool:
     lines = text.splitlines()
     if not 0 < line <= len(lines) or not lines[line - 1].lstrip().startswith("|"):
         return False
-    section = next(
-        (
-            candidate.rstrip()
-            for candidate in reversed(lines[: line - 1])
-            if candidate.startswith("## ")
-        ),
-        "",
-    )
+    # A heading inside fenced code is example text, not a section boundary.
+    section = ""
+    for line_no, candidate in _unfenced_lines(text):
+        if line_no >= line:
+            break
+        if candidate.startswith("## "):
+            section = candidate.rstrip()
     return section in _EVIDENCE_SECTIONS
 
 

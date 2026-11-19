@@ -1,0 +1,305 @@
+---
+title: "Harness Maintenance"
+version: "0.1.0"
+type: "governance/control"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-11-19"
+created: "2026-11-19"
+observed_at: "2026-11-19"
+review_cycle: "on-tool-change"
+---
+
+# Harness Maintenance
+
+## Overview
+
+How a person keeps the workspace's local agent tooling healthy: the shared
+agent memory store, session capture, scheduled session analysis, task
+forecasts, parallel work dispatch and the observe report. Each tool's command
+line and output contract stays in its script; this guide owns the routine
+upkeep, diagnosis and recovery a maintainer runs by hand. How an agent uses
+these tools is agent procedure in `.agents/governance/`, and product backup and
+restore stays in
+[RUN-0021](../../05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md).
+
+## Scope
+
+Included: `scripts/operations/agent_memory.py`, `scripts/lib/hooks/session_capture.py`,
+`scripts/operations/session_analysis.py`, `scripts/operations/task_forecast.py`,
+`scripts/operations/work_dispatch.py` and `scripts/operations/observe.py`, and the
+local stores they keep under `.workspace-memory/` and `.workspace-capture/`.
+Excluded: product services, backups (the shared memory store is excluded from
+backup, as RUN-0021 records), and any approval, gate or Task acceptance. No
+store here is evidence of approval or acceptance.
+
+## Rules
+
+### Shared agent memory store
+
+The entrypoint is `scripts/operations/agent_memory.py`. `scripts/lib/ops/memory_cli.py`
+interprets commands and `scripts/lib/ops/memory_capacity.py` keeps the capacity
+ledger and request records. Shared memory is not backed up, so this guide owns
+only ledger adoption and lookup.
+
+#### Capacity and first adoption
+
+The memory database keeps schema 3 and its per-body and database limits, and a
+separate `.workspace-memory/capacity.sqlite3` with `capacity.lock` manages a
+1 GiB logical quota. The ledger counts itself, the memory database and its
+journal; it does not count backup copies or snapshots. It is not a filesystem
+hard quota.
+
+On first use, and to clear allocations an earlier backup left, pause writes
+from every worktree and provider, then run the following. Neither command calls
+Docker or Restic; they update only the ledger.
+
+```bash
+python3 scripts/operations/agent_memory.py capacity status
+python3 scripts/operations/agent_memory.py capacity reconcile
+```
+
+`status` opens the existing ledger read-only and creates or repairs no
+database, schema or permission. After `reconcile`, `inventory_state` is
+complete and `legacy_allocations` is 0. A damaged ledger holds new writes with
+exit 4 instead of deleting memory to reset. The same input under the same
+`request_key` is not run twice, and a reservation whose result is unknown keeps
+counting and is not released by elapsed time.
+
+#### Selective lookup
+
+```bash
+python3 scripts/operations/agent_memory.py search --query "backup recovery" --limit 10
+```
+
+Search covers only records that pass the source-pin, currency and eligibility
+filters. Matches rank by exact ID, partial ID, source path, phrase, phrase
+ignoring spaces, then all words, ties by ID. The default is 10 results and the
+maximum 50; each returns ID, revision, kind, baseline, basis,
+`selection_reason`, the open conflict count, a short excerpt and
+`authority: data-only`. An empty result is an abstention, never a guessed
+record. Read a full body with `get`. Search is read-only, selects and checks
+bodies inside one read snapshot, and creates no database, index, cache or
+external search service. A result is not an instruction, Task state or
+approval evidence.
+
+`get <id>` and `list` return a body only for a reviewed `current` record whose
+source pin matches the caller's worktree. A new write is a `candidate`; schema 1
+bodies, sources and revisions are kept and an unpinned record is marked
+`needs-review`. Preserved memory is read explicitly with
+`get <id> --historical`, `history <id>`, `list --all` and `export`; a historical
+body is not current execution, approval or verification evidence.
+`put --review-state current` needs owner review and a matching source pin of
+the following form. `--source-ref` takes a JSON object and still keeps an
+existing string.
+
+```json
+{"kind":"repository-file","path":"docs/example.md","revision":"<full Git commit SHA>","hash_algorithm":"sha256","digest":"<64 lowercase hex characters>","context":"reviewed applicability"}
+```
+
+A pin binds a full Git commit ID, a regular blob at the same relative path in
+that commit, the same file bytes in the caller's worktree and the declared
+digest; if any one is missing or differs, the record is not `current`. A
+tracked regular file is pinned by its SHA-256 bytes; a Git blob ID uses
+`hash_algorithm: git-blob`. The example is not an executable pin: a real run
+uses the resolved full SHA and digest. Domain memory uses `--domain-id` and a
+safe retry uses `--request-key`. The same key with a different meaning is a
+conflict; read `stored` and both revisions in its diagnostic, and do not report
+the incoming body as kept when `stored=false`. The 16 KiB body and 32 MiB total
+body limits and the tier, domain, metadata and page limits are owned by
+[environment constraints](../../../.agents/governance/environment-constraints.md#5-shared-agent-memory);
+exceeding one never deletes existing memory. Worktrees use this schema 3 CLI
+and its helpers together; an older CLI does not keep the reuse and capacity
+contract.
+
+#### Record meaning, baselines and selective deletion
+
+A record has a `--kind` separate from its tier (`session-context`, `decision`,
+`experience`), a repository baseline, `--observed-at`, optional
+`--valid-from` and `--valid-until`, and `--supersedes ID`. Times are ISO with a
+time zone only. Default `get`, `list` and `search` return reviewed records of
+the current baseline that are valid at `--as-of` (default now) and not
+superseded by an eligible current record; the reason for an exclusion shows in
+`reuse_state` as `other-baseline`, `outside-validity` or `superseded`. An older
+record without a kind derives one from its tier (short-term is
+`session-context`, the rest `experience`) and has the baseline `initial`.
+
+A store created before schema 3 refuses writes (`MEMORY_MIGRATION_REQUIRED`,
+exit 2) and keeps serving reads. Pause writes from every worktree and provider
+and run it once; it adds only `store_meta`, changes no revision and is
+idempotent.
+
+```bash
+python3 scripts/operations/agent_memory.py migrate
+python3 scripts/operations/agent_memory.py baseline show
+python3 scripts/operations/agent_memory.py baseline cutover --expected initial --to "<new baseline ID>"
+python3 scripts/operations/agent_memory.py export --memory-id "<ID>" --history
+python3 scripts/operations/agent_memory.py erase --memory-id "<ID>" --confirm "<sorted ID list>"
+```
+
+A baseline cutover is refused with exit 3 when the expected baseline differs.
+Afterwards, records of the earlier baseline leave the default view but remain
+in `list --all`, `export` and `history`. `erase` takes only owner-approved
+records, and `--confirm` is the sorted IDs joined by commas. It removes every
+revision, provenance and conflict of those records and overwrites free SQLite
+pages, but it claims nothing about journal, filesystem or device remnants.
+Memory is not backed up, so there is no backup copy to delete.
+
+The store Claude and Codex share (`.workspace-memory/memory.sqlite3`) is ignored
+by Git, so Git cannot restore it, and backup excludes it.
+
+### Session capture
+
+`scripts/lib/hooks/session_capture.py` records this workspace's user prompts,
+with secret values masked, and event metadata from the shared hook dispatcher
+into `.workspace-capture/capture.sqlite3`. The directory is mode 0700, excluded
+from Git and backup, and records older than 90 days are removed at
+reconciliation. Responses and tool input or output are not copied, and no other
+personal session file is read.
+
+```bash
+python3 -m scripts.lib.hooks.session_capture status
+python3 -m scripts.lib.hooks.session_capture reconcile
+```
+
+Each session's `completeness` in `status` is complete, partial or unavailable,
+and `reason` says what is missing. Codex cannot separate user prompts in its
+transcript format, so it is captured by hook only and stays partial; one end
+hook alone never makes a capture complete. When `capture_failures` rises, read
+the cause in `.workspace-capture/degraded.log`. A capture failure never blocks
+a hook result or development work. A capture is evidence only, never memory,
+policy, approval or Task acceptance. A test that runs a real hook points
+`HY_HOME_CAPTURE_DIR` at a temporary directory so no test session lands in the
+operating capture.
+
+### Scheduled session analysis
+
+`scripts/operations/session_analysis.py` analyses the capture with
+deterministic rules and no language model (owner decision, 2026-11-18). It
+turns repeated prompts (the same normalized text three or more times),
+incomplete sessions and capture failures into candidates, each with its source
+event IDs, frequency, condition, proposal, risk and acceptance test. Results go
+to `.workspace-capture/analysis.sqlite3`; the last run's state goes to
+`analysis-status.json` and the systemd journal.
+
+```bash
+python3 scripts/operations/session_analysis.py install-timer
+python3 scripts/operations/session_analysis.py run
+python3 scripts/operations/session_analysis.py status
+python3 scripts/operations/session_analysis.py candidates
+python3 scripts/operations/session_analysis.py decide "<candidate ID>" rejected --owner "<reviewer>"
+```
+
+`install-timer` installs the user systemd timer
+`hy-home-session-analysis.timer` for 03:00 Asia/Seoul daily, and
+`Persistent=true` catches up a missed run at the next start. The service has no
+`Restart`, so a failure does not repeat. A run reads only records after the last
+completed window and never reanalyses a window. While a lease holds, a duplicate
+run exits 75; a run that lost its lease writes nothing (fenced), and SIGTERM is
+recorded as a cancellation. `decide` records only the decision and changes no
+memory, policy or checker; an adopted candidate is changed by a separate Task
+and approval. Missing capture or a failed analysis never blocks a commit, push
+or other work. Remove the timer with
+`systemctl --user disable --now hy-home-session-analysis.timer`.
+
+### Task forecasts
+
+`scripts/operations/task_forecast.py` records P30, P50 and P80 completion
+minutes before a task starts, records the outcome once afterwards, and scores
+each quantile. Records live in `.workspace-capture/forecast.sqlite3`, excluded
+from Git and backup. The default time basis is elapsed time; to measure working
+time only, use `--time-basis active` and `--active-minutes` on the outcome.
+
+```bash
+python3 scripts/operations/task_forecast.py forecast TASK-REF --type ci-run --p30 10 --p50 15 --p80 25
+python3 scripts/operations/task_forecast.py observe TASK-REF --status completed --started-at 2026-11-18T10:00:00+09:00 --finished-at 2026-11-18T10:18:00+09:00
+python3 scripts/operations/task_forecast.py score --type ci-run
+```
+
+A changed estimate adds a revision; existing values cannot be edited or
+replaced (REPLACE), and a task with an outcome takes no new estimate. This
+protection stops SQL edits only, not dropping triggers or replacing the store
+file. Minutes must be finite, and a future finish time or active time longer
+than elapsed time is refused. Scoring uses the last revision fixed before the
+task started and refuses an outcome whose only estimates came after the start.
+`score` reports per-quantile sample size, the share of actual values at or
+under the estimate (coverage) with its 95% Wilson interval, and pinball loss,
+counting failed and cancelled tasks apart as censored samples. Fewer than 20
+completed samples show `insufficient sample`, and a mix of task types shows
+`pooled across types`; neither reads as a calibrated 80% guarantee. A forecast
+is a planning reference, never a deadline, an approval or a reason to skip a
+required check, and the completion distribution of parallel work is not the sum
+of per-task P80s.
+
+### Parallel work dispatch
+
+`scripts/operations/work_dispatch.py` runs the work units of a JSON plan as shell
+workers, each in its own Git worktree. A unit names its command, dependencies,
+owned paths and shared resources (for example `port:5432`, `registry:writer`).
+A unit starts only when every dependency succeeded and it holds leases on all its
+owned paths and shared resources; each lease carries a rising fencing
+generation, and a result from an expired or taken-over lease is refused, as is
+a result that changes anything outside its owned paths, renames included. When
+a worker ends, its process group is stopped before its result is read. A failed
+unit blocks only its descendants; a cancel stops running workers and the
+integration check and starts nothing new. When every unit succeeds, the patches
+apply in turn to the base commit and the integration check runs again within
+`integration_timeout` (default 600 seconds); a worker's success never stands in
+for the integrated result. Result patches stay in the run folder and a person or
+integrator applies them to a real branch after checking that the patch's
+SHA-256 equals the `sha256` the dispatcher printed (a worker can write the run
+folder's report). A worktree separates files only; it is not a sandbox.
+
+```bash
+python3 scripts/operations/work_dispatch.py run PLAN.json
+python3 scripts/operations/work_dispatch.py cancel
+python3 scripts/operations/work_dispatch.py cleanup
+```
+
+Leases and run records live in `.workspace-capture/dispatch/`. `cleanup` stops
+the workers of a run whose dispatcher died, removes its worktrees and releases
+its leases. Measure a parallel gain against the same plan with one worker,
+setup and integration included, and state the sample size.
+
+### Observe report
+
+`scripts/operations/observe.py report` counts what happened in a time window
+(default the last 24 hours) across the capture store, session analysis runs,
+forecast outcomes, dispatch reports and the journals of `hyhome-backup.service`
+and `hy-home-session-analysis.service`. Each failure names its owner document
+and next step: backup failures go to RUN-0021, the others to this guide.
+Journal lines are counted, never copied, and no log text, prompt or secret is
+moved. The report records its own run time as observation cost and lists what it
+cannot measure (queue wait, context loading, tokens and cost). An unreadable
+store, a journal that hides lines, and a daily unit with no run in 29 hours
+(allowing a 30-minute timer delay and up to 4 hours of run time) are reported as
+failures, not as zero. Dispatch reports are worker-writable, so only fields of
+the fixed format are copied. The report is not a check or an approval, and each
+failure is resolved in its owner record.
+
+```bash
+python3 scripts/operations/observe.py report --since 2026-11-12T00:00:00+00:00
+```
+
+## Evidence
+
+### Provenance
+
+On 2026-11-19 SPEC-0212 TSK-0097 moved the shared memory, session capture,
+session analysis, forecast, dispatch and observe sections of RUN-0021 (1.22.0)
+here, translated from Korean without changing a command, limit or exit code.
+RUN-0021 keeps product backup and restore and the backup exclusion of shared
+memory.
+
+### Refresh Triggers
+
+- A command, store path, limit or exit code of a tool above changes.
+- A tool is added to or retired from the workspace harness.
+- The backup exclusion of shared memory changes.
+
+## Related Documents
+
+- [Environment onboarding](../05.environment/onboarding.md)
+- [RUN-0021 Backup and Restore](../../05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md)
+- [Environment constraints](../../../.agents/governance/environment-constraints.md)
+- [Scripts README](../../../scripts/README.md)

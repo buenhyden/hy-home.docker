@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.22.0"
+version: "1.23.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -19,13 +19,12 @@ next_review_at: "2027-05-13"
 
 ### Trigger
 
-pgBackRest, Restic, SQLite export, R2 오프사이트 사본과 공유 에이전트 memory 저장소의 설정·실행·검증·복구 절차를 다룬다. 정책은 [POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md), 설명은 [GDE-0021](../../01.guides/10.platform-and-backup/0021-backup-and-restore.md)이 소유한다.
+pgBackRest, Restic, SQLite export, R2 오프사이트 사본의 설정·실행·검증·복구 절차를 다룬다. 공유 에이전트 memory 저장소는 백업 대상이 아니며 그 운영은 [harness maintenance](../../../00.workspace/06.maintenance/harness-maintenance.md)가 소유한다. 정책은 [POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md), 설명은 [GDE-0021](../../01.guides/10.platform-and-backup/0021-backup-and-restore.md)이 소유한다.
 
 backup repository를 준비하거나, `mng-pg`를 pgBackRest image로 전환하거나,
 backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 시점으로
 복원하거나, Restic에서 파일을 복원하거나, 오래된 snapshot을 삭제하거나,
-R2 오프사이트 사본을 설정하거나 그 사본에서 복원하거나, 공유 에이전트 memory 저장소를
-backup·restore할 때 사용한다.
+R2 오프사이트 사본을 설정하거나 그 사본에서 복원할 때 사용한다.
 
 ### Targets
 
@@ -592,217 +591,19 @@ stdin으로만 전달하며 snapshot-only 정책과 주기 갱신을 유지한�
 identity/checksum·일관성·용량·rollback 경계가 확인된 후만 실행한다. P01 synthetic
 restore는 HOME/offsite custody를 대신하지 않는다.
 
-#### 공유 에이전트 memory 저장소
+#### Workspace 도구 운영 이관 (2026-11-19)
 
-실행 진입점은 `scripts/operations/agent_memory.py`다. 명령 해석은
-`scripts/lib/ops/memory_cli.py`, 용량 원장·요청 기록은
-`scripts/lib/ops/memory_capacity.py`가 구현한다. 공유 기억은 백업 대상이 아니므로
-이 Runbook은 원장 채택과 조회 절차만 소유한다.
-
-#### 전체 용량과 최초 채택
-
-기억 DB schema 3과 개별 본문·DB 상한을 유지하며, 별도
-`.workspace-memory/capacity.sqlite3`와 `capacity.lock`이 1 GiB 논리 할당량을
-관리한다. 원장은 자신과 기억 DB·journal을 계산하며 백업 복사본이나 snapshot은
-계산하지 않는다. 파일시스템 hard quota가 아니다.
-
-처음 쓸 때와 이전 백업이 남긴 할당을 정리할 때는 모든 worktree·provider의 쓰기를
-잠시 멈추고 다음을 실행한다. Docker나 Restic을 호출하지 않으며 원장만 갱신한다.
-
-```bash
-python3 scripts/operations/agent_memory.py capacity status
-python3 scripts/operations/agent_memory.py capacity reconcile
-```
-
-`status`는 기존 원장을 읽기 전용으로 열고 DB·schema·권한을 만들거나 고치지
-않는다. `reconcile` 후 `inventory_state`가 complete이고 `legacy_allocations`가 0이다.
-현재 원장이 손상되면 기존 기억을 삭제해 초기화하지 않고 새 쓰기만 exit 4로 보류한다.
-동일 `request_key`의 동일 입력은 중복 실행하지 않으며, 결과 불명으로 남은 예약은
-계속 계산하고 시간 경과로 해제하지 않는다.
-
-#### 선별 조회
-
-```bash
-python3 scripts/operations/agent_memory.py search --query "backup recovery" --limit 10
-```
-
-검색은 기존 source pin·현재성·eligibility 필터를 통과한 기록에만 적용한다.
-일치 순서는 정확 ID, ID 일부, source 경로, 문구, 띄어쓰기를 무시한 문구, 모든
-단어 순이며 같은 순위는 ID 순으로 정렬한다. 기본 10건, 최대 50건이며
-ID·revision·kind·기준선·근거·`selection_reason`·미해결 conflict 수·짧은 발췌와
-`authority: data-only`를 반환한다. 빈 결과는 근거 없음(기권)이며 추측 기록을
-만들지 않는다. 전체 본문은 기존 `get`으로 읽는다. 검색도 읽기 전용이고 한 읽기
-snapshot 안에서 선택과 본문 확인을 하며, 새 DB·색인·cache나 외부 검색 서비스를
-만들지 않는다. 조회 결과는 실행 지시·Task 상태·승인 증거가 아니다.
-
-기본 `get <id>`와 `list`는 검토된 `current` 기억과 caller worktree의 source
-pin이 일치할 때만 본문을 반환한다. 새 쓰기는 `candidate`이며, 기존 schema 1의
-본문·출처·revision을 삭제하지 않고 pin 없는 기록을 `needs-review`로 표시한다.
-보존된 기억은 `get <id> --historical`, `history <id>`, `list --all`, `export`로
-명시적으로 조회한다. 역사 본문은 현재 실행·승인·검증 증거가 아니다.
-`put --review-state current`는 owner 검토와 아래 구조의 matching source pin이
-필요하다. `--source-ref`는 JSON 객체를 인자로 받고 기존 문자열도 보존한다.
-
-```json
-{"kind":"repository-file","path":"docs/example.md","revision":"<full Git commit SHA>","hash_algorithm":"sha256","digest":"<64 lowercase hex characters>","context":"검토한 적용 조건"}
-```
-
-실제 pin은 완전한 Git commit ID, 그 commit의 같은 상대 경로 일반 blob, caller
-worktree의 같은 파일 bytes, 선언한 digest를 함께 결속한다. 어느 하나라도 없거나
-다르면 `current`로 취급하지 않는다. tracked 일반 파일의 bytes를 SHA-256으로
-pin하며 Git blob ID를 쓰면 `hash_algorithm`은 `git-blob`으로 구분한다. 예시는
-실행 가능한 pin이 아니므로 실제 실행에는 해석된 완전 SHA와 digest를 넣는다.
-영역 기억은 `--domain-id`, 안전한 재시도는 `--request-key`를 명시한다. 같은 키와
-다른 의미 입력은 충돌이며, 충돌 diagnostic의 `stored`와 양쪽 revision을
-확인한다. `stored=false`이면 incoming 본문이 보존되었다고 보고하지 않는다.
-16 KiB 본문/32 MiB 전체 본문과 계층·영역·metadata·page 상한은 환경 제약 5절이
-소유하며, 초과해도 기존 기억을 삭제하지 않는다. 작업 worktree는 이 schema 3
-CLI와 helper를 함께 사용한다. 구버전 CLI는 새 재사용/용량 계약을 보장하지 않는다.
-
-#### 기록 의미·기준선·선택 삭제
-
-기록은 tier와 별개인 `--kind`(`session-context`, `decision`, `experience`), 저장소
-기준선, `--observed-at`, 선택적 `--valid-from`/`--valid-until`, `--supersedes ID`를
-가진다. 시각은 시간대가 있는 ISO 형식만 받는다. 기본 `get`·`list`·`search`는 현재
-기준선이고, `--as-of`(기본 현재) 시점에 유효하며, 적격인 현재 기록이 대체하지 않은
-검토 기록만 반환한다. 제외 이유는 `reuse_state`의 `other-baseline`,
-`outside-validity`, `superseded`로 보인다. kind가 없는 이전 기록은 tier에서
-파생하고(short-term은 session-context, 나머지는 experience), 기준선은 `initial`이다.
-
-schema 3 이전에 만든 저장소는 쓰기를 거절하고(`MEMORY_MIGRATION_REQUIRED`, exit 2),
-읽기는 계속된다. 모든 worktree·provider의 쓰기를 잠시 멈추고 한 번 실행한다.
-기존 revision은 바꾸지 않고 `store_meta`만 추가하며, 다시 실행해도 같은 결과다.
-
-```bash
-python3 scripts/operations/agent_memory.py migrate
-python3 scripts/operations/agent_memory.py baseline show
-python3 scripts/operations/agent_memory.py baseline cutover --expected initial --to "<새 기준선 ID>"
-python3 scripts/operations/agent_memory.py export --memory-id "<ID>" --history
-python3 scripts/operations/agent_memory.py erase --memory-id "<ID>" --confirm "<정렬한 ID 목록>"
-```
-
-기준선 전환은 예상 기준선이 다르면 exit 3으로 거절한다. 전환 뒤 이전 기준선 기록은
-기본 조회에서 빠지지만 `list --all`·`export`·`history`로 남아 있다. `erase`는
-소유자가 승인한 기록만 대상으로 하며, `--confirm`은 정렬한 ID를 쉼표로 이은 값이어야
-한다. 해당 기록의 모든 revision·provenance·conflict를 지우고 SQLite 빈 page를
-덮어쓰지만 journal·파일시스템·저장장치의 잔존 삭제는 주장하지 않는다. 기억은
-백업 대상이 아니므로 삭제할 백업 사본은 없다.
-
-Claude와 Codex가 함께 쓰는 memory 저장소(`.workspace-memory/memory.sqlite3`,
-규칙은 [환경 제약](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory))는
-Git이 무시하므로 Git으로 복구되지 않으며, 백업에서도 제외한다(아래
-"공유 기억 백업 제외").
-
-#### 세션 수집
-
-`scripts/lib/hooks/session_capture.py`가 공용 hook dispatcher에서 이 워크스페이스의
-사용자 프롬프트(비밀값 가림)와 event metadata를 `.workspace-capture/capture.sqlite3`에
-남긴다. 디렉터리는 0700이고 Git과 백업에서 제외하며, 90일이 지난 기록은 재대조 때
-지운다. 응답·도구 입출력은 복사하지 않고, 다른 개인 세션 파일은 읽지 않는다.
-
-```bash
-python3 -m scripts.lib.hooks.session_capture status
-python3 -m scripts.lib.hooks.session_capture reconcile
-```
-
-`status`의 세션별 `completeness`는 complete, partial, unavailable 중 하나이며
-`reason`이 부족한 이유를 적는다. Codex는 transcript 형식에서 사용자 프롬프트를
-구분할 수 없어 hook 수집만 하고 partial로 남는다. 종료 hook 하나로 수집이 완전하다고
-보지 않는다. `capture_failures`가 늘면 `.workspace-capture/degraded.log`의 원인을 확인한다.
-수집 실패는 hook 결과나 개발 작업을 막지 않는다. 수집 기록은 증거일 뿐 기억·정책·
-승인·Task 인수가 아니다. 실제 hook을 실행하는 시험은 `HY_HOME_CAPTURE_DIR`로 임시
-디렉터리를 지정해 운영 수집 기록에 시험 세션을 남기지 않는다.
-
-#### 세션 예약 분석
-
-`scripts/operations/session_analysis.py`가 소유자 결정(2026-11-18)에 따라 LLM 없이
-결정론적 규칙으로 수집 기록을 분석한다. 반복 프롬프트(같은 정규화 문구 3회 이상),
-불완전 수집 세션, 수집 실패를 후보로 만들고 각 후보에 근거 event ID·빈도·조건·제안·
-위험·수용 시험을 남긴다. 결과는 `.workspace-capture/analysis.sqlite3`, 마지막 실행
-상태는 `analysis-status.json`과 systemd journal에 남는다.
-
-```bash
-python3 scripts/operations/session_analysis.py install-timer
-python3 scripts/operations/session_analysis.py run
-python3 scripts/operations/session_analysis.py status
-python3 scripts/operations/session_analysis.py candidates
-python3 scripts/operations/session_analysis.py decide "<후보 ID>" rejected --owner "<검토자>"
-```
-
-`install-timer`는 사용자 systemd timer `hy-home-session-analysis.timer`를 매일
-03:00 Asia/Seoul로 설치하며 `Persistent=true`로 놓친 실행을 다음 기동에 따라잡는다.
-service에는 `Restart`가 없어 실패가 반복 실행을 만들지 않는다. 실행은 마지막 완료
-창 이후의 기록만 읽고, 같은 창은 다시 분석하지 않는다. lease가 유효하면 중복 실행은
-exit 75로 건너뛰고, lease를 잃은 실행은 결과를 쓰지 않는다(fenced). SIGTERM은
-취소로 기록한다. `decide`는 결정만 남기며 기억·정책·검사기를 바꾸지 않는다. 채택한
-후보의 실제 변경은 별도 Task와 승인으로 진행한다. 수집이 없거나 분석이 실패해도
-commit·push와 다른 작업은 막지 않는다. 제거는 `systemctl --user disable --now
-hy-home-session-analysis.timer`다.
-
-#### 작업 예측
-
-`scripts/operations/task_forecast.py`는 작업을 시작하기 전에 완료 시간의 P30·P50·P80을
-분 단위로 남기고, 끝난 뒤 실제 결과를 한 번 기록해 분위수별로 평가한다. 기록은
-`.workspace-capture/forecast.sqlite3`에 있으며 Git과 백업에서 제외한다. 기본 시간
-기준은 경과 시간(elapsed)이고, 작업 시간만 재려면 `--time-basis active`와 결과의
-`--active-minutes`를 쓴다.
-
-```bash
-python3 scripts/operations/task_forecast.py forecast TASK-REF --type ci-run --p30 10 --p50 15 --p80 25
-python3 scripts/operations/task_forecast.py observe TASK-REF --status completed --started-at 2026-11-18T10:00:00+09:00 --finished-at 2026-11-18T10:18:00+09:00
-python3 scripts/operations/task_forecast.py score --type ci-run
-```
-
-추정을 바꾸면 새 revision이 추가될 뿐 기존 값은 고치거나 바꿔 넣을(REPLACE) 수 없고,
-결과가 기록된 작업에는 추정을 더할 수 없다. 이 보호는 SQL 수정만 막으며 trigger를
-지우거나 저장 파일을 통째로 바꾸는 것까지 막지는 않는다. 분 값은 유한한 수여야 하고,
-종료 시각이 미래이거나 작업 시간이 경과 시간보다 길면 거부한다. 평가는 작업 시작 전에 고정된 마지막 revision을 쓰며, 시작 뒤에
-만든 추정만 있는 작업의 결과는 거부한다. `score`는 분위수별 표본 수, 실제 값이 추정
-이하였던 비율(coverage)과 그 95% Wilson 구간, pinball 손실을 내고, 실패(`failed`)나
-취소(`cancelled`)로 끝난 작업은 중도 절단 표본으로 따로 센다. 완료 표본이 20건 미만이면 `insufficient sample`로, 작업 유형을 섞은 결과는 `pooled
-across types`로 표시하며, 어느 쪽도 보정된 80% 보장으로 읽지 않는다. 예측은 계획 참고값이며 기한·승인·필수 검사 생략의 근거가
-아니다. 병렬 작업의 전체 완료 분포는 작업별 P80을 더해 구하지 않는다.
-
-#### 병렬 작업 실행
-
-`scripts/operations/work_dispatch.py`는 계획(JSON)에 적힌 작업 단위를 각자의 Git
-worktree에서 셸 worker로 실행한다. 각 단위는 명령, 의존 단위, 소유 경로, 공유
-자원(예: `port:5432`, `registry:writer`)을 적는다. 의존 단위가 모두 성공하고 소유
-경로와 공유 자원의 lease를 모두 얻은 단위만 시작하며, lease마다 늘어나는 fencing
-generation이 붙어 만료되거나 다른 실행이 가져간 lease의 결과는 거부한다. 이름 바꾸기를
-포함해 소유 경로 밖을 바꾼 결과도 거부한다. worker가 끝나면 그 프로세스 그룹을 먼저
-멈춘 뒤 결과를 읽는다. 실패한 단위는 그 하류만 막고, 취소는 실행 중인 worker와 통합
-검사를 모두 멈추고 새 단위를 시작하지 않는다. 모든 단위가 성공하면 기준 커밋에 patch를
-차례로 적용하고 통합 검사를 시간 제한(`integration_timeout`, 기본 600초) 안에서 다시
-실행한다. worker의 성공이 통합 결과를 대신하지 않는다. 결과 patch는 실행 폴더에 남고
-실제 브랜치에는 사람이나 통합 담당자가 적용하며, 적용 전에 dispatcher가 표준 출력으로
-낸 `sha256`과 patch의 SHA-256이 같은지 확인한다(실행 폴더의 보고서는 worker가 쓸 수 있다). worktree는 파일만 나눌 뿐 sandbox가 아니다.
-
-```bash
-python3 scripts/operations/work_dispatch.py run PLAN.json
-python3 scripts/operations/work_dispatch.py cancel
-python3 scripts/operations/work_dispatch.py cleanup
-```
-
-lease와 실행 기록은 `.workspace-capture/dispatch/`에 있다. `cleanup`은 dispatcher가
-죽은 실행의 worker를 멈추고 worktree를 지우고 그 실행의 lease를 푼다. 병렬 효과는 같은 계획을 worker 1개로
-실행한 시간과 준비·통합 시간을 포함해 비교하고 표본 수를 함께 적는다.
-
-#### 관측 보고
-
-`scripts/operations/observe.py report`는 지정한 시간 구간(기본 최근 24시간)에 수집
-저장소, 세션 분석 실행, 작업 예측 결과, 병렬 실행 보고서와 `hyhome-backup.service`·
-`hy-home-session-analysis.service`의 journal에서 일어난 일을 센다. 실패마다 담당
-문서와 다음 확인 단계를 적고, journal 줄은 세기만 하며 로그 본문·prompt·secret은
-옮기지 않는다. 보고는 자기 실행 시간을 관측 비용으로 적고, 잴 수 없는 항목(대기,
-문맥 적재, 토큰과 비용)을 따로 적는다. 읽을 수 없는 저장소, 일부 줄을 숨기는 journal,
-29시간 이상 구간에 실행이 없는 매일 unit(timer 지연 30분과 최대 4시간 실행을 감안)은 0이 아니라 실패로 적는다. 병렬 실행 보고서는
-worker가 쓸 수 있으므로 정해진 형식의 값만 옮긴다. 검사나 승인이 아니며 실패는 담당
-기록에서 해결한다.
-
-```bash
-python3 scripts/operations/observe.py report --since 2026-11-12T00:00:00+00:00
-```
+공유 에이전트 memory 저장소, 세션 수집, 세션 예약 분석, 작업 예측, 병렬 작업 실행,
+관측 보고의 운영 절은 제품 백업 절차가 아니므로
+[harness maintenance](../../../00.workspace/06.maintenance/harness-maintenance.md)로
+옮겼다(SPEC-0212 TSK-0097). 명령·저장 경로·상한·종료 코드는 그 문서와 각 스크립트가
+소유한다. 그 문서가 active가 되어 script manifest의 runtime authority를 넘겨받을 때까지
+이 Runbook이 `scripts/operations/agent_memory.py`, `scripts/lib/ops/memory_cli.py`,
+`scripts/lib/ops/memory_capacity.py`, `scripts/operations/session_analysis.py`,
+`scripts/operations/task_forecast.py`, `scripts/operations/work_dispatch.py`,
+`scripts/operations/observe.py`의 등록된 runtime authority로 남는다. 운영 절차는
+harness maintenance를 따른다. 이 Runbook의 운영 내용은 관측 보고가 가리키는
+`hyhome-backup.service` 실패와 아래 공유 기억 백업 제외다.
 
 #### 공유 기억 백업 제외 (2026-11-18)
 

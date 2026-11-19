@@ -1,6 +1,6 @@
 ---
 title: "W11 Acceptance Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -55,7 +55,7 @@ TSK-0080.
 | W08-ANALYSIS | TSK-0085 | 141 | accepted 2026-11-19 after the catch-up was observed |
 | W08-RETRIEVAL, CAPTURE | TSK-0083, TSK-0084 | 139, 140 | accepted 2026-11-19 |
 | SDLC-STRUCTURE, W09-ENV | TSK-0086, TSK-0087 | 142, 143 | accepted 2026-11-19 |
-| DOC-PATH-PLAN | TSK-0088 | 144 | pending: rehearsal FAILs are Q07 inputs |
+| DOC-PATH-PLAN | TSK-0088 | 144 | accepted 2026-11-19 after TSK-0096 applied the moves ahead of Q07 |
 | W10-FORECAST, PARALLEL, REVIEW, INFRA | TSK-0089 to TSK-0091, TSK-0093 | 145 to 147, 149 | accepted 2026-11-19 |
 | W10-OBSERVE | TSK-0092 | 148 | pending: open required rows |
 | W09-CLEANUP | TSK-0094 | 150 | accepted 2026-11-19 |
@@ -77,7 +77,6 @@ Each remainder blocks only the claim named; none blocks Q07.
 | --- | --- | --- | --- | --- |
 | 138 (pending) | 30 R2 copies of the memory export: a removal attempt on 2026-11-19 was refused by the lock, which counts from upload; 2 unlock about 20:30 KST on 2026-11-19 and 28 one a day until about 2026-12-10; a Restic snapshot without memory | authorized-live | A confirmed rewrite and prune as the copies unlock, and the next successful daily backup | Memory absent from backups |
 | 148 (pending) | State repository under budget on a daily run | authorized-live | The 2026-11-20 03:42 KST backup | Daily backup succeeds |
-| 144 (pending) | Rehearsal link and reader FAILs in TSK-0088 | local-execution | The Q07 cutover candidate after its consumer conversion | Folder moves keep every link and reader |
 | 145, 146, 149 | Calibration from 20 tasks of one type; a provider worker run; a live LAB run, which the owner declined | local-execution | Later use | Calibrated forecasts, provider parallel gain, live LAB cleanup |
 
 #### Cutover readiness
@@ -100,8 +99,9 @@ whole-stack start ban stays.
 
 ### Blockers and Decisions
 
-Criteria 138, 144 and 148 stay pending, and 135 is not required; 144's rehearsal rows
-are Q07 inputs, and the owner decides whether Q07 waits for the others. The remainders above stay with their
+Criteria 138 and 148 stay pending, and 135 is not required. Criterion 144 was
+accepted on 2026-11-19 after TSK-0096 applied the folder moves ahead of Q07;
+the owner decides whether Q07 waits for the others. The remainders above stay with their
 Tasks.
 
 ## Verification Evidence

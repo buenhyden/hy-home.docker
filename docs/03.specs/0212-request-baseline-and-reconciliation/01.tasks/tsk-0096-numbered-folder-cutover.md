@@ -1,8 +1,8 @@
 ---
 title: "Numbered Folder Cutover Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-19"
 layer: "specs"
@@ -113,6 +113,7 @@ choice.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0096 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0096 | ready | in-progress | #moves-and-consumer-conversion |
+| SPEC-0212-TSK-0096 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -143,6 +144,9 @@ choice.
 | Independent review | 152 | W168 | Read-only `code-reviewer` in a fresh context over the code and contract diff; dispatched and returned in this session, one round, times not observed | `0e30b9f09` | FAIL | 1 critical (workspace AD/ADR numbers missing from the base identity scan), 4 important, 6 minor | required | - |
 | Review fixes | 152 | W168 | Identity allocation transition with base `HEAD`, the new identity-route and evidence-row tests, the converted Spec Package fixtures, links and corpus lifecycle | `51de9e1d9` and `e8c22f215` | PASS | Allocation 2 findings before, 0 after; `test_identity_history`, `test_links`, `test_references`, `test_registry`, `test_generation6`, `test_spec_packages` and `metadata.test_reference` OK; links and corpus PASS | required | - |
 | Hosted candidate | 152 | W168 | Pull request #1124 checks | `0e30b9f09` | FAIL | `candidate-documents` failed on an undeclared skip from a rewritten historical schema path; CodeQL reported 3 ReDoS alerts already open on `main` at the same lines; `candidate-quality` (the only required check) failed with it | required | - |
+| Unit tests in the venv | 152 | W168 | `python3 -m unittest` per module over `tests/lib` and `tests/validation` (210 modules) | `main` at `eadd81adc` plus TSK-0097, with the hash-locked `.venv/bin` first on `PATH` as `tests/README.md` requires | PASS | 210 of 210 modules; the 9 earlier failures were the system interpreter lacking `referencing` | required | Unit tests |
+| Re-review | 152 | W168 | Read-only `code-reviewer` in a fresh context over the code and contract diff; dispatched and returned in this session, one round, times not observed | Fix commits `51de9e1d9` and `e8c22f215` | PASS | No blocking defect; one minor gap (fenced headings) fixed in `47df34c63` with a RED and GREEN test | required | Independent review |
+| Hosted candidate rerun | 152 | W168 | Pull request #1124 checks | `5bbebdec9` | PASS | `candidate-quality`, the only required check, and `candidate-core`, `candidate-documents`, `candidate-routing` passed; CodeQL reported only alerts already open on `main`; merged as `eadd81adc` | required | Hosted candidate |
 
 ### Resolution Links
 
@@ -154,22 +158,21 @@ None.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 152 | pending | Cutover checks, Unit tests, Lint and format | The owner decides after review | @buenhyden |
+| 152 | accepted | Cutover checks, Unit tests in the venv, Re-review, Hosted candidate rerun, Lint and format | Owner @buenhyden accepted on 2026-11-19 in this chat after PR #1124 merged | @buenhyden |
 
 ### Remaining Conditions
 
-Review findings left open: I3 (`{category}` also matches the old Stage 90 names; the corpus loader still rejects an unknown category folder) and M1 to M5 (old Spec Package routes accepted in the contract check, snapshot with both Task folders, intermediate routes in the route map, no index files under workspace architecture, unpinned AD/ADR additional routes). The owner's acceptance of ADR-0063,
-and hosted CI on the pull request. On 2026-11-19 the owner asked in this
-chat to commit, push, open the pull request and merge it.
+The owner accepted criterion 152 on 2026-11-19. Review findings I3 and M1 to
+M5 and the re-review's untested paths stay recorded above as accepted
+residual risk; TSK-0097 carries the environment and maintenance follow-up.
 
 ## Handoff
 
 ### Promotion Receipt
 
-None yet: the lasting meaning lands in ADR-0063, the workspace glossary,
-quality standards section 11 and POL-0006-R43 to R45 once accepted.
+ADR-0063 (accepted 2026-11-19), the workspace glossary, quality standards
+section 11 and POL-0006-R43 to R45 on `main` at `eadd81adc`.
 
 ### Next Owner
 
-The owner reviews the diff, decides criterion 152 and ADR-0063, and chooses
-whether to commit and open a pull request.
+None; criterion 152 is accepted and TSK-0097 continues the follow-up.
