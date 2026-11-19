@@ -1,6 +1,6 @@
 ---
 title: "W11 Acceptance Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -125,9 +125,11 @@ None.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 151 | pending | Acceptance ledger, Journal reconciliation, Cutover rehearsal | Awaits the owner's decision | @buenhyden |
+| 151 | accepted | Acceptance ledger, Journal reconciliation, Cutover rehearsal | Owner @buenhyden accepted on 2026-11-19 in this chat | @buenhyden |
 
 ### Remaining Conditions
+
+The owner accepted criterion 151 on 2026-11-19.
 
 The runtime remainders above stay open with their next checks.
 
@@ -139,4 +141,5 @@ Each prerequisite's Task holds its acceptance; nothing new is promoted.
 
 ### Next Owner
 
-The owner decides criterion 151 and starts Q07-CUTOVER.
+The owner starts Q07-CUTOVER and decides whether it waits for the
+pending criteria.
