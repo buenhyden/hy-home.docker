@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -453,6 +453,8 @@ project trust before it can supply the missing delivery evidence.
 | RUNTIME-CLOSE Claude malformed output | 135 | W140 | headless PreToolUse output control | Claude Code 2.1.327, synthetic project hook, three Writes | PASS | Invalid JSON let the Write run; explicit deny refused it; no output allowed it | required | - |
 | RUNTIME-CLOSE Codex sandbox | 135 | W140 | read-only exec write attempt | codex-cli 0.169.0, synthetic directory | NOT_RUN | Blocked by the account usage limit before any tool call; target not reached | required | - |
 | RUNTIME-CLOSE Claude onFailure | 135 | W140 | headless PreToolUse failure control | Claude Code 2.1.327, synthetic project hook with `onFailure: block`, four Writes | PASS | Exit 1 refused by onFailure; invalid JSON on exit 0 still ran; explicit deny refused; no output allowed | required | - |
+| RUNTIME-CLOSE Codex sandbox observed | 135 | W140 | read-only exec write attempt | `codex exec --sandbox read-only` 0.169.0 on a scratch fixture, 2026-11-19 | PASS | The shell write was refused with `read-only file system`; fixture unchanged; 20 s, 22,613 tokens | required | RUNTIME-CLOSE Codex sandbox |
+| Codex CLI reviewer subagent rerun | 135 | W140 | shell write and sensitive path denial | `codex exec --sandbox workspace-write` spawning `code-reviewer` (`sandbox_mode = "read-only"`) on an ignored synthetic file, 2026-11-19 | FAIL | The subagent wrote the file and reported `WROTE`; the parent did not run the command; 67 s, 74,473 tokens; fixture removed | required | - |
 
 ### Resolution Links
 
@@ -478,7 +480,10 @@ Edit resolves the missing project PostToolUse exit-status witness.
 
 ### Remaining Conditions
 
-On 2026-11-19 the owner kept criterion 135 pending: the SDLC accepts it only after the unresolved required Codex reviewer and sandbox rows below are resolved; TSK-0095 lists them with their next check.
+On 2026-11-19 the owner kept criterion 135 pending: the SDLC accepts it only after the unresolved required Codex reviewer and sandbox rows below are resolved; TSK-0095 lists them with their next check. The read-only sandbox row is now resolved; the CLI rerun shows a spawned
+reviewer still runs with its parent's write access, so WORKFLOWS 1.7.0 has a
+read-only review run from a read-only parent, and 135 stays pending until a
+spawned reviewer's own sandbox holds.
 
 A trusted Claude session observed SessionStart and UserPromptSubmit
 delivery and a PreToolUse allow and deny on the native Edit route only.

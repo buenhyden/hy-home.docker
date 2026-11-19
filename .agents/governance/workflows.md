@@ -1,6 +1,6 @@
 ---
 title: "Workflows"
-version: "1.6.0"
+version: "1.7.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -84,6 +84,11 @@ the governing criteria and the recorded check results against the
 unless an actual boundary appears. A low-risk change closes with its focused
 checks and an author check in the Task that names what was compared and
 what was not checked; the author check is not called independent review.
+A reviewer counts as read-only only where its runtime enforces it: when a
+spawned reviewer would run with its parent's write access, the review runs
+from a read-only parent, and a review whose read-only state was not
+enforced is recorded as such. The provider adapters name the runtimes
+where this holds.
 When the class is unclear, take the higher class. A reviewer does not rerun
 a check whose input is unchanged, and an evidence-only commit after review
 needs no new review. A review run after merge is recorded as such, and its
