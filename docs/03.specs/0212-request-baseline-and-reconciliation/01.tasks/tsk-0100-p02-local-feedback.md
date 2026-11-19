@@ -1,6 +1,6 @@
 ---
 title: "P02 Local Feedback Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -57,6 +57,14 @@ commit.gpgsign and init.templateDir queries returned no configured values;
 no Husky command is installed. No post-commit or prepare-commit-msg hook is
 installed. The existing read-only `--check-hooks` reports all three PASS.
 No global configuration or hook is overwritten.
+
+Final read-only inventory confirms no pre-commit.legacy, commit-msg.legacy
+or pre-push.legacy chain. The existing executable pre-push.before-native
+backup is preserved and is not a Git hook event. Tracked `.codex/hooks.json`
+routes native events through `agent-event-hook.sh`; brief/template guidance
+was delivered during this session. Configuration and those delivered events
+do not prove every native counterfactual permission boundary; that remains
+with the existing provider contract and later native work.
 
 The staged hooks filter files/types and use check-only Ruff, Markdown and
 text checks. Fixing hooks remain manual. The push hook runs no QA and
@@ -164,6 +172,24 @@ test file and Task only. The production guard/controller remain frozen.
 The reproduced focused failures and full-module correction are recorded
 below; a local correction does not resolve the failed hosted aggregate.
 
+Corrected [run44598043991](https://github.com/buenhyden/hy-home.docker/actions/runs/44598043991)
+subsequently passed routing/core/required candidate-quality on head
+`9910ee480ec83935a09dac5901bb19c09c910f26`, base `043585e5` and authenticated
+merge candidate `352b17fb09bc82055f6a2c855ea28065d256b2da`. Logs report
+405 tests over eleven modules, including the affected 94-test module in
+28.547 seconds; these are observations, not count gates. PR style execution
+also passed. `leaf.ci-precommit-regressions` is explicitly registered as
+local-only; its staged/unborn/cancellation evidence above remains local,
+not a hosted result. The document regression shard and PR main-security lane
+were correctly not applicable.
+
+PR1130 merged as `029342ae54db937ff2ee582ba1e9867af55405f3` after strict
+current-head checks, enforced admin protection and resolved conversations;
+zero approving reviews are required. Fast-forward reconciliation kept the
+current checkout and a clean tree. Brief revision4 binds this Task-only
+receipt to that merged baseline. The receipt has its own ordinary PR check
+and delivery read-back; this text never substitutes for its future result.
+
 ### Blockers and Decisions
 
 No additional user decision is needed. No new dependency, global setting,
@@ -203,6 +229,9 @@ Criterion Decisions forms. Observations and acceptance are separate.
 | E22 | 156 | W172 | .venv/bin/python -m unittest tests.validation.test_agent_governance_ci_routing.HookOutputAndMainPushTests.test_pre_push_guard_refuses_main | Same legacy fixture before correction | FAIL | Exit1, two witnessed failures: one-character OIDs now correctly return malformed-input error2 instead of intended valid-input main1/feature0 | required | - |
 | E23 | 156 | W172 | .venv/bin/python -m unittest tests.validation.test_agent_governance_ci_routing.HookOutputAndMainPushTests.test_pre_push_guard_refuses_main | Existing cases with full-length hexadecimal OIDs, assertions unchanged | PASS | Exit0, 0.023 seconds. Complete affected tests.validation.test_agent_governance_ci_routing module passed 94 tests in 55.387 seconds. Nonimplementer narrow inspection approves the two-line correction; earlier source review retained | required | E22 |
 | E24 | 156 | W172 | In-memory added-shell-executable-anchor exercise using Bash xtrace and installed tree-sitter-bash AST | Final production diff from 043585e5; existing controller regression and focused guard input test | PASS | Both instrumented consumers exit0: controller 38/43 added command/assignment/test anchors (88.37 percent), guard8/8 (100 percent). Not full-module or branch coverage. No dependency installed; owned trace/environment shim/fixtures deleted | required | - |
+| E25 | 156 | W172 | Hosted candidate-quality aggregate | PR1130 corrected head 9910ee480, base043585e5, candidate352b17fb; run44598043991 | PASS | Routing/core/required aggregate success; 405 tests in eleven modules, including all94 affected tests; actual PR style/controller path passed. Document regression shard unselected; main-security N/A for PR. This completed corrected candidate, not local success, resolves the old hosted failure | required | E21 |
+| E26 | 156 | W172 | Authorized P02 source delivery read-back | PR1130 current head9910ee480 after required checks | PASS | GitHub confirms merge029342ae54db937ff2ee582ba1e9867af55405f3; local fetch/ff-only retains current checkout and clean tree matching main. No hook/protection bypass; owner acceptance not inferred. Final Task receipt remains a separate ordinary delivery unit | required | - |
+| E27 | 156 | W172 | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 029342ae5; .venv/bin/python scripts/validation/check-document-links.py --mode all --changed --base-ref 029342ae5 | Task-only verified source-delivery receipt | PASS | Both exit0: one selected metadata record, zero violations/overrides; two selected link documents, zero failures/warnings. Author checked evidence resolution, live source run/PR targets, exact one-file diff and changed-plan explanation. Unchanged source/corpus review and regressions are reused, not replayed | required | - |
 
 ### Resolution Links
 
@@ -214,8 +243,8 @@ E14 and E15 resolve the witnessed review-derived REDs E13 and E12. E17
 resolves E11/E16 only after actual production corrections and the owned
 fixture cleanup correction; a security verdict does not erase another axis.
 E23 resolves E22 through valid control data while retaining every refusal
-assertion. E21 remains an actual failed hosted candidate until an equivalent
-successful current-head aggregate is observed; no local row resolves it.
+assertion. E25 resolves E21 through the actual corrected hosted candidate;
+no local row or acceptance prose resolves a hosted failure.
 
 ## Acceptance Decision
 
@@ -223,14 +252,15 @@ successful current-head aggregate is observed; no local row resolves it.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 156 | pending | E06, E07, E08, E10, E14, E15, E17, E18, E19 | Implementation and local verification complete; delivery and owner acceptance remain separate | @buenhyden |
+| 156 | pending | E06, E07, E08, E10, E14, E15, E17, E18, E19, E23, E24, E25, E26 | Implementation, local/hosted verification and source delivery complete; owner acceptance remains separate | @buenhyden |
 
 ### Remaining Conditions
 
 Measurements, witnessed RED/GREEN, affected regressions and independent review
-and final staged-document checks are complete. Hosted candidate checks and
-normal authorized delivery remain to be observed; no unexecuted test or later
-prompt is passing evidence. Cold
+and final staged-document checks are complete. The corrected source's hosted
+checks and requested merge are complete; the result-only Task receipt's
+current check/merge are read back separately. No known unrepaired P02 defect
+is deferred as observation. Owner acceptance remains pending. Cold
 installation and other IDE/host/network contexts are unobserved, not defects
 silently deferred from this installed environment.
 
@@ -247,6 +277,10 @@ boundaries. Six owned one-off review input/result/event files were deleted;
 offline fixture and raw-trace temporary directories were removed on exit.
 The input package, persistent regression tests, private request state and
 advisory graph output are retained for their continuing consumers.
+Source commit5ea3e3282 and fixture correction9910ee480 are integrated by
+029342ae5; the actual source candidate is E25 and delivery is E26. The
+one-off delivery timing helper was deleted after its normal push; no raw
+transport trace was stored. No P02 temporary output remains in `_workspace/`.
 
 ### Next Owner
 
