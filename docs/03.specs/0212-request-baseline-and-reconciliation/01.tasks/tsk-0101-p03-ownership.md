@@ -1,6 +1,6 @@
 ---
 title: "P03 Ownership Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -151,6 +151,11 @@ relaxed to accept the mistaken form.
 | E21 | 157 | W173 | .venv/bin/python scripts/validation/check-document-corpus-lifecycle.py | Corrected registered Task form | PASS | Exit0, document corpus and active-stage occupancy violations0. Final evidence-row contiguity is checked again after recording results | required | E14 |
 | E22 | 157 | W173 | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 30bfa6543 --changed-path docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0101-p03-ownership.md | Final evidence-recording delta, current shared Registry bindings | PASS | Exit0,851 selected records, zero violations/overrides; explicit Task input did not bypass shared-consumer expansion. Final table contiguity and exact staged ownership author check pass; unchanged source review reused | required | - |
 | E23 | 157 | W173 | Normal commit hooks | Final staged unit, first ordinary git commit attempt | FAIL | Exit1, markdownlint MD012 found a double blank after the evidence table; all other applicable style/secret hooks passed. Normalize only the Task blank spacing, then retry ordinary hooks | required | - |
+| E24 | 157 | W173 | Normal commit hooks | Corrected staged source unit; ordinary commit68dc64a83e825b6829e6dc6301aed3c1dadb21c5 | PASS | Exit0 through installed pre-commit and commit-msg hooks after Task spacing correction; no verification bypass. Source semantics unchanged from independent review | required | E23 |
+| E25 | 157 | W173 | Normal push | Source68dc64a83 to explicit remote refs/heads/codex/p03-ownership-1-1-0 | PASS | Exit0 through installed pre-push guard; requested branch created and upstream set; no probe ref or main direct push | required | - |
+| E26 | 157 | W173 | Hosted candidate-quality aggregate | PR1132 head68dc64a83, base30bfa6543, tested merge4e4c6964410354735fb4b8945b1ca9169bc84c24; run44605391320 | PASS | Routing/core/documents/required aggregate success; document shard1143 tests in29 executed module summaries passed. Remote metadata851 with0 violations, links/lifecycle passed; CodeQL and GitGuardian success. Main-security N/A for PR; no native/acceptance inference | required | - |
+| E27 | 157 | W173 | Authorized P03 source delivery read-back | PR1132 exact checked head68dc64a83 and current strict main protection | PASS | GitHub confirms merge7fc51345f2f6556b53082f520dac9e123391766a. Fetch and ff-only preserve current checkout and clean tree matching main; no force, checkout, reset or protection bypass. Task receipt is a separate ordinary delivery unit | required | - |
+| E28 | 157 | W173 | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 7fc51345f; .venv/bin/python scripts/validation/check-document-links.py --mode all --changed --base-ref 7fc51345f | Same Task-only actual source-delivery receipt | PASS | Both exit0: one selected metadata record, zero violations/overrides; two selected link documents, zero failures/warnings. Author checked exact one-file diff, evidence resolution, contiguity and actual source run/merge. Unchanged source/corpus/regressions/review reused | required | - |
 
 ### Resolution Links
 
@@ -160,8 +165,9 @@ E10 correct the exact renderer/plan invocation errors without source changes.
 E12 resolves the witnessed ADR link failure. E20 and E21 resolve the
 registered metadata/corpus findings through author corrections, never checker
 waivers. Final evidence additions pass the actual selected structural check and
-contiguity inspection. Hosted
-evidence is recorded only after the actual current candidate finishes.
+contiguity inspection. E24 resolves the witnessed ordinary-hook failure E23
+through the corrected actual commit. E26 is the actual successful hosted source candidate, separate
+from every local/source observation and from owner acceptance.
 
 ## Acceptance Decision
 
@@ -169,15 +175,18 @@ evidence is recorded only after the actual current candidate finishes.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 157 | pending | E04, E05, E06, E08, E10, E12, E15, E16, E17, E19, E20, E21 | Implementation, focused checks and independent review complete; delivery and owner acceptance remain separate | @buenhyden |
+| 157 | pending | E04, E05, E06, E08, E10, E12, E15, E16, E17, E19, E20, E21, E24, E26, E27 | Implementation, local/hosted verification and source delivery complete; owner acceptance remains separate | @buenhyden |
 
 ### Remaining Conditions
 
-Source checks, independent review and final recorded Task structure checks
-are complete. Normal commit/push and required current-candidate PR checks
-precede merge; their actual results are recorded after observation.
-Owner acceptance stays pending until actually decided. No actual service
-run is required by this source ownership change.
+Implementation, local source checks, independent review, normal source hooks,
+the actual current hosted candidate and requested source merge are complete.
+This result-only Task receipt receives minimum metadata/link/diff checks and
+ordinary checked delivery; unchanged source review, corpus and regressions are
+reused. No known P03 defect is deferred as runtime observation. Criterion157
+owner acceptance remains pending; the new common-path document's initial draft
+state does not undo the already adopted3.0.1 term contract. No actual service
+operation or new native counterfactual is required by this ownership change.
 
 ## Handoff
 
@@ -190,8 +199,16 @@ placements remain; draft maintenance promotion stays with P05.
 Three owned one-off review input/result/event files were deleted after their
 actual conclusion was recorded; no temporary P03 package output was created.
 
-persistent tests, private state, advisory graph output and the matching
+Persistent tests, private state, advisory graph output and the matching
 package are continuing inputs and are retained.
+
+Source commit68dc64a83 and actual tested merge4e4c69644 are integrated by
+7fc51345f. E26 records the source candidate and E27 the requested source
+merge. Brief revision3 rebinds that new clean baseline for this Task-only
+receipt; authority, exclusive writer and accepted source scope are unchanged.
+The app attachment request for PR1132 did not return a confirmation; its
+GitHub creation, checks and merge were independently confirmed. No app
+attachment result is used as repository delivery evidence.
 
 ### Next Owner
 
