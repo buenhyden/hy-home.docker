@@ -1,15 +1,21 @@
 ---
 title: "CLN01 Material Retirement Task"
-version: "0.1.6"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "cancelled"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0007"
 parent_ids:
 - "SPEC-0204-PLAN-0001"
 created: "2026-10-10"
+cancellation:
+  reason: "Criterion 12 is rejected and the Supabase SMTP duplicate no longer exists"
+  authorization_ref: "#owner-decisions-2026-11-19"
+  criteria_disposition:
+  - criterion: 12
+    withdrawal_ref: "#owner-decisions-2026-11-19"
 ---
 
 # CLN01 Material Retirement Task
@@ -902,6 +908,20 @@ is added. COMM-003 remains SMTP01-only, and COMM-002, PG-020 and cryptographic
 recovery materials remain protected. This clarification changes no Evidence
 edge, criterion decision or Task lifecycle status and grants no deletion.
 
+#### Owner decisions 2026-11-19
+
+Source: user
+
+In this chat the owner cancelled this draft Task. Criterion 12 is already
+rejected, and the Supabase SMTP duplicate it would retire no longer exists,
+so no retirement work remains.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0007 | draft | cancelled | #owner-decisions-2026-11-19 |
+
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
@@ -935,25 +955,8 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Remaining Conditions
 
-The delivered CLN01/SMTP01 increment is user-accepted under the clarification
-above. LAB GoTrue connection/activation is excluded, not a pending completion
-condition. The historical source and operational evidence below keeps its
-original attribution; separate candidate checks are not a new LAB requirement.
-
-SOURCE and UNIT passed on the frozen helper input; ISOLATED passed using only
-synthetic fixtures. STATIC includes Manifest/workflow validation, active metadata, full links and
-corpus lifecycle PASS (exit 0); the registered staged controller passed after
-explicit blank-line corrections. Historical SOURCE delivery is included in local main
-`2773a20c1` and is user-accepted; the then-current local-main instruction did
-not require a new remote PR. The 2026-10-13 reassessment follows the current
-owning-Spec PR instruction recorded above. HOME, MIGRATION, ROTATION and RECOVERY retain
-their recorded NOT_RUN states. Private apply, functional runtime proof and
-recovery remain NOT_RUN; the limited
-checkout-to-host label observation above does not satisfy those criteria.
-A Git logical revert can restore tracked source; it cannot restore private
-material. Private recovery is limited to a pre-existing encrypted recovery
-artifact or a reissue path proved before deletion. No service health, actual
-secret migration, native SMTP delivery, runtime consumer absence, actual deletion or recovery is claimed by this draft.
+None. The Task is cancelled; its recorded evidence and the rejected
+criterion 12 decision stay as written.
 
 ## Handoff
 
