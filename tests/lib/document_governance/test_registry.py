@@ -4057,12 +4057,23 @@ class RepositoryVocabularyProfileTests(unittest.TestCase):
         registry = load_registry()
         self.assertEqual(
             "governance-vocabulary",
-            classify_path("docs/00.workspace/01.project/glossary.md", registry),
+            classify_path(".agents/knowledge/glossary.md", registry),
         )
         profile = registry.profiles["governance-vocabulary"]
         self.assertEqual(self.VOCABULARY_SECTIONS, tuple(profile["required_sections"]))
         self.assertTrue(profile["ordered_sections"])
         self.assertTrue(profile["nonempty_sections"])
+
+    def test_local_glossary_is_separate_from_the_pinned_common_contract(self) -> None:
+        registry = load_registry()
+        self.assertEqual(
+            "governance-knowledge",
+            classify_path("docs/00.workspace/01.project/glossary.md", registry),
+        )
+        self.assertEqual(
+            ".agents/knowledge/glossary.md",
+            registry.common["vocabulary_contract"]["glossary_path"],
+        )
 
     def test_other_knowledge_members_keep_the_knowledge_profile(self) -> None:
         registry = load_registry()

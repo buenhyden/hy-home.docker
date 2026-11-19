@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.98.0"
+version: "1.99.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -417,6 +417,35 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W170 | 154 | Reconcile the current Docker workspace with remediation 1.1.0 and confirmed Q-01–Q-04; preserve matching completed work, map owners/consumers, and route actual defects, observations and changed decisions | None | TSK-0098 | Finding/path/decision-delta coverage; changed metadata, links, corpus lifecycle, changed-selector explanation, diff check and required PR checks |
 | W171 | 155 | Split document regressions by actual consumers, restrict content validation to changed/inbound scope, share immutable parsing/history inputs and preserve fail-closed candidate aggregation | W170 | TSK-0099 | RED/GREEN gate and document tests; same-input timing; workflow/manifest/ownership/document checks; independent review and hosted PR checks |
 | W172 | 156 | Observe installed local hooks and timings; repair source-index drift, unborn/empty staged diagnostics and complete fail-closed push records while retaining narrow checks | W171 | TSK-0100 | Same-input offline timing; RED/GREEN existing shell and installed-guard regressions; scoped syntax, document and manifest checks; independent delta review; normal hooks and hosted candidate |
+| W173 | 157 | Reconcile policy and architecture ownership, separate common/local vocabulary with complete consumer updates, remove copied bootstrap order and align rule_owner prose | W172 | TSK-0101 | Profile and route RED/GREEN, pinned vocabulary/template/heading regressions, existing rule-owner negatives, changed document and canonical/provider checks, independent review and required hosted candidate |
+
+#### Current P03 ownership implementation
+
+The direct P03 1.1.0 request authorizes only this ownership unit and its
+ordinary commit, push, PR and merge. [TSK-0101](01.tasks/tsk-0101-p03-ownership.md)
+owns criterion157/W173 and all execution, review and delivery evidence.
+Keep P00/P01/P02 and the eleven completed areas at their evidenced scope.
+
+One coordinator exclusively writes the two glossary owners, retires the old
+agent-only glossary after moving its six meanings, updates knowledge/workspace
+navigation, Provider Registry canonical_sources, Stage99 profiles and vocabulary
+binding, the existing numbered-path consumer and four existing regression
+modules. The same unit corrects quality policy's rule_owner wording, removes
+the repository map's copied entry order, records ADR-0063's scoped glossary
+replacement and updates this Spec/Plan/Task. Inspectors are read-only.
+
+Reuse the registered vocabulary and knowledge forms without new wrappers or
+profiles. The shared contract's43 IDs, wording, order, Korean labels and3.0.1
+version stay fixed; supplemental concepts have no invented common IDs. Local
+bindings link their policy owners, including product POL-0078. Keep architecture
+placements, generated provider semantics and draft environment/maintenance
+status. P05 owns promotion and RUN-0021 consumer transition; P17 owns final
+renumbering and history disposition. Tests prove current profile separation and
+no glossary relocation, while existing contract tests retain rejection cases.
+Review the complete logical change before normal hooks and hosted checks.
+Rollback reverts this unit's coherent owners, bindings and consumers together.
+No service operation or private settings change. P04 is the next input only
+after the P03 result; it never executes automatically.
 
 #### Current P02 local feedback implementation
 

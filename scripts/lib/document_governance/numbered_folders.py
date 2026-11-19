@@ -41,7 +41,6 @@ _RELOCATED = {
     "docs/00.workspace/02.process/approval-boundaries.md": (
         "docs/00.workspace/04.quality/approval-boundaries.md"
     ),
-    ".agents/knowledge/glossary.md": "docs/00.workspace/01.project/glossary.md",
     "docs/99.templates/templates/governance/vocabulary.template.md": (
         "docs/99.templates/02.templates/00.workspace/vocabulary.template.md"
     ),

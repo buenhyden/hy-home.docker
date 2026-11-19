@@ -1,10 +1,10 @@
 ---
 title: "00.workspace"
-version: "1.2.0"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-20"
 created: "2026-11-18"
 layer: "workspace"
 ---
@@ -42,7 +42,7 @@ agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)�
 | Path | Purpose |
 | --- | --- |
 | `01.project/stage-authoring-matrix.md` | 책임 계층과 Stage별 소유자 |
-| `01.project/glossary.md` | 사람과 agent가 함께 쓰는 공통 용어(Repository Vocabulary) |
+| `01.project/glossary.md` | Docker workspace 로컬 용어와 정책 바인딩 |
 | `02.architecture/01.descriptions/` | workspace 구조 설명(AD-0027 agent governance, AD-0030 문서 생명주기) |
 | `02.architecture/02.decisions/` | workspace 구조 결정(ADR-0032·0034·0037·0044·0048·0049·0051·0057·0063) |
 | `03.process/sdlc.md` | 요구에서 인수까지의 공통 수명주기 |
@@ -57,8 +57,8 @@ agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)�
 
 제품 AD·ADR은
 [Stage 02](../02.architecture/README.md)에 있고, workspace AD·ADR과 같은 번호 공간을
-씁니다. agent·provider 전용 용어는
-[agent glossary](../../.agents/knowledge/agent-glossary.md)에 있습니다.
+씁니다. 공통 용어와 agent·provider 의미는
+[Repository Vocabulary](../../.agents/knowledge/glossary.md)가 소유합니다.
 
 ### Owners
 

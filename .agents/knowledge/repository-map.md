@@ -1,10 +1,10 @@
 ---
 title: "Repository Authority Map"
-version: "0.5.4"
+version: "0.5.5"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-20"
 created: "2026-09-06"
 observed_at: "2026-10-07"
 review_cycle: "on-surface-change"
@@ -57,22 +57,9 @@ contents, user-global provider settings, and anything outside this repository.
 
 ### Entry Order
 
-1. Root `AGENTS.md` or `CLAUDE.md`.
-2. [Bootstrap policy](../governance/bootstrap.md) and the matching authored
-   provider adapter.
-3. Only the policies, canonical role, and explicitly invoked skills the request
-   needs, plus `.agents/knowledge/` when the request needs to find which surface
-   owns something and `.agents/prompts/` when it produces a handoff, a diff
-   review, a commit message, or a test design.
-4. For a repository change, the governing Requirement, Architecture, and Spec
-   Package plus its current Task.
-5. The applicable registered gates, with evidence recorded in that Task.
-
-Loading more than the request needs is a cost, not a safeguard. Discovery of any
-file in this map grants no permission, and neither knowledge nor prompts grant a
-tool, a path, or an approval; the selected role's permission profile still
-governs. [`bootstrap.md`](../governance/bootstrap.md) owns this order and this
-list restates it; a disagreement between them is a defect here.
+Read the [canonical bootstrap sequence](../governance/bootstrap.md#canonical-load-order)
+for entry and request-scoped loading. This map only locates owners; discovery
+here grants no tool, path, approval or broader permission profile.
 
 ### Where Similar Things Differ
 

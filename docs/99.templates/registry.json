@@ -1473,7 +1473,7 @@
       "version": "3.0.1",
       "source_label": "3.0.1",
       "source_sha256": "a8f595f543f380f992a20a52886d0cc2b4f340c47a449537d2f90ec082f39dfb",
-      "glossary_path": "docs/00.workspace/01.project/glossary.md",
+      "glossary_path": ".agents/knowledge/glossary.md",
       "terms": [
         {
           "term_id": "TERM-AUTHORITY",
@@ -4100,7 +4100,7 @@
       "path_pattern": ".agents/knowledge/repository-map.md",
       "additional_paths": [
         ".agents/knowledge/verification-surface-map.md",
-        ".agents/knowledge/agent-glossary.md",
+        "docs/00.workspace/01.project/glossary.md",
         "docs/00.workspace/05.environment/onboarding.md",
         "docs/00.workspace/06.maintenance/harness-maintenance.md"
       ],
@@ -4153,7 +4153,7 @@
       "type": "governance/vocabulary",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.workspace/01.project/glossary.md",
+      "path_pattern": ".agents/knowledge/glossary.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/vocabulary",
@@ -5172,7 +5172,7 @@
         "TERM-GOVERNANCE",
         "TERM-CANONICAL"
       ],
-      "applicability": "Applies to every file the governance-knowledge profile owns: .agents/knowledge/repository-map.md, .agents/knowledge/verification-surface-map.md.",
+      "applicability": "Applies to the registered repository and verification maps, local Docker vocabulary, and draft environment and maintenance knowledge members; registration alone does not activate a draft.",
       "relationships": [
         "Routes to canonical owners; the owner stays the authority for what it says."
       ],
@@ -5286,8 +5286,8 @@
       "profiles": [
         "governance-vocabulary"
       ],
-      "purpose": "English Repository Vocabulary at docs/00.workspace/01.project/glossary.md.",
-      "responsibility": "Define each common term with its Term ID and policy owner, and local terms under Local Extensions.",
+      "purpose": "English common Repository Vocabulary at .agents/knowledge/glossary.md.",
+      "responsibility": "Define each adopted common term with its stable Term ID and policy owner; distinguish supplemental shared meanings from the pinned contract and route local bindings to their separate owner.",
       "non_goals": [
         "Restating the policy owner's procedure.",
         "Redefining a common term locally."
@@ -5305,9 +5305,9 @@
         "TERM-CANONICAL",
         "TERM-POLICY"
       ],
-      "applicability": "Applies to every file the governance-vocabulary profile owns: docs/00.workspace/01.project/glossary.md.",
+      "applicability": "Applies to the common owner .agents/knowledge/glossary.md; the local Docker vocabulary uses governance-knowledge.",
       "relationships": [
-        "Each term names its policy owner under .agents/governance/; TemplateDefinition vocabulary_refs point here."
+        "Each term routes to its actual canonical policy owner; TemplateDefinition vocabulary_refs resolve common terms here and local bindings in docs/00.workspace/01.project/glossary.md."
       ],
       "consumer_paths": [
         "scripts/lib/document_governance/registry.py",

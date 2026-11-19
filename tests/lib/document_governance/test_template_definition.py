@@ -21,9 +21,8 @@ from scripts.lib.document_governance.registry import (
 from scripts.lib.document_governance.template_definition import template_definition
 
 SCHEMA_PATH = ROOT / "docs/99.templates/01.contracts/template-definition.schema.json"
-GLOSSARY = ROOT / "docs/00.workspace/01.project/glossary.md"
-# Agent-only local terms moved out of the shared vocabulary (SPEC-0212-TSK-0096).
-AGENT_GLOSSARY = ROOT / ".agents/knowledge/agent-glossary.md"
+GLOSSARY = ROOT / ".agents/knowledge/glossary.md"
+LOCAL_GLOSSARY = ROOT / "docs/00.workspace/01.project/glossary.md"
 
 
 def _errors(definition: object) -> list[str]:
@@ -45,7 +44,7 @@ def _reference_failures(definition: dict) -> list[str]:
     """Return every authored reference that does not resolve."""
 
     failures = []
-    glossary = GLOSSARY.read_text(encoding="utf-8") + AGENT_GLOSSARY.read_text(
+    glossary = GLOSSARY.read_text(encoding="utf-8") + LOCAL_GLOSSARY.read_text(
         encoding="utf-8"
     )
     for path in definition["consumer_paths"]:
