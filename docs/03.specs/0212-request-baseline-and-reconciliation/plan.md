@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.96.0"
+version: "1.97.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -414,14 +414,14 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W167 | 151 | Judge every prerequisite criterion with the owner, list runtime remainders and rehearse the cutover allocation read only | W166 | TSK-0095 | Acceptance ledger, journal reconciliation and cutover rehearsal |
 | W168 | 152 | Move every classification folder to `NN.name`, move workspace architecture, vocabulary and approval boundaries into the workspace classes, convert every consumer and test, and move product runtime rules to their product owners | W160 | TSK-0096 | Link, corpus, metadata, catalog, contract, manifest and renderer checks; governance and validation test modules against a clean `main` baseline |
 | W169 | 153 | Triage CodeQL, rerun the venv-only test modules, record the owner's acceptances, add the environment and maintenance guides and move the RUN-0021 workspace sections | W168 | TSK-0097 | Alert triage, venv test run, link, metadata, catalog, corpus, manifest and contract checks |
-| W170 | 154 | Reconcile the current Docker workspace with remediation 1.0.0; preserve matching completed work, map owners and consumers, and route defects, observations and decisions to P01–P17 | None | TSK-0098 | Finding coverage and path checks; changed metadata, links, corpus lifecycle, changed-selector explanation and diff check |
+| W170 | 154 | Reconcile the current Docker workspace with remediation 1.1.0 and confirmed Q-01–Q-04; preserve matching completed work, map owners/consumers, and route actual defects, observations and changed decisions | None | TSK-0098 | Finding/path/decision-delta coverage; changed metadata, links, corpus lifecycle, changed-selector explanation, diff check and required PR checks |
 | W171 | 155 | Split document regressions by actual consumers, restrict content validation to changed/inbound scope, share immutable parsing/history inputs and preserve fail-closed candidate aggregation | W170 | TSK-0099 | RED/GREEN gate and document tests; same-input timing; workflow/manifest/ownership/document checks; independent review and hosted PR checks |
 
 #### Current P01 routing implementation
 
-The direct P01 request authorizes W171 and local commit, branch push, pull
-request and merge after required checks. It reuses P00 and prior completed
-work; only P01 is executed. [TSK-0099](01.tasks/tsk-0099-p01-ci-routing.md)
+W171's earlier direct P01 request authorized local commit, branch push, pull
+request and merge after required checks. That unit reuses P00 and prior
+completed work; its scope is P01. [TSK-0099](01.tasks/tsk-0099-p01-ci-routing.md)
 owns exact paths, test results, timing, review and delivery evidence.
 
 The CI writer owns the workflow contract, gate contract and their existing
@@ -442,17 +442,27 @@ the Task records their promotion and any unobserved boundary.
 
 #### Current P00 remediation sequence
 
-The direct 2026-11-20 request reuses this package's reconciliation ownership.
+The direct 2026-11-20 P00 1.1.0 request reuses this package's reconciliation ownership.
 The doc-writer owns only `spec.md`, `plan.md` and
 `01.tasks/tsk-0098-p00-reconcile.md` in this package. TSK-0097 retains criterion
 153 and its independent CodeQL and maintenance-authority remainders; no
-terminal Task is reopened. W170 is a local documentation unit with focused
-checks and review of its logical diff. Reverting these three edits reverses
+terminal Task is reopened. W170 is a documentation unit with focused
+checks, review of its decision delta, and explicitly requested commit, push,
+PR and merge after required checks. Reverting these three edits reverses
 the unit without changing runtime or data. No executable logic is added, so
 implementation RED/GREEN and coverage expansion have no subject here.
 
 [TSK-0098](01.tasks/tsk-0098-p00-reconcile.md#ordered-follow-up) owns the
 ordered P01–P17 file and validation map, findings and preserved decisions.
+Apply `decision_revision: "2026-11-20"` only to results actually compared
+against the confirmed decisions. Maintain matching W171 implementation and
+evidence instead of replaying P01; continue with the first unperformed base
+stage before the later decision-delta stages. Q-01 routes final remote-ref
+history and local Git residue to P17; Q-02 routes selected/redacted content,
+summaries and finite retention to P09/P10; Q-03 routes supported native
+observations to P06–P10/P12/P13. Historical criterion 135 withdrawal and
+shell-only acceptance do not exempt those new obligations. Blog Q-04 is
+not a Docker implementation task. No later prompt executes during W170.
 Its follow-ups promote durable rules to the existing workspace, agent,
 product and Stage 99 owners before final P17 retirement. This planning
 sequence is not evidence that any follow-up ran. Read-only PR discovery,

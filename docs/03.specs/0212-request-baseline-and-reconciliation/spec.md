@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.96.0"
+version: "1.97.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -263,11 +263,17 @@ TSK-0079 for native hook compatibility and evidence boundaries.
 
 ### Owning Requirements
 
-The direct P00-RECONCILE 1.0.0 request on 2026-11-20 adds criterion 154
-and W170 in TSK-0098. It reconciles this Docker workspace against the
-matching remediation package, excludes evidenced completed work and routes
-remaining changes to P01–P17. The new sequence does not reopen historical
-acceptances or authorize another workspace, paid execution or external deletion.
+The direct P00-RECONCILE 1.1.0 request on 2026-11-20 reuses criterion 154
+and W170 in TSK-0098. It reconciles this Docker workspace against the matching
+package and confirmed Q-01–Q-04 decisions, excludes evidenced completed work
+and routes only remaining or changed obligations. Historical acceptances stay
+historical; they do not exempt newly expanded scope. P00 changes reconciliation
+documents and delivers their checked PR only. Q-01's manageable remote-ref
+history work belongs to final P17; Q-02's selected/redacted retention belongs
+to P09/P10; Q-03's bounded supported native observations belong to P06–P13's
+relevant stages. No other workspace, new subscription, unlimited call budget,
+permission bypass or unrelated external deletion is inferred. Q-04 has no
+Docker publication implementation scope.
 
 This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005, REQ-0024 and REQ-0027 together with AD-0004 and AD-0031. The body also cites REQ-0003 (the ISO/IEC measurement wording in the acceptance text, and criterion 114), REQ-0025 and REQ-0026 (criterion 114) and ADR-0050, ADR-0003 and ADR-0018 (the Vault ADR acceptance and archival recorded for criterion 49/W54); it cites no REQ-####-FR or REQ-####-NFR identifier.
 
@@ -1239,7 +1245,10 @@ target, backup, recovery boundary, and action-specific authorization.
      matching implementation is excluded from rebuilding. Existing obligations
      and user decisions are preserved or explicitly routed to their successor;
      prompt receipt, merge, implementation, runtime verification and owner
-     acceptance remain separate. Questions are limited to applicable Q-01–Q-04.
+     acceptance remain separate. Apply confirmed Q-01–Q-04 without reasking
+     their basic choices, record the actually reviewed decision_revision,
+     and ask only about a concrete additional conflict. Reuse matching P01
+     implementation and evidence; do not replay it because the package changed.
      The matching package stays available through P17, without a second
      completion ledger or a per-task SHA approval gate.
 
