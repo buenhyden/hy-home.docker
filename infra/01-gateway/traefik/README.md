@@ -1,37 +1,64 @@
 ---
 title: "Traefik Edge Router"
-version: "1.2.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-12"
 ---
 
 # Traefik Edge Router
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > hy-home.docker 생태계의 주 에지 라우터로, 동적 서비스 탐색과 TLS 조율을 갖췄습니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
-#### Overview
+###### Overview
+<!-- core-payload-level:4 -->
 
 Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker 프로바이더를 통한 동적 서비스 탐색과 자동 TLS 종료를 제공합니다. 트래픽 모니터링 및 관리를 위한 대시보드도 있습니다.
 
 ---
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
 - Infrastructure Engineers
 - SREs
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
-##### In Scope
+###### In Scope
+<!-- core-payload-level:5 -->
 
 - 전역 entrypoint 정의(`web` 80, `websecure` 443, `metrics` 8082). `metrics`(Prometheus metrics와 ping)는 Prometheus만 함께 붙는 `traefik_metrics_net`의 `10.250.46.2`(alias `traefik-metrics`)에만 bind함(SPEC-0267).
 - Docker Provider를 통한 동적 서비스 탐색과 라우팅 label.
@@ -39,13 +66,15 @@ Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker �
 - TLS store와 인증서 관리.
 - Observability 통합(Prometheus 메트릭, OTLP 추적).
 
-##### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:5 -->
 
 - 애플리케이션 수준의 비즈니스 로직.
 - 상세한 경로 기반 재작성.
 - 개별 서비스 컨테이너 정의(각자의 infra 폴더에서 관리).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 traefik/
@@ -58,7 +87,7 @@ traefik/
 └── README.md           # 이 파일
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -67,15 +96,18 @@ traefik/
 | `sso-auth@file` ForwardAuth -> `http://oauth2-proxy:${OAUTH2_PROXY_PORT:-4180}/` | OAuth2 Proxy | `traefik`의 `websecure` 라우트 | 인증을 OAuth2 Proxy에 위임하며 session이 없으면 브라우저는 Keycloak으로 302, JSON 요청은 401을 받는다. | `sso-errors@file`이 403만 `/oauth2/sign_in`으로 바꾸고 401은 그대로 전달하며 부적합한 포트 값은 유효 URL이 되지 않는다. |
 | Traefik 대시보드 `https://dashboard.${DEFAULT_URL:-localhost}` | `traefik` | 이 README는 소비자를 기록하지 않는다. | `traefik.http.routers.dashboard.*` label로 라우팅되는 내부용 대시보드로 동적 라우팅 변경 검증에 쓴다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
-##### Core Files
+###### Core Files
+<!-- core-payload-level:5 -->
 
 - `config/traefik.yml`: 정적 설정(entrypoint, provider, API).
 - `dynamic/middleware.yml`: 공유 미들웨어(SSO/ForwardAuth, RateLimit, BasicAuth).
 - `dynamic/tls.yaml`: TLS 인증서 매핑과 store.
 
-##### Docker Healthcheck
+###### Docker Healthcheck
+<!-- core-payload-level:5 -->
 
 Traefik의 내장 healthcheck는 내부 ping 엔드포인트를 사용합니다.
 
@@ -87,7 +119,8 @@ healthcheck:
   retries: 5
 ```
 
-##### Keycloak & OAuth2 Proxy Integration
+###### Keycloak & OAuth2 Proxy Integration
+<!-- core-payload-level:5 -->
 
 Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OAuth2 Proxy에 위임합니다.
 
@@ -95,21 +128,23 @@ Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OA
 2. Middleware: `sso-auth@file` -> `http://oauth2-proxy:${OAUTH2_PROXY_PORT:-4180}/`. 동적 설정은 Traefik 컨테이너에 전달된 `OAUTH2_PROXY_PORT`를 `1..65535` 정규식으로 제한해 이 주소를 렌더하며, 부적합한 값은 유효한 backend URL이 되지 않습니다. session이 없으면 브라우저는 Keycloak으로 302, `Accept: application/json` 요청은 401을 받습니다.
 3. Error page: `sso-errors@file`은 403만 `/oauth2/sign_in` 응답으로 바꿉니다. 401은 machine client에게 그대로 전달합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}`이다. (출처: `infra/01-gateway/traefik/docker-compose.yml`, `infra/01-gateway/traefik/compose.window-ca.override.yml`의 `traefik` 서비스)
 
 2026-11-09에 Compose 고정을 GHSA-xv5x-242w-7hf7(인증 없는 NTLM/Negotiate 헤더가 연결마다 backend transport를 남기는 High 결함)이 고쳐진 Traefik 패치 릴리스로 올렸습니다. 해당 릴리스 migration guide의 Go 1.27 항목(GODEBUG TLS 설정 제거, 요청 header 값 500개 제한, Ingress-NGINX 생성 이름)은 이 설정에 해당하지 않습니다. 서명, 스캔, config 부팅과 HOME 재생성은 `NOT_RUN`이며 실행 중인 컨테이너는 바뀌지 않았습니다. 기록은 `infra/09-platform-ops/security-updates/`와 SPEC-0212-TSK-0041이 소유합니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)으로 drift를 검증합니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
@@ -122,7 +157,8 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 - **필수**: 모든 동적 라우팅 변경은 Traefik 대시보드로 검증해야 합니다.
 - **검증**: 정적 검증을 먼저 사용하고 승인된 실행 중 스택에 대해서만 Traefik 로그를 확인합니다.
 
-##### Environment Variables
+###### Environment Variables
+<!-- core-payload-level:5 -->
 
 | Variable          | Required | Description |
 | ----------------- | -------: | ----------- |
@@ -130,11 +166,12 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 | `HTTP_HOST_PORT`  |       No | HTTP 호스트 포트(기본값: 80) |
 | `HTTPS_HOST_PORT` |       No | HTTPS 호스트 포트(기본값: 443) |
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 | Command | Description |
 | --- | --- |
@@ -148,9 +185,10 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 - 승인된 루트 runtime이 실행 중일 때만 Traefik 대시보드에서 라우팅 설정을 확인합니다.
 - runtime 승인 후에만 정제된 Traefik 로그로 TLS와 미들웨어 동작을 확인합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [01-gateway 루트 README](../README.md)
 - Traefik 가이드 (`docs/05.operations/01.guides/02.gateway-and-networking/0013-traefik.md`)
@@ -159,7 +197,8 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 - [Traefik 대시보드](https://dashboard.${DEFAULT_URL:-localhost}) (내부용)
 - [문서 인덱스](../../../docs/README.md)
 
-#### Service Readiness
+###### Service Readiness
+<!-- core-payload-level:4 -->
 
 | Field | Evidence |
 | --- | --- |
@@ -177,7 +216,28 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 루트 profile 검증과 게이트웨이 하드닝 검사부터 시작하고 Traefik runtime이 이미 승인되어 실행 중일 때만 서비스 로그를 확인함 |
 
-#### Troubleshooting
+###### Troubleshooting
+<!-- core-payload-level:4 -->
 
 - 루트 `core` profile 검증기로 라우터, 네트워크, secret, 마운트된 dynamic config 경로가 정상 렌더링되는지 먼저 확인합니다.
 - runtime 증거가 범위에 있을 때만 `traefik` 컨테이너 로그를 확인하고 라우터 또는 미들웨어 실패를 연결된 게이트웨이 운영 가이드와 비교합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,36 +1,61 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.12.0"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # GitHub Governance Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Normative policy baseline aligning agent behavior with GitHub repository operations.
 A stricter rule in another canonical governance owner prevails over this document.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of repository protection, pull requests, hosted workflows, and remote actions under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Repository protection, pull requests, hosted workflows, and separately authorized remote actions.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -158,7 +183,8 @@ None: this document states no exclusion.
 | GITHUB-GOVERNANCE-R121 | Spec and Task records | Required: Specs retain AC/contracts and Tasks retain actual commands, results, acceptance and authorization | none | none |
 | GITHUB-GOVERNANCE-R122 | Mirroring Task state to Projects | Forbidden: adding an App/PAT just to mirror Task state | none | none |
 
-#### 1. Repository Protection Contract
+###### 1. Repository Protection Contract
+<!-- core-payload-level:4 -->
 
 - Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks.
 - This is an agent behavior contract, not evidence of applied GitHub settings.
@@ -176,7 +202,8 @@ None: this document states no exclusion.
   remote verification is unavailable.
 - CODEOWNERS-triggered reviews are mandatory wherever remote protection enforces them. Agents must read the enforced state rather than assume it: when `require_code_owner_reviews` is enabled, an owned path's review must be obtained before merge; when it is disabled, `.github/CODEOWNERS` remains the ownership and review-routing record and no longer gates merges. Report which of the two applies; never record a review that protection did not require and no person gave.
 
-#### 2. Pull Request and Review Contract
+###### 2. Pull Request and Review Contract
+<!-- core-payload-level:4 -->
 
 Issues provide intake, coordination, and branch links. The current Task owns
 approval, evidence, and lifecycle state; closing an Issue, by hand or through
@@ -216,7 +243,8 @@ target and action.
   recovery commit, but must not turn a branch tip, expected SHA, checksum, or
   commit census into a standing merge Gate.
 
-#### 3. Merge and Branch Discipline
+###### 3. Merge and Branch Discipline
+<!-- core-payload-level:4 -->
 
 This section is the single owner of merge and branch-lifecycle rules. Both the
 Git workflow policy and `.github/rulesets/main-protection.md` defer here; the
@@ -249,7 +277,8 @@ rule of its own.
   remaining work in the PR template.
 - Agents must never modify another agent's in-progress branch without explicit coordination.
 
-#### 4. GitHub Actions Security Contract
+###### 4. GitHub Actions Security Contract
+<!-- core-payload-level:4 -->
 
 - Workflows must use least-privilege `GITHUB_TOKEN` — request only the permissions the job actually needs.
 - Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a `medium` finding.
@@ -265,7 +294,8 @@ rule of its own.
 - Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — raise a `blocker` finding.
 - Reusable workflows called from external repositories must be pinned and reviewed before use.
 
-#### 5. Execution Boundary (Local vs Remote)
+###### 5. Execution Boundary (Local vs Remote)
+<!-- core-payload-level:4 -->
 
 - **Local**: explicit formatting, focused RED/GREEN, message validation and
   read-only diagnostic checks. The shared
@@ -278,7 +308,8 @@ rule of its own.
   second candidate run. The sole manual release producer runs only once the user
   names its exact version and trusted main revision.
 
-#### 5.0 Approved Remote Mutation Protocol
+###### 5.0 Approved Remote Mutation Protocol
+<!-- core-payload-level:4 -->
 
 When the user approves remote GitHub mutation, agents must still bind the action
 to a concrete repository and remote surface before changing state. Task evidence
@@ -293,7 +324,8 @@ Read-only remote checks may be recorded as verification evidence. Remote state
 that was approved but not changed must be reported as verified-only, not as a
 mutation.
 
-#### 5.1 Tracked Workflow Definition Boundary
+###### 5.1 Tracked Workflow Definition Boundary
+<!-- core-payload-level:4 -->
 
 A tracked workflow file is a local repository definition, not evidence that a
 remote schedule, manual dispatch, job, or required check ran. Agents may author
@@ -303,7 +335,8 @@ remotely, or change GitHub checks, rulesets, branch protection, environments,
 deployments, or releases until the user names that repository and remote
 surface.
 
-#### 5.2 Evidence Boundary by Change Type
+###### 5.2 Evidence Boundary by Change Type
+<!-- core-payload-level:4 -->
 
 Use the [shared change-type verification matrix](../04.quality/quality-standards.md#5-change-type-verification-matrix)
 for local checks, selected public suites, and skipped-check rationale. This
@@ -318,7 +351,8 @@ not passing evidence.
 No task is complete by citing a CI-only gate alone when a cheap local check is
 available, and no local-only check replaces required protected-branch gates.
 
-#### 5.3 QA Definition Trust and Amendment
+###### 5.3 QA Definition Trust and Amendment
+<!-- core-payload-level:4 -->
 
 A change to a QA definition ties the current owner's actual acceptance to
 that diff and revision, and records in the Task the source and revision of
@@ -341,7 +375,8 @@ never checks out or runs candidate code in a privileged
 `pull_request_target` runner, and never creates a new App or credential
 implicitly.
 
-#### 6. Local Instruction Authority
+###### 6. Local Instruction Authority
+<!-- core-payload-level:4 -->
 
 - This repository does not adopt a GitHub-native instruction hierarchy for agent execution.
 - Instruction authority lives in repo-local assets only:
@@ -359,7 +394,8 @@ implicitly.
 - GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.
 - Any future GitHub-native instruction file must be treated as out-of-scope until the repository governance explicitly adopts it.
 
-#### 8. CI/CD Job Taxonomy
+###### 8. CI/CD Job Taxonomy
+<!-- core-payload-level:4 -->
 
 The [canonical phase matrix](../04.quality/quality-standards.md#canonical-delivery-phase-matrix)
 owns stage responsibility. `.github/workflow-contract.yml` owns exact job
@@ -394,7 +430,8 @@ workflow YAML and tracked protection target together, then observe the remote
 state separately. A proposed required context is not effective protection.
 Never introduce an administrative bypass when source and remote state differ.
 
-#### Issues and Projects
+###### Issues and Projects
+<!-- core-payload-level:4 -->
 
 Issue forms (`.github/ISSUE_TEMPLATE/`) collect problem/request, priority and
 optional contract/execution links. Specs retain AC/contracts; Tasks retain
@@ -403,28 +440,32 @@ actual commands, results, acceptance and authorization. The Project rule is in
 just to mirror Task state. See
 [Project automation](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/automating-projects-using-actions).
 
-#### References
+###### References
+<!-- core-payload-level:4 -->
 
 - <https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
 - <https://docs.github.com/en/actions/reference/security/secure-use>
 - <https://docs.github.com/en/actions/how-tos/monitor-workflows>
 - <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](../04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
-#### 7. Completion Gate (GitHub-Specific)
+###### 7. Completion Gate (GitHub-Specific)
+<!-- core-payload-level:4 -->
 
 Before an agent declares any PR-related task complete, it must confirm:
 
@@ -436,7 +477,7 @@ Before an agent declares any PR-related task complete, it must confirm:
 
 If any gate is unmet, the task status is "blocked" not "done."
 
-### Limits
+##### Limits
 
 Four rules name a check the policy ties to them (R48, R60, R61, R104); every other rule names none:
 
@@ -457,13 +498,13 @@ Four rules name a check the policy ties to them (R48, R60, R61, R104); every oth
 - Enforcement gap: remote enforcement of QA definition trust needs a separately approved, applied and read-back verification definition and protection settings; a local revision of this policy observes none of it.
 - Rules stated under Enforcement (the GitHub-specific Completion Gate) are outside this table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -477,3 +518,23 @@ Changes land in place with Task evidence; related documents:
 - [Quality standards](../04.quality/quality-standards.md)
 - [AI agent standards](../../../.agents/governance/standards.md)
 - [Bootstrap policy](../../../.agents/governance/bootstrap.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

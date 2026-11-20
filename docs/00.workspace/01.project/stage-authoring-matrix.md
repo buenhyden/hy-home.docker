@@ -1,35 +1,60 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.5.1"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Stage Authoring Matrix
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Map each stage to its layer, canonical owner, and completion evidence.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of the stage ownership and document type family map under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Current stage roles, document families, canonical ownership, and verification routes.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 Shared README profiles, native envelopes, and scoped registry/schema/template reads keep the exceptions the documentation protocol registers.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -95,7 +120,8 @@ source for files outside docs. Use README navigation and canonical agent rules;
 scoped execution reads and required registry/schema/template inputs retain the
 narrow exceptions in that protocol.
 
-#### Document Type Families
+###### Document Type Families
+<!-- core-payload-level:4 -->
 
 `type` is a `family/kind` pair. The family names the authority that owns the
 document; the kind names its role inside that family.
@@ -128,7 +154,8 @@ observed evidence and never authenticates an approval source. The Registry owns
 document-family state vocabulary, direct parent cardinality, result and review
 table shapes, and lifecycle generation; the SDLC owns their execution meaning.
 
-#### Responsibility Layers
+###### Responsibility Layers
+<!-- core-payload-level:4 -->
 
 Each common rule has one meaning owner. A layer is a responsibility, not a
 directory to create.
@@ -147,25 +174,27 @@ A machine check implements the rule its owner states and never becomes a
 second owner. Hookify rules and native bindings are I and A inputs and stay
 with their loaders.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](../04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not
 stale generated files eligible for automatic deletion.
 
-### Limits
+##### Limits
 
 The policy names no check that enforces or verifies any rule in this table; every row records `none`.
 
@@ -176,13 +205,13 @@ The policy names no check that enforces or verifies any rule in this table; ever
 - Responsibility layer, approval-meaning and hook-input rules (R34-R36) name no check.
 - Rules stated under Enforcement/Mechanisms (the canonical home and its unknown or unsafe entries) are outside the table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -190,3 +219,23 @@ Changes land in place with Task evidence; related documents:
 - [SDLC](../03.process/sdlc.md)
 - Stage 99 registry (`docs/99.templates/registry.json`)
 - [Documentation index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

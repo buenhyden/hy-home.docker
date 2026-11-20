@@ -1,10 +1,13 @@
 ---
 title: "BLOCKED: plaintext secrets"
-version: "1.0.7"
+version: "2.0.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: 'BLOCKED: plaintext secrets'
+  layer: agent
+updated: "2026-11-20"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -20,13 +23,33 @@ name: "block-plaintext-secret-compose"
 
 # BLOCKED: plaintext secrets
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the rule payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Objective
 
 Apply the declared `block` action for block-plaintext-secret-compose.
 
-### Authority
+##### Authority
 
 Owning policies:
 
@@ -34,20 +57,20 @@ Owning policies:
 - [Environment constraints](../environment-constraints.md)
 - [Quality standards](../../../docs/00.workspace/04.quality/quality-standards.md)
 
-## Scope
+#### Scope
 
-### Applies To
+##### Applies To
 
 The `block-plaintext-secret-compose` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("BLOCKED: plaintext secrets"). The frontmatter owns the exact matcher.
 
-### Exclusions
+##### Exclusions
 
 **Exclusions:** `_FILE` suffixes, `${...}` variable references, `/run/secrets/`
 paths, and empty values are not flagged.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 **Plaintext secret detected in Docker Compose file (project rule)**
 
@@ -101,26 +124,46 @@ env_file:
 
 The declared action applies when the pattern matches.
 
-### Enforcement
+##### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Exceptions
+#### Exceptions
 
-### Exception Conditions
+##### Exception Conditions
 
 No exception is declared by this rule.
 
-### Approval and Review
+##### Approval and Review
 
 None.
 
-## Ownership
+#### Ownership
 
-### Responsibilities
+##### Responsibilities
 
 `@buenhyden`.
 
-### Change and Adoption
+##### Change and Adoption
 
 `.agents/README.md`.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

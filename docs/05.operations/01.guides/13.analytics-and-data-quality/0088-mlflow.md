@@ -1,10 +1,13 @@
 ---
 title: "MLflow Usage Guide"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0088"
 parent_ids:
@@ -19,37 +22,60 @@ next_review_at: "2027-05-13"
 
 # MLflow Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자가 선택 방법, 인증 경계, artifact 처리 방식을 확인할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 MLflow는 `mlops` 또는 `data-science`가 선택하는 OPTIONAL experiment tracking
 server이다. HOME 선택에 들어 있지 않으며, 추가하려면 별도로 활성화를 결정해야 한다.
 
 MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문서다. 선택 방법, 인증 경계, artifact 처리 방식을 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/13.analytics-and-data-quality/0088-mlflow.md) (`POL-0088`)
 - [Runbook](../../03.runbooks/13.analytics-and-data-quality/0088-mlflow.md) (`RUN-0088`)
 - [Laboratory architecture](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md)
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Image Dockerfile](../../../../infra/08-ai/mlflow/Dockerfile) 및 [derived version projection](../../../../infra/tech-stack.versions.json)
 - [MLflow self-hosting network security](https://mlflow.org/docs/latest/self-hosting/security/network)
 - [MLflow SSO and the OIDC plugin](https://mlflow.org/docs/latest/self-hosting/security/sso)
 - [MLflow tracking server architecture and artifact proxy](https://mlflow.org/docs/latest/self-hosting/architecture/tracking-server)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 - [MLflow Compose](../../../../infra/08-ai/mlflow/docker-compose.yml)가
   두 service를 관장한다. `mlflow-db-provision`이 feature SQL을 실행한 뒤,
@@ -65,15 +91,16 @@ MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문
 - 공유 `mng-pg-init` job은 더 이상 MLflow object를 생성하지 않고 MLflow
   secret도 읽지 않으므로 `core`/`mng`/`dev`/`local`은 이것들 없이 시작한다.
 
-### Authority
+##### Authority
 
 별도 접근 승인은 기록하지 않는다. job 재활성화에는 측정한 메모리 예산과 승인이 필요하고(Steps), 인증·권한 변경은 owner 승인과 보안 검토가 필요하다(Steps).
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Sizing
+###### Sizing
+<!-- core-payload-level:4 -->
 
 자원·worker·job 설정의 원본은 [MLflow Compose](../../../../infra/08-ai/mlflow/docker-compose.yml)다.
 현재 선언은 uvicorn worker 2개, `mem_limit: 1g`, server-side job 비활성화
@@ -81,7 +108,8 @@ MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문
 template limit은 반복 OOM kill을 일으켰고, job consumer는 각각 약 200 MB를
 더 쓴다. job 재활성화에는 측정한 메모리 예산과 승인이 필요하다.
 
-#### Authentication and identity
+###### Authentication and identity
+<!-- core-payload-level:4 -->
 
 | Path | Control | Limitation |
 | --- | --- | --- |
@@ -98,17 +126,20 @@ Keycloak client 중 어느 것도 확인되지 않았다. owner가 승인한 변
 `object_net`만이 아니라 `edge_net`·`mng_data_net`까지 직접 접근 경계로 기록한다. SDK가 동작하도록
 SSO 없이 route를 열지 않는다.
 
-#### Normal use, backup, and upgrade
+###### Normal use, backup, and upgrade
+<!-- core-payload-level:4 -->
 
 실행 순서와 실패·복구 판단은 [런북](../../03.runbooks/13.analytics-and-data-quality/0088-mlflow.md)의 `Tracking 데이터와 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-#### 소스 검토의 한계
+###### 소스 검토의 한계
+<!-- core-payload-level:4 -->
 
 여기서 설명한 네트워크는 선언상 연결 가능한 경로다. 실제 peer 연결·인터넷 공개·
 사용자 인증·복구 성공을 이번 문서 작업에서 시험하지 않았다. 현재 선언의 제한을
 해소하는 구현 변경은 별도 승인·보안 검토·검증이 필요하다.
 
-#### 사용·신호와 helper 경계
+###### 사용·신호와 helper 경계
+<!-- core-payload-level:4 -->
 
 승인된 notebook/job은 `MLFLOW_TRACKING_URI`로 tracking 서버를 선택하고
 실험·run과 artifact proxy를 사용한다. bucket 또는 DB 이름 변경은 기존 URI를
@@ -121,25 +152,46 @@ health는 DB 복구·artifact round-trip·사용자 인가를 증명하지 않�
 자동 복구하지 않는다. 빌드의 직접 라이브러리 pin은 모든 transitive dependency를
 고정하지 않으며 서버와 helper의 버전·자원 설정은 각 Compose/build 원본이 소유한다.
 
-### Expected Results
+##### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates`
 - `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - `mlflow`가 시작하지 않으면 `mlflow-db-provision`과 `seaweedfs-buckets` 종료 코드를 먼저 본다. 서버는 두 작업이 성공해야 시작한다.
 - 직접 SDK 요청이 거부되면 Host header가 `MLFLOW_ALLOWED_HOSTS`와 일치하는지 확인한다.
 - 기존 tracking DB의 schema revision 불일치로 시작이 거부되면 런북의 `Tracking DB schema upgrade`를 따른다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 provisioning 실패, credential 회전, restore, upgrade에는
 [runbook](../../03.runbooks/13.analytics-and-data-quality/0088-mlflow.md)을 사용한다.
 
-### Next Action
+##### Next Action
 
 provisioning 실패, credential 회전, restore, upgrade는 [runbook](../../03.runbooks/13.analytics-and-data-quality/0088-mlflow.md)을 따른다. 인증·권한 변경은 owner 승인과 보안 검토가 필요하다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

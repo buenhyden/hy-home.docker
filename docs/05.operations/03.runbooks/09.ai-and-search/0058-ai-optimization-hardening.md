@@ -1,10 +1,13 @@
 ---
 title: "08-AI Optimization Hardening Runbook"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0058"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # 08-AI Optimization Hardening Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 `08-ai` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, Ollama concurrency 설정 누락, Open WebUI LAB 경계 드리프트, exporter health 계약 실패, CI 게이트 실패를 중심으로 점검/복구한다.
 
@@ -29,7 +52,7 @@ next_review_at: "2027-05-13"
 - Ollama GPU 과부하/OOM 또는 queue 적체가 반복될 때
 - exporter metrics 수집이 실패할 때
 
-### Targets
+##### Targets
 
 - Declared parent: [08-AI Optimization Hardening Usage Guide](../../01.guides/09.ai-and-search/0058-ai-optimization-hardening.md) (`GDE-0058`)
 - Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/01.descriptions/0008-ai-architecture.md) (`AD-0008`)
@@ -41,31 +64,33 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../01.guides/09.ai-and-search/0058-ai-optimization-hardening.md)
 - [Operations policy](../../02.policies/09.ai-and-search/0058-ai-optimization-hardening.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 승인과 실행 경계는 아래 항목에 따른다.
 
-#### Execution Boundary
+###### Execution Boundary
+<!-- core-payload-level:4 -->
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01.common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10.platform-and-backup/0021-backup-and-restore.md), [image 변경](../10.platform-and-backup/0086-dependency-version-management.md), [시크릿](../04.security-and-secrets/0085-openbao.md), [계정](../03.identity-and-access/0014-keycloak.md), [gateway·인증서](../02.gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Environment
+##### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
-#### 사전 점검
+###### 사전 점검
+<!-- core-payload-level:4 -->
 
 - [ ] 실패 항목(middleware, concurrency, template, healthcheck, script, docs) 식별
 - [ ] 최근 변경 커밋 및 영향 범위 확인
 - [ ] 운영 영향도(응답 지연, 인증 실패, GPU 사용률 급등) 평가
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -77,7 +102,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 절차는 아래 항목에 따른다.
 
-#### 복구 단계
+###### 복구 단계
+<!-- core-payload-level:4 -->
 
 1. 정적 구성 점검
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -103,7 +129,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-#### Agent Operations
+###### Agent Operations
+<!-- core-payload-level:4 -->
 
 - **Model Fallback**: operator approval을 받은 뒤에만 승인된 운영 모델에서 직전 안정 모델로 전환
 - **Tool Disable / Revoke**: AI 자동 배포/승격 파이프라인 일시 중지(승인 필요)
@@ -113,31 +140,35 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
   - `python3 scripts/validation/check-document-links.py --mode all`
 - **Trace Capture**: CI 로그, exporter 지표, Compose 설정
 
-### Stop Conditions
+##### Stop Conditions
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단한다. 검증 실패, secret 노출 위험, 파괴적 변경 필요, 예상 절차와 다른 상태도 중단 사유다.
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요, 예상 절차와 다른 상태는 Escalation에 기록한 중단 조건이다. Authority의 `Execution Boundary`도 예상 밖 출력, backup 누락, dependency 실패, 승인되지 않은 부작용이면 중단하도록 한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 - [ ] AI compose static validation 통과
 - [ ] AI hardening script 실패 0건
 - [ ] optimization-hardening 문서 링크/README 인덱스 최신화 확인
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 증거 기록은 아래 항목에 따른다.
 
-#### Control evidence boundary
+###### Control evidence boundary
+<!-- core-payload-level:4 -->
 
 통제 증거의 한계는 [정책의 Control evidence boundary](../../02.policies/09.ai-and-search/0058-ai-optimization-hardening.md#control-evidence-boundary)를 따른다.
 
-#### Observability and Evidence Sources
+###### Observability and Evidence Sources
+<!-- core-payload-level:4 -->
 
 - **Signals**: CI `infrastructure-hardening`, Ollama exporter 지표, gateway 접근 로그
 - **Evidence to Capture**:
@@ -145,12 +176,13 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
   - compose config 결과
   - 관련 compose/script/docs diff
 
-#### 증거 기록
+###### 증거 기록
+<!-- core-payload-level:4 -->
 
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 이 문서에는 아래 단계의 실행 결과가 기록되어 있지 않다.
 
@@ -158,19 +190,20 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - Agent Operations의 모델 fallback과 AI 자동 배포/승격 중지(승인 필요): 승인 기록과 실행 결과가 필요하다.
 - 재검증 명령 4종: 실행 결과(종료 코드와 시각)가 필요하다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 설정 rollback rehearsal은 계획만 있으며 미실행 상태다. 상태 데이터 복구는 `RUN-0056`, `RUN-0057`, `RUN-0081`이 소유한다. 이 최적화 Runbook으로 모델·SQLite·벡터·워크플로 복구를 입증하지 않는다.
 - 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 위 Next Owner에 따라 보고한다.
 
-#### Safe Rollback or Recovery Procedure
+###### Safe Rollback or Recovery Procedure
+<!-- core-payload-level:4 -->
 
 - [ ] 롤백 대상 파일
   - `infra/08-ai/ollama/docker-compose.yml`
@@ -179,3 +212,23 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.4.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0007"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-26"
 
 # Workflow Tier (07-workflow) Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Owns:** the Airflow services (`airflow-apiserver`, `airflow-scheduler`,
   `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`,
@@ -28,24 +51,26 @@ created: "2026-03-26"
 - **Does not own:** business logic inside DAGs or n8n workflows, external
   CI/CD, or stream processing.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `07-workflow` is the owner-confirmed always-on HOME orchestration layer. It
 runs Apache Airflow for code-first DAGs, authenticated natively through the
 Keycloak Auth Manager, and n8n for low-code automation with its own login and no
 gateway SSO.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Browsers reach Airflow, Flower and n8n through Traefik. The tier consumes `mng-pg` and `mng-valkey` (`04-data`), Keycloak and OAuth2 Proxy (`02-auth`), and Prometheus and Loki (`06-observability`).
 
-### Constraints
+##### Constraints
 
 The tier is owner-confirmed always-on HOME orchestration. Airflow authenticates natively through the Keycloak Auth Manager, n8n through its own login with no gateway SSO, and both share `mng-valkey` as broker with no per-app broker (ADR-0062 decision 10).
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - **Airflow** (`infra/07-workflow/airflow/`) uses `CeleryExecutor`. The image
   is built from `airflow/Dockerfile`, which pins Airflow and the Keycloak
@@ -61,7 +86,7 @@ The tier is owner-confirmed always-on HOME orchestration. Airflow authenticates 
 - **Broker:** both use the shared `mng-valkey`; no per-app broker exists
   (ADR-0062 decision 10).
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -74,11 +99,12 @@ The tier is owner-confirmed always-on HOME orchestration. Airflow authenticates 
 
 Airflow uses `CeleryExecutor` and a Keycloak `home-airflow` client with Authorization Services; its internal JWT is separate from the Keycloak access token. Flower routes through ForwardAuth, and n8n runs in queue mode with its own login.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 ```text
 Browser -> Traefik TLS -> airflow-apiserver -> Keycloak OIDC + Authorization Services
@@ -92,22 +118,24 @@ PostgreSQL metadata and the application encryption key are the durable
 recovery authority; the Valkey queue is in-flight coordination, not a recovery
 record.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 `workflow` selects Airflow and n8n; `workflow-airflow` and `workflow-n8n`
 select one each; core services are HOME. The `blog-ingestion`
 capability profile selects the blog ingestion gateway, which shares isolated
 internal networks only with `n8n-worker` and Traefik.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Airflow, n8n and OAuth2 Proxy share `mng-valkey`, so its outage stops queued work in both engines (see Risks below). PostgreSQL metadata and the application encryption key are the durable recovery authority; the Valkey queue is in-flight coordination only.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Reliability:** scheduler, worker and triggerer health and broker
   availability.
@@ -117,12 +145,13 @@ Airflow, n8n and OAuth2 Proxy share `mng-valkey`, so its outage stops queued wor
 - **Operability:** provider, database migration and auth bootstrap procedures
   live in Stage 05.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 Airflow, n8n and OAuth2 Proxy share `mng-valkey`;
 its outage stops queued work in both engines.
 
-### Trade-offs
+##### Trade-offs
 
 - Airflow and n8n share `mng-valkey` as broker with no per-app broker
   (ADR-0062 decision 10); the accepted cost is that a `mng-valkey` outage,
@@ -132,23 +161,45 @@ its outage stops queued work in both engines.
   recovery authority (Runtime View).
 - n8n uses its own login with no gateway SSO (Constraints).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0007 Airflow and n8n hybrid](../02.decisions/0007-airflow-n8n-hybrid-workflow.md)
 - [ADR-0038 Selective Native OIDC](../02.decisions/0038-selective-native-oidc-for-native-auth-apps.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 The description reflects the current tree at its `updated` date and history lives in Git.
 
 - [Airflow guide](../../05.operations/01.guides/08.workflows-and-automation/0050-airflow.md)
 - [Application authentication integration](../../05.operations/01.guides/03.identity-and-access/0079-application-auth-integration.md)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

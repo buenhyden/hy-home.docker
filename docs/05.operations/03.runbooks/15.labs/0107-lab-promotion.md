@@ -1,10 +1,13 @@
 ---
 title: "LAB Promotion Runbook"
-version: "0.3.0"
+version: "1.0.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0107"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # LAB Promotion Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 LAB을 `infra/`로 승격하는 readiness 검사 실행과 세 승격 절차 `add`, `replace-same`,
 `replace-substitute`를 다룬다. 통제 기준은 [POL-0107](../../02.policies/15.labs/0107-lab-promotion.md),
@@ -29,7 +52,7 @@ SPEC-0263은 아무 LAB도 승격하지 않는다. 이 런북은 이후 승격 T
 LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 그 LAB의 승격 Task를 연 때
 사용한다. readiness 검사 자체는 HOME 상태를 읽기만 하므로 승격 여부를 판단하려 할 때 언제든 쓴다.
 
-### Targets
+##### Targets
 
 - Contract: [SPEC-0263](../../../03.specs/0263-lab-promotion-contract/spec.md) section 5–6.
 - Implementation: `scripts/operations/lab.py` `readiness`, `reservation_sum`, `budget`.
@@ -39,9 +62,9 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 - [LAB README](../../../../labs/README.md)
 - [Domain catalog](../../README.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 - 승격 Task가 있고, 그 Task가 대상 LAB, kind, 목적지와 운영 window를 기록한다.
 - **HOME runtime을 건드리는 모든 단계(기동, 정지, 재생성, 데이터 export·import, 소비자 전환,
@@ -49,7 +72,7 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 
 - agent는 두 env 파일과 `secrets/`를 읽지 않는다.
 
-### Environment
+##### Environment
 
 - `labs/.env`(`--env-file`, 기본 `labs/.env`)에 대상 LAB의 필수 입력(`LAB_DATA_DIR`과 LAB별 입력)이
   있다.
@@ -58,9 +81,9 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 
 - 대체 승격이면 은퇴할 서비스의 최신 backup과 격리 복원 증거가 있다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -93,7 +116,8 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 
 승격 절차는 readiness 검사, kind별 절차, secret 은퇴 순서로 구성된다.
 
-#### Readiness run
+###### Readiness run
+<!-- core-payload-level:4 -->
 
 repository root에서 실행한다. 이 명령은 LAB과 root render, 실행 중 LAB project의 render,
 `docker info`, `docker inspect`, disk 사용량만 읽고 아무것도 시작하지 않는다.
@@ -134,7 +158,8 @@ reservation은 render에서 오므로 HOME container를 재생성하지 않아�
 Docker memory reservation은 owner window에서 서비스를 재생성할 때 적용된다. LAB 서비스의
 reservation은 승인된 LAB lease 실행(`lab.py run`)에서 측정할 때까지 limit과 같다.
 
-##### Owner checklist
+###### Owner checklist
+<!-- core-payload-level:5 -->
 
 보고서의 `owner_checks`는 `OWNER_JUDGMENT` 값을 가진 항목이며 `PASS`를 막지 않는다. 각 승격
 Task는 readiness 결과와 함께 아래 checklist를 기록하고, 항목마다 owner의 판단과 근거를 남긴다.
@@ -145,7 +170,8 @@ Task는 readiness 결과와 함께 아래 checklist를 기록하고, 항목마�
 | Group과 file mode | `linux.values.groups_and_file_modes` | 서비스 user의 group, `group_add`, 데이터·secret 파일 mode가 목적지에서 맞는지 |
 | Profile과 consumer 충돌 | `composition.values.profile_and_consumer_clashes` | 합류할 profile의 기존 서비스와 consumer inventory에 충돌이 없는지 |
 
-#### add
+###### add
+<!-- core-payload-level:4 -->
 
 1. 파일을 옮기기 전에 LAB 위치에서 [readiness 검사](#readiness-run)를 실행한다. 0이 아니면 절차를
    멈춘다. readiness는 `labs/<name>/docker-compose.yml`과 `promotion.yaml`을 읽고, 문서가 있는지
@@ -159,17 +185,20 @@ Task는 readiness 결과와 함께 아래 checklist를 기록하고, 항목마�
 6. 승인된 운영 window에서 서비스를 시작하고 health와 사용자 기능을 확인한다.
 7. `promotion.yaml`을 삭제하고 그 사실을 승격 Task에 기록한다.
 
-#### replace-same
+###### replace-same
+<!-- core-payload-level:4 -->
 
 `add`의 모든 단계에 다음을 더한다. readiness(1단계)는 여기서도 가장 먼저 실행한다. 6단계(기동)는 아래 순서 안에서 실행한다.
 
-##### Consumer inventory
+###### Consumer inventory
+<!-- core-payload-level:5 -->
 
 1. manifest `replaces[].consumers`를 시작점으로 `git grep`으로 은퇴 서비스의 이름, host, port,
    secret, network를 참조하는 모든 파일을 찾는다.
 2. 소비자마다 연결 방식, 전환 순서, 중단 허용 여부를 승격 Task에 표로 기록한다.
 
-##### Data migration
+###### Data migration
+<!-- core-payload-level:5 -->
 
 1. **Export.** 승인된 window에서 writer를 멈추거나 합의한 일관성 지점을 정한다. 엔진 공식
    방식으로 export하고 파일, 크기, checksum manifest를 남긴다.
@@ -178,22 +207,26 @@ Task는 readiness 결과와 함께 아래 checklist를 기록하고, 항목마�
 3. **Verify.** 객체 수, key·topic·index 목록, 표본 값과 애플리케이션 read를 export manifest와
    비교한다. 불일치가 있으면 cutover하지 않는다.
 
-##### Cutover
+###### Cutover
+<!-- core-payload-level:5 -->
 
 1. inventory 순서대로 소비자 하나씩 새 서비스로 전환하고 각 전환 뒤 기능을 확인한다.
 2. 전환하는 동안 이전 서비스와 데이터는 정지만 하고 삭제하지 않는다.
 
-##### Retirement
+###### Retirement
+<!-- core-payload-level:5 -->
 
 새 서비스가 검증되고 rollback window가 끝난 뒤에만 은퇴 서비스를 Compose에서 제거한다. 그
 데이터는 [POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)의 보존
 기간을 따르며, 삭제는 별도 승인이다. 은퇴 서비스의 secret도 아래 절차로 정리한다.
 
-#### replace-substitute
+###### replace-substitute
+<!-- core-payload-level:4 -->
 
 `replace-same`의 모든 단계에 다음을 더한다. 제품이 다르므로 export와 import 사이에 변환이 있다.
 
-##### Configuration and data format mapping
+###### Configuration and data format mapping
+<!-- core-payload-level:5 -->
 
 1. 이전 제품의 설정 키마다 새 제품의 대응 키, 기본값 차이, 대응이 없는 키를 표로 만든다.
 2. 데이터 형식(schema, type, encoding, index·topic 구조)의 대응과 변환 도구를 정한다. 손실되는
@@ -201,7 +234,8 @@ Task는 readiness 결과와 함께 아래 checklist를 기록하고, 항목마�
 3. 소비자 측 protocol·client 차이와 필요한 코드·설정 변경을 inventory에 더한다.
 4. Data migration의 Verify는 변환 뒤 값으로 비교한다.
 
-#### Secret retirement
+###### Secret retirement
+<!-- core-payload-level:4 -->
 
 LAB secret 값은 승격하지 않는다. 승격된 서비스는 manifest `secrets[].destination`의 `infra`
 secret을 쓴다.
@@ -228,7 +262,7 @@ secret을 쓴다.
 
 6. owner가 LAB 사본 파일을 제거한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 종료 코드가 0이 아니면 승격을 멈추고 보고서와 종료 코드를 승격 Task에 기록한다. `NOT_RUN`은
 측정하지 못한 값이며 통과가 아니다.
@@ -237,21 +271,23 @@ secret을 쓴다.
 
 그 밖에 add 1단계는 readiness가 0이 아니면 절차를 멈추고, Data migration의 Verify는 불일치가 있으면 cutover하지 않으며, 데이터·secret 소유가 불명확하면 멈추고 @buenhyden에게 보고서와 실패 신호를 전달한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 readiness 종료 코드가 0(다섯 기준 모두 `PASS`)이고, Data migration의 Verify 결과가 export manifest와 일치하며, 소비자마다 전환 뒤 기능이 확인되어야 한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 승격 Task에 readiness 보고서, 종료 코드, source revision, export manifest 요약, verify 결과,
 소비자별 전환 결과, rollback window와 은퇴 시점을 기록한다. secret 값, raw payload와 rendered
 private 설정은 기록하지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 절차와 보고서 형식을 설명할 뿐 특정 LAB의 승격 실행 결과를 기록하지 않는다.
 
@@ -260,20 +296,41 @@ private 설정은 기록하지 않는다.
 - add/replace-same/replace-substitute의 파일 이동, 운영 window 기동, 데이터 migration, cutover, 은퇴: 승인된 window가 필요하며 실행 결과가 기록되어 있지 않다. Verify 결과가 export manifest와 일치하고 소비자별 전환 뒤 기능이 확인되면 검증된다.
 - Secret retirement 동기화와 catalog 검사: 실행 결과가 기록되어 있지 않다. `--sync-metadata-check`와 `secret-catalog.py check` 통과가 관찰되면 검증된다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 readiness가 0이 아니거나, verify가 불일치하거나, 소비자 전환이 실패하거나, 데이터·secret 소유가
 불명확하면 멈추고 @buenhyden에게 보고서와 실패 신호를 전달한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 각 대체 절차의 Rollback을 따른다. 이전 서비스와 데이터는 Retirement 전까지 삭제하지 않으므로
 언제든 되돌릴 수 있어야 한다. `add`는 새 서비스를 정지하고 root include를 되돌린다.
 
-#### Rollback
+###### Rollback
+<!-- core-payload-level:4 -->
 
 1. 소비자를 이전 서비스로 되돌리고 이전 서비스를 보존한 데이터로 다시 시작한다.
 2. cutover 이후 새 서비스에만 쓰인 데이터가 있으면 그 범위를 Task에 기록하고 owner가 처리를
    결정한다. 실패한 새 서비스의 데이터는 보존한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

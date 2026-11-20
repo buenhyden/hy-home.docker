@@ -1,10 +1,13 @@
 ---
 title: "BLOCKED: direct push to main"
-version: "1.2.5"
+version: "2.0.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: 'BLOCKED: direct push to main'
+  layer: agent
+updated: "2026-11-20"
 action: "block"
 enabled: true
 event: "bash"
@@ -14,13 +17,33 @@ pattern: "\\bgit(\\s+-C\\s+\\S+)*\\s+push\\b[^;&|\\n]*?(\\s|:|\\+)(refs/heads/)?
 
 # BLOCKED: direct push to main
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the rule payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Objective
 
 Apply the declared `block` action for block-direct-main-push.
 
-### Authority
+##### Authority
 
 `docs/00.workspace/03.process/github-governance.md` — Repository Protection Contract:
 
@@ -28,9 +51,9 @@ Apply the declared `block` action for block-direct-main-push.
 
 > "\"No exceptions\" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary."
 
-## Scope
+#### Scope
 
-### Applies To
+##### Applies To
 
 The declared `bash` event and `pattern` match an explicit `main` destination
 (`main`, `HEAD:main`, `HEAD:refs/heads/main`, `+main`, `-u`, `--force`,
@@ -40,13 +63,13 @@ show: `HEAD` and `@`, implicit refspecs, `heads/main`, wildcard refspecs,
 push runs in (`cd`, `pushd`, `git -C`, `--git-dir`, `GIT_DIR`). A push from a
 repository it cannot read is denied.
 
-### Exclusions
+##### Exclusions
 
 None.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 ```bash
 # BLOCKED: direct push to main
@@ -68,7 +91,7 @@ git push origin HEAD:refs/heads/feat/42-my-feature
 
 The declared action applies when the pattern matches.
 
-### Enforcement
+##### Enforcement
 
 The native Git hook installed by `scripts/hooks/install-pre-push-guard.sh`
 passes all raw refs to `scripts/hooks/pre-push-guard.sh`, including mixed-ref
@@ -79,22 +102,42 @@ it does not replace another host owner's chain. Hook bypass remains possible,
 so only remote protection without bypass enforces the boundary. Installation,
 synthetic pushes, provider delivery and editor sync are separate observations.
 
-## Exceptions
+#### Exceptions
 
-### Exception Conditions
+##### Exception Conditions
 
 No exception is declared by this rule.
 
-### Approval and Review
+##### Approval and Review
 
 None.
 
-## Ownership
+#### Ownership
 
-### Responsibilities
+##### Responsibilities
 
 `@buenhyden`.
 
-### Change and Adoption
+##### Change and Adoption
 
 `.agents/README.md`.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

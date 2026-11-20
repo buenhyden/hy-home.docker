@@ -1,29 +1,55 @@
 ---
 title: "개발 데이터베이스 (dev-db)"
-version: "0.2.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-02"
 ---
 
 # 개발 데이터베이스
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 이 패키지는 개발 업무용 PostgreSQL과 Valkey의 소스 선언을 소유합니다.
 관리 서비스의 `mng-db` 및 별도 LAB 상태와 저장 경로를 공유하지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 개발 데이터 엔진과 외부 프로젝트 접속 계약을 검토하는 maintainer와 operator를 대상으로 합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 [`docker-compose.yml`](docker-compose.yml)은 `dev-pg`, `dev-platform-provision`,
 `dev-perf-provision`, `dev-valkey`와 지표 수집용 `dev-pg-monitor-provision`,
@@ -33,13 +59,14 @@ created: "2026-10-02"
 소비합니다. 실제 외부 프로젝트 DB·계정·ACL은 승인된 프로젝트
 명세가 있을 때만 등록합니다. HOME 실행과 기존 데이터 이관은 별도 승인 단계입니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 [`pg/`](pg/)는 TimescaleDB 이미지, 백업 설정, 명시적 프로젝트 provision을
 소유합니다. [`valkey/`](valkey/)는 설정, ACL 생성, 시작 스크립트를 소유합니다.
 엔진별 입력·출력·검증 상태는 각 하위 README에서 확인합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -48,25 +75,29 @@ created: "2026-10-02"
 | `dev-pg-exporter` `http://localhost:9187/metrics` | `dev-pg-exporter` | Prometheus `dev-pg-exporter` job | 읽기 전용 `dev_pg_monitor` role로만 접속해 통계·설정·WAL 디렉터리를 조회한다. | `wget` metrics 헬스체크(interval 15s)를 쓴다. |
 | `dev-valkey-exporter` `http://localhost:9121/metrics` | `dev-valkey-exporter` | Prometheus `dev-valkey-exporter` job | `PING`·`INFO`·로그 길이만 읽는 `devmonitor` ACL 사용자로 접속한다. | `wget` metrics 헬스체크(interval 30s)를 쓴다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 [`docker-compose.yml`](docker-compose.yml)의 `dev-data` profile, `dev_data_net`(dev-pg는 notifier용 내부 `opsflow_notifier_db_net`도 추가로 사용), 별도 데이터 경로와 Docker secret 참조를 사용합니다. 프로젝트별 DB·ACL은 승인된 명시적 명세로만 등록합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_password`, `dev_pg_opsflow_ingest_password`, `dev_pg_opsflow_migrator_password`, `dev_pg_opsflow_notifier_password`, `dev_pg_opsflow_reader_password`, `dev_pg_platform_migrator_password`, `dev_pg_platform_reader_password`, `dev_pg_platform_runtime_password`, `dev_pgbackrest_cipher_pass`, `dev_valkey_admin_password`, `dev_valkey_inspector_password`, `dev_valkey_monitor_password`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432`이다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-pg`, `dev-platform-provision`, `dev-perf-provision`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dev-valkey`, `dev-valkey-exporter` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 TimescaleDB Community 기반 PostgreSQL과 Valkey의 단일 개발 인스턴스를 정의합니다. 이미지와 확장 선언은 [`pg/`](pg/) 및 [`valkey/`](valkey/)가 소유합니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 루트에서 다음 정적 검사를 실행합니다. `config`는 컨테이너를 시작하지 않습니다.
 
@@ -75,29 +106,53 @@ docker compose --env-file .env.example --profile dev-data config --quiet
 python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test_dev_valkey_acl
 ```
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 Selected Start의 정적 명령은 Compose 렌더와 provision·ACL 입력 검증을 확인합니다. 실제 엔진 동작은 별도의 격리 실행 증거로 기록합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0100: `docs/05.operations/03.runbooks/05.databases-and-storage/0100-development-database.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 [문서 진입점](../../../docs/README.md)에서 현재 개발 데이터 계약의
 GDE-0100·POL-0100·RUN-0100을 참조하십시오. 엔진 세부 사항은
 [PostgreSQL README](pg/README.md) 및 [Valkey README](valkey/README.md)를
 참조하십시오.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 헬스체크: `dev-pg` 서비스는 `pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres` (interval 15s); `dev-pg-exporter` 서비스는 `wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1` (interval 15s); `dev-valkey` 서비스는 `REDISCLI_AUTH=$$(tr -d "\n" </run/secrets/dev_valkey_admin_password) valkey-cli --user devadmin -h 127.0.0.1 -p 6379 ping | grep -qx PONG` (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -32,6 +32,34 @@ def current_profiles() -> dict[str, object]:
     return metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
 
 
+def common_fixture_metadata(
+    registry: object, profile_id: str, *, path: str | pathlib.Path | None = None
+) -> dict[str, object]:
+    """Supply explicit common meanings for a current document body fixture."""
+    common = registry.common["document_core"]
+    binding = {
+        **common["profile_bindings"][profile_id],
+        **common.get("path_bindings", {}).get(str(path), {}),
+    }
+    states = binding["lifecycle_values"]
+    state = next(
+        (name for name, value in states.items() if value == "active"),
+        next(iter(states)),
+    )
+    return {
+        "title": "Fixture",
+        "version": "1.0.0",
+        "type": registry.profiles[profile_id]["type"],
+        "status": state,
+        "owner": "@fixture",
+        "document_scope": {
+            "subject": "Fixture document",
+            "layer": binding["scope_layers"][0],
+        },
+        binding["lifecycle_field"]: state,
+    }
+
+
 def write_doc(
     path: pathlib.Path, frontmatter: dict[str, object] | None, body: str = "# Fixture\n"
 ) -> None:
@@ -89,6 +117,12 @@ def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         pathlib.Path("docs/99.templates/01.contracts/document-profile.schema.json"),
         pathlib.Path("docs/99.templates/01.contracts/document-frontmatter.schema.json"),
         *(pathlib.Path(role["source"]) for role in values["template_roles"].values()),
+        *(
+            pathlib.Path(role["native_source"])
+            for role in values["template_roles"].values()
+            if role.get("native_source")
+        ),
+        pathlib.Path(values["common"]["document_core"]["source_path"]),
         *(
             pathlib.Path(values["common"]["role_design_contract"][key])
             for key in ("source_path", "schema_path")

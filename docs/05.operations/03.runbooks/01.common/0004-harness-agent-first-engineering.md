@@ -1,10 +1,13 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.5.1"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -12,11 +15,32 @@ parent_ids:
 created: "2026-06-04"
 next_review_at: "2027-05-13"
 ---
+
 # Harness / Agent-first Engineering Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
 
@@ -28,7 +52,7 @@ next_review_at: "2027-05-13"
 - 새 stage doc이 추가될 때
 - harness 또는 Agent-first audit이 요청될 때
 
-### Targets
+##### Targets
 
 - 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`, retired)
 - 같은 주제: [Guide](../../01.guides/01.common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../../02.policies/01.common/0004-harness-agent-first-engineering.md) (`POL-0004`)
@@ -38,9 +62,9 @@ next_review_at: "2027-05-13"
 - [Subagent Protocol](../../../../.agents/governance/agentic.md)
 - 현재 승인된 Spec Package의 Plan과 Task evidence
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 승인 범위와 접근에 관한 확인:
 
@@ -48,7 +72,7 @@ next_review_at: "2027-05-13"
 
 - [ ] 아래 적용 가능한 verification command의 입력·부작용·필요 도구를 먼저 확인한다. 공개/sanitized checkout이 없거나 private 접근·Docker 실행이 승인되지 않았으면 해당 검사를 BLOCKED/NOT_RUN으로 남긴다.
 
-### Environment
+##### Environment
 
 시작 전 확인:
 
@@ -59,9 +83,9 @@ next_review_at: "2027-05-13"
 - [ ] 새 stage doc이 template을 사용하고 parent README 파일이 갱신되었는지 확인한다.
 - [ ] hook quoting/parsing 변경 후에는 hook payload simulation을 실행한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -140,7 +164,8 @@ next_review_at: "2027-05-13"
 
 7. 변경 파일, command 결과, Graphify 유효성, 실제 선택 범위와 범위 밖 infra 실패를 현재 Task에 기록한다. 실패를 지우기 위해 범위를 넓히거나 통제를 낮추지 않는다.
 
-#### Git push guard installation and recovery
+###### Git push guard installation and recovery
+<!-- core-payload-level:4 -->
 
 Git `pre-push`의 전체 ref 입력은
 [`pre-push-guard.sh`](../../../../scripts/hooks/pre-push-guard.sh)가 검사한다.
@@ -173,7 +198,8 @@ main push를 시험하지 않으며 합성 결과를 원격 보호나 editor syn
 `pre-commit install --hook-type pre-push`를 다시 실행해 native guard를
 migration chain으로 이동시키지 않는다.
 
-#### CI quality-gate version alignment
+###### CI quality-gate version alignment
+<!-- core-payload-level:4 -->
 
 1. `.github/workflows/ci-quality.yml`, `.github/workflow-contract.yml`,
    `.pre-commit-config.yaml`, 그리고 실패한 job log를 읽는다. event, revision,
@@ -210,7 +236,8 @@ diff·revision을 Task에 연결한다. 후보 workflow가 후보 controller와 
 정의 검증을 강제하는지 확인되지 않으면 그 주장만 미확인으로 남긴다.
 일반 문서 교정에 새로운 전체 QA나 반복 승인을 추가하지 않는다.
 
-#### Evaluation and QA Ownership
+###### Evaluation and QA Ownership
+<!-- core-payload-level:4 -->
 
 agent 답변 점수와 완료된 Spec/Task 사건을 재증명하는 fixture는 정기 workspace
 QA가 아니다. 현재 [품질 정책](../../../00.workspace/04.quality/quality-standards.md)이
@@ -226,15 +253,16 @@ QA가 아니다. 현재 [품질 정책](../../../00.workspace/04.quality/quality
 입력이 없으면 해당 lane을 BLOCKED/NOT_RUN으로 남기고 독립적인 안전 작업을
 계속한다. static PASS를 HOME capacity·복구·배포 성공으로 확대하지 않는다.
 
-### Stop Conditions
+##### Stop Conditions
 
 중단 조건은 두 곳에 있다. 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단한다(Recovery or Forward Repair), verification 실패·secret 노출 위험·파괴적 데이터 변경 필요·예상과 다른 상태는 작업을 중단하고 escalation한다(Escalation). private 접근이나 Docker 실행이 승인되지 않은 검사는 BLOCKED/NOT_RUN으로 남긴다(Environment).
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 `--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
 [quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix)의
@@ -242,7 +270,8 @@ QA가 아니다. 현재 [품질 정책](../../../00.workspace/04.quality/quality
 
 이 runbook의 수용은 실제 변경에 선택된 현재 보장 검사와 독립 리뷰의 결과로 판단한다. 무관한 hook simulation·Graphify 보고·전체 QA를 모든 변경에 요구하지 않는다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 증거 출처:
 
@@ -256,7 +285,7 @@ QA가 아니다. 현재 [품질 정책](../../../00.workspace/04.quality/quality
 - 이 runbook을 실행할 때마다 command 출력, timestamp, operator 또는 agent 조치를 기록한다.
 - 실패한 check, 관찰된 증상, 최종 recovery 또는 escalation 상태를 관련 task 또는 incident evidence에 기록한다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
 
@@ -266,13 +295,13 @@ QA가 아니다. 현재 [품질 정책](../../../00.workspace/04.quality/quality
 - Git push guard 설치와 복구: 승인된 checkout에서만 수행하며 이 문서에는 실행 결과가 기록되어 있지 않다. 합성 local bare remote의 push 결과로 검증하고, 실제 원격 main 보호는 관측하지 않았다.
 - trusted base의 QA 정의 검증 강제: 현재 원격에서 확인되지 않으면 미확인으로 남긴다고 문서에 기록되어 있다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 작업을 중단하고 @buenhyden에게 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 - 이 runbook에 이미 문서화된 recovery/rollback 단계만 사용한다.
 - 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단하고 evidence를 보존한 뒤 Next Owner에 따라 escalation한다.
@@ -280,3 +309,23 @@ verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴
 - runtime catalog drift는 canonical agent governance role, skill, provider registry에서 provider projection을 다시 생성한다.
 - Compose validation 실패는 관련 없는 파일을 편집하기 전에 변경된 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 먼저 점검한다.
 - 영향받은 infra 실패가 승인된 범위 밖이면 별도 remediation으로 전달하며 실패/미실행 상태를 성공으로 바꾸지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

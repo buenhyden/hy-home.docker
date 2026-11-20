@@ -1,10 +1,13 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.2.2"
+version: "4.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -12,9 +15,29 @@ created: "2026-09-01"
 
 # Document Retention and Retirement Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 Retention rules must outlive the change that introduced them. A document remains
 current while it owns current meaning; when it leaves, readers must still find
@@ -23,7 +46,7 @@ summarized into a current owner, the original is deleted, version history is the
 record of the removed body, and its number stays retired. Age, corpus size, and
 absent incoming links cannot by themselves authorize deletion.
 
-### Stakeholders
+##### Stakeholders
 
 - Maintainers need durable retention and review criteria independent of old Tasks.
 - Agents need enforceable lifecycle, approval, retirement, and citation boundaries.
@@ -31,13 +54,13 @@ absent incoming links cannot by themselves authorize deletion.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 This package covers how documents are retained, retired and summarized into a current owner, and the registered checks that enforce it, as stated in the Overview.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - Retirement summarizes before it deletes: the lineage of a removed record lives
   in the lineage section of its Stage 01 or Stage 02 owner, never in a Stage 98
@@ -50,7 +73,7 @@ This package covers how documents are retained, retired and summarized into a cu
   recreate a removed record as current authority. Secret exposure requires
   separately authorized security response, not ordinary retirement.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -72,7 +95,7 @@ This package covers how documents are retained, retired and summarized into a cu
 | --- | --- | --- | --- | --- | --- |
 | REQ-0026-NFR-0006 | Determinism | The same tree and Registry give the same verdict. | The package records no unit for this measure. | The selected tree and that tree's own Registry, on an explicitly selected snapshot. | The same verdict for the same tree and Registry; a missing, symlinked, unreadable or invalid Registry reserves nothing; unavailable checks are reported. |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0026-FR-0001**: Retention uses lifecycle and ownership. Age and corpus
   size may trigger review but never determine automatic removal.
@@ -136,7 +159,7 @@ This package covers how documents are retained, retired and summarized into a cu
   `resolved_at` value. Its bundle and corrective-work owner preserve closure
   evidence without claiming all corrective work is complete.
 
-### Quality Requirements
+##### Quality Requirements
 
 - **REQ-0026-NFR-0006 — Determinism**: Checks derive judgments from the selected tree and that
   tree's own Registry. A missing, symlinked, unreadable, or invalid Registry
@@ -144,17 +167,18 @@ This package covers how documents are retained, retired and summarized into a cu
   ledgers do not decide retention; measure: the same
   tree and Registry give the same verdict.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 - [Documentation protocol](../00.workspace/03.process/documentation-protocol.md)
 - [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0026-FR-0001**: No document is removed automatically because of its age
   or the corpus size; those only trigger review.
@@ -191,11 +215,13 @@ This package covers how documents are retained, retired and summarized into a cu
   Current metadata, lifecycle, link and affected regression checks pass on the
   explicitly selected snapshot; unavailable checks are reported.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Each condition is judged by running the registered metadata, lifecycle, link and regression checks on the explicitly selected snapshot; unavailable checks are reported, not treated as passing. The Spec Packages that list REQ-0026 as a parent, such as SPEC-0212, record the check results in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - [Document lifecycle architecture](../00.workspace/02.architecture/01.descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0051 Summarize-and-delete retirement](../00.workspace/02.architecture/02.decisions/0051-summarize-and-delete-retirement.md)
@@ -211,3 +237,23 @@ Each condition is judged by running the registered metadata, lifecycle, link and
   earlier items, whose numbers stay reserved in the Registry: a Tombstone
   namespace rule, immutable Stage 98 captures, and one capture record per
   unit. Stage 98 no longer holds records.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

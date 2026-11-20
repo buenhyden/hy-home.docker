@@ -1,10 +1,13 @@
 ---
 title: "Native Memory Controlled Verification"
-version: "0.1.4"
+version: "1.0.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0244"
 parent_ids:
@@ -16,9 +19,29 @@ created: "2026-10-16"
 
 # Native Memory Controlled Verification
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Intent
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the spec payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Intent
 
 The owner authorized a bounded continuation of the Claude native-memory and
 hook investigation. This package
@@ -27,13 +50,13 @@ defines one controlled verification route that does not promote configured state
 ADR-0049 owns the shared-memory decision. This package reads, migrates or
 writes no native or shared memory store.
 
-### Owning Requirements
+##### Owning Requirements
 
 This Spec makes concrete the frontmatter parents REQ-0024 (agent governance standardization), AD-0027 (agent governance canonical adapter) and ADR-0049 (shared agent memory store). The body cites no REQ-####-FR or REQ-####-NFR identifier.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 In scope:
 
@@ -56,7 +79,7 @@ In scope:
   stopping condition; and
 - independent privacy/security review of the resulting claim boundary.
 
-### Non-goals
+##### Non-goals
 
 Out of scope:
 
@@ -70,9 +93,9 @@ Out of scope:
   available; and
 - reopening completed SPEC-0212 TSK-0009.
 
-## Behavior Contract
+#### Behavior Contract
 
-### Normal Behavior
+##### Normal Behavior
 
 1. Each controlled session has a written action allowlist. A normal state
    query may only initialize, call its approved metadata view, and end its
@@ -105,7 +128,7 @@ Out of scope:
    tool payload, private path, or raw provider diagnostic. The execution owner
    stops and escalates if any is about to enter the evidence.
 
-### Failure and Edge Cases
+##### Failure and Edge Cases
 
 Item 6 of the normal behavior also defines the stop and escalation path.
 
@@ -119,9 +142,9 @@ global native settings, expose authentication or private diagnostic content,
 or widen the fixture or tool boundary stops this package and requires
 separately scoped authorization.
 
-## Acceptance Criteria
+#### Acceptance Criteria
 
-### Criteria
+##### Criteria
 
 1. The Task records the controlled-session allowlist, redaction rules, target,
    and stop conditions before a normal-session attempt.
@@ -139,15 +162,15 @@ separately scoped authorization.
 6. A privacy/security review and the selected document checks pass without
    exposing private native-memory or authentication material.
 
-### Evidence Requirements
+##### Evidence Requirements
 
 - Each criterion is evidenced by rows in TSK-0001 under `tasks/`, recording the sanitized, value-free observation, the command category, the result and the stopping condition.
 - A criterion whose state is unavailable, unverified or unknown stays pending; no state-changing or unbounded fallback counts as evidence.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table, together with the independent privacy/security review named in criterion 6.
 
-## References
+#### References
 
-### Normative and Evidence
+##### Normative and Evidence
 
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
 - [AD-0027](../../00.workspace/02.architecture/01.descriptions/0027-agent-governance-canonical-adapter.md)
@@ -155,6 +178,26 @@ separately scoped authorization.
 - [Plan](plan.md)
 - [Task](01.tasks/tsk-0001-native-memory-controlled-verification.md)
 
-### Historical and Navigation
+##### Historical and Navigation
 
 - SPEC-0236 is a retired Spec package; it is non-authoritative history and not current authority.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,39 +1,66 @@
 ---
 title: "Cassandra LAB"
-version: "1.1.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-12"
 ---
 
 # Cassandra LAB
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 이 문서는 root Compose에서 분리된 Cassandra LAB topology의 source 계약을
 설명한다. normal HOME 또는 development stack의 상태·network·secret을 공유하지
 않으며, LAB 학습과 정적 render에만 사용한다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - 개발자: 이 실습 topology의 연결과 상태 경계를 확인합니다.
 - 운영자: 격리된 LAB 렌더링과 복구 전제만 확인합니다.
 - Agent: root Compose와 분리된 보조 자산 경로를 추적합니다.
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 단일 Cassandra node의 학습·render 계약
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - HOME 서비스, 관리 DB, root Compose, 운영 데이터와 credential 값
 - 실제 기동, 중지, 데이터 이관·삭제, credential rotation
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 labs/cassandra/
@@ -52,30 +79,33 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 않습니다. LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Prometheus·Grafana가
 이 파일을 읽도록 구성하며, HOME provisioning 경로로 옮기지 않습니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | `cassandra-node1`의 `lab_cassandra_core_net` 내부 expose | `cassandra-node1` | 이 README는 소비자를 기록하지 않는다. | host port를 게시하지 않으며 비밀번호 인증은 구성되지 않았다. | Compose healthcheck 선언만 있고 runtime 결과는 미검증이며 RUN-0025를 따른다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 환경 변수 `LAB_DATA_DIR`이 가리키는 `${LAB_DATA_DIR}/cassandra/node1`을 `/var/lib/cassandra`에 mount하고 network는 `lab_cassandra_core_net`만 사용한다. 환경 변수는 아래 표와 같다.
 
-#### Environment Variables
+###### Environment Variables
+<!-- core-payload-level:4 -->
 
 | Variable | Required | Description |
 | --- | ---: | --- |
 | `LAB_DATA_DIR` | Yes for bind-backed LAB state | isolated LAB data root; unset이면 fail fast |
 | LAB-specific port/network keys | No | Compose의 LAB default만 사용하며 root key와 공유하지 않음 |
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 secret 참조는 없고 host port를 게시하지 않으며 LAB network 내부 expose만 선언한다. 비밀번호 인증은 구성되지 않았다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Category | Source of truth | Boundary |
 | --- | --- | --- |
@@ -84,22 +114,23 @@ secret 참조는 없고 host port를 게시하지 않으며 LAB network 내부 e
 | Authentication | 공식 Cassandra 이미지 기본값; LAB 내부망 외 노출 없음 | 비밀번호 인증 미구성 |
 | Networks | LAB 전용 network declarations | root network와 미공유 |
 
-### Selected Start
+##### Selected Start
 
 1. `LAB_DATA_DIR`을 독립 상태 경로로 지정한다.
 2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
 3. LAB Compose project, network, volume, port가 HOME 또는 management 경로와 겹치지 않는지 검토한다.
 4. 기동은 `python3 scripts/operations/lab.py up cassandra --purpose "<목적>" --lease <30m|4h>`로만 한다. 이 명령은 다른 LAB·HOME과의 이름·port·data 경로 충돌, 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/cassandra.json`에 정리 대상을 기록한다. 종료는 `lab.py down cassandra`이며 volume과 data를 지우지 않는다. 만료 lease는 `lab.py reap`이 정지한다 (정책 `POL-0078`).
 
-#### Available Scripts
+###### Available Scripts
+<!-- core-payload-level:4 -->
 
 | Command | Description |
 | --- | --- |
 | `LAB_DATA_DIR=/tmp/hyhome-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 Classification은 `LAB`입니다. 이 topology는 독립 Compose project, LAB 전용
 network와 state path를 사용합니다. 같은 host의 여러 member는
@@ -113,15 +144,17 @@ host-level HA를 증명하지 않습니다. 정적 render 통과는 실행·인�
 인증이 필요한 소비자가 생기면 공식 이미지 설정 파일과 계정 provisioning을
 별도 승인된 LAB Task에서 추가해야 합니다. 실제 기동·데이터 권한은 미검증입니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
 - [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0025 cassandra, RUN-0107 lab-promotion
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 | Field | Evidence |
 | --- | --- |
@@ -135,7 +168,28 @@ host-level HA를 증명하지 않습니다. 정적 render 통과는 실행·인�
 | Helper assets | [promotion manifest](./promotion.yaml), [대시보드](./dashboards/cassandra.json) |
 | Readiness | Compose healthcheck/one-shot dependency declarations only; runtime result is unverified |
 
-#### Troubleshooting
+###### Troubleshooting
+<!-- core-payload-level:4 -->
 
 - `LAB_DATA_DIR` unset 오류는 안전한 fail-fast 동작이다. HOME data path를 대입하지 않는다.
 - 실제 cluster 재초기화·volume 삭제·restore는 별도 승인 없이는 실행하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

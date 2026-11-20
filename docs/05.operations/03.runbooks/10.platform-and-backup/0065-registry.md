@@ -1,10 +1,13 @@
 ---
 title: "Docker Registry Runbook"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0065"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Docker Registry Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 Registry(`registry` service)의 장애 진단, 일관된 백업·복원, 업그레이드, 별도로 승인된
 garbage collection 절차다.
@@ -25,7 +48,7 @@ garbage collection 절차다.
 `/v2/` failure, push/pull 또는 digest mismatch, storage exhaustion, consistent
 backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용한다.
 
-### Targets
+##### Targets
 
 - [Guide](../../01.guides/10.platform-and-backup/0065-registry.md) (`GDE-0065`)
 - [Policy](../../02.policies/10.platform-and-backup/0065-registry.md) (`POL-0065`)
@@ -34,17 +57,18 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 - [Registry deployment](https://distribution.github.io/distribution/about/deploying/)
 - [Garbage collection](https://distribution.github.io/distribution/about/garbage-collection/)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 작업 전에 승인자를 기록한다. 복원된 store 승격(data replacement)과 garbage collection은 명시적 승인이 있어야 하며, 책임자는 `@buenhyden`이다.
 
-### Environment
+##### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
-#### 작업 선택과 복구 전제
+###### 작업 선택과 복구 전제
+<!-- core-payload-level:4 -->
 
 변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
@@ -53,9 +77,9 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -88,7 +112,8 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 4. storage와 network 점검 후 `registry`만 재시작한다. `/v2/`를 확인한 뒤 non-sensitive
    canary 하나를 push/pull하고 digest를 비교한다.
 
-#### Consistent backup and restore
+###### Consistent backup and restore
+<!-- core-payload-level:4 -->
 
 1. tracked config에 read-only maintenance mode가 없으므로 push/pull을 차단하고
    `registry`를 중지한다.
@@ -100,7 +125,8 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
    count를 확인하고 대표 집합을 digest로 pull한다.
 4. digest 검증과 명시적 data replacement 승인 후에만 복원된 store를 promote한다.
 
-#### Garbage collection and upgrade
+###### Garbage collection and upgrade
+<!-- core-payload-level:4 -->
 
 - GC는 destructive하다: backup을 확보/검증하고, registry를 중지 상태로 유지하거나
   검토된 read-only mode를 설정하고, 지원되면 dry-run을 실행하고, mark set을 검토한
@@ -109,7 +135,8 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
   push/pull과 digest 동등성을 확인하며, format이나 동작이 호환되지 않으면 image와
   storage snapshot을 함께 되돌린다.
 
-#### 로컬 이미지 이관과 제거
+###### 로컬 이미지 이관과 제거
+<!-- core-payload-level:4 -->
 
 실행 중이 아닌 로컬 빌드 이미지는 Registry에 보관해 두고 `/`의 Docker 이미지 저장소에서는
 빼 둘 수 있다. `${DEFAULT_REGISTRY_DIR}`는 데이터 디스크에
@@ -124,25 +151,27 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 4. 다시 사용하려면 Registry 참조를 pull하여 Compose 파일이 기대하는 이름으로
    재태깅하거나, 추적되는 Dockerfile에서 재빌드한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 untrusted exposure, 알 수 없는 artifact provenance, backup 누락, digest mismatch,
 filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 `docker compose --profile registry ps registry`가 정상이고 `/v2/`가 응답해야 한다. non-sensitive canary 하나를 push/pull한 뒤 digest를 비교한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 exit, endpoint boundary, source commit, snapshot ID/checksum, count, 선택된
 digest, 최종 service state를 기록한다. credential이나 layer는 캡처하지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 이 문서에는 아래 단계의 실행 결과가 기록되어 있지 않다.
 
@@ -152,13 +181,33 @@ digest, 최종 service state를 기록한다. credential이나 layer는 캡처�
 - 로컬 이미지 이관과 제거: push된 digest와 pull한 digest의 비교 결과, 로컬 태그 제거 기록이 필요하다.
 - 재시작 후 `/v2/`와 canary push/pull digest 비교: 실행 결과가 필요하다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 backup/restore, GC, upgrade rehearsal은 이 문서에서 **계획되었으나 미실행** 상태이다.
 Registry storage에 대한 복구 단계로 `rm`을 절대 사용하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

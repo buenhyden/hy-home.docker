@@ -1,20 +1,43 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.6.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-02-21"
 ---
 
 # Utilities & Automation Scripts (`scripts/`)
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > Repository maintenance, utility scripts, and automation triggers.
 
-## Purpose
+#### Purpose
 
-### Audience
+##### Audience
 
 이 README의 주요 독자:
 
@@ -22,29 +45,32 @@ created: "2026-02-21"
 - Developers
 - Documentation Writers
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 `scripts/` 디렉터리에는 빌드, 테스트, 환경 구성 등에 필요한 보조 스크립트와 자동화 도구가 있습니다.
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 저장소 검증, 구현 정합성 점검, 계약 점검, 로컬 QA 게이트 오케스트레이션, agent 이벤트 훅 자동화 스크립트
 - 계층별 하드닝 점검과 공유 헬퍼 라이브러리
 - 로컬 preflight 검증 모드와 안전한 secret 파일 생성 유틸리티
 - canonical purpose-folder 경로에 대한 스크립트 인벤토리와 lifecycle 소유권 규칙
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 평문 secret 값, 자격 증명, 토큰, 개인 키, 생성된 인증서 내용
 - `docs/05.operations/`에 속하는 장문의 운영 절차
 - `graphify-out/` 아래의 생성된 Graphify 산출물
 - `infra/` 아래의 서비스별 Docker Compose 소스 파일
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 저장소 검증 스크립트는 `scripts/requirements.txt`에 유지되는 Python 모듈에 의존하며, 스크립트는 `python3`와 Bash로 실행합니다.
 
@@ -62,7 +88,7 @@ Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-co
 `bin`을 `PATH` 맨 앞에 둡니다. `gen-secrets.sh`가 `PATH`의 `python3`를
 호출하기 때문입니다.
 
-### First Use
+##### First Use
 
 Hermes v1 후보 JSON의 로컬 사전 검사는
 `python3 scripts/validation/check-hermes-candidate.py <candidate.json>`으로
@@ -83,7 +109,8 @@ Blog-data에 접근하지 않습니다. Stage 03의 SPEC-0247 문서 탐색은
 6. secret 관련 예시는 절차만 남기고, 생성된 secret 값을 출력하거나 문서화하지 않습니다.
 7. 저장소 검증 스크립트의 Python 모듈 의존성은 `scripts/requirements.txt`에 유지합니다.
 
-#### Validation ownership
+###### Validation ownership
+<!-- core-payload-level:4 -->
 
 `.github/workflow-contract.yml`은 실행 가능한 구성 레지스트리입니다. 이 파일의
 `public_gate.validators` 행마다 공개 suite를 정확히 하나 선언합니다:
@@ -284,15 +311,18 @@ validator 명령을 중복 실행하지 않습니다. 현재 품질 소유권은
 
 ---
 
-#### Utilities & Automation
+###### Utilities & Automation
+<!-- core-payload-level:4 -->
 
-##### Standard Rules
+###### Standard Rules
+<!-- core-payload-level:5 -->
 
 - **Idempotency**: 모든 스크립트는 여러 번 실행해도 상태가 깨지지 않도록 안전해야 합니다.
 - **No Secrets**: 스크립트는 자격 증명을 환경 변수에서 가져와야 하며 절대 하드코딩하지 않습니다.
 - **Deterministic**: 추가하는 모든 자동화는 `../.agents/governance/`의 저장소 거버넌스를 따라야 합니다.
 
-##### Usage Examples
+###### Usage Examples
+<!-- core-payload-level:5 -->
 
 ```bash
 # doc-paths: illustrative
@@ -358,7 +388,8 @@ source scripts/operations/use-qa-ci-tools.sh
 
 ---
 
-#### Invocation Safety
+###### Invocation Safety
+<!-- core-payload-level:4 -->
 
 check-only validator는 `mutation: none`을 사용합니다. Generator와
 synchronizer는 `mutation: check-write`를 사용합니다: 기본 호출은 저장소
@@ -403,7 +434,8 @@ knowledge map과 루트 `llms.txt` entry point가 소유하며,
 `scripts/knowledge/report-graphify-health.sh`는 쓰기 없이 advisory Graphify
 상태만 보고합니다.
 
-#### Verification
+###### Verification
+<!-- core-payload-level:4 -->
 
 manifest와 생성된 output 게이트는 다음으로 실행합니다:
 
@@ -421,11 +453,12 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 절대 호출하지 않습니다. 현재 두 조건을 모두 선언한 행은 없으므로 이 모드는
 기본 점검 이상을 추가하지 않습니다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
-#### Directories
+###### Directories
+<!-- core-payload-level:4 -->
 
 ```text
 scripts/
@@ -443,7 +476,8 @@ scripts/
 └── README.md            # 이 문서
 ```
 
-#### Purpose Folder Implementation
+###### Purpose Folder Implementation
+<!-- core-payload-level:4 -->
 
 canonical script surface는 purpose-folder 경로입니다. docs, CI, hooks, pre-commit
 참조가 purpose-folder 경로로 이동한 뒤 루트 레벨 `scripts/*.sh` 중복 파일은
@@ -466,7 +500,8 @@ wrapper를 다시 만들지 않습니다.
 [`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. Canonical Entry Points의 Path
 표는 각 entrypoint의 용도를 설명합니다.
 
-#### Active Surface Retention Rules
+###### Active Surface Retention Rules
+<!-- core-payload-level:4 -->
 
 다음 중 하나라도 해당하면 루트 `scripts/` 구현을 유지합니다:
 
@@ -481,7 +516,8 @@ wrapper를 다시 만들지 않습니다.
 아키텍처 결정, 실행 evidence, 거버넌스 메모리, 생성된 참고 산출물 아래의 과거
 참조는 감사 근거로만 쓰며 그것만으로 스크립트를 유지하지는 않습니다.
 
-#### Hardening Tier Arguments
+###### Hardening Tier Arguments
+<!-- core-payload-level:4 -->
 
 선택한 tier 하나만 검사하려면 `bash scripts/hardening/check-all-hardening.sh <tier>`를
 사용합니다. 인자가 없으면 지원되는 모든 tier를 검사합니다.
@@ -502,7 +538,8 @@ wrapper를 다시 만들지 않습니다.
 | Analytics     | `12-analytics`, `analytics`               |
 | Experience    | `13-experience`, `experience`             |
 
-#### Canonical Entry Points
+###### Canonical Entry Points
+<!-- core-payload-level:4 -->
 
 `[scripts/manifest.yaml](manifest.yaml)` is the canonical inventory for every
 script, consumer, lifecycle, and test record. This README indexes only the
@@ -519,17 +556,17 @@ direct purpose folders so it does not duplicate that manifest.
 | [`lib/`](lib/) | Import-only domain implementations behind public entrypoints. |
 | [`manifest.yaml`](manifest.yaml) | Complete script inventory and ownership source. |
 
-### Owners
+##### Owners
 
 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
 
-### Related Documentation
+##### Related Documentation
 
 - [에이전트 작업 규칙](AGENTS.md)
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
@@ -542,3 +579,23 @@ direct purpose folders so it does not duplicate that manifest.
 - [Documentation index](../docs/README.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

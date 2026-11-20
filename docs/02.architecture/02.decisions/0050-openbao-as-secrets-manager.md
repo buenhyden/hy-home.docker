@@ -1,10 +1,13 @@
 ---
 title: "OpenBao as Secrets Manager"
-version: "1.1.0"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0050"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-10-29"
 
 # ADR-0050: OpenBao as Secrets Manager
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 ADR-0003 chose HashiCorp Vault as the secrets manager and was deprecated on
 2026-10-15. ADR-0018 (accepted) still describes the Vault and `vault-agent`
@@ -31,26 +54,27 @@ the nearest ADRs.
   [`infra/03-security/openbao`](../../../infra/03-security/openbao/docker-compose.yml).
 - Unseal method, backup custody and operations keep their own owners.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [AD-0003](../01.descriptions/0003-security-architecture.md)
 - [ADR-0042](0042-openbao-unseal-method.md)
 - [OpenBao policy](../../05.operations/02.policies/04.security-and-secrets/0085-openbao.md)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the choice of the platform secrets manager and its HOME implementation in `infra/03-security/openbao`. Unseal method, backup custody and operations keep their own owners, and multi-node Raft HA is not part of it.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep ADR-0003 and ADR-0018 as the owners: rejected; they describe a removed
   product and leave the current choice undecided in the ADR set.
 - Amend ADR-0003 in place: rejected; its Vault decision and 2026-03-26
   acceptance are historical evidence.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -60,9 +84,9 @@ This decision covers the choice of the platform secrets manager and its HOME imp
 
 Each alternative is rejected for the reason stated in its entry above: ADR-0003 and ADR-0018 describe a removed product, and ADR-0003's Vault decision and 2026-03-26 acceptance are historical evidence that an in-place amendment would overwrite.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 OpenBao is the platform secrets manager. `openbao-agent` is the HOME
 implementation of consumer secret rendering.
@@ -77,23 +101,24 @@ implementation of consumer secret rendering.
    Operational controls, bootstrap, recovery and backup custody stay in the
    OpenBao guide, policy and runbook.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden, who accepted it on 2026-10-29; status `accepted`. Effective from 2026-10-29.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This record supersedes ADR-0003 and ADR-0018. Both were later deleted; their numbers are reserved in the Registry and their bodies are in version history (historical, non-authoritative). The Vault-era auto-unseal and remote-audit deferral recorded in ADR-0018 was never decided and is not carried here; ADR-0042 owns the seal question.
 
 - **Superseded decisions**: ADR-0003 adopted HashiCorp Vault as the central secrets manager, and ADR-0018 ordered its hardening and HA expansion (agent template, healthcheck, CI gate; auto-unseal deferred). This decision replaces both.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 This record changes no runtime behavior and claims no data migration, recovery or deployment result.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -102,7 +127,28 @@ decision text is unchanged.
 
 None. Any change of seal method or HA topology needs its own ADR.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 The documentation gates check the supersession links and metadata. Runtime
 state needs separate execution evidence.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,18 +1,41 @@
 ---
 title: "공유 Storybook 정적 origin"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-03"
 ---
 
 # 공유 Storybook 정적 origin과 원격 문서 MCP
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 `storybook` 서비스는 검토된 공유 UI story와 문서의 빌드 결과를 내부 8080
 포트에서 읽기 전용으로 제공한다. Traefik의 HTTPS 브라우저 route는 기존
@@ -20,17 +43,20 @@ OAuth2 Proxy의 Keycloak `/admins` 판정을 사용한다. `storybook-mcp`는 �
 빌드의 manifest를 다른 워크스페이스의 Codex·Claude Code에 문서 tool로 제공하며
 Keycloak bearer token만 받는다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 공유 UI 사용자, 디자인 검토자, 운영자와 검증 담당자를 위한 패키지다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 두 image 선언, 선택형 profile, Traefik route, 망과 health를 소유한다. 컴포넌트
 패키지, MCP 서버 코드와 image 빌드는
 [Storybook 프로젝트](../../../projects/storybook/nextjs/README.md)가 소유한다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 storybook/
@@ -38,7 +64,7 @@ storybook/
 └── README.md          # 이 패키지 계약
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -46,7 +72,8 @@ storybook/
 | `storybook-mcp.${DEFAULT_URL}` `/mcp`·`/.well-known/oauth-protected-resource` | `storybook-mcp` | 다른 워크스페이스의 Codex·Claude Code | 같은 빌드 manifest를 문서 tool로 제공하며 Keycloak bearer token의 issuer·audience·만료·서명·`/admins`를 확인한다. | MCP는 401/403을 돌려주며 health는 보호 자원 metadata 응답을 확인한다. |
 | `https://keycloak.${DEFAULT_URL}` discovery와 JWKS | Keycloak | `storybook-mcp` | `edge_net`에서 host root CA로 discovery와 JWKS를 가져온다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 root [Compose](../../../docker-compose.yml)가 leaf를 include한다. 유일한 선택
 profile은 `experience`이며 HOME에는 없다. `storybook`은 `internal: true`
@@ -77,13 +104,14 @@ metadata 응답을 확인한다. DNS/TLS와
 실제 브라우저 동작은 운영 실행 승인 전까지 미확인이다. Docker daemon
 권한으로 전용망에 다른 container를 붙일 수 있는 운영자 신뢰 경계는 남는다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 `storybook`은 `internal: true` 전용 `experience_ingress_net`에만 연결되고 Traefik만 이 망과 `edge_net`에 붙는다. 브라우저 route는 OAuth2 Proxy의 Keycloak `/admins` 판정을 거치며 내부 8080은 expose만 하고 호스트에 게시하지 않는다. Compose에 선언된 secret은 없다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Category | Technology | Notes |
 | --- | --- | --- |
@@ -92,15 +120,15 @@ metadata 응답을 확인한다. DNS/TLS와
 | MCP 이미지 | `hy-home/storybook-mcp:<source-SHA>` | 정적 image와 같은 커밋; `pull_policy: never` |
 | 인증 | 정적 origin은 Traefik `sso-auth@file`; MCP는 서버의 bearer 검증 | 비인증 브라우저는 Keycloak으로 302, JSON 요청은 401; MCP는 401/403 |
 
-### Selected Start
+##### Selected Start
 
 1. `python3 scripts/operations/storybook_image.py verify`로 두 image의 커밋, OCI label, revision과 manifest hash를 대조한다.
 2. `experience` 선택과 HOME 미선택, 전용망의 두 서비스 연결, 관리자 ForwardAuth를 검토한다.
 3. 변경 후 정적 검사와 승인된 격리 검사를 수행하고 결과를 승인된 운영 Task와 RUN-0101 evidence handoff에 기록한다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 ```bash
 docker compose --env-file .env.example --profile experience config --quiet
@@ -111,15 +139,37 @@ python3 scripts/validation/check-operations-catalog.py
 정적 검증과 격리 image 검사는 HOME 배포의 증거가 아니다. 실행 전 Docker context,
 project, port, network, volume, resource와 정리 범위를 확인한다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [13 경험 자산](../README.md)
 - [인프라 인덱스](../../README.md)
 - [문서 진입점](../../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
 - [14-design-system runbooks](../../../docs/05.operations/03.runbooks/14.design-system/README.md): RUN-0101 storybook
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 두 서비스 모두 `wget` 기반 Compose 헬스체크를 선언한다. 복구와 장애 대응은 [14-design-system runbooks](../../../docs/05.operations/03.runbooks/14.design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,10 +1,13 @@
 ---
 title: "Valkey Cluster Health Runbook"
-version: "2.2.0"
+version: "3.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -15,16 +18,36 @@ next_review_at: "2027-05-13"
 
 # Valkey Cluster Health and Recovery Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 LAB 전용 Valkey Cluster(`labs/valkey-cluster/docker-compose.yml`)의 정적 점검, 백업 계획, 격리 복원 절차를 다룬다.
 
 이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
 사용한다.
 
-### Targets
+##### Targets
 
 static validation은 이 문서화 task에서 안전하게 수행할 수 있다. cluster
 시작, 데이터 쓰기, live backup, restore, membership 변경은 계획된 operator
@@ -40,22 +63,22 @@ static validation은 이 문서화 task에서 안전하게 수행할 수 있다.
 
 - [Domain catalog](../../README.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 live write, restore, cutover, cleanup, credential 변경은 별도로
 승인된 task가 필요하다.
 
 기동/정지는 [GDE-0099](../../01.guides/01.common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../02.policies/01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
-### Environment
+##### Environment
 
 대상: `valkey-cluster-exporter`, `valkey-cluster-init`, `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -86,7 +109,8 @@ LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-clu
 password secret; node health check; 기본 loopback host 17379–17384 → 내부 6379–6384 client와 16379–16384 bus
 exposure을 확인한다. rendered 경로가 비어 있거나 예상과 다르면 중단한다.
 
-#### Planned backup procedure
+###### Planned backup procedure
+<!-- core-payload-level:4 -->
 
 1. 승인된 maintenance window를 열고 application writer를 식별한다.
 2. engine/image source, cluster node ID, slot ownership, primary/replica
@@ -100,7 +124,8 @@ exposure을 확인한다. rendered 경로가 비어 있거나 예상과 다르�
 5. node role, timestamp, file size, checksum의 manifest를 작성한다. 세트는
    custody가 제한된 별도의 encrypted 목적지로 전송한다.
 
-#### Planned isolated restore
+###### Planned isolated restore
+<!-- core-payload-level:4 -->
 
 1. persistence-compatible Valkey version과 disposable credential을 사용해
    비어 있고 network-isolated된 6-node target을 준비한다. application
@@ -120,27 +145,29 @@ exposure을 확인한다. rendered 경로가 비어 있거나 예상과 다르�
    writer를 일시 정지하고, 최종 backup을 만들고, client를 전환하고,
    검증하고, rollback을 위해 이전 상태를 보존해야 한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 AOF segment 누락, checksum mismatch, 예기치 않은 identity, 커버되지 않은 slot, replica drift가 확인되거나 persistence를 repair/truncate하라는 요청이 있으면 중단한다. rendered 경로가 비어 있거나 예상과 다르면 중단한다.
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 격리 target에서 AOF loading이 truncation이나 repair 없이 완료되고, `cluster_state`가 healthy이며, 모든 slot이 커버되고, replica가 의도한 primary에 연결되어야 한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 source revision/version, scope, timestamp, manifest/checksum 요약, command와
 exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
 gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 컨테이너 실행과 복구가 `NOT_RUN`이라고 적고 있다.
 
@@ -148,17 +175,37 @@ gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한
 - 운영 cutover와 rollback: 별도 승인이 필요하며 실행 기록이 없다. 승인된 cutover 후 application validation과 원본 cluster 복귀 경로 확인이 관찰되면 검증된다.
 - 실제 점검(승인된 Docker context와 `labs/.env` 기반): 2026-10-08 합성 data로 `up`·`check`·`reap` 실행 결과는 문서에 기록되어 있으나, 운영 data 대상 실행 결과는 기록되어 있지 않다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 AOF segment 누락, checksum mismatch, 예기치 않은 identity, 커버되지 않은
 slot, replica drift, persistence를 repair/truncate하라는 요청이 있으면
 중단한다. secret 값 없이 로그를 보존하고 data @buenhyden에게 escalation한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 실패한 cutover는 identity와 write boundary를 검증한 뒤 client를 보존된 원본
 cluster로 되돌린다. backup 세트와 isolated target은 그대로 보존한다.
 cutover는 owner approval, 최종 consistency capture, application validation,
 보존된 rollback window를 거친 뒤에만 진행한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

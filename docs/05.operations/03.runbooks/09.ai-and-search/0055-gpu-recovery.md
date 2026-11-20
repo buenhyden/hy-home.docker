@@ -1,10 +1,13 @@
 ---
 title: "AI GPU Recovery Runbook"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0055"
 created: "2026-03-25"
@@ -13,9 +16,29 @@ next_review_at: "2027-05-13"
 
 # AI GPU Recovery Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 > Scope: `infra/08-ai`의 `ollama` NVIDIA GPU 가속 복구.
 
@@ -31,7 +54,7 @@ next_review_at: "2027-05-13"
 - 모델 로딩이 GPU 미할당 또는 VRAM 접근 오류로 실패한다.
 - 소비자에서 모델 응답이 급격히 느려지고 GPU 사용률이 0에 머문다.
 
-### Targets
+##### Targets
 
 - Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/01.descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: `0055` 번호를 공유하는 Guide·Policy는 없다.
@@ -43,31 +66,33 @@ next_review_at: "2027-05-13"
 - [Ollama operations policy](../../02.policies/09.ai-and-search/0056-ollama.md)
 - [Ollama runbook](0056-ollama.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 승인과 실행 경계는 아래 항목에 따른다.
 
-#### Execution Boundary
+###### Execution Boundary
+<!-- core-payload-level:4 -->
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01.common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10.platform-and-backup/0021-backup-and-restore.md), [image 변경](../10.platform-and-backup/0086-dependency-version-management.md), [시크릿](../04.security-and-secrets/0085-openbao.md), [계정](../03.identity-and-access/0014-keycloak.md), [gateway·인증서](../02.gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Environment
+##### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
-#### 사전 점검
+###### 사전 점검
+<!-- core-payload-level:4 -->
 
 - [ ] 최근 GPU driver, Docker, NVIDIA Container Toolkit 변경 이력을 확인한다.
 - [ ] Docker daemon 재시작이 다른 서비스에 미치는 영향을 확인하고 운영 승인을 받는다.
 - [ ] `ollama` 컨테이너 상태와 로그를 캡처한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -82,7 +107,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 절차는 아래 항목에 따른다.
 
-#### 복구 단계
+###### 복구 단계
+<!-- core-payload-level:4 -->
 
 1. 호스트 GPU 상태를 확인한다.
 
@@ -128,43 +154,48 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    docker compose exec ollama nvidia-smi
    ```
 
-#### Agent Operations
+###### Agent Operations
+<!-- core-payload-level:4 -->
 
 - **Model Fallback**: 운영자 승인 후에만 승인된 낮은 VRAM 모델로 전환한다.
 - **Tool Disable / Revoke**: 복구 중 자동 고동시성 추론을 중단한다.
 - **Eval Re-run**: 복구 후 목록/API와 별도 승인된 추론 검증을 수행한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단한다. 또한 host `nvidia-smi`·NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재, `08-ai` 밖 영향이 있으면 중단한다.
 
 중단 조건은 Escalation에 기록한다. host `nvidia-smi`·NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재, `08-ai` 밖 영향이 있으면 중단한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 - `docker compose exec ollama nvidia-smi`가 성공한다.
 - `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags`가 성공한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 증거 기록은 아래 항목에 따른다.
 
-#### Observability and Evidence Sources
+###### Observability and Evidence Sources
+<!-- core-payload-level:4 -->
 
 - **Logs**: `docker logs --tail 200 ollama`
 - **Metrics**: `nvidia-smi`의 GPU 사용률·VRAM과 제공되는 Ollama exporter 지표
 - **Host Evidence**: Docker daemon 재시작 시각, NVIDIA driver·toolkit 버전, `docker inspect`의 device 요청
 
-#### 증거 기록
+###### 증거 기록
+<!-- core-payload-level:4 -->
 
 - 명령·시각, daemon 재시작 승인과 GPU 전후 상태를 기록한다.
 - 실패 검사·증상과 최종 복구 또는 에스컬레이션 상태를 Task/Incident에 남긴다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서에는 아래 단계의 실행 결과가 기록되어 있지 않다.
 
@@ -172,18 +203,39 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - 복구 후 `docker compose exec ollama nvidia-smi`와 `/api/tags` 성공: 명령 실행 결과가 필요하다.
 - 낮은 VRAM 모델 전환과 승인된 추론 검증(승인 필요): 승인 기록과 검증 결과가 필요하다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 Host `nvidia-smi`, NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재 또는 `08-ai` 밖 영향이면 중단하고 @buenhyden에게 넘긴다. 정제된 로그, 시도한 단계와 현재 복구 상태를 전달한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 위 Steps 절에 기록된 복구만 사용한다. 승인된 daemon 재시작 뒤에도 host GPU runtime이 실패하면 추가 변경을 멈추고 에스컬레이션한다.
 
-#### Safe Rollback or Recovery Procedure
+###### Safe Rollback or Recovery Procedure
+<!-- core-payload-level:4 -->
 
 1. Docker daemon 재시작이 더 넓은 서비스에 영향을 주면 추가 변경을 멈추고 정제된 로그로 에스컬레이션한다.
 2. 최근 모델 변경이 VRAM 고갈을 일으켰다면 [Ollama Runbook](0056-ollama.md)의 승인 경계에서 unload 또는 제거한다.
 3. 승인된 daemon 재시작 뒤에도 GPU를 사용할 수 없으면 명시적 owner 승인 아래에서만 degraded 상태를 유지하고 사용자를 Incident 소유자에게 안내한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

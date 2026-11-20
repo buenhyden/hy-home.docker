@@ -1,20 +1,44 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.4.3"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-12"
 ---
 
 # n8n 워크플로 자동화
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 n8n은 시각적 인터페이스로 워크플로우 자동화를 구현하는 로우코드 도구이다. 복잡한 Airflow DAG와 달리 직관적인 노드 연결로 API 통합, 웹후크 처리, 이벤트 기반 자동화를 빠르게 배포할 수 있다.
 
@@ -22,28 +46,33 @@ n8n은 시각적 인터페이스로 워크플로우 자동화를 구현하는 �
 일반 소스에 Sustainable Use License, Enterprise 부분에 별도 조건을 적용합니다.
 무료 내부 자체 호스팅과 무제한 오픈소스·외부 제공 권한을 동일하게 취급하지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
 - Workflow Operators
 - Integration Developers
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
-##### In Scope
+###### In Scope
+<!-- core-payload-level:5 -->
 
 - n8n 메인 서비스, worker, task runner, 메타데이터 DB, queue 모드 compose 연결
 - 비밀이 아닌 환경 변수와 런타임 토폴로지 노트
 - 정식 가이드, 정책, 런북, 워크플로우 스펙으로의 연결
 
-##### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:5 -->
 
 - Airflow DAG 작성 및 스케줄러 운영
 - n8n 자격 증명 값, 워크플로우 시크릿, 내보낸 비공개 워크플로우 데이터
 - 서드파티 SaaS 계정 설정
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 n8n/
@@ -55,7 +84,8 @@ n8n/
 └── README.md           # This file
 ```
 
-#### Architecture
+###### Architecture
+<!-- core-payload-level:4 -->
 
 n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 
@@ -64,7 +94,8 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 - **Task Runner**: 특정 복잡한 태스크를 격리된 환경에서 안전하게 처리.
 - **Valkey**: 워커 간 작업 분배를 위한 메시지 브로커.
 
-##### 선택형 공유 계정과 Ollama 실행 경로
+###### 선택형 공유 계정과 Ollama 실행 경로
+<!-- core-payload-level:5 -->
 
 기본 broker는 기존 default 계정·DB0이며 신규 비밀 파일을 요구하지 않습니다.
 `SHARE_NAMED_USER`는 MNG의 typed ACL overlay와 `N8N_VALKEY_USERNAME=n8n`,
@@ -84,7 +115,7 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 [워크플로와 자동화 런북 목록](../../../docs/05.operations/03.runbooks/08.workflows-and-automation/README.md)의
 n8n Runbook 「선택형 공유 Valkey 계정과 Local Ollama」 절이 소유합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -95,19 +126,22 @@ n8n Runbook 「선택형 공유 Valkey 계정과 Local Ollama」 절이 소유�
 | 공유 웹 검색 `searxng` (`N8N_INSTANCE_AI_SEARXNG_URL`) | `searxng`(`infra/08-ai/searxng`, OPS-0110) | n8n Assistant(`n8n` main) | `n8n` main만 internal `search_net`에 합류한다. worker·task runner·sandbox는 합류하지 않는다(POL-0110) | SearXNG가 없으면 Assistant 웹 검색만 실패한다 |
 | `blog-ingestion` `/v1/summary` | `blog-ingestion` | Traefik(내부·격리 `blog_export_net` 공유) | 인증 없는 `/v1/summary` 요청은 401을 반환한다 | Compose healthcheck가 인증 없는 `/v1/summary`의 401로 상태를 확인한다 |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `blog_export_net`, `edge_net`, `mng_data_net`, `n8n_blog_ingest_net`, `n8n_net`, `n8n_ollama_net`, `n8n_sandbox_net`, `n8n_sandbox_outbound_net`, `n8n_sandbox_runner_net`, `n8n_worker_runner_net`, `search_net`, `obs_net`, `opsflow_capture_net`, `opsflow_notifier_db_net`이다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_sandbox_api_key`, `n8n_sandbox_runner_api_key`, `n8n_sandbox_runner_registration_token`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 | Component | Technology | Version | Note |
 | :--- | :--- | :--- | :--- |
@@ -116,9 +150,10 @@ Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `
 | Queue Broker | Valkey (Redis 호환) | 선택은 `${N8N_VALKEY_HOST:-mng-valkey}`와 `${N8N_VALKEY_SECRET:-mng_valkey_password}`가 소유하며 공유 `mng-valkey`만 허용함 | Queue 오케스트레이션 |
 | Task Runner | n8nio/runners | declared version | 격리된 실행 환경 |
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
@@ -131,16 +166,18 @@ Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `
 6. **Modularization**: 복잡한 로직은 `Sub-workflows`로 분리해 재사용성을 확보하십시오.
 7. **Credential Safety**: 모든 외부 인증 정보는 n8n 내부의 `Credentials` 시스템에 암호화되어 저장되어야 하며 `docker-compose.yml`의 시크릿(`secrets`)으로 안전하게 공급됩니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 - README나 n8n에 영향을 주는 Compose 참조 변경 후에는 `HYHOME_COMPOSE_PROFILES='workflow-n8n' bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - n8n 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
 
-##### SEC01 안정판 묶음
+###### SEC01 안정판 묶음
+<!-- core-payload-level:5 -->
 
 2026-10-16 KST [공식 릴리스](https://github.com/n8n-io/n8n/releases/tag/n8n%402.43.6), <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
 [npm stable 배포](https://registry.npmjs.org/n8n/latest)와 Docker stable/latest channel의 OCI index를 대조했습니다.
@@ -198,7 +235,8 @@ module loading 결과는 위 안정판 묶음에서 구분합니다. 위 후보 
 bundle 버전과 맞지 않아 저장소 시험에서 제외했습니다. 현재 bundle 회귀는
 `WorkflowVersionBundleTests`가 계속 검사합니다.
 
-##### 독립 DEV 통지 워크로드
+###### 독립 DEV 통지 워크로드
+<!-- core-payload-level:5 -->
 
 [매니페스트 outbox 통지](workloads/manifest-outbox-notifier/README.md)는
 P04 SQL을 소비하는 비활성 workflow·제한된 SMTP node·합성 시험입니다.
@@ -208,22 +246,25 @@ P04 SQL을 소비하는 비활성 workflow·제한된 SMTP node·합성 시험�
 필요합니다. 실행·중단·정리 절차는 Runbook Links의 탐색점의 RUN-0053이 소유합니다.
 Airflow 게시 데이터의 실제 n8n 인계·combined E2E·HOME 복구는 미검증입니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0053: `docs/05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md`
 
-#### Traceability (Golden 5)
+###### Traceability (Golden 5)
+<!-- core-payload-level:4 -->
 
 - **PRD**: 07-workflow PRD (`docs/01.requirements/0008-workflow.md`)
 - **ARD**: 07-workflow Architecture Description (`docs/02.architecture/01.descriptions/0007-workflow-architecture.md`)
 - **ADR**: N8N Integration ADR (`docs/02.architecture/02.decisions/0007-airflow-n8n-hybrid-workflow.md`)
 - **Plan**: [Spec Package 탐색](../../../docs/03.specs/README.md)의 SPEC-0204 Task0017이 이번 버전 소스 준비를 담당합니다.
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Guide 탐색](../../../docs/05.operations/01.guides/08.workflows-and-automation/README.md)
 - [Policy 탐색](../../../docs/05.operations/02.policies/08.workflows-and-automation/README.md)
@@ -234,7 +275,8 @@ Airflow 게시 데이터의 실제 n8n 인계·combined E2E·HOME 복구는 미�
 
 Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).
 
-#### Service Readiness
+###### Service Readiness
+<!-- core-payload-level:4 -->
 
 | Field | Evidence |
 | --- | --- |
@@ -252,14 +294,36 @@ Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfil
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `HYHOME_COMPOSE_PROFILES='workflow-n8n' bash scripts/validation/validate-docker-compose.sh`로 시작한 뒤 서비스 로그와 연결된 런북 근거를 확인합니다. |
 
-#### Troubleshooting
+###### Troubleshooting
+<!-- core-payload-level:4 -->
 
 - 이 leaf는 루트 네트워크, Docker Secrets, 루트 include 컨텍스트에 의존하므로 루트 workflow 검증 명령으로 시작합니다.
 - queue나 자격 증명 설정을 변경하기 전에 n8n 서비스 로그와 연결된 런북을 확인합니다.
 
-##### Convergence contract
+###### Convergence contract
+<!-- core-payload-level:5 -->
 
 - n8n core/worker/task runner는 `workflow`/`workflow-n8n`에서 **HOME**입니다. 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d n8n n8n-worker n8n-task-runner-worker`.
 - Broker는 `N8N_VALKEY_HOST`와 `N8N_VALKEY_SECRET`의 지원 쌍(공유 기본값과 선택형 공유 이름 계정)뿐입니다. 두 entrypoint는 선택된 파일의 존재를 확인하고, 두 runner는 마운트된 `n8n_runner_auth_token`을 launcher에 전달합니다. 선언 버전은 모두 일치하지만 Code 노드와 DB upgrade의 격리 실행은 별도로 검증해야 합니다.
 - 운영 문서는 Runbook Links의 탐색점의 `GDE-0053`, `POL-0053`, `RUN-0053`을 사용합니다. HOME 격리 복구는 미실행입니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

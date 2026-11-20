@@ -1,22 +1,45 @@
 ---
 title: "Diff Review Prompt"
-version: "0.3.2"
+version: "1.0.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Diff Review Prompt
+  layer: agent
+updated: "2026-11-20"
 created: "2026-09-06"
 ---
 
 # Diff Review Prompt
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the prompt payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
 
 Review one exact diff independently of the contributor who produced it. The
 review judges the diff against the governing acceptance contract and the
 repository's own guards, not against a general sense of code quality.
 
-## Inputs
+#### Inputs
 
 - The exact diff under review, produced by a named command such as
   `git diff`, `git diff --staged`, or `git diff <base>...HEAD`. The command and
@@ -37,9 +60,9 @@ Stop without a disposition if the diff cannot be reproduced or inputs are
 partial or stale. For missing or revoked approval, issue a `blocker` and stop
 before reviewing merits. A prompt grants no authority.
 
-## Instructions
+#### Instructions
 
-### Constraints
+##### Constraints
 
 - Reviewing your own implementation as if independent. Independence means the
   reviewer did not write the diff; say so plainly when that is not the case.
@@ -52,7 +75,7 @@ before reviewing merits. A prompt grants no authority.
 - Recording a review disposition that was not actually performed.
 - Weakening a guard, threshold, fixture, or negative test to make the diff pass.
 
-### Applies To
+##### Applies To
 
 - Roles: `code-reviewer`, `security-auditor`, `iac-reviewer`, and
   `qa-engineer` consume this prompt within their own read-only permission
@@ -65,7 +88,7 @@ before reviewing merits. A prompt grants no authority.
   failure scenario, every non-pre-review claim cites a location inside the
   reviewed diff, and the uncovered area is stated rather than left implicit.
 
-## Outputs
+#### Outputs
 
 A findings list, most severe first. Each finding carries:
 
@@ -86,7 +109,7 @@ After the findings, a disposition: `approve`, `approve with follow-up`, or
 
 An empty findings list is a valid result and is stated explicitly.
 
-## Failure Handling
+#### Failure Handling
 
 If the diff cannot be reproduced from the stated command, or inputs are partial
 or stale, stop and report that before reviewing anything. If approval is missing
@@ -95,9 +118,29 @@ evidence, raise a `blocker` naming the missing evidence and stop before merits
 rather than inferring approval. If the acceptance contract and the diff disagree about
 intent, report the conflict to the owning Spec instead of choosing a reading.
 
-## Related Documents
+#### Related Documents
 
 - [Prompt index](README.md)
 - [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
 - [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)
 - [Workflows](../governance/workflows.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

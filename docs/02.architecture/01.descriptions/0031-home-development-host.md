@@ -1,10 +1,13 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.6.0"
+version: "1.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-09-19"
 
 # Home and Development Host Architecture
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 The root Compose owns include, and the service profile owns activation. The
 canonical owner of the vocabulary is
@@ -30,7 +53,8 @@ prove complete network isolation.
 Storage and Redis administration packages are flat under `04-data`; processing, data quality, BI, dbt and JupyterLab are standalone LAB entrypoints under `labs/` (SPEC-0262). Software verification and development mail capture belong to `11-quality`; platform tools remain in `09-platform-ops`. Dozzle belongs to Observability; Open Notebook/SurrealDB and MLflow belong to AI. This is source organization only and does
 not change HOME selection or the root Compose project (ADR-0062).
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 One Linux server shares HOME service and development experiments. The user
 also designated AI and workflow as always-on HOME capabilities. The goal is
@@ -38,17 +62,18 @@ to keep the service within the scope where one operator can explain state
 and the recovery path. An optional capability with no confirmed real
 consumer does not push its always-on startup cost onto HOME.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The operator and development experiments share one Linux server. Traefik fronts the HOME services, external Project-Template-derived workspaces register through the project-registration contract, and the Mermaid diagram in the Runtime View shows the user, gateway, identity, application, state, object, GPU and observability flows.
 
-### Constraints
+##### Constraints
 
 Profiles are not a security isolation boundary and share the same Docker daemon failure, and the shared Compose network is an existing trust boundary, not proven isolation. Root Compose never includes external application source, no secret values belong in diagrams or evidence, and runtime pins come from Compose and Dockerfile declarations.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 | Class | Retained capability | Activation and limitation |
 | --- | --- | --- |
@@ -83,7 +108,7 @@ and [development database policy](../../05.operations/02.policies/05.databases-a
 own the current interfaces; metadata approval does not deploy or issue secrets.
 The independent 07/08 product-planning tracks grant no runtime resource authority.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -97,11 +122,12 @@ The independent 07/08 product-planning tracks grant no runtime resource authorit
 - Projects use explicit database/role and Valkey ACL contracts rather than the legacy `app_db`.
 - [POL-0078](../../05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md) owns the profile vocabulary.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 ```mermaid
 flowchart LR
@@ -119,7 +145,8 @@ OpenBao rendered outputs and Docker Secret consumers are distinct existing paths
 a migration must verify consumer mounts and permissions before claiming automatic
 rotation or complete secret delivery. No secret values belong in diagrams or evidence.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The source-controlled selection is validated before deployment. `core mng ai
 workflow storage obs-core obs-host availability logs alerting tracing profiling
@@ -135,7 +162,7 @@ instead of repeating patch pins without context.
 Renovate is the sole dependency updater: it owns the enabled infrastructure managers and
 npm for Storybook and the OpsflowSmtp node. Dependabot version updates are retired.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Single-host power, storage, Docker daemon and GPU failure affect multiple HOME
 capabilities. Git configuration rollback cannot undo database migrations.
@@ -144,11 +171,12 @@ jobs. Deployment requires isolated backup and restore evidence for the affected
 data. The dated [MLflow recovery receipt](../../03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0008-infra-audit-execution.md#c19-row-resolutions-2026-10-28 "navigation")
 covers the named MLflow target on 2026-10-28.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - Availability: initialization completion, daemon health and application readiness
   are separate evidence. Unseal and authenticated functional checks are explicit.
@@ -161,14 +189,15 @@ covers the named MLflow target on 2026-10-28.
 - Security: prefer authenticated gateway ingress and loopback diagnostic ports;
   document remaining host publications and shared network grants as residual risk.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 Single-host power, storage, Docker daemon and GPU failure affect multiple HOME
 capabilities. Existing shared networks and host-level capabilities limit isolation.
 Current backup/restore, OpenBao bootstrap and resource acceptance are not yet
 proven by this redesign. Keep these as deployment prerequisites, not PASS claims.
 
-### Trade-offs
+##### Trade-offs
 
 - HOME service and development experiments share one Linux server, so
   single-host power, storage, Docker daemon and GPU failure affect multiple
@@ -187,28 +216,51 @@ proven by this redesign. Keep these as deployment prerequisites, not PASS claims
 - Remaining host publications and shared network grants are documented as
   residual risk (Quality Attributes).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0062](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [SPEC-0262 Analytics LAB migration](../../03.specs/0262-analytics-labs-migration/spec.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - SPEC-0180 and SPEC-0265 (retired; version history; ADR-0060 holds the Hermes report source contract)
 - [Service disposition research](../../90.references/01.research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
 - [Infrastructure implementation](../../../infra/README.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 Measure actual application usage and restore evidence before removing persistent
 services or changing storage engines. Promote only validated optional capabilities;
 retire migrations through the summarize-and-delete retirement contract, never
 by rewriting history or deleting unverified data.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

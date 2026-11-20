@@ -1,10 +1,13 @@
 ---
 title: "Gatus Runbook"
-version: "0.4.0"
+version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0087"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Gatus Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 Gatus(`gatus`)의 준비 상태 점검, 승인된 대상 배포, SQLite 백업·복구, native OIDC 운영을 다룬다.
 
@@ -27,7 +50,7 @@ next_review_at: "2027-05-13"
 
 Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구에 사용한다.
 
-### Targets
+##### Targets
 
 - [AD-0031](../../../02.architecture/01.descriptions/0031-home-development-host.md)
 - Subject peers: [Guide](../../01.guides/07.observability/0087-gatus.md) (`GDE-0087`), [Policy](../../02.policies/07.observability/0087-gatus.md) (`POL-0087`)
@@ -39,24 +62,26 @@ Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구�
 - [운영 인덱스](../../README.md)
 - [공식 Gatus 설정, 저장소, 인증](https://github.com/TwiN/gatus)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 저장소 루트에서 작업한다.
 
-#### Execution Boundary
+###### Execution Boundary
+<!-- core-payload-level:4 -->
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01.common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10.platform-and-backup/0021-backup-and-restore.md), [image 변경](../10.platform-and-backup/0086-dependency-version-management.md), [시크릿](../04.security-and-secrets/0085-openbao.md), [계정](../03.identity-and-access/0014-keycloak.md), [gateway·인증서](../02.gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Environment
+##### Environment
 
 런타임 변경 전에 설정 커밋, 실제 마운트된 데이터 경로,
 백업 대상을 기록한다.
 
-#### Service lifecycle prerequisites
+###### Service lifecycle prerequisites
+<!-- core-payload-level:4 -->
 
 `gatus`는 승인된 source/patch build 결과, 선택 OIDC config, subject allowlist, client secret과 CA, sqlite volume 권한을 확인한 뒤 기동한다. Dockerfile의 test 선언은 실행 증거가 아니다. 교체·중지 전 sqlite 일관성을 확보하고 Keycloak·CA 유지보수는 공통 소유자에게 넘긴다.
 
@@ -74,9 +99,9 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    컨테이너 헬스, UI 인증, 예상 프로브 이름을 별도로 검증한다. 예상치 못한
    마운트, 권한, 이미지 식별자를 발견하면 중단한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -87,7 +112,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 실행 절차는 아래 항목을 따른다.
 
-#### Native OIDC operation
+###### Native OIDC operation
+<!-- core-payload-level:4 -->
 
 기록된 owner 승인 rollout은 네이티브 OIDC로 전환되었고 현재 source는
 `config.oidc.yaml`을 사용한다. 라우터는 표준 게이트웨이 체인만 유지하며
@@ -120,7 +146,8 @@ denied/invalid-session 검사를 통과할 때까지 유지한다. 인용된 rol
 Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하지 못한다. 별도의
 관찰 테스트 없이 애플리케이션 간 단일 로그아웃을 주장하지 않는다.
 
-#### Planned isolated restore rehearsal
+###### Planned isolated restore rehearsal
+<!-- core-payload-level:4 -->
 
 **Project 이름만 바꿔서는 실행할 수 없다.** Rehearsal 전에 고정 container name, host port, bind path, external network와 route 충돌을 제거하고 production 통지·workflow egress를 차단한 별도 Compose/storage 정의를 승인한다. 격리와 대상 backup 계약을 검토하기 전에는 NOT_RUN으로 유지한다. 임의 project에 production volume이나 credential을 연결하지 않는다.
 
@@ -138,25 +165,27 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
    백업으로 되돌린다. 프로덕션 상태/클라이언트/경로 교체는 별도 승인이
    필요하다.
 
-### Stop Conditions
+##### Stop Conditions
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 네이티브 OIDC/root-CA 검증, 세션 만료 동작, metrics 스크레이핑이 통과해야 한다(`Planned isolated restore rehearsal` 3단계). 소스 검증만으로는 런타임 준비 상태나 복원된 이력을 입증하지
 못한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 현재 Task에 날짜, 커밋, 서비스 이름, 종료 코드, 정제된 health/프로브 결과를
 기록한다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
 
@@ -166,15 +195,15 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 - 애플리케이션 간 단일 로그아웃: 별도 관찰 테스트 없이는 주장하지 않는다.
 - 이후 승인된 롤아웃(이미지 롤백 보존, SQLite 백업, Gatus만 교체): 실행 결과가 이 문서에 기록되어 있지 않으며 현재 상태는 Task 0004에 속한다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 백업 누락, 인증 실패, 알 수 없는 데이터 경로 또는 파괴적 교체가 발생하면
 중단하고 @buenhyden에게 연락한다. 배포와 셧다운에는 구체적으로 승인된
 대상이 필요하다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 일관된 SQLite 백업에는 조율된 스냅샷 또는 승인된 quiescence가 필요하다.
 실행 중인 데이터베이스 파일만 복사하면 WAL 상태가 누락될 수 있다. 승인된
@@ -182,3 +211,23 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 격리된 저장소로 복원하고 프로덕션 데이터 교체를 승인하기 전에 이력과 새
 프로브를 검증한다. 설정과 이미지는 독립적으로 롤백하며, 문제 해결의 기본
 수단으로 볼륨을 삭제하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

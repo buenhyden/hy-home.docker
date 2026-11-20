@@ -1,21 +1,45 @@
 ---
 title: "Traefik & Nginx Hybrid Gateway Architecture"
-version: "1.3.0"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0001"
 parent_ids:
 - "AD-0001"
 created: "2026-03-26"
 ---
+
 # ADR-0001: Traefik & Nginx Hybrid Gateway Architecture
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 This document is the architecture decision record for the decision to use a hybrid of Traefik and Nginx as the ingress for `hy-home.docker`.
 
@@ -24,35 +48,38 @@ This document is the architecture decision record for the decision to use a hybr
 - Traefik is very strong at Docker Label based automatic service discovery (Dynamic Discovery), but configuring fine-grained, Nginx-level path control can be somewhat cumbersome.
 - Nginx, on the other hand, supports elaborate configuration, but upstream management in a dynamically changing Docker virtual IP environment is manual or needs a separate solution.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 - **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
 - **Architecture Description**: [../descriptions/0001-gateway-architecture.md](../01.descriptions/0001-gateway-architecture.md)
 
-### Decision Scope
+##### Decision Scope
 
 Explicit non-goals:
 
 - Placing Nginx in front of every internal service (avoids unnecessary hop growth).
 - Exposing Nginx directly as the external edge.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
-#### Alternative 1: Traefik Only
+###### Alternative 1: Traefik Only
+<!-- core-payload-level:4 -->
 
 - Good: The architecture becomes simpler and there are fewer management points.
 - Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
 
-#### Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)
+###### Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)
+<!-- core-payload-level:4 -->
 
 - Good: Configuration is very powerful and familiar.
 - Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -62,9 +89,9 @@ Explicit non-goals:
 
 Traefik only was not chosen because Keycloak and MinIO path and header handling is relatively complex with Traefik middleware alone. Nginx only was not chosen because detecting dynamic Docker container changes needs an extra tool or manual management.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 - **Primary Edge Router**: use Traefik v3.
   - Handles the initial receipt of all external traffic (80, 443) and TLS termination.
@@ -92,13 +119,13 @@ Traefik only was not chosen because Keycloak and MinIO path and header handling 
     decision above is preserved as a record of its time and no longer applies.
 - **Service Flow**: default root flow is `Client -> Traefik (Edge) -> Backend Service`; specialized flow is `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service` only when the Nginx leaf is explicitly deployed.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26. The 2026-11-10 amendment above is recorded as an owner decision in the text.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - **Positive**:
   - Adding a new service can be routed with only Docker Labels, no extra configuration (Traefik's strength).
@@ -108,7 +135,7 @@ Decided by the owner, @buenhyden; status `accepted`. No separate approval record
   - One extra network hop is added for certain services (Traefik -> Nginx).
   - Operational burden of managing two different proxy configuration syntaxes.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -116,3 +143,23 @@ options table under Trade-offs was derived from the options it records. The
 decision text is unchanged.
 
 No follow-up work is recorded in this decision.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

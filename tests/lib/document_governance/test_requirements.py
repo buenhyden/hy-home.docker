@@ -109,6 +109,100 @@ class RequirementPackageTests(unittest.TestCase):
         path.write_text(text or _package_text(), encoding="utf-8")
         return path
 
+    def test_interface_refs_belong_to_existing_functional_or_quality_requirements(
+        self,
+    ) -> None:
+        requirements = _requirements_module()
+        references = (
+            "docs/03.specs/0001-delivery/02.contracts/openapi.yaml#/paths/~1submit",
+            "urn:interface:delivery.submit",
+            "https://example.invalid/interfaces#submit",
+        )
+        text = _package_text().replace(
+            'owner: "@buenhyden"',
+            'owner: "@buenhyden"\ninterface_refs: '
+            + json.dumps({"REQ-0001-FR-0001": list(references)}),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            package = requirements.parse_requirement_package(
+                self._write_package(pathlib.Path(directory), text=text)
+            )
+        self.assertEqual(references, package.items[0].interface_refs)
+        self.assertEqual((), package.items[1].interface_refs)
+        with self.assertRaises(dataclasses.FrozenInstanceError):
+            package.items[0].interface_refs = ()
+
+    def test_interface_refs_reject_unknown_owners_and_unsafe_or_duplicate_values(
+        self,
+    ) -> None:
+        requirements = _requirements_module()
+        invalid = (
+            None,
+            [],
+            {"REQ-0001-IF-0001": ["urn:interface:submit"]},
+            {"REQ-0002-FR-0001": ["urn:interface:submit"]},
+            {"REQ-0001-FR-9999": ["urn:interface:submit"]},
+            {"REQ-0001-FR-0001": "urn:interface:submit"},
+            {"REQ-0001-FR-0001": []},
+            {"REQ-0001-FR-0001": [1]},
+            {"REQ-0001-FR-0001": ["urn:interface:submit"] * 2},
+            {"REQ-0001-FR-0001": ["../private.yaml"]},
+            {"REQ-0001-FR-0001": ["%2e%2e/private.yaml"]},
+            {"REQ-0001-FR-0001": ["file:///private.yaml"]},
+            {"REQ-0001-FR-0001": ["javascript:run()"]},
+            {"REQ-0001-FR-0001": ["https://user:pass@example.invalid/api"]},
+            {"REQ-0001-FR-0001": ["https://example.invalid/api\nnext"]},
+            {"REQ-0001-FR-0001": ["{{INTERFACE_REFERENCE}}"]},
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            for references in invalid:
+                with self.subTest(references=references):
+                    text = _package_text().replace(
+                        'owner: "@buenhyden"',
+                        'owner: "@buenhyden"\ninterface_refs: '
+                        + json.dumps(references),
+                    )
+                    with self.assertRaisesRegex(
+                        requirements.RequirementPackageError, "interface_refs"
+                    ):
+                        requirements.parse_requirement_package(
+                            self._write_package(pathlib.Path(directory), text=text)
+                        )
+
+    def test_common_envelope_preserves_requirement_content_and_source_lines(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        requirements = _requirements_module()
+        for text in (
+            _package_text(),
+            wrap_document(_package_text(), kind="requirement"),
+        ):
+            with self.subTest(enveloped="## 문서 개요" in text):
+                with tempfile.TemporaryDirectory() as directory:
+                    package = requirements.parse_requirement_package(
+                        self._write_package(pathlib.Path(directory), text=text)
+                    )
+                self.assertEqual(4, len(package.items))
+                for item in package.items:
+                    self.assertIn(
+                        item.identity, text.splitlines()[item.line_number - 1]
+                    )
+
+    def test_malformed_common_envelope_is_not_a_legacy_requirement(self) -> None:
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        requirements = _requirements_module()
+        text = wrap_document(_package_text(), kind="requirement").replace(
+            "### 본문과 규칙", "### Broken payload", 1
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(requirements.RequirementPackageError):
+                requirements.parse_requirement_package(
+                    self._write_package(pathlib.Path(directory), text=text)
+                )
+
     def test_requirement_package_identity_is_owned_by_path(self) -> None:
         requirements = _requirements_module()
         with tempfile.TemporaryDirectory() as directory:

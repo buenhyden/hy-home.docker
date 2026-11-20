@@ -1,10 +1,13 @@
 ---
 title: "RedisInsight Operations Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0076"
 parent_ids:
@@ -15,31 +18,53 @@ next_review_at: "2027-05-13"
 
 # RedisInsight Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gateway 접근은 각
 대상 데이터베이스에 대한 최소 권한 부여를 대체하지 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Laboratory 아키텍처](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md)
 
 - [RedisInsight Compose 소스](../../../../infra/04-data/redisinsight/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 활성화, gateway/CIDR, 저장된 대상 자격 증명/이력, 대상 작업, 텔레메트리/라이선스,
 설정 백업/복구, 업그레이드, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 대상 Redis/Valkey 데이터의 백업은 이 정책의 범위가 아니며 각 엔진 소유자를 따른다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -92,27 +117,29 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
 - 업그레이드 전에 릴리스 노트, 텔레메트리 설정, 적용 가능한 SSPL/라이선스
   조건을 검토한다. 제거 전에 저장된 대상 자격 증명을 폐기한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 대상 권한 부여를 우회하거나 gateway 로그인을 데이터베이스 권한으로 취급하는
 예외는 없다. `encryption` 동의가 꺼진 저장소는 안전하다고 할 수 없다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 이미지/라이선스, 인증/CIDR, 암호화 키, 대상, 저장소 변경 시 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspector의 읽기
 허용과 쓰기·금지 명령 거부, UI health와 별개인 DB 접속, 저장 비밀번호의 평문
 부재, 설정 지속성을 검증하고, 복구 테스트가 프로덕션 대상에 도달할 수 없음을
 검증한다.
 
-### Limits
+##### Limits
 
 이 정책은 검증 항목만 나열하고 실행 검사의 이름을 지정하지 않으며, 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
@@ -124,16 +151,36 @@ gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspect
 - 정책이 밝힌 공백: `encryption` 동의가 꺼진 저장소는 안전하다고 할 수 없으나 이를 자동으로 확인하는 검사는 정의되지 않았다.
 - POL-0076-R3, POL-0076-R5, POL-0076-R7, POL-0076-R13, POL-0076-R18, POL-0076-R20: 수동 검증에 맡겨진다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 정책 소유자는 @buenhyden이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [가이드](../../01.guides/05.databases-and-storage/0076-redisinsight.md) (`GDE-0076`)
 - [런북](../../03.runbooks/05.databases-and-storage/0076-redisinsight.md) (`RUN-0076`)
 
 - [RedisInsight 설정](https://redis.io/docs/latest/operate/redisinsight/configuration/)
 - [RedisInsight 문서](https://redis.io/docs/latest/develop/tools/insight/)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.3.0"
+version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0100"
 parent_ids:
@@ -16,34 +19,56 @@ next_review_at: "2027-05-13"
 
 # Development Database Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 현재 source 인계 소유자는 [SPEC-0204](../../../03.specs/0204-service-integration-security-and-operations/spec.md)이며, SPEC-0202의 합성 검증은 삭제된 Spec의 역사적 근거이며 본문은 버전 이력에 있다.
 
 이 정책은 source-only `dev-pg`와 `dev-valkey`의 관리 데이터 분리, 최소 권한
 provision, 그리고 승인 전 실행 금지 경계를 정한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Artifact: `POL-0100`; parents: `AD-0031`, `SPEC-0204`.
 - Runtime declaration: `infra/04-data/dev-db/docker-compose.yml`.
 
-### Applies To
+##### Applies To
 
 적용 대상은 `dev-pg`, `dev-platform-provision`, `dev-perf-provision`, `dev-valkey`, 지표용 `dev-pg-monitor-provision`·`dev-pg-exporter`·`dev-valkey-exporter`와 그 선언된 state,
 network, secret reference다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 `mng-pg`와 `mng-valkey`의 metadata, session, management
 queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다. LAB entrypoint와
 외부 업무 앱도 범위 밖이다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -89,23 +114,25 @@ queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다.
 - secret은 Docker secret reference로만 소비한다. 값, rendered private configuration, raw
   database payload를 source evidence나 문서에 기록하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 내부 `platform_dev` fixture는 dbt/CDC contract 확인에 한정된다. 외부 project DB·schema·계정
 생성 또는 writer 전환의 근거가 되지 않는다. 예외는 @buenhyden의 승인, 대상 manifest,
 rollback 보존 기간과 검증 결과를 기록할 때만 종료한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 Compose image/profile/network/mount/secret reference, project provision schema, 권한 계약,
 backup declaration 또는 external consumer가 바뀔 때 검토한다. runtime acceptance 전에는
 각 실행 요청에서 Docker context, resource, port, network, volume과 cleanup 범위를 재확인한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 source change는 Compose render(`docker compose --env-file .env.example --profile dev-data config --quiet`)와 permission regression test를 통과해야 한다([RUN-0100](../../03.runbooks/05.databases-and-storage/0100-development-database.md#steps)). fresh PGDATA,
 repeat provision, app A/B isolation, reader write/DDL rejection, Timescale behavior, Valkey ACL,
@@ -113,7 +140,7 @@ backup/restore, CDC replay와 external consumer switching은 runtime task에서 
 SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.
 정적 통과나 격리 시험을 HOME deployment, 운영 recovery 또는 data migration 증거로 사용하지 않는다.
 
-### Limits
+##### Limits
 
 이 정책에서 이름 붙은 검사는 Compose render와 permission regression test뿐이며(검증 행에만 연결), 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
@@ -127,15 +154,35 @@ SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거
 - 정책이 밝힌 공백: fresh PGDATA/repeat provision/app A/B isolation/reader write·DDL rejection/Timescale behavior/Valkey ACL/backup·restore/CDC replay/external consumer switching은 runtime task에서 별도 증명 전까지 미검증이다.
 - 정책이 밝힌 공백: SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 정책 소유자는 @buenhyden이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Development database guide](../../01.guides/05.databases-and-storage/0100-development-database.md)
 - [Development database source preflight](../../03.runbooks/05.databases-and-storage/0100-development-database.md)
 - [Backup and restore policy](../10.platform-and-backup/0021-backup-and-restore.md)
 - [Management database policy](0028-management-database.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Dependency Version Management Runbook"
-version: "0.5.0"
+version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0086"
 parent_ids:
@@ -15,16 +18,36 @@ next_review_at: "2027-05-13"
 
 # Dependency Version Management Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 소스 이미지, 빌드 의존성, updater 정책, 파생 버전 projection을 바꿀 때 따르는 검증과 적용 절차를 안내한다.
 
 소스 이미지·빌드 의존성·updater 정책·파생 버전 projection 또는 단일 파일 config를
 변경할 때 사용한다.
 
-### Targets
+##### Targets
 
 - [운영 인덱스](../../README.md)
 - [파생 이미지 projection](../../../../infra/tech-stack.versions.json)
@@ -34,23 +57,23 @@ next_review_at: "2027-05-13"
 - [Guide](../../01.guides/10.platform-and-backup/0086-dependency-version-management.md), [Policy](../../02.policies/10.platform-and-backup/0086-dependency-version-management.md)
 - 적용 통제: [POL-0006](../../02.policies/01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 저장소 루트의 정확한 diff와 소유 service·profile을 기록한다.
 공개 source 검증은 runtime 적용이나 Renovate 작업 실행 승인이 아니다. private
 입력·Docker 작업이 필요한 단계는 대상 checkout/context와 별도 승인을 확인한다.
 
-### Environment
+##### Environment
 
 `sync-tech-stack-versions.sh --dry-run`과 `--check`로 공개 source만 읽는 projection 검사를 먼저 수행한다.
 
 읽기 전용 점검은 Steps의 `Source and updater changes` 2단계(`sync-tech-stack-versions.sh --dry-run`과 `--check`)와 `Static configuration validation`에 있다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -69,7 +92,8 @@ next_review_at: "2027-05-13"
 
 절차는 아래 항목에 따른다.
 
-#### Source and updater changes
+###### Source and updater changes
+<!-- core-payload-level:4 -->
 
 1. Compose image와 선택된 build context/Dockerfile/args/target, 설치 package,
    복사된 requirements·설정, entrypoint/command를 확인한다. image label만으로
@@ -117,7 +141,8 @@ next_review_at: "2027-05-13"
    local/custom·서로 다른 source version 사례를 검증한다. 현재 gate가 요구하는
    범위만 실행하며 Compose image projection PASS로 build pin을 대체하지 않는다.
 
-#### Renovate PR 처리
+###### Renovate PR 처리
+<!-- core-payload-level:4 -->
 
 1. Dependency Dashboard에서 속도 제한 대기 항목은 필요한 것만 체크한다.
 2. 보안 영향이 큰 PR부터 한 번에 하나씩 머지한다. 머지 뒤 남은 PR은 Renovate를 실행해 rebase한다.
@@ -125,14 +150,16 @@ next_review_at: "2027-05-13"
 4. 머지는 적용이 아니다. HOME 적용(recreate)은 별도 승인으로 진행하고 local 빌드 이미지는 CI가 검증하지 않으므로
    해당 서비스 Runbook으로 확인한다(n8n font-noto 사고, #895).
 
-#### Dependabot 보안 업데이트 중단 (owner 단계)
+###### Dependabot 보안 업데이트 중단 (owner 단계)
+<!-- core-payload-level:4 -->
 
 Renovate의 첫 정상 실행(Dependency Dashboard 생성, 대상 PR 제안)을 확인한 뒤, owner가
 GitHub 저장소 설정에서 Dependabot automatic security fixes만 끈다. Dependabot alerts는
 Renovate `vulnerabilityAlerts`의 입력이므로 켜 둔다. 이 문서는 해당 원격 설정을 바꾸지
 않으며, 실행은 owner의 별도 승인과 기록으로만 한다. 첫 실행 전에는 설정을 유지한다.
 
-#### Static configuration validation
+###### Static configuration validation
+<!-- core-payload-level:4 -->
 
 이 절은 network·profile·하네스 점검에도 적용된다. 실제 private `.env`와 secret을
 읽지 않는 승인된 public/sanitized checkout에서 도구·선택 범위를 먼저 확인한다.
@@ -155,7 +182,8 @@ bash scripts/validation/validate-docker-compose.sh
 mount와 network를 조회한다. 문서 전용 검증으로 실행하지 않는다. 입력이나 도구
 승인이 부족하면 `NOT_RUN`/`BLOCKED`로 남기고 가능한 공개 source 검사를 계속한다.
 
-#### Runtime configuration apply
+###### Runtime configuration apply
+<!-- core-payload-level:4 -->
 
 이 단계는 정확한 기존 service·Docker context·운영 checkout·변경 영향·백업과
 rollback이 승인된 경우에만 수행한다. 새 service의 기동, image pull/build, 초기화
@@ -191,27 +219,29 @@ exit0만으로 완료하지 않으며 기대 coverage와 unreadable0/diff0을 �
 있을 때만 사용하며 read-only 조회로 분류하지 않는다. helper 승인이나 읽기 경로가
 없으면 검증 미완료를 보존한다. 이는 script 수정이나 runtime 검증 성공 선언이 아니다.
 
-### Stop Conditions
+##### Stop Conditions
 
 소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단한다. parser/미분류 source 오류와 `UNREADABLE` 결과도 중단 사유다. gate를 우회하거나 force push하지 않는다.
 
 소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 Escalation에 기록한 중단 조건이다. parser/미분류 source 오류와 `UNREADABLE` 결과는 Steps의 해당 단계에서 중단 사유로 명시한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 `--check`는 의도한 항목만 추가·변경·삭제되고 성공해야 하며, 선택별 성공과 host-port 충돌 없음을 확인한다. 구문·선택 성공은 credential·network 도달성·health·복구 증거가 아니다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 명령·종료 코드·source commit·updater/validator 버전·선택과 coverage, 예상 결과와
 실패/중단을 현재 Task에 기록한다. private 값·원문 환경·raw log를 남기지 않는다.
 local 검사와 remote bot/hosted 실행, 실제 적용·복구를 구분하고 미실행은 명시한다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
 
@@ -222,18 +252,38 @@ local 검사와 remote bot/hosted 실행, 실제 적용·복구를 구분하고 
 - 런타임 config 반영: 문서는 구문/선택 성공이 credential, network 도달성, health, 복구 증거가 아니라고 밝힌다. 기대 mount 전부 `MATCH`와 서비스 health 확인이 검증 근거가 된다.
 - data restore: 서비스 소유의 별도 승인된 복구 절차에서만 수행하며 이 문서에는 기록이 없다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류,
 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단하고
 @buenhyden에게 전달한다. gate를 우회하거나 force push하지 않는다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 source와 derived registry를 함께 이전 승인 상태로 되돌리고 검사한다. runtime
 config rollback은 기존 승인된 구성의 재반영·hash·기능 확인까지 필요하다.
 Git rollback은 database 파일이나 migration을 downgrade하지 않는다. 마지막
 호환 image와 보호된 backup을 유지하며 data restore는 서비스 소유의 격리된
 복구 절차와 별도 승인으로만 수행한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

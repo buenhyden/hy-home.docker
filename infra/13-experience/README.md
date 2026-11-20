@@ -1,45 +1,72 @@
 ---
 title: "13 경험 자산"
-version: "1.1.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-03"
 ---
 
 # 13 경험 자산
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 공유 UI 구성요소를 검토하는 정적 Storybook origin을 소유한다. 폴더 번호는
 기동 순서가 아니며 새 업무 앱의 저장 위치도 아니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 UI 개발자, 디자인 검토자와 인프라 운영자를 위한 인덱스다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 선택형 `storybook` 서비스의 Compose 선언과 운영 설명을 포함한다.
 컴포넌트 코드·story·정적 빌드는 기존 `projects/storybook/nextjs`가 소유한다.
 로컬 문서 MCP와 외부 업무 앱은 이 tier의 서비스가 아니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 | Package | 역할 | 분류·profile | 의존성 |
 | --- | --- | --- | --- |
 | [storybook](storybook/README.md) | 정적 Storybook 문서 origin | OPTIONAL / `experience` | Traefik·OAuth2 Proxy·Keycloak은 브라우저 접근 시 별도 선택 |
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | Storybook Traefik 라우트(`DEFAULT_URL`의 기존 공개 route 이름) | `storybook` static origin | 관리자 `/admins` 브라우저 | 라우트는 `sso-auth@file`을 거치고 `experience_ingress_net`이 Storybook과 Traefik만 연결하며 host port는 없다. | 운영과 복구는 RUN-0101 Storybook Runbook을 따른다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 root [Compose](../../docker-compose.yml)가 leaf를 include하고 전용망을 선언한다.
 `experience`는 HOME 선택에 포함되지 않는다. static origin에는 secret,
@@ -47,13 +74,14 @@ root [Compose](../../docker-compose.yml)가 leaf를 include하고 전용망을 �
 제공한다. 이미지 빌드 소스·revision과 MCP는
 [Storybook 프로젝트](../../projects/storybook/nextjs/README.md)를 따른다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 static origin에는 secret, 영속 volume, host port가 없고 Traefik 라우트는 `sso-auth@file`을 거친다. `experience` profile은 HOME 선택에 포함되지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Category | Technology | Notes |
 | --- | --- | --- |
@@ -61,15 +89,15 @@ static origin에는 secret, 영속 volume, host port가 없고 Traefik 라우트
 | 브라우저 ingress | 기존 Traefik + OAuth2 Proxy | 관리자 `/admins`만 허용 |
 | 내부 연결 | `experience_ingress_net` | Storybook과 Traefik만 연결하는 internal network |
 
-### Selected Start
+##### Selected Start
 
 1. 소스 revision과 image label·manifest revision을 대조한다.
 2. root와 Traefik의 전용망 연결, `sso-auth@file` 및 profile 분류를 함께 검토한다.
 3. 실제 기동·재시작은 별도 운영 승인 이후에만 수행한다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 ```bash
 docker compose --env-file .env.example --profile experience config --quiet
@@ -78,15 +106,37 @@ python3 scripts/validation/check-operations-catalog.py
 
 정적 render는 HOME 기동, DNS/TLS, 로그인이나 브라우저 사용성을 증명하지 않는다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [상위 인프라](../README.md)
 - [서비스 패키지](storybook/README.md)
 - [문서 진입점](../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
 - [14-design-system runbooks](../../docs/05.operations/03.runbooks/14.design-system/README.md): RUN-0101 storybook
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 운영과 복구는 [14-design-system runbooks](../../docs/05.operations/03.runbooks/14.design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다. 정적 render는 HOME 기동을 증명하지 않으며 실제 기동·재시작은 별도 운영 승인 대상이다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

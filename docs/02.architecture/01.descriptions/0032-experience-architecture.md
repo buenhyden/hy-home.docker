@@ -1,10 +1,13 @@
 ---
 title: "Experience Tier Architecture Description"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0032"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-10-29"
 
 # Experience Tier Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **storybook:** an unprivileged, read-only static origin on the internal
   `experience_ingress_net`, with no secret, persistent volume or host port.
@@ -32,7 +55,8 @@ created: "2026-10-29"
   `projects/storybook/nextjs`; this tier owns no business application, and
   Compose validation proves no running service, login or HOME activation.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 The `13-experience` tier owns the shared Storybook delivery: a static
 documentation origin and a remote docs MCP, both built from one commit of
@@ -40,17 +64,18 @@ documentation origin and a remote docs MCP, both built from one commit of
 and infrastructure operators. The tier is optional and outside the default HOME
 selection.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 UI developers and design reviewers reach Storybook through Traefik with `sso-auth`, while other workspaces call `storybook-mcp` with a Keycloak bearer token. The tier depends on Keycloak and the `projects/storybook/nextjs` build.
 
-### Constraints
+##### Constraints
 
 The tier is optional and outside the default HOME selection. Both images are pinned to one commit, the static origin serves only administrators, the MCP authorizes by token alone, and static validation infers no runtime, TLS or browser result.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 ```mermaid
 flowchart LR
@@ -61,7 +86,7 @@ flowchart LR
   MCP --> Keycloak
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -73,44 +98,48 @@ flowchart LR
 - `storybook-mcp` serves `docs-list`, `docs-show` and `docs-show-story` on `/mcp` and the protected-resource metadata path, for Keycloak bearer tokens from the `/admins` group.
 - Both services use the `experience` profile.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 Administrators reach the static origin after the gateway and ForwardAuth
 checks. Other workspaces call `storybook-mcp` with a Keycloak token; the server
 verifies the signature, issuer, audience, lifetime and group before it returns
 `docs-list`, `docs-show` or `docs-show-story` results.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The root Compose project includes the `infra/13-experience/storybook` leaf.
 Both images are pinned to the same commit with `pull_policy: never`, so a
 missing image fails the start. The `experience` profile is selected only on
 request.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Both images use `pull_policy: never`, so a missing image fails the start. The MCP rejects a token with the wrong signature, issuer, audience, lifetime or group, and no cookie-based `sso-auth` applies to the MCP.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 Delivery is reproducible from one commit. The static origin serves content only
 to administrators, and the MCP authorizes by token alone. Static validation
 infers no runtime, TLS or browser result.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 A build whose commit differs between the two images, or a token accepted for
 another audience, would break the contracts that POL-0101 defines.
 
-### Trade-offs
+##### Trade-offs
 
 - Both images are pinned to one commit with `pull_policy: never`, which makes
   delivery reproducible but means a missing image fails the start (Deployment
@@ -121,19 +150,21 @@ another audience, would break the contracts that POL-0101 defines.
 - The tier is optional and outside the default HOME selection, and static
   validation infers no runtime, TLS or browser result (Constraints).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 No ADR is linked to this description. POL-0101 and its operations documents, linked under Currentness and Lineage, define the contracts.
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - SPEC-0219 (retired; version history)
 - [Storybook guide](../../05.operations/01.guides/14.design-system/0101-storybook.md)
@@ -142,7 +173,28 @@ No ADR is linked to this description. POL-0101 and its operations documents, lin
 - [Experience tier packages](../../../infra/13-experience/README.md)
 - [AD-0031](0031-home-development-host.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 Changes to the build, routes or token checks follow POL-0101 and its
 operations documents; this description changes only when the structure does.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Security Optimization and Hardening Architecture"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0018"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-28"
 
 # Security Optimization and Hardening Architecture
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - OpenBao owns KV-v2 secret storage and lookup.
 - OpenBao Agent owns AppRole authentication, the token sink, and per-service
@@ -26,26 +49,28 @@ created: "2026-03-28"
 - Per-application configuration parsing and external KMS/HSM operation are
   outside this architecture.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This document describes the OpenBao and OpenBao Agent boundary implemented in
 `infra/03-security/`. The maintainer, service owner, and operator must clearly
 separate ownership of the source secret, the rendered output, health, and the
 recovery procedure.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Traefik provides the external boundary, and OpenBao Agent provides minimum-scope rendered output to consuming services.
 
-### Constraints
+##### Constraints
 
 Plaintext secrets and placeholder paths are rejected and least privilege is kept. Raft 3-node, auto-unseal, and a remote audit sink are not the current implementation. The source secret and the rendered output maintain separate access boundaries.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 The current HOME implementation consists of `openbao` and `openbao-agent` from
 `infra/03-security/openbao/docker-compose.yml`, the policy, configuration, and
@@ -53,7 +78,7 @@ template files, and a persistent volume. Traefik provides the external
 boundary, and OpenBao Agent provides only minimum-scope output to consuming
 services.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -64,11 +89,12 @@ services.
 - OpenBao Agent authenticates with AppRole and keeps token state at `/openbao/agent/token`.
 - Rendered output is published under `/openbao/out/<service>/`, bind-mounted from `${DEFAULT_SECURITY_DIR}/openbao/out`, for consuming services.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 The source secret is stored in OpenBao KV-v2. OpenBao Agent authenticates with
 AppRole, keeps restricted token state at `/openbao/agent/token`, and then
@@ -76,7 +102,8 @@ renders template output under `/openbao/out/<service>/`, bind-mounted from
 `${DEFAULT_SECURITY_DIR}/openbao/out`. The source secret
 and the rendered output maintain separate access boundaries.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The current HOME deployment is a single Docker Compose-based OpenBao and
 OpenBao Agent structure. The registered hardening and Compose validators check the tracked
@@ -84,15 +111,16 @@ configuration. Raft 3-node, auto-unseal, and a remote audit sink
 are not the current implementation, and are not treated as the current
 topology without a separately approved Requirement and ADR.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Healthchecks, persistent data and an explicit recovery procedure keep reliability; health and rendering results must be checkable without exposing the secret value. The recovery procedure is owned by the linked [OpenBao runbook](../../05.operations/03.runbooks/04.security-and-secrets/0085-openbao.md).
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Security**: rejects plaintext secrets and placeholder paths, and keeps
   least privilege.
@@ -103,7 +131,7 @@ Healthchecks, persistent data and an explicit recovery procedure keep reliabilit
 - **Operability**: configuration, the Operations procedure, and validation
   results must describe the same current topology.
 
-### Trade-offs
+##### Trade-offs
 
 - The current HOME deployment is a single Docker Compose-based OpenBao and
   OpenBao Agent structure; Raft 3-node, auto-unseal and a remote audit sink are
@@ -114,22 +142,44 @@ Healthchecks, persistent data and an explicit recovery procedure keep reliabilit
   and the Agent provides only minimum-scope output to consuming services
   (Constraints, Building Blocks).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0050](../02.decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0018
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0003](../../01.requirements/0003-security.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - [AD-0003 Security architecture](0003-security-architecture.md)
 
 The description reflects the current tree at its `updated` date and history lives in Git.
 
 Operations documents: [OpenBao policy](../../05.operations/02.policies/04.security-and-secrets/0085-openbao.md) and [OpenBao runbook](../../05.operations/03.runbooks/04.security-and-secrets/0085-openbao.md).
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

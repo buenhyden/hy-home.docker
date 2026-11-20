@@ -1,10 +1,13 @@
 ---
 title: "DEV Timescale, InfluxDB Retirement and Load Tools"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0047"
 parent_ids:
@@ -15,9 +18,29 @@ created: "2026-10-07"
 
 # ADR-0047: DEV Timescale, InfluxDB Retirement and Load Tools
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 The 2026-10-07 user request asks for one time-series and test-result store,
 removal of every active InfluxDB surface, a single default load tool, and
@@ -34,20 +57,21 @@ duplicate raw results across stores. Keep normal startup free of lab topology.
 Removal must be complete in source while data disposal stays a separate,
 verified operation.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [AD-0004](../01.descriptions/0004-data-architecture.md)
 - [AD-0031](../01.descriptions/0031-home-development-host.md)
 - [ADR-0062](0062-home-lab-membership.md)
 - [SPEC-0212](../../03.specs/0212-request-baseline-and-reconciliation/spec.md)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the DEV TimescaleDB time-series and test-result store, the retirement of InfluxDB from every active surface, the default load tool, and the placement of HA/replica topologies. It affects ADR-0045's Data tier list, REQ-0005, AD-0004/AD-0012, POL-0078 and the InfluxDB guide, policy and runbook.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep InfluxDB as an optional service: rejected; the request retires it and
   it would remain a second time-series owner.
@@ -59,7 +83,7 @@ This decision covers the DEV TimescaleDB time-series and test-result store, the 
 - Root profiles for HA services: rejected; explicit service targeting
   activates a profiled service, so a profile cannot keep lab services out.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -72,9 +96,9 @@ This decision covers the DEV TimescaleDB time-series and test-result store, the 
 
 Each option's reason for rejection or deferral is stated in its entry above. The chosen decisions reuse running engines and contracts, keep one owner per data role, and keep normal startup free of lab topology.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. DEV TimescaleDB is the store for project time-series history and for
    `perf_db` results. Run, attempt, verdict and checksum records stay ordinary
@@ -93,13 +117,13 @@ Each option's reason for rejection or deferral is stated in its entry above. The
    their own project, network, data root, secrets and ports. They are never
    root-included; a profile is a selector, not an isolation boundary.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-10-07, the date the Follow-up records for acceptance.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 ADR-0045's Data tier list loses InfluxDB once the retirement change lands;
 its storage/processing boundary is otherwise unchanged. REQ-0005,
@@ -108,7 +132,7 @@ in that same follow-on package. A DEV-only engine shares CPU and I/O between
 projects; a separate quality instance is considered only after measured
 interference, never by moving load to MNG.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -121,9 +145,30 @@ Locust and HA topologies in standalone LAB files); the live load metric path
 is completed by the follow-on quality package. Real data export, purge and HOME container removal
 need a confirmed target and recovery path; until then they stay `NOT_RUN`.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 The retirement package proves an empty active reference set outside history,
 a root model without `influxdb`, and passing replacement regressions. The
 LAB package proves no LAB key or network in the root `--profile '*'` model
 and a standalone render for each LAB file.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

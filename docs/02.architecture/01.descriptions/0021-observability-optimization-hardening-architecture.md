@@ -1,10 +1,13 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-28"
 
 # 06-Observability Optimization Hardening Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 The observability layer separates collection and storage from management
 UI and API routes. Traefik terminates TLS for management routes, which use
@@ -38,26 +61,28 @@ use `obs_net`.
   - Immediate multi-cluster/multi-region observability adoption
   - Full redesign of the sampling policy
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This document defines the optimization/hardening reference architecture of
 the `06-observability` layer. It organizes the gateway boundary security,
 health-based dependency, custom image runtime hardening, and catalog-based
 expansion strategy from an architecture perspective.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The layer consumes the `01-gateway` Traefik middleware chain, `02-auth` Keycloak-based SSO and `04-data` SeaweedFS object storage; clients reach management routes through Traefik.
 
-### Constraints
+##### Constraints
 
 Security requires TLS termination, SSO or application authentication per route, and non-root container execution; boot order is health-based. The long-term retention policy is managed at the operations layer, and multi-cluster/multi-region adoption and a full sampling-policy redesign are non-goals.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - Storage/Query Plane:
   - Prometheus, Loki, Tempo, Pyroscope
@@ -73,7 +98,7 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - Internal Path:
   - OTLP/log/trace traffic over `obs_net`
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -88,11 +113,12 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
   browser ForwardAuth chain.
 - Internal path: OTLP/log/trace traffic over `obs_net`.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 - **Key Entities / Flows**:
   - Metrics, logs, traces, profiles
@@ -103,7 +129,8 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Data Boundaries**:
   - the long-term retention policy is managed at the operations layer
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 - **Runtime / Platform**:
   - Docker Compose + `infra/common-optimizations.yml`
@@ -112,15 +139,16 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Verification**:
   - the registered `infrastructure-hardening` gate in `.github/workflow-contract.yml`
 
-### Failure and Recovery
+##### Failure and Recovery
 
 The data plane is kept over `obs_net` internal communication, and boot stability is improved through `service_healthy` dependency. The description records no failure boundary beyond the linked operations documents under Interfaces.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Performance**: burst control/overload mitigation through the gateway
   standard chain
@@ -133,7 +161,7 @@ The data plane is kept over `obs_net` internal communication, and boot stability
 - **Operability**: script-based regression blocking + standard runbook
   procedure
 
-### Trade-offs
+##### Trade-offs
 
 - The layer runs a single-node observability core with only optional
   horizontal expansion; multi-cluster or multi-region adoption is a non-goal
@@ -145,28 +173,51 @@ The data plane is kept over `obs_net` internal communication, and boot stability
   description records no failure boundary beyond the linked operations
   documents (Failure and Recovery).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - **ADR**: [ADR-0021 Observability hardening and HA expansion](../02.decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - **Requirement**: [REQ-0007 Observability](../../01.requirements/0007-observability.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - **Tier Architecture Description**: [AD-0006 Observability Architecture Description](0006-observability-architecture.md)
 - **Guide**: [Observability optimization hardening guide](../../05.operations/01.guides/07.observability/0044-observability-optimization-hardening.md)
 - **Policy**: [Observability optimization hardening policy](../../05.operations/02.policies/07.observability/0044-observability-optimization-hardening.md)
 - **Runbook**: [Observability optimization hardening runbook](../../05.operations/03.runbooks/07.observability/0044-observability-optimization-hardening.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 - Prometheus: scrape budget + remote_write tiering
 - Loki: label cardinality budget + separate retention/compactor operation
 - Tempo: per-service/endpoint sampling policy + span-burst protection
 - Alloy: onboarding templating + modularized collection pipeline
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

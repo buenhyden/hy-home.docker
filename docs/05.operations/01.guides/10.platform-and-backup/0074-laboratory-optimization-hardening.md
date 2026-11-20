@@ -1,10 +1,13 @@
 ---
 title: "Admin and Experiment Tools Hardening Usage Guide"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0074"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # Admin and Experiment Tools Hardening Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 Platform SRE, DevOps Engineer, Security Reviewer가 관리·실험 도구(dozzle, redisinsight, open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 적용할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 이 가이드는 Data·Observability·AI·Analytics tier에 흩어진 관리·실험 기능(dozzle, redisinsight,
 open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. jupyterlab은 SPEC-0262 이후 독립 LAB `labs/jupyterlab/docker-compose.yml`이며 root에 포함되지 않는다. `12-analytics` tier에는 현재 root가 include하는 패키지가 없으므로 하드닝 검사 인자에 남아 있어도 대상 service가 없다.
@@ -36,7 +59,8 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 - open-notebook UI route를 승인된 allowlist+large-body+앱 비밀번호 경계로 보호하고 secret-file 주입을 유지한다.
 - 하드닝 회귀를 script와 CI로 일찍 막는다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - 상위 문서: [Admin and Experiment Tools Hardening Operations Policy](../../02.policies/10.platform-and-backup/0074-laboratory-optimization-hardening.md) (`POL-0074`)
 - 설계 근거: [Administration and Experimentation Architecture Description](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md) (`AD-0011`)
@@ -47,28 +71,31 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 - [Operations index](../../README.md)
 - [Operations policy](../../02.policies/10.platform-and-backup/0074-laboratory-optimization-hardening.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 사전 조건
+###### 사전 조건
+<!-- core-payload-level:4 -->
 
 - Docker와 Docker Compose 실행 환경
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Authority
+##### Authority
 
 - 변경 대상 Data·Observability·AI·Analytics 패키지의 수정 권한
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 실행 순서와 실패·복구 판단은 [런북](../../03.runbooks/10.platform-and-backup/0074-laboratory-optimization-hardening.md)의 `Steps` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-#### 흔한 실수
+###### 흔한 실수
+<!-- core-payload-level:4 -->
 
 - allowlist CIDR 설정을 빠뜨려 운영자 접근이 막힌다.
 - dashboard direct 포트 노출을 되돌려 우회 경로를 만든다.
@@ -76,25 +103,46 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 - 문서 링크와 README 인덱스 동기화를 빠뜨린다.
 - service-local standalone compose render를 root readiness 증거로 오해한다.
 
-### Expected Results
+##### Expected Results
 
 - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 - `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../03.runbooks/10.platform-and-backup/0074-laboratory-optimization-hardening.md)의 절차로 진단한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../03.runbooks/10.platform-and-backup/0074-laboratory-optimization-hardening.md)을 따른다.
 
 - [Recovery runbook](../../03.runbooks/10.platform-and-backup/0074-laboratory-optimization-hardening.md)
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [recovery runbook](../../03.runbooks/10.platform-and-backup/0074-laboratory-optimization-hardening.md)(`RUN-0074`)의 진단, rollback, escalation 기준을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

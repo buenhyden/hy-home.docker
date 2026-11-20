@@ -1,10 +1,13 @@
 ---
 title: "08-AI Optimization Hardening Usage Guide"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0058"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # 08-AI Optimization Hardening Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 `08-ai` 계층의 최적화/하드닝 변경을 적용하는 SRE/Platform Operator, DevOps Engineer, AI Platform Owner.
 
-### Outcome
+##### Outcome
 
 이 문서는 `08-ai` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 경계 보안, GPU concurrency 제어, stateful 템플릿 일관성, health 기반 검증 절차를 제공한다.
 
@@ -39,7 +62,8 @@ next_review_at: "2027-05-13"
 - AI 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목(모델 승격/접근 분리/로그 정책)을 운영 기준으로 반영한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Declared parent: [08-AI Optimization Hardening Operations Policy](../../02.policies/09.ai-and-search/0058-ai-optimization-hardening.md) (`POL-0058`)
 - Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/01.descriptions/0008-ai-architecture.md) (`AD-0008`)
@@ -50,22 +74,23 @@ next_review_at: "2027-05-13"
 - [Operations index](../../README.md)
 - [Operations policy](../../02.policies/09.ai-and-search/0058-ai-optimization-hardening.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 사전 조건
+###### 사전 조건
+<!-- core-payload-level:4 -->
 
 - Docker / Docker Compose 실행 환경
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Authority
+##### Authority
 
 - `infra/08-ai` 수정 권한
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -77,7 +102,8 @@ next_review_at: "2027-05-13"
 | 6 | `bash scripts/validation/check-template-security-baseline.sh`와 `python3 scripts/validation/check-document-links.py --mode traceability`로 기준선을 검증한다. | Expected Results의 Common Checks가 통과한다. | 문서에 기록 없음 |
 | 7 | 카탈로그 확장 운영 기준(모델 승격 절차, Open WebUI 모델 접근 권한 분리, 대화 로그 보존/마스킹)을 tasks/operations에 반영한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
-#### 사용 절차
+###### 사용 절차
+<!-- core-payload-level:4 -->
 
 1. 정적 구성 점검
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -104,34 +130,57 @@ next_review_at: "2027-05-13"
    - Open WebUI 모델 접근 권한 분리 기준을 반영한다.
    - 대화 로그 보존/마스킹 정책을 반영한다.
 
-#### Control evidence boundary
+###### Control evidence boundary
+<!-- core-payload-level:4 -->
 
 AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
 
-### Expected Results
+##### Expected Results
 
-#### Common Checks
+###### Common Checks
+<!-- core-payload-level:4 -->
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - Open WebUI LAB에 gateway route를 다시 붙이거나 Ollama에서 proxy auth를 누락하는 실수
 - Ollama 상한 없이 고동시성 부하를 허용해 GPU OOM을 유발하는 실수
 - Open WebUI LAB을 stateless 템플릿으로 운용해 상태 드리프트를 유발하는 실수
 - exporter health 계약 없이 모니터링 신뢰도를 낮추는 실수
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../03.runbooks/09.ai-and-search/0058-ai-optimization-hardening.md)을 따른다.
 
 - [Recovery runbook](../../03.runbooks/09.ai-and-search/0058-ai-optimization-hardening.md)
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [recovery runbook](../../03.runbooks/09.ai-and-search/0058-ai-optimization-hardening.md)의 장애 대응, rollback, escalation 기준을 따른다. 소스에 없는 chat retention과 모델 접근 분리는 `@buenhyden`의 별도 통제·구현 변경과 검증이 필요하다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "JupyterLab Operations Policy"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0089"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-13"
 
 # JupyterLab Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 JupyterLab은 임의의 코드를 실행한다. kernel이나 terminal에 도달할 수 있는 사람은 누구든
 컨테이너와 컨테이너가 읽을 수 있는 모든 credential을 제어한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Laboratory architecture](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md)
 - SPEC-0262 Analytics labs migration
 - [Image Dockerfile](../../../../labs/jupyterlab/Dockerfile) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [JupyterLab Compose source](../../../../labs/jupyterlab/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 활성화, 인증, 네트워크 노출, work-directory 데이터, 이미지 의존성, MLflow client 접근,
 backup, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 다중 사용자 JupyterHub 설계와 MLflow 서버 자체 통제(POL-0088)는 이 정책의 대상이 아니다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -83,33 +108,36 @@ backup, 제거.
   별도 승인 아래 수동으로만 한다.
 - 라이브러리 버전을 고정한다. 의존성 변경은 다른 이미지 변경처럼 검토한다.
 
-#### 복구·회전과 책임
+###### 복구·회전과 책임
+<!-- core-payload-level:4 -->
 
 책임자는 `@buenhyden`이다. 토큰 회전은 새 token 성공뿐 아니라 이전 token·cookie
 거부 근거가 필요하다. 정확한 base 동작이 확인되지 않으면 폐기 완료로 기록하지 않는다.
 work 복구본과 원본은 격리하고 파일·노트북 출력의 민감성을 유지한다. 데이터 삭제는
 컨테이너 제거와 별도로 보존·승인을 확인한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 내부 MLflow SDK 경로는 인증되지 않는다 (`POL-0088` 참고). terminal은 단일 사용자를
 위해 활성화 상태로 유지한다. 추가 검토 없이 비활성화해도 된다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 이미지나 라이브러리 변경, 인증 변경, 신규 사용자, JupyterHub 결정 시 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 정적 렌더링(`docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab config --quiet`)과
 `tests.validation.test_lab_isolation` 후, lease 아래 런타임 검사: 토큰 없는 요청과 잘못된 토큰의
 거부, 게시 port가 `LAB_HOST_BIND_IP`에만 bind됨, kernel 시작과 WebSocket.
 
-### Limits
+##### Limits
 
 아래 규칙은 이름 붙은 검사가 규칙에 연결되어 있지 않거나 승인/검토에 의존한다(정적 렌더링과 `tests.validation.test_lab_isolation`은 개별 규칙과 연결되지 않음).
 
@@ -122,14 +150,34 @@ work 복구본과 원본은 격리하고 파일·노트북 출력의 민감성�
 - 토큰 회전의 이전 token/cookie 거부는 정확한 base 동작이 확인되지 않으면 폐기 완료로 기록할 수 없다.
 - MLflow endpoint 승인은 미결정이며 내부 MLflow SDK 경로는 인증되지 않는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Guide](../../01.guides/15.labs/0089-jupyterlab.md) (`GDE-0089`)
 - [Runbook](../../03.runbooks/15.labs/0089-jupyterlab.md) (`RUN-0089`)
 - [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

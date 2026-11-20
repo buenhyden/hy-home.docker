@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "common": {
     "allowed_statuses": [
       "draft",
@@ -36,6 +36,9 @@
       "type",
       "status",
       "owner",
+      "document_scope",
+      "document_lifecycle",
+      "interface_refs",
       "updated",
       "layer",
       "artifact_id",
@@ -83,7 +86,8 @@
       "model_reasoning_effort",
       "permissionMode",
       "skills",
-      "tools"
+      "tools",
+      "template_id"
     ],
     "generated_outputs": {},
     "globally_forbidden": [
@@ -126,7 +130,8 @@
       "observed_at": "{{OBSERVED_AT}}",
       "occurred_at": "{{OCCURRED_AT}}",
       "review_cycle": "{{REVIEW_CYCLE}}",
-      "next_review_at": "{{NEXT_REVIEW_AT}}"
+      "next_review_at": "{{NEXT_REVIEW_AT}}",
+      "document_subject": "{{DOCUMENT_SUBJECT}}"
     },
     "template_required_placeholders": [
       "title",
@@ -635,7 +640,7 @@
         ]
       },
       "status": {
-        "meaning": "Current lifecycle status, drawn from the profile's lifecycle.",
+        "meaning": "The profile-specific authored state: normative use for a document policy, implementation progress for a Task, or event progress for an Incident; never actual criterion acceptance.",
         "writer": "document author",
         "consumers": [
           "scripts/lib/document_governance/registry.py",
@@ -1057,6 +1062,35 @@
         "writer": "scripts/operations/provider_surface_renderer.py",
         "consumers": [
           "scripts/operations/provider_surface_renderer.py"
+        ]
+      },
+      "document_scope": {
+        "meaning": "The actual maintained subject and common workspace/product/agent/provider/template/reference layer; separate from stage layer and workload scope.",
+        "writer": "The document author names the actual described target.",
+        "consumers": [
+          "scripts/lib/document_governance/common_document.py",
+          "scripts/lib/document_governance/metadata/heading.py"
+        ]
+      },
+      "document_lifecycle": {
+        "meaning": "Normative draft/active/deprecated state for a document whose status owns implementation or incident progress; never inferred from PASS or completed.",
+        "writer": "The authorized document owner; an execution or acceptance result cannot promote it.",
+        "consumers": [
+          "scripts/lib/document_governance/common_document.py"
+        ]
+      },
+      "interface_refs": {
+        "meaning": "Interface-surface references owned by declared FR/NFR requirement identities, not a third requirement kind.",
+        "writer": "The Requirement Package author.",
+        "consumers": [
+          "scripts/lib/document_governance/requirements.py"
+        ]
+      },
+      "template_id": {
+        "meaning": "The registered definition identity for an author-facing template descriptor, separate from an output artifact identity.",
+        "writer": "The template definition owner.",
+        "consumers": [
+          "scripts/lib/document_governance/template_definition.py"
         ]
       }
     },
@@ -1656,6 +1690,607 @@
       "schema_path": "docs/99.templates/01.contracts/document-role-design.schema.json",
       "source_sha256": "3ac2806ec2db8b9f7cd320faa1b5bfe36675624555e63269783be8cdc2039a0e",
       "schema_sha256": "a07b2f24bc9980bab04895128e4ddf3339a2d719485a6f48f49e7ba26e227ad2"
+    },
+    "document_core": {
+      "contract_id": "WORKSPACE-DOCUMENT-CORE",
+      "contract_version": "1.0.0",
+      "source_path": "docs/99.templates/01.contracts/common-document-contract.json",
+      "source_sha256": "f9368ee8e4ed1484fba7ae31ef39e74c1f5adcaff52ec41508735e85fea2993f",
+      "adoption": "verified",
+      "profile_bindings": {
+        "requirements-package": {
+          "kind": "requirement",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "approved": "active"
+          }
+        },
+        "architecture-description": {
+          "kind": "architecture-description",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "approved": "active"
+          }
+        },
+        "adr": {
+          "kind": "architecture-decision",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "accepted": "active",
+            "rejected": "deprecated",
+            "proposed": "draft"
+          }
+        },
+        "spec": {
+          "kind": "spec",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "approved": "active",
+            "cancelled": "deprecated"
+          }
+        },
+        "data-model-contract": {
+          "kind": "data-model",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "approved": "active"
+          }
+        },
+        "openapi-contract": {
+          "kind": "native-asset",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "active": "active",
+            "deprecated": "deprecated"
+          }
+        },
+        "graphql-contract": {
+          "kind": "native-asset",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "active": "active",
+            "deprecated": "deprecated"
+          }
+        },
+        "proto-contract": {
+          "kind": "native-asset",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "active": "active",
+            "deprecated": "deprecated"
+          }
+        },
+        "plan": {
+          "kind": "plan",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "approved": "active",
+            "cancelled": "deprecated"
+          }
+        },
+        "task": {
+          "kind": "task",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "document_lifecycle",
+          "lifecycle_values": {
+            "draft": "draft",
+            "active": "active",
+            "deprecated": "deprecated"
+          }
+        },
+        "guide": {
+          "kind": "guide",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "policy": {
+          "kind": "policy",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "runbook": {
+          "kind": "runbook",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "incident": {
+          "kind": "incident",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "document_lifecycle",
+          "lifecycle_values": {
+            "draft": "draft",
+            "active": "active",
+            "deprecated": "deprecated"
+          }
+        },
+        "postmortem": {
+          "kind": "postmortem",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "published": "active"
+          }
+        },
+        "reference-category-readme": {
+          "kind": "readme",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "research": {
+          "kind": "reference-pack",
+          "scope_layers": [
+            "reference"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "published": "active",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "audit": {
+          "kind": "reference-pack",
+          "scope_layers": [
+            "reference"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "published": "active",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "data": {
+          "kind": "reference-pack",
+          "scope_layers": [
+            "reference"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "published": "active",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "research-member": {
+          "kind": "research",
+          "scope_layers": [
+            "reference"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "published": "active",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "audit-member": {
+          "kind": "audit",
+          "scope_layers": [
+            "reference"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "published": "active",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "documentation-readme": {
+          "kind": "readme",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "repository-readme": {
+          "kind": "readme",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "package-readme": {
+          "kind": "readme",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "runtime-governance-readme": {
+          "kind": "readme",
+          "scope_layers": [
+            "provider"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "readme": {
+          "kind": "readme",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "incident-year-readme": {
+          "kind": "readme",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "governance-policy": {
+          "kind": "policy",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "governance-hook-policy": {
+          "kind": "rule",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "governance-role": {
+          "kind": "role",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "governance-skill": {
+          "kind": "skill",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "governance-provider": {
+          "kind": "provider",
+          "scope_layers": [
+            "provider"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "folder-agent-guide": {
+          "kind": "agent-guide",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active"
+          }
+        },
+        "governance-provider-index": {
+          "kind": "provider-index",
+          "scope_layers": [
+            "provider"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "governance-sdlc": {
+          "kind": "contract",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "governance-knowledge": {
+          "kind": "knowledge",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "governance-vocabulary": {
+          "kind": "glossary",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "governance-knowledge-index": {
+          "kind": "knowledge-index",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "governance-prompt": {
+          "kind": "prompt",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "governance-prompt-index": {
+          "kind": "prompt-index",
+          "scope_layers": [
+            "agent",
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "active": "active"
+          }
+        },
+        "runtime-projection-claude": {
+          "kind": "native-asset",
+          "scope_layers": [
+            "provider"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "active": "active",
+            "deprecated": "deprecated"
+          }
+        },
+        "runtime-projection-codex": {
+          "kind": "native-asset",
+          "scope_layers": [
+            "provider"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "active": "active",
+            "deprecated": "deprecated"
+          }
+        },
+        "generated": {
+          "kind": "data-reference",
+          "scope_layers": [
+            "workspace",
+            "product"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "published": "active",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        }
+      },
+      "path_bindings": {
+        "docs/00.workspace/01.project/glossary.md": {
+          "kind": "glossary",
+          "scope_layers": [
+            "workspace"
+          ]
+        },
+        ".agents/knowledge/glossary.md": {
+          "scope_layers": [
+            "workspace"
+          ]
+        }
+      }
     }
   },
   "profiles": [
@@ -1675,12 +2310,14 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
         "created",
-        "parent_ids"
+        "parent_ids",
+        "interface_refs"
       ],
       "required_sections": [
         "Overview",
@@ -1738,7 +2375,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -1807,7 +2445,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -1872,7 +2511,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -1945,7 +2585,8 @@
         "updated",
         "layer",
         "parent_ids",
-        "created"
+        "created",
+        "document_scope"
       ],
       "optional_frontmatter": [],
       "required_sections": [
@@ -2053,7 +2694,8 @@
         "owner",
         "updated",
         "artifact_id",
-        "parent_ids"
+        "parent_ids",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2135,7 +2777,9 @@
         "cancellation",
         "completed_at",
         "identity_recovery_decisions",
-        "archive_authorizations"
+        "archive_authorizations",
+        "document_scope",
+        "document_lifecycle"
       ],
       "required_sections": [
         "Scope",
@@ -2203,7 +2847,8 @@
         "owner",
         "updated",
         "artifact_id",
-        "next_review_at"
+        "next_review_at",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2293,7 +2938,8 @@
         "owner",
         "updated",
         "artifact_id",
-        "next_review_at"
+        "next_review_at",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2383,7 +3029,8 @@
         "owner",
         "updated",
         "artifact_id",
-        "next_review_at"
+        "next_review_at",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2486,7 +3133,9 @@
         "superseded_by",
         "occurred_at",
         "resolved_at",
-        "parent_ids"
+        "parent_ids",
+        "document_scope",
+        "document_lifecycle"
       ],
       "required_frontmatter_by_status": {
         "resolved": [
@@ -2555,7 +3204,8 @@
         "supersedes",
         "superseded_by",
         "parent_ids",
-        "reviewed_at"
+        "reviewed_at",
+        "document_scope"
       ],
       "required_sections": [
         "Facts",
@@ -2610,7 +3260,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2662,7 +3313,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2732,7 +3384,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2801,7 +3454,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2883,7 +3537,8 @@
         "identity_recovery",
         "reviewed_at",
         "next_review_at",
-        "review_cycle"
+        "review_cycle",
+        "document_scope"
       ],
       "required_sections": [
         "Question and Scope",
@@ -2955,7 +3610,8 @@
         "observed_at",
         "reviewed_at",
         "next_review_at",
-        "review_cycle"
+        "review_cycle",
+        "document_scope"
       ],
       "required_sections": [
         "Scope",
@@ -3015,7 +3671,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3077,7 +3734,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3169,7 +3827,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3219,7 +3878,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3334,7 +3994,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3573,7 +4234,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3624,7 +4286,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3702,7 +4365,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3773,7 +4437,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3900,7 +4565,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -3951,7 +4617,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -4014,7 +4681,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer"
@@ -4060,7 +4728,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -4113,7 +4782,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -4163,7 +4833,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -4212,7 +4883,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -4259,7 +4931,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -4308,7 +4981,8 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
         "layer",
@@ -4411,10 +5085,12 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "document_scope"
       ],
       "optional_frontmatter": [
-        "layer"
+        "layer",
+        "template_id"
       ],
       "required_sections": [],
       "optional_sections": [],
@@ -4423,7 +5099,10 @@
       "exceptions": [],
       "free_form_sections": true,
       "additional_paths": [
-        "docs/99.templates/02.templates/03.specs/02.contracts/data-model.template.md"
+        "docs/99.templates/02.templates/03.specs/02.contracts/data-model.template.md",
+        "docs/99.templates/02.templates/03.specs/02.contracts/schema-definition.template.md",
+        "docs/99.templates/02.templates/03.specs/02.contracts/openapi-definition.template.md",
+        "docs/99.templates/02.templates/03.specs/02.contracts/service-definition.template.md"
       ]
     },
     {
@@ -4452,7 +5131,8 @@
         "observed_at",
         "reviewed_at",
         "next_review_at",
-        "generated_by"
+        "generated_by",
+        "document_scope"
       ],
       "required_sections": [
         "Purpose",
@@ -4540,7 +5220,8 @@
         "scripts/lib/document_governance/metadata/heading.py",
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -4603,7 +5284,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "tests/lib/document_governance/test_metadata_validator.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -4667,7 +5349,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/metadata/reference.py",
         "scripts/lib/document_governance/lifecycle/contract.py",
-        "tests/lib/document_governance/metadata/test_heading.py"
+        "tests/lib/document_governance/metadata/test_heading.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -4734,7 +5417,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/metadata/reference.py",
         "scripts/lib/document_governance/lifecycle/contract.py",
-        "tests/lib/document_governance/metadata/test_heading.py"
+        "tests/lib/document_governance/metadata/test_heading.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -4799,7 +5483,8 @@
         "scripts/lib/document_governance/metadata/heading.py",
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -4864,7 +5549,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/operations/provider_surface_renderer.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -4929,7 +5615,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/hooks/folder_guides.py",
         "scripts/operations/provider_surface_renderer.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -4962,7 +5649,7 @@
       "core_role": "agent-instructions"
     },
     "governance/claude-agent": {
-      "source": "docs/99.templates/02.templates/92.runtime/claude-agent.template.md",
+      "source": "docs/99.templates/02.templates/92.runtime/claude-agent-definition.template.md",
       "profiles": [
         "runtime-projection-claude"
       ],
@@ -4993,7 +5680,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/operations/provider_surface_renderer.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5019,10 +5707,11 @@
       "core_exception": {
         "kind": "native",
         "reason": "A Claude native agent envelope rendered from a canonical role"
-      }
+      },
+      "native_source": "docs/99.templates/02.templates/92.runtime/claude-agent.template.md"
     },
     "governance/codex-agent": {
-      "source": "docs/99.templates/02.templates/92.runtime/codex-agent.template.toml",
+      "source": "docs/99.templates/02.templates/92.runtime/codex-agent-definition.template.md",
       "profiles": [
         "runtime-projection-codex"
       ],
@@ -5053,7 +5742,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/operations/provider_surface_renderer.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5078,7 +5768,8 @@
       "core_exception": {
         "kind": "native",
         "reason": "A Codex native agent TOML envelope rendered from a canonical role"
-      }
+      },
+      "native_source": "docs/99.templates/02.templates/92.runtime/codex-agent.template.toml"
     },
     "governance/hook-policy": {
       "source": "docs/99.templates/02.templates/91.agent-governance/rule.template.md",
@@ -5115,7 +5806,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/hooks/hook_rules.py",
         "scripts/lib/agent_governance/agent_governance_contract.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5183,7 +5875,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/agent_governance/agent_governance_contract.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5247,7 +5940,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/metadata/reference.py",
         "scripts/lib/document_governance/lifecycle/contract.py",
-        "tests/lib/document_governance/metadata/test_heading.py"
+        "tests/lib/document_governance/metadata/test_heading.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5316,7 +6010,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/agent_governance/agent_governance_contract.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5387,7 +6082,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/agent_governance/agent_governance_contract.py",
         "tests/lib/document_governance/metadata/test_profile.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5453,7 +6149,8 @@
         "scripts/lib/document_governance/metadata/heading.py",
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
-        "scripts/lib/agent_governance/agent_governance_contract.py"
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5520,7 +6217,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/metadata/reference.py",
         "scripts/lib/document_governance/lifecycle/contract.py",
-        "tests/lib/document_governance/metadata/test_heading.py"
+        "tests/lib/document_governance/metadata/test_heading.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5589,7 +6287,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/agent_governance/agent_governance_contract.py",
         "scripts/operations/provider_surface_renderer.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5653,7 +6352,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/metadata/reference.py",
         "scripts/lib/document_governance/lifecycle/contract.py",
-        "tests/lib/document_governance/metadata/test_heading.py"
+        "tests/lib/document_governance/metadata/test_heading.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5722,7 +6422,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/agent_governance/agent_governance_contract.py",
         "scripts/operations/provider_surface_renderer.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5790,7 +6491,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/agent_governance/agent_governance_contract.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5825,7 +6527,7 @@
       }
     },
     "governance/skill": {
-      "source": "docs/99.templates/02.templates/91.agent-governance/skill.template.md",
+      "source": "docs/99.templates/02.templates/91.agent-governance/skill-definition.template.md",
       "profiles": [
         "governance-skill"
       ],
@@ -5859,7 +6561,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/agent_governance/agent_governance_contract.py",
         "scripts/operations/provider_surface_renderer.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5889,7 +6592,8 @@
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/02.templates/91.agent-governance/skill.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/91.agent-governance/skill.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_role": "skill"
+      "core_role": "skill",
+      "native_source": "docs/99.templates/02.templates/91.agent-governance/skill.template.md"
     },
     "operation/guide": {
       "source": "docs/99.templates/02.templates/05.operations/guide.template.md",
@@ -5927,7 +6631,8 @@
         "scripts/lib/document_governance/operations_catalog.py",
         "scripts/lib/document_governance/links.py",
         "tests/lib/document_governance/test_operations_catalog.py",
-        "scripts/lib/document_governance/operations_moves.py"
+        "scripts/lib/document_governance/operations_moves.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -5994,7 +6699,8 @@
         "scripts/lib/document_governance/operations_catalog.py",
         "scripts/lib/document_governance/links.py",
         "tests/lib/document_governance/test_operations_catalog.py",
-        "scripts/lib/document_governance/identity_history.py"
+        "scripts/lib/document_governance/identity_history.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6063,7 +6769,8 @@
         "scripts/lib/document_governance/operations_catalog.py",
         "scripts/lib/document_governance/links.py",
         "tests/lib/document_governance/test_operations_catalog.py",
-        "scripts/lib/document_governance/operations_moves.py"
+        "scripts/lib/document_governance/operations_moves.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6129,7 +6836,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/operations_catalog.py",
         "scripts/lib/document_governance/links.py",
-        "tests/lib/document_governance/test_operations_catalog.py"
+        "tests/lib/document_governance/test_operations_catalog.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6196,7 +6904,8 @@
         "scripts/lib/document_governance/operations_catalog.py",
         "scripts/lib/document_governance/links.py",
         "tests/lib/document_governance/test_operations_catalog.py",
-        "scripts/lib/document_governance/operations_moves.py"
+        "scripts/lib/document_governance/operations_moves.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6261,7 +6970,8 @@
         "scripts/lib/document_governance/metadata/heading.py",
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
-        "scripts/lib/document_governance/references.py"
+        "scripts/lib/document_governance/references.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6321,7 +7031,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/references.py",
-        "scripts/lib/document_governance/identity_history.py"
+        "scripts/lib/document_governance/identity_history.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6381,7 +7092,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/references.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6445,7 +7157,8 @@
         "scripts/lib/document_governance/metadata/heading.py",
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
-        "scripts/lib/document_governance/references.py"
+        "scripts/lib/document_governance/references.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6504,7 +7217,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/references.py",
-        "scripts/lib/document_governance/identity_history.py"
+        "scripts/lib/document_governance/identity_history.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6570,7 +7284,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/references.py",
-        "scripts/lib/document_governance/links.py"
+        "scripts/lib/document_governance/links.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6633,7 +7348,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/references.py",
-        "scripts/lib/document_governance/identity_history.py"
+        "scripts/lib/document_governance/identity_history.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6698,7 +7414,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/architecture.py",
-        "tests/lib/document_governance/test_architecture.py"
+        "tests/lib/document_governance/test_architecture.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6762,7 +7479,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/architecture.py",
-        "tests/lib/document_governance/test_architecture.py"
+        "tests/lib/document_governance/test_architecture.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6825,7 +7543,8 @@
         "scripts/lib/document_governance/metadata/heading.py",
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
-        "scripts/lib/document_governance/spec_packages.py"
+        "scripts/lib/document_governance/spec_packages.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6856,7 +7575,7 @@
       }
     },
     "sdlc/graphql": {
-      "source": "docs/99.templates/02.templates/03.specs/02.contracts/schema.template.graphql",
+      "source": "docs/99.templates/02.templates/03.specs/02.contracts/schema-definition.template.md",
       "profiles": [
         "graphql-contract"
       ],
@@ -6887,7 +7606,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/spec_packages.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6914,10 +7634,11 @@
       "core_exception": {
         "kind": "native",
         "reason": "GraphQL schema syntax"
-      }
+      },
+      "native_source": "docs/99.templates/02.templates/03.specs/02.contracts/schema.template.graphql"
     },
     "sdlc/openapi": {
-      "source": "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml",
+      "source": "docs/99.templates/02.templates/03.specs/02.contracts/openapi-definition.template.md",
       "profiles": [
         "openapi-contract"
       ],
@@ -6948,7 +7669,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/spec_packages.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -6976,7 +7698,8 @@
       "core_exception": {
         "kind": "native",
         "reason": "OpenAPI document syntax"
-      }
+      },
+      "native_source": "docs/99.templates/02.templates/03.specs/02.contracts/openapi.template.yaml"
     },
     "sdlc/plan": {
       "source": "docs/99.templates/02.templates/03.specs/plan.template.md",
@@ -7011,7 +7734,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/spec_packages.py",
-        "tests/lib/document_governance/test_spec_packages.py"
+        "tests/lib/document_governance/test_spec_packages.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -7046,7 +7770,7 @@
       "core_role": "plan"
     },
     "sdlc/proto": {
-      "source": "docs/99.templates/02.templates/03.specs/02.contracts/service.template.proto",
+      "source": "docs/99.templates/02.templates/03.specs/02.contracts/service-definition.template.md",
       "profiles": [
         "proto-contract"
       ],
@@ -7077,7 +7801,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/spec_packages.py",
-        "tests/lib/document_governance/test_registry.py"
+        "tests/lib/document_governance/test_registry.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -7105,7 +7830,8 @@
       "core_exception": {
         "kind": "native",
         "reason": "Protocol Buffers syntax"
-      }
+      },
+      "native_source": "docs/99.templates/02.templates/03.specs/02.contracts/service.template.proto"
     },
     "sdlc/requirement": {
       "source": "docs/99.templates/02.templates/01.requirements/requirement-package.template.md",
@@ -7140,7 +7866,8 @@
         "scripts/lib/document_governance/template_definition.py",
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/requirements.py",
-        "tests/lib/document_governance/test_requirements.py"
+        "tests/lib/document_governance/test_requirements.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -7205,7 +7932,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/spec_packages.py",
         "tests/lib/document_governance/test_spec_packages.py",
-        "scripts/lib/document_governance/links.py"
+        "scripts/lib/document_governance/links.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [
@@ -7277,7 +8005,8 @@
         "tests/lib/document_governance/test_template_definition.py",
         "scripts/lib/document_governance/spec_packages.py",
         "tests/lib/document_governance/test_spec_packages.py",
-        "scripts/lib/document_governance/lifecycle/occupancy.py"
+        "scripts/lib/document_governance/lifecycle/occupancy.py",
+        "scripts/lib/document_governance/common_document.py"
       ],
       "validation": {
         "positive": [

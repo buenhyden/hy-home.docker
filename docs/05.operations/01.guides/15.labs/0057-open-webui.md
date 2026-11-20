@@ -1,10 +1,13 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # Open WebUI Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자가 LAB 경계, 필수 입력, 명령의 부작용과 정상 점검 방법을 찾을 때 읽는다.
 
-### Outcome
+##### Outcome
 
 Open WebUI는 root Compose에서 분리된 독립 LAB `labs/open-webui/docker-compose.yml`의 채팅·RAG 웹
 애플리케이션이며 LAB profile `lab-open-webui`로 선택된다(ADR-0062, 2026-11-10 owner 개정). HOME의 로컬
@@ -34,14 +57,16 @@ SearXNG가, RAG는 Qdrant와 n8n이 맡는다. 이 LAB은 Open WebUI 자체를 �
 Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자를 위한 문서다. LAB 경계, 필수 입력,
 명령의 부작용과 정상 점검 방법을 찾는 것이 목표다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Open WebUI Operations Policy](../../02.policies/15.labs/0057-open-webui.md) (`POL-0057`)
 - Governing authority: [ADR-0062](../../../02.architecture/02.decisions/0062-home-lab-membership.md),
   [LAB promotion policy](../../02.policies/15.labs/0107-lab-promotion.md) (`POL-0107`)
 - Subject peers: [Policy](../../02.policies/15.labs/0057-open-webui.md) (`POL-0057`), [Runbook](../../03.runbooks/15.labs/0057-open-webui.md) (`RUN-0057`)
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Open WebUI LAB Compose](../../../../labs/open-webui/docker-compose.yml)
 - [Open WebUI LAB README](../../../../labs/open-webui/README.md)
@@ -49,11 +74,12 @@ Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자를 위�
 - [Operations policy](../../02.policies/15.labs/0057-open-webui.md)
 - [Recovery runbook](../../03.runbooks/15.labs/0057-open-webui.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 - **LAB boundary.** `hy-home-lab-open-webui` project의 `lab_open_webui_net` 하나만 사용하고 HOME
   network에 합류하지 않는다. 서비스는 `hy-home.tier: lab`, `traefik.enable: 'false'` label을 가지며
@@ -82,15 +108,16 @@ Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자를 위�
   1060을 쓸 수 없고 GPU 예약도 없다. embedding은 Ollama가 처리한다. `ENABLE_OPENAI_API=false`를 유지하고 Docker socket과 terminal server는
   연결하지 않는다(SPEC-0226, 은퇴).
 
-### Authority
+##### Authority
 
 `LAB config` 렌더링만 승인 없이 안전하다. 그 외 명령은 활성 lease, 승인된 Ollama endpoint와 LAB secret(`lab_open_webui_oidc_client_secret`)이 필요하고 LAB 사본 준비와 정리는 별도 승인 단계다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Commands and side effects
+###### Commands and side effects
+<!-- core-payload-level:4 -->
 
 표의 `LAB`은 `docker compose --env-file labs/.env -f labs/open-webui/docker-compose.yml --profile lab-open-webui`다.
 `LAB config` 렌더링만 승인 없이 안전하며, 그 외 명령은 `python3 scripts/operations/lab.py check|up|down open-webui`의
@@ -102,41 +129,65 @@ Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자를 위�
 | `LAB up -d open-webui` | LAB data root에 schema를 만들거나 migration하고 웹 서버 시작 |
 | `LAB exec open-webui curl -f http://localhost:8080/health` | container 내부 health만 확인; 로그인·RAG 증거 아님 |
 
-#### Persisted settings
+###### Persisted settings
+<!-- core-payload-level:4 -->
 
 `ENABLE_PERSISTENT_CONFIG`가 기본값(켜짐)이면 `webui.db`의 `config` 행이 Compose 환경 변수보다 우선한다.
 `rag.embedding_model`과 `openai.enable` 행은 Compose 값과 함께 바꾸고, 행을 바꾸기 전에 data root를
 백업한다. embedding 모델은 Ollama에 있는 `embeddinggemma-2:740m`(768차원)이며 바꾸면 재색인한다.
 `AIOHTTP_CLIENT_TIMEOUT`은 설정하지 않는다.
 
-#### HOME data left in place
+###### HOME data left in place
+<!-- core-payload-level:4 -->
 
 HOME 컨테이너 `open-webui`와 volume `hy-home-infra_open-webui`(`${DEFAULT_AI_MODEL_DIR}/open-webui`)는 이
 source 이동으로 바뀌지 않는다. 정지·제거, LAB data root로의 data 이전 또는 삭제, Keycloak client와 DNS
 정리는 각각 별도 승인 단계이며 순서는 [runbook](../../03.runbooks/15.labs/0057-open-webui.md#home-retirement-steps)이 소유한다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `python3 scripts/operations/lab.py check open-webui`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - **렌더링 거부**: 필수 `LAB_OPEN_WEBUI_*` 입력이 비어 있다.
 - **Ollama 연결 실패**: `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`이 LAB network에서 도달 불가하다.
 - **로그인 실패**: LAB origin redirect가 Keycloak에 등록되지 않았거나 HTTPS origin이 없다.
 - **임베딩 모델 누락**: `RAG_EMBEDDING_MODEL`이 Ollama에 없다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 LAB 기동, 로그인 실패, data 복구와 HOME 퇴역 절차는 [runbook](../../03.runbooks/15.labs/0057-open-webui.md)을 따른다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [RUN-0057](../../03.runbooks/15.labs/0057-open-webui.md)를 따른다. LAB 기동, 로그인 실패, data 복구와 HOME 퇴역 절차는 이 runbook이 소유한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

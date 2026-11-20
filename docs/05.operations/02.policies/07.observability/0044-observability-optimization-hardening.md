@@ -1,10 +1,13 @@
 ---
 title: "Observability Optimization Hardening Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0044"
 parent_ids:
@@ -15,19 +18,40 @@ next_review_at: "2027-05-13"
 
 # Observability Optimization Hardening Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 `06-observability` 계층의 최적화/하드닝 운영 정책을 정의한다. 게이트웨이 경계 보안, health 기반 의존성, 커스텀 이미지 런타임 하드닝, CI 기준선 검증, 카탈로그 확장 승인 조건을 통제한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/01.descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-### Applies To
+##### Applies To
 
 - `infra/06-observability/docker-compose.yml`
 - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
@@ -39,13 +63,14 @@ next_review_at: "2027-05-13"
 - **Systems**: Prometheus, Alertmanager, Grafana, Loki, Tempo, Alloy, Pushgateway, Pyroscope, cAdvisor
 - **Environments**: 로컬·개발·홈랩 운영과 운영 환경에 준하는 검증
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -112,7 +137,8 @@ next_review_at: "2027-05-13"
   - secret guard가 없는 Loki/Tempo object storage 연결
   - 정책 미연계 확장 실행
 
-#### Catalog Expansion Approval Gates
+###### Catalog Expansion Approval Gates
+<!-- core-payload-level:4 -->
 
 - **Prometheus 승인 조건**:
   - scrape budget 및 rule evaluation 지연 예산 정의
@@ -124,34 +150,38 @@ next_review_at: "2027-05-13"
   - 신규 서비스 온보딩 템플릿 표준화
   - 파이프라인 모듈 경계와 소유권 명시
 
-#### Lifecycle and data controls
+###### Lifecycle and data controls
+<!-- core-payload-level:4 -->
 
 - 두 exporter의 HOME 분류를 유지하고 host PID·privileged·device/host mount 확대에는 보안 검토를 요구한다.
 - node-exporter는 route나 LAN 공개 포트 없이 `obs_net` gateway 주소에만 listen하고(internal이 아닌 bridge의 container는 접근 가능), cAdvisor는 보호 route를 유지하며 무관한 secret이나 writable host mount를 추가하지 않는다.
 - 별도 영속 exporter backup은 없다. 추적 Compose로 복구한 뒤 target과 series 연속성을 검증한다.
 - 자원/cardinality 변경에는 scrape/host 영향 측정이 필요하다. 제거에는 rule/dashboard 의존성 검토와 관측 공백 승인이 필요하다.
 
-#### cAdvisor and static-check limits
+###### cAdvisor and static-check limits
+<!-- core-payload-level:4 -->
 
 cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는 privileged 관측기다. 공통 template이 capability를 제거한다고 격리를 보장하지 않는다. Disk metric 등 제외 collector, container label/cardinality와 보호 route를 유지한다. Health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 자체 애플리케이션 데이터나 Docker Secret은 없고 복구 대상은 승인된 image/config와 telemetry 기준이다.
 
 관측 hardening 함수는 일부 문자열·파일만 검사하며 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성이나 용량을 증명하지 않는다. Loki/Tempo LAN 접근은 POL-0096의 기존 예외이고 retention 결함은 POL-0048에 남는다. Grafana/Gatus native 인증에 일괄 proxy SSO를 붙이지 않는다. 검사 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 긴급 장애 대응 시 일시적으로 인증 경계 완화가 필요할 수 있다.
 - 단, 동일 릴리스 내 원상 복구 및 검증 증적 확보가 필수다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 월 1회 정기 검토
 - 관측성 주요 버전 변경/보안 이슈 발생 시 수시 검토
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 - `bash scripts/validation/check-template-security-baseline.sh`
@@ -159,7 +189,7 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 - `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
 - Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
 
-### Limits
+##### Limits
 
 정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
@@ -175,13 +205,13 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 - 관측 hardening 함수는 일부 문자열·파일만 검사하므로 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성, 용량은 기계적으로 증명되지 않는다고 정책이 명시한다.
 - 정책 미연계 확장 금지에는 지정된 검사나 증거가 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/07.observability/0044-observability-optimization-hardening.md) (`GDE-0044`), [Runbook](../../03.runbooks/07.observability/0044-observability-optimization-hardening.md) (`RUN-0044`)
 
@@ -189,3 +219,23 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 - [Usage guide](../../01.guides/07.observability/0044-observability-optimization-hardening.md)
 - [Recovery runbook](../../03.runbooks/07.observability/0044-observability-optimization-hardening.md)
 - [Retention policy](0048-telemetry-retention.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

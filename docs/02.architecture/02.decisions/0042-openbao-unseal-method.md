@@ -1,10 +1,13 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0042"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-09-25"
 
 # ADR-0042: OpenBao Unseal Method
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 OpenBao runs as a single-node Raft on the 2.6-series image pinned by
 [Compose](../../../infra/03-security/openbao/docker-compose.yml). Compose's
@@ -82,7 +105,8 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - The effect on the W11 cold start runbook and the Agent SecretID delivery
   method.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - Parent: [AD-0003 Security Architecture](../01.descriptions/0003-security-architecture.md)
 - Spec: SPEC-0182 criterion 10 and 11,
@@ -94,7 +118,8 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - Runtime sources: [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
   [Agent configuration](../../../infra/03-security/openbao/config/agent.hcl)
 
-#### Official references
+###### Official references
+<!-- core-payload-level:4 -->
 
 - [OpenBao seal configuration (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/)
 - [Static Key seal](https://openbao.org/docs/configuration/seal/static/)
@@ -102,13 +127,13 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - [PKCS#11 seal (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/pkcs11/)
 - [AWS KMS seal](https://openbao.org/docs/configuration/seal/awskms/)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the unseal method of the single-node OpenBao Raft described above, which currently uses the default Shamir seal. It affects the W11 cold start runbook and the Agent SecretID delivery method.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 | Option | Unattended reboot | Key location | New dependency | W11 impact |
 | --- | --- | --- | --- | --- |
@@ -118,7 +143,8 @@ This decision covers the unseal method of the single-node OpenBao Raft described
 | (d) Static Key or PKCS#11 (same host) | Yes | Host file or SoftHSM | None (Static) or HSM build/plugin | Unseal step disappears |
 | (e) Defer (record owner and trigger) | No | Current | None | Same as (a) |
 
-#### (a) Keep manual Shamir unseal (current)
+###### (a) Keep manual Shamir unseal (current)
+<!-- core-payload-level:4 -->
 
 - **Good**: No change. The seal key is not in container config or
   environment. No external dependency.
@@ -127,7 +153,8 @@ This decision covers the unseal method of the single-node OpenBao Raft described
 - **Agent SecretID**: No change. The owner also delivers the SecretID at every
   reboot.
 
-#### (b) Transit auto-unseal from a second OpenBao/Vault
+###### (b) Transit auto-unseal from a second OpenBao/Vault
+<!-- core-payload-level:4 -->
 
 - **Method**: Keep a transit engine and key on another instance, and give
   this server's `seal "transit"` the address, key name, and a periodic orphan
@@ -143,7 +170,8 @@ This decision covers the unseal method of the single-node OpenBao Raft described
   management, TLS, and a network path are newly needed.
 - **Agent SecretID**: No change.
 
-#### (c) Cloud KMS auto-unseal
+###### (c) Cloud KMS auto-unseal
+<!-- core-payload-level:4 -->
 
 - **Method**: `awskms`, `gcpckms`, `azurekeyvault`, etc., built into the
   current 2.6 series. Credentials are supplied via environment variables or a
@@ -160,7 +188,8 @@ This decision covers the unseal method of the single-node OpenBao Raft described
   cloud credentials (a new SEC row) and egress on the OpenBao container.
 - **Agent SecretID**: No change.
 
-#### (d) Static Key or PKCS#11 seal (same host)
+###### (d) Static Key or PKCS#11 seal (same host)
+<!-- core-payload-level:4 -->
 
 - **Method**: Give `seal "static"` a 32-byte key via `file://` and mount that
   file as a Docker Secret. PKCS#11 keeps the key in a software token like
@@ -179,7 +208,8 @@ This decision covers the unseal method of the single-node OpenBao Raft described
   a seal transition (`-migrate`) and a recovery key scheme change.
 - **Agent SecretID**: No change.
 
-#### (e) Defer (record owner and trigger)
+###### (e) Defer (record owner and trigger)
+<!-- core-payload-level:4 -->
 
 Keep (a) while recording an owner and review trigger per criterion 10.
 Candidate triggers:
@@ -192,7 +222,7 @@ Candidate triggers:
   same account).
 - OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -204,9 +234,9 @@ Candidate triggers:
 
 The Good and Bad entries of each option above record its benefits and costs. Option (e) was chosen because auto-unseal alone does not give an unattended reboot, a same-host key (d) widens the key-exposure surface with no security gain, and another device (b) or cloud (c) creates a new availability dependency whose cost outweighs the benefit at the current scale.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 **(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
 owner is @buenhyden. Whichever of the following triggers comes first opens a
@@ -229,13 +259,13 @@ Rationale:
   Another device (b) or cloud (c) creates a new availability dependency. At
   the current scale, this cost outweighs the benefit.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden (owner decision, 2026-09-25); status `accepted`. No separate approval record is linked. Effective from 2026-09-25.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - **W11 cold start runbook**:
   - (a)/(e): The order is OpenBao start -> owner unseal (2 shares, hidden
@@ -255,7 +285,7 @@ Decided by the owner, @buenhyden (owner decision, 2026-09-25); status `accepted`
   be updated together. A protected Raft snapshot and an isolated recovery
   rehearsal are needed before the transition.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -264,3 +294,23 @@ decision text is unchanged.
 
 - The W11 runbook records the unseal method actually in use at decision time.
 - If deferred, record the owner and trigger in Task 0003's Deferred Items.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

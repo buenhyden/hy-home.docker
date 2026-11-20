@@ -1,10 +1,13 @@
 ---
 title: "Mailpit Runbook"
-version: "0.4.0"
+version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0084"
 parent_ids:
@@ -15,16 +18,36 @@ next_review_at: "2027-05-13"
 
 # Mailpit Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 Mailpit의 캡처 실패, database lock·손상, 보존 한도 이상을 진단하고, 승인된 export·restore·upgrade를 수행하는 절차를 정의한다. 저장소 루트에서 작업하며 캡처된 콘텐츠를 증거로 노출하지 않는다.
 
 synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거나, 보존 한도가 예상과
 다르거나, backup/restore/upgrade가 승인된 경우에 사용한다.
 
-### Targets
+##### Targets
 
 - [Guide](../../01.guides/11.mail-and-notifications/0084-mailpit.md) (`GDE-0084`)
 - [Policy](../../02.policies/11.mail-and-notifications/0084-mailpit.md) (`POL-0084`)
@@ -34,17 +57,18 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 - [Mailpit storage](https://mailpit.axllent.org/docs/configuration/email-storage/)
 - [운영 인덱스](../../README.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 재시작과 구체적 데이터 교체는 승인이 있어야 한다. 책임자는 `@buenhyden`이다.
 
-### Environment
+##### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
-#### 작업 선택과 복구 전제
+###### 작업 선택과 복구 전제
+<!-- core-payload-level:4 -->
 
 변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](../10.platform-and-backup/0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
@@ -53,9 +77,9 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -86,7 +110,8 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 3. 재시작이 승인되면 `docker compose --profile mail-dev restart mailpit`으로 Mailpit만 재시작하고 고유한 비민감 식별자를 가진 synthetic 메시지
    1건을 전송한다. 본문을 기록하지 않고 캡처를 검증한다.
 
-#### Consistent export and restore
+###### Consistent export and restore
+<!-- core-payload-level:4 -->
 
 1. 여유 공간이 충분한, Git 외부의 보호된 backup 디렉터리를 선택한다.
 2. 실행 중인 인스턴스에서의 live export를 우선한다. 임시 컨테이너 경로에 dump를 생성하고,
@@ -100,7 +125,8 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
    이 근거와 격리된 listener를 확보하지 못하면 ingest를 실행하지 않는다. 개수와 synthetic 샘플을 검증한 뒤 현재 데이터를 교체하기
    전에 승인을 받는다.
 
-#### Upgrade
+###### Upgrade
+<!-- core-payload-level:4 -->
 
 1. 위의 일관된 export 또는 정지 상태의 DB 캡처를 완료하고 개수·백업 checksum을
    기록한다. 쓰기 중인 SQLite 파일의 checksum만으로 일관성을 증명하지 않는다.
@@ -110,25 +136,27 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
    검증한다. 실패 시 새 컨테이너를 중단하고, 데이터 교체 전에 격리된 이전 버전 인스턴스로
    복구한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 실제 메일 캡처가 의심되거나, database 불일치, 보호된 backup 부재, 알 수 없는 SQLite
 sidecar, 외부 노출, 또는 호환되지 않는 upgrade가 있으면 중단한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 `config --quiet`와 `ps mailpit`로 상태를 확인하고, 재시작 뒤 synthetic 메시지 1건이 캡처되는지 본문 기록 없이 확인한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 명령 exit, 이미지/source commit, database/export checksum, 메시지 개수, synthetic 식별자,
 최종 상태를 기록한다. 수신자, 헤더, 본문, 첨부파일, credential은 절대 기록하지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
 
@@ -137,13 +165,33 @@ sidecar, 외부 노출, 또는 호환되지 않는 upgrade가 있으면 중단�
 - `mailpit dump`/`mailpit ingest` 옵션 호환성: 선언 버전의 공식 옵션 확인이 필요하며 이 문서에는 확인 결과가 기록되어 있지 않다.
 - 활성 SQLite database 교체: 격리된 restore 성공과 구체적 교체 승인이 있어야 하며 이 문서에는 기록이 없다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 backup/restore와 upgrade 리허설은 여기서 **계획됨, 미실행** 상태다. 격리된 restore가
 성공하고 구체적 데이터 교체가 승인될 때까지 활성 SQLite database를 덮어쓰지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,26 +1,51 @@
 ---
 title: "AI Agent Governance"
-version: "1.5.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "agent-governance"
 ---
 
 # Agent Governance
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `.agents/`는 공유 agent governance, role, 재사용 가능한 절차를 위한 저장소 소유의
 canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source를
 소비합니다. canonical home은 authored content이며 renderer output이 아닙니다.
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 - `governance/`는 approval, security, quality, Git, documentation, workflow,
   bootstrap, SDLC 동작을 소유합니다.
@@ -55,7 +80,7 @@ canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source�
 - [Claude](../.claude/provider.md)와 [Codex](../.codex/provider.md)는 각자의
   native loading과 syntax 차이를 소유합니다. 이들의 생성된 README는 output입니다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 Stage 99(`docs/99.templates/README.md`)는 document profile, path, identifier,
 lifecycle 값, template을 소유합니다. 등록된 script는 executable check를
@@ -66,11 +91,12 @@ README 탐색과 디렉터리 목적 설명은 허용하지만, docs 밖의 현�
 승인된 Spec/Task 읽기와 필요한 registry/schema/template 입력은
 `governance/documentation-protocol.md`의 문서 경계 규칙에 따릅니다. 과거 결정의 출처 표시는 현재 실행 권한을 부여하지 않습니다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | --- | --- |
@@ -99,23 +125,26 @@ entry만 허용됩니다. 알 수 없는 entry는 보존되며 검토용으로 �
 않습니다. 여기에는 공통 runtime, progress ledger, installer, 생성된 role
 surface가 도입되지 않습니다.
 
-#### Classification
+###### Classification
+<!-- core-payload-level:4 -->
 
 `governance/`·`roles/`·`skills/`·`knowledge/`·`prompts/`는 authored canonical 내용이고 `evaluations/`는 권위가 없는 평가 증거 영역이며, `governance/providers/registry.yaml`은 provider 사실에 한정한 machine authority입니다. 이 중 어느 것도 renderer output이 아닙니다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [Documentation index](../docs/README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - `governance/sdlc.md` (SDLC)
 - `governance/bootstrap.md` (Bootstrap)
@@ -124,9 +153,10 @@ surface가 도입되지 않습니다.
 - `governance/documentation-protocol.md`의 `#readme-and-agentsmd`: README와 AGENTS.md의 역할 구분
 - [README 템플릿 폴더](../docs/99.templates/README.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Create and Review
+###### Create and Review
+<!-- core-payload-level:4 -->
 
 1. 루트 `AGENTS.md` 또는 `CLAUDE.md`로 진입하여 `governance/bootstrap.md`
    (Bootstrap)를 따릅니다.
@@ -140,6 +170,27 @@ surface가 도입되지 않습니다.
 5. 공유 quality matrix(`governance/quality-standards.md#5-change-type-verification-matrix`)를
    통해 완료 점검을 선택합니다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 은퇴하는 문서는 남아야 할 의미를 해당 governance owner에 옮긴 뒤 삭제하며, 삭제된 본문은 Git 이력이 보관합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

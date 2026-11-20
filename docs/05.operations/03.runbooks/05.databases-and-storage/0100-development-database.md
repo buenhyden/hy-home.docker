@@ -1,10 +1,13 @@
 ---
 title: "Development Database Source Preflight Runbook"
-version: "0.4.0"
+version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0100"
 parent_ids:
@@ -15,15 +18,35 @@ next_review_at: "2027-05-13"
 
 # Development Database Source Preflight Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 `dev-db` source 변경의 정적 사전 검사와 DEV 지표 경보·중지 절차를 다룬다.
 
 `dev-db` source change를 검토하거나 runtime execution request를 준비할 때 사용한다.
 
-### Targets
+##### Targets
 
 - Artifact: `RUN-0100`; parent guide: `GDE-0100`.
 - Governing source contract: `SPEC-0204`(SPEC-0202는 삭제된 역사적 근거).
@@ -33,24 +56,24 @@ next_review_at: "2027-05-13"
 - [Development database policy](../../02.policies/05.databases-and-storage/0100-development-database.md)
 - [Backup and restore runbook](../10.platform-and-backup/0021-backup-and-restore.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 현재 완료 범위는 소스 통합·정적 검증, 신규 dev/LAB 비밀 파일 20개 발급과
 합성 격리 엔진의 기동·권한·오프라인 백업·별도 볼륨 복원이다(SPEC-0202-TSK-0002).
 HOME 배포·기동·정지·재시작, 외부 프로젝트 계정 발급, 실데이터 이관,
 운영 백업 검증·복원은 `NOT_RUN`이며 각각 별도 구체적 승인이 필요하다.
 
-### Environment
+##### Environment
 
 runtime request가 있으면 실행 전에 승인된 Docker context, project name, ports, networks,
 volumes, bind paths, UID/GID, resource budget, exact cleanup 대상과 rollback target을
 읽기 전용으로 재확인한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -80,7 +103,8 @@ SPEC-0202-TSK-0002가 남긴 증거(삭제됨, 버전 이력)를 기준으로 �
 secret reference, quota와 approval state가 승인된 뒤에만 별도 task에서 실행한다. 앱 migration은
 외부 workspace가 소유한다.
 
-#### 관측 경보와 의도적 중지
+###### 관측 경보와 의도적 중지
+<!-- core-payload-level:4 -->
 
 DEV 장애 경보는 `db_scope="dev"`이고 `expected_state="on"`일 때만 울리며, `DevDatastoreUpWhileDeclaredOff`만 `off` 선언 상태에서 울린다.
 `expected_state`는 Prometheus 시작 시 루트 `.env`의
@@ -103,26 +127,28 @@ DEV를 일부러 내릴 때:
 바꾸고 `dev-pg-monitor-provision`을 다시 실행하거나 `dev-valkey`를 재생성한 뒤
 exporter를 재생성한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 `down -v`, volume prune, 기존 management state 재연결, retention
 축소, credential rotation은 이 runbook의 source-only 단계에서 금지한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 `config --quiet`와 unittest 두 명령이 모두 exit 0이어야 한다. source profile, secret reference, static project grant/ACL contract가 일관되어야 한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, 정적·격리 결과와
 운영 `NOT_RUN` 경계를 각각 기록한다. secret 값, private file 내용, raw log, DB row,
 resolved mount path는 기록하지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook은 아래 항목을 아직 관측하지 않았다.
 
@@ -131,18 +157,38 @@ resolved mount path는 기록하지 않는다.
 - DEV 의도적 중지/재가동과 monitor 비밀번호 회전: live 변경이며 실행 결과가 기록되어 있지 않다. 경보 상태와 exporter 재수집 관측이 필요하다.
 - 외부 project provision: manifest 승인 후 별도 task에서만 실행하며 이 문서에는 실행 기록이 없다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 Compose render failure, ambiguous project identity, secret/mount ownership drift, host port/network
 collision, insufficient resource evidence, unsupported image/extension/backup compatibility,
 grant isolation failure, current management dependency 발견 시 중단하고 @buenhyden에게
 target, source SHA, failure signal, proposed approval boundary를 전달한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 source 문제는 runtime mutation 전에 source patch를 되돌려 static checks를 재실행한다.
 runtime activation 뒤의 rollback은 해당 승인 task의 preserved volume, compatible image,
 consumer impact와 recovery point를 사용한다. source rollback은 schema, data, ACL 또는
 credential rollback을 보장하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

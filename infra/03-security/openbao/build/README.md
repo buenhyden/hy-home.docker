@@ -1,30 +1,56 @@
 ---
 title: "Owned OpenBao Build"
-version: "0.3.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Owned OpenBao build
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 OpenBao 2.7.2의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.3, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
 `golang.org/x/net` 0.62.0, `go-jose/v4` 4.1.9, `klauspost/compress` 1.20.4 세 module 버전을 사용합니다. <!-- runtime-version-exception: migration — 검토된 build packet의 고정 module migration material이며 build-inputs.json이 pin을 소유함 -->
 결과 버전은 `2.7.2+hyhome.go1.27.3.net0.62.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
 서명된 이미지가 아닙니다. 다른 의존성의 취약점 해결을 보장하지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 선택된 이미지의 source, 재현성, SEC01 증거를 검토하는 Developer와 Operator.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 [build-inputs.json](build-inputs.json)은 실제 source, builder, Alpine, APK closure,
 patch와 resource 한도를 고정합니다. [Dockerfile](Dockerfile)은 실제 runtime
@@ -45,7 +71,8 @@ binary에 링크되므로 이 packet이 해결하지 않는 잔여 위험으로 
 v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go module, patch 입력은 그대로이고
 두 publisher receipt는 새로 검증했습니다. 정확한 digest와 version은 build-inputs.json이 소유합니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - [build-inputs.json](build-inputs.json): 선택된 source, builder, runtime, module, APK closure와 resource 한도를 고정합니다.
 - [Dockerfile](Dockerfile): 공개 material을 검증하고 owned runtime rootfs를 조립하는 recipe입니다.
@@ -53,14 +80,15 @@ v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go
 - [owned_image_oci.py](owned_image_oci.py): 검증된 공개 runtime export를 결정론적 OCI archive로 포장합니다.
 - [build-owned-image.py](../scripts/build-owned-image.py): plan, 두 번의 build, 비교와 receipt 생성을 제한된 단계로 실행합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | `materials/` 디렉터리와 `materials.json` SHA (`--materials-directory`, `--materials-sha256`) | `scripts/operations/prepare-openbao-materials.py` | `build-owned-image.py`의 `--phase plan`과 `--phase build` | materials.json SHA와 일곱 source 파일의 packet SHA를 명시해 plan을 실행하고 build는 같은 입력으로 두 번 compile한다. | 실패·OOM·cleanup 실패는 FAIL이며 receipt를 덮어쓰지 않고 새 directory로만 재시도한다. |
 | OCI archive와 `hy-home/openbao:<tag>@sha256:<manifest>` | `owned_image_oci.py` | Docker(`--pull=never`로 조회 및 실행) | packet/material/patch hash를 OCI label로 연결한 결정론적 단일 layer OCI archive이다. | 두 binary SHA와 OCI config/layer/manifest가 모두 같아야 재현성 PASS이다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 공개 material directory의 `materials.json` SHA와 일곱 source 파일의 packet SHA를
 명시하여 helper의 `--phase plan`을 실행합니다. packet은 정렬된 상대 경로,
@@ -95,31 +123,35 @@ Packet/material/patch hash는 OCI label로 연결됩니다. OCI archive를
 Docker에 load한 뒤 `hy-home/openbao:<tag>@sha256:<manifest>`를 `--pull=never`로
 조회 및 실행하여 고정 reference가 작동하는지 확인해야 합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 없음: 이 폴더에는 Compose 서비스나 secret 정의가 없고 `Dockerfile`, `build-inputs.json`, `go-modules.patch`, `owned_image_oci.py`만 두며 secret 값은 저장소에 두지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 선택된 [build-inputs.json](build-inputs.json)이 이 owned build의 고정 build input과
 결과 version/tag의 권위입니다. [Dockerfile](Dockerfile)은 실제 runtime 조립 recipe이며,
 [공유 버전 레지스트리](../../../../infra/tech-stack.versions.json)는 Compose와 build
 source에서 파생된 투영으로서 이 build packet이나 배포 manifest를 대신하지 않습니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 새 build를 검토할 때는 [build-inputs.json](build-inputs.json)의 선택된 입력과
 [Dockerfile](Dockerfile), 공개 material receipt를 같은 packet으로 확인합니다.
 실제 build와 OCI 검증은 [helper](../scripts/build-owned-image.py)의 제한된 phase를
 사용하며, HOME 배포·인증·발급·복구는 소유 Runbook의 별도 수용 절차를 따릅니다.
 
-##### Material 준비 절차
+###### Material 준비 절차
+<!-- core-payload-level:5 -->
 
 다음 build를 같은 방식으로 재현하려면 [준비 script](../../../../scripts/operations/prepare-openbao-materials.py)를
 사용합니다. 공개 자료만 받으며 HOME, 인증, secret, `labs/`는 건드리지 않습니다.
@@ -153,11 +185,12 @@ source에서 파생된 투영으로서 이 build packet이나 배포 manifest를
    `recipe_sha256`(Dockerfile의 SHA-256)을 다시 계산한 뒤, packet SHA(`current_packet` 규칙)를 계산하여
    `build-owned-image.py --phase plan`이 FAIL 없이 끝나는지 확인합니다. 그 뒤에만 `--phase build`를 승인된 창에서 실행합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 [contract tests](../../../../tests/validation/test_openbao_owned_image_contract.py)는
 경로·소유권·material hash·실제 container 제한·재현성 및 공개 export 경계를
@@ -165,20 +198,43 @@ source에서 파생된 투영으로서 이 build packet이나 배포 manifest를
 P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증합니다.
 이 README와 build 성공만으로 runtime 수용을 선언하지 않습니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0085: `docs/05.operations/03.runbooks/04.security-and-secrets/0085-openbao.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [OpenBao implementation](../README.md)
 - [Shared runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Owned image contract tests](../../../../tests/validation/test_openbao_owned_image_contract.py)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 이 폴더는 이미지 빌드 입력이며 헬스체크를 선언하지 않는다. 실행 서비스는 상위 `openbao/docker-compose.yml`이 선언한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

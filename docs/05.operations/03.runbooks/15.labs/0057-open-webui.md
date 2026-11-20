@@ -1,10 +1,13 @@
 ---
 title: "Open WebUI Runbook"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0057"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Open WebUI Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 독립 LAB `labs/open-webui/docker-compose.yml`(profile `lab-open-webui`)의 준비·기동·장애 대응과,
 2026-11-10 ADR-0062 개정으로 HOME에 남은 Open WebUI 컨테이너·volume의 퇴역 절차를 다룬다.
@@ -30,7 +53,7 @@ next_review_at: "2027-05-13"
 - LAB 로그인 실패, 모델 목록 미표시, RAG 인덱싱 실패, healthcheck 실패.
 - HOME 퇴역 단계 중 하나가 승인됨.
 
-### Targets
+##### Targets
 
 > 범위: Open WebUI LAB과 HOME 잔여 상태
 
@@ -42,13 +65,14 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../01.guides/15.labs/0057-open-webui.md)
 - [Operations policy](../../02.policies/15.labs/0057-open-webui.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 LAB과 HOME 명령의 실행 경계와 승인 조건은 다음과 같다.
 
-#### Execution Boundary
+###### Execution Boundary
+<!-- core-payload-level:4 -->
 
 LAB 명령은 `python3 scripts/operations/lab.py`의 목적·lease·충돌·예산 규칙을 따른다. `down`은 `-v` 없이
 그 LAB project만 정지한다. HOME 명령은 이 런북의 퇴역 단계가 각각 승인된 경우에만 실행한다. 예상 밖 출력,
@@ -56,11 +80,12 @@ backup 누락, 승인되지 않은 부작용이면 중단하고 @buenhyden에게
 [LAB 승격](0107-lab-promotion.md), [백업](../10.platform-and-backup/0021-backup-and-restore.md),
 [계정](../03.identity-and-access/0014-keycloak.md), [gateway·인증서](../02.gateway-and-networking/0013-traefik.md)가 소유한다.
 
-### Environment
+##### Environment
 
 기동 전 확인할 LAB 설정, 비밀 파일 이름, data 경로 전제는 다음과 같다.
 
-#### Service lifecycle prerequisites
+###### Service lifecycle prerequisites
+<!-- core-payload-level:4 -->
 
 - `labs/.env`에 `LAB_DATA_DIR`, `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`, `LAB_OPEN_WEBUI_DEFAULT_URL`,
   `LAB_OPEN_WEBUI_CA_FILE`이 있고, 소유자가 LAB network에서 도달 가능한 Ollama endpoint를 승인했다.
@@ -69,9 +94,9 @@ backup 누락, 승인되지 않은 부작용이면 중단하고 @buenhyden에게
 - `${LAB_DATA_DIR}/open-webui/data`가 있고 HOME data 경로와 겹치지 않는다.
 - LAB origin redirect의 Keycloak 등록 여부를 확인했다. 등록 전에는 로그인 성공을 주장하지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -87,7 +112,8 @@ backup 누락, 승인되지 않은 부작용이면 중단하고 @buenhyden에게
 
 LAB 기동·점검과 데이터 보존, HOME 퇴역 단계는 다음 순서를 따른다.
 
-#### LAB start and triage
+###### LAB start and triage
+<!-- core-payload-level:4 -->
 
 ```bash
 python3 scripts/operations/lab.py check open-webui
@@ -104,13 +130,15 @@ docker compose --project-name hy-home-lab-open-webui --env-file "$LAB_ENV_FILE" 
 health는 로그인·RAG의 증거가 아니다. 승인된 lease 안에서 Keycloak 로그인, 모델 목록, 통제된 RAG 질의를
 따로 확인한다. entrypoint는 secret이 비었거나 두 줄 이상이거나 CA 파일이 없으면 기동을 멈춘다.
 
-#### LAB data backup and recovery
+###### LAB data backup and recovery
+<!-- core-payload-level:4 -->
 
 LAB data root는 HOME Restic 범위 밖이다. 보존할 실험 data가 있으면 쓰기를 멈추고 LAB을 정지한 뒤
 `${LAB_DATA_DIR}/open-webui/data` 전체(SQLite·upload·로컬 vector·`.webui_secret_key`)를 같은 시점으로
 복사한다. 실행 중인 SQLite를 복사하지 않는다. 임베딩 모델을 바꾸면 재색인한다.
 
-#### HOME retirement steps
+###### HOME retirement steps
+<!-- core-payload-level:4 -->
 
 이 source 이동 당시 HOME 컨테이너와 volume은 퇴역 대기였다. 현재 host 상태는 별도 승인으로 확인한다.
 LAB도 같은 `open-webui` 컨테이너 이름을 사용한다. 정지·제거 전 승인된 Docker context에서 HOME
@@ -135,32 +163,35 @@ docker ps -aq --no-trunc --filter 'label=com.docker.compose.project=hy-home-infr
 5. **DNS·router**: Traefik router는 컨테이너 label이었으므로 컨테이너 제거와 함께 사라진다.
    `chat.${DEFAULT_URL}` DNS 기록과 인증서 SAN 정리는 별도 변경이다.
 
-### Stop Conditions
+##### Stop Conditions
 
 예상 밖 출력, backup 누락, 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상과 다른 상태이면 중단하고 @buenhyden에게 넘긴다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 - [ ] `python3 scripts/operations/lab.py check open-webui` 성공
 - [ ] lease 안에서 container-internal health 성공
 - [ ] 승인된 경우 Keycloak 로그인, 모델 목록, 통제된 RAG 질의 성공
 - [ ] 퇴역 단계마다 대상 상태와 backup checksum 기록
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 기록할 신호와 증거는 다음과 같다.
 
-#### Observability and Evidence Sources
+###### Observability and Evidence Sources
+<!-- core-payload-level:4 -->
 
 - **Signals**: LAB healthcheck 실패, 로그인 실패, 인덱싱 실패.
 - **Evidence to Capture**: 비식별 로그 스니펫, 수행 명령과 결과, 퇴역 단계별 승인과 상태. 실패 검사와
   최종 상태는 관련 Task에 남긴다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 퇴역 단계는 각각 별도 승인 아래에서만 실행하도록 되어 있다.
 
@@ -169,16 +200,36 @@ docker ps -aq --no-trunc --filter 'label=com.docker.compose.project=hy-home-infr
 - LAB data backup과 복구: 실행 결과가 기록되어 있지 않다. backup 세트의 checksum과 복원 후 data 확인이 관찰되면 검증된다.
 - HOME 퇴역 5단계(최종 backup, 컨테이너 제거, volume 처리, Keycloak client, DNS/router): 단계별 승인이 필요하며 실행 결과가 기록되어 있지 않다. 단계별 대상 상태와 backup checksum 기록이 관찰되면 검증된다. 문서는 현재 host 상태를 별도 승인으로 확인하라고 한다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상과 다른 상태이면 중단하고 @buenhyden에게 넘긴다.
 정제된 증거, 시도한 단계와 현재 상태를 함께 전달한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 - LAB 문제는 `lab.py down open-webui`로 정지하고 data root를 보존한다.
 - HOME으로 되돌리려면 [POL-0107](../../02.policies/15.labs/0107-lab-promotion.md) 승격 절차를 따른다. 복구 후보인
   기존 HOME 컨테이너가 있는지는 HOME retirement steps의 project·service·ID 확인을 사용한다.
 - 격리 복원 rehearsal은 계획만 있고 실행되지 않았다. 복원 성공을 주장하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

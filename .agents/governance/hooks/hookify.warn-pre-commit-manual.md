@@ -1,10 +1,13 @@
 ---
 title: "WARNING: manual pre-commit execution"
-version: "1.1.6"
+version: "2.0.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: 'WARNING: manual pre-commit execution'
+  layer: agent
+updated: "2026-11-20"
 action: "warn"
 enabled: true
 event: "bash"
@@ -14,29 +17,49 @@ pattern: "pre-commit\\s+run"
 
 # Manual Pre-commit Execution Warning
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the rule payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Objective
 
 **Manual `pre-commit run` detected (project rule)**
 
-### Authority
+##### Authority
 
 Owning policy: [Quality standards execution boundary](../../../docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary).
 
-## Scope
+#### Scope
 
-### Applies To
+##### Applies To
 
 Bash commands matching the frontmatter pattern.
 
-### Exclusions
+##### Exclusions
 
 None.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 Agents never run `pre-commit run` directly. Use the observed installed hooks
 for an ordinary commit. When installed delivery is unconfirmed or diagnosis is
@@ -64,26 +87,46 @@ git commit -m "feat(scope): My change"
 
 If lint or format issues exist, fix the affected files directly before committing.
 
-### Enforcement
+##### Enforcement
 
 The declared Bash event and unchanged native pattern identify matching commands.
 
-## Exceptions
+#### Exceptions
 
-### Exception Conditions
+##### Exception Conditions
 
 An explicitly approved all-files gate uses only its controlled route and conditions.
 
-### Approval and Review
+##### Approval and Review
 
 That gate needs explicit approval under the execution boundary.
 
-## Ownership
+#### Ownership
 
-### Responsibilities
+##### Responsibilities
 
 `@buenhyden`.
 
-### Change and Adoption
+##### Change and Adoption
 
 None.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "SurrealDB Policy"
-version: "0.4.0"
+version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0080"
 parent_ids:
@@ -15,18 +18,39 @@ next_review_at: "2027-05-13"
 
 # SurrealDB Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 `08-ai` 티어 내에서 Open Notebook이 사용하는 `OPTIONAL`
 단일 서비스 SurrealDB 배포를 다룬다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - 상위 아키텍처: [AD-0011](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md)
 
-### Applies To
+##### Applies To
 
 - [작성된 Compose 소스](../../../../infra/08-ai/open-notebook/docker-compose.yml), Dockerfile, entrypoint
 - 서비스 `surrealdb`. 정확한 프로필은 `surrealdb`, `notebook`
@@ -34,13 +58,14 @@ next_review_at: "2027-05-13"
 - `surreal_db_password`와 root/namespace/database 인증 범위
 - 연결된 가이드와 런북
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 이 정책은 단일 서비스 `surrealdb` 배포만 다루며 Open Notebook 애플리케이션 서비스는 대상에 포함하지 않는다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -95,28 +120,30 @@ next_review_at: "2027-05-13"
   라이브 `/mydata`를 복사하는 것, 부분적으로 import된 대상을 재사용하는 것,
   또는 실행되지 않은 리허설을 테스트된 복구로 제시하는 것.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 소유자 `@buenhyden`은 편차 전에 범위, 위험, 만료, 종료 조건, 백업 식별자,
 롤백 증거를 기록해야 한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 매월, 그리고 이미지, 저장 형식, 영속성, 인증, namespace/database, 노출,
 업그레이드, 제거 변경 전에 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `docker compose --profile surrealdb config --quiet`
 - 서비스/프로필/마운트/시크릿 사실을 연결된 가이드, 런북, infra README와
   비교한다.
 - `python3 scripts/validation/check-document-links.py --mode all`를 실행한다.
 
-### Limits
+##### Limits
 
 이 정책에서 이름 붙은 검사는 compose render와 문서 링크 검사뿐이며, 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
@@ -129,13 +156,13 @@ next_review_at: "2027-05-13"
 - 검사: 수동 검토/승인 `POL-0080-R24`
 - 정책이 밝힌 범위: 정책이 지정한 검사는 compose render/문서 비교/문서 링크 검사뿐이며 문서와 서비스 사실의 일치는 사람이 비교하는 검토에 의존한다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 정책 소유자는 @buenhyden이다.
 
-### Review Triggers
+##### Review Triggers
 
 - 대상 동위 문서: [가이드](../../01.guides/05.databases-and-storage/0080-surrealdb.md), [런북](../../03.runbooks/05.databases-and-storage/0080-surrealdb.md)
 
@@ -147,3 +174,23 @@ next_review_at: "2027-05-13"
 - [런타임 버전 projection](../../../../infra/tech-stack.versions.json)
 - [운영 인덱스](../../README.md)
 - [Infrastructure README](../../../../infra/08-ai/open-notebook/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

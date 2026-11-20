@@ -1,22 +1,45 @@
 ---
 title: "Test Design Prompt"
-version: "0.2.2"
+version: "1.0.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Test Design Prompt
+  layer: agent
+updated: "2026-11-20"
 created: "2026-09-06"
 ---
 
 # Test Design Prompt
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the prompt payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
 
 Derive tests from a stated requirement and its failure conditions, so the tests
 encode the contract rather than the current implementation. A test written from
 the implementation passes by construction and proves nothing.
 
-## Inputs
+#### Inputs
 
 - The requirement or acceptance criterion under test, quoted from its owning
   Requirement, Spec, or contract document.
@@ -32,9 +55,9 @@ the implementation passes by construction and proves nothing.
 Stop and route to the owning stage if the requirement does not state an
 observable outcome or the criterion is partial or stale.
 
-## Instructions
+#### Instructions
 
-### Constraints
+##### Constraints
 
 - Building a fixture by copying the implementation's own output, which makes the
   assertion tautological.
@@ -48,7 +71,7 @@ observable outcome or the criterion is partial or stale.
 - Adding a discovery-only placeholder module that runs no assertion.
 - Claiming coverage from a test that was written but not executed.
 
-### Applies To
+##### Applies To
 
 - Roles: `qa-engineer` owns authoring and running these tests within its
   approved Task scope; `eval-engineer` owns deterministic evaluation fixtures.
@@ -60,7 +83,7 @@ observable outcome or the criterion is partial or stale.
   actually observed before implementation, and no assertion depends on the
   implementation's own output as its oracle.
 
-## Outputs
+#### Outputs
 
 For each behavior:
 
@@ -79,7 +102,7 @@ For each behavior:
 State which inputs are synthetic. Synthetic input is required wherever real
 input would carry credentials, live logs, or environment values.
 
-## Failure Handling
+#### Failure Handling
 
 If the requirement admits two readings, write the test for neither and return
 the ambiguity to the owning document. If a behavior cannot be observed without a
@@ -88,9 +111,29 @@ layer and name the boundary rather than mocking the guarantee away. If an
 existing test already covers the behavior, extend it and say so instead of
 adding a second owner.
 
-## Related Documents
+#### Related Documents
 
 - [Prompt index](README.md)
 - [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
 - [Workflows](../governance/workflows.md)
 - [Environment constraints](../governance/environment-constraints.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

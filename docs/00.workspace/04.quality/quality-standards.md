@@ -1,35 +1,60 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.15.1"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
 updated: "2026-11-20"
 ---
 
 # Agent Quality and Security Standards
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Universal quality gate for agent-driven changes in this repository.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of change-specific verification, security, reliability, and quality routing under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Change-specific verification, security, reliability, generated freshness, and local or hosted quality routing.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -273,7 +298,8 @@ None: this document states no exclusion.
 | QUALITY-STANDARDS-R246 | Any other change | Allowed: close it as low-risk with its focused checks and an author check that names what was compared and what was not checked; the author check is not called independent review | none | none |
 | QUALITY-STANDARDS-R247 | The class is unclear | Required: take the higher class | none | none |
 
-#### 1. Documentation Quality Rubric
+###### 1. Documentation Quality Rubric
+<!-- core-payload-level:4 -->
 
 | Grade | Description | Requirements                                                           |
 | :---- | :---------- | :--------------------------------------------------------------------- |
@@ -289,7 +315,8 @@ Quality dimensions:
 - Conciseness: avoid generic filler.
 - Accuracy: references match current repository structure.
 
-#### 2. Security Baseline
+###### 2. Security Baseline
+<!-- core-payload-level:4 -->
 
 - Never commit plaintext credentials, including in source-controlled configs.
 - Prefer secret managers or mounted secret files.
@@ -311,7 +338,8 @@ A change to any of them selects its checks through the
 [change-type verification matrix](#5-change-type-verification-matrix); the
 retired rule IDs are not reused.
 
-##### Bounded npm risk acceptance
+###### Bounded npm risk acceptance
+<!-- core-payload-level:5 -->
 
 No npm risk acceptance is active. The single bounded acceptance for
 GHSA-vfj7-8cjw-p6xm was retired after GitHub withdrew the advisory on
@@ -327,7 +355,8 @@ omitted development audit.
 Remote PR candidate validation and review by [risk](#11-review-risk) own candidate acceptance, while
 main-push security remains a post-merge observation.
 
-#### 3. Reliability Baseline
+###### 3. Reliability Baseline
+<!-- core-payload-level:4 -->
 
 - Recurring QA covers current document forms, templates, frontmatter, identity,
   relationships, links, lifecycle and preservation, plus this workspace's
@@ -398,7 +427,8 @@ main-push security remains a post-merge observation.
   Changing the canonical rule itself needs its owner's approval under
   [approval boundaries](approval-boundaries.md#authorization-source-and-records).
 
-#### 4. Execution Boundary
+###### 4. Execution Boundary
+<!-- core-payload-level:4 -->
 
 - **Authoring**: explicit formatting may write eligible authored files. Focused
   RED/GREEN and selected read-only lint help diagnose a change. Observe actual
@@ -498,7 +528,8 @@ main-push security remains a post-merge observation.
   tools must not block a small document-only plan. Preserve bounded process,
   pipe and descendant cleanup; do not hide environment failures by skipping it.
 
-##### Canonical delivery phase matrix
+###### Canonical delivery phase matrix
+<!-- core-payload-level:5 -->
 
 | Boundary | Automatic owner | Distinct evidence |
 | --- | --- | --- |
@@ -543,7 +574,8 @@ CodeQL and external security integrations are distinct remote observations;
 source edits do not prove that their server-side settings changed. Actual
 protection settings require approved mutation and authenticated read-back.
 
-#### 8. Workflow and Language Routing
+###### 8. Workflow and Language Routing
+<!-- core-payload-level:4 -->
 
 - Follow the sole load order in `.agents/governance/bootstrap.md#canonical-load-order`.
 - Follow repeatable orchestration in `.agents/governance/workflows.md`.
@@ -553,14 +585,16 @@ protection settings require approved mutation and authenticated read-back.
   `docs/00.workspace/03.process/documentation-protocol.md#readme-navigation`.
 - Resolve write permission through `docs/00.workspace/04.quality/approval-boundaries.md`.
 
-#### 9. Completion Routing
+###### 9. Completion Routing
+<!-- core-payload-level:4 -->
 
 Use only `docs/00.workspace/04.quality/task-checklists.md#before-completion`. Its conditional
 harness, evidence, documentation, and controlled-gate clauses determine which
 quality checks apply. PR-specific completion remains owned by the Completion
 Gate in `docs/00.workspace/03.process/github-governance.md`.
 
-#### 6. Generated-Artifact Freshness
+###### 6. Generated-Artifact Freshness
+<!-- core-payload-level:4 -->
 
 Some artifacts are generated from repository content and must be regenerated as
 part of QA before completion. Treat regeneration as a verification step, not an
@@ -580,7 +614,8 @@ optional cleanup.
 - **General rule**: never hand-edit a generated artifact to pass a check. Re-run
   its generator and commit the generated result as a separate logical unit.
 
-#### 7. Local QA/CI Orchestration
+###### 7. Local QA/CI Orchestration
+<!-- core-payload-level:4 -->
 
 Use `python3 scripts/validation/run-ci-gate.py --profile changed --explain` to render the
 selected public suite-to-validator mapping without execution. The public runner
@@ -624,7 +659,8 @@ it to check the staged input when installed hook delivery is unconfirmed or
 diagnosis is needed. Isolated wrapper regressions do not substitute for an
 observed local or hosted execution.
 
-##### Explicit Full Audit
+###### Explicit Full Audit
+<!-- core-payload-level:5 -->
 
 `full` is an explicitly scoped comprehensive audit, not a commit, feature-push,
 PR, main or release completion ritual. Record its selected context, tools,
@@ -639,7 +675,8 @@ Final review and evidence-update reuse follow
 slice revalidation and mandatory protected-surface expertise. An evidence-only
 Task update does not create another independent source-review gate.
 
-##### Gate and Fixture Ownership
+###### Gate and Fixture Ownership
+<!-- core-payload-level:5 -->
 
 A gate owns one current invariant, not a historical document count, a copied
 command list, or a Task's observed commit. The workflow manifest owns composition;
@@ -664,7 +701,8 @@ require model execution or a second all-files sweep for wording-only edits.
 Retain negative cases for authorization, ownership, symlinks, and fail-closed
 execution. A smaller suite must not mean missing behavioral coverage.
 
-#### 10. Formatting and Linting Ownership
+###### 10. Formatting and Linting Ownership
+<!-- core-payload-level:4 -->
 
 At commit time, end-of-file and trailing whitespace are checked by
 read-only checkers, mixed-line-ending runs with `--fix=no`, Ruff format with
@@ -710,7 +748,8 @@ and no separate formatting tool is added.
 - Adopting or changing a formatter reformats the corpus once, in its own
   commit, after every check that the reformatting would break is fixed.
 
-#### 11. Review Risk
+###### 11. Review Risk
+<!-- core-payload-level:4 -->
 
 Every change gets the review its risk class requires (R244-R247). A change is
 high-risk when it touches a
@@ -733,21 +772,24 @@ recorded in the owning Task. How an agent selects, dispatches and enforces a
 read-only reviewer is the agent procedure in
 [workflows](../../../.agents/governance/workflows.md#review-risk).
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
-#### 5. Change-Type Verification Matrix
+###### 5. Change-Type Verification Matrix
+<!-- core-payload-level:4 -->
 
 Use the smallest meaningful selected checks. This is the sole matrix for all
 providers; Task evidence names each input, result, acceptance and unexecuted lane.
@@ -769,7 +811,7 @@ proves arbitrary agent prose or provider performance. Missing required evidence
 remains FAIL, BLOCKED, NOT_RUN or unverified as applicable. Independent review
 reads the exact diff, contract and actual results; the current Task owns it.
 
-### Limits
+##### Limits
 
 Seven rules name a check that rejects or fails a violation; every other rule names no check.
 
@@ -789,16 +831,36 @@ Seven rules name a check that rejects or fails a violation; every other rule nam
 - Review risk (R244-R247) names no check; the review itself is the evidence.
 - Rules stated under Enforcement/Mechanisms (the change-type verification matrix and its acceptance statements) are outside the table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
 - `docs/00.workspace/03.process/github-governance.md`
 - `.agents/governance/agentic.md`
 - `docs/00.workspace/03.process/git-workflow.md`
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

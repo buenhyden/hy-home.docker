@@ -1,10 +1,13 @@
 ---
 title: "Archive Disposition Consistency Assessment"
-version: "0.4.1"
+version: "1.0.0"
 type: "reference/research-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: Archive Disposition Consistency Assessment
+  layer: reference
+updated: "2026-11-20"
 layer: "references"
 artifact_id: "RES-0096"
 created: "2026-09-15"
@@ -13,11 +16,32 @@ observed_at: "2026-09-15"
 
 # Archive Disposition Consistency Assessment
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 Stage 98 archive 정책, Registry, 등록된 check, 그리고 이를 설명하는 활성
 문서가 `main@e233d2a19a3a266e3535184a95c55222f9793c8e`에서 서로 일치하는
@@ -30,7 +54,8 @@ Stage 98 archive 정책, Registry, 등록된 check, 그리고 이를 설명하�
 finding, SPEC-0177/SPEC-0178 route는 주제 연구나 infrastructure 연구에
 병합되지 않습니다. 현재 cross-package routing만 통합됩니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - 범위 안: `docs/00.workspace/03.process/documentation-protocol.md`(문서 보존 및
   은퇴), `docs/98.archive/README.md`, `docs/99.templates/registry.json`와
@@ -42,7 +67,7 @@ finding, SPEC-0177/SPEC-0178 route는 주제 연구나 infrastructure 연구에
   썼으며 거기서 나온 어떤 개수, test 총합, identifier도 이
   저장소의 사실로 이곳에 옮기지 않았습니다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - 이는 commit 한 개에 대한 날짜가 있는 관찰입니다. hosted CI run,
   all-files나 full-profile 실행, 어떤 runtime 상태도 기록하지 않습니다.
@@ -51,21 +76,21 @@ finding, SPEC-0177/SPEC-0178 route는 주제 연구나 infrastructure 연구에
 - PREMIS는 조회하지 않았으므로 어떤 preservation-standard conformance도
   주장하거나 암시하지 않습니다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
 | [README.md](README.md) | RES-0096: question, 방법, A01–A25 finding, 외부 근거를 한 문서에 담은 단일 문서 package |
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 member의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
 - 여섯 개 disposition, retention class 이름, 두 번째 복구 원장 금지는
   지역적 설계 선택입니다. 어떤 조회된 source도 이를 요구하지 않으며,
@@ -84,7 +109,8 @@ finding, SPEC-0177/SPEC-0178 route는 주제 연구나 infrastructure 연구에
 - 항목 A11은 이 평가를 작성할 당시 어느 package에도 owner가 없었습니다.
   운영자가 2026-09-16에 SPEC-0178에 배정했습니다.
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [문서 보존 정책](../../../00.workspace/03.process/documentation-protocol.md#document-retention-and-retirement)
 - [REQ-0026 문서 보존 및 은퇴](../../../01.requirements/0026-document-retention-and-retirement.md)
@@ -95,9 +121,10 @@ finding, SPEC-0177/SPEC-0178 route는 주제 연구나 infrastructure 연구에
 - SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity (은퇴; Git 이력)
 - [Research index](../README.md)
 
-### Checks
+##### Checks
 
-#### Method
+###### Method
+<!-- core-payload-level:4 -->
 
 모든 claim은 확인 가능한 문장 하나로 쪼개어, 일관성과 그 문장이 어떻게
 검증되었는지라는 서로 독립된 두 축으로 기록됩니다. 검증 수준은 `source
@@ -118,7 +145,8 @@ read`(관장하는 텍스트를 읽음), `static code`(강제하는 코드를 �
 위 개수는 그 commit의 관찰값입니다. 이는 threshold가 아니며, link 총합은
 SPEC-0177 Task가 같은 날 W3에 기록한 `links=6655`와 이미 다릅니다.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - <https://git-scm.com/docs/gitrevisions>
 - <https://git-scm.com/docs/git-cat-file>
@@ -137,7 +165,8 @@ SPEC-0177 Task가 같은 날 W3에 기록한 `links=6655`와 이미 다릅니다
 - <https://www.writethedocs.org/guide/docs-as-code/>
 - <https://spec.commonmark.org/>
 
-#### Consistency by Review Item
+###### Consistency by Review Item
+<!-- core-payload-level:4 -->
 
 항목 번호 A01부터 A25까지는 이 평가의 검토 체크리스트이며 Registry
 identifier가 아닙니다.
@@ -170,7 +199,8 @@ identifier가 아닙니다.
 | A24 Stale facts and counts | 현재 텍스트가 현재 tree와 일치 | SPEC-0177 Task의 날짜가 있는 개수는 날짜가 있는 관찰임; index와 정책의 transition 표는 구현된 코드를 없는 것으로 설명(A05, A12); Task의 Commit Ledger는 W2 승인 이전에서 끝남 | 오래된 현재 설명 | reproduced | 이 평가를 기록하는 변경에서 수정됨 |
 | A25 Integration | 기존 작업을 재사용하지 중복하지 않음 | SPEC-0177 W5, W7, W8은 남아 있음; `ADR-0035`는 `proposed`; 이 평가가 드러낸 정책 변경은 SPEC-0177을 넓히는 대신 별도 draft package로 제안됨 | 일관됨 | source read | SPEC-0177은 W4b로 수정됨; SPEC-0178 작성됨 |
 
-#### External Sources
+###### External Sources
+<!-- core-payload-level:4 -->
 
 각 행은 그 source가 뒷받침하는 것과 뒷받침하지 않는 것을 명시합니다.
 2026-09-15에 읽기 전용으로 수집했습니다.
@@ -192,7 +222,8 @@ identifier가 아닙니다.
 | Write the Docs, *Docs as Code* | 문서화는 version control, 검토, 자동화된 test를 사용함 | 어떤 check를 실행할지 |
 | CommonMark 0.31.2 §4.4, §4.5, §4.7, §6.1, §6.3 | code block과 fence는 literal text임; code span은 link bracket보다 강하게 결합됨; reference definition은 reference link를 해석함 | GitHub Flavored Markdown 확장 |
 
-#### 2026-09-28 외부 근거 재확인
+###### 2026-09-28 외부 근거 재확인
+<!-- core-payload-level:4 -->
 
 Archive 표준안 3.0.0 대조를 위해 다음 공식 설명을 다시 조회했습니다. 기존
 2026-09-15 관찰은 당시의 증거로 유지합니다. 이번 구현·검증 결과는 현재
@@ -214,3 +245,23 @@ ADR-0033, ADR-0035, ADR-0036은 현재 tree에 없으며(`docs/03.specs/`,
 `docs/02.architecture/02.decisions/`) 본문은 Git 이력에만 있습니다.
 `docs/98.archive/`에는 `README.md`만 남아 있습니다. 위 A01–A25 표와 명령 결과는
 `main@e233d2a19a3a266e3535184a95c55222f9793c8e`의 2026-09-15 관찰로 보존합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

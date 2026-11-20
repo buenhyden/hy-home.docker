@@ -541,7 +541,12 @@ def read_bounded_regular(
 
 def _read_text(root: pathlib.Path, relative: pathlib.PurePosixPath) -> str:
     try:
-        return read_bounded_regular(root, relative).decode("utf-8")
+        text = read_bounded_regular(root, relative).decode("utf-8")
+        if relative.suffix == ".md":
+            from scripts.lib.document_governance.common_document import payload_text
+
+            return payload_text(text)
+        return text
     except UnicodeDecodeError as error:
         raise OperationsAuthorityError(
             "utf8-invalid", f"invalid UTF-8: {relative}"

@@ -1,10 +1,13 @@
 ---
 title: "Workspace Engineering Main Baseline Assessment"
-version: "0.6.0"
+version: "1.0.0"
 type: "reference/research-pack"
 status: "in-review"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: Workspace Engineering Main Baseline Assessment
+  layer: reference
+updated: "2026-11-20"
 layer: "references"
 artifact_id: "RES-0085"
 created: "2026-09-04"
@@ -13,11 +16,32 @@ observed_at: "2026-09-05"
 
 # Workspace Engineering Main Baseline Assessment
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 `main@4c6d211129615eab372d720ebd209b6c27618c86` 평가에서 어떤 binding
 범위, 증거 경계, identity-recovery provenance를 보존해야 하는가?
@@ -33,7 +57,8 @@ publication lifecycle이 review를 거치는 동안 날짜가 있는 평가 enve
 GitHub Actions 주제 연구를 담습니다. 이 package는 identity-recovery tuple과
 관찰 경계를 보존합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - 날짜가 있는 저장소 baseline: `buenhyden/hy-home.docker`
   `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -49,7 +74,7 @@ GitHub Actions 주제 연구를 담습니다. 이 package는 identity-recovery t
   그 형제 구성원에서 확인합니다. GitHub Actions mechanics는
   [RES-0084](../0084-github-actions-platform/README.md)에 남습니다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - secret, credential 값, 개인 key, environment 값, raw log, shell
   history, 사용자 전역 provider 설정은 조회하지 않았습니다.
@@ -70,21 +95,21 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
 현재 package가 없습니다(`docs/90.references/02.audits/README.md`). 위 AUD-0097
 언급은 날짜가 있는 관찰로 보존합니다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
 | [m0001-request-scope.md](m0001-request-scope.md) | RES-0085-m0001: 원래 binding request와 복구된 request identity |
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 member의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
 - 과거 workspace-baseline 종합은 RES-0002-m0020에서 확인합니다. 현재 구현은
   해당 소유자의 추적 소스로, 새 관찰은 범위가 승인된 Task의 증거로 확인합니다.
@@ -94,7 +119,8 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
   보존합니다.
 - 현재 개선 사항은 소유 Requirement와 해당 Task에서 다룹니다.
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - 과거 baseline 종합, 주제 구성원, 보존 선언:
   [RES-0002](../0002-agentic-engineering-research-pack/README.md)와
@@ -116,9 +142,10 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
 - Package registry: [Research index](../README.md)와
   [Stage 99 Registry](../../../99.templates/registry.json).
 
-### Checks
+##### Checks
 
-#### Method
+###### Method
+<!-- core-payload-level:4 -->
 
 1. 정확한 baseline SHA, 관찰 날짜, source request, 복구된 artifact
    identity, 상호 Task decision을 보존합니다.
@@ -131,7 +158,8 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
    inbound link, 보호된 RES-0002 집합, 생성된 index 신선도를
    검증합니다.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - 저장소 baseline: Git commit
   `4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -153,7 +181,8 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
 - 세부 주제와 당시 baseline source는 대응하는 RES-0002 구성원과 RES-0084에서
   확인합니다.
 
-#### Findings
+###### Findings
+<!-- core-payload-level:4 -->
 
 | Evidence retained here | Dated result | Evidence depth | Current owner / disposition |
 | --- | --- | --- | --- |
@@ -167,3 +196,23 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
 당시 평가의 세부 finding은
 [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)에
 통합되어 있습니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

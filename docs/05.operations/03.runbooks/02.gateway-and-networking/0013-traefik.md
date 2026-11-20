@@ -1,10 +1,13 @@
 ---
 title: "01-Gateway Traefik Runbook"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0013"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # 01-Gateway Traefik Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
 
@@ -29,7 +52,7 @@ next_review_at: "2027-05-13"
 - 미들웨어 체인 누락/오타/잘못된 순서
 - Traefik healthcheck 실패
 
-### Targets
+##### Targets
 
 - Declared parent: [01-Gateway Traefik Usage Guide](../../01.guides/02.gateway-and-networking/0013-traefik.md) (`GDE-0013`)
 - Governing authority: [Gateway Tier Architecture Description](../../../02.architecture/01.descriptions/0001-gateway-architecture.md) (`AD-0001`)
@@ -43,9 +66,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../01.guides/02.gateway-and-networking/0013-traefik.md)
 - [Operations policy](../../02.policies/02.gateway-and-networking/0013-traefik.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 저장소 루트, 승인된 Docker context의 `traefik`만 대상으로 한다. `core`/`dev`/
 `local` 중 기존 선택, host bind/80·443, root network, 인증서와
@@ -53,11 +76,12 @@ BasicAuth Secret 참조, `${DEFAULT_SECURITY_DIR}/openbao/tls/ca.pem` 존재를 
 응답이나 secret mount 내용을 증거로 출력하지 않는다. config/image 변경·restart는
 서비스 영향과 이전 config/certificate/image identity가 확인된 별도 승인이 필요하다.
 
-### Environment
+##### Environment
 
 적용 전 정적 점검과 읽기 전용 진단:
 
-#### Static checks and diagnosis
+###### Static checks and diagnosis
+<!-- core-payload-level:4 -->
 
 ```bash
 HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
@@ -85,9 +109,9 @@ docker compose ps traefik
 docker compose exec -T traefik traefik healthcheck --ping
 ```
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -96,7 +120,8 @@ docker compose exec -T traefik traefik healthcheck --ping
 | 3 | Startup, shutdown and apply: `/dynamic` 변경은 실제 mount source 확인, 정적 단일 파일 변경은 `--force-recreate traefik`와 post-apply hash 검사 | 문서에 기록 없음 | 실패하면 새 설정 적용을 중단하고 Recovery or Forward Repair로 전달한다 |
 | 4 | Startup, shutdown and apply: healthy, dashboard BasicAuth, ForwardAuth/OIDC route, 내부 metrics를 별개로 확인 | healthcheck, dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집 | 새 설정 적용을 중단하고 Recovery or Forward Repair로 전달한다 |
 
-#### Startup, shutdown and apply
+###### Startup, shutdown and apply
+<!-- core-payload-level:4 -->
 
 기존 로컬 image와 network·secret·cert 입력이 준비됐고 runtime 변경이 승인된
 경우에만 아래를 실행한다. start는 80/443을 점유하며 stop은 모든 해당 route를 중단한다.
@@ -115,25 +140,27 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집을 별개로 확인한다.
 실패하면 새 설정 적용을 중단하고 아래 rollback으로 전달한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 새 설정 적용이 실패하면 적용을 중단하고 Recovery or Forward Repair로 전달한다(Steps의 마지막 단락). canary/격리 route가 준비되지 않았으면 적용을 중단한다(Recovery or Forward Repair의 2번).
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 Traefik healthcheck, dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집을 별개로 확인한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 시각·revision·승인 대상, 명령 exit, chain 멤버십, 정제된 health/route/metrics
 결과만 Task/Incident에 남긴다. secret 값, Authorization/Cookie, 원문 access/error
 로그는 첨부하지 않는다. 증거별 static/runtime/NOT_RUN을 구분한다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
 
@@ -141,18 +168,19 @@ Traefik healthcheck, dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 n
 - 정적 설정 적용 뒤 hash 검사: `--force-recreate`와 post-apply hash 검사 결과가 이 문서에는 기록되어 있지 않다. hash 대조 결과로 검증한다.
 - Dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집: 별개로 확인해야 하며 이 문서에는 각 결과가 기록되어 있지 않다. 증거별 static/runtime/`NOT_RUN`을 구분해 Task/Incident에 남긴 결과로 검증한다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 limiter 미준수, 인증 우회·credential 노출 징후, persistent health/route 오류,
 잘못된 bind/network, 또는 canary·rollback 입력 부재는 @buenhyden에게 전달한다.
 영향 route, 정제된 관찰과 필요한 별도 구현/운영 승인을 기록한다. 여러 티어
 장애는 [RUN-0099](../01.common/0099-system-operations.md)로 연결한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
-#### Rollback or Recovery
+###### Rollback or Recovery
+<!-- core-payload-level:4 -->
 
 1. Git의 검토된 static/dynamic 설정과 private owner의 일치하는 인증서 세트를
    준비한다. key를 repository/evidence에 복사하지 않는다.
@@ -167,3 +195,23 @@ limiter 미준수, 인증 우회·credential 노출 징후, persistent health/ro
 
 기존 2026-09-20 복구 계획과 이번 감사는 runtime 복구를 실행하지 않았다.
 전체 호스트 cold-start는 [RUN-0098](../01.common/0098-cold-start-and-reboot.md)이 소유한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

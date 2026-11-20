@@ -1,10 +1,13 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "1.5.1"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -15,13 +18,34 @@ next_review_at: "2027-05-13"
 
 # Platform Operations and Quality Optimization Hardening Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 `09-platform-ops`·`11-quality`의 최적화/하드닝 운영 정책을 정의한다. 관리 경로 보안, 네트워크 경계, 테스트 도구 안정성, 카탈로그 확장 승인 게이트를 통제한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md) (`AD-0009`)
 
@@ -29,7 +53,7 @@ next_review_at: "2027-05-13"
 
 - 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 
-### Applies To
+##### Applies To
 
 - `infra/09-platform-ops/*/docker-compose.yml` 및 `infra/11-quality/*/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
@@ -37,13 +61,14 @@ next_review_at: "2027-05-13"
 - **Systems**: opentofu, terrakube, registry, SonarQube LAB, k6, Locust LAB, renovate
 - **Environments**: 단일 HOME/DEV 호스트(별도 stage·production 환경은 없다)
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -84,7 +109,8 @@ next_review_at: "2027-05-13"
   - 검증 게이트 우회 배포
   - 감사/보존 정책 없이 확장 항목 운영 전환
 
-#### Catalog Expansion Approval Gates
+###### Catalog Expansion Approval Gates
+<!-- core-payload-level:4 -->
 
 - **opentofu 승인 조건**:
   - plan/apply 승인 게이트 문서화
@@ -105,28 +131,31 @@ next_review_at: "2027-05-13"
   - `dependency-update` 작업 범위(`hyhome-renovate.timer` 주간 기본 실행과 온디맨드 실행)와 최소 token 권한을 유지한다.
   - self-host `allowedCommands` 허용 목록과 변경 PR 검증을 확인한다.
 
-#### 확장 게이트와 현재 제한
+###### 확장 게이트와 현재 제한
+<!-- core-payload-level:4 -->
 
 위 카탈로그 항목은 추가 운영 전환의 승인 조건이며 구현 완료 목록이 아니다.
 일반 변경·예외 절차는 [공통 운영 정책](../01.common/0006-infrastructure-optimization-governance.md)을
 따른다. Terrakube의 cookie ForwardAuth와 CLI/executor 비호환은 별도 구현 검토
 대상이다. gateway 통제를 유지하면서 실행 활성화를 차단하고 `@buenhyden`에게 보고한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
 - 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 월 1회 정기 검토
 - tooling 구성/권한/정책 변경 시 수시 검토
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 - `bash scripts/validation/check-template-security-baseline.sh`
@@ -134,7 +163,7 @@ next_review_at: "2027-05-13"
 - 원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix))
 - 프로필로 선택한 서비스는 루트 Compose의 네트워크·secret·의존성 문맥으로 검증한다. 개별 서비스 파일만으로 실행 구성을 판정하지 않는다.
 
-### Limits
+##### Limits
 
 아래 규칙은 규칙과 직접 연결된 검사가 정책에 없거나 수동 검토에 의존한다.
 
@@ -149,16 +178,36 @@ next_review_at: "2027-05-13"
 - 개별 서비스 파일만으로는 실행 구성을 판정할 수 없다.
 - 월 1회 정기 검토는 자동 점검이 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - 동일 주제 문서: [Guide](../../01.guides/10.platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`), [Runbook](../../03.runbooks/10.platform-and-backup/0063-tooling-optimization-hardening.md) (`RUN-0063`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../01.guides/10.platform-and-backup/0063-tooling-optimization-hardening.md)
 - [Recovery runbook](../../03.runbooks/10.platform-and-backup/0063-tooling-optimization-hardening.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

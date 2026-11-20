@@ -17,6 +17,10 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 from scripts.lib.document_governance import registry as registry_module
+from scripts.lib.document_governance.common_document import (
+    CommonDocumentError,
+    payload_text,
+)
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
@@ -1010,7 +1014,10 @@ def _completion_line_states(
 def _completion_visible_lines(body: str) -> list[str]:
     """Give each consumer fresh lines from the shared immutable text parse."""
 
-    return list(_completion_visible_snapshot(body))
+    try:
+        return list(_completion_visible_snapshot(payload_text(body)))
+    except CommonDocumentError as error:
+        raise SpecPackageError(str(error)) from error
 
 
 @functools.lru_cache(maxsize=8)
@@ -1125,22 +1132,80 @@ def _has_execution_items(text: str) -> bool:
     """Find a visible Execution Items heading without opening historical schemas."""
     from scripts.lib.document_governance.metadata.heading import _markdown_form_lines
 
+    try:
+        text = payload_text(text)
+    except CommonDocumentError as error:
+        raise SpecPackageError(str(error)) from error
     return "Execution Items" in text and any(
         heading in {(3, "Execution Items"), (4, "Execution Items")}
         for _, _, heading in _markdown_form_lines(text)
     )
 
 
-def acceptance_criterion_numbers(spec_body: str, heading: str) -> tuple[int, ...]:
-    """Read visible numbered criteria from the registered acceptance section."""
-    return tuple(
-        int(value)
-        for value in re.findall(
-            r"^([1-9][0-9]*)\. \S",
-            "\n".join(_contract_section(spec_body, heading)),
-            re.M,
+def acceptance_criterion_id(number: int) -> str:
+    """Display a stable criterion number without reallocating its identity."""
+    if type(number) is not int or number < 1:
+        raise SpecPackageError("criterion number must be a positive integer")
+    return f"AC-{number:04d}"
+
+
+def acceptance_criterion_number(display: str) -> int:
+    match = re.fullmatch(r"AC-([0-9]+)", display) if isinstance(display, str) else None
+    if match is None:
+        raise SpecPackageError("criterion display must be a canonical AC identity")
+    try:
+        number = int(match[1])
+    except ValueError as error:
+        raise SpecPackageError("criterion display number is invalid") from error
+    if number < 1 or acceptance_criterion_id(number) != display:
+        raise SpecPackageError("criterion display must be a canonical AC identity")
+    return number
+
+
+def _ac_declaration(line: str) -> int | None:
+    ordinal = re.match(r"^([1-9][0-9]*)\.\s+", line)
+    text = re.sub(r"^(?:[-*+]|[1-9][0-9]*\.)\s+", "", line)
+    if text.startswith("|"):
+        cells = [cell.strip() for cell in text.strip("|").split("|")]
+        token = cells[0]
+        if re.match(r"(?:\*\*|`)?AC-", token) and not any(cells[1:]):
+            raise SpecPackageError("criterion declaration has no observable outcome")
+    else:
+        match = re.match(
+            r"(?:\*\*(AC-[^*]+)\*\*|`(AC-[^`]+)`|(AC-[^: .]+))[:.]\s+\S", text
         )
-    )
+        if match is None:
+            if ordinal is None and re.match(r"(?:\*\*|`)?AC-", text):
+                raise SpecPackageError("criterion declaration is malformed")
+            return None
+        token = next(value for value in match.groups() if value is not None)
+    if token.startswith("**") and token.endswith("**"):
+        token = token[2:-2]
+    elif token.startswith("`") and token.endswith("`"):
+        token = token[1:-1]
+    if re.match(r"(?:\*\*|`)?AC-", token) is None:
+        return None
+    number = acceptance_criterion_number(token)
+    if ordinal is not None and int(ordinal[1]) != number:
+        raise SpecPackageError("criterion ordinal and AC identity disagree")
+    return number
+
+
+def acceptance_criterion_numbers(spec_body: str, heading: str) -> tuple[int, ...]:
+    """Read canonical AC displays or historical numbers, preserving their meaning."""
+    canonical: list[int] = []
+    historical: list[int] = []
+    for line in _contract_section(spec_body, heading):
+        number = _ac_declaration(line)
+        if number is not None:
+            canonical.append(number)
+        elif match := re.match(r"^([1-9][0-9]*)\. \S", line):
+            historical.append(int(match[1]))
+    if canonical and historical:
+        raise SpecPackageError(
+            "criterion declarations mix AC and historical identities"
+        )
+    return tuple(canonical or historical)
 
 
 # sdlc.md says an approval without its source is invalid, and
@@ -1428,7 +1493,7 @@ def _completion_rows(
         except SpecPackageError as error:
             raise SpecPackageError(f"completion evidence: {error}") from error
         if rows:
-            tables.append((key, rows))
+            tables.append((key, _criterion_rows(rows, 0)))
     if len(tables) > 1:
         raise SpecPackageError("Task must use one registered completion table shape")
     return tuple(tables)
@@ -1458,7 +1523,8 @@ def _review_rows(
     except SpecPackageError as error:
         raise SpecPackageError(f"review evidence: {error}") from error
     return tuple(
-        (criterion, acceptance, evidence) for criterion, acceptance, evidence in rows
+        (_criterion_cell(criterion), acceptance, evidence)
+        for criterion, acceptance, evidence in rows
     )
 
 
@@ -1496,6 +1562,30 @@ def _cell_references(value: str, label: str) -> tuple[str, ...]:
     return references
 
 
+def _criterion_cell(value: str) -> str:
+    references = _cell_references(value, "Criterion")
+    semantic = tuple(
+        str(acceptance_criterion_number(reference))
+        if reference.startswith("AC-")
+        else reference
+        for reference in references
+    )
+    if any(reference.startswith("AC-") for reference in references) and len(
+        set(semantic)
+    ) != len(semantic):
+        raise SpecPackageError("criterion references repeat the same semantic identity")
+    return ", ".join(semantic)
+
+
+def _criterion_rows(
+    rows: tuple[tuple[str, ...], ...], column: int
+) -> tuple[tuple[str, ...], ...]:
+    return tuple(
+        (*row[:column], _criterion_cell(row[column]), *row[column + 1 :])
+        for row in rows
+    )
+
+
 def _work_references(value: str) -> tuple[str, ...]:
     if value == "None":
         return ()
@@ -1531,8 +1621,10 @@ def _v5_plan_rows(
         plan.body, _registered_common_section(registry, "plan_section")
     )
     if _is_generation_8(registry, plan.path):
-        return _core_table_rows(lines, registry, "plan_columns")
-    return _registered_table_rows(lines, headers, strict_contiguity=True)
+        rows = _core_table_rows(lines, registry, "plan_columns")
+    else:
+        rows = _registered_table_rows(lines, headers, strict_contiguity=True)
+    return _criterion_rows(rows, 1)
 
 
 def _v5_evidence_rows(
@@ -1550,12 +1642,15 @@ def _v5_evidence_rows(
         "Acceptance",
     ):
         raise SpecPackageError("generation 5 Evidence columns are not canonical")
-    return _registered_table_rows(
-        _contract_section(
-            task.body, _registered_common_section(registry, "task_section")
+    return _criterion_rows(
+        _registered_table_rows(
+            _contract_section(
+                task.body, _registered_common_section(registry, "task_section")
+            ),
+            headers,
+            strict_contiguity=True,
         ),
-        headers,
-        strict_contiguity=True,
+        1,
     )
 
 
@@ -1788,22 +1883,27 @@ def _v6_evidence_rows(
         task.body, _registered_common_section(registry, "task_section")
     )
     if _is_generation_8(registry, task.path):
-        return _core_table_rows(lines, registry, "evidence_columns")
-    return _registered_table_rows(lines, headers, strict_contiguity=True)
+        rows = _core_table_rows(lines, registry, "evidence_columns")
+    else:
+        rows = _registered_table_rows(lines, headers, strict_contiguity=True)
+    return _criterion_rows(rows, 1)
 
 
 def _core_evidence_cells(
     task: SpecDocument, registry: DocumentRegistry
 ) -> tuple[tuple[str, ...], ...]:
-    """Every core Evidence cell of a generation 8 Task, in core order."""
+    """Core Evidence cells with stable semantic criteria, in core order."""
 
-    return _core_table_rows(
-        _contract_section(
-            task.body, _registered_common_section(registry, "task_section")
+    return _criterion_rows(
+        _core_table_rows(
+            _contract_section(
+                task.body, _registered_common_section(registry, "task_section")
+            ),
+            registry,
+            "evidence_columns",
+            raw=True,
         ),
-        registry,
-        "evidence_columns",
-        raw=True,
+        1,
     )
 
 
@@ -1819,8 +1919,10 @@ def _criterion_acceptance_rows(
         _registered_common_section(registry, "criterion_acceptance_section"),
     )
     if _is_generation_8(registry, task.path):
-        return _core_table_rows(lines, registry, "criterion_acceptance_columns")
-    return _registered_table_rows(lines, headers, strict_contiguity=True)
+        rows = _core_table_rows(lines, registry, "criterion_acceptance_columns")
+    else:
+        rows = _registered_table_rows(lines, headers, strict_contiguity=True)
+    return _criterion_rows(rows, 0)
 
 
 def _historical_pass_pairs(

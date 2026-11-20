@@ -1,10 +1,13 @@
 ---
 title: "Gateway Tier (01-gateway) Requirements"
-version: "1.4.1"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0001"
 created: "2026-03-26"
@@ -12,9 +15,29 @@ created: "2026-03-26"
 
 # Gateway Tier (01-gateway) Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 The `01-gateway` tier is the single entry point for external traffic into
 `hy-home.docker`. It must terminate TLS, route requests to services that opt in
@@ -25,7 +48,7 @@ Without it, each service carries its own TLS and authentication settings,
 exposure needs manual configuration, and there is no central view of what is
 reachable from outside.
 
-### Stakeholders
+##### Stakeholders
 
 - **Infrastructure engineer**: controls traffic flow, TLS and the shared
   security chain in one place.
@@ -37,15 +60,15 @@ reachable from outside.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - The edge router for all external HTTP and HTTPS traffic, TLS
   termination, automatic route discovery for opted-in services, the shared
   middleware chain.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - **Out of scope**: business logic inside services, long-term log storage
   (Observability tier) and the authentication server itself (Auth tier).
@@ -64,7 +87,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 - The gateway is a single point of entry: when it is down, every external route
   is down.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -73,7 +96,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 | REQ-0001-FR-0003 | The gateway must terminate external TLS with the operator-provided certificate and must not accept a protocol version below TLS 1.2. | The gateway terminates TLS so that each service need not carry its own TLS settings; the operator provides the certificate and key. | A TLS 1.0 or 1.1 handshake is refused, and a TLS 1.2 or 1.3 handshake presents the operator-provided certificate. | must |
 | REQ-0001-FR-0004 | The gateway must offer a reusable single sign-on access-control step, backed by the Auth tier, that a route can require. | A shared access-control chain spares each service its own authentication front door and lets a security auditor check which routes require which access control. | A route that requires single sign-on sends an unauthenticated browser to the sign-in flow and admits the request only after a valid session. | must |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0001-FR-0001**: Plain HTTP requests must be permanently redirected to
   HTTPS.
@@ -86,19 +109,20 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 - **REQ-0001-FR-0004**: The gateway must offer a reusable single sign-on
   access-control step, backed by the Auth tier, that a route can require.
 
-### Quality Requirements
+##### Quality Requirements
 
 This package declares no quality requirement and records no reason why none applies.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 This package records the owner's requirements for the gateway tier; no upstream document governs it.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0001-FR-0001**: An HTTP request to any external host receives a
   permanent redirect to the HTTPS URL; every external route is served over TLS.
@@ -111,14 +135,36 @@ This package records the owner's requirements for the gateway tier; no upstream 
   unauthenticated browser to the sign-in flow and admits the request only after
   a valid session.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Each condition is judged by a runtime observation of the live gateway: an HTTP request and its redirect, a route-discovery timing and a request to a service without a declared route, a TLS handshake at each protocol version, and a request through the single sign-on step. No current Spec Package cites REQ-0001; a Spec that implements it records the evidence in its Task. The evidence is the observed result of each check, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - [Gateway architecture description](../02.architecture/01.descriptions/0001-gateway-architecture.md)
 - [Traefik policy](../05.operations/02.policies/02.gateway-and-networking/0013-traefik.md)
 - [ADR-0001: Traefik and Nginx hybrid gateway](../02.architecture/02.decisions/0001-traefik-nginx-hybrid.md)
 - Retired domain Spec SPEC-0001 (gateway): replaced by the gateway guides,
   policies and runbooks under `docs/05.operations/`.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,33 +1,60 @@
 ---
 title: "OpenBao Implementation"
-version: "0.2.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # OpenBao
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 secret 제어 평면은 Raft storage와 AppRole Agent를 사용합니다. bootstrap 의존성이며 sealed 컨테이너의 healthcheck 통과가 secret 전달 준비 완료를 의미하지는 않습니다.
 
 Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 profile이 활성화를 제어합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 구현, 설정, 검증을 검토하는 Operator와 Developer.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 로컬 서비스 정의와 구현 내비게이션을 다룹니다. 운영 통제와 복구는 `GDE-0085`, `POL-0085`, `RUN-0085`(OpenBao 운영 가이드/정책/런북) 소관이며 [문서 인덱스](../../../docs/README.md)를 통해 접근합니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - `config/`: [Agent 설정](config/agent.hcl)과 template 소스를 담은 디렉터리입니다.
 - `config/policies/`: 추적되는 ACL 정책입니다. 운영자가 적용하며 컨테이너에 mount하지 않습니다.
@@ -48,7 +75,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 - [소비자 이관 계약](consumer-migration/README.md): 값 없는 wave·receipt schema와
   합성 검증 경로입니다. 실제 pilot·복구·삭제·회전은 별도 수용 증거가 필요합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -56,7 +83,8 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 | Agent 렌더링 출력 `openbao-agent-out` (`${DEFAULT_SECURITY_DIR}/openbao/out`) | `openbao-agent` | 이 README는 소비자를 기록하지 않는다. | `agent.hcl`의 template별 `destination`·`perms`로 파일을 렌더링한다 | symlink나 `/openbao/out/` 밖 경로가 있으면 Agent를 시작하지 않으며 healthcheck는 `health-agent.sh`(interval 30s)이다 |
 | 공개 secret catalog `secret-catalog.json` | OpenBao 패키지(`secret-catalog.json`과 schema) | catalog CLI `scripts/operations/secret-catalog.py` | 값 없는 공개 분류·보존·미결정 mapping이며 `render`는 `.agent-work/p02-views`에 네 파일만 쓴다 | `COMM-002`와 `COMM-003`의 재생성을 거부하며 실제 명령과 중단 조건은 `RUN-0085`가 소유한다 |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 | Service | Profiles | Networks | `edge_net`, `obs_net`, `secrets_net` | Secret references |
 | --- | --- | --- | --- | --- |
@@ -72,7 +100,8 @@ Persistence:
 
 환경 키 이름과 기본값은 Compose와 [공개 환경 예시](../../../.env.example)에 선언되어 있습니다. Compose의 마운트 권한과 healthcheck 명령은 구현을 설명할 뿐이며 설정 검사 통과가 runtime 준비 완료를 증명하지는 않습니다. 비공개 환경 값, credential 파일, 원본 렌더링된 설정은 출력하지 마십시오.
 
-##### P01 native trust and bootstrap
+###### P01 native trust and bootstrap
+<!-- core-payload-level:5 -->
 
 내부 endpoint는 `https://openbao:${OPENBAO_PORT:-8200}`이며 Agent·metrics·Gatus·Traefik이
 같은 port와 검증된 CA를 사용합니다. 외부 custody의 `ca.pem`, `server.pem`,
@@ -97,7 +126,8 @@ config-owned HMAC audit는 `openbao-audit`에 기록합니다. 한 backend가 �
 실제 복구는 운영 Runbook `RUN-0085`([운영 문서 인덱스](../../../docs/05.operations/README.md))을 따르며
 P06 확대 전제입니다. 임시 고정 버전 시험은 HOME 완료 증거가 아닙니다.
 
-##### P01 protected maintenance clients
+###### P01 protected maintenance clients
+<!-- core-payload-level:5 -->
 
 [protected-maintenance.py](./scripts/protected-maintenance.py)는 인증된 root ceremony의
 보호 입력·custody·중단 경계를 구현합니다. 고정 HTTPS gateway, 숫자 connect IP와 검토된
@@ -119,7 +149,8 @@ P06 확대 전제입니다. 임시 고정 버전 시험은 HOME 완료 증거가
 share 입력은 보호 client에서만 처리하며, 준비 확인을 발급·upgrade·semantic restore 성공으로
 취급하지 않습니다.
 
-##### P01 versioned issuance journal compatibility
+###### P01 versioned issuance journal compatibility
+<!-- core-payload-level:5 -->
 
 새 발급은 journal 문서에 `schema_version: 2`와 `issuance_id`를 기록합니다.
 `issuance_id`는 기존 `nonce`와 같은 값인 호환 별칭이며, accessor metadata에는
@@ -134,7 +165,8 @@ journal과 활성 anchor는 version·identity가 정확히 일치해야 하며, 
 발급하지 않습니다. 이는 source 계약이며, 실제 HOME 대상·custody·복구 입력은 아직 확정되지
 않았습니다.
 
-##### P02 공개 secret catalog
+###### P02 공개 secret catalog
+<!-- core-payload-level:5 -->
 
 [secret-catalog.json](secret-catalog.json)과 [schema](secret-catalog.schema.json)는 값 없는
 공개 분류·보존·미결정 mapping을 소유합니다. 각 항목의 원본 기록 날짜와 실행 증거를
@@ -152,35 +184,40 @@ canonical `COMM-002`와 source-retired alias `COMM-003`의 재생성을 거부�
 alias는 별도 credential 또는 KV 대상을 만들지 않으며 실제 파일 폐기는 SMTP01 소관입니다.
 공개 catalog와 합성 검사 통과는 HOME 인증·소비·이관·rotation·복구를 증명하지 않습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/03-security/openbao/docker-compose.yml`의 `openbao`, `openbao-agent` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 런타임 고정 값은 [Compose](docker-compose.yml)와 그것이 참조하는 build 소스에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 투영이며 배포 매니페스트가 아닙니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 Compose, build 소스, 공개 환경 키, secret 참조를 일관되게 유지하십시오. 변경 전에 gateway 인증, 지속성, 리소스 예산, 버전 예외를 검토하십시오. 여기에 명령을 중복 작성하지 말고 기존 운영 subject를 갱신하십시오.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 저장소 루트에서 문서화된 profile을 선택해 `scripts/validation/validate-docker-compose.sh`를 사용하십시오. 대상 runtime 확인과 승인 후 복구는 소유 운영 Runbook을 사용하십시오. 누락된 마운트, 예기치 않은 노출, 초기화 실패 시 중단하십시오.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
@@ -190,12 +227,34 @@ Compose, build 소스, 공개 환경 키, secret 참조를 일관되게 유지�
 - RUN-0105: `docs/05.operations/03.runbooks/04.security-and-secrets/0105-openbao-maintenance-window.md`
 - RUN-0106: `docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [인프라 인덱스](../../../infra/README.md)
 - [문서 인덱스](../../../docs/README.md)
 - [공개 secret 계약](../../../secrets/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 헬스체크: `openbao` 서비스는 `bao status >/dev/null 2>&1` (interval 15s); `openbao-agent` 서비스는 `/bin/sh /openbao/scripts/health-agent.sh` (interval 30s).
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

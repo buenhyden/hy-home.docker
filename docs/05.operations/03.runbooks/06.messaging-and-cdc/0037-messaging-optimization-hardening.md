@@ -1,10 +1,13 @@
 ---
 title: "05-Messaging Optimization Hardening Runbook"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0037"
 parent_ids:
@@ -15,15 +18,35 @@ next_review_at: "2027-05-13"
 
 # 05-Messaging Optimization Hardening Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 Kafka family hardening baseline을 컨테이너를 시작하지 않고 정적으로 점검하는 절차를 다룬다.
 
 현재 Kafka hardening baseline에 대한 승인된 정적 진단에 사용한다.
 
-### Targets
+##### Targets
 
 - Artifact: `RUN-0037`; parent guide: `GDE-0037`.
 - 정적 evidence는 runtime이나 restore를 입증하지 않는다.
@@ -31,20 +54,20 @@ next_review_at: "2027-05-13"
 - [Kafka runbook](0036-kafka.md)
 - [Hardening policy](../../02.policies/06.messaging-and-cdc/0037-messaging-optimization-hardening.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 runtime
 변경, restore, 정리, credential rotation은 별도 task가 필요하다.
 
-### Environment
+##### Environment
 
 Upgrade/config 변경 전에 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 확인한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -72,11 +95,12 @@ Upgrade/config 변경 전에 declared image/build/entrypoint와 mount를 비교�
 5. 정확한 diff와 운영 문서를 검토한다. 컨테이너를 시작하지 않고 명령, 종료
    상태, 미해결 gap을 기록한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 중단 조건과 실행 경계는 아래 항목을 따른다.
 
-#### Execution and stop boundary
+###### Execution and stop boundary
+<!-- core-payload-level:4 -->
 
 HOME 대상: `kafbat-ui`, `kafka-1`, `kafka-exporter`, `kafka-init`. LAB 대상은 별도 `labs/kafka-cluster/docker-compose.yml`의 `lab-kafka-1/2/3`, exporter, init, `lab-schema-registry`, `lab-kafka-connect`이다. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
@@ -84,36 +108,38 @@ HOME 대상: `kafbat-ui`, `kafka-1`, `kafka-exporter`, `kafka-init`. LAB 대상�
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 통과란 root configuration이 parse되고 현재 profile이 resolve되고 scoped
 hardening script가 통과하고 native OIDC와 standard gateway routing이
 일치하고 recovery ownership이 명시되었다는 뜻이다. runtime, 성능, OIDC 로그인,
 failover, restore는 입증하지 않는다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 정적 점검 증거에는 명령, 종료 상태, 미해결 gap을 기록한다. 결과·시간·target·source revision·종료 코드만 요약하고 raw log, rendered Compose, payload, credential URI는 붙이지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook은 아래 항목을 아직 관측하지 않았다.
 
 - runtime, 성능, OIDC 로그인, failover, restore: 문서는 이 정적 점검이 입증하지 않는다고 밝힌다. 각 항목의 격리 실행 관측이 있어야 검증된다.
 - 세 정적 명령의 실행 결과: 이 문서에는 종료 상태가 기록되어 있지 않다. 날짜가 기록된 종료 상태 evidence가 필요하다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 source/profile, persistence, secret, OIDC, listener-security, 또는 recovery
 ownership drift에서 중단하고 messaging @buenhyden에게 escalation한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 정적 실패라면 이를 소유한 leaf source나 shared template을 식별하고 승인된
 범위만 수정한다. 동일한 selector를 다시 렌더링한다. 실패한 secret, health,
@@ -123,3 +149,23 @@ runtime incident라면 record나 credential 없이 broker/UI 로그를 보존하
 mutation을 중단한 뒤 [RUN-0036](0036-kafka.md)을 사용한다. raw log-directory
 수리, offset 이동, schema 삭제, connector 재개, cluster identity 변경은
 승인된 recovery task가 필요하다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

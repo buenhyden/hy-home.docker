@@ -1,10 +1,13 @@
 ---
 title: "Cassandra Operations Policy"
-version: "2.2.0"
+version: "3.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0025"
 parent_ids:
@@ -15,28 +18,50 @@ next_review_at: "2027-05-13"
 
 # Cassandra Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 독립 Cassandra LAB의 단일 노드·데이터 보존·인증 경계를 정의한다. HOME 소비자와 공유하지 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [AD-0004](../../../02.architecture/01.descriptions/0004-data-architecture.md)
 - [LAB Compose](../../../../labs/cassandra/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 `labs/cassandra/docker-compose.yml`의 `cassandra-node1`, `cassandra-node1-data`, `lab_cassandra_core_net`와 연결 문서에 적용한다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 exporter와 Cassandra password secret은 현재 구현에 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -64,27 +89,30 @@ exporter와 Cassandra password secret은 현재 구현에 없다.
 - **Allowed:** 정적 Compose 렌더와 승인된 read-only 건강 확인.
 - **Disallowed:** 단일 노드를 HA로 주장하거나 `nodetool` 건강을 복구 증거로 사용하지 않는다.
 
-#### Accountable lifecycle boundary
+###### Accountable lifecycle boundary
+<!-- core-payload-level:4 -->
 
 @buenhyden이 LAB 기동·중단·복구·정리 승인과 기존 상태 소유권을 확인한다. [POL-0006](../01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)과 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)을 따른다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 승인된 예외 없음.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 이미지·profile·mount·접속·인증 계약 변경 시 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 `LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile cassandra config --quiet`와 문서 링크 검사를 수행한다. 실제 CQL·복원은 `NOT_RUN`으로 기록한다.
 
-### Limits
+##### Limits
 
 다음 규칙은 정책이 이름 있는 자동 검사를 연결하지 않았다.
 
@@ -101,14 +129,34 @@ exporter와 Cassandra password secret은 현재 구현에 없다.
 - 정책이 스스로 밝힌 한계: 정적 Compose 렌더와 문서 링크 검사는 Mechanisms에 있으나 어느 규칙에 대응하는지 정책이 연결하지 않았다.
 - 실제 CQL과 복원은 `NOT_RUN`으로 기록되며 실행 증거가 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [GDE-0025](../../01.guides/15.labs/0025-cassandra.md), [RUN-0025](../../03.runbooks/15.labs/0025-cassandra.md)
 - [LAB 설명](../../../../labs/cassandra/README.md)
 - [Cassandra backup](https://cassandra.apache.org/doc/stable/cassandra/managing/operating/backups.html)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

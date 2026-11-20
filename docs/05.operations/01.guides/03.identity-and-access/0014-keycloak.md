@@ -1,10 +1,13 @@
 ---
 title: "02-Auth Keycloak Usage Guide"
-version: "1.5.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0014"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # 02-Auth Keycloak Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 Infra/DevOps 엔지니어, 운영자, 기여자가 Keycloak 운영 구성, OIDC 발급자 계약, 로그인·로그아웃·token/session 장애 진단 기준을 확인할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
 
@@ -34,7 +57,8 @@ Infra/DevOps 엔지니어, 운영자, 기여자가 Keycloak 운영 구성, OIDC 
 - OAuth2 Proxy ForwardAuth와 application native OIDC client를 혼동하지 않는다.
 - 로그인, 로그아웃, token/session 장애의 진단 기준을 공식 Keycloak 동작과 tracked config에 맞춘다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Declared parent: [02-Auth Keycloak Operations Policy](../../02.policies/03.identity-and-access/0014-keycloak.md) (`POL-0014`)
 - Governing authority: [02-Auth Architecture Description](../../../02.architecture/01.descriptions/0002-auth-architecture.md) (`AD-0002`)
@@ -55,13 +79,14 @@ Infra/DevOps 엔지니어, 운영자, 기여자가 Keycloak 운영 구성, OIDC 
 - [Recovery runbook](../../03.runbooks/03.identity-and-access/0014-keycloak.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 구현 소스는 [infra/02-auth/keycloak/docker-compose.yml](../../../../infra/02-auth/keycloak/docker-compose.yml)이다.
 
-#### Tracked Configuration Snapshot
+###### Tracked Configuration Snapshot
+<!-- core-payload-level:4 -->
 
 | 항목 | 추적된 값 | 출처 |
 | --- | --- | --- |
@@ -76,7 +101,8 @@ Infra/DevOps 엔지니어, 운영자, 기여자가 Keycloak 운영 구성, OIDC 
 
 공식 Keycloak hostname 문서는 Keycloak이 OIDC discovery와 email/action link에 URL을 게시하므로 hostname이 보안상 민감하다고 설명한다. reverse-proxy 문서는 proxy가 forwarded header를 덮어쓰도록 요구하며, 관리 port `9000`을 외부에 노출하지 말라고 경고한다. 확인 날짜: 2026-09-19.
 
-#### Implementation, readiness and resources
+###### Implementation, readiness and resources
+<!-- core-payload-level:4 -->
 
 `keycloak`은 `core`/`auth`/`dev`/`local`에서 선택하며 Compose는 upstream image를
 직접 사용한다. 같은 폴더의 [Dockerfile](../../../../infra/02-auth/keycloak/Dockerfile)은
@@ -117,19 +143,21 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 확인했다. release pin은 [Compose](../../../../infra/02-auth/keycloak/docker-compose.yml)가
 소유하며 현재 실행 버전·provider 호환성·로그인은 다시 측정하지 않았다.
 
-### Authority
+##### Authority
 
 초기 관리자는 `KEYCLOAK_ADMIN_USER`와 `KEYCLOAK_ADMIN_PASSWORD_FILE`(기본 Docker Secret `keycloak_admin_password`)을, DB는 `keycloak_db_password` secret을 쓴다. client secret은 비밀 정보로 문서에 남기지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용 절차는 아래 항목에 정리한다.
 
-#### OIDC Concepts for This Host
+###### OIDC Concepts for This Host
+<!-- core-payload-level:4 -->
 
 - `issuer`: client가 authorization, token, JWKS와 logout metadata를 탐색하는 정확한 realm URL이다. 이 host에서는 `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`이다.
 - `client`: OAuth2 Proxy의 `home-proxy-client`나 OpenBao native OIDC의 `home-openbao`처럼 하나의 application 연동을 나타낸다. client secret은 비밀 정보이며 문서에 담지 않는다.
@@ -137,11 +165,12 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 - `gateway SSO`: Traefik/OAuth2 Proxy가 app의 HTTP 진입점을 보호한다. app이 forwarded header를 신뢰하거나 자체 OIDC 연동을 갖춘 경우가 아니라면 app의 native role까지 부여하지는 않는다.
 - `native OIDC`: application이 Keycloak에 대해 직접 token을 검증하고 claim을 자체 role에 연결한다. OpenBao native OIDC는 별도로 검증했으며, 그 증거를 모든 app에 일반화하지 않는다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-### Expected Results
+##### Expected Results
 
 1. Compose 설정 확인
    - `template-infra-high` 적용 여부 확인
@@ -163,13 +192,14 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
    - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 증상과 진단은 아래 항목에 정리한다.
 
-#### Pitfalls
+###### Pitfalls
+<!-- core-payload-level:4 -->
 
 - `KC_HOSTNAME`, OAuth2 Proxy issuer, Keycloak realm frontend URL이 서로 다른 host/scheme를 가리키는 경우
 - reverse proxy가 `X-Forwarded-*`를 append만 하고 overwrite하지 않아 forged issuer/redirect 문제가 생기는 경우
@@ -178,7 +208,8 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 - CA trust가 깨져 OAuth2 Proxy가 issuer/JWKS를 가져오지 못하는 경우
 - OpenBao native OIDC 검증 성공을 다른 client의 login 검증으로 확대하는 경우
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../03.runbooks/03.identity-and-access/0014-keycloak.md)을 따른다.
 
@@ -189,6 +220,26 @@ realm export는 세션·event 등 전체 상태와 시점 일관성을 보장하
 [POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)의 Keycloak 파일 보존과 DB
 백업 기준을 함께 적용하며 기존 2026-09-20 미실행 복구 한계는 그대로다.
 
-### Next Action
+##### Next Action
 
 반복 실행 절차, 장애 대응, rollback, escalation은 [recovery runbook](../../03.runbooks/03.identity-and-access/0014-keycloak.md)을 따른다. 업그레이드·격리 migration·이전 DB와 이미지의 짝 복구는 해당 Runbook의 rollback 절이 소유한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

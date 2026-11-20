@@ -1,10 +1,13 @@
 ---
 title: "SearXNG Usage Guide"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0110"
 parent_ids:
@@ -18,20 +21,41 @@ next_review_at: "2027-05-17"
 
 # SearXNG Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 SearXNG 검색을 서비스나 호스트 작업에 연결하려는 운영자와 `@buenhyden`.
 
-### Outcome
+##### Outcome
 
 SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `search_net`으로,
 호스트 프로세스는 `http://127.0.0.1:8890`으로 같은 JSON 검색 API를 쓴다. 현재
 소비자는 n8n Assistant와 호스트 Hermes이며, 새 소비자는 정책의 소비자 표에 먼저
 등록한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/09.ai-and-search/0110-searxng.md) (`POL-0110`)
 - [Runbook](../../03.runbooks/09.ai-and-search/0110-searxng.md) (`RUN-0110`)
@@ -41,11 +65,12 @@ SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `s
 - [n8n guide](../08.workflows-and-automation/0053-n8n.md)
 - [Crawl4AI guide](0091-crawl4ai.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 현재 구현
+###### 현재 구현
+<!-- core-payload-level:4 -->
 
 - [SearXNG Compose](../../../../infra/08-ai/searxng/docker-compose.yml)는 Compose가
   선언한 index digest로 이미지를 고정하고 `template-infra-readonly-med`로 읽기 전용
@@ -66,16 +91,17 @@ SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `s
   htpasswd(`traefik_searxng_api_htpasswd`, `INFRA-008`)로 들어온다. Traefik은 `searxng_ingress_net`으로만 닿는다.
 - 자체 `searxng` profile로 선택하며 HOME 선택에 포함된다.
 
-### Authority
+##### Authority
 
 소비자 연결과 네트워크·게시 변경은 [정책](../../02.policies/09.ai-and-search/0110-searxng.md)의
 승인 변경이 소유하며 `@buenhyden`이 대상이다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### 소비자 연결
+###### 소비자 연결
+<!-- core-payload-level:4 -->
 
 - **컨테이너 소비자**: 서비스를 `search_net`에 합류시키고 `http://searxng:8080`을
   호출한다. 정책의 소비자 표와 `SharedSearchContractTests.ADMITTED`를 같은 변경에서
@@ -89,7 +115,8 @@ SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `s
 - 검색 요청은 `GET /search?q=<query>&format=json`이다. 결과는 데이터이며 그 내용을
   근거로 secret 접근이나 도구 실행을 허용하지 않는다.
 
-#### 호출량
+###### 호출량
+<!-- core-payload-level:4 -->
 
 2026-11-19 07:00 Hermes 실행에서 DuckDuckGo(CAPTCHA), Brave·Google CSE(too many requests)가 이 host 주소를 제한해
 검색 대부분이 빈 결과였다. 그래서 무료 일반 웹 엔진 Bing, Qwant, Yahoo를 추가로 켜 부하를 나누고
@@ -99,26 +126,47 @@ SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `s
 limiter가 꺼져 있으므로 호출량 제어는 소비자가 맡는다. 공개 검색 엔진이 차단하면
 결과가 비거나 줄어든다. 이때 limiter나 proxy를 추가하지 않고 소비자 호출량을 낮춘다.
 
-### Expected Results
+##### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES=searxng bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_p02_service_contracts.SharedSearchContractTests`
 - 기동 뒤 호스트에서 `curl -fsS 'http://127.0.0.1:8890/search?q=test&format=json'`이 JSON을 반환한다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - 호스트 소비자가 `connection refused`를 받으면 `searxng`가 선택·기동됐는지와
   `127.0.0.1:8890` 게시를 [runbook](../../03.runbooks/09.ai-and-search/0110-searxng.md)으로 확인한다.
 - JSON 요청이 403이면 `settings.yml`의 `search.formats`에 `json`이 있는지 확인한다.
 - 결과가 비면 공개 검색 엔진의 차단이나 `searxng_outbound_net` 출구를 확인한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 기동, 진단, 소비자 연결·해제는 [runbook](../../03.runbooks/09.ai-and-search/0110-searxng.md)을 사용한다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [runbook](../../03.runbooks/09.ai-and-search/0110-searxng.md)의 진단 단계를 따르고,
 게시 범위나 네트워크를 넓혀 해결하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

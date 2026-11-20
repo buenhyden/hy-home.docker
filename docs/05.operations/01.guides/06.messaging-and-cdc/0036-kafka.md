@@ -1,10 +1,13 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -21,19 +24,40 @@ next_review_at: "2027-05-13"
 
 # Kafka Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 Kafka family를 켜거나 변경하는 운영자와 개발자. 서비스별 profile, 보호 범위, 복구 포함 범위를 확인할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 이 가이드는 OPTIONAL 이벤트 스트리밍 기능인 Kafka family의 구성, 프로파일, 접근 경계를 설명한다. 정상 root는 단일 KRaft broker와 Kafbat UI, exporter, init job을 정의한다. Schema Registry와 Debezium Connect(CDC)는 2026-11-10 owner 결정(ADR-0062 개정)으로 LAB `labs/kafka-cluster`로 옮겼고, 다중 broker 학습도 독립 LAB이다.
 
 대상 독자는 Kafka family를 켜거나 변경하는 운영자와 개발자다. 목표는 어떤 서비스가 어느 profile에서 선택되는지, 어디까지 보호되는지, 복구가 무엇을 포함하는지 확인하는 것이다. 실행 절차는 [RUN-0036](../../03.runbooks/06.messaging-and-cdc/0036-kafka.md)이 소유한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Artifact: `GDE-0036`; 상위 정책: `POL-0036`.
 - Runtime authority: `infra/05-messaging/kafka/docker-compose.yml`; CDC 경로는 `labs/kafka-cluster/docker-compose.yml`과
@@ -48,9 +72,9 @@ Kafka family를 켜거나 변경하는 운영자와 개발자. 서비스별 prof
 - [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
 - [Kafbat license](https://github.com/kafbat/kafka-ui/blob/main/LICENSE)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. 정상 root에는 단일
 `kafka-1`만 있고, 다중 broker 학습은 독립 LAB 진입점의 `lab-kafka`
@@ -58,7 +82,8 @@ Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. 정상 root에는 단일
 가용성을 증명하지 않는다. 정상 서비스를 지속 실행해야 한다는 HOME consumer는
 현재 확인되지 않았다.
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 [`infra/05-messaging/kafka/docker-compose.yml`](../../../../infra/05-messaging/kafka/docker-compose.yml)은
 정상 서비스 4개를 정의한다. [`Kafka LAB 안내`](../../../../labs/kafka-cluster/README.md)와 [`labs/kafka-cluster/docker-compose.yml`](../../../../labs/kafka-cluster/docker-compose.yml)은
@@ -85,19 +110,21 @@ Kafbat은 자체 `auth.type: OAUTH2` 구성을 tmpfs에 렌더링하고,
 이 native-OIDC route에는 forwarding-auth gateway chain을 붙이면 안 된다.
 Kafbat은 schema registry와 Connect cluster를 설정하지 않으며 `kafka-1`에만 의존한다. HOME에는 Connect·Schema Registry route가 없다.
 
-### Authority
+##### Authority
 
 Kafbat UI는 Keycloak OIDC와 group 기반 RBAC로 접근이 제한되며 secret은 `kafbat_client_secret` 이름으로만 다룬다. CDC 등록, `dev-pg` slot 삭제, HOME에 남은 volume의 처리는 별도 승인 대상이다(Actions와 Troubleshooting에 기술).
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
-#### Identity-specific behavior
+###### Identity-specific behavior
+<!-- core-payload-level:4 -->
 
 Compose에 선언된 Confluent CP 이미지가 정상 단일 broker와 LAB 다중 broker에 쓰인다.
 정상 `kafka-init`은 RF1, LAB `lab-kafka-init`은 RF3이며 서로 다른
@@ -115,7 +142,8 @@ PLAINTEXT는 TLS·인증을 제공하지 않는다. Schema Registry와 Connect�
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-#### Images, configuration and resource controls
+###### Images, configuration and resource controls
+<!-- core-payload-level:4 -->
 
 Compose 파일은 핀된 Confluent Kafka, Kafbat, Kafka
 exporter 이미지 계열을 소유한다. 저장소 Renovate가 업데이트를 제안하면 버전
@@ -127,14 +155,16 @@ client-secret 파일을 사용한다. broker는 high stateful 템플릿을,
 Kafbat은 medium infrastructure 템플릿을, exporter는 low를, init
 job은 low를 extend한다. 모든 장기 실행 서비스는 healthcheck를 선언한다.
 
-#### Static preflight and profile choice
+###### Static preflight and profile choice
+<!-- core-payload-level:4 -->
 
 정적 render 명령은 [RUN-0036 절차](../../03.runbooks/06.messaging-and-cdc/0036-kafka.md#steps)가 소유한다. 정상 `kafka-init`은 RF1,
 LAB `lab-kafka-init`은 RF3이다. LAB의 `LAB_KAFKA_CLUSTER_ID`는 정상
 `KAFKA_CLUSTER_ID`와 달라야 한다. 서비스 시작과 topic 생성은 별도 runtime
 승인 대상이다.
 
-#### Change data capture (LAB)
+###### Change data capture (LAB)
+<!-- core-payload-level:4 -->
 
 CDC 경로(Debezium Connect와 Schema Registry)는 HOME에서 `labs/kafka-cluster`로 옮겼다
 ([LAB 안내](../../../../labs/kafka-cluster/README.md), ADR-0062 개정 2026-11-10). 근거는 HOME에서
@@ -157,31 +187,34 @@ LAB의 Connect worker에는 connector, 원천 DB, credential이 선언되어 있
 중단된 replication slot은 원천 DB의 WAL을 고정할 수 있으므로 원천을 연결하면 lag와 WAL 용량을 별도로 관측한다.
 HOME `dev-pg`는 `wal_level=logical`과 slot 한도 선언이 남아 있으나 현재 소비자가 없다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
-#### License and source boundary
+###### License and source boundary
+<!-- core-payload-level:4 -->
 
 Apache Kafka와 Kafbat은 Apache-2.0 프로젝트다. LAB의 Schema Registry와 Connect
 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검토가
 필요하다. Cluster Linking이나 다른 edition 전용 기능은 선언하지도 가정하지도
 않는다.
 
-### Expected Results
+##### Expected Results
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - `kafka-1` unhealthy: healthcheck는 `kafka-broker-api-versions --bootstrap-server localhost:19092`다. 실행마다 JVM을 띄워(CPU 약 2.5초) 간격은 60초이고, 시작 중에만 5초다. `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data` 권한과 `KAFKA_CLUSTER_ID` 일치를 먼저 확인한다.
 - `dev-pg` WAL 증가: 과거 Debezium slot(`hyhome_platform_slot`)이 생성된 적이 있다면 WAL을 고정할 수 있다. slot 삭제는 [POL-0036](../../02.policies/06.messaging-and-cdc/0036-kafka.md)의 재동기화 승인 대상이다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 Kafka 복구 범위는 broker 디렉터리보다 넓다. topic 데이터와 config,
 partition 수, consumer-group offset, KRaft cluster metadata를 목록으로 정리한다.
@@ -200,6 +233,26 @@ artifact 및 rollback이 필요하다.
 - [Operations policy](../../02.policies/06.messaging-and-cdc/0036-kafka.md)
 - [Cluster recovery runbook](../../03.runbooks/06.messaging-and-cdc/0036-kafka.md)
 
-### Next Action
+##### Next Action
 
 Kafka 복구와 실행 절차는 [RUN-0036](../../03.runbooks/06.messaging-and-cdc/0036-kafka.md)을 따르고, slot 삭제는 [POL-0036](../../02.policies/06.messaging-and-cdc/0036-kafka.md)의 재동기화 승인 대상이다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

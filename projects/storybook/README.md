@@ -1,34 +1,60 @@
 ---
 title: "Storybook Workspace"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-24"
 ---
 
 # Storybook Workspace
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 `projects/storybook/nextjs/`는 저장소가 직접 관리하는 공유 UI 자산 작업공간입니다. 정적 Storybook, 내부 UI 패키지와 로컬 문서 MCP를 함께 소유합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 내부 UI 개발자, 디자인 검토자와 운영 담당자입니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 공유 컴포넌트와 문서만 포함합니다. 신규 공공데이터·공무원·언어 학습 앱은 외부 프로젝트가 소유합니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 `nextjs/`에 npm lockfile, Storybook 설정, `packages/ui/`, 로컬 `mcp/`, 정적 origin Dockerfile이 있습니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -36,39 +62,63 @@ created: "2025-11-24"
 | 내부 UI 패키지 `packages/ui/` | `projects/storybook/nextjs/` | 외부 프로젝트 | 검토된 패키지 계약을 소비하며 Storybook 소스 파일을 무관리 복사하지 않는다 | 이 README는 실패 처리를 기록하지 않는다. |
 | 로컬 문서 MCP `mcp/` | `projects/storybook/nextjs/` | 이 README는 소비자를 기록하지 않는다. | Compose 밖의 로컬 프로세스이며 원격 접속은 비활성이다 | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 정적 origin은 별도 Compose fragment로 선택형 root profile에 연결됩니다. Traefik이 HTTPS를 종료하고 기존 관리자 인증을 적용합니다. 문서 MCP는 Compose 밖의 로컬 프로세스이며 원격 접속은 비활성입니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 이 작업공간은 소스 트리라 secret을 저장하지 않는다. 정적 origin의 HTTPS 종료와 접근 경계는 Traefik과 [Storybook 패키지](../../infra/13-experience/storybook/README.md)의 Compose가 소유한다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 버전과 peer dependency는 [하위 패키지](nextjs/README.md)의 npm manifest와 lockfile이 소유합니다.
 
-### Selected Start
+##### Selected Start
 
 UI 변경은 `nextjs/`에서 진행합니다. 외부 프로젝트는 검토된 패키지 계약을 소비하며 Storybook 소스 파일을 무관리 복사하지 않습니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 `npm ci --prefix projects/storybook/nextjs` 후 하위 README의 빌드·검사 명령을 사용합니다. Docker 실행 검사는 격리 범위를 확인한 뒤 수행합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [하위 Storybook 작업공간](nextjs/README.md)
 - [프로젝트 인덱스](../README.md)
 - [문서 인덱스](../../docs/README.md)
 - [14-design-system runbooks](../../docs/05.operations/03.runbooks/14.design-system/README.md): RUN-0101 storybook
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 소스 트리라 직접 관측 대상이 없다. 실행 중인 origin의 운영과 복구는 [14-design-system runbooks](../../docs/05.operations/03.runbooks/14.design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

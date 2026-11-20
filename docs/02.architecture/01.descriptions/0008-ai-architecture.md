@@ -1,10 +1,13 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.3.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-26"
 
 # AI Infrastructure Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Owns:** HOME Ollama inference and its model store;
   ComfyUI and its declared workflow mounts; Open Notebook with its nested
@@ -30,7 +53,8 @@ created: "2026-03-26"
   notebooks (Analytics LAB).
 - **Non-goals:** multi-node GPU clusters and model training environments.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `08-ai` owns privacy-preserving local inference and the interfaces that use
 it: GPU allocation, service boundaries and data flow for local LLM inference,
@@ -38,17 +62,18 @@ RAG chat, image workflows, knowledge notebooks, experiment tracking and web
 extraction. Local inference uses NVIDIA GPUs; provider or API egress needs
 separate authorization.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The root Compose declares gateway routes for ComfyUI, Open Notebook and MLflow when their optional profiles are selected. The tier consumes GPUs through the NVIDIA Container Toolkit, `mng-pg` and SeaweedFS for MLflow, Keycloak for SSO, and Qdrant only for explicitly configured consumers. Crawl4AI reaches the internet only through `crawl4ai-egress`. The independent Open WebUI LAB requires a separately approved and reachable Ollama endpoint.
 
-### Constraints
+##### Constraints
 
 Local inference uses NVIDIA GPUs, and provider or API egress needs separate authorization. Multi-node GPU clusters and model training environments are non-goals; Compose resource declarations are source limits, not measured shared-GPU headroom.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 1. **Inference:** `ollama` controls the model store and the GPU (NVIDIA device
    reservation) and serves an OpenAI-compatible API; `ollama-exporter` exports
@@ -70,7 +95,7 @@ weights or the GPU driver. The proposed Notebook registration names
 embeddings; the declaration does not prove either model is downloaded,
 registered or working.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -86,11 +111,12 @@ registered or working.
 
 Ollama serves an OpenAI-compatible API that consumers use instead of touching model weights or the GPU driver. The Open WebUI LAB declares native OIDC. Ollama, ComfyUI and the MLflow browser route use ForwardAuth. Open Notebook uses password-file authentication with an admin IP allow list.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 ```text
 Authorized caller -> approved Ollama endpoint (inference or embedding) -> response
@@ -107,7 +133,8 @@ Authorized caller -> approved Ollama endpoint (inference or embedding) -> respon
 - Open Notebook recovery coordinates app data, SurrealDB and its encryption
   key. MLflow coordinates `mng-pg` metadata with SeaweedFS artifacts.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 `ai` and `ai-llm` select the HOME Ollama, its exporter and Qdrant. `ollama` selects
 Ollama and its exporter. `ai-image` explicitly selects the optional root ComfyUI.
@@ -117,15 +144,16 @@ Notebook and SurrealDB, SurrealDB also by `surrealdb`), `mlops` and
 does not select them. Compose resource declarations are source limits, not
 measured shared-GPU headroom.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 MLflow's SDK path is not authenticated like its browser route (see Risks below). Health checks are process and application signals and do not alone restart a container or prove recovery; Open Notebook and MLflow recovery are coordinated as described under Runtime View.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Performance:** CUDA acceleration and quantization are workload choices; no
   measured latency or shared-GPU capacity is established.
@@ -140,14 +168,15 @@ MLflow's SDK path is not authenticated like its browser route (see Risks below).
 - **Observability:** `ollama-exporter` reports model and API metrics; VRAM is
   covered by `dcgm-exporter` under `obs-gpu`.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 - MLflow's SDK path on `edge_net`, `ai_net`, `mng_data_net` and `object_net`
   is not authenticated like its browser route.
 - `ai` and `ai-llm` select Qdrant. Treat use by any given consumer as a
   separate configuration and runtime question.
 
-### Trade-offs
+##### Trade-offs
 
 - Local Ollama inference on NVIDIA GPUs is the source-default model path for
   privacy-preserving inference; provider or API egress needs separate
@@ -160,25 +189,48 @@ MLflow's SDK path is not authenticated like its browser route (see Risks below).
 - MLflow's SDK path on `edge_net`, `ai_net`, `mng_data_net` and `object_net`
   is not authenticated like its browser route (Risks).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0008 original local AI decision](../02.decisions/0008-ollama-openwebui-local-ai.md)
 - [ADR-0062 current HOME and LAB membership](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0009 AI requirements](../../01.requirements/0009-ai.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 - This document carries the SPEC-0267 secondary-listener hardening outcome; that package is retired and its body is in version history.
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 Switching Open WebUI to Qdrant or enabling a cloud model path each needs a
 Stage 03 change and egress approval.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

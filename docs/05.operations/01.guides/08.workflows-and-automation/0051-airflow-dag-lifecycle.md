@@ -1,10 +1,13 @@
 ---
 title: "Airflow Dag Basics Operations"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0051"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # Airflow Dag Basics Operations
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 `hy-home.docker`의 Airflow stack에서 DAG를 작성하는 개발자와 데이터 엔지니어.
 
-### Outcome
+##### Outcome
 
 이 문서는 `hy-home.docker` 환경에서 Airflow DAG를 작성하는 기본 방법과 권장 패턴을 설명합니다. 현재 compose는 DAG 파일을 repo 내부 Airflow 하위 경로가 아니라 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에서 bind mount합니다.
 
@@ -34,7 +57,8 @@ next_review_at: "2027-05-13"
 
 프로젝트용으로 작성한 모든 DAG가 일관된 pattern을 따르고 공유 infrastructure(PostgreSQL, SeaweedFS)를 올바르게 사용하도록 보장한다. `hy-home.docker` stack에서 Airflow DAG를 작성하는 기본 pattern을 다룬다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Declared parent: [DAG Deployment Operations Policy](../../02.policies/08.workflows-and-automation/0052-airflow-dag-lifecycle.md) (`POL-0052`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/01.descriptions/0007-workflow-architecture.md) (`AD-0007`)
@@ -43,29 +67,32 @@ next_review_at: "2027-05-13"
 - Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 - [Airflow system guide](0050-airflow.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 이 가이드가 전제하는 환경과 개념은 아래와 같다.
 
-#### 사전 조건
+###### 사전 조건
+<!-- core-payload-level:4 -->
 
 - Python과 Apache Airflow TaskFlow API에 대한 기본 이해.
 
-### Authority
+##### Authority
 
 - `${DEFAULT_WORKFLOW_DIR}/airflow/dags` 접근 권한.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
-#### DAG Definition Pattern
+###### DAG Definition Pattern
+<!-- core-payload-level:4 -->
 
 pipeline을 현대적이고 읽기 쉽게 작성하려면 `@dag` decorator를 사용한다.
 
@@ -89,31 +116,35 @@ def my_workflow():
 my_workflow()
 ```
 
-#### File Placement
+###### File Placement
+<!-- core-payload-level:4 -->
 
 `.py` file을 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에 배치한다. 이 경로는 `airflow-dags` bind volume으로 모든 Airflow 서비스의 `/opt/airflow/dags`에 연결되며, `airflow-dag-processor`가 파싱한다. Compose가 `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true`를 설정하므로 새 DAG는 paused 상태로 등록된다. 같은 Compose가 `AIRFLOW__CORE__LOAD_EXAMPLES=true`도 설정하므로 example DAG가 함께 보인다.
 
-#### Public DAG interface
+###### Public DAG interface
+<!-- core-payload-level:4 -->
 
 선언된 Airflow의 `airflow.sdk` TaskFlow API를 사용한다. Task code가 Airflow metadata DB를 직접 조회해서는 안 된다. 업무용 PostgreSQL 작업은 별도 Connections와 transaction/idempotency 통제를 따른다. Staging/production은 승격 단계이며 별도 stack 존재를 증명하지 않는다. 복구는 [RUN-0050](../../03.runbooks/08.workflows-and-automation/0050-airflow.md)을 공유하고 기존 GDE-0051/POL-0052 ID 예외를 유지한다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 Task code의 metadata DB 직접 조회 금지와 DAG top level 연산 금지는 Actions의 `Public DAG interface`와 Troubleshooting에 기술되어 있다.
 
-### Expected Results
+##### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
 - Runtime이 실행 중이면 `docker compose --profile workflow-airflow exec airflow-apiserver airflow dags list`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - **Relative Imports**: DAG 내부에서 relative import를 피한다. 공유 로직에는 `plugins/` 디렉터리를 사용한다.
 - **Heavy Initialization**: DAG file의 top level에서 무거운 연산이나 database query를 수행하지 않는다. `@task` 안에 유지한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 DAG 장애 복구는 [RUN-0050](../../03.runbooks/08.workflows-and-automation/0050-airflow.md)이 소유한다.
 
@@ -121,6 +152,26 @@ DAG 장애 복구는 [RUN-0050](../../03.runbooks/08.workflows-and-automation/00
 - [DAG deployment policy](../../02.policies/08.workflows-and-automation/0052-airflow-dag-lifecycle.md)
 - [Airflow recovery runbook](../../03.runbooks/08.workflows-and-automation/0050-airflow.md)
 
-### Next Action
+##### Next Action
 
 증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0050](../../03.runbooks/08.workflows-and-automation/0050-airflow.md)의 진단, 재시작, rollback, escalation 기준을 따른다. DAG 장애 복구는 `RUN-0050`이 소유한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

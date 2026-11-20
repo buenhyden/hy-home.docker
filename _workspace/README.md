@@ -1,25 +1,49 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.5.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-03-05"
 ---
 
 # Workspace Staging Surface
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 - evidence로 요약되기 전에 task가 만든 산출물을 검토하는 maintainer
 - agent scratch 출력이 저장소에 도달하지 않았는지 감사하는 사람
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 `_workspace`는 저장소 로컬 staging 공간입니다. 여기 두는 산출물은 저장소 작업이
 진행되는 동안 생성되고 단명하며 secret이 아닙니다. agent, 스크립트, migration이
@@ -29,7 +53,8 @@ created: "2026-03-05"
 이곳에는 authority가 하나도 없습니다. task가 끝난 뒤에도 남아야 하는 결과는
 canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - 소유 대상: 아래 일곱 개의 tracked 계약 README, 그리고 스크립트가 쓰는
   ignore 대상 `diagnostics/`, `repo-support/` staging 트리
@@ -37,7 +62,8 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
   절차(`docs/05.operations/`에 속함), 그리고 secret 값(항상 `secrets/`에
   속하며 이곳에는 절대 두지 않음)
 
-#### Prohibited Surface
+###### Prohibited Surface
+<!-- core-payload-level:4 -->
 
 다음 중 어느 것도 `_workspace` 아래에 두지 않습니다:
 
@@ -52,13 +78,13 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 - 토큰이 포함된 명령 출력
 - secret 파일 전체 본문
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 필요한 도구는 Git뿐입니다. Tracking Contract의 점검 명령은 `git check-ignore`와 `git ls-files`만 사용합니다.
 
-### First Use
+##### First Use
 
 1. 산출물을 `_workspace/repo-support/<task-slug>/` 아래에 씁니다 → 경로가
    ignore 대상이므로 `git status`가 깨끗하게 유지됩니다.
@@ -69,7 +95,8 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 4. 산출물을 그대로 두거나 삭제합니다 → 둘 다 괜찮습니다. 이곳에는
    복구해야 할 authority가 하나도 없습니다.
 
-#### Tracking Contract
+###### Tracking Contract
+<!-- core-payload-level:4 -->
 
 루트 `.gitignore`는 `_workspace/` 아래 모든 것을 ignore하고, Directories에 명시된
 일곱 개의 tracked 계약 README만 다시 포함합니다. 각 README마다
@@ -104,11 +131,12 @@ staging 계약을 벗어난 것입니다.
 던집니다. 이 테스트는 모든 게이트에서 실행되며 exit status로 둘을 실제로 구분합니다.
 이제 이 계약은 누군가 명령을 직접 입력해 기억하는 데 의존하지 않습니다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
-#### Directories
+###### Directories
+<!-- core-payload-level:4 -->
 
 런타임 산출물은 `diagnostics/`와 `repo-support/` 아래에 두며 기본적으로 ignore됩니다.
 `diagnostics/`에는 secret과 raw log를 뺀 정제 결과만 둡니다. 생성된
@@ -130,21 +158,22 @@ subagent 인계 파일이 그 예입니다.
 각자 정해 씁니다. 예를 들어 `scripts/security/verify-sample-service-supply-chain.sh`와
 `scripts/operations/rehearse-sample-service-delivery.sh`가 있습니다.
 
-#### Canonical Entry Points
+###### Canonical Entry Points
+<!-- core-payload-level:4 -->
 
 계약 문서는 [Diagnostics contract](./diagnostics/README.md)와 [Staging tree contract](./repo-support/README.md)입니다.
 
-### Owners
+##### Owners
 
 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
 
-### Related Documentation
+##### Related Documentation
 
 - [Diagnostics contract](./diagnostics/README.md)
 - [Staging tree contract](./repo-support/README.md)
@@ -152,3 +181,23 @@ subagent 인계 파일이 그 예입니다.
 - [Environment constraints](../.agents/governance/environment-constraints.md)
 - [Task checklists](../docs/00.workspace/04.quality/task-checklists.md)
 - [Repository README](../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

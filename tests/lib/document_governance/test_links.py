@@ -818,6 +818,89 @@ class IgnoredLinkTargetTests(unittest.TestCase):
 
 
 class DocumentGraphTests(unittest.TestCase):
+    def test_uri_components_decode_once_without_losing_query_followed_by_fragment(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            source = root / "source.md"
+            target = root / "name#part.md"
+            source.write_text("[read](name%23part.md?view=1#details)\n")
+            target.write_text("# Details\n")
+            graph = links.build_document_graph([source, target], repo_root=root)
+            self.assertEqual([], links.check_alignment(graph))
+            self.assertEqual("name#part.md", graph.links[0].target.as_posix())
+            self.assertEqual("details", graph.links[0].fragment)
+
+    def test_nfc_paths_and_fragments_reach_the_actual_document(self) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            source = root / "source.md"
+            target = root / "caf\u00e9.md"
+            source.write_text("[read](cafe%CC%81.md#cafe%CC%81)\n")
+            target.write_text("# Caf\u00e9\n")
+            graph = links.build_document_graph([source, target], repo_root=root)
+            self.assertEqual([], links.check_alignment(graph))
+            self.assertEqual("caf\u00e9.md", graph.links[0].target.as_posix())
+            self.assertEqual("caf\u00e9", graph.links[0].fragment)
+
+    def test_unicode_path_collisions_are_reported_without_choosing_a_target(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            files = [root / "caf\u00e9.md", root / "cafe\u0301.md"]
+            for path in files:
+                path.write_text("# Heading\n")
+            graph = links.build_document_graph(files, repo_root=root)
+            self.assertIn(
+                "document-path-normalization-collision",
+                {finding.code for finding in links.check_alignment(graph)},
+            )
+
+    def test_a_unicode_collision_cannot_select_one_documents_fragment(self) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            source = root / "source.md"
+            source.write_text("[read](caf\u00e9.md#heading)\n")
+            targets = [root / "caf\u00e9.md", root / "cafe\u0301.md"]
+            for path in targets:
+                path.write_text("# Heading\n")
+            graph = links.build_document_graph([source, *targets], repo_root=root)
+            with mock.patch.object(
+                links,
+                "_target_headings",
+                side_effect=AssertionError("ambiguous target"),
+            ):
+                self.assertIn(
+                    "ambiguous-link-target",
+                    {f.code for f in links.check_alignment(graph)},
+                )
+
+    def test_renderer_suffixes_cannot_generate_duplicate_fragment_ids(self) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            source = root / "source.md"
+            target = root / "target.md"
+            source.write_text("[last](target.md#repeat-1-1)\n")
+            target.write_text("# Repeat\n## Repeat\n## Repeat-1\n")
+            graph = links.build_document_graph([source, target], repo_root=root)
+            headings = next(
+                n.headings for n in graph.nodes if n.path.name == "target.md"
+            )
+            self.assertEqual(("repeat", "repeat-1", "repeat-1-1"), headings)
+            self.assertEqual([], links.check_alignment(graph))
+
     def test_local_markdown_link_parser_bounds_malformed_opening_brackets(
         self,
     ) -> None:
@@ -2103,6 +2186,44 @@ class ChangedDocumentScopeTests(unittest.TestCase):
             self.assertEqual(["docs/source.md:1"], [item.path for item in findings])
             self.assertEqual("missing-link-anchor", findings[0].code)
 
+    def test_unrelated_nfc_collision_does_not_expand_a_changed_document_check(self):
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            graph = self.graph(
+                root,
+                {
+                    "caf\u00e9.md": "# One\n",
+                    "cafe\u0301.md": "# Two\n",
+                    "other.md": "# Other\n",
+                },
+            )
+            selected = links.select_changed_documents(graph, {"other.md"})
+            self.assertEqual([], links.check_alignment(selected))
+
+    def test_nfd_change_selects_consumers_of_its_colliding_canonical_path(self):
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            graph = self.graph(
+                root,
+                {
+                    "caf\u00e9.md": "# One\n",
+                    "cafe\u0301.md": "# Two\n",
+                    "source.md": '[read](caf\u00e9.md#heading "cites")\n',
+                    "other.md": "# Other\n",
+                },
+            )
+            selected = links.select_changed_documents(graph, {"cafe\u0301.md"})
+            self.assertIn(pathlib.PurePosixPath("source.md"), selected.selected_paths)
+            self.assertNotIn(pathlib.PurePosixPath("other.md"), selected.selected_paths)
+            self.assertIn(
+                "ambiguous-link-target",
+                {f.code for f in links.check_alignment(selected)},
+            )
+
     def test_deleted_target_and_deleted_command_still_select_consumers(self):
         from scripts.lib.document_governance.links import (
             run_mode,
@@ -3244,6 +3365,45 @@ class LinkTypeTitleTests(unittest.TestCase):
                     {"link-type-unknown", "link-evidence-unpinned"} & self.codes(body)
                 )
 
+    def test_semantic_relations_are_distinct_from_legacy_link_categories(self) -> None:
+        for relation in (
+            "requires",
+            "designs",
+            "implements",
+            "verifies",
+            "operates",
+            "defines",
+            "cites",
+        ):
+            with self.subTest(relation=relation):
+                self.assertEqual(set(), self.codes(f'[Plan](plan.md "{relation}")'))
+        self.assertIn(
+            "link-evidence-unpinned", self.codes('[Plan](plan.md "verifies evidence")')
+        )
+        self.assertEqual(set(), self.codes('[Plan](plan.md "requires normative")'))
+
+    def test_external_citation_does_not_grant_normative_authority_or_fetch_http(
+        self,
+    ) -> None:
+        with mock.patch("urllib.request.urlopen", side_effect=AssertionError("HTTP")):
+            self.assertEqual(
+                set(), self.codes('[Source](https://example.invalid/standard "cites")')
+            )
+        self.assertIn(
+            "link-relation-authority", self.codes('[Plan](plan.md "cites normative")')
+        )
+        self.assertIn(
+            "link-relation-external",
+            self.codes('[Owner](https://example.invalid/standard "requires")'),
+        )
+
+    def test_ambiguous_semantic_title_does_not_gain_a_default_relation(self) -> None:
+        for title in ("requires cites", "requires normative navigation", "requres"):
+            with self.subTest(title=title):
+                self.assertIn(
+                    "link-type-unknown", self.codes(f'[Plan](plan.md "{title}")')
+                )
+
     def test_an_unknown_type_is_rejected(self) -> None:
         self.assertIn("link-type-unknown", self.codes('[Plan](plan.md "normtive")'))
 
@@ -3345,6 +3505,78 @@ class RelationLookupTests(unittest.TestCase):
                 )
                 self.assertEqual(result["consumers"], ())
                 self.assertEqual(result["impact"], ())
+
+    def test_citations_never_become_consumers_but_named_dependencies_do(self) -> None:
+        result = self.lookup(
+            {
+                "docs/s/spec.md": self.SPEC,
+                "docs/s/citation.md": '[Spec](spec.md "cites")\n',
+                "docs/s/requirement.md": '[Spec](spec.md "requires")\n',
+                "docs/s/verification.md": '[Spec](spec.md "verifies")\n',
+                "docs/s/navigation.md": '[Spec](spec.md "requires navigation")\n',
+            },
+            "docs/s/spec.md",
+        )
+        self.assertEqual(
+            ("docs/s/requirement.md", "docs/s/verification.md"), result["consumers"]
+        )
+
+    def test_each_repeated_reference_preserves_its_non_authoritative_title(
+        self,
+    ) -> None:
+        for title in (
+            "cites",
+            "navigation",
+            "historical",
+            "evidence",
+            "requires navigation",
+            "verifies evidence",
+        ):
+            with self.subTest(title=title):
+                result = self.lookup(
+                    {
+                        "docs/s/spec.md": self.SPEC,
+                        "docs/s/citation.md": (
+                            "[First][ref]\n\n[Second][ref]\n\n[ref][] and [ref].\n\n"
+                            f'[ref]: spec.md "{title}"\n'
+                        ),
+                    },
+                    "docs/s/spec.md",
+                )
+                self.assertEqual((), result["consumers"])
+                self.assertEqual((), result["impact"])
+
+    def test_inbound_semantics_preserve_the_independent_legacy_category(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            inbound_link_lookup,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+
+        files = {
+            "spec.md": self.SPEC,
+            "requires.md": '[Spec](spec.md "requires normative")',
+            "verifies.md": '[Spec](spec.md "verifies")',
+            "cites.md": '[Spec](spec.md "cites")',
+            "invalid-authority.md": '[Spec](spec.md "cites normative")',
+        }
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            for name, body in files.items():
+                (root / name).write_text(body)
+            graph = build_document_graph(
+                [root / name for name in files], repo_root=root
+            )
+            result = inbound_link_lookup(
+                graph, pathlib.PurePosixPath("spec.md"), load_registry()
+            )
+        self.assertEqual(("requires.md",), result.get("inbound_requires"))
+        self.assertEqual(("verifies.md",), result.get("inbound_verifies"))
+        self.assertEqual(
+            ("cites.md", "invalid-authority.md"), result.get("inbound_cites")
+        )
+        self.assertEqual(("requires.md",), result["inbound_normative"])
+        self.assertEqual((), result["inbound_untitled"])
 
     def test_a_normative_title_or_a_second_untitled_link_still_consumes(self) -> None:
         result = self.lookup(

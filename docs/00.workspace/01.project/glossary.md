@@ -1,9 +1,12 @@
 ---
 title: "Docker Workspace Vocabulary"
-version: "0.13.0"
+version: "1.0.0"
 type: "governance/control"
 status: "active"
 owner: "@buenhyden"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
 updated: "2026-11-20"
 created: "2026-09-06"
 observed_at: "2026-11-20"
@@ -12,7 +15,27 @@ review_cycle: "on-contract-change"
 
 # Docker Workspace Vocabulary
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the glossary payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
 
 This file owns narrower meanings and concrete bindings in this Docker
 workspace. Common Term IDs, foundation concepts and agent/provider terms
@@ -21,7 +44,7 @@ have one meaning owner in the
 A local binding names its policy owner and never changes the common meaning
 or grants permission to operate a service.
 
-## Scope
+#### Scope
 
 Included: this repository's document lifecycle, gate names and operational
 context. Excluded: common definitions, service inventories, runtime state,
@@ -29,9 +52,9 @@ secrets and provider settings. Product profile names remain owned by
 [POL-0078](../../05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md);
 this vocabulary routes to that owner instead of copying its table.
 
-## Rules
+#### Rules
 
-### Local Terms
+##### Local Terms
 
 | Term | Definition | Not to Confuse | Policy Owner |
 | --- | --- | --- | --- |
@@ -82,9 +105,9 @@ this vocabulary routes to that owner instead of copying its table.
 | LAB context | The repository's experiment context; entrypoint and isolation guarantees depend on the selected LAB owner | A Compose profile automatically providing isolation | [Environment constraints](../../../.agents/governance/environment-constraints.md) |
 | Compose profile, local binding | A selection name registered by POL-0078, distinct from this file's gate-profile sense | A Document Profile, permission profile or security boundary | [POL-0078](../../05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md) |
 
-## Evidence
+#### Evidence
 
-### Provenance
+##### Provenance
 
 Read from tracked source at `30bfa6543fd60bbce9f38efedc1728e9b1e382a0`
 on 2026-11-20: the previous Repository Vocabulary's Local Extensions,
@@ -95,16 +118,36 @@ merges the six agent-only rows there, and retains these local bindings here.
 No common Term ID or definition is copied into this local owner. The
 Historical Audit ID entry explains old references without reopening them.
 
-### Refresh Triggers
+##### Refresh Triggers
 
 - A linked policy changes a local binding or its authoritative location.
 - The adopted vocabulary or a public suite/profile name changes.
 - A local meaning becomes shared; migrate it rather than defining it twice.
 
-## Related Documents
+#### Related Documents
 
 - [Repository Vocabulary](../../../.agents/knowledge/glossary.md)
 - [Workspace index](../README.md)
 - [Documentation protocol](../03.process/documentation-protocol.md)
 - [SDLC](../03.process/sdlc.md)
 - [Quality standards](../04.quality/quality-standards.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

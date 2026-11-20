@@ -1,26 +1,51 @@
 ---
 title: "Gateway Tier (01-gateway)"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-12"
 ---
 
 # Gateway Tier (01-gateway)
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > 라우팅, TLS, 보안을 조율하는 모든 트래픽의 단일 진입점입니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
-#### Overview
+###### Overview
+<!-- core-payload-level:4 -->
 
 `01-gateway` tier는 `hy-home.docker` 생태계로 들어오는 트래픽의 단일 진입점입니다. 루트 스택은 `traefik` leaf를 무조건 include하며, profile이 실제로 기동되는 서비스를 결정합니다: `traefik`은 `core`, `dev`, `local`에 속합니다. profile이 선택되지 않으면 기동되지 않습니다. 대안 gateway였던 Nginx는 2026-11-10 소유자 결정으로 저장소에서 퇴역했습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
@@ -28,21 +53,25 @@ created: "2025-11-12"
 - Backend Developers
 - Security Auditors
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
-##### In Scope
+###### In Scope
+<!-- core-payload-level:5 -->
 
 - Traefik(에지 라우터) 설정과 루트 스택 배포.
 - TLS 종료와 인증서 관리.
 - Docker provider를 통한 동적 서비스 탐색.
 
-##### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:5 -->
 
 - 애플리케이션 수준의 비즈니스 로직.
 - 장기 로그 저장 또는 분석(Observability tier가 담당).
 - Identity provider 관리(Auth tier가 담당).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 01-gateway/
@@ -50,26 +79,29 @@ created: "2025-11-12"
 └── README.md        # 이 파일
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | Traefik HTTP/HTTPS 진입점 | `traefik` | 이 README는 소비자를 기록하지 않는다. | 정확한 포트 번호와 프로토콜은 하위 `traefik/`의 서비스 준비성 정보가 소유한다. | 이 README는 실패 처리를 기록하지 않는다. |
 | Traefik 메트릭 진입점 | `traefik` | 이 README는 소비자를 기록하지 않는다. | 정확한 포트 번호와 프로토콜은 하위 `traefik/`의 서비스 준비성 정보가 소유한다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Networking (Ports)
+###### Networking (Ports)
+<!-- core-payload-level:4 -->
 
 정확한 포트 번호와 프로토콜은 각 서비스의 서비스 준비성 정보가 소유합니다: [traefik/](traefik/). Traefik은 HTTP/HTTPS 진입점과 메트릭 진입점을 게시합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `traefik/`가 각자 선언한다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 런타임 이미지 고정 값은 각 서비스의 compose 파일이 소유합니다: [traefik/](traefik/). [버전 레지스트리](../tech-stack.versions.json)는 파생된 Compose 이미지 투영입니다.
 
@@ -79,24 +111,26 @@ created: "2025-11-12"
 | Discovery  | Docker Provider                   | 컨테이너 자동 탐지 |
 | Security   | OAuth2 Proxy / Keycloak           | 통합 SSO 제공자   |
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 1. [문서 인덱스](../../docs/README.md)와 subject package `docs/05.operations/README.md`를 검토해 트래픽 흐름을 이해합니다.
 2. 배포 전 `scripts/operations/gen-secrets.sh`로 secret을 생성했는지 확인합니다.
 3. 초기 배포 경계는 `docs/05.operations/README.md`의 subject `0012-edge-routing-stack`을 따릅니다.
 4. `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`와 `bash scripts/hardening/check-all-hardening.sh 01-gateway`로 정적 준비성을 확인합니다. runtime 헬스 명령은 승인된 실행 중 스택에 대해서만 사용합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 없음: 이 디렉터리는 자체 테스트나 검증 스크립트를 두지 않으며, 하위 `traefik/`가 각자 둔다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Agent 거버넌스](../../AGENTS.md)
 - 시스템 아키텍처 (`docs/02.architecture/01.descriptions/README.md`)
@@ -106,6 +140,27 @@ created: "2025-11-12"
 - 비상 런북 (`docs/05.operations/03.runbooks/README.md`)
 - [문서 인덱스](../../docs/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `traefik/`가 각자 선언한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

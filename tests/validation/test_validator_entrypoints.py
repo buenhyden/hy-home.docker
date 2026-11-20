@@ -11,6 +11,7 @@ import tempfile
 import tomllib
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
@@ -60,9 +61,11 @@ class ValidatorEntrypointTests(unittest.TestCase):
                 self.assertEqual(0, completed.returncode, completed.stderr)
 
     def test_agent_descriptions_carry_role_routing_text(self) -> None:
+        from scripts.operations import provider_surface_renderer as renderer
+
         for role in sorted((ROOT / ".agents/roles").glob("*.md")):
             with self.subTest(role=role.stem):
-                source = role.read_text(encoding="utf-8")
+                source = renderer.compact_payload(role.read_text(encoding="utf-8"))
                 overview = source.split("## Overview\n\n", 1)[1].split("\n\n", 1)[0]
                 use_when = source.split("### Use When\n\n", 1)[1].split("\n\n", 1)[0]
                 claude = (ROOT / ".claude/agents" / role.name).read_text(
@@ -187,6 +190,294 @@ class ValidatorEntrypointTests(unittest.TestCase):
             self.assertEqual(1, run(repo, drift_exit=1).returncode)
 
 
+class NativeTemplateProducerTests(unittest.TestCase):
+    """P04: the real producer reads native payload, not a common wrapper."""
+
+    def setUp(self) -> None:
+        from scripts.lib.agent_governance.agent_governance_contract import (
+            ProviderRecord,
+        )
+        from scripts.operations import provider_surface_renderer as renderer
+
+        self.renderer = renderer
+        self.role = renderer.RoleRecord(
+            agent_id="fixture-reviewer",
+            scope="common",
+            tier="worker",
+            work_profile="review",
+            permission_profile="read-only",
+            tool_profile="inspection",
+            skill_ids=("fixture-procedure",),
+            source_path=pathlib.PurePosixPath(".agents/roles/fixture-reviewer.md"),
+            source_text=(
+                '# fixture-reviewer\n\n## Overview\n\nReview "quoted" input.\n\n'
+                "### Use When\n\n- A bounded review is needed.\n\n"
+                "## Responsibilities\n\nKeep the source read-only.\n"
+            ),
+        )
+        providers = tuple(
+            ProviderRecord(
+                provider_id=provider,
+                capability_status="supported",
+                adoption_status="adopted",
+                runtime_acceptance="unobserved",
+                adapter_path=pathlib.PurePosixPath(f".{provider}/provider.md"),
+                agent_pattern=f".{provider}/agents/{{agent_id}}.{suffix}",
+                skill_pattern=None,
+                canonical_skill_pattern=".agents/skills/{skill_id}/SKILL.md",
+                config_path=pathlib.PurePosixPath(f".{provider}/hooks.json"),
+            )
+            for provider, suffix in (("claude", "md"), ("codex", "toml"))
+        )
+        skill = renderer.SkillRecord(
+            skill_id="fixture-procedure",
+            scope="common",
+            owner_agent="fixture-reviewer",
+            description="A bounded fixture procedure.",
+            source_path=pathlib.PurePosixPath(
+                ".agents/skills/fixture-procedure/SKILL.md"
+            ),
+            source_text="# Fixture\n",
+        )
+        self.state = renderer.AgentGovernanceState(
+            providers=("claude", "codex"),
+            provider_records=providers,
+            root_entries=(),
+            provider_entries=(),
+            roles=(self.role,),
+            skills=(skill,),
+            registry={
+                "work_profiles": {
+                    "review": {
+                        "claude": {"model": "sonnet", "value": "high"},
+                        "codex": {"model": "fixture-model", "value": "high"},
+                    }
+                },
+                "permissions": {"read-only": {"claude": "plan", "codex": "read-only"}},
+                "tool_profiles": {"inspection": ["Read", "Glob"]},
+                "projections": [],
+            },
+        )
+        folder = ROOT / "docs/99.templates/02.templates/92.runtime"
+        self.claude = (folder / "claude-agent.template.md").read_text()
+        self.codex = (folder / "codex-agent.template.toml").read_text()
+
+    def test_claude_output_consumes_native_template_and_keeps_typed_fields(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
+
+        source = self.claude + "\nNative fixture payload.\n"
+        self.assertIn(
+            "<!-- markdownlint-disable-next-line MD041 -->\n{{AGENT_BODY}}", source
+        )
+        content = self.renderer._claude_agent(
+            self.state,
+            self.role,
+            pathlib.PurePosixPath(".claude/agents/fixture-reviewer.md"),
+            template=source,
+        ).decode()
+        metadata = parse_frontmatter_text(content)
+        self.assertEqual(
+            {
+                "name",
+                "description",
+                "tools",
+                "model",
+                "effort",
+                "permissionMode",
+                "skills",
+            },
+            set(metadata),
+        )
+        self.assertEqual(["Read", "Glob"], metadata["tools"])
+        self.assertEqual(["fixture-procedure"], metadata["skills"])
+        self.assertEqual("plan", metadata["permissionMode"])
+        self.assertIn('Review "quoted" input.', metadata["description"])
+        self.assertIn("Native fixture payload.", content)
+        self.assertNotIn("## 문서 개요", content)
+        self.assertNotIn("markdownlint-disable", content)
+        self.assertIn(
+            self.renderer._marker(self.role.source_path) + "\n\n# fixture-reviewer\n",
+            content,
+        )
+        self.assertEqual(1, content.splitlines().count("# fixture-reviewer"))
+
+    def test_optional_claude_effort_and_empty_skills_remain_native_values(self) -> None:
+        from dataclasses import replace
+
+        from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
+
+        state = replace(
+            self.state,
+            registry={
+                **self.state.registry,
+                "work_profiles": {
+                    "review": {"claude": {"model": "sonnet", "value": None}}
+                },
+            },
+        )
+        role = replace(self.role, skill_ids=())
+        content = self.renderer._claude_agent(
+            state,
+            role,
+            pathlib.PurePosixPath(".claude/agents/fixture-reviewer.md"),
+            template=self.claude,
+        ).decode()
+        metadata = parse_frontmatter_text(content)
+        self.assertNotIn("effort", metadata)
+        self.assertEqual([], metadata["skills"])
+
+    def test_codex_output_consumes_native_template_and_escapes_instructions(
+        self,
+    ) -> None:
+        source = self.codex.replace(
+            "__AGENT_BODY__", "__AGENT_BODY__\\nNative fixture payload."
+        )
+        content = self.renderer._codex_agent(
+            self.state,
+            self.role,
+            pathlib.PurePosixPath(".codex/agents/fixture-reviewer.toml"),
+            template=source,
+        ).decode()
+        metadata = tomllib.loads(content)
+        self.assertEqual(
+            {
+                "name",
+                "description",
+                "developer_instructions",
+                "model",
+                "model_reasoning_effort",
+                "sandbox_mode",
+            },
+            set(metadata),
+        )
+        self.assertEqual("read-only", metadata["sandbox_mode"])
+        self.assertIn('Review "quoted" input.', metadata["developer_instructions"])
+        self.assertIn("Native fixture payload.", metadata["developer_instructions"])
+        self.assertIn("## Required Procedures", metadata["developer_instructions"])
+        self.assertNotIn("## 문서 개요", metadata["developer_instructions"])
+
+    def test_native_templates_reject_unknown_keys_and_permission_overrides(
+        self,
+    ) -> None:
+        cases = (
+            ("claude", self.claude.replace("\n---\n", '\nowner: "intruder"\n---\n', 1)),
+            (
+                "claude",
+                self.claude.replace('"{{PERMISSION_MODE}}"', '"bypassPermissions"'),
+            ),
+            ("codex", self.codex + 'permissionMode = "plan"\n'),
+            ("codex", self.codex.replace('"__SANDBOX_MODE__"', '"danger-full-access"')),
+        )
+        for provider, source in cases:
+            with self.subTest(provider=provider, source=source):
+                render = getattr(self.renderer, f"_{provider}_agent")
+                with self.assertRaises(ValueError):
+                    render(
+                        self.state,
+                        self.role,
+                        pathlib.PurePosixPath(f".{provider}/agents/fixture"),
+                        template=source,
+                    )
+
+    def test_native_templates_require_one_active_standalone_role_payload(self) -> None:
+        for provider, template, token, newline in (
+            ("claude", self.claude, "{{AGENT_BODY}}", "\n"),
+            ("codex", self.codex, "__AGENT_BODY__", "\\n"),
+        ):
+            for replacement in (
+                "",
+                token + newline + token,
+                "```markdown" + newline + token + newline + "```",
+                "~~~" + newline + token + newline + "~~~",
+                "<!--" + newline + token + newline + "-->",
+                "prefix " + token,
+                "    " + token,
+            ):
+                with self.subTest(provider=provider, replacement=replacement):
+                    render = getattr(self.renderer, f"_{provider}_agent")
+                    with self.assertRaisesRegex(ValueError, "payload slot"):
+                        render(
+                            self.state,
+                            self.role,
+                            pathlib.PurePosixPath(f".{provider}/agents/fixture"),
+                            template=template.replace(token, replacement),
+                        )
+
+    def test_render_all_reads_registered_payloads_once_per_native_kind(self) -> None:
+        templates = {
+            "governance/claude-agent": self.claude + "\nNative fixture payload.\n",
+            "governance/codex-agent": self.codex.replace(
+                "__AGENT_BODY__", "__AGENT_BODY__\\nNative fixture payload."
+            ),
+        }
+        registry = object()
+        with (
+            mock.patch.object(
+                self.renderer, "load_agent_governance", return_value=self.state
+            ),
+            mock.patch.object(
+                self.renderer, "validate_contract_bundle", return_value=()
+            ),
+            mock.patch.object(self.renderer, "_folder_guides", return_value=()),
+            mock.patch.object(self.renderer, "load_registry", return_value=registry),
+            mock.patch.object(
+                self.renderer,
+                "template_payload",
+                side_effect=lambda _registry, kind, *, root: templates[kind],
+            ) as payload,
+        ):
+            records = self.renderer.render_all(Path("/fixture"))
+        self.assertEqual(
+            [
+                mock.call(registry, "governance/claude-agent", root=Path("/fixture")),
+                mock.call(registry, "governance/codex-agent", root=Path("/fixture")),
+            ],
+            payload.call_args_list,
+        )
+        self.assertTrue(
+            all(b"Native fixture payload." in item.content for item in records)
+        )
+        self.assertTrue(
+            all(item.path.parts[0] in {".claude", ".codex"} for item in records)
+        )
+
+    def test_wrapped_role_and_readme_keep_native_and_owned_boundaries(self) -> None:
+        from dataclasses import replace
+
+        from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
+
+        role = replace(
+            self.role,
+            source_text=self.renderer.wrap_document(self.role.source_text, kind="role"),
+        )
+        self.assertEqual(
+            self.renderer._description(self.role), self.renderer._description(role)
+        )
+        native = self.renderer._codex_agent(
+            self.state,
+            role,
+            pathlib.PurePosixPath(".codex/agents/fixture-reviewer.toml"),
+            template=self.codex,
+        )
+        self.assertNotIn(
+            "## 문서 개요", tomllib.loads(native.decode())["developer_instructions"]
+        )
+        pointer = self.renderer._pointer(
+            "Codex Runtime Route",
+            pathlib.PurePosixPath(".codex/provider.md"),
+            pathlib.PurePosixPath(".codex/README.md"),
+        )
+        self.assertIn("## 문서 개요", pointer.decode())
+        self.assertNotIn("\n\n\n", pointer.decode())
+        self.assertEqual(
+            "provider",
+            parse_frontmatter_text(pointer.decode())["document_scope"]["layer"],
+        )
+        self.assertTrue(self.renderer._is_generated(pointer))
+
+
 class FolderGuideShimTests(unittest.TestCase):
     """The renderer owns one `@AGENTS.md` import shim per tracked folder guide."""
 
@@ -202,19 +493,27 @@ class FolderGuideShimTests(unittest.TestCase):
             ".claude",
             ".codex",
             "docs/00.workspace",
+            "docs/99.templates",
             "scripts/hooks",
         ):
+            ignored = ["worktrees", "settings.local.json", "__pycache__"]
+            if name == "docs/99.templates":
+                # The real template dependencies are needed; unrelated folder
+                # guide fixtures would add extra shims to these focused tests.
+                ignored.extend(("AGENTS.md", "CLAUDE.md"))
             shutil.copytree(
                 ROOT / name,
                 self.root / name,
-                ignore=shutil.ignore_patterns(
-                    "worktrees", "settings.local.json", "__pycache__"
-                ),
+                ignore=shutil.ignore_patterns(*ignored),
             )
         (self.root / "AGENTS.md").write_text("# root\n", encoding="utf-8")
+        self.git("init", "-q")
+        self.git("add", "-A")
+        # Copied adapters may belong to the previous checked-in generation.
+        # Establish current native output before introducing the tested guide.
+        self.renderer.write_native_projection(self.root)
         (self.root / "docs/03.specs").mkdir(parents=True)
         (self.root / "docs/03.specs/AGENTS.md").write_text("# s\n", encoding="utf-8")
-        self.git("init", "-q")
         self.git("add", "-A")
 
     def git(self, *args: str) -> None:

@@ -1,10 +1,13 @@
 ---
 title: "Kafka as the Only Messaging Broker"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0052"
 parent_ids:
@@ -15,9 +18,29 @@ created: "2026-11-06"
 
 # ADR-0052: Kafka as the Only Messaging Broker
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 The platform once planned two brokers: Kafka for event streams and RabbitMQ
 for task queues, with RabbitMQ kept behind an opt-in `messaging-option`
@@ -33,7 +56,8 @@ multi-broker Kafka cluster exists only as the `labs/kafka-cluster` LAB.
   the Airflow and n8n packages.
 - Accepted decisions must describe the tree as it is.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 Evidence is the current repository configuration and
 `scripts/hardening/check-all-hardening.sh` (`check_05_messaging`). No runtime
@@ -45,14 +69,14 @@ state is claimed.
 - [ADR-0038 Selective native OIDC](0038-selective-native-oidc-for-native-auth-apps.md)
 - [POL-0107 LAB promotion](../../05.operations/02.policies/15.labs/0107-lab-promotion.md)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the messaging broker of HOME and the 05-messaging tier.
 Redis Pub/Sub and cloud messaging services stay out of scope.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep the two-broker decision and restore RabbitMQ as an opt-in profile:
   rejected; it reintroduces a runtime no consumer uses.
@@ -61,7 +85,7 @@ Redis Pub/Sub and cloud messaging services stay out of scope.
 - Kafka as the only broker, with task-queue needs met by the workflow
   packages' own Valkey: selected.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -72,9 +96,9 @@ Redis Pub/Sub and cloud messaging services stay out of scope.
 - Trade-off: a future need for AMQP-style routing or per-message
   acknowledgement needs a new decision and runtime.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. Apache Kafka in KRaft mode, without ZooKeeper, is the only messaging broker
    in HOME. It carries event streams that need ordering, retention and replay.
@@ -91,12 +115,13 @@ Redis Pub/Sub and cloud messaging services stay out of scope.
    reprocessing, HA) proceeds in phases through policy, guide and runbook
    approval.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval
 record is linked. Effective from 2026-11-06.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This record replaces two accepted ADRs, deleted in the same change (ADR-0051);
 both are historical and non-authoritative:
@@ -112,15 +137,15 @@ both are historical and non-authoritative:
   hardening and phased-expansion decisions carry forward; the RabbitMQ item is
   withdrawn.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: one broker to operate and secure; the messaging documents describe
   one runtime.
 - Positive: the hardening gate already checks the only broker.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -130,7 +155,28 @@ decision text is unchanged.
 Messaging requirement and description text that still names RabbitMQ is
 reconciled by its owners.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `check_05_messaging` in `scripts/hardening/check-all-hardening.sh` checks the
 gateway chain and Kafbat native OIDC labels.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.4.1"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Harness / Agent-first Engineering Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 운영 정책은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약을 유지하기 위한 통제 기준을 정의한다.
 
@@ -29,11 +52,12 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 아래 표는 canonical 규칙의 소유자로 연결한다. 모델·permission·scope를 이 문서에
 별도 값으로 복제하지 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`)
 
-### Applies To
+##### Applies To
 
 이 정책은 다음 대상에 적용한다.
 
@@ -53,13 +77,14 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 - `docs/05.operations/03.runbooks/*/[0-9][0-9][0-9][0-9]-*.md`
 - `scripts/validation/check-*.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/validation/validate-docker-compose.sh`
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -105,9 +130,10 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 정적 source나 수동 비교를 native 호출·복구 성공으로 기록하지 않는다.
 Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 미실행은 성공이 아니다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 과거 Stage 90 또는 Stage 98 evidence는 명확히 non-authoritative일 때 이전 source label을 언급할 수 있다.
 - `bash scripts/knowledge/report-graphify-health.sh`는 `status=advisory`를 보고할 수 있다; 이는 repository validation 실패가 아니라 신뢰도 하향 evidence다.
@@ -115,22 +141,23 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 - `rtk`는 active shell에서 사용할 수 없을 때 우회할 수 있다.
 - 승인되지 않은 Compose/include/IP remediation은 이 하네스 점검의 실행 범위가 아니다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 현재 owner나 계약이 바뀌면 영향받는 소비자와 필요한 회귀를 검토한다.
 - 완료 여부는 현재 Task의 실제 필수 증거와 독립 검토로 판정하며 같은 입력의 aggregate QA를 반복하지 않는다.
 - `.claude`, `.codex`, 또는 canonical agent governance role/skill catalog가 바뀌면 이 policy를 검토한다.
 - scope 밖 infra profile 실패는 HAFE acceptance criteria를 조용히 확장하는 대신 별도로 기록한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 변경 영향에 맞춰 quality policy와 canonical public plan이 선택한 검사만 수행한다.
 [Runbook](../../03.runbooks/01.common/0004-harness-agent-first-engineering.md#steps)은 승인된
 관측의 실행 경로를 안내하며 모든 변경에 전체 hook/runtime bundle을 요구하지 않는다.
 
-### Limits
+##### Limits
 
 이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
@@ -144,14 +171,34 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 - 자동 답변 점수 QA와 완료 사건의 전용 증명은 현재 delivery gate가 아니다.
 - `bash scripts/knowledge/report-graphify-health.sh`의 `status=advisory`는 신뢰도 하향 evidence이며 repository validation 실패가 아니다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 정책 소유자는 @buenhyden이다.
 
-### Review Triggers
+##### Review Triggers
 
 - 같은 주제: [Guide](../../01.guides/01.common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../../03.runbooks/01.common/0004-harness-agent-first-engineering.md) (`RUN-0004`)
 
 - [Operations index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

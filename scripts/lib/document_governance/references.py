@@ -607,11 +607,15 @@ def _finding(code: str, path: str | pathlib.PurePosixPath, detail: str) -> Findi
 
 
 def _rendered_lines(text: str) -> tuple[str, ...]:
+    from scripts.lib.document_governance.common_document import payload_text
+
     try:
         body = frontmatter_record_from_text(pathlib.Path("document.md"), text).body
     except FrontmatterError:
         body = text
-    return tuple(_without_inline_code(line) for _, line in _unfenced_lines(body))
+    return tuple(
+        _without_inline_code(line) for _, line in _unfenced_lines(payload_text(body))
+    )
 
 
 def _asserts_normative_authority(text: str) -> bool:

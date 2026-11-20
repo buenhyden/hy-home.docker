@@ -1,10 +1,13 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-07-19"
 
 # Operational Readiness Closure Architecture
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - Execution is limited to repository-local, task-scoped Docker resources and
   synthetic input.
@@ -27,24 +50,26 @@ created: "2026-07-19"
 - Raw artifacts and logs are transient, and only a redacted summary remains
   in the current Task.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This architecture aligns Compose readiness, sample-service supply chain, and local delivery under one isolation
 principle. The maintainer, operator, security reviewer, and release reviewer
 must each independently verify the subject identity, failure boundary,
 cleanup, and evidence of every lane.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The maintainer, operator, security reviewer and release reviewer verify each lane. The lanes act on repository-local, task-scoped Docker resources and synthetic input, with `examples/sample-web-service/` as the shared artifact for supply chain and delivery.
 
-### Constraints
+##### Constraints
 
 Execution is limited to repository-local, task-scoped Docker resources and synthetic input. Registry publication, production or shared runtime, live data, credentials, remote deployment and GitHub setting mutation are out of bounds, and secrets and private keys stay out of durable evidence.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 | Lane | Current implementation | Primary output |
 | --- | --- | --- |
@@ -56,7 +81,7 @@ Focused tests supply deterministic positive and negative fixtures for these
 components. Operations documents provide operator-facing invocation and
 recovery guidance without owning the architectural decision.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -69,11 +94,12 @@ recovery guidance without owning the architectural decision.
 - The Compose lane's readiness and the supply-chain lane's verified digest become delivery input.
 - Each lane's primary output is listed in the Building Blocks table.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 Each wrapper follows the `preflight → allocate → execute → verify → summarize → cleanup`
 order. The Compose lane's readiness and the
@@ -81,7 +107,8 @@ supply-chain lane's verified digest become delivery input. A failure does not sk
 required verification and exits non-zero along with the owned cleanup
 result.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 Tracked scripts, policies, schemas, sample artifacts, and fixtures define the
 execution contract. Runtime containers, volumes, networks, generated SBOM,
@@ -89,15 +116,16 @@ signature working files, and database state are task-scoped transient
 resources. Automatic cleanup and promotion act only on an identity the lane
 allocated itself.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 A failure does not skip required verification and exits non-zero along with the owned cleanup result. A digest mismatch fails closed, and automatic cleanup and promotion act only on an identity the lane allocated itself. Configuration rollback is distinct from data recovery.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Isolation**: protect other workloads with a unique project identity and
   label.
@@ -109,12 +137,13 @@ A failure does not skip required verification and exits non-zero along with the 
 - **Observability**: summarize the subject, transition, result, cleanup, and
   stable failure class without secrets.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 - The lanes prove behavior on synthetic input in task-scoped resources only;
   they establish nothing about production data or a shared runtime.
 
-### Trade-offs
+##### Trade-offs
 
 - The lanes run only on synthetic input in task-scoped resources, which
   protects other workloads but establishes nothing about production data or a
@@ -125,26 +154,29 @@ A failure does not skip required verification and exits non-zero along with the 
 - Configuration rollback is kept distinct from data recovery; the PostgreSQL
   recovery lane was removed on 2026-11-10 (Quality Attributes, Evolution).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0028 Local-Isolated Readiness Evidence](../02.decisions/0028-local-isolated-readiness-evidence.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0025 Operational Readiness Closure](../../01.requirements/0025-operational-readiness-closure.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - `examples/sample-web-service/`
 - `tests/validation/test_compose_core_readiness.py`
 - `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 - A new lane follows the same wrapper order and isolation boundary.
 - The PostgreSQL recovery lane, a synthetic 17 to 18 logical upgrade
@@ -152,3 +184,23 @@ A failure does not skip required verification and exits non-zero along with the 
   already runs major 18; ADR-0028 Follow-up records the retirement.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

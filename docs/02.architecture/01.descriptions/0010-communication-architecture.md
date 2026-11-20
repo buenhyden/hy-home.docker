@@ -1,10 +1,13 @@
 ---
 title: "Communication Tier Architecture Description"
-version: "1.4.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0010"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-26"
 
 # Communication Tier Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Mailpit owns:** test-message capture in persistent SQLite
   `/data/mailpit.db`, loopback-published SMTP/UI ports, and a Traefik UI route.
@@ -29,30 +52,32 @@ created: "2026-03-26"
 - **Non-goals:** Mailpit does not replace Stalwart, and Stalwart is not an
   automatic HOME service.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 The mail requirements separate development message capture in `11-quality/mailpit` from the optional mail server, which since SPEC-0262 is the standalone LAB `labs/stalwart/docker-compose.yml` and joins no HOME network; it is not promoted. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
 `mail-dev`. Stalwart is selected only by the LAB profile `mail-server` and requires mail-domain,
 DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Development applications and browsers reach Mailpit; mail clients reach Stalwart over authenticated mail protocols; external delivery from Stalwart is a separate promotion decision, as the Runtime View diagram shows.
 
-### Constraints
+##### Constraints
 
 Mailpit must not be internet exposed and no captured development message may be relayed externally. Stalwart requires mail-domain, DNS, TLS, authentication, relay, abuse and backup ownership before use, and public delivery requires DNS/SPF/DKIM/DMARC and TLS promotion acceptance. Runtime pins are owned by Compose/Dockerfile declarations; the
 [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 Mailpit is the development SMTP/UI component backed by one SQLite database.
 Stalwart is the optional mail-protocol and administration component backed by
 the operator-selected storage configuration under its persistent mount.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -65,11 +90,12 @@ the operator-selected storage configuration under its persistent mount.
 - Mailpit: SMTP and UI ports published on loopback, plus a Traefik UI route.
 - Stalwart: internal SMTP25/submission587 and implicit-TLS IMAP993 listeners on the LAB network `hy-home-lab-stalwart`; HTTP8080 published on `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}`; no gateway route.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 ```mermaid
 flowchart LR
@@ -80,21 +106,23 @@ flowchart LR
   Stalwart --> Store[(configured data/blob/directory backends)]
 ```
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The root project includes only the Mailpit leaf, selected by `mail-dev`, `dev` or `local`. Stalwart is started from its own LAB entrypoint, where `mail-server` selects Stalwart plus `stalwart-config`. A
 currently running optional service may remain running when another profile is
 rendered; profile rendering is not a stop operation.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Mailpit recovery preserves SQLite with its WAL or uses the official dump/ingest path; Stalwart recovery is described under Recoverability in Scenarios. Relay denial is reconciled from `config/plan.ndjson`, and a running optional service may stay running when another profile is rendered.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Isolation:** applications choose Mailpit explicitly for tests; no captured
   development message may be relayed externally.
@@ -106,7 +134,7 @@ Mailpit recovery preserves SQLite with its WAL or uses the official dump/ingest 
 - **Licensing:** Stalwart upstream offers AGPL-3.0 and enterprise licensing;
   deployment documentation must not assume paid features or entitlement.
 
-### Trade-offs
+##### Trade-offs
 
 - Mailpit accepts arbitrary SMTP authentication by design for development
   capture; in exchange it must not be internet exposed or described as a
@@ -120,21 +148,43 @@ Mailpit recovery preserves SQLite with its WAL or uses the official dump/ingest 
   documentation must not assume paid features or entitlement (Quality
   Attributes).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0054 Mailpit in HOME and Stalwart as a LAB](../02.decisions/0054-mailpit-home-stalwart-lab.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [Communication requirement](../../01.requirements/0011-communication.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 The description reflects the current tree at its `updated` date and history lives in Git. Operations guides:
 
 - [Mailpit operations](../../05.operations/01.guides/11.mail-and-notifications/0084-mailpit.md)
 - [Stalwart operations](../../05.operations/01.guides/15.labs/0070-mail.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

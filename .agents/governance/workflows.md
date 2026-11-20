@@ -1,26 +1,49 @@
 ---
 title: "Workflows"
-version: "1.8.0"
+version: "2.0.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Workflows
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Workflows
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the contract payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
 
 This document owns repeatable provider-neutral workflow order. Provider
 adapters may map native controls but may not redefine these states.
 
-## Inputs
+#### Inputs
 
 The approved Spec Package and current Task, canonical roles, required governance, and source-bound repository state.
 
-## Sequence
+#### Sequence
 
-### Change Lifecycle
+##### Change Lifecycle
 
 Every repository change follows one lifecycle:
 
@@ -60,7 +83,7 @@ or protected-branch rule requires human review. Existing approval remains
 applicable only while its recorded scope is unchanged; review and delegation
 cannot broaden it.
 
-### Review Risk
+##### Review Risk
 
 The [review risk standard](../../docs/00.workspace/04.quality/quality-standards.md#11-review-risk)
 owns the three classes and the review each requires. An agent applies it
@@ -80,7 +103,7 @@ rerun on an enforced route or a human accepts it. The
 [capability matrix](provider-capability-matrix.md) records the observed
 routes.
 
-### Review Scope and Evidence Updates
+##### Review Scope and Evidence Updates
 
 One final independent review covers one frozen logical diff and its applicable
 check evidence. Assign its owner and required expertise before execution. A
@@ -119,12 +142,12 @@ private keys, raw logs, secret values, shell history, or tokens. Historical
 citations and version history preserve provenance only; they cannot authorize a
 current operation.
 
-### SDLC Workflow
+##### SDLC Workflow
 
 The [SDLC sequence](../../docs/00.workspace/03.process/sdlc.md#sequence) owns the stage order. `sdlc.md` owns stage boundaries, the Stage 99 registry owns document shapes
 and lifecycle values, and `scripts/` owns executable validation.
 
-### Supporting Workflows
+##### Supporting Workflows
 
 - Infrastructure: `compose-stack-agent` -> `infra-validate` -> independent review.
 - Code review: self-verification -> findings -> owner resolution -> re-verification.
@@ -138,23 +161,43 @@ only approved all-files pre-commit route and its clean linked-worktree,
 Task, prefix, and Git-visible-state conditions. Workflows does not create a
 second local invocation path.
 
-### Skill Lifecycle
+##### Skill Lifecycle
 
 Reusable procedures follow discovery, applicability, canonical agent governance source,
 registered projection, focused validation, and evidence. Provider projections
 do not own this lifecycle.
 
-## Stop Conditions
+#### Stop Conditions
 
 Apply the authorization and retry limits in Change Lifecycle. Missing authority, conflicting ownership, repeated failed verification, or a changed source binding stops the dependent operation.
 
-## Outputs
+#### Outputs
 
 Task-owned commands, results, review disposition, sanitized evidence, and the next accountable owner.
 
-## Related Documents
+#### Related Documents
 
 - [SDLC](../../docs/00.workspace/03.process/sdlc.md)
 - [Agentic policy](agentic.md)
 - [Stage authoring matrix](../../docs/00.workspace/01.project/stage-authoring-matrix.md)
 - [Provider capability matrix](provider-capability-matrix.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

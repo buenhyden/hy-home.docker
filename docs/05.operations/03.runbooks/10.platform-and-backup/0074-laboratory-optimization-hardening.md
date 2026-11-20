@@ -1,10 +1,13 @@
 ---
 title: "Admin and Experiment Tools Hardening Runbook"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0074"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Admin and Experiment Tools Hardening Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 관리·실험 기능 하드닝 항목의 회귀를 복구하는 절차다. direct 노출 복원, allowlist/SSO/gateway 체인 누락,
 네트워크 경계 드리프트, CI 게이트 실패를 점검하고 복구한다. 관리 UI 보안 경계와 운영 안정성 기준을
@@ -30,7 +53,7 @@ next_review_at: "2027-05-13"
 - dashboard direct 접근 경로가 다시 노출되었을 때
 - dozzle socket 권한 드리프트가 발생했을 때
 
-### Targets
+##### Targets
 
 - 상위 문서: [Admin and Experiment Tools Hardening Usage Guide](../../01.guides/10.platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`)
 - 설계 근거: [Administration and Experimentation Architecture Description](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md) (`AD-0011`)
@@ -42,21 +65,21 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../01.guides/10.platform-and-backup/0074-laboratory-optimization-hardening.md)
 - [Operations policy](../../02.policies/10.platform-and-backup/0074-laboratory-optimization-hardening.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 저장소 루트에서 작업한다. 파일 되돌림이나 runtime 재시작이 필요하면 승인자와 영향 범위를 먼저 기록한다.
 
-### Environment
+##### Environment
 
 - [ ] 실패 항목(middleware, allowlist, network, direct exposure, socket 권한, script, docs) 식별
 - [ ] 최근 변경 커밋 및 영향 범위 확인
 - [ ] 운영 영향도(관리 UI 접근/보안/감사) 평가
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -68,7 +91,8 @@ next_review_at: "2027-05-13"
 
 절차는 아래 항목에 따른다.
 
-#### Steps
+###### Steps
+<!-- core-payload-level:4 -->
 
 1. 정적 구성 점검
    - `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
@@ -93,7 +117,8 @@ next_review_at: "2027-05-13"
 5. 카탈로그 확장 항목(dozzle 로그 제한, redisinsight 감사 정책, open-notebook data retention/direct-port review)은
    [Policy](../../02.policies/10.platform-and-backup/0074-laboratory-optimization-hardening.md)의 확장 게이트에 따라 Task로 넘긴다.
 
-#### 적용 범위와 검증 한계
+###### 적용 범위와 검증 한계
+<!-- core-payload-level:4 -->
 
 이 주제는 Data·Observability·AI·Analytics로 나뉜 관리·실험 기능의 공통 통제를
 소유한다. Dozzle·RedisInsight는 OPTIONAL, JupyterLab은 독립 LAB(SPEC-0262)이며 tier나 프로필은 격리
@@ -103,32 +128,36 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 정적 gate 통과는 직접 peer 접근 차단·인증·복구 성공을 증명하지 않는다. 승인된
 예외, 월별 검토와 같은 릴리스 안의 임시 예외 종료·재검증 조건은 유지한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 검증 실패, 비밀 노출 의심, 파괴적 변경 필요, 예상과 다른 결과가 나타나면 중단한다.
 
 검증 실패, 비밀 노출 의심, 파괴적 변경 필요, 예상과 다른 결과는 Escalation에 기록한 중단 조건이다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 서비스 점검은 아래 항목에 따른다.
 
-#### Verification Steps
+###### Verification Steps
+<!-- core-payload-level:4 -->
 
 - [ ] 관리·실험 기능 compose static validation 통과
 - [ ] 관리·실험 기능 hardening script 실패 0건
 - [ ] optimization-hardening 문서 링크/README 인덱스 최신화 확인
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 - 이 런북 실행의 명령 결과·시각과 운영자 또는 agent의 조치를 기록한다.
 - 실패 검사·관측 증상·최종 복구 또는 보고 상태를 해당 Task나 사고 근거에 기록한다.
 
-#### 증거 출처
+###### 증거 출처
+<!-- core-payload-level:4 -->
 
 - **Signals**: CI `infrastructure-hardening` 결과와 정제된 ingress·서비스 로그
 - **Evidence to Capture**:
@@ -136,7 +165,7 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
   - compose config 결과
   - 관련 compose/script/docs diff
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 정적 gate 통과가 직접 peer 접근 차단, 인증, 복구 성공을 증명하지 않는다고 밝힌다.
 
@@ -145,15 +174,15 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 - 3단계 증상별 복구 이후 재검증: hardening, template security baseline, traceability 명령의 실행 결과가 필요하다.
 - 승인된 예외와 월별 검토, 임시 예외의 종료/재검증 조건: 이 문서에는 실행 결과가 기록되어 있지 않다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 검증 실패·비밀 노출 의심·파괴적 변경 필요·예상과 다른 결과가 나타나면 중단하고 책임자에게 보고한다. 근거, 시도한 단계와 현재 복구 상태를 함께 남긴다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 - 이 런북에 정의된 복구·rollback 단계만 사용한다.
 - 관측 실패가 절차와 맞지 않으면 변경을 멈추고 근거를 보존한 뒤 `Escalation`을 따른다.
@@ -165,3 +194,23 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 - [ ] 파일 되돌림이나 runtime 재시작이 필요하면 승인자와 영향 범위를 기록한 뒤 수행
 - [ ] 복구 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

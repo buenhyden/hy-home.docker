@@ -1,10 +1,13 @@
 ---
 title: "Observability CA Execution Plan"
-version: "0.1.6"
+version: "1.0.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0245-PLAN-0001"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-10-16"
 
 # Observability CA Execution Plan
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Goal and Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the plan payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Goal and Boundary
 
 Run the two services in fixed order: Prometheus, then Gatus. Each service must
 pass its own backup and isolated restore gate before its CA recreation. No
@@ -34,23 +57,23 @@ Parent Spec:
 
 - [Spec](spec.md)
 
-### Assumptions
+##### Assumptions
 
 The plan works under the approved SPEC-0245; it assumes no authority beyond it. No execution command is inferred from this Plan.
 
-## Dependencies
+#### Dependencies
 
-### Prerequisites
+##### Prerequisites
 
 The plan needs only the approved Spec, the two named services (Prometheus, then Gatus), and the reviewed backup, isolated-restore and CA selections named in its Goal and Boundary and its Task; it uses no OpenBao secret.
 
-### Dependency Order
+##### Dependency Order
 
 W1 has no dependency. W2 and W3 start after W1. W4 starts after W2 and W3, and W5 after W3 and W4. W6 starts after W1 to W5 and W7 after W1 to W6.
 
-## Implementation Strategy
+#### Implementation Strategy
 
-### Work Breakdown
+##### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -62,15 +85,15 @@ W1 has no dependency. W2 and W3 start after W1. W4 starts after W2 and W3, and W
 | W6 | 6 | Record a stopped service path or reviewed rollback when a gate fails | W1, W2, W3, W4, W5 | TSK-0001 | Sanitized Task evidence |
 | W7 | 7 | Independent operational, security, and recovery reviews; selected source and document checks | W1, W2, W3, W4, W5, W6 | TSK-0001 | QA, IaC, and security evidence |
 
-### Change and Rollback
+##### Change and Rollback
 
 - **Rollback.** Restoring source or an image does not replace data. A
   production-data replacement needs a new explicit approval after a successful
   isolated rehearsal and review.
 
-## Verification Plan
+#### Verification Plan
 
-### Verification Matrix
+##### Verification Matrix
 
 - Before each service action, compare the preflight identity with current
   Compose, image, mount, and persistent-data boundary; stop on a mismatch.
@@ -86,13 +109,13 @@ W1 has no dependency. W2 and W3 start after W1. W4 starts after W2 and W3, and W
   artifacts in the QA-selected protected custody path; an ignored, mode-0700
   repository-local path is permissible when its custody review approves it.
 
-### Stage Placement
+##### Stage Placement
 
 The Plan places no stage-specific checks beyond the Verification Matrix; the Task records each run.
 
-## Risks
+#### Risks
 
-### Risks and Mitigations
+##### Risks and Mitigations
 
 - **Prometheus data loss or incompatible restore.** Stop before recreation until the service-specific backup and
   isolated restore pass. Never delete or manually manipulate TSDB/WAL files.
@@ -106,18 +129,38 @@ The Plan places no stage-specific checks beyond the Verification Matrix; the Tas
 - **Service failure.** Stop before the next service. Use only the recorded,
   reviewed rollback path; retain production volume and evidence for escalation.
 
-### Escalation
+##### Escalation
 
 Work stops before the next service when a gate fails and returns to the owner, per the Spec; production-data replacement needs a new explicit approval after a successful isolated rehearsal and review.
 
-## Promotion Map
+#### Promotion Map
 
-### Durable Meaning
+##### Durable Meaning
 
 The operating CA and recovery facts belong to the Prometheus and Gatus runbooks (RUN-0045, RUN-0087); TSK-0001 records the receipts.
 
-### Owner and Receipt
+##### Owner and Receipt
 
 Owner @buenhyden. The receipt is the sanitized evidence recorded in TSK-0001.
 
 - [Task](01.tasks/tsk-0001-observability-ca-execution.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

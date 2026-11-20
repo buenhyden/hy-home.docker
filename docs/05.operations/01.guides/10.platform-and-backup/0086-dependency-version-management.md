@@ -1,10 +1,13 @@
 ---
 title: "Dependency Version Management Guide"
-version: "0.5.0"
+version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0086"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # Dependency Version Management Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 인프라 운영자, 저장소 유지보수자, 의존성 업데이트를 검토하는 agent가 버전을 바꾸기 전에 선언 소유자와 updater를 찾을 때 읽는다.
 
-### Outcome
+##### Outcome
 
 이 가이드는 Compose 이미지, Dockerfile, 파생 버전 projection의 버전 선언을 어떻게 찾고 확인하는지 설명한다. 버전 변경은 선언 소유자를 먼저 찾은 뒤에 시작한다.
 
@@ -29,7 +52,8 @@ next_review_at: "2027-05-13"
 
 목표는 버전을 바꾸기 전에 원본 선언과 updater 소유자를 식별하고, 변경 후 필요한 검사를 빠뜨리지 않는 것이다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - [Home/Dev architecture](../../../02.architecture/01.descriptions/0031-home-development-host.md) (`AD-0031`)
 - [Guide](0086-dependency-version-management.md), [Policy](../../02.policies/10.platform-and-backup/0086-dependency-version-management.md), [Runbook](../../03.runbooks/10.platform-and-backup/0086-dependency-version-management.md)
@@ -38,9 +62,9 @@ next_review_at: "2027-05-13"
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Repository Renovate policy](../../../../renovate.json5)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 운영자는 버전 변경 전에 해당 선언의 소유자를 찾는다. Compose `image`와
 Dockerfile의 선택된 context·target·`FROM`/`ARG`, 설치 package·복사한 requirements/설정과 entrypoint가 빌드 원본이며 `infra/tech-stack.versions.json`은
@@ -57,23 +81,25 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 `runtime-version-exception: <category> — <reason>` 주석을 사용한다.
 문서 frontmatter version과 API/프로토콜 버전은 실행 이미지 pin이 아니다.
 
-### Authority
+##### Authority
 
 이 가이드는 별도의 권한 요구를 기록하지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 버전 변경 전 선언 소유자를 찾는 기준은 Environment에, 점검 항목은 Procedure의 Expected Results에 둔다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 변경 파일이 어떤 updater의 manager에 속하는지, 빌드 이미지와 로컬 이미지
 태그가 일치하는지, registry check 및 공식 Renovate strict validator가 통과하는지
@@ -81,17 +107,38 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 release는 무기한 대기하지 않도록 schedule과 수동 검토를 적용한다. Green
 registry check만으로 Dockerfile pin 검증을 대체하지 않는다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../03.runbooks/10.platform-and-backup/0086-dependency-version-management.md)의 절차로 진단한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 [Runbook](../../03.runbooks/10.platform-and-backup/0086-dependency-version-management.md)이 검증 순서와 rollback을 소유하며 [Policy](../../02.policies/10.platform-and-backup/0086-dependency-version-management.md)가
 업데이트 소유권과 예외를 소유한다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [Runbook](../../03.runbooks/10.platform-and-backup/0086-dependency-version-management.md)의 검증 순서와 rollback을 따른다. 업데이트 소유권과 예외는 [Policy](../../02.policies/10.platform-and-backup/0086-dependency-version-management.md)가 소유한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

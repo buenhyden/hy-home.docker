@@ -82,6 +82,14 @@ def _normalized_document_values(
     normalized = path.as_posix()
     for role in registry.template_roles.values():
         if role.get("source") == normalized:
+            if role.get("native_source"):
+                return dict(values)
+            profile_ids = role.get("profiles", ())
+            if len(profile_ids) == 1:
+                return normalize_profile_frontmatter(
+                    values, registry.profiles[profile_ids[0]]
+                )
+        if role.get("native_source") == normalized:
             profile_ids = role.get("profiles", ())
             if len(profile_ids) == 1:
                 return normalize_profile_frontmatter(
@@ -1172,6 +1180,7 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
             )
         projected_roles[role_id] = {
             "source": role.get("source"),
+            "native_source": role.get("native_source"),
             "artifact_profile": profile_id,
             "target_globs": [
                 _registry_path_glob(pattern)

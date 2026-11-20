@@ -1,10 +1,13 @@
 ---
 title: "Native OIDC for Open WebUI and the Airflow UI"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0059"
 parent_ids:
@@ -16,9 +19,29 @@ created: "2026-11-06"
 
 # ADR-0059: Native OIDC for Open WebUI and the Airflow UI
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 [ADR-0038](0038-selective-native-oidc-for-native-auth-apps.md) decided that an
 application with its own OIDC and authorization does not also get Traefik
@@ -38,7 +61,8 @@ its state in the `open-webui` volume at `/app/backend/data`, and no
 - Keycloak stays the single identity provider.
 - Services without their own authentication keep ForwardAuth.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 Evidence is the current repository configuration; no runtime state is
 claimed.
@@ -51,15 +75,15 @@ claimed.
 - [ADR-0008 Ollama and Open WebUI local AI](0008-ollama-openwebui-local-ai.md)
 - [ADR-0038 Selective native OIDC](0038-selective-native-oidc-for-native-auth-apps.md)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the router authentication of the Open WebUI, Airflow,
 Flower, n8n and Ollama endpoints, and the 07-workflow and 08-ai hardening items
 listed below. Services without their own authentication keep ForwardAuth.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep ForwardAuth on Open WebUI and Airflow as well as their OIDC: rejected;
   double sign-in and header conflicts (ADR-0038).
@@ -68,7 +92,7 @@ listed below. Services without their own authentication keep ForwardAuth.
 - Native OIDC without ForwardAuth for Open WebUI and the Airflow web UI, SSO
   ForwardAuth for the rest: selected.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -80,9 +104,9 @@ listed below. Services without their own authentication keep ForwardAuth.
   UIs; the application's login is the only authentication boundary.
 - Negative: the concurrency ceilings can limit short-term throughput.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. Open WebUI is the primary AI and RAG interface, with Ollama as its primary
    inference engine. It authenticates users through Keycloak OIDC, and its
@@ -110,13 +134,14 @@ listed below. Services without their own authentication keep ForwardAuth.
    promotion, model access separation and conversation log retention proceed
    in phases.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval
 record is linked. Effective from 2026-11-06. On 2026-11-09 the owner directed
 an in-place amendment: n8n leaves ForwardAuth and keeps only its own login.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This record replaces three accepted ADRs, deleted in the same change
 (ADR-0051); all three are historical and non-authoritative.
@@ -148,15 +173,15 @@ This record replaces three accepted ADRs, deleted in the same change
 Each rejected "everything at once" and "documentation only" alternative in
 ADR-0022 and ADR-0023 stays rejected.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: one sign-in for Open WebUI and Airflow, and no header conflict.
 - Positive: application RBAC (Airflow Keycloak Authorization Services, Open
   WebUI roles) is used as designed.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -169,8 +194,29 @@ and keeps only its own login. The Context and Decision item 3 state this.
 Confirm in AD-0013 that the Open WebUI store is the application default in its
 volume.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `scripts/hardening/check-all-hardening.sh` checks the router middleware labels
 for 07-workflow and 08-ai. OIDC client secrets are injected as Docker Secrets
 (ADR-0038 guardrails).
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

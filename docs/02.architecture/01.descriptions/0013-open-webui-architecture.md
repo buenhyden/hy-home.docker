@@ -1,10 +1,13 @@
 ---
 title: "Open WebUI Architecture Description"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0013"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-27"
 
 # Open WebUI Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Owns:** the web UI and backend, RAG orchestration, and user, chat, upload
   and vector-store data under `/app/backend/data`.
@@ -28,30 +51,32 @@ created: "2026-03-27"
   built-in store in its data volume.
 - **Non-goals:** model training or fine-tuning.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 Open WebUI is an independent LAB for evaluating chat and retrieval-augmented
 generation (RAG) with a local Ollama endpoint. Its obligations are owned by
 [REQ-0013](../../01.requirements/0013-ai-open-webui.md).
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The LAB publishes the UI on its own bind address. It uses the operator's approved Ollama endpoint and reaches the identity provider through the Keycloak gateway name. Successful browser access and authentication require a suitable LAB origin and separate runtime evidence.
 
-### Constraints
+##### Constraints
 
 The service is stateful on local storage; horizontal scaling would first need an external database and vector store. Compose disables password login, signup, email merge and OAuth role/group management. Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 [`labs/open-webui/docker-compose.yml`](../../../labs/open-webui/docker-compose.yml)
 defines the `open-webui` service on `lab_open_webui_net` alone. It declares no
 gateway route or HOME network attachment. Its native OIDC entrypoint reads the
 LAB-only Compose secret. The retained HOME OpenBao Agent output has no LAB bind.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -67,17 +92,19 @@ LAB-only Compose secret. The retained HOME OpenBao Agent output has no LAB bind.
   LAB login requires a registered redirect for an approved HTTPS origin.
 - `/health` on container port `8080` reports application health.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 - User input -> Open WebUI -> Ollama (generation).
 - Document upload -> Open WebUI -> Ollama (embedding) -> built-in vector store.
 - Query -> built-in vector store (retrieval) -> context and prompt -> Ollama.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The independent `lab-open-webui` profile defines `/health` on container port
 `8080`. Its host publication defaults to `127.0.0.1:18095`. It uses the CUDA
@@ -86,18 +113,19 @@ image pinned in Compose without a GPU reservation. The LAB data bind at
 session key. Root Compose excludes the LAB. HOME promotion stays undecided,
 and retirement of earlier HOME state requires separate approval under RUN-0057.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 A missing or unreachable model endpoint blocks chat and embedding acceptance.
 Compose does not order Ollama startup across project boundaries. Chat state and
 RAG vectors share one data volume. A write-stopped capture and a verified
 isolated restore are separate steps under RUN-0057.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Security:** native Keycloak OIDC with password login, signup, email merge
   and OAuth role/group management disabled. LAB login depends on approval of
@@ -106,12 +134,13 @@ isolated restore are separate steps under RUN-0057.
 - **Recoverability:** preserve the full LAB data root and the corresponding
   credential custody. HOME Restic does not cover LAB state.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 - The service is stateful on local storage; horizontal scaling would first need
   an external database and vector store.
 
-### Trade-offs
+##### Trade-offs
 
 - The service is stateful on local storage with RAG vectors in the built-in
   store of its data volume; horizontal scaling would first need an external
@@ -125,25 +154,48 @@ isolated restore are separate steps under RUN-0057.
   a secure origin (Quality Attributes).
 - HOME Restic does not cover LAB state (Quality Attributes).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0059 native OIDC decision](../02.decisions/0059-native-oidc-open-webui-and-airflow.md)
 - [ADR-0062 current placement](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0013 Open WebUI requirement](../../01.requirements/0013-ai-open-webui.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - [AD-0008 AI infrastructure](0008-ai-architecture.md)
 - [RUN-0057 LAB operation and separately approved HOME retirement](../../05.operations/03.runbooks/15.labs/0057-open-webui.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 Moving RAG vectors to Qdrant would need a Compose change and a new decision;
 none is current.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

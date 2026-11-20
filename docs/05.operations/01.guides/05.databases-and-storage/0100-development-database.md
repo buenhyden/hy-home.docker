@@ -1,10 +1,13 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.4.0"
+version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -24,13 +27,33 @@ next_review_at: "2027-05-13"
 
 # Development Database Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 미래 외부 프로젝트의 개발 DB를 준비하는 운영자와 프로젝트 소유자. `dev-db`의 구성 경계, 최소 권한 원칙, 정적 검사 방법, HOME 실행 전 승인 범위를 이해할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 `dev-db`는 미래 외부 프로젝트의 업무 데이터를 위한 선택형 개발 엔진이다.
 관리 서비스 metadata·세션·관리 queue는 `mng-db`에 계속 남는다. `app_db`는 신규
@@ -41,7 +64,8 @@ next_review_at: "2027-05-13"
 `dev-db`의 구성 경계, 최소 권한 원칙, 정적 검사 방법과 HOME 실행 전에 필요한 승인
 범위를 이해하는 것이다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Artifact: `GDE-0100`; governing policy: `POL-0100`.
 - Source contract: `SPEC-0204`(SPEC-0202는 삭제된 역사적 근거); architecture context: `AD-0031`.
@@ -52,9 +76,9 @@ next_review_at: "2027-05-13"
 - [Management database guide](0028-management-database.md)
 - [Development database package](../../../../infra/04-data/dev-db/README.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 [`infra/04-data/dev-db/docker-compose.yml`](../../../../infra/04-data/dev-db/docker-compose.yml)은
 TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를 만드는
@@ -82,19 +106,21 @@ schema를 준비한다. 해당 job의 실행과 프로젝트별 결과 writer/re
 앱 provision이나 HOME cutover가 아니다. runtime과 reader는 schema/database owner가
 아니며 migration 계정도 아니다.
 
-### Authority
+##### Authority
 
 필요한 secret은 `dev_pg_platform_migrator_password`, `dev_pg_platform_runtime_password`, `dev_pg_platform_reader_password`와 `dev_pg_opsflow_{migrator,ingest,notifier,reader}_password`다. Opsflow 적용, credential 발급·회전, `quality-results` provision은 각각 별도 owner 승인 범위다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용 절차는 아래 항목에 정리한다.
 
-#### 시간 데이터 계약
+###### 시간 데이터 계약
+<!-- core-payload-level:4 -->
 
 현재 `platform_dev`에는 승인된 hypertable이 없고 provision은 Timescale 확장만 준비한다. 외부 앱 migration이 시간 이력 테이블을 소유할 때 다음 항목을 프로젝트 계약에 명시한다. 사용자·권한·구독·outbox는 필요가 입증되지 않으면 일반 관계형 테이블로 유지한다.
 
@@ -109,11 +135,12 @@ SPEC-0202-TSK-0002의 합성 격리 환경(당시 `archive_mode=off`)에서는 �
 WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시작, 실제 데이터 이관,
 기존 자격 증명 회전은 실행하지 않았으며 별도 승인 범위다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-### Expected Results
+##### Expected Results
 
 저장소 root에서 정적 Compose와 permission contract만 확인한다. 명령은
 [RUN-0100 절차](../../03.runbooks/05.databases-and-storage/0100-development-database.md#steps)가 소유한다. 이 검사는
@@ -128,19 +155,40 @@ RUN-0021의 순서대로 repository 최상위 디렉터리를 `70:70 0750`으로
 만든다. stanza 없이 시작하면 `archive_timeout`(300초)마다 archive가 실패하고, 보관되지 않은 WAL은 재활용되지 않으므로
 `pg_wal`이 data disk를 채울 때까지 자란다(`max_wal_size=2GB`는 이 증가를 막지 않는다).
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - `dev-pg` 디스크 증가·archive 실패 로그: `dev` stanza와 `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest` 권한을 확인하고 [RUN-0100](../../03.runbooks/05.databases-and-storage/0100-development-database.md)과 RUN-0021로 넘긴다.
 - exporter `pg_up`/`redis_up`이 0: `dev-pg-monitor-provision` 종료 코드와 monitor secret을 확인한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../../03.runbooks/05.databases-and-storage/0100-development-database.md)이
 소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002가 기록했다(삭제됨, 버전 이력). HOME 기동·실제 프로젝트
 provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
 
-### Next Action
+##### Next Action
 
 디스크 증가·archive 실패는 [RUN-0100](../../03.runbooks/05.databases-and-storage/0100-development-database.md)과 RUN-0021로 넘긴다. HOME 기동, 프로젝트 provision, 백업/복원, 이관, 전환은 별도 승인이 필요하다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

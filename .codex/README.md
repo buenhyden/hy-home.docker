@@ -1,10 +1,13 @@
 ---
 title: "Codex Runtime Route"
-version: "1.1.0"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: ".codex provider routing and generated adapters"
+  layer: "provider"
+updated: "2026-11-20"
 generated_by: "scripts/operations/provider_surface_renderer.py"
 ---
 
@@ -12,31 +15,51 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 # Codex Runtime Route
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 `.codex/` 디렉터리를 여는 독자가 대상입니다.
 
-### Outcome
+##### Outcome
 
 이 생성 어댑터는 `.codex/provider.md`로 안내합니다.
 
 이 디렉터리는 생성된 provider 어댑터를 담으며, 정책 정본은 담지 않습니다.
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 이 어댑터를 사용하기 전에 연결된 원본을 읽습니다.
 
-### First Use
+##### First Use
 
 `python3 scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
 정본 거버넌스는 연결된 원본에 남습니다.
 
@@ -46,16 +69,36 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 정본 진입점은 [`.codex/provider.md`](../.codex/provider.md)입니다.
 
-### Owners
+##### Owners
 
 이 문서는 `scripts/operations/provider_surface_renderer.py`가 생성하며 소유자는 `@buenhyden`입니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 이 문서는 별도의 문의 경로를 기록하지 않습니다. 내용은 연결된 원본이 소유합니다.
 
-### Related Documentation
+##### Related Documentation
 
 - [`.codex/provider.md`](../.codex/provider.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

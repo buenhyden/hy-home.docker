@@ -1,10 +1,13 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.10.0"
+version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -15,19 +18,40 @@ next_review_at: "2027-05-13"
 
 # Application Authentication Integration Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 Keycloak을 중앙 IdP로 사용하면서 OAuth2 Proxy ForwardAuth와
 application-native OIDC를 선택·운영하는 기준을 정의한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Parent: [ADR-0038](../../../02.architecture/02.decisions/0038-selective-native-oidc-for-native-auth-apps.md)
 - Architecture: [AD-0002](../../../02.architecture/01.descriptions/0002-auth-architecture.md)
 
-### Applies To
+##### Applies To
 
 - Keycloak
 - OAuth2 Proxy
@@ -38,13 +62,14 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 신규 OIDC-capable internal applications
 - Open WebUI/Gatus native 연동과 Task 0004에서 보류한 Terrakube 후보
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-keycloak.md)와 [POL-0015](0015-oauth2-proxy.md)가 다룬다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -81,7 +106,8 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 | POL-0079-R31 | Airflow | 금지: Keycloak access token을 Airflow internal JWT로 취급한다 | none | none |
 | POL-0079-R32 | 공통 Secret 보존/runtime 변경 승인 | 필수: [POL-0006](../01.common/0006-infrastructure-optimization-governance.md)과 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)을 적용한다 | none | none |
 
-#### Required
+###### Required
+<!-- core-payload-level:4 -->
 
 - 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다.
 - 서비스 onboarding 시 `Gateway ForwardAuth` 또는 `Application-native OIDC` 중
@@ -113,7 +139,8 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
   검증된 단일 기존 관리자 연결에 한정했으며 수용 검증 후 비활성화 상태를 유지한다.
 - 미기동 Terrakube는 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않는다.
 
-#### Disallowed
+###### Disallowed
+<!-- core-payload-level:4 -->
 
 - Native OIDC 서비스에 OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용
 - `rootCA-key.pem` 배포/공유
@@ -121,14 +148,16 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 - 과거 OAuth callback URL 또는 authorization code 재사용
 - Keycloak access token을 Airflow internal JWT로 취급
 
-#### Shared controls
+###### Shared controls
+<!-- core-payload-level:4 -->
 
 공통 Secret 보존·runtime 변경 승인은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md)과
 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)을 적용한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 긴급한 auth 우회는 적용 범위, 시작/종료 조건, rollback, evidence를 incident/task에
 기록한 경우에만 허용한다. Native OIDC 앱에 임시 ForwardAuth를 적용하려면
@@ -150,7 +179,8 @@ RBAC, 다른 경로, 다른 host 또는 다른 method로 넓어지지 않는다.
 [Guide의 source 한계](../../01.guides/03.identity-and-access/0079-application-auth-integration.md)에
 기록한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - Keycloak update
 - OAuth2 Proxy update
@@ -159,9 +189,9 @@ RBAC, 다른 경로, 다른 host 또는 다른 method로 넓어지지 않는다.
 - 신규 Native OIDC 서비스 승인
 - 분기별 인증 연동 검토
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 정적 검증: [GDE-0079](../../01.guides/03.identity-and-access/0079-application-auth-integration.md#서비스별-정적-검증)의
 profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
@@ -175,7 +205,7 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../../03.runbooks/04.security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
 - Airflow provider/Authorization Services bootstrap 상태
 
-### Limits
+##### Limits
 
 이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
@@ -189,13 +219,13 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - Keycloak client redirect URI/public URL 정합, Airflow provider/Authorization Services bootstrap 상태는 추가 검증 목록에 있으나 어느 규칙에 대응하는지 본문이 연결하지 않는다.
 - POL-0079-R4, POL-0079-R5, POL-0079-R6, POL-0079-R7, POL-0079-R16: 수동 검증에 맡겨진다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 운영 책임자는 @buenhyden이다.
 
-### Review Triggers
+##### Review Triggers
 
 - Child: [GDE-0079](../../01.guides/03.identity-and-access/0079-application-auth-integration.md)
 
@@ -205,3 +235,23 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - [OAuth2 Proxy Guide](../../01.guides/03.identity-and-access/0015-oauth2-proxy.md)
 - [Kafka/Kafbat Guide](../../01.guides/06.messaging-and-cdc/0036-kafka.md)
 - [Airflow Guide](../../01.guides/08.workflows-and-automation/0050-airflow.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

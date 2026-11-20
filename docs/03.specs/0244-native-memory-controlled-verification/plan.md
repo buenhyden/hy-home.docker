@@ -1,10 +1,13 @@
 ---
 title: "Native Memory Controlled Verification Plan"
-version: "0.1.4"
+version: "1.0.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0244-PLAN-0001"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-10-16"
 
 # Native Memory Controlled Verification Plan
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Goal and Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the plan payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Goal and Boundary
 
 Prepare and run a narrowly controlled native-session observation. The normal
 session is evidence only for views it exposes without a mutating action; it is
@@ -37,23 +60,23 @@ Parent Spec:
 
 - [Spec](spec.md)
 
-### Assumptions
+##### Assumptions
 
 The plan works under the approved SPEC-0244; it assumes no authority beyond it. The normal session is evidence only for views it exposes without a mutating action.
 
-## Dependencies
+#### Dependencies
 
-### Prerequisites
+##### Prerequisites
 
 The plan needs only the approved Spec, an authorized normal Claude control query and the public Codex CLI feature observation named in its Goal and Boundary; it changes no persistent or provider-global state.
 
-### Dependency Order
+##### Dependency Order
 
 W1 has no dependency. W2 and W3 start after W1. W4 starts after W1 and W3, and W5 after W4. W6 starts after W2 to W5.
 
-## Implementation Strategy
+#### Implementation Strategy
 
-### Work Breakdown
+##### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -64,15 +87,15 @@ W1 has no dependency. W2 and W3 start after W1. W4 starts after W1 and W3, and W
 | W5 | 5 | For each W4 attempt, record the Task-reviewed two- or three-turn/USD 1 bound, strict MCP/tool denial, fixture hash, raw-output disposal, cleanup, and any session-only forced-memory or sandbox fallback proof class | W4 | TSK-0001 | Sanitized Task evidence |
 | W6 | 6 | Privacy/security review and selected changed-document checks | W2, W3, W4, W5 | TSK-0001 | Review and gate evidence |
 
-### Change and Rollback
+##### Change and Rollback
 
 - **Rollback.** This package changes no persistent or provider-global state.
   A documentation correction is a normal reviewed Git change; it does not
   alter any session.
 
-## Verification Plan
+#### Verification Plan
 
-### Verification Matrix
+##### Verification Matrix
 
 - Review the action allowlist before the normal control query and every
   conditional fixture attempt. Each fixture attempt is limited to its
@@ -85,13 +108,13 @@ W1 has no dependency. W2 and W3 start after W1. W4 starts after W1 and W3, and W
 - Run the selected changed-document metadata, link, and Task-evidence checks.
 - Obtain an independent privacy/security review before criterion acceptance.
 
-### Stage Placement
+##### Stage Placement
 
 The Plan places no stage-specific checks beyond the Verification Matrix; the Task records each run.
 
-## Risks
+#### Risks
 
-### Risks and Mitigations
+##### Risks and Mitigations
 
 - **Ambiguous provider view.** A menu may not expose effective memory state.
   Record it as unverified, leave criterion 3 pending, and do not explore hidden
@@ -107,18 +130,38 @@ The Plan places no stage-specific checks beyond the Verification Matrix; the Tas
   separately reviewed Task plan, is classified separately from normal merged
   state, and does not alter persistent settings.
 
-### Escalation
+##### Escalation
 
 Per Spec item 6 and its failure and edge cases, the execution owner stops and escalates before restricted content enters evidence, and a request to widen the fixture or tool boundary stops this package. An ambiguous view leaves the state unverified and the criterion pending.
 
-## Promotion Map
+#### Promotion Map
 
-### Durable Meaning
+##### Durable Meaning
 
 This package changes no persistent state and promotes no lasting meaning; TSK-0001 records the sanitized observations.
 
-### Owner and Receipt
+##### Owner and Receipt
 
 Owner @buenhyden. The receipt is the sanitized evidence recorded in TSK-0001.
 
 - [Task](01.tasks/tsk-0001-native-memory-controlled-verification.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

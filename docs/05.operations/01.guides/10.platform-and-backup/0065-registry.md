@@ -1,10 +1,13 @@
 ---
 title: "Docker Registry Usage Guide"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0065"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # Docker Registry Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 HOME OCI 이미지 저장소에 이미지를 push·pull하고 저장소를 유지하는 운영자.
 
-### Outcome
+##### Outcome
 
 Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하는 HOME OCI 이미지 저장소다.
 `registry` 또는 `tooling` profile에서 선택된다.
@@ -33,7 +56,8 @@ Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하
 이해하고, 일반 사용과 백업·업그레이드 경계를 확인하는 것이다. 실행 절차는
 [Registry Runbook](../../03.runbooks/10.platform-and-backup/0065-registry.md)이 맡는다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/10.platform-and-backup/0065-registry.md) (`POL-0065`)
 - [Runbook](../../03.runbooks/10.platform-and-backup/0065-registry.md) (`RUN-0065`)
@@ -45,11 +69,12 @@ Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하
 - [Registry project and Apache license](https://distribution.github.io/distribution/)
 - [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 분류와 저장소 범위
+###### 분류와 저장소 범위
+<!-- core-payload-level:4 -->
 
 Registry는 `registry`(HOME)와 `tooling`이 선택하는 `HOME` OCI 이미지 저장소이다.
 push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. 로컬에서 빌드한
@@ -59,7 +84,8 @@ push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. �
 복사하지 않는다. 보관한 이미지는 업스트림 pull이나 추적되는 Dockerfile로 다시 만들며, 고유
 아티팩트를 push하기 전에는 정책의 전체 파일시스템 스냅샷을 따로 남긴다.
 
-#### 현재 구현과 보안 격차
+###### 현재 구현과 보안 격차
+<!-- core-payload-level:4 -->
 
 - [Registry Compose](../../../../infra/09-platform-ops/registry/docker-compose.yml)가
   이미지, profile, 호스트 게시, healthcheck, 스토리지 마운트를 정의한다.
@@ -76,13 +102,13 @@ push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. �
 - bind 기반의 `/var/lib/registry`가 권위 있는 파일시스템 스토리지다. 삭제 기능은
   활성화되어 있지 않으며 garbage collection은 정상적인 정리 절차가 아니다.
 
-### Authority
+##### Authority
 
 push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인해야 하며, garbage collection은 별도 승인이 필요하다. 상세는 Steps의 일반적인 사용과 Runbook Handoff에 있다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -91,7 +117,8 @@ push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 
 | 3 | 불변 release/digest 정책에 따라 태그를 지정해 push하고 digest로 pull하여 매니페스트 digest를 검증한다. | 매니페스트 digest가 검증되고 repository, tag, digest, 출처 권한이 기록된다. | 문서에 기록 없음 |
 | 4 | 파일시스템과 digest 인벤토리를 하나의 백업 단위로 다룬다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
-#### 일반적인 사용
+###### 일반적인 사용
+<!-- core-payload-level:4 -->
 
 1. 루트에서 `docker compose --profile registry config --quiet`로 검증한다.
 2. push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인한다. TLS와
@@ -101,42 +128,67 @@ push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 
    매니페스트 digest를 검증한다. repository, tag, digest, 출처 권한을 기록한다.
 4. 파일시스템과 digest 인벤토리를 하나의 백업 단위로 다룬다.
 
-#### 로컬에서 빌드한 이미지 보관
+###### 로컬에서 빌드한 이미지 보관
+<!-- core-payload-level:4 -->
 
 실행 순서와 실패·복구 판단은 [런북](../../03.runbooks/10.platform-and-backup/0065-registry.md)의 `로컬 이미지 이관과 제거` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-#### 백업과 업그레이드
+###### 백업과 업그레이드
+<!-- core-payload-level:4 -->
 
 실행 순서와 실패·복구 판단은 [런북](../../03.runbooks/10.platform-and-backup/0065-registry.md)의 `Consistent backup and restore`와 `Garbage collection and upgrade` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-#### 신호와 자원
+###### 신호와 자원
+<!-- core-payload-level:4 -->
 
 내부 debug listener의 `/metrics`는 Registry API와 별도 관측 경로이며 호스트에
 직접 게시되지 않는다. 접근 경계는 [Compose](../../../../infra/09-platform-ops/registry/docker-compose.yml)의
 네트워크와 listener 선언을 기준으로 확인한다. 파일시스템 사용량·쓰기 오류·digest
 불일치를 함께 확인하며 `/v2/` 성공만으로 용량이나 복구 가능성을 판정하지 않는다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 레지스트리 삭제·garbage collection은 정상 정리 절차가 아니며, health 성공은 용량·내구성·클라이언트 신뢰를 증명하지 않는다(Environment).
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --profile registry config --quiet`
 - `docker compose --profile registry config --services`
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../03.runbooks/10.platform-and-backup/0065-registry.md)의 절차로 진단한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승인된 garbage collection에는
 [runbook](../../03.runbooks/10.platform-and-backup/0065-registry.md)을 사용한다.
 
-### Next Action
+##### Next Action
 
 push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승인된 garbage collection은 [runbook](../../03.runbooks/10.platform-and-backup/0065-registry.md)을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

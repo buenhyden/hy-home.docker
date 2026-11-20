@@ -1,10 +1,13 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.5.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # 02-Auth OAuth2 Proxy Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 Infra/DevOps 엔지니어, 운영자, 기여자가 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하고 신규 서비스의 gateway SSO를 연동할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. `oauth2-proxy`의 lifecycle class는 **HOME**이다. 세션 저장소는 공유 `mng-valkey`이며 앱별 전용 Valkey와 exporter는 ADR-0062 결정 10으로 제거되었다. Keycloak OIDC provider, redis/Valkey session storage, cookie와 token의 차이, callback/logout 경계를 함께 다룬다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. OAuth2 Proxy 전체 login/logout acceptance는 별도 런북 증거가 필요하다.
 
@@ -44,7 +67,8 @@ Infra/DevOps 엔지니어, 운영자, 기여자가 OAuth2 Proxy를 Traefik `Forw
   `Dockerfile`/`docker-entrypoint.sh` 대안 모두 `mng_valkey_password`를 사용한다.
   이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Declared parent: [02-Auth OAuth2 Proxy Operations Policy](../../02.policies/03.identity-and-access/0015-oauth2-proxy.md) (`POL-0015`)
 - Governing authority: [02-Auth Architecture Description](../../../02.architecture/01.descriptions/0002-auth-architecture.md) (`AD-0002`)
@@ -62,13 +86,14 @@ Infra/DevOps 엔지니어, 운영자, 기여자가 OAuth2 Proxy를 Traefik `Forw
 - [Recovery runbook](../../03.runbooks/03.identity-and-access/0015-oauth2-proxy.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 구현 소스는 [infra/02-auth/oauth2-proxy/docker-compose.yml](../../../../infra/02-auth/oauth2-proxy/docker-compose.yml)이다. 세션 저장소의 metric은 `mng-valkey-exporter`가 제공한다.
 
-#### Build selection and effective startup
+###### Build selection and effective startup
+<!-- core-payload-level:4 -->
 
 Compose build context는 이 패키지의 `.`이며 기본 선택은
 [dev.Dockerfile](../../../../infra/02-auth/oauth2-proxy/dev.Dockerfile)이다.
@@ -84,7 +109,8 @@ UID 100/GID 101과 [대안 entrypoint](../../../../infra/02-auth/oauth2-proxy/do
 사용해 같은 `mng_valkey_password`를 읽는다. private override의 실제 선택은 미확인이다.
 이미지 생성 결과와 설치 버전은 build를 실행하기 전까지 미검증이다.
 
-#### Services, inputs and persistence
+###### Services, inputs and persistence
+<!-- core-payload-level:4 -->
 
 | 서비스 | 선택·연결·상태·정상 신호 |
 | --- | --- |
@@ -106,7 +132,8 @@ Proxy의 cfg와 CA는 읽기 전용, 세션은 외부 Valkey가 소유한다. Pr
 [provider 문서](https://raw.githubusercontent.com/oauth2-proxy/oauth2-proxy/v7.15.5/docs/docs/configuration/providers/keycloak_oidc.md)를 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
 대조했다. Valkey의 AOF 선언은 backup·HA 보장이 아니다.
 
-#### Tracked Configuration Snapshot
+###### Tracked Configuration Snapshot
+<!-- core-payload-level:4 -->
 
 | 항목 | 추적된 값 | 출처 |
 | --- | --- | --- |
@@ -126,33 +153,37 @@ Proxy의 cfg와 CA는 읽기 전용, 세션은 외부 Valkey가 소유한다. Pr
 | Client secret 파일 | `OAUTH2_PROXY_CLIENT_SECRET_FILE`, 기본 `/run/secrets/oauth2_proxy_client_secret`; OpenBao 소비 시 `/run/openbao/oauth2-proxy` 아래 Agent 출력(미지정 시 원복). `${DEFAULT_SECURITY_DIR}/openbao/out/oauth2-proxy`가 없으면 기동하지 않음 | compose 환경 설정/volume |
 | Metrics | `OAUTH2_PROXY_METRICS_ADDRESS=10.250.43.2:44180`(`oauth2_proxy_metrics_net`의 고정 주소), route 없음 | compose 환경 설정 |
 
-### Authority
+##### Authority
 
 SSO route는 Keycloak `/admins` group 구성원만 통과한다. client ID는 `OAUTH2_PROXY_CLIENT_ID`, client secret은 `OAUTH2_PROXY_CLIENT_SECRET_FILE`(기본 `/run/secrets/oauth2_proxy_client_secret`), 저장소 password는 `OAUTH2_PROXY_REDIS_PASSWORD`로 전달하며 값은 문서에 남기지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 cookie·session 구분은 아래에 정리한다.
 
-#### Cookie, Token, and Session Distinctions
+###### Cookie, Token, and Session Distinctions
+<!-- core-payload-level:4 -->
 
 OAuth2 Proxy는 browser cookie로 사용자를 추적한다. `session_store_type=redis`일 때 browser cookie는 짧은 ticket이며, 암호화된 session data는 Redis/Valkey에 저장된다. access, ID, refresh token은 backend session data에 있을 수 있으며 browser cookie와는 다르다. `oauth2_proxy_cookie_secret`을 회전하면 기존 proxy cookie가 무효화된다. Keycloak client secret 회전은 token 교환에, Valkey credential 회전은 session 조회에 영향을 준다. 각각 별개의 incident로 다룬다.
 
 The tracked config requests `openid email profile offline_access groups`, uses PKCE `S256`, passes authorization/access-token headers, and enables `set_xauthrequest`. Proxy 자체의 헤더 생성과 실제 전달은 다르다. 현재 Traefik `sso-auth`는 사용자·이메일·preferred username만 전달하며 Authorization/access token은 전달하지 않는다. gateway SSO는 앱 RBAC를 대신하지 않는다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 특수 사례와 한계는 아래 항목에 정리한다.
 
-#### Logout Boundary
+###### Logout Boundary
+<!-- core-payload-level:4 -->
 
 공식 OAuth2 Proxy endpoint 문서에 따르면 `/oauth2/sign_out`은 OAuth2 Proxy cookie만 삭제한다. 사용자는 여전히 Keycloak에 로그인된 상태일 수 있으며 즉시 다시 로그인될 수도 있다. Keycloak SSO logout에는 허용된 `rd` 목적지와 일치하는 whitelist 설정을 사용하여 provider end-session endpoint로 redirect하는 과정이 필요하다. 현재 추적되는 설정은 `OAUTH2_PROXY_WHITELIST_DOMAINS=.${DEFAULT_URL}`을 지정하지만, 모든 서비스의 logout 버튼이 Keycloak end-session redirect를 호출한다는 증거는 아니다. 현재 logout이 Keycloak SSO까지 종료한다고 일괄적으로 주장하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 1. Compose 런타임 계약 확인
    - `template-infra-readonly-med` 사용
@@ -170,13 +201,14 @@ The tracked config requests `openid email profile offline_access groups`, uses P
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
    - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 증상과 진단은 아래 항목에 정리한다.
 
-#### Pitfalls
+###### Pitfalls
+<!-- core-payload-level:4 -->
 
 - `DEFAULT_URL`, Keycloak realm issuer, OAuth2 Proxy callback 도메인 불일치
 - `ssl_insecure_skip_verify=false` 상태에서 root CA mount가 깨져 discovery/JWKS fetch가 실패하는 경우
@@ -188,7 +220,8 @@ The tracked config requests `openid email profile offline_access groups`, uses P
 
 Valkey credential은 프로세스 인자로 전달하지 않는다(Secret 파일을 entrypoint가 환경 변수로 읽는다). 노출 경계와 증거 취급 기준은 [Policy](../../02.policies/03.identity-and-access/0015-oauth2-proxy.md#credential-exposure-boundary)가 소유한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../03.runbooks/03.identity-and-access/0015-oauth2-proxy.md)을 따른다.
 
@@ -197,6 +230,26 @@ Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 �
 복구 한계는 [Runbook](../../03.runbooks/03.identity-and-access/0015-oauth2-proxy.md#rollback-or-recovery)에 남긴다.
 이미지 변경·PKCE·logout·session 만료 검증과 helper 기동/중지는 같은 Runbook이 소유한다.
 
-### Next Action
+##### Next Action
 
 반복 실행 절차, 장애 대응, rollback, escalation은 [recovery runbook](../../03.runbooks/03.identity-and-access/0015-oauth2-proxy.md)을 따른다. 이미지 변경, PKCE, logout, session 만료 검증과 helper 기동/중지도 같은 Runbook이 소유한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

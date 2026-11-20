@@ -1,20 +1,44 @@
 ---
 title: "명세 패키지"
-version: "1.4.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 ---
 
 # 명세 패키지
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `docs/03.specs`는 범위가 정해진 변경의 명세와 실행 package를 관리합니다.
 package마다 Spec이 관찰 가능한 동작과 acceptance를, Plan이 구현 순서와
@@ -24,25 +48,27 @@ package마다 Spec이 관찰 가능한 동작과 acceptance를, Plan이 구현 �
 이 README는 현재 package로 가는 길만 안내합니다. package 안의 Spec, Plan,
 Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 현재 Spec Package와 Task를 찾는 작성자·검토자·운영자를 대상으로 합니다.
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 - 포함: 진행 중인 변경, 검증이 끝나 삭제 승인을 기다리는 package의
   Spec·Plan·Task와 Spec이 직접 소유하는 실행 가능한 contract.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - 제외: 운영 절차, 감사·조사 데이터, 이미 삭제된 package의 본문, 이전 경로의
   복제본과 redirect. 운영·참조 자료는 각 Stage의 현재 owner가 소유합니다.
   삭제된 package의 번호는 Registry `reserved_history`에 남고, 본문은 Git
   history가 기록합니다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
@@ -55,14 +81,16 @@ Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않
 | [0262-analytics-labs-migration/](./0262-analytics-labs-migration/) | Lakehouse, dbt, Superset, JupyterLab, SonarQube, Stalwart를 root Compose에서 독립 LAB entrypoint로 옮기고, 참조와 Stage 05 문서를 `15-labs`로 정리함 |
 | [0263-lab-promotion-contract/](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이름은
 `<4자리 번호>-<slug>`이며 package 안의 파일 경로와 역할은
 [Stage 99 Registry](../99.templates/registry.json)가 소유합니다.
 `design.md`, `tests.md`, 단수형 `task.md`는 package 역할이 아닙니다.
 
-#### 현재 package
+###### 현재 package
+<!-- core-payload-level:4 -->
 
 | ID | Package | 목적 |
 | --- | --- | --- |
@@ -80,7 +108,8 @@ package가 removal review 준비 상태인지는 [SDLC](../00.workspace/03.proce
 규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle
 상태도, 처분 승인도 아닙니다.
 
-#### 역할 계약
+###### 역할 계약
+<!-- core-payload-level:4 -->
 
 | 역할 | 책임 |
 | --- | --- |
@@ -89,21 +118,23 @@ package가 removal review 준비 상태인지는 [SDLC](../00.workspace/03.proce
 | Task | 실제 작업 기록, 명령 결과, 검토, commit, 이연 증거 |
 | Contract | Spec이 소유하는 등록된 실행 가능 인터페이스 |
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [Requirements](../01.requirements/README.md)
 - [Architecture](../02.architecture/README.md)
 - [Operations](../05.operations/README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
@@ -111,9 +142,10 @@ package가 removal review 준비 상태인지는 [SDLC](../00.workspace/03.proce
 - [문서 작성 계약](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Authoring Flow
+###### Authoring Flow
+<!-- core-payload-level:4 -->
 
 1. 관련 Requirement, Architecture Description, ADR을 먼저 읽습니다.
 2. 등록된 Spec template으로 `spec.md`를 만들거나 고칩니다.
@@ -128,7 +160,8 @@ package가 removal review 준비 상태인지는 [SDLC](../00.workspace/03.proce
    `reserved_history`에 추가합니다. clarify, analyze, 구현, 검증 순서는
    [SDLC](../00.workspace/03.process/sdlc.md)를 따릅니다.
 
-#### Package 수명주기
+###### Package 수명주기
+<!-- core-payload-level:4 -->
 
 - 현재 Requirement와 Architecture가 변경 범위를 이미 다루면 그대로
   재사용합니다.
@@ -157,3 +190,23 @@ package가 removal review 준비 상태인지는 [SDLC](../00.workspace/03.proce
   철회와 완료의 처분 기록은
   [문서 보존 정책](../00.workspace/03.process/documentation-protocol.md#document-retention-and-retirement)을
   따릅니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

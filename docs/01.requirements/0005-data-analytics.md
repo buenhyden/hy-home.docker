@@ -1,10 +1,13 @@
 ---
 title: "Analytics Services Requirements"
-version: "1.6.1"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0005"
 created: "2026-03-26"
@@ -12,9 +15,29 @@ created: "2026-03-26"
 
 # Analytics Services Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 The platform needs time-series history, full-text log search, SQL stream
 processing into shared tables, and interactive SQL over those tables. Time-series
@@ -25,7 +48,7 @@ lakehouse LAB (SPEC-0262); the root platform includes no stream-processing or SQ
 ksqlDB and StarRocks were removed in SPEC-0180 after the Flink and Trino live
 acceptance on 2026-09-24.
 
-### Stakeholders
+##### Stakeholders
 
 - **Data scientist**: derives trends with SQL queries against shared tables.
 - **SRE**: searches logs within seconds and watches system metrics.
@@ -36,15 +59,15 @@ acceptance on 2026-09-24.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - The time-series, log search, stream processing and SQL
   analysis needs above, the boundary that keeps the analytics engines separate
   from core transactional data, and the InfluxDB retirement.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - **Owned elsewhere**: POL-0094 owns the Iceberg catalog, table bucket and
   object storage operations. SPEC-0262 owns the LAB entrypoints.
@@ -66,7 +89,7 @@ tier. A LAB reaches a HOME service only through an approved endpoint input.
 - The LAB engines depend on the Iceberg catalog in object storage and on Kafka
   for stream input; neither is reachable unless its endpoint is supplied.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -75,7 +98,7 @@ tier. A LAB reaches a HOME service only through an approved endpoint input.
 | REQ-0005-FR-0005 | Write events to an Iceberg table via SQL-based stream processing, resuming from the last checkpoint after a failure. | The platform needs SQL stream processing into shared tables; a data engineer processes Kafka events with SQL into a table. | Flink writes to an Iceberg table by batch and by checkpointed streaming INSERT and resumes from its checkpoint; this passed live acceptance on 2026-09-24 (SPEC-0180), and the lakehouse LAB form has static rendering evidence only. | must |
 | REQ-0005-FR-0006 | Provide interactive SQL queries against Iceberg tables. | The platform needs interactive SQL over shared tables; a data scientist derives trends with SQL queries against them. | Trino reads the table Flink wrote and the data quality suite passes through Trino, which passed live acceptance on 2026-09-24 before the move to the lakehouse LAB; interactive latency is claimed only with separate benchmark evidence. | must |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0005-FR-0001**: Provide a dedicated write and query interface for time-series data.
 - **REQ-0005-FR-0003**: Provide full-text search over collected logs.
@@ -86,20 +109,21 @@ FR numbers 0002 (ksqlDB stream processing) and 0004 (StarRocks OLAP) were
 retired with those engines and are not reused; 0005 and 0006 restate the same
 needs without naming an engine.
 
-### Quality Requirements
+##### Quality Requirements
 
 This package declares no quality requirement and records no reason why none applies.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 This package records the owner's requirements for data analytics; no upstream
 document governs it.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0005-FR-0001**: InfluxDB is retired (ADR-0047, SPEC-0213) and nothing
   current deploys it. Time-series history uses DEV TimescaleDB tables; a
@@ -118,11 +142,13 @@ document governs it.
   the move to the lakehouse LAB. Interactive latency is claimed only with
   separate benchmark evidence.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Each condition is judged by reviewing the documented engine boundaries and the acceptance evidence the condition names; latency is claimed only from separate benchmark evidence. SPEC-0212 and SPEC-0262 cite REQ-0005, with SPEC-0262 covering the lakehouse LAB; their Task evidence rows record the review and any benchmark. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/01.descriptions/0012-data-analytics-architecture.md)
 - **Spec**: [SPEC-0262 analytics LAB migration](../03.specs/0262-analytics-labs-migration/spec.md); SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks) is retired and its body is in version history.
@@ -130,3 +156,23 @@ Each condition is judged by reviewing the documented engine boundaries and the a
 - **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/02.decisions/0062-home-lab-membership.md) (supersedes ADR-0015), [0047-dev-timescale-influx-retirement-and-load-tools.md](../02.architecture/02.decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
 - **SPEC-0265** (retired; version history) captured the Hermes report source; ADR-0060 holds the contract.
 - **Retired domain Spec SPEC-0005** (data-analytics): replaced by the data-analytics guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

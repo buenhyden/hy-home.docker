@@ -1,9 +1,12 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.99.0"
+version: "2.0.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
 updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0212"
@@ -19,9 +22,29 @@ created: "2026-10-07"
 
 # Request Baseline and Reconciliation
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Intent
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the spec payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Intent
 
 The earlier 11–30 request replaced P00's routing while preserving issued
 IDs, created dates and completed Task bodies. The current coordination audit is
@@ -261,7 +284,7 @@ TSK-0078 for request-bound understanding and scope checks.
 The direct W07-ADAPTER 3.0.0 request adds criterion 135 and W140 in
 TSK-0079 for native hook compatibility and evidence boundaries.
 
-### Owning Requirements
+##### Owning Requirements
 
 The direct P00-RECONCILE 1.1.0 request on 2026-11-20 reuses criterion 154
 and W170 in TSK-0098. It reconciles this Docker workspace against the matching
@@ -277,9 +300,9 @@ Docker publication implementation scope.
 
 This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005, REQ-0024 and REQ-0027 together with AD-0004 and AD-0031. The body also cites REQ-0003 (the ISO/IEC measurement wording in the acceptance text, and criterion 114), REQ-0025 and REQ-0026 (criterion 114) and ADR-0050, ADR-0003 and ADR-0018 (the Vault ADR acceptance and archival recorded for criterion 49/W54); it cites no REQ-####-FR or REQ-####-NFR identifier.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 LLM Wiki work is preparation only: documentation, schema, connection contract,
 synthetic fixtures and future acceptance criteria are allowed. Wiki Core/API/UI,
@@ -291,13 +314,13 @@ LAB runtime is excluded; P08 may make actual typed `labs/` document moves with
 required READMEs, links, Registry and path checks. Learning applications remain
 excluded, including planning.
 
-### Non-goals
+##### Non-goals
 
 This Spec states no separate exclusion list; the exclusions that apply are stated inside the In Scope text above.
 
-## Behavior Contract
+#### Behavior Contract
 
-### Normal Behavior
+##### Normal Behavior
 
 **Current P01 inventory contract (2026-11-01).**
 
@@ -510,7 +533,7 @@ in place; no repeat native-memory migration or private-body audit is implied.
 P04 retires an asset only after its current consumers, retained assurance,
 hold, authorization and recovery requirements have been established.
 
-### Failure and Edge Cases
+##### Failure and Edge Cases
 
 Reconciliation fails when a request item has competing acceptance owners,
 a source or historical receipt is presented as fresh runtime acceptance, or
@@ -524,9 +547,9 @@ assessment, a lower evidence stage is promoted, a shared path changes without
 its lease, or a destructive/secret/live action proceeds without its named
 target, backup, recovery boundary, and action-specific authorization.
 
-## Acceptance Criteria
+#### Acceptance Criteria
 
-### Criteria
+##### Criteria
 
 1. The current Task records local/remote baseline and worktree evidence,
    root/inventory set equality or exact differences, and private/LAB exclusions.
@@ -1301,15 +1324,36 @@ target, backup, recovery boundary, and action-specific authorization.
      review independently and deliver the checked P03 PR without running P04.
      Distinguish source, verification, delivery and pending owner acceptance.
 
-### Evidence Requirements
+158. TSK-0102 applies P04-TEMPLATES 1.1.0 and the supplied
+     WORKSPACE-DOCUMENT-CORE1.0.0 to this Docker workspace. Connect the
+     independent formal contract, all actual profile/kind/metadata mappings,
+     common H2/H3 definition envelope and role payload to real readers and
+     producers. Preserve the existing20 TemplateDefinition fields, core role
+     content, table meanings and conditional payload. Native assets keep their
+     syntax and required fields; common definitions never leak into native
+     outputs or make canonical agent sources generated projections. Preserve
+     existing strict numeric version parsing and add lower-component reset
+     checks for document MAJOR/MINOR increases. Represent interface references
+     through functional/quality requirements and map AC display IDs to stable
+     semantic numbers without renumbering historical evidence. Keep lifecycle,
+     implementation, verification and actual acceptance independent. Add the
+     seven semantic relation kinds without inventing old link intent or
+     imposing reciprocal links, full SHA pins or commit-time HTTP. Apply the
+     envelope to current normative sources with explicit adapters; preserve
+     past Task bodies and dated evidence for P05/P17 disposition. Verify real
+     representative generation/consumption, required negatives, one justified
+     related corpus check and independent review. Deliver checked source and
+     results normally; do not execute P05 or final numbering/history work.
+
+##### Evidence Requirements
 
 - Each criterion is evidenced by rows in the Task under `tasks/` that owns it; a row records the observation, the check run and its actual result, and unknown execution or approval evidence stays unknown.
 - Local source, document and registry checks are run by the Task owner; a local source PASS never substitutes for remote, runtime or approval evidence.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; that decision remains separate from independent implementation review.
 
-## References
+#### References
 
-### Normative and Evidence
+##### Normative and Evidence
 
 - [Master workspace reconciliation](01.tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](01.tasks/tsk-0059-w00-v14-7-intake.md)
@@ -1342,9 +1386,29 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Home host requirement](../../01.requirements/0027-home-development-host.md)
 - [Home host architecture](../../02.architecture/01.descriptions/0031-home-development-host.md)
 
-### Historical and Navigation
+##### Historical and Navigation
 
 The following completed Tasks are historical records and non-authoritative history.
 
 - [Historical baseline Task](01.tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](01.tasks/tsk-0002-twenty-item-reconciliation.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

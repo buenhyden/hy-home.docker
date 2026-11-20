@@ -1,35 +1,60 @@
 ---
 title: "Postflight Routing"
-version: "1.2.2"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Postflight Routing
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Postflight Routing
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Route completion verification to the actual changed authority surface.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of completion verification routing for changed authority surfaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Completion verification selected for the changed canonical and protected surfaces.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -48,26 +73,28 @@ pre-commit prohibition and every wrapper condition. Postflight records only
 the concise result and hook-managed fallout; the controlled wrapper reports
 exit 20 for unexpected paths.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 `task-checklists.md` is the completion authority. Apply only validators mapped
 to the changed canonical source and protected surface. For provider projections,
 run the agent governance contract and renderer check; write mode is used only through
 the registered renderer.
 
-### Limits
+##### Limits
 
 Postflight routes to other owners and ties no check to any rule in Requirements.
 
@@ -75,13 +102,13 @@ Postflight routes to other owners and ties no check to any rule in Requirements.
 - All-files gate (R4-R5): no check is named.
 - Rules stated under Enforcement (Mechanisms) are outside this table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -89,3 +116,23 @@ Changes land in place with Task evidence; related documents:
 - [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary)
 - [Documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)
 - [Provider registry](providers/registry.yaml)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Analytics Labs Migration Plan"
-version: "0.1.2"
+version: "1.0.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0262-PLAN-0001"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-11-04"
 
 # Analytics Labs Migration Plan
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Goal and Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the plan payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Goal and Boundary
 
 Move the services into LAB entrypoints, then reconcile every reference and
 record the checks.
@@ -25,23 +48,23 @@ The files named in the Spec; no runtime or remote state changes.
 
 Parent Spec: [Spec](spec.md)
 
-### Assumptions
+##### Assumptions
 
 The plan works under the approved SPEC-0262; it assumes no authority beyond it, and no runtime or remote state changes.
 
-## Dependencies
+#### Dependencies
 
-### Prerequisites
+##### Prerequisites
 
 The approved Spec.
 
-### Dependency Order
+##### Dependency Order
 
 W1 has no dependencies; W2 and W3 start after W1; W4 starts after W1-W3.
 
-## Implementation Strategy
+#### Implementation Strategy
 
-### Work Breakdown
+##### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -50,14 +73,14 @@ W1 has no dependencies; W2 and W3 start after W1; W4 starts after W1-W3.
 | W3 | 4 | Move the Stage 05 documents to `15-labs` and update their claims | W1 | TSK-0001 | operations catalog; metadata; links |
 | W4 | 5 | Record local results | W1-W3 | TSK-0001 | the checks above |
 
-### Change and Rollback
+##### Change and Rollback
 
 Revert the branch to restore the root
 includes.
 
-## Verification Plan
+#### Verification Plan
 
-### Verification Matrix
+##### Verification Matrix
 
 Run `docker compose config` for the root and each LAB, the full unit suite,
 `check-all-hardening.sh`, `check-document-metadata.py` in `check-changed` and
@@ -65,29 +88,49 @@ Run `docker compose config` for the root and each LAB, the full unit suite,
 `check-document-corpus-lifecycle.py`, `check-operations-catalog.py` and
 `check-script-manifest.py`.
 
-### Stage Placement
+##### Stage Placement
 
 The Plan places no stage-specific checks beyond the Verification Matrix; the Task records each run.
 
-## Risks
+#### Risks
 
-### Risks and Mitigations
+##### Risks and Mitigations
 
 A LAB cannot reach its HOME dependency without an approved endpoint; the
 Task records this as an owner decision.
 
-### Escalation
+##### Escalation
 
 A LAB that cannot reach its HOME dependency without an approved endpoint stops at the owner decision the Task records.
 
-## Promotion Map
+#### Promotion Map
 
-### Durable Meaning
+##### Durable Meaning
 
 The LAB entrypoints and the Stage 05 documents under `15-labs` hold the durable meaning.
 
-### Owner and Receipt
+##### Owner and Receipt
 
 Owner @buenhyden. The receipt is TSK-0001, named in the Work Breakdown Task column.
 
 - [Task](01.tasks/tsk-0001-analytics-labs-migration.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,20 +1,43 @@
 ---
 title: "분석 dbt 변환 작업"
-version: "1.3.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-21"
 ---
 
 # 분석 dbt 변환 작업
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > PostgreSQL 어댑터를 사용하는 커맨드라인 dbt Core LAB으로, 애플리케이션 데이터베이스를 전용 스키마로 변환합니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
 dbt는 웹 서비스가 아니라 1회성 작업으로 실행되므로 라우트, OIDC 클라이언트,
 장기 실행 컨테이너가 없습니다. 독립 Compose project인 [dbt LAB](docker-compose.yml)
@@ -24,17 +47,20 @@ dbt는 웹 서비스가 아니라 1회성 작업으로 실행되므로 라우트
 기록합니다. HOME은 dev-pg를 LAB network에 게시하지 않으므로 owner가 도달 가능한
 endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - **Analytics engineers**: 모델을 작성하고 실행합니다.
 - **Operators**: 역할을 프로비저닝하고 `run`/`build`의 부작용을 검토합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - **Included**: dbt 이미지, 프로필, 프로젝트 스켈레톤, 기능 전용 역할/권한 프로비저닝.
 - **Excluded**: 애플리케이션 스키마 소유권, 스케줄링(오케스트레이션은 Airflow가 담당), BI 서빙.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 .
@@ -52,7 +78,7 @@ endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 
 서비스 정의(`dbt`, `dbt-db-provision`)는 [labs/dbt/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -60,7 +86,8 @@ endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 | 대상 스키마(`DBT_SCHEMA`, 기본값 `analytics`) | `dbt` | 이 README는 소비자를 기록하지 않는다. | `run`/`build`는 뷰/테이블을 생성 또는 교체하고 `compile`은 데이터베이스에 기록하지 않는다. | 실패는 명령 종료 코드로 확인하고 복구는 RUN-0090 dbt Runbook을 따른다. |
 | `provisioning/dev-pg.sql` | 이 패키지(기능 소유) | `dbt-db-provision`(공유 프로비저닝 러너) | 역할, source 읽기 권한, 대상 스키마를 정의한다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 | Field | Value |
 | --- | --- |
@@ -74,13 +101,14 @@ endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 | Network | `lab_dbt_net`(`hy-home-lab-dbt`); HOME network 없음 |
 | Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로비저닝 전용 `lab_dbt_dev_pg_admin_password`만 읽고 HOME 값 복사는 별도 승인 대상이다. 라우트와 OIDC 클라이언트가 없고 HOME network에 연결되지 않으며 호스트 포트를 게시하지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Component | Source | Purpose |
 | --- | --- | --- |
@@ -90,7 +118,7 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며
 [파생된 Compose 이미지 프로젝션](../../infra/tech-stack.versions.json)은 드리프트 검증을 제공합니다.
 
-### Selected Start
+##### Selected Start
 
 명령은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/dbt/docker-compose.yml --profile lab-dbt` 접두사로 실행합니다.
@@ -105,9 +133,9 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 5. 비즈니스 소스는 자체 `sources.yml`과 함께 `projects/models/`에 선언하고 권한은
    `provisioning/dev-pg.sql`에 유지합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 - `docker compose --env-file labs/.env -f labs/dbt/docker-compose.yml --profile lab-dbt config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
@@ -115,9 +143,10 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 
 `dbt --version`이나 `debug` 성공은 어떤 모델이 실행되었다는 근거가 되지 않습니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - **Guide**: dbt usage guide (`docs/05.operations/01.guides/15.labs/0090-dbt.md`)
 - **Policy**: dbt operations policy (`docs/05.operations/02.policies/15.labs/0090-dbt.md`)
@@ -126,6 +155,27 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 - [Documentation index](../../docs/README.md)
 - [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0107 lab-promotion
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 1회성 작업이라 장기 실행 컨테이너와 헬스체크가 없다. 실패는 명령 종료 코드로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md)의 RUN-0090 dbt Runbook을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

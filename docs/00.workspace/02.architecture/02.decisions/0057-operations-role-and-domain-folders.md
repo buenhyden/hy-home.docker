@@ -1,10 +1,13 @@
 ---
 title: "Operations Documents in Role and Domain Folders"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0057"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-11-06"
 
 # ADR-0057: Operations Documents in Role and Domain Folders
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 Stage 05 is organized by role first, then by domain. Under
 `docs/05.operations/`, the role directories `guides/`, `policies/` and
@@ -31,7 +54,8 @@ keep their own directory.
 - Issued IDs never change.
 - One discovery system, not two.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 No runtime state is claimed.
 
@@ -39,15 +63,15 @@ No runtime state is claimed.
 - [Operations README](../../../05.operations/README.md)
 - [ADR-0051 Summarize-and-delete retirement](0051-summarize-and-delete-retirement.md)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the paths of Guides, Policies and Runbooks under
 `docs/05.operations/`. Incident and postmortem paths are unchanged, and links
 from other repositories are outside it.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep the domain-first catalog: rejected; answering "what may I do" means
   opening every domain.
@@ -57,7 +81,7 @@ from other repositories are outside it.
 - Role directories with numbered domain folders, one README per domain folder:
   selected.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -71,9 +95,9 @@ from other repositories are outside it.
 - Negative: each new domain needs a README in every role directory that uses
   it.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. A Guide, Policy or Runbook lives at `<role>/<NN-domain>/####-<slug>.md`
    under `docs/05.operations/`. Incident and postmortem paths are unchanged.
@@ -87,12 +111,13 @@ from other repositories are outside it.
 5. The domain catalog is a retired root; a current document that names a
    catalog path is an active-reference violation.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval
 record is linked. Effective from 2026-11-06.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This record replaces ADR-0043, deleted in the same change (ADR-0051); ADR-0043
 is historical and non-authoritative. ADR-0043
@@ -108,14 +133,14 @@ index. Those decisions carry forward. Its flat paths `<role>/####-<slug>.md` and
 its removal of domain READMEs are replaced by domain folders with one README
 each.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: a reader finds a document by role, then domain, without a parallel
   index.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -124,7 +149,28 @@ decision text is unchanged.
 
 Links from other repositories are fixed by those repositories' owners.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `scripts/validation/check-operations-catalog.py`, the Registry taxonomy check,
 and `check-document-links.py --mode all` enforce the layout.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

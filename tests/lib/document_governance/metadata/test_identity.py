@@ -14,6 +14,7 @@ from scripts.lib.document_governance.metadata import (
 )
 from scripts.lib.document_governance.metadata.lifecycle import collect_records
 from tests.lib.document_governance.metadata._support import (
+    common_fixture_metadata,
     current_profiles,
     git,
     init_git,
@@ -100,11 +101,15 @@ class IdentityBehaviorTests(unittest.TestCase):
             )
 
     def test_inventory_exposes_all_semantic_state_columns(self) -> None:
-        profiles = current_profiles()
+        registry = metadata.load_registry()
+        profiles = metadata.build_registry_profiles(registry)
         records = [
             metadata.Record(
                 pathlib.Path("docs/03.specs/README.md"),
                 {
+                    **common_fixture_metadata(
+                        registry, "readme", path="docs/03.specs/README.md"
+                    ),
                     "title": "Specs",
                     "version": "1.0.0",
                     "type": "common/readme",
@@ -121,6 +126,11 @@ class IdentityBehaviorTests(unittest.TestCase):
                     "docs/90.references/03.data/0001-generated/m0001-generated.md"
                 ),
                 {
+                    **common_fixture_metadata(
+                        registry,
+                        "generated",
+                        path="docs/90.references/03.data/0001-generated/m0001-generated.md",
+                    ),
                     "title": "Generated Data Member",
                     "version": "1.0.0",
                     "type": "reference/data",
@@ -162,13 +172,17 @@ class IdentityBehaviorTests(unittest.TestCase):
         self.assertIn("reviewed_at=forbidden:not-provided", rendered)
 
     def test_inventory_records_identity_relations_and_transition_evidence(self) -> None:
-        profiles = current_profiles()
+        registry = metadata.load_registry()
+        profiles = metadata.build_registry_profiles(registry)
         parent = metadata.Record(
             pathlib.Path("docs/02.architecture/01.descriptions/0123-parent.md"),
             {
-                "status": "active",
+                **common_fixture_metadata(
+                    registry,
+                    "architecture-description",
+                    path="docs/02.architecture/01.descriptions/0123-parent.md",
+                ),
                 "artifact_id": "AD-0123",
-                "artifact_type": "architecture-description",
                 "parent_ids": [],
                 "created": "2026-08-07",
                 "updated": "2026-08-07",
@@ -179,9 +193,11 @@ class IdentityBehaviorTests(unittest.TestCase):
         child = metadata.Record(
             pathlib.Path("docs/03.specs/0123-child/spec.md"),
             {
+                **common_fixture_metadata(
+                    registry, "spec", path="docs/03.specs/0123-child/spec.md"
+                ),
                 "status": "approved",
                 "artifact_id": "SPEC-0123",
-                "artifact_type": "spec",
                 "parent_ids": ["AD-0123"],
                 "created": "2026-08-07",
                 "updated": "2026-08-07",

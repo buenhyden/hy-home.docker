@@ -1,35 +1,60 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.10.1"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Agent Bootstrap Policy
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Agent Bootstrap Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Provide the sole repository bootstrap sequence for supported agents.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the sole bootstrap authority.
 
-### Applies To
+##### Applies To
 
 Supported agent entry shims, authored provider adapters, and request-scoped canonical loading.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -81,7 +106,8 @@ None: this document states no exclusion.
 | BOOTSTRAP-R46 | Always | Required: use in-place canonical edits | none | none |
 | BOOTSTRAP-R47 | Always | Forbidden: creating legacy redirects or parallel authority copies | none | none |
 
-#### Canonical Load Order
+###### Canonical Load Order
+<!-- core-payload-level:4 -->
 
 1. Enter through root `AGENTS.md` or `CLAUDE.md`.
 2. Load this policy, the matching authored `.claude/provider.md` or
@@ -115,7 +141,8 @@ stage document. Current agent rules live in their canonical governance owner;
 README navigation, historical provenance and typed machine inputs follow the
 [documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md#entry-point-for-documents-outside-docs).
 
-#### Authority and Precedence
+###### Authority and Precedence
+<!-- core-payload-level:4 -->
 
 1. Direct system and user instructions.
 2. Canonical governance policies, including workflow and approval behavior.
@@ -144,7 +171,8 @@ Execution progress and handoff state belong to the current Task. A document that
 leaves an active stage is summarized into its current owner and deleted; Git
 history is the record of what was removed.
 
-#### Hard Constraints
+###### Hard Constraints
+<!-- core-payload-level:4 -->
 
 - Governance, role, skill, knowledge, and prompt documents and provider
   guidance are written in English; every `README.md` is Korean. Native
@@ -158,27 +186,30 @@ history is the record of what was removed.
 - Use in-place canonical edits; do not create legacy redirects or parallel
   authority copies.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
-#### Verification Routing
+###### Verification Routing
+<!-- core-payload-level:4 -->
 
 Use [task-checklists.md](../../docs/00.workspace/04.quality/task-checklists.md) for completion and
 [approval-boundaries.md](../../docs/00.workspace/04.quality/approval-boundaries.md) for protected surfaces. Stage
 99 owns document shapes; registered scripts own executable checks.
 
-### Limits
+##### Limits
 
 The Requirements prose ties no named check, gate or review to any of its rules.
 
@@ -189,13 +220,13 @@ The Requirements prose ties no named check, gate or review to any of its rules.
 - Hard constraints on language, read-only stage documents, root shims, secrets, the Graphify report and in-place edits (R38-R47) name no check.
 - Statements under Enforcement / Mechanisms are outside this table and are not restated here.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -203,3 +234,23 @@ Changes land in place with Task evidence; related documents:
 - [Completion checklist](../../docs/00.workspace/04.quality/task-checklists.md)
 - [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)
 - [Documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

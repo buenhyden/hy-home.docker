@@ -1,27 +1,52 @@
 ---
 title: "외부 프로젝트 인프라 등록 계약"
-version: "0.2.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # 외부 프로젝트 인프라 등록 계약
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 외부 `Project-Template` 파생 프로젝트가 사용할 인프라 자원과 접속 위치를
 비밀값 없이 기록하는 메타데이터 계약입니다. 등록 문서의 통과는 자원 생성,
 비밀 발급, 배포 또는 운영 승인으로 해석하지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 프로젝트 연결을 검토하는 인프라 운영자와 외부 프로젝트 담당자입니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 인프라는 엔진, 공용 ingress·identity, 관측, 백업과 제한된 자원 등록을
 소유합니다. 외부 프로젝트는 업무 API·UI·migration·수집 adapter·workflow·fixture·
@@ -29,7 +54,8 @@ E2E와 실행 Compose를 소유합니다. 이 저장소 root Compose는 외부 �
 include하지 않습니다. 실제 프로젝트 ID와 자원 범위가 승인되기 전에는
 등록 문서를 생성하지 않습니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - [`schema.json`](schema.json): 알 수 없는 필드를 거부하는 등록 문서 형식.
 - [`check-project-registration.py`](../../../scripts/validation/check-project-registration.py):
@@ -39,13 +65,14 @@ include하지 않습니다. 실제 프로젝트 ID와 자원 범위가 승인되
 - [`wiki-preparation/`](wiki-preparation/README.md): 실제 앱·자원 생성 없이
   미래 LLM Wiki의 합성 계약, fixture와 수용 기준을 준비하는 패키지.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | 프로젝트 등록 문서 (`schema.json`) | 외부 `Project-Template` 파생 저장소 | `check-project-registration.py` 검증기와 인프라 담당자 | 알 수 없는 필드를 거부하며 `endpoints`·DB·S3·OIDC 등 자원과 `secret_refs` 이름만 기록한다. | `--allow-secret-ref`로 명시하지 않은 이름은 거부되며 실패는 Checks 명령 출력으로 확인한다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 `schema_version`, `interface_version`, `project_id`, `environment`, 세 Git SHA
 (`infra_ref`, `template_ref`, `project_ref`), 접속 위치별 구조화된 `endpoints`,
@@ -78,27 +105,28 @@ ACL 생성기가 `:<key>` 패턴을 붙입니다. `default`와 `devadmin`은 ACL
 않습니다. quota의 실제 허용 상한과 경로 접근 권한은 후속 프로젝트별 승인이
 결정합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 이 계약은 포트·서비스를 만들지 않지만 접속 경계를 제한합니다. `endpoints`는 `same_daemon`·`host`·`external` 위치별로 scheme·host·port·path만 받고 `external`은 `https`·`rediss`와 DNS FQDN만 허용하며 DB endpoint는 거절합니다. 기본 Docker `host`·`none`·`bridge` 네트워크는 프로젝트 경계로 등록하지 않습니다. 비밀은 값이 아닌 이름(`secret_refs`)으로만 기록하며, 검증기는 허용 이름 목록이 기본적으로 비어 있어 `--allow-secret-ref`로 명시한 이름만 받습니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 Python 표준 라이브러리와 저장소의 기존 `jsonschema` 의존성만 사용합니다.
 Compose 서비스나 이미지를 추가하지 않습니다.
 
-### Selected Start
+##### Selected Start
 
 실제 프로젝트가 승인되면 외부 저장소가 소비용 manifest를 작성합니다. 인프라
 담당자는 해당 Task에서 참조 이름과 자원 범위를 확인하고, 이 schema와 검증기를
 실행합니다. 이후의 provision·비밀 발급·HOME 변경은 각각 승인된 작업으로
 진행합니다. 필드를 바꾸면 schema, 검증기, 합성 검사를 같은 변경에서 갱신합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 저장소 루트에서 합성 계약 검사를 실행합니다.
 
@@ -113,14 +141,36 @@ python3 scripts/validation/check-script-manifest.py
 별도의 비밀 검사와 사람 검토가 필요합니다. 정적 통과는 route, OIDC, DB,
 Valkey, S3, 검색, 관측의 접근 권한이나 실제 연결을 증명하지 않습니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 [문서 진입점](../../../docs/README.md)에서 현재 소유 경계의 AD-0031과
 DB 권한의 POL-0100을 참조하십시오. 등록 필드의 기계 계약은
 이 패키지의 [schema](schema.json)가 소유합니다.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 실행되는 서비스가 아니라 헬스체크·지표·로그가 없고 이 계약을 대상으로 하는 운영 런북도 `docs/05.operations/03.runbooks`에 없습니다. 검증기·합성 검사 실패는 Checks 명령의 출력으로 확인하며, 복구는 Git 이력에서 문서·schema 변경을 되돌리는 것입니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

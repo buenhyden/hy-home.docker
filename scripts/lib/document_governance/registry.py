@@ -53,6 +53,7 @@ TEMPLATE_DEFINITION_FIELDS = (
 TEMPLATE_ROLE_KEYS = frozenset(
     {
         "source",
+        "native_source",
         "profiles",
         "conditional_units",
         # One of these binds the form to the role design core or says why not.
@@ -101,6 +102,10 @@ _TRUSTED_SECTION_KIND = {
 
 def _trusted_requirement_sections(text: str) -> tuple[re.Match[str], ...]:
     """Return historical H2 groups and current H3 groups under Requirements."""
+
+    from scripts.lib.document_governance.common_document import payload_text
+
+    text = payload_text(text)
 
     sections: list[re.Match[str]] = []
     parents = tuple(_REQUIREMENT_PARENT_SECTION.finditer(text))
@@ -1008,7 +1013,10 @@ def vocabulary_contract_findings(
     common Term ID appears under Local Extensions. Meaning is a review.
     """
 
+    from .common_document import payload_text
     from .metadata.heading import _markdown_unfenced_lines
+
+    glossary_text = payload_text(glossary_text)
 
     contract = common.get("vocabulary_contract")
     if not isinstance(contract, Mapping):

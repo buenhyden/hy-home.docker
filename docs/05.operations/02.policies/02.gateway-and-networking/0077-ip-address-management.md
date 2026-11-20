@@ -1,10 +1,13 @@
 ---
 title: "Compose Network Membership Operations Policy"
-version: "1.5.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0077"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-13"
 
 # Compose Network Membership Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 `hy-home.docker` 시스템의 Docker network 소속과 주소 할당 정책을 정의한다. IP 충돌 방지 및 일관성 유지를 위한 통제 기준을 제공한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - 상위 문서: [Compose Network Segmentation Architecture Description](../../../02.architecture/01.descriptions/0026-standardize-infra-net.md) (`AD-0026`)
 
 - [Compose network segmentation architecture](../../../02.architecture/01.descriptions/0026-standardize-infra-net.md)
 
-### Applies To
+##### Applies To
 
 이 정책은 repository가 root Compose에서 소유하는 모든 network의 소속과 주소 할당 방식을 관할한다.
 
 - **Systems**: `hy-home.docker` 기반 모든 서비스.
 - **Environments**: 현재 HOME/DEV와 명시적으로 선택한 OPTIONAL/LAB 환경. 미래 production을 검증된 대상으로 간주하지 않는다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 repository가 root Compose에서 소유하지 않는 network는 이 정책의 관할이 아니다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -72,21 +97,23 @@ repository가 root Compose에서 소유하지 않는 network는 이 정책의 �
   - 사용하지 않는 peer를 위한 network 연결.
   - 외부망 주소와의 브릿징 설정 수동 수정.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 현재 예외는 없다. `k3d-hyhome` 공유 membership 예외는 2026-09-23 종료되었다.
 별도 LAN endpoint 연동은 [POL-0096](../10.platform-and-backup/0096-k8s-integration.md)의 기존 경계를 따른다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
 - **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `bash scripts/validation/validate-docker-compose.sh`를 통한 root compose 구조 검증.
 - 변경한 tier profile은 `HYHOME_COMPOSE_PROFILES`로 지정해 동일 검증을 반복한다.
@@ -100,7 +127,7 @@ repository가 root Compose에서 소유하지 않는 network는 이 정책의 �
 중복은 별도로 검토한다. 이 구현 한계는 중복 금지 통제를 면제하지 않는다.
 검사 입력·임시 파일 효과는 [RUN-0086](../../03.runbooks/10.platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)을 따른다.
 
-### Limits
+##### Limits
 
 이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
@@ -108,15 +135,35 @@ repository가 root Compose에서 소유하지 않는 network는 이 정책의 �
 - 고정 주소: 명명된 검사 없음 R5~R9, R11 (`POL-0077-` 접두)
 - 현재 Compose validator의 명시적 충돌 검사는 host port이며 static-IP 유일성을 전부 검증하지 않는다. `rg`는 후보 목록일 뿐이며 subnet/dynamic pool/network별 중복은 별도로 검토한다. 이 한계는 중복 금지 통제를 면제하지 않는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 @buenhyden이며, 주소·membership·노출 예외를 승인한다.
 
-### Review Triggers
+##### Review Triggers
 
 - 같은 주제: [Guide](../../01.guides/02.gateway-and-networking/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../../03.runbooks/02.gateway-and-networking/0077-ip-address-management.md) (`RUN-0077`)
 
 - [Operations index](../../README.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

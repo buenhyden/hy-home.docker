@@ -1,10 +1,13 @@
 ---
 title: "01-Gateway Traefik Operations Policy"
-version: "1.5.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0013"
 parent_ids:
@@ -15,17 +18,38 @@ next_review_at: "2027-05-13"
 
 # 01-Gateway Traefik Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 `01-gateway`의 Traefik 운영 정책을 정의한다. 런타임 모델은 `Traefik Primary`이며, 표준 하드닝 강도는 `Balanced`다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Gateway Tier Architecture Description](../../../02.architecture/01.descriptions/0001-gateway-architecture.md) (`AD-0001`)
 
-### Applies To
+##### Applies To
 
 - `infra/01-gateway/traefik/docker-compose.yml`
 - `infra/01-gateway/traefik/dynamic/middleware.yml`
@@ -34,13 +58,14 @@ next_review_at: "2027-05-13"
 - **Systems**: Traefik v3 (gateway tier)
 - **Environments**: Local, Dev, Stage, Production-like
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -102,7 +127,8 @@ next_review_at: "2027-05-13"
   - 비게이트웨이 소유 라우터에 전역 강제 적용
   - BasicAuth 제거 또는 평문 인증정보 사용
 
-#### Rate-limit basis
+###### Rate-limit basis
+<!-- core-payload-level:4 -->
 
 2026-10-20 @buenhyden이 burst를 50에서 200으로 올리는 조정을 승인했다. 24시간 access log의
 최대치는 한 출발지·라우터 기준 open-webui 123 req/s, prometheus-api 33 req/s였다.
@@ -112,7 +138,8 @@ bucket은 라우터·출발지별이다. host와 k3d 요청은 docker-proxy를 �
 대신하지 않는다. HOME 적용 뒤의 라우터별 수용 증거는 SPEC-0204 TSK-0011이 소유하며,
 문서·정적 검사 통과만으로 HOME 통제 적용을 기록하지 않는다.
 
-#### Shared controls and accountability
+###### Shared controls and accountability
+<!-- core-payload-level:4 -->
 
 공통 자원 상한과
 mount 적용은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md), profile·
@@ -121,20 +148,23 @@ mount 적용은 [POL-0006](../01.common/0006-infrastructure-optimization-governa
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-#### Recovery and Upgrade Controls
+###### Recovery and Upgrade Controls
+<!-- core-payload-level:4 -->
 
 Config rollback과 certificate rollback을 구분한다. 이전 config와 certificate가
 호환되는지 격리 route에서 확인한 후 80/443 트래픽을 수용한다. Image upgrade는
 공식 migration/release note 검토, config 검증, dashboard 인증, 대표 route, metrics와
 명시적인 이전 image rollback을 요구한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 비상 복구 시 임시 체인 우회 가능. 단, 사후에 원복 커밋과 변경 기록을 남겨야 한다.
 
-#### SEC01 image acceptance — 2026-10-15
+###### SEC01 image acceptance — 2026-10-15
+<!-- core-payload-level:4 -->
 
 owner는 SEC01(SPEC-0204 TSK-0009 "Traefik and Prometheus upstream candidates")에서 Compose가 고정한 Traefik image
 (index `575fa15b`)의 잔여 위험을 받아들였다. 적용 가능한 것은 서비스 거부뿐이다. Go HTTP/2 서버
@@ -151,22 +181,23 @@ upstream 릴리스(index `1336e85a`)로 바꾸기로 결정했으므로 이 수�
 offline scan, 독립 applicability 검토, config 부팅, HOME 재생성과 rollback은 아직 `NOT_RUN`이고
 SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 월 1회 정기 점검
 - Traefik 버전 변경/라우터 추가 시 수시 점검
 
 - OOM·반복 재시작·인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `docker compose exec traefik traefik healthcheck --ping`과 같은 runtime health evidence는 승인된 root stack이 실행 중일 때만 유효하다.
 
-### Limits
+##### Limits
 
 이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
@@ -180,14 +211,14 @@ SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 - 명명된 검사는 hardening 점검과 core profile 정적 렌더링뿐이며 `docker compose exec traefik traefik healthcheck --ping` 같은 runtime health evidence는 승인된 root stack이 실행 중일 때만 유효하다.
 - 현재 고정 image의 pull, offline scan, 독립 applicability 검토, config 부팅, HOME 재생성과 rollback은 `NOT_RUN`이며 publisher 서명 확인은 하지 않았다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
 종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/02.gateway-and-networking/0013-traefik.md) (`GDE-0013`), [Runbook](../../03.runbooks/02.gateway-and-networking/0013-traefik.md) (`RUN-0013`)
 
@@ -196,3 +227,23 @@ SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 - 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Operations index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

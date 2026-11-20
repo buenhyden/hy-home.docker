@@ -1,10 +1,13 @@
 ---
 title: "Release Management Runbook"
-version: "1.5.1"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0009"
 created: "2026-06-04"
@@ -13,9 +16,29 @@ next_review_at: "2027-05-13"
 
 # Release Management Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 main 대상 릴리스 준비 PR과 승인된 SemVer 게시 절차를 소유한다. 일반 후보
 QA는 PR의 changed-profile 한 번으로 검증하며 릴리스에서 다시 전체 QA를
@@ -26,7 +49,7 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
 - main 대상 준비 PR에서 `CHANGELOG.md`의 실제 변경을 작성한다.
 - 승인된 owning Task가 ROOT service의 image·custom build·migration·운영 승격을 요청한다.
 
-### Targets
+##### Targets
 
 - [Operations index](../../README.md)
 - [Runbooks index](../../README.md)
@@ -37,9 +60,9 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
 - 과거 구현 증거: Workspace Revalidation Outcome (`SPEC-0097`). 완료된 기록은 현재 실행 권한이 아니다.
 - 같은 번호 `0009`의 Guide/Policy는 없다.
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 개발 push마다
   자동 생성하거나 이미 게시된 릴리스 이력을 덮어쓰지 않는다.
@@ -51,15 +74,15 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
 - 기존 `main-current`와 과거 릴리스 ref는 역사로 보존한다. moving tag 생산자는
   폐기하며, 소비자는 main의 immutable SHA 또는 SemVer Release를 사용한다.
 
-### Environment
+##### Environment
 
 시작 전에 `git status --short --branch`와 `git branch --show-current`로 branch와 작업 트리 상태를 확인하고, 정확한 base/candidate commit SHA와 `git diff --check` 결과를 확인한다.
 
 시작 상태 확인은 Steps의 1~2단계에 있다. `git status --short --branch`로 branch와 작업 트리 상태를, 정확한 base/candidate commit SHA와 `git diff --check` 결과를 확인한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -127,7 +150,8 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
    요청한다. 이미 게시된 버전은 수정하지 않는다. 실제 배포·backup·rollback 수용은
    해당 service Task에 별도로 기록하며 Release 게시를 배포 성공으로 표현하지 않는다.
 
-#### ROOT 인프라 image 후보와 승격
+###### ROOT 인프라 image 후보와 승격
+<!-- core-payload-level:4 -->
 
 이 절차는 실제 ROOT image 승격에 적용한다. 일반 repository SemVer 게시 때문에 동일 입력의
 전체 QA를 다시 실행하지 않는다. 실제 승격에는 아래 순서의 대상별 증거가 필요하며, 같은
@@ -171,7 +195,8 @@ n8n/Airflow의 격리 선택·capture·pressure·정리 명령은
 실제 DEV Timescale·HOME·physical/offsite 복원의 대체 증거가 아니다. 다른 service의 구체
 build/migration/복원 명령과 budget은 해당 owning Task·기존 service Runbook이 소유한다.
 
-#### Optional Compose service observation
+###### Optional Compose service observation
+<!-- core-payload-level:4 -->
 
 이 runbook은 다음 기존 운영 명령의 수동 실행 경계를 유지한다. 일반 Release의
 추가 필수 gate가 아니다. 입력·환경·권한은 해당 service Task에서 먼저 승인한다.
@@ -192,7 +217,8 @@ bash scripts/validation/validate-docker-compose.sh
 bash scripts/operations/check-compose-core-readiness.sh
 ```
 
-#### Optional service delivery rehearsal
+###### Optional service delivery rehearsal
+<!-- core-payload-level:4 -->
 
 아래 재사용 가능한 Docker 운영 예제는 해당 service의 승인된 변경에만 적용한다.
 문서·commit·일반 릴리스의 필수 gate가 아니며 후보 QA와 live 운영 수용을 합치지 않는다.
@@ -261,7 +287,8 @@ bash scripts/operations/check-compose-core-readiness.sh
     handoff한다. 이 런북은 실행이나 재실행을 승인하지 않는다. 필요하면 owning Spec에
     co-located Plan과 Task 승인/evidence 계약을 먼저 작성한다.
 
-#### 검증된 미사용 자료의 정확한 폐기
+###### 검증된 미사용 자료의 정확한 폐기
+<!-- core-payload-level:4 -->
 
 `python3 scripts/operations/retire-materials.py --root <운영자-체크아웃> --manifest <검토된-manifest>`는 기본적으로 계획만 검사한다. `--apply`는 총괄 통합 순서에 따른 별도 운영 단계이며, 현재 CLN01 source 검증은 실제 삭제 승인이 아니다. 추적 파일은 이 helper가 거부하므로 해당 owning commit에서 정확한 `git rm -- PATH...`를 사용한다. 빈 디렉터리는 별도 확인 후 `rmdir`만 사용한다.
 
@@ -286,23 +313,25 @@ manifest 필드 계약은 아래와 같다. 이것은 값 없는 입력 계약�
 
 helper는 전체 preflight 후 각 파일을 즉시 재검증한다. 부분 실패는 exit 2와 처리됨·이미 없음·실패·미시도 상태를 남긴다. unlink 뒤 fsync 실패는 `deleted-durability-unknown`, identity 확인 실패는 `deleted-identity-unconfirmed`로 보고하므로 파일이 그대로 있다고 가정하지 않는다. 먼저 실제 상태를 재관측하고 검토된 근거를 갱신한 뒤 재실행한다. private 원본을 새 retired/backup 평문 폴더에 복제하지 않는다. Git revert는 추적 source만 복구하며 private 파일의 복구는 이미 존재하는 암호화 복구 자료나 검증된 재발급 경로에 한정한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단한다. release/tag 판단이 차단되거나 rollback 증거가 불완전하면 판단을 중단한다. Verdict pair가 하나라도 없거나 legacy, stale, mixed, substituted이면 class `10`에서 중단하며, local delivery cleanup의 ownership query가 누락되거나 ambiguous하면 broad cleanup 없이 class `60`으로 중단한다.
 
 대상별 중단 경계는 Steps의 `ROOT 인프라 image 후보와 승격` 표의 중단 경계 열에 있다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 - ROOT 운영 승격을 실행했다면 위 각 단계의 exact 대상·source/image·artifact SHA,
   독립 review·실제 승인·rollback·HOME 기능 결과를 owning Task에서 확인한다. 미실행
   단계와 repository SemVer 게시 결과를 합치지 않는다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 - 현재 branch와 clean/예상된 작업 트리 상태.
 - 정확한 base/candidate SHA, 두 commit 사이 diff 요약과 `git diff --check` 결과.
@@ -317,7 +346,7 @@ secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입
 - Local-delivery record의 현재 verdict와 교체 전후 hash/inode는 해당 실행
   Task의 실제 증거에서 확인한다. 과거 문서 서술은 현재 실행 결과가 아니다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 이 런북이 실행 성공을 선언하지 않으며 실행이나 재실행도 승인하지 않는다고 밝힌다.
 
@@ -327,14 +356,15 @@ secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입
 - Optional service delivery rehearsal의 실제 positive/negative 실행: 실행 Task의 schema-v4 record hash와 cleanup 증거가 필요하다.
 - 검증된 미사용 자료의 `--apply` 폐기: 총괄 승인된 유지보수 구간의 실행 결과가 필요하며, 이 문서에는 실제 삭제 승인이 없다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 - tag 생성, release branch push, branch protection/required check 변경, 배포, runtime 변경은 해당 승인을 확인하고 저장소 소유자 또는 담당 operator에게 handoff한다.
 - secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단·에스컬레이션한다.
 
-#### Candidate Required-Check Handoff
+###### Candidate Required-Check Handoff
+<!-- core-payload-level:4 -->
 
 2026-10-16의 이전 empty-context/check read-back은 과거 관측으로 보존한다.
 현재 [main-protection.md](../../../../.github/rulesets/main-protection.md)와
@@ -358,7 +388,7 @@ local recovery payload를 준비·검토할 수 있지만 PATCH 실행에는 별
 실패하면 handoff를 차단한다. 과거 `validation-changed` context 복구를 rollback으로
 취급하지 않는다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 - 해당 service·workflow·deployment에 문서화된 rollback/recovery 절차만 사용한다.
 - 모든 Compose service에 적용되는 일반 rollback 명령은 N/A다. 서비스별 data migration과 backup 복구 경계를 따른다.
@@ -370,3 +400,23 @@ local recovery payload를 준비·검토할 수 있지만 PATCH 실행에는 별
   cleanup은 pair가 absent/incomplete/additional/nonmatching이면 destructive
   call 없이 class `60`으로 중단한다.
 - 실패한 문서 변경은 직전 diff 단위로 되돌린다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

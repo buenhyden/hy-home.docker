@@ -1,10 +1,13 @@
 ---
 title: "Common Controls and Exceptions"
-version: "1.0.3"
+version: "2.0.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0218"
 parent_ids:
@@ -16,9 +19,29 @@ created: "2026-10-09"
 
 # Common Controls and Exceptions
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Intent
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the spec payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Intent
 
 `infra/common-optimizations.yml` gives every root and LAB service its security
 defaults, lifecycle and resource tier through `extends`, and
@@ -30,13 +53,13 @@ service. This package checks the effective controls of all services, gives
 each exception an exact target and rationale, and corrects the templates and
 leaves where the defaults were wrong.
 
-### Owning Requirements
+##### Owning Requirements
 
 This Spec makes concrete the frontmatter parents REQ-0027 (HOME development host), AD-0031 and ADR-0062 (HOME LAB membership). The body cites no REQ-####-FR or REQ-####-NFR identifier.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 In scope: the shared templates, the exception registry and its validator, the
 leaves that deviate, the Conftest Compose policy, the tests and the operations
@@ -54,16 +77,16 @@ remain UNKNOWN. Benchmark/load, permission/configuration change and HOME
 rollout require the relevant accepted image, function, workload, endpoint,
 backup and recovery contracts plus an exclusive service window.
 
-### Non-goals
+##### Non-goals
 
 LAB runtime, images, data, secrets and lifecycle changes are excluded from
 P07. Learning apps and actual Wiki implementation, model pulls, new workers
 or workspace creation are excluded. Stage05 LAB document movement remains
 with P08. Consumer retirement remains with CLN01 and the owning executor.
 
-## Behavior Contract
+#### Behavior Contract
 
-### Normal Behavior
+##### Normal Behavior
 
 1. Effective controls. A validator renders the root with every profile and
    each LAB entrypoint with synthetic inputs and reads each service's final
@@ -102,7 +125,7 @@ with P08. Consumer retirement remains with CLN01 and the owning executor.
     and has no root-only scope flag. Do not execute a guessed flag or duplicate
     the renderer; a needed root-only extension is a coordinator proposal.
 
-### Failure and Edge Cases
+##### Failure and Edge Cases
 
 Malformed, orphaned, expired or mismatched exceptions and missing enforced
 controls fail effective-model validation. Unmeasured limits cannot be called
@@ -110,9 +133,9 @@ optimal, and least-privilege proof cannot be replaced by blanket secret-group,
 read-only or ownership changes; root rollout requires its exact service,
 function, backup and recovery evidence.
 
-## Acceptance Criteria
+#### Acceptance Criteria
 
-### Criteria
+##### Criteria
 
 1. The validator and schema v2 replace both shell checks, with tests that
    fail on each registry defect and each enforced control.
@@ -147,15 +170,15 @@ function, backup and recovery evidence.
     recovery evidence. Rollback preserves data and restores the named service
     boundary; whole-stack recreation or source revert alone is insufficient.
 
-### Evidence Requirements
+##### Evidence Requirements
 
 - Criteria 1-5 and 6-10 are evidenced by rows in TSK-0001 and TSK-0002 under `tasks/`: validator and schema tests, real LAB or exact-image runs, Conftest fixtures, and measured, runtime and rollout results with their actual outcomes.
 - Unknown measurements and unreadable private inputs stay recorded as unknown, and synthetic or static findings are not presented as deployment or recovery evidence.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
-## References
+#### References
 
-### Normative and Evidence
+##### Normative and Evidence
 
 - [Plan](plan.md)
 - [Task](01.tasks/tsk-0001-common-controls-and-exceptions.md)
@@ -163,6 +186,26 @@ function, backup and recovery evidence.
 - [HOME development host requirement](../../01.requirements/0027-home-development-host.md)
 - [Exceptions policy](../../05.operations/02.policies/01.common/0001-common-optimizations-template-exceptions.md)
 
-### Historical and Navigation
+##### Historical and Navigation
 
 No historical or navigation link applies; every link above is current authority or evidence.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,19 +1,43 @@
 ---
 title: "Gatus Implementation"
-version: "0.4.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Gatus
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 설정된 엔드포인트 가용성을 모니터링하고 SQLite 이력을 `gatus-data`의
 `/data/gatus.db`에 저장합니다. Compose는 호스트에 직접 게시하지 않고 네이티브
@@ -22,19 +46,22 @@ Keycloak OIDC 설정을 선택합니다. 네이티브 로그인 승인이 기록
 모니터가 정상이라고 해서 모니터링 대상 애플리케이션이 모두 정상 동작함을
 증명하지는 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 서비스 설정을 검토하는 운영자와 개발자.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/01.guides/07.observability/0087-gatus.md`, `docs/05.operations/02.policies/07.observability/0087-gatus.md`, `docs/05.operations/03.runbooks/07.observability/0087-gatus.md`(ID: `GDE-0087`, `POL-0087`, `RUN-0087`)가 담당합니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 [Compose](../docker-compose.yml)가 서비스, 마운트, 네트워크 권한, 엔트리포인트를 소유합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -47,7 +74,8 @@ Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../d
 | `POST /api/v1/endpoints/:key/external` | `gatus` | 머신 수집 | Per-endpoint bearer token 경계를 독립적으로 유지한다. | 이 README는 실패 처리를 기록하지 않는다. |
 | 내부 상태 probe 대상 | Keycloak(`${KEYCLOAK_MANAGEMENT_PORT:-9000}`), OAuth2 Proxy(`${OAUTH2_PROXY_PORT:-4180}`), 관리 PostgreSQL·Valkey | `gatus` | DNS·전송·프로세스 준비 증거이며 로그인이나 데이터 기능 완료를 대신하지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 프로필: `availability / obs / dev`. 루트 Compose가 이 정의를 include하지만 include 자체만으로는 서비스가 시작되지 않습니다. 네트워크는 `edge_net`과 `obs_net`입니다. 비공개 값을 출력하지 않고 [공개 환경 변수 키](../../../.env.example)와 [시크릿 참조](../../../secrets/README.md)를 검토합니다.
 
@@ -94,27 +122,31 @@ Alpine 선택과 Go 버전은 유지했으므로 compiler·base 이미지 보안
 `NOT_RUN`입니다. 기존 custom image tag가 같아도 새 이미지가 빌드되거나
 수용된 증거는 아니며, 상태가 바뀐 뒤 tag만 되돌려 복구할 수 있다고 가정하지 않습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `gatus_oidc_client_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `gatus` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 업스트림 빌드 고정 값은 [Dockerfile](Dockerfile)에, 런타임 설정은 [Compose](../docker-compose.yml)에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 정제된 프로젝션이며 배포 매니페스트가 아닙니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 변경 작업 중에는 데이터와 자격 증명을 보존합니다. 배포 전에 정확한 런타임
 대상을 검토합니다. 운영 절차는 기존 운영 주제(operations subject) 안에
 유지합니다.
 
-##### Convergence contract
+###### Convergence contract
+<!-- core-payload-level:5 -->
 
 - Classification: **HOME**. Exact profiles: `obs`, `availability`, `dev`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
@@ -122,11 +154,12 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`이며 값은 저장
 - 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/01.guides/07.observability/0087-gatus.md`; ID: `GDE-0087`, `POL-0087`, `RUN-0087`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 저장소 루트에서 문서화된 프로필을 선택하고
 `scripts/validation/validate-docker-compose.sh`를 실행합니다. 이미지 빌드는
@@ -134,13 +167,35 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`이며 값은 저장
 사용합니다. 설정 검증만으로는 네이티브 로그인, 로그아웃, 거부, 세션 만료,
 모니터링 이력 복구를 증명하지 못합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 헬스체크: `gatus` 서비스는 `wget -qO- http://127.0.0.1:${GATUS_PORT}/health >/dev/null 2>&1 || exit 1` (interval 30s).
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,25 +1,48 @@
 ---
 title: "Software Development Lifecycle"
-version: "2.3.1"
+version: "3.0.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Software Development Lifecycle
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the contract payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
 
 Provide one lifecycle for human and agent work without duplicating document
 shape rules or executable gates.
 
-## Inputs
+#### Inputs
 
 An approved change uses its governing Requirements and Architecture, the active
 Spec Package, the current Task, and the registered Stage 99 contract.
 
-## Sequence
+#### Sequence
 
 1. **Requirements** — Stage 01 owns durable, solution-independent needs and
    acceptance criteria.
@@ -264,7 +287,7 @@ and `NOT_APPLICABLE` remain valid non-completion observations; they do not
 satisfy acceptance. Stage 99 and its validator own the machine shapes, so
 templates refer here for completion meaning.
 
-## Stop Conditions
+#### Stop Conditions
 
 Every transition requires the smallest applicable validation set, exact Task
 evidence, review by [risk](../04.quality/quality-standards.md#11-review-risk), and logical Conventional
@@ -278,15 +301,35 @@ Trace durable requirement IDs through Architecture and Spec packages. Record
 implementation and verification against the current Task rather than a parallel
 progress or handoff document.
 
-## Outputs
+#### Outputs
 
 The current Task records execution evidence, and the durable Requirement,
 Architecture, Operations, or governance owner receives any lasting meaning.
 
-## Related Documents
+#### Related Documents
 
 - [Governance hub](../../../.agents/README.md)
 - [Approval boundaries](../04.quality/approval-boundaries.md)
 - [Documentation protocol](documentation-protocol.md)
 - Stage 99 registry (`docs/99.templates/registry.json`)
 - [Documentation index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

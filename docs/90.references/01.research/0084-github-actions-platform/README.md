@@ -1,10 +1,13 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "2.4.1"
+version: "3.0.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: 'Reference: GitHub Actions Platform Mechanics'
+  layer: reference
+updated: "2026-11-20"
 layer: "references"
 artifact_id: "RES-0084"
 created: "2026-07-05"
@@ -13,11 +16,32 @@ observed_at: "2026-09-05"
 
 # Reference: GitHub Actions Platform Mechanics
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 이 저장소에 중요한 GitHub Actions 보안, 실행, 권한, identity,
 supply-chain, runner, remote-enforcement mechanics는 무엇이며, 그 가운데
@@ -33,7 +57,8 @@ cross-package routing 아래에서 GitHub Actions 전문 증거를 소유합니�
 현재 cross-category 결론은 RES-0002를 통해 route되고, 세부 workflow,
 Hosted, remote-control-plane 증거는 여기 남습니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - 저장소 baseline: `buenhyden/hy-home.docker`
   `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -46,7 +71,7 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 - Stage 90은 증거와 implication을 기록합니다. Workflow/configuration
   권위는 `.github/`에, 실행 증거는 소유 Task에, remote 사실은 날짜가 있는
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - Remote protection은 2026-09-05 read-back 시점에만 검증되었습니다;
   이후 상태는 다를 수 있습니다.
@@ -62,21 +87,21 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
   [main protection record](../../../../.github/rulesets/main-protection.md)가
   현재 기록을 소유합니다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
 | [m0001-platform-mechanics.md](m0001-platform-mechanics.md) | RES-0084-m0001: workflow 권한, OIDC, supply chain, runner, ruleset의 claim 단위 platform 분석 |
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 member의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
 - 현재 required check와 그 rollback 기준은
   [main protection record](../../../../.github/rulesets/main-protection.md)가
@@ -88,7 +113,8 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 - 어떤 구현이든 Requirement → Architecture/ADR → Spec → Plan → Task →
   검증 → 독립 검토를 거쳐 route합니다.
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - Member: [RES-0084-m0001](m0001-platform-mechanics.md).
 - Research index: [Research Packages](../README.md).
@@ -109,9 +135,10 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
   [research-member template](../../../99.templates/02.templates/90.references/research.template.md),
   [Registry](../../../99.templates/registry.json).
 
-### Checks
+##### Checks
 
-#### Method
+###### Method
+<!-- core-payload-level:4 -->
 
 1. 600줄짜리 package README를 남기거나 경쟁하는 research package를
    만드는 대신, 기존 platform 분석을 구성원으로 보존합니다.
@@ -124,7 +151,8 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 5. 분리 이후 구성원 identity, 링크, 생성된 index 신선도, public 저장소
    gate를 검증합니다.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [GitHub ruleset status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 - [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use).
@@ -137,7 +165,8 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 
 세부 source inventory와 claim 단위 분석은 구성원이 소유합니다.
 
-#### Findings
+###### Findings
+<!-- core-payload-level:4 -->
 
 아래 표는 2026-09-05의 관측입니다.
 
@@ -160,3 +189,23 @@ required check는 2026-10-07에 비워졌고 2026-10-16부터 App 15368의
 `candidate-quality` 하나입니다(`.github/rulesets/main-protection.md:53`, `:88`).
 `publish-release.yml`은 `main`에서 준비된 제품 버전을 수동으로 발행하는 경로를
 정의합니다. 이 설정 관측은 발행이나 배포 실행을 검증하지 않습니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

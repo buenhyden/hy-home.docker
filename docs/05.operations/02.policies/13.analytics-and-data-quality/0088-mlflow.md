@@ -1,10 +1,13 @@
 ---
 title: "MLflow Operations Policy"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0088"
 parent_ids:
@@ -15,31 +18,53 @@ next_review_at: "2027-05-13"
 
 # MLflow Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 MLflow는 OPTIONAL tracking 서비스다. MLflow의 데이터베이스와 artifact store는 공유
 인프라 위의 feature-owned 자원이며 공유 인프라의 권한을 절대 넓혀서는 안 된다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Laboratory architecture](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md)
 - [Image Dockerfile](../../../../infra/08-ai/mlflow/Dockerfile) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [MLflow Compose source](../../../../infra/08-ai/mlflow/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저닝, 인증, credential
 처리, backup/restore, 업그레이드, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -77,29 +102,32 @@ MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저
 - 업그레이드 전에 데이터베이스와 bucket을 함께 백업하고 격리 환경에서 restore를
   검증한다.
 
-#### 보존·삭제와 책임
+###### 보존·삭제와 책임
+<!-- core-payload-level:4 -->
 
 책임자는 `@buenhyden`이다. run 삭제는 metadata soft-delete이며 bucket의 저장
 공간 회수를 보장하지 않는다. artifact 정리는 참조·보존·복구본을 확인하고 별도로
 승인한다. `--allowed-hosts`나 gateway `/admins` 검사로 직접 peer 경로의 권한 통제가
 완료되었다고 주장하지 않는다. 기존 DB migration은 서버 재시작과 별도 변경이다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 `edge_net`, `ai_net`, `mng_data_net`, `object_net`의 직접 SDK 접근에는
 동등한 네이티브 사용자 인증이 선언되지 않았다. MLflow 레벨 인증
 경로가 승인될 때까지 받아들이고 기록해 둔 gap일 뿐, 보증이 아니다. 어떤 예외도 gateway
 SSO를 비활성화할 수 없다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, credential 회전 시 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 정적 profile 렌더링, provisioning 계약 테스트, 일회성 PostgreSQL 리허설. 런타임 검증은
 다음을 요구한다: 세션 없는 gateway 요청이 인증 경계에서 거부·로그인 redirect되고
@@ -107,7 +135,7 @@ MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, 
 round-trip한다, MLflow SeaweedFS user가 다른 bucket에서 거부된다, restore 리허설이
 수행된다.
 
-### Limits
+##### Limits
 
 다음 규칙은 정책이 이름 있는 자동 검사를 연결하지 않았다.
 
@@ -124,15 +152,35 @@ round-trip한다, MLflow SeaweedFS user가 다른 bucket에서 거부된다, res
 - run 삭제는 metadata soft-delete이며 bucket의 저장 공간 회수를 보장하지 않는다.
 - Mechanisms의 정적 profile 렌더링, provisioning 계약 테스트, 일회성 PostgreSQL 리허설은 어느 규칙에 대응하는지 정책이 연결하지 않았다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Guide](../../01.guides/13.analytics-and-data-quality/0088-mlflow.md) (`GDE-0088`)
 - [Runbook](../../03.runbooks/13.analytics-and-data-quality/0088-mlflow.md) (`RUN-0088`)
 - [Management database policy](../05.databases-and-storage/0028-management-database.md)
 - [SeaweedFS policy](../05.databases-and-storage/0024-seaweedfs.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

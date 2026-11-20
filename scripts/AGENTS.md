@@ -1,19 +1,43 @@
 ---
 title: "Scripts Agent Guide"
-version: "0.4.2"
+version: "1.0.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Scripts Agent Guide
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Scripts Agent Guide
 
-## Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Allowed Scope
+## 문서 개요
 
-#### Allowed Surface
+### 목적과 독자
+
+Readers use the agent-guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Scope
+
+##### Allowed Scope
+
+###### Allowed Surface
+<!-- core-payload-level:4 -->
 
 `scripts/` holds the executable gates: validators, hardening checks, hooks,
 operation commands and their shared libraries. This guide routes an agent that
@@ -23,12 +47,13 @@ changes or runs them. The human guide is [README.md](README.md).
 `scripts/knowledge/`, `scripts/operations/`, `scripts/security/`,
 `scripts/lib/<domain>/` and `scripts/manifest.yaml`.
 
-#### Non-goals
+###### Non-goals
+<!-- core-payload-level:4 -->
 
 Policy text is out of scope; a script implements a canonical rule and never
 becomes its owner.
 
-### Instruction Precedence
+##### Instruction Precedence
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
@@ -37,9 +62,9 @@ and this guide is corrected
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
 
-## Workflow
+#### Workflow
 
-### Intake
+##### Intake
 
 - [Bootstrap](../.agents/governance/bootstrap.md),
   [quality standards](../docs/00.workspace/04.quality/quality-standards.md),
@@ -58,15 +83,17 @@ canonical governance or a Stage contract.
 - Provider loading: [Claude adapter](../.claude/provider.md),
   [Codex adapter](../.codex/provider.md).
 
-### Execution
+##### Execution
 
-#### Inspect and Change
+###### Inspect and Change
+<!-- core-payload-level:4 -->
 
 - Inspect the selected gates with
   `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
   before running them.
 
-#### Local Obligations
+###### Local Obligations
+<!-- core-payload-level:4 -->
 
 - Register every new, moved or retired script in `scripts/manifest.yaml`; the
   Script Manifest check rejects an unregistered or orphaned script.
@@ -74,16 +101,16 @@ canonical governance or a Stage contract.
   `tests/lib/<domain>/`, and a CLI or entrypoint change a test in
   `tests/validation/`.
 
-## Boundaries
+#### Boundaries
 
-### Authority
+##### Authority
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
 [approval boundaries](../docs/00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
-### Secrets and External Effects
+##### Secrets and External Effects
 
 - Let the installed hooks check the reviewed index and message on an ordinary
   commit when their delivery has been confirmed. If delivery is unconfirmed or
@@ -99,26 +126,48 @@ has not granted, or when a required check fails.
   hand-edit them.
 - A script never prints, logs or writes a secret value.
 
-## Verification
+#### Verification
 
-### Checks
+##### Checks
 
 - `python3 scripts/validation/check-script-manifest.py`
 - `python3 scripts/operations/provider_surface_renderer.py --check`
 - `python3 scripts/validation/check-agent-governance-contract.py`
 
-### Reporting
+##### Reporting
 
-#### Evidence and Limits
+###### Evidence and Limits
+<!-- core-payload-level:4 -->
 
 Record each check's command, revision and exit in the current Task. These
 checks are static or local; they do not prove runtime state, native provider
 delivery, remote enforcement or owner acceptance.
 
-#### Handoff
+###### Handoff
+<!-- core-payload-level:4 -->
 
 Record progress, decisions and evidence in the current Task, and leave the
 next owner named there. Human-facing and related documents:
 
 - [Scripts README](README.md)
 - [Tests agent guide](../tests/AGENTS.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

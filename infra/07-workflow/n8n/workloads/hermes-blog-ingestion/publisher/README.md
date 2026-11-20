@@ -1,19 +1,43 @@
 ---
 title: "Hermes 로컬 발행기"
-version: "0.3.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Hermes 로컬 발행기
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 완료된 구조화 결과와 연결된 원본을 제한적으로 읽고 영속 대기함에 보존합니다.
 Blog-data `dev`의 고정 계약을 사용하는 어댑터와 합성 시험을 준비했지만 실제
@@ -32,7 +56,8 @@ Gateway 계약에 맞춘 전송 값은 밀리초 단위로 내리므로 최대 9
 문자열의 SHA-256도 대기함에 고정합니다. 이후 전송 또는 재전송에서 어느 하나라도
 달라지면 실패하며 다른 endpoint로 조용히 전송하지 않습니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 호출자가 선택한 검증기의 정확한 다이제스트와
 `validate(data)`로 구조를 확인합니다. Publisher는 별도로 디렉터리 기준의
@@ -45,7 +70,8 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 심볼릭 링크·경로 이탈·해시 불일치·미완료·비공개 입력을 거부합니다.
 여기서 선택하는 기준 경로는 홈 전체에 대한 접근이나 연결 권한을 뜻하지 않습니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - [cli.py](cli.py): 파일 준비·집계 상태·제한된 전송과 `attest-queue` 명령입니다.
 - [attestation.py](attestation.py): Blog-data `attestation/2` 서명 메시지(확인된 항목·증거 해시 포함), 서명 키 보관 검사와 Gateway 응답 분류입니다.
@@ -66,7 +92,7 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 - [gateway_transport.py](gateway_transport.py): 조건을 확인한 동일 요청 재전송을 선택적으로 연결합니다.
 - [\_\_init\_\_.py](__init__.py): 패키지 진입점입니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -74,7 +100,8 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 | `dispatch` relay endpoint 전송 | `python -I -m publisher.cli dispatch` | 고정 relay endpoint(Gateway) | `이름: 값` 인증 헤더 파일과 고정 계약 요청을 endpoint SHA-256과 함께 대기함에 결속하며 HTTP 시간 제한은 45초이다 | 신뢰 판정 실패는 `blocked`, 401·403·409는 `failed`, 5xx·응답 유실은 `uncertain`이며 `--allow-replay` 없이 재전송하지 않는다 |
 | `attest` POST `/v1/ingestions/{report-id}/attestations` | `python -I -m publisher.cli attest`(별도 서명 계정) | 고정 Gateway 주소의 Blog-data Attestation | `dispatch`와 같은 신뢰 판정을 통과한 같은 요청 바이트로 Blog-data Attestation을 한 번 POST한다 | 결과는 `attested`·`rejected`·`retry`(429·5xx·통신 실패)·`blocked`이며 `attested`만 종료 코드 0이다 |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 `stage`에는 내보내기·원본·아이디어 기준 경로, 검토된 검증기 경로와 다이제스트,
 전용 대기함 경로를 모두 지정합니다. 실제 대상은 연결된 운영 절차에서
@@ -99,7 +126,8 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 파일별 8 MiB, 한 후보의 합계 32 MiB로 읽기를 제한합니다.
 일괄 처리는 후보별로 보존하므로 뒤의 실패가 앞의 성공을 취소하지 않습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 `dispatch`는 대기함, 고정 relay endpoint, `이름: 값` 한 줄의 인증 헤더 파일을
 받습니다. 인증 파일은 실행 계정 소유이고 그룹·기타 권한이 없어야 하며 인자·
@@ -131,15 +159,16 @@ Gateway 주소의 `/v1/ingestions/{report-id}/attestations`에 한 번 POST합�
 실패), `blocked`(신뢰 실패)이며 `attested`만 종료 코드 0입니다. 절차는
 [워크로드 설명](../README.md#attestation과-resource-export)을 따릅니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 없음: Compose나 Dockerfile 없이 파일 20개(`__init__.py`, `attestation.py`, `attester.py`, `candidates.py`, `cli.py`, `delivery.py`, `evidence.py`, `files.py`, `gateway_adapter.py`, `gateway_receipt.py`, `gateway_transport.py`, `http_transport.py`, `outbox.py`, `policy.py`, `private_records.py`, `producer-keys.json`, `source_check.py`, `source_collection.py`, `source_fetch.py`, `trust.py`)만 포함한다. 실행은 상위 `hermes-blog-ingestion/README.md`의 보호 설치 release venv에서 `python -I -m publisher.cli`로 한다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 워크로드 디렉터리에서 아래 도움말로 인자를 확인합니다. 도움말은 원본을 읽거나
 대기함을 생성하지 않습니다.
@@ -155,11 +184,12 @@ python3 -m publisher.cli dispatch --help
 `<release>/venv/bin/python -I -m publisher.cli <명령>`처럼 합니다.
 `verify-install`은 런타임 보호와 키 저장소 해석만 확인하고 키 개수를 출력합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Verification
+###### Verification
+<!-- core-payload-level:4 -->
 
 같은 실행과 내용은 중복으로 처리하고 다른 내용은 최초 보존본과 충돌 증거를
 유지합니다. 전송 본문·계약 개정·목적지의 결합은 재시작 후에도 유지합니다.
@@ -198,19 +228,42 @@ Gateway 전달은 검증되지 않았습니다. PR #695 병합 시점의 전체 
 151건이었습니다. 생산자 인증을 추가한 현재 소스의 수치는 `SPEC-0204-TSK-0022`의
 최신 기록을 따르며, 운영 n8n·Gateway 전달과 Windows 수신은 포함하지 않습니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0053: `docs/05.operations/03.runbooks/08.workflows-and-automation/0053-n8n.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [수집 전송 소스](../README.md)
 - [시험](../tests/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 이 폴더는 헬스체크를 선언하지 않는다. 대기함 상태는 `python3 -m publisher.cli status`가 상태별 건수로 보고하며, `uncertain` 항목은 `--allow-replay` 없이 다시 보내지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

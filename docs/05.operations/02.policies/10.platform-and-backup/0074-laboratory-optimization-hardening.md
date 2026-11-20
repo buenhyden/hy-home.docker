@@ -1,10 +1,13 @@
 ---
 title: "Admin and Experiment Tools Hardening Operations Policy"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -15,19 +18,40 @@ next_review_at: "2027-05-13"
 
 # Admin and Experiment Tools Hardening Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 여러 tier의 관리·실험 기능 최적화/하드닝 운영 정책을 정의한다. 관리 UI 보안 경계, 실험성 서비스 운영 통제, 카탈로그 확장 승인 게이트를 명문화한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - 상위 문서: [Administration and Experimentation Architecture Description](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 
 - 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 
-### Applies To
+##### Applies To
 
 - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`; JupyterLab LAB은 `labs/jupyterlab/docker-compose.yml`과 `labs/jupyterlab/`(SPEC-0262)
 - `.env.example` (`ADMIN_UI_ALLOWED_CIDRS`)
@@ -36,13 +60,14 @@ next_review_at: "2027-05-13"
 - **Systems**: dozzle, redisinsight, open-notebook, surrealdb, mlflow, JupyterLab LAB
 - **Environments**: 단일 HOME/DEV 호스트의 관리 환경(별도 stage·production 환경은 없다)
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -82,7 +107,8 @@ next_review_at: "2027-05-13"
   - 인증 우회 direct 노출 복원
   - 감사 기준 없이 운영 캐시 직접 수정
 
-#### Catalog Expansion Approval Gates
+###### Catalog Expansion Approval Gates
+<!-- core-payload-level:4 -->
 
 - **dashboard 승인 조건**:
   - 실험성 dashboard 접근 만료 정책(자동 종료 기준) 문서화
@@ -97,28 +123,30 @@ next_review_at: "2027-05-13"
   - notebook data retention/expiration 기준 문서화
   - API/SurrealDB host-bound port 노출 필요성, 방화벽, 접근 경계 evidence 기록
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
 - 예외 종료 후 동일 릴리스 내 기준선 복구 및 재검증을 수행한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 월 1회 정기 검토
 - allowlist/권한/노출 정책 변경 시 수시 검토
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-### Limits
+##### Limits
 
 정책은 compose 검증, hardening 검사, template baseline, traceability 검사를 나열하지만 아래 규칙은 규칙과 직접 연결된 검사가 없거나 수동에 의존한다.
 
@@ -130,16 +158,36 @@ next_review_at: "2027-05-13"
 - Open Notebook API/SurrealDB 노출은 현재 경계로 기록되며 production-like promotion 전 direct exposure review가 필요하다.
 - 월 1회 정기 검토는 자동 점검이 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - 동일 주제 문서: [Guide](../../01.guides/10.platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../../03.runbooks/10.platform-and-backup/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../01.guides/10.platform-and-backup/0074-laboratory-optimization-hardening.md)
 - [Recovery runbook](../../03.runbooks/10.platform-and-backup/0074-laboratory-optimization-hardening.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

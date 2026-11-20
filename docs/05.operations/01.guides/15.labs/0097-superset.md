@@ -1,10 +1,13 @@
 ---
 title: "Superset Usage Guide"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0097"
 parent_ids:
@@ -20,13 +23,33 @@ next_review_at: "2027-05-13"
 
 # Superset Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영자가 접근 방식과 명령의 부작용을 이해하고 정상 사용·점검 방법을 찾을 때 읽는다.
 
-### Outcome
+##### Outcome
 
 Superset은 root Compose에서 분리된 독립 LAB `labs/superset/docker-compose.yml`의 BI 웹 애플리케이션이며 LAB
 profile `lab-superset`으로 선택된다(SPEC-0262). Trino를 통해 레이크하우스 테이블을 탐색하고 차트로 만드는
@@ -35,7 +58,8 @@ profile `lab-superset`으로 선택된다(SPEC-0262). Trino를 통해 레이크�
 
 Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영자를 위한 문서다. 접근 방식과 명령의 부작용을 이해하고 정상 사용·점검 방법을 찾는 것이 목표다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/15.labs/0097-superset.md) (`POL-0097`)
 - [Runbook](../../03.runbooks/15.labs/0097-superset.md) (`RUN-0097`)
@@ -43,17 +67,19 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
 - [Lakehouse guide](0094-lakehouse.md)
 - SPEC-0262 Analytics labs migration
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Superset package README](../../../../labs/superset/README.md)
 - [Superset Compose source](../../../../labs/superset/docker-compose.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [Superset configuration](https://superset.apache.org/docs/configuration/configuring-superset)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 - **Image.** [Superset Compose](../../../../labs/superset/docker-compose.yml)는
   `apache/superset`에 PostgreSQL 드라이버, Authlib, `requirements.txt`에
@@ -91,15 +117,16 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
   tmpfs를 둔 읽기 전용 루트다. UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}`에만
   게시된다.
 
-### Authority
+##### Authority
 
 secret은 LAB 전용 `lab_superset_<purpose>`이며 mng-pg 관리자·Superset DB 비밀번호, signing key, OIDC client secret의 LAB 사본은 별도 승인 아래 준비한다. 렌더링 외 명령은 활성 lease와 승인된 mng-pg endpoint가 필요하다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Identity-specific behavior
+###### Identity-specific behavior
+<!-- core-payload-level:4 -->
 
 `superset-init`과 `superset` app은 같은 build와 config를 쓰지만, app은 upstream gunicorn command를 실행하고 init은 db upgrade, init, Trino URI 등록을 실행한다. provision은 PostgreSQL runner로 별도 metadata DB와 role을 만든다. 공유 PostgreSQL을 복원하면 다른 consumer에도 영향이 간다. Keycloak OIDC, PKCE S256, Gamma 등록은 유지하고 Admin identity 매칭은 별도로 검증한다. Secret signing key는 encrypted metadata 연결을 복원할 때도 필요하다. Trino URI의 superset user는 인증 없는 SQL의 표시값이며 DB 권한 경계가 아니다. 직접 package pin은 transitive lock이 아니며 `/health`는 OIDC나 SQL query의 증거가 아니다. 실행 버전은 [Dockerfile](../../../../labs/superset/Dockerfile)이 소유한다.
 
@@ -111,7 +138,8 @@ secret은 LAB 전용 `lab_superset_<purpose>`이며 mng-pg 관리자·Superset D
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-#### Commands and side effects
+###### Commands and side effects
+<!-- core-payload-level:4 -->
 
 표의 `LAB`은 `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset`다. `LAB config`
 렌더링만 승인 없이 안전하며, 그 외 명령은 `python3 scripts/operations/lab.py check|up|down superset`의
@@ -124,24 +152,46 @@ secret은 LAB 전용 `lab_superset_<purpose>`이며 mng-pg 관리자·Superset D
 | `LAB run --rm superset-init` | 마이그레이션과 역할 동기화 재실행(업그레이드 후) |
 | `LAB exec superset superset fab create-admin --username <keycloak username> …` | 해당 사용자의 첫 OIDC 로그인 전에 Admin 생성 |
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 최초 설정, 로그인 실패, 업그레이드는 [runbook](../../03.runbooks/15.labs/0097-superset.md)을 따른다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [RUN-0097](../../03.runbooks/15.labs/0097-superset.md)를 따른다. 최초 설정, 로그인 실패, 업그레이드를 다룬다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

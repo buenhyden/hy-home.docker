@@ -1,10 +1,13 @@
 ---
 title: "Open Notebook Usage Guide"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # Open Notebook Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 OPTIONAL 노트북 워크스페이스를 `notebook` selector로 켜고 쓰는 Laboratory Operator와 `@buenhyden`.
 
-### Outcome
+##### Outcome
 
 Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_notebook` 서비스는
 오직 `notebook`에만 속한다. 소유자 커밋 `d5912ab03`가 이를 포괄 `admin` selector에서
@@ -35,7 +58,8 @@ Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_noteb
 
 Laboratory Operator와 `@buenhyden`이 OPTIONAL 노트북 워크스페이스를 `notebook` selector로 켜고 쓰는 경우를 다룬다. 목표는 승인된 비밀번호와 허용된 모델/provider만으로 노트북을 사용하고, 데이터·키·이미지 한계를 알고 운영하는 것이다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/09.ai-and-search/0073-open-notebook.md) (`POL-0073`)
 - [Runbook](../../03.runbooks/09.ai-and-search/0073-open-notebook.md) (`RUN-0073`)
@@ -45,11 +69,12 @@ Laboratory Operator와 `@buenhyden`이 OPTIONAL 노트북 워크스페이스를 
 - [Open Notebook deployment](https://github.com/lfnovo/open-notebook/blob/main/README.md)
 - [SurrealDB backups and recovery](https://surrealdb.com/docs/manage/self-hosted/backups-and-recovery)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 현재 구현과 데이터
+###### 현재 구현과 데이터
+<!-- core-payload-level:4 -->
 
 - [Open Notebook Compose](../../../../infra/08-ai/open-notebook/docker-compose.yml)가
   app 서비스, 라우트, app-data 볼륨, secret, healthcheck를 정의한다.
@@ -69,19 +94,21 @@ Laboratory Operator와 `@buenhyden`이 OPTIONAL 노트북 워크스페이스를 
   provider·모델 준비, 저장된 모델 등록과 노트북 기능은 별도 증거가 필요하다. 디렉터리
   health 역시 마운트 가용성만 증명한다.
 
-### Authority
+##### Authority
 
 필요한 Docker secret은 `open_notebook_password`, `open_notebook_encryption_key`, `surreal_db_password`이며 값은 기록하지 않는다. UI 라우트는 admin CIDR 허용목록과 Open Notebook 앱 비밀번호를 사용한다. 자세한 내용은 Environment의 현재 구현과 데이터에 있다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### 일반적인 사용, 백업, 업그레이드
+###### 일반적인 사용, 백업, 업그레이드
+<!-- core-payload-level:4 -->
 
 실행 순서와 실패·복구 판단은 [런북](../../03.runbooks/09.ai-and-search/0073-open-notebook.md)의 `승인된 사용과 일관된 복구 세트` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-#### 정상 사용과 이미지 한계
+###### 정상 사용과 이미지 한계
+<!-- core-payload-level:4 -->
 
 승인된 비밀번호로 노트북·소스를 선택하고 허용된 모델/provider만 사용한다.
 `open_notebook`은 SurrealDB health를 기다리지만 선택적 Ollama URL에 readiness
@@ -92,7 +119,8 @@ SurrealDB v2 binary를 [로컬 Dockerfile](../../../../infra/08-ai/open-notebook
 선택한 이미지 식별자·호환성·자격 증명 복호화 결과를 별도 승인된 검증으로 확인한다.
 자원·마운트 설정은 Compose가 소유하며 프로필 분리가 물리적 격리를 뜻하지 않는다.
 
-#### P03 모델 등록 경계
+###### P03 모델 등록 경계
+<!-- core-payload-level:4 -->
 
 P03의 현재 로컬 source 계약은 `gemma4:e2b` chat과
 `embeddinggemma-2:740m` 768차원 embedding 후보를 지정한다. 이는 모델 다운로드,
@@ -106,20 +134,21 @@ Ollama 추론, provider credential, Notebook 저장 등록 또는 사용자 기�
 embedding 작업은 terminal job 상태와 저장된 model association을 별도로 확인해야 하며,
 취소 응답·`/health`·SurrealDB health는 그 증거가 아니다.
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --profile notebook config --quiet`
 - `docker compose --profile notebook config --services`
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - `open_notebook`이 기동하지 않으면 `surrealdb` health를 먼저 확인한다. 앱은 DB가 healthy가 된 뒤에만 시작한다.
 - 저장된 provider key를 읽을 수 없으면 쓰기를 멈추고 [runbook](../../03.runbooks/09.ai-and-search/0073-open-notebook.md)의 진단 절차를 따른다. 암호화 키를 새 값으로 덮어쓰지 않는다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 데이터베이스/키/provider 복구와 업그레이드에는
 [runbook](../../03.runbooks/09.ai-and-search/0073-open-notebook.md)을 사용한다.
@@ -128,6 +157,26 @@ embedding 작업은 terminal job 상태와 저장된 model association을 별도
 `open_notebook_encryption_key`가 함께 필요하다. API가 null 기본값 복원을 지원한다고
 가정하지 않으며, 실제 복구는 별도 승인된 격리 절차의 증거가 있을 때만 기록한다.
 
-### Next Action
+##### Next Action
 
 데이터베이스/키/provider 복구와 업그레이드는 [runbook](../../03.runbooks/09.ai-and-search/0073-open-notebook.md)의 진단 절차를 따른다. 복구 수용은 별도 승인된 격리 절차의 증거가 있을 때만 기록한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

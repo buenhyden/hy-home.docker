@@ -1,10 +1,13 @@
 ---
 title: "Harness Maintenance"
-version: "0.1.0"
+version: "1.0.0"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-11-19"
 observed_at: "2026-11-19"
 review_cycle: "on-tool-change"
@@ -12,7 +15,27 @@ review_cycle: "on-tool-change"
 
 # Harness Maintenance
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the knowledge payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
 
 How a person keeps the workspace's local agent tooling healthy: the shared
 agent memory store, session capture, scheduled session analysis, task
@@ -23,7 +46,7 @@ these tools is agent procedure in `.agents/governance/`, and product backup and
 restore stays in
 [RUN-0021](../../05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md).
 
-## Scope
+#### Scope
 
 Included: `scripts/operations/agent_memory.py`, `scripts/lib/hooks/session_capture.py`,
 `scripts/operations/session_analysis.py`, `scripts/operations/task_forecast.py`,
@@ -33,16 +56,17 @@ Excluded: product services, backups (the shared memory store is excluded from
 backup, as RUN-0021 records), and any approval, gate or Task acceptance. No
 store here is evidence of approval or acceptance.
 
-## Rules
+#### Rules
 
-### Shared agent memory store
+##### Shared agent memory store
 
 The entrypoint is `scripts/operations/agent_memory.py`. `scripts/lib/ops/memory_cli.py`
 interprets commands and `scripts/lib/ops/memory_capacity.py` keeps the capacity
 ledger and request records. Shared memory is not backed up, so this guide owns
 only ledger adoption and lookup.
 
-#### Capacity and first adoption
+###### Capacity and first adoption
+<!-- core-payload-level:4 -->
 
 The memory database keeps schema 3 and its per-body and database limits, and a
 separate `.workspace-memory/capacity.sqlite3` with `capacity.lock` manages a
@@ -66,7 +90,8 @@ exit 4 instead of deleting memory to reset. The same input under the same
 `request_key` is not run twice, and a reservation whose result is unknown keeps
 counting and is not released by elapsed time.
 
-#### Selective lookup
+###### Selective lookup
+<!-- core-payload-level:4 -->
 
 ```bash
 python3 scripts/operations/agent_memory.py search --query "backup recovery" --limit 10
@@ -112,7 +137,8 @@ exceeding one never deletes existing memory. Worktrees use this schema 3 CLI
 and its helpers together; an older CLI does not keep the reuse and capacity
 contract.
 
-#### Record meaning, baselines and selective deletion
+###### Record meaning, baselines and selective deletion
+<!-- core-payload-level:4 -->
 
 A record has a `--kind` separate from its tier (`session-context`, `decision`,
 `experience`), a repository baseline, `--observed-at`, optional
@@ -148,7 +174,7 @@ Memory is not backed up, so there is no backup copy to delete.
 The store Claude and Codex share (`.workspace-memory/memory.sqlite3`) is ignored
 by Git, so Git cannot restore it, and backup excludes it.
 
-### Session capture
+##### Session capture
 
 `scripts/lib/hooks/session_capture.py` records this workspace's user prompts,
 with secret values masked, and event metadata from the shared hook dispatcher
@@ -172,7 +198,7 @@ policy, approval or Task acceptance. A test that runs a real hook points
 `HY_HOME_CAPTURE_DIR` at a temporary directory so no test session lands in the
 operating capture.
 
-### Scheduled session analysis
+##### Scheduled session analysis
 
 `scripts/operations/session_analysis.py` analyses the capture with
 deterministic rules and no language model (owner decision, 2026-11-18). It
@@ -202,7 +228,7 @@ and approval. Missing capture or a failed analysis never blocks a commit, push
 or other work. Remove the timer with
 `systemctl --user disable --now hy-home-session-analysis.timer`.
 
-### Task forecasts
+##### Task forecasts
 
 `scripts/operations/task_forecast.py` records P30, P50 and P80 completion
 minutes before a task starts, records the outcome once afterwards, and scores
@@ -231,7 +257,7 @@ is a planning reference, never a deadline, an approval or a reason to skip a
 required check, and the completion distribution of parallel work is not the sum
 of per-task P80s.
 
-### Parallel work dispatch
+##### Parallel work dispatch
 
 `scripts/operations/work_dispatch.py` runs the work units of a JSON plan as shell
 workers, each in its own Git worktree. A unit names its command, dependencies,
@@ -261,7 +287,7 @@ the workers of a run whose dispatcher died, removes its worktrees and releases
 its leases. Measure a parallel gain against the same plan with one worker,
 setup and integration included, and state the sample size.
 
-### Observe report
+##### Observe report
 
 `scripts/operations/observe.py report` counts what happened in a time window
 (default the last 24 hours) across the capture store, session analysis runs,
@@ -281,9 +307,9 @@ failure is resolved in its owner record.
 python3 scripts/operations/observe.py report --since 2026-11-12T00:00:00+00:00
 ```
 
-## Evidence
+#### Evidence
 
-### Provenance
+##### Provenance
 
 On 2026-11-19 SPEC-0212 TSK-0097 moved the shared memory, session capture,
 session analysis, forecast, dispatch and observe sections of RUN-0021 (1.22.0)
@@ -291,15 +317,35 @@ here, translated from Korean without changing a command, limit or exit code.
 RUN-0021 keeps product backup and restore and the backup exclusion of shared
 memory.
 
-### Refresh Triggers
+##### Refresh Triggers
 
 - A command, store path, limit or exit code of a tool above changes.
 - A tool is added to or retired from the workspace harness.
 - The backup exclusion of shared memory changes.
 
-## Related Documents
+#### Related Documents
 
 - [Environment onboarding](../05.environment/onboarding.md)
 - [RUN-0021 Backup and Restore](../../05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md)
 - [Environment constraints](../../../.agents/governance/environment-constraints.md)
 - [Scripts README](../../../scripts/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

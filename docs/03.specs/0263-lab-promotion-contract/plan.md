@@ -1,10 +1,13 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "0.3.4"
+version: "1.0.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0263-PLAN-0001"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-11-05"
 
 # LAB Promotion Contract Plan
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Goal and Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the plan payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Goal and Boundary
 
 The plan has five steps:
 
@@ -56,25 +79,25 @@ checkboxes. Run each test through the Python 3.12 controller venv
 
 Parent Spec: [Spec](spec.md)
 
-### Assumptions
+##### Assumptions
 
 The plan works under the approved SPEC-0263; it assumes no authority beyond it. No runtime, data or secret state changes.
 
-## Dependencies
+#### Dependencies
 
-### Prerequisites
+##### Prerequisites
 
 The approved Spec and the related plan:
 
 - [Analytics LAB migration Plan](../0262-analytics-labs-migration/plan.md)
 
-### Dependency Order
+##### Dependency Order
 
 W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after W1 and W2; W5 starts after W2 and W4; W6 starts after W1-W5; W7 starts after W1-W6; W8 starts after W1-W7.
 
-## Implementation Strategy
+#### Implementation Strategy
 
-### Work Breakdown
+##### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -87,7 +110,8 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
 | W7 | 5, 8 | Amend the resource rule to reservations plus an external-workload allowance; declare reservations in the shared templates from measurements; make the section 5 owner check items non-blocking in readiness and `lab.py check` | W1-W6 | TSK-0002 | `test_lab_controller`; readiness and check on HOME; full suite; hardening |
 | W8 | 3 | Retire the supabase LAB: delete `labs/supabase/`, its Guide, Runbook and Policy and its catalog rows; move the SMTP01 retirement sections into RUN-0106; remove the `vector` socket allowance so no LAB binds the Docker socket | W1-W7 | TSK-0003 | LAB suites; secret suites; catalog check; hardening; root render; document checks; full suite |
 
-#### Global Constraints
+###### Global Constraints
+<!-- core-payload-level:4 -->
 
 - **Paths.** A LAB entrypoint is exactly `labs/<name>/docker-compose.yml`.
   The manifest is exactly `labs/<name>/promotion.yaml`. Only `labs/README.md`
@@ -103,7 +127,8 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
 - **Readiness results.** A value the readiness check cannot measure is
   `NOT_RUN`, and a `NOT_RUN` criterion fails the report.
 
-#### Review Focus
+###### Review Focus
+<!-- core-payload-level:4 -->
 
 1. **Relative paths after the move.** Moving a Compose file one folder deeper
    changes the base that relative paths resolve against. A missed path renders
@@ -125,7 +150,8 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
 
 ---
 
-#### W1: `lab.py` layout, manifest and socket refusal
+###### W1: `lab.py` layout, manifest and socket refusal
+<!-- core-payload-level:4 -->
 
 **Files:**
 
@@ -224,7 +250,8 @@ phrase:**
 - [ ] **Step 5: Commit.**
   `feat: Resolve LAB folders and validate promotion manifests`.
 
-#### W2: Standard layout for the 15 LABs
+###### W2: Standard layout for the 15 LABs
+<!-- core-payload-level:4 -->
 
 **Files:**
 
@@ -308,12 +335,14 @@ in the Task:
 - [ ] **Step 5: Commit** after each LAB, then commit the references:
   `refactor: Move the <name> LAB into labs/<name>/`.
 
-#### W3: supabase on LAB secret copies
+###### W3: supabase on LAB secret copies
+<!-- core-payload-level:4 -->
 
 Withdrawn. The owner retired the supabase LAB on 2026-11-06, and W8 removed
 it, so its secrets were never moved to LAB copies.
 
-#### W4: Promotion readiness check
+###### W4: Promotion readiness check
+<!-- core-payload-level:4 -->
 
 **Files:**
 
@@ -390,7 +419,8 @@ is `FAIL` when any criterion fails, and `NOT_RUN` in the remaining cases.
     result.
 - [ ] **Step 5: Commit.** `feat: Add the LAB promotion readiness check`.
 
-#### W5: Promotion operations documents
+###### W5: Promotion operations documents
+<!-- core-payload-level:4 -->
 
 **Files:**
 
@@ -431,7 +461,8 @@ is `FAIL` when any criterion fails, and `NOT_RUN` in the remaining cases.
   Expected: PASS.
 - [ ] **Step 4: Commit.** `docs: Add LAB promotion policy, runbook and cluster LAB documents`.
 
-#### W6: Evidence
+###### W6: Evidence
+<!-- core-payload-level:4 -->
 
 - [ ] **Step 1: Run the Verification Plan.** Record each result in the Task
   as an Evidence row with the revision it examined.
@@ -440,7 +471,8 @@ is `FAIL` when any criterion fails, and `NOT_RUN` in the remaining cases.
 - [ ] **Step 3: Leave criteria pending.** Set each Criterion Acceptance row to
   `pending`; the owner accepts them.
 
-#### W7: Reservations and owner check items
+###### W7: Reservations and owner check items
+<!-- core-payload-level:4 -->
 
 Spec 0.3.0 (owner decisions, 2026-11-06) changes the resource rule from summed
 limits to summed reservations plus an external-workload allowance. It also
@@ -515,7 +547,8 @@ turns two section 5 sub-checks into owner check items.
 The HOME services pick up the new reservations only when they are recreated,
 in an owner window. This work unit restarts nothing.
 
-#### W8: Retire the supabase LAB
+###### W8: Retire the supabase LAB
+<!-- core-payload-level:4 -->
 
 Spec 0.4.0 (owner decision, 2026-11-06) removes the supabase LAB. No LAB is
 promoted.
@@ -544,13 +577,13 @@ promoted.
 hardening, a root render, the document checks and the full suite, recorded in
 TSK-0003.
 
-### Change and Rollback
+##### Change and Rollback
 
 **Rollback.** Revert the branch. No runtime, data or secret state changes.
 
-## Verification Plan
+#### Verification Plan
 
-### Verification Matrix
+##### Verification Matrix
 
 **Local checks:**
 
@@ -566,13 +599,13 @@ TSK-0003.
 
 **The readiness run.** One read-only `lab.py readiness` run on HOME.
 
-### Stage Placement
+##### Stage Placement
 
 The Plan places no stage-specific checks beyond the Verification Matrix; the Task records each run.
 
-## Risks
+#### Risks
 
-### Risks and Mitigations
+##### Risks and Mitigations
 
 | Risk | Handling |
 | --- | --- |
@@ -580,20 +613,40 @@ The Plan places no stage-specific checks beyond the Verification Matrix; the Tas
 | The large reference rename touches terminal or Stage 90 records | W2 excludes them; the link checker decides any residue |
 | The proposed reserve is too small or too large | It is one policy value plus one constant, changed together |
 
-### Escalation
+##### Escalation
 
 The Spec states: "This Spec promotes no LAB and starts no container."
 
-## Promotion Map
+#### Promotion Map
 
-### Durable Meaning
+##### Durable Meaning
 
 The LAB folder layout, manifest and promotion readiness contract live in `lab.py`, the promotion policy and Runbook, and the Stage 05 operations documents.
 
-### Owner and Receipt
+##### Owner and Receipt
 
 Owner @buenhyden. The receipts are TSK-0001, TSK-0002 and TSK-0003, named in the Work Breakdown Task column.
 
 - [Task](01.tasks/tsk-0001-lab-promotion-contract.md)
 - [Reservations Task](01.tasks/tsk-0002-lab-promotion-reservations.md)
 - [supabase LAB retirement Task](01.tasks/tsk-0003-retire-supabase-lab.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

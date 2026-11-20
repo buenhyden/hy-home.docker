@@ -21,7 +21,16 @@ from scripts.lib.document_governance.metadata.profile import Finding, Record, _f
 # Lifecycle state and review dates are independent of the content version
 # (documentation protocol, Version objects): an edit confined to them is no
 # content change.
-_LIFECYCLE_KEYS = frozenset({"status", "updated", "reviewed_at", "next_review_at"})
+_LIFECYCLE_KEYS = frozenset(
+    {
+        "status",
+        "lifecycle",
+        "document_lifecycle",
+        "updated",
+        "reviewed_at",
+        "next_review_at",
+    }
+)
 
 
 def _typed_value(value: object) -> object:
@@ -114,7 +123,20 @@ def version_change_findings(
                 "the merge base; raise it or restore the base version"
             )
         else:
-            continue
+            old_core, _ = semver.parse_semver(base)
+            new_core, _ = semver.parse_semver(head)
+            if new_core[0] > old_core[0] and any(new_core[1:]):
+                code = "version-major-reset"
+                message = "a document MAJOR increase resets MINOR and PATCH to zero"
+            elif (
+                new_core[:1] == old_core[:1]
+                and new_core[1] > old_core[1]
+                and new_core[2]
+            ):
+                code = "version-minor-reset"
+                message = "a document MINOR increase resets PATCH to zero"
+            else:
+                continue
         findings.append(_finding(record, code, message))
     return findings
 

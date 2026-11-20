@@ -11,6 +11,7 @@ import pathlib
 import posixpath
 import re
 import subprocess
+import unicodedata
 import urllib.parse
 from collections.abc import Iterable, Mapping
 from html.parser import HTMLParser
@@ -423,7 +424,7 @@ def _markdown_destinations(
 
 
 def _slug(value: str) -> str:
-    text = re.sub(r"<[^>]+>", "", value).strip().lower()
+    text = re.sub(r"<[^>]+>", "", unicodedata.normalize("NFC", value)).strip().lower()
     text = re.sub(r"[`*_~]", "", text)
     text = re.sub(r"[^\w\- ]", "", text, flags=re.UNICODE)
     return re.sub(r"[ -]+", "-", text).strip("-")
@@ -432,6 +433,7 @@ def _slug(value: str) -> str:
 def _headings(text: str) -> tuple[str, ...]:
     values: list[str] = []
     counts: dict[str, int] = {}
+    used: set[str] = set()
     for _, line in _unfenced_lines(text):
         match = _HEADING.match(line)
         if match is None:
@@ -440,9 +442,18 @@ def _headings(text: str) -> tuple[str, ...]:
         if not base:
             continue
         count = counts.get(base, 0)
+        anchor = base if count == 0 else f"{base}-{count}"
+        while anchor in used:
+            count += 1
+            anchor = f"{base}-{count}"
         counts[base] = count + 1
-        values.append(base if count == 0 else f"{base}-{count}")
+        used.add(anchor)
+        values.append(anchor)
     return tuple(values)
+
+
+def _nfc_path(path: pathlib.PurePosixPath) -> pathlib.PurePosixPath:
+    return pathlib.PurePosixPath(unicodedata.normalize("NFC", path.as_posix()))
 
 
 def _normalized_target(
@@ -451,9 +462,11 @@ def _normalized_target(
 ) -> tuple[pathlib.PurePosixPath, str | None, bool, bool] | None:
     if not raw or _URL.match(raw):
         return None
-    unquoted = urllib.parse.unquote(raw)
-    without_query = unquoted.split("?", 1)[0]
-    path_text, separator, fragment = without_query.partition("#")
+    before_fragment, separator, raw_fragment = raw.partition("#")
+    path_text = unicodedata.normalize(
+        "NFC", urllib.parse.unquote(before_fragment.split("?", 1)[0])
+    )
+    fragment = unicodedata.normalize("NFC", urllib.parse.unquote(raw_fragment))
     if not path_text:
         return source, (fragment if separator and fragment else None), False, False
     absolute = path_text.startswith("/")
@@ -462,7 +475,7 @@ def _normalized_target(
         combined = clean
     else:
         combined = posixpath.join(source.parent.as_posix(), clean)
-    normalized = posixpath.normpath(combined)
+    normalized = unicodedata.normalize("NFC", posixpath.normpath(combined))
     outside = normalized == ".." or normalized.startswith("../")
     target = pathlib.PurePosixPath(normalized.lstrip("/"))
     return target, (fragment if separator and fragment else None), absolute, outside
@@ -799,12 +812,36 @@ def build_document_graph(
             continue
         nodes.append(DocumentNode(relative, text, metadata, _headings(text)))
         links.extend(parse_local_markdown_links(relative, text))
+    canonical_paths: dict[pathlib.PurePosixPath, list[pathlib.PurePosixPath]] = (
+        collections.defaultdict(list)
+    )
+    for node in nodes:
+        canonical_paths[_nfc_path(node.path)].append(node.path)
+    for equivalent in canonical_paths.values():
+        if len(equivalent) > 1:
+            input_findings.extend(
+                LinkFinding(
+                    str(path),
+                    "document-path-normalization-collision",
+                    ", ".join(map(str, equivalent)),
+                )
+                for path in equivalent
+            )
+
+    def actual_target(link: DocumentLink) -> DocumentLink:
+        equivalent = canonical_paths.get(link.target, ())
+        return (
+            dataclasses.replace(link, target=equivalent[0])
+            if len(equivalent) == 1
+            else link
+        )
+
     graph = DocumentGraph(
         root,
         tuple(sorted(nodes, key=lambda item: item.path.as_posix())),
         tuple(
             sorted(
-                links,
+                map(actual_target, links),
                 key=lambda item: (
                     item.source.as_posix(),
                     item.line,
@@ -817,7 +854,7 @@ def build_document_graph(
         registry,
     )
     return dataclasses.replace(
-        graph, commonmark_links=tuple(_links_with_commonmark(graph))
+        graph, commonmark_links=tuple(map(actual_target, _links_with_commonmark(graph)))
     )
 
 
@@ -863,6 +900,7 @@ def _document_consumers(
         if target not in nodes and target / "README.md" in nodes:
             target /= "README.md"
         consumers[target].add(link.source)
+        consumers[_nfc_path(target)].add(link.source)
     by_id: dict[str, set[pathlib.PurePosixPath]] = collections.defaultdict(set)
     for node in graph.nodes:
         for identity in _ids(node.metadata.get("artifact_id")):
@@ -921,6 +959,7 @@ def select_changed_documents(
     nodes = _node_map(graph)
     consumers, structural = _document_consumers(graph)
     targets = paths | {path.parent for path in paths}
+    targets |= {_nfc_path(path) for path in targets}
     selected = set(paths)
     selected.update(
         parent / "README.md" for parent in targets if parent / "README.md" in nodes
@@ -1456,6 +1495,28 @@ def _markdown_title(match: re.Match[str]) -> str:
     return next(match[name] for name in ("dq", "sq", "pq") if match[name] is not None)
 
 
+def _semantic_relations() -> frozenset[str]:
+    from scripts.lib.document_governance.common_document import load_contract
+
+    return frozenset(load_contract()["relation_kinds"])
+
+
+def _link_title_axes(
+    title: str | None, relations: frozenset[str]
+) -> tuple[str | None, str | None] | None:
+    """Read a semantic relation and optional independent legacy category."""
+    if title is None:
+        return None, None
+    if title in LINK_TYPES:
+        return None, title
+    if title in relations:
+        return title, None
+    parts = title.split()
+    if len(parts) == 2 and parts[0] in relations and parts[1] in LINK_TYPES:
+        return parts[0], parts[1]
+    return None
+
+
 def _paragraphs(text: str) -> Iterable[tuple[int, str]]:
     """Yield each unfenced paragraph with its first line number."""
 
@@ -1473,15 +1534,26 @@ def _paragraphs(text: str) -> Iterable[tuple[int, str]]:
         yield start, "\n".join(lines)
 
 
-def _link_type_findings(block: str) -> Iterable[tuple[str, str]]:
+def _link_type_findings(
+    block: str, relations: frozenset[str] | None = None
+) -> Iterable[tuple[str, str]]:
+    if relations is None:
+        relations = _semantic_relations()
     matches = [*_TITLED_LINK.finditer(block), *_TITLED_DEFINITION.finditer(block)]
     for match in matches:
         if _is_escaped(match.string, match.start()):
             continue
         title = _markdown_title(match)
-        if title not in LINK_TYPES:
+        axes = _link_title_axes(title, relations)
+        if axes is None:
             yield "link-type-unknown", title
-        elif title == "evidence" and not _COMMIT_PINNED_URL.match(match["dest"]):
+            continue
+        relation, category = axes
+        if relation == "cites" and category == "normative":
+            yield "link-relation-authority", title
+        if relation and relation != "cites" and _URL.match(match["dest"]):
+            yield "link-relation-external", title
+        if category == "evidence" and not _COMMIT_PINNED_URL.match(match["dest"]):
             yield "link-evidence-unpinned", match["dest"]
 
 
@@ -1493,21 +1565,6 @@ def _ids(value: object) -> tuple[str, ...]:
     return ()
 
 
-def _non_consuming_titles(node: DocumentNode) -> collections.Counter[str]:
-    """Count each destination's links titled with a type other than normative."""
-
-    counts: collections.Counter[str] = collections.Counter()
-    for _, block in _paragraphs(node.text):
-        for pattern in (_TITLED_LINK, _TITLED_DEFINITION):
-            for match in pattern.finditer(block):
-                if _is_escaped(match.string, match.start()):
-                    continue
-                title = _markdown_title(match)
-                if title in LINK_TYPES - {"normative"}:
-                    counts[match["dest"]] += 1
-    return counts
-
-
 def relation_lookup(
     graph: DocumentGraph, target: pathlib.PurePosixPath
 ) -> dict[str, tuple[str, ...]]:
@@ -1515,9 +1572,10 @@ def relation_lookup(
 
     children: documents whose `parent_ids` name the target (Structural
     Ownership and Constraint); successors: documents whose `supersedes` names
-    it; consumers: documents with an untitled or `normative` link to it
+    it; consumers: documents with an untitled, `normative` or named dependency link to it
     (Authority; an untitled link may also be navigation, which a reviewer
-    tells apart); impact: the transitive closure over children and consumers
+    tells apart), excluding citations and explicit nonnormative categories;
+    impact: the transitive closure over children and consumers
     (Change Impact).
     """
 
@@ -1541,17 +1599,19 @@ def relation_lookup(
         readme = linked / "README.md"
         return readme if linked not in paths and readme in paths else linked
 
-    excluded = {node.path: _non_consuming_titles(node) for node in graph.nodes}
-    totals = collections.Counter(
-        (link.source, document(link.target), link.raw_target)
-        for link in graph.links
-        if link.source != document(link.target)
-    )
+    relations = _semantic_relations()
     consumers: dict[pathlib.PurePosixPath, set[pathlib.PurePosixPath]]
     consumers = collections.defaultdict(set)
-    for (source, linked, raw), count in totals.items():
-        if count > excluded.get(source, collections.Counter())[raw]:
-            consumers[linked].add(source)
+    for link in _links_with_commonmark(graph):
+        linked = document(link.target)
+        if link.source == linked:
+            continue
+        axes = _link_title_axes(link.title, relations)
+        if axes is not None and (
+            axes[0] == "cites" or axes[1] in LINK_TYPES - {"normative"}
+        ):
+            continue
+        consumers[linked].add(link.source)
 
     def ordered(paths: Iterable[pathlib.PurePosixPath]) -> tuple[str, ...]:
         return tuple(sorted(path.as_posix() for path in paths))
@@ -1583,6 +1643,7 @@ def inbound_link_lookup(
         raise ValueError("Registry link_types must be a mapping")
     by_type: dict[str, set[str]] = {name: set() for name in declared}
     by_type["untitled"] = set()
+    relations = _semantic_relations()
     document_paths = {node.path for node in graph.nodes}
 
     def record(
@@ -1592,7 +1653,16 @@ def inbound_link_lookup(
             linked == target
             or (linked not in document_paths and linked / "README.md" == target)
         ):
-            by_type.get(title or "untitled", by_type["untitled"]).add(source.as_posix())
+            axes = _link_title_axes(title, relations)
+            relation, category = axes if axes is not None else (None, None)
+            if relation is not None:
+                by_type.setdefault(relation, set()).add(source.as_posix())
+            if relation == "cites" and category == "normative":
+                category = None
+            if category is not None or relation is None:
+                by_type.get(category or "untitled", by_type["untitled"]).add(
+                    source.as_posix()
+                )
 
     for link in _links_with_commonmark(graph):
         record(link.source, link.target, link.title)
@@ -1611,9 +1681,17 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     number; any other missing target still fails.
     """
 
-    findings: list[LinkFinding] = list(graph.input_findings)
+    findings: list[LinkFinding] = [
+        finding
+        for finding in graph.input_findings
+        if finding.code != "document-path-normalization-collision"
+        or graph.selected_paths is None
+        or pathlib.PurePosixPath(finding.path) in graph.selected_paths
+    ]
     nodes = _node_map(graph)
+    canonical_paths = collections.Counter(_nfc_path(path) for path in nodes)
     path_registry = graph.registry or load_registry()
+    relations = _semantic_relations()
     evidence_links = _HistoricalEvidenceLinks(graph, nodes, path_registry)
     root_registry = None
     registry_loaded = False
@@ -1630,6 +1708,9 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             continue
         if link.has_unsafe_target:
             findings.append(_finding(link, "unsafe-local-link", link.raw_target))
+        if canonical_paths[_nfc_path(link.target)] > 1:
+            findings.append(_finding(link, "ambiguous-link-target", link.raw_target))
+            continue
         resolved_target = link.target
         target_path, target_error = _regular_target(graph, resolved_target)
         if target_path is None and target_error == "missing-link-target":
@@ -1676,7 +1757,7 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
         for line_no, block in _paragraphs(node.text):
             findings.extend(
                 LinkFinding(f"{node.path.as_posix()}:{line_no}", code, message)
-                for code, message in _link_type_findings(block)
+                for code, message in _link_type_findings(block, relations)
             )
         for line_no, line in _unfenced_lines(node.text):
             if "operation.template.md" in line:

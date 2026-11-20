@@ -1,10 +1,13 @@
 ---
 title: "Selective Native OIDC for Applications with Built-in Authentication"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0038"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-09-18"
 
 # ADR-0038: Selective Native OIDC for Applications with Built-in Authentication
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 `ADR-0002` selected Keycloak as the central Identity Provider and OAuth2 Proxy
 as the Traefik ForwardAuth provider. This pattern suits services without their
@@ -27,7 +50,8 @@ responsibility duplication.
 Airflow 3.3.1's Keycloak Auth Manager and Kafbat UI v1.5.0 provide the <!-- runtime-version-exception: history — the decision records the versions it evaluated -->
 application's own OIDC and authorization features.
 
-#### Rationale
+###### Rationale
+<!-- core-payload-level:4 -->
 
 - Keeps Keycloak as the central IAM.
 - Uses Airflow's Keycloak Authorization Services as-is.
@@ -37,7 +61,8 @@ application's own OIDC and authorization features.
 - Keeps ForwardAuth's simplicity for services without their own
   authentication.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)
 - [Auth Architecture](../01.descriptions/0002-auth-architecture.md)
@@ -47,9 +72,10 @@ application's own OIDC and authorization features.
 - [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)
 - [AD-0002](../01.descriptions/0002-auth-architecture.md)
 
-### Decision Scope
+##### Decision Scope
 
-#### Guardrails
+###### Guardrails
+<!-- core-payload-level:4 -->
 
 - Do not apply ForwardAuth redundantly to native OIDC services by default.
 - Inject OIDC client secrets as Docker Secrets.
@@ -58,11 +84,12 @@ application's own OIDC and authorization features.
   upstream token scheme.
 - Document new Native OIDC services in the architecture/operations documents.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
-#### ForwardAuth-only
+###### ForwardAuth-only
+<!-- core-payload-level:4 -->
 
 Pros:
 
@@ -74,7 +101,8 @@ Cons:
 - Duplicates responsibility between application-level RBAC and gateway auth.
 - Actual Bearer/JWT conflicts observed in Airflow.
 
-#### Native OIDC-only
+###### Native OIDC-only
+<!-- core-payload-level:4 -->
 
 Pros:
 
@@ -85,7 +113,7 @@ Cons:
 - Cannot be applied to services without OIDC.
 - Increases per-service Keycloak client management cost.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -95,15 +123,16 @@ Cons:
 
 The Pros and Cons of each option above carry its benefits and costs. ForwardAuth-only was not chosen because it causes double-auth in native OIDC apps; Native OIDC-only was not chosen because it cannot be applied to services without OIDC and increases per-service Keycloak client management cost.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 Keycloak stays the central IdP.
 
 Service authentication paths are split into two patterns.
 
-#### Gateway ForwardAuth
+###### Gateway ForwardAuth
+<!-- core-payload-level:4 -->
 
 ```text
 Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
@@ -112,7 +141,8 @@ Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
 Used for services that have no OIDC of their own, or for which gateway SSO is
 suitable.
 
-#### Application-native OIDC
+###### Application-native OIDC
+<!-- core-payload-level:4 -->
 
 ```text
 Browser -> Traefik -> Application -> Keycloak
@@ -129,26 +159,28 @@ Only `gateway-standard-chain@file` applies to the Airflow and Kafbat UI
 routers; OAuth2 Proxy's `sso-auth@file`/`sso-errors@file` is not applied
 redundantly.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-09-18.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
-#### Positive
+###### Positive
+<!-- core-payload-level:4 -->
 
 - Authentication/authorization ownership becomes clear.
 - Keeps Airflow/Kafbat application RBAC.
 - Avoids conflicts between OAuth2 Proxy header injection and application JWT.
 
-#### Negative
+###### Negative
+<!-- core-payload-level:4 -->
 
 - Auth pattern must be explicitly chosen during service onboarding.
 - The number of Keycloak clients increases.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -156,3 +188,23 @@ options table under Trade-offs was derived from the options it records. The
 decision text is unchanged.
 
 No separate follow-up work is recorded. The guardrails under Decision Scope apply to each new Native OIDC service.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

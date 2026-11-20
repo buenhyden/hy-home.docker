@@ -1643,6 +1643,65 @@ class GateCrosswalkTests(unittest.TestCase):
         self.assertEqual([], [r.gate_id for r in self.rows if r.owner == "UNOWNED"])
         self.assertEqual((), contract.validate_rule_owners(ROOT, self.registry))
 
+    def test_common_envelope_preserves_exact_deep_rule_owner_anchor(self) -> None:
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        document = ".agents/governance/fixture-policy.md"
+        leaf = next(
+            node for node in self.registry.nodes if node.gate_id == "leaf.zizmor"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / document
+            path.parent.mkdir(parents=True)
+            for level in (5, 6):
+                source = (
+                    "# Gate Policy\n\n"
+                    + "#" * level
+                    + " 4. Execution Boundary\n\nExact owner.\n"
+                )
+                for text in (source, wrap_document(source, kind="policy")):
+                    with self.subTest(level=level, enveloped=text != source):
+                        path.write_text(text, encoding="utf-8")
+                        for anchor, expected in (
+                            ("4-execution-boundary", ()),
+                            ("4-execution-boundary-typo", ("ci-gate-rule-owner",)),
+                        ):
+                            node = dataclasses.replace(
+                                leaf, rule_owner=f"{document}#{anchor}"
+                            )
+                            registry = dataclasses.replace(self.registry, nodes=(node,))
+                            findings = contract.validate_rule_owners(root, registry)
+                            self.assertEqual(
+                                expected, tuple(item.code for item in findings)
+                            )
+
+    def test_malformed_common_envelope_cannot_supply_a_rule_owner(self) -> None:
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        document = ".agents/governance/fixture-policy.md"
+        text = wrap_document("# Gate Policy\n\n## Rules\n\nAn owner.\n", kind="policy")
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / document
+            path.parent.mkdir(parents=True)
+            path.write_text(text + "\n## Forged Ownership\n", encoding="utf-8")
+            leaf = next(
+                node for node in self.registry.nodes if node.gate_id == "leaf.zizmor"
+            )
+            registry = dataclasses.replace(
+                self.registry,
+                nodes=(
+                    dataclasses.replace(
+                        leaf, rule_owner=f"{document}#forged-ownership"
+                    ),
+                ),
+            )
+            findings = contract.validate_rule_owners(root, registry)
+            self.assertEqual(
+                ("ci-gate-rule-owner",), tuple(item.code for item in findings)
+            )
+
     def test_promotion_readiness_is_reported_by_the_lifecycle_leaf(self) -> None:
         """H-W04-2: SDLC-PROMOTION reuses the lifecycle check's --readiness
         report; it only prints, so the leaf's exit semantics stay unchanged."""

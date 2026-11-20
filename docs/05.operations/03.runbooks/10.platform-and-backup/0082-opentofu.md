@@ -1,10 +1,13 @@
 ---
 title: "OpenTofu Runbook"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
@@ -15,16 +18,36 @@ next_review_at: "2027-05-13"
 
 # OpenTofu Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업그레이드 절차다.
 
 검토된 plan, lock 실패, 보호된 state backup/recovery, 또는 런타임/provider upgrade에
 사용한다.
 
-### Targets
+##### Targets
 
 - [Guide](../../01.guides/10.platform-and-backup/0082-opentofu.md) (`GDE-0082`)
 - [Policy](../../02.policies/10.platform-and-backup/0082-opentofu.md) (`POL-0082`)
@@ -34,20 +57,20 @@ OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업�
 - [OpenTofu upgrading](https://opentofu.org/docs/intro/upgrading/)
 - [운영 인덱스](../../README.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 저장소 루트에서 작업한다. backend/provider에 접근하는 명령은 아래 명시된 승인이
 필요하다.
 
-### Environment
+##### Environment
 
 configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, backend, account, 명령 클래스, rollback 담당자를 기록하고 다른 writer가 활성 상태가 아님을 확인한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -85,7 +108,8 @@ configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, back
 4. `apply` 전에 중단한다. 검토자는 저장된 plan digest, account, 예상 변경 사항을 명시적
    apply 승인과 묶어야 한다. 이 경계를 `-auto-approve`로 대체하지 않는다.
 
-#### State 백업과 복구
+###### State 백업과 복구
+<!-- core-payload-level:4 -->
 
 1. local 또는 remote backend를 판별하고 활성 writer/lock owner가 없음을 증명한다.
 2. local state의 경우 state와 backup 파일을 mode `0600`으로 보호된 디렉터리에 복사한다.
@@ -99,7 +123,8 @@ configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, back
    승인이 정확히 그 손실 수용 사례를 명시하지 않는 한 lineage나 serial 보호를 우회하기 위해
    `-force`를 사용하지 않는다.
 
-#### Lock과 업그레이드 복구
+###### Lock과 업그레이드 복구
+<!-- core-payload-level:4 -->
 
 - lock 오류의 경우 보유자를 확인하고 writer를 기다리거나 중단시킨다. `force-unlock`은 운영자
   본인의 방치된 lock ID에만 사용한다.
@@ -108,7 +133,8 @@ configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, back
   호환성이 실패하면 이미지/빌드를 롤백한다. upgrade가 state를 변경한 경우에만 검증된
   backup에서 state를 롤백한다.
 
-#### Terraform 이관
+###### Terraform 이관
+<!-- core-payload-level:4 -->
 
 기동할 Terraform 서비스가 없으므로 과거 Compose 명령을 재실행하지 않는다.
 
@@ -120,26 +146,28 @@ configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, back
 
 검증 전 원본 state를 덮어쓰지 않는다. 적용 이후에는 Git 되돌리기만으로 복구하지 말고 원래 CLI/provider의 호환성과 백업을 확인한다. 동시 lock, 미검증 provider 또는 복구본 부재는 @buenhyden에게 보고하고 중단한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 알 수 없는 backend/workspace, 보호된 backup 부재, 활성 lock owner, lineage/serial 불일치,
 파괴적 plan, 또는 credential/account 모호성이 있으면 중단한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 `docker compose --profile iac config --quiet`가 통과해야 하고, 승인된 plan에서는 저장한 plan의 digest와 resource action 개수를 확인한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 exit, 버전, configuration/plan digest, backend/workspace 식별자, 정제된 action 개수, lock
 owner 결정, 최종 처리 상태를 기록한다. state, plan 본문, credential, 또는 secret을 포함한
 provider 응답은 절대 기록하지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
 
@@ -148,14 +176,34 @@ provider 응답은 절대 기록하지 않는다.
 - `apply`와 `tofu state push`: 별도 승인이 필요한 쓰기이며 이 문서에는 실행 결과가 기록되어 있지 않다. 승인 기록과 검토된 plan 대비 결과가 검증 근거가 된다.
 - Terraform 이관: 이 문서에는 실행 결과가 기록되어 있지 않다. 복제 workspace에서 엔진, provider, state 호환성이 확인된 기록이 검증 근거가 된다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 Git이나 이미지를 되돌려도 remote resource는 되돌아가지 않는다. resource rollback에는 새로
 검토된 plan이 필요하다. state restore와 upgrade 리허설은 현재 이 저장소에서 **계획됨,
 미실행** 상태다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

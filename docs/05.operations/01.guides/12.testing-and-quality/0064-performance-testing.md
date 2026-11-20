@@ -1,10 +1,13 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.3.1"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0064"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # Performance Testing Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 성능 시험을 계획하고 판정하는 운영자와 시나리오 소유자가 도구 선택, 실행 전 입력, 결과 해석을 확인할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 성능 시험은 `k6`(기본 부하 발생기), WireMock(외부 HTTP 의존성 모의 서버), Locust(독립 LAB 선택 도구)로
 수행한다. 이 가이드는 세 도구의 역할과 시험 입력, 결과 판정 기준을 정리한다.
@@ -30,23 +53,25 @@ next_review_at: "2027-05-13"
 실행 전 입력을 갖추고, 결과를 올바르게 해석하는 것이다. 중단·복구 절차는
 [성능 시험 런북](../../03.runbooks/12.testing-and-quality/0064-performance-testing.md)이 맡는다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - [POL-0064](../../02.policies/12.testing-and-quality/0064-performance-testing.md)
 - [RUN-0064](../../03.runbooks/12.testing-and-quality/0064-performance-testing.md)
 - SPEC-0203
 - [ADR-0062](../../../02.architecture/02.decisions/0062-home-lab-membership.md)
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [k6 Guide](0061-k6.md)
 - [Locust Guide](../15.labs/0062-locust.md)
 - [WireMock Guide](0092-wiremock.md)
 - [Operations index](../../README.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 실제 경로는
 승인된 앱 시험에서 `k6 → 개발 API → 실제 worker → WireMock`이다. WireMock만 호출한
@@ -71,15 +96,16 @@ fixture, API 계약, 완료 확인 및 임계값을 소유한다. 이 저장소�
 실행 manifest, 결과 판정·적재 도구, `perf_db` 권한과 대시보드를 소유한다.
 외부 앱 전체 경로는 루트 Compose에 include하지 않는다.
 
-### Authority
+##### Authority
 
 실제 실행은 `RUN-0064`의 대상·자원·정리 사전 점검과 별도 승인을 따른다. 부하 발생기에는 관리 PostgreSQL·관리 secret을 전달하지 않고 승인된 참조만 쓴다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### 실행 전 입력
+###### 실행 전 입력
+<!-- core-payload-level:4 -->
 
 - 대상 소유자와 `@buenhyden`이 정확한 origin/port, 허용 네트워크,
   users/rate/duration, CPU·메모리·디스크, 중단 SLI를 승인한다. 공개 API,
@@ -90,7 +116,8 @@ fixture, API 계약, 완료 확인 및 임계값을 소유한다. 이 저장소�
 - 관리 PostgreSQL·관리 secret을 부하 발생기에 전달하지 않는다. 키는
   승인된 참조만 사용하며 원본에 query/token/cookie/PII를 기록하지 않는다.
 
-#### 결과와 판정
+###### 결과와 판정
+<!-- core-payload-level:4 -->
 
 k6의 check만으로 실패 종료를 보장하지 않으므로 threshold와 종료 코드를
 함께 읽는다. HTTP 202는 접수만 뜻한다. 비동기 완료 상태·최종 조회·권한·
@@ -105,7 +132,8 @@ k6의 check만으로 실패 종료를 보장하지 않으므로 threshold와 종
 DB에는 정규화 결과와 객체 참조를 둔다. 실제 bucket, secret, 보존 기간은
 프로젝트별 승인 계약이 정한다.
 
-#### 구현 계약과 연결 경계
+###### 구현 계약과 연결 경계
+<!-- core-payload-level:4 -->
 
 [k6 runner 계약](../../../../infra/11-quality/k6/README.md)은 승인된 exact-path
 경계와 native 원본의 크기·파일 신원·단위·태그 검사를 소유한다. v2 실행은
@@ -124,7 +152,7 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 재시작을 넘는 메트릭 영속성 증거가 아니다. 실제 reader·bucket·부하 대상이
 선정되기 전에는 소스 계약만 소비하며 자동 연결·배포하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 - 원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix))는 변경 경로의
   소스·문서 회귀를 검사한다. 통과해도 실행 대상의 준비 상태는 증명하지 않는다.
@@ -132,9 +160,9 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
   master/worker closure가 별도 프로젝트·네트워크·볼륨을 사용하는지 본다.
 - 실제 실행은 `RUN-0064`의 대상·자원·정리 사전 점검과 별도 승인을 따른다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - WireMock 기능 모드의 journal·reset과 부하 모드의 journal 비활성화를
   구분한다. 무저널 모드에서 `GET /__admin/requests`의 HTTP 500은 빈 저널의
@@ -142,13 +170,34 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
   없으므로 호스트 공개와 내부 peer 접근을 제한한다.
 - 부하 중단과 대상 회복 판단은 [RUN-0064](../../03.runbooks/12.testing-and-quality/0064-performance-testing.md)를 따른다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 [RUN-0064](../../03.runbooks/12.testing-and-quality/0064-performance-testing.md)는 부하 중단과 대상
 회복 판단을 소유한다. SPEC-0203(삭제됨, 버전 이력)이 기록한 소스·합성 검증은 HOME 실행이나
 실제 프로젝트의 성능 수치가 아니다. k6, Locust, WireMock의 세부 절차는
 각 서비스 런북을 따른다.
 
-### Next Action
+##### Next Action
 
 부하 중단과 대상 회복 판단은 [RUN-0064](../../03.runbooks/12.testing-and-quality/0064-performance-testing.md)를 따르고, k6, Locust, WireMock의 세부 절차는 각 서비스 런북을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

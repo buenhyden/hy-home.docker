@@ -1,10 +1,13 @@
 ---
 title: "OpenTofu Policy"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0082"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-13"
 
 # OpenTofu Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 OpenTofu는 명시적인 `iac` job이다. 정적 선택과 검증은 provider 계정을 읽거나
 원격 인프라를 변경할 권한을 결코 뜻하지 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 
 - [OpenTofu Compose 소스](../../../../infra/09-platform-ops/opentofu/docker-compose.yml)
 - [파생 Compose 이미지 projection](../../../../infra/tech-stack.versions.json)
 
-### Applies To
+##### Applies To
 
 로컬 이미지 빌드, `/workspace`, 마운트된 클라우드 자격 증명, 백엔드 상태,
 lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -91,40 +116,44 @@ lock, plan, provider 작업, 업그레이드, 서비스 폐기.
   백엔드 상태, 자격 증명, 소유권 기록을 보존한다. 컨테이너 제거가 의도적으로
   인프라를 파괴하는 일은 결코 없다.
 
-#### 책임과 도구 범위
+###### 책임과 도구 범위
+<!-- core-payload-level:4 -->
 
 책임자는 `@buenhyden`이다. 버전 조회·format/validate라도 선언된 마운트와
 실행 영향을 확인한다. 정확한 바이너리 태그 외의 distro 패키지와 provider 선택은
 완전히 고정된 빌드가 아니므로 복구 시 사용한 이미지·provider lock 식별자를 보존한다.
 
-#### Terraform 이관
+###### Terraform 이관
+<!-- core-payload-level:4 -->
 
 - 기존 state와 lock 정보를 보존하고 암호화된 복구본을 먼저 준비한다.
 - 복제 workspace에서 provider 및 backend 호환성을 검증하고, 이관 대상별 Terrakube 실제 엔진을 확인한다.
 - CLI 교체와 실제 remote resource 변경을 별도 검토한다. `apply`, `destroy`, state rewrite와 force-unlock은 정확한 대상 승인을 요구한다.
 - 새로운 Terraform 서비스나 병렬 updater를 만들지 않는다. 호환성 때문에 기존 CLI가 필요하면 담당자, 대상 workspace, 지원 종료 조건과 검증 계획을 기록하며 private state 공개는 허용하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 별도의 변경 승인, 상태 보호, 또는 lock 소유권을 우회하는 예외는 없다. 범위,
 만료, 복구 아티팩트, 종료 조건을 기록한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 모든 provider/백엔드/런타임 업그레이드 전, 그리고 자격 증명 마운트, 네트워크
 접근, 또는 workspace 소유권이 변경될 때마다 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 정적 Compose 점검은 선택만 증명한다. 런타임 증거는 버전, init/validate,
 plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복구와 업그레이드
 리허설은 공백으로 남는다.
 
-### Limits
+##### Limits
 
 정책은 정적 Compose 점검이 선택만 증명한다고 밝히며 모든 규칙은 전용 검사 없이 수동 검토와 승인에 의존한다.
 
@@ -142,13 +171,13 @@ plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복
 - 런타임 증거는 버전, init/validate, plan, apply, apply 이후 결과를 구분해야 한다.
 - 정확한 바이너리 태그 외의 distro 패키지와 provider 선택은 완전히 고정된 빌드가 아니다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [가이드](../../01.guides/10.platform-and-backup/0082-opentofu.md) (`GDE-0082`)
 - [런북](../../03.runbooks/10.platform-and-backup/0082-opentofu.md) (`RUN-0082`)
@@ -156,3 +185,23 @@ plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복
 - [OpenTofu 상태 저장소](https://opentofu.org/docs/language/state/backends/)
 - [OpenTofu state 명령 안전성](https://opentofu.org/docs/cli/commands/state/)
 - [운영 인덱스](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

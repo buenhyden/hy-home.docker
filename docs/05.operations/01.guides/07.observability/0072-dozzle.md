@@ -1,10 +1,13 @@
 ---
 title: "Dozzle Usage Guide"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0072"
 parent_ids:
@@ -18,19 +21,40 @@ next_review_at: "2027-05-13"
 
 # Dozzle Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 컨테이너 로그를 조회하거나 Dozzle 구성을 바꾸는 운영자.
 
-### Outcome
+##### Outcome
 
 이 가이드는 OPTIONAL admin 로그 뷰어 Dozzle의 구성, 인증 경계, 일반 사용 방법을 설명한다. `admin`과 `admin-logs` profile에서만 선택된다.
 
 대상 독자는 컨테이너 로그를 조회하거나 Dozzle 구성을 바꾸는 운영자다. 목표는 Dozzle이 로그 아카이브가 아니라는 점, Docker socket과 OIDC 경계가 어디에 있는지 이해하고 안전하게 조회하는 것이다. 장애와 복구 절차는 [RUN-0072](../../03.runbooks/07.observability/0072-dozzle.md)가 소유한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/07.observability/0072-dozzle.md) (`POL-0072`)
 - [Runbook](../../03.runbooks/07.observability/0072-dozzle.md) (`RUN-0072`)
@@ -40,20 +64,22 @@ next_review_at: "2027-05-13"
 - [Dozzle getting started](https://dozzle.dev/guide/getting-started)
 - [Dozzle MIT license](https://github.com/amir20/dozzle#license)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 이 가이드가 전제하는 환경과 개념은 아래와 같다.
 
-#### 목적과 분류
+###### 목적과 분류
+<!-- core-payload-level:4 -->
 
 Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 로그 아카이브가
 아니다. 컨테이너 로그는 여전히 Docker/로깅 백엔드가 소유한다. Dozzle은
 `${DEFAULT_MANAGEMENT_DIR}/dozzle`에 UI/사용자 설정을 영속화하지만, 조회한 로그의
 두 번째 권위 사본을 보관하지는 않는다.
 
-#### 현재 구현과 위험
+###### 현재 구현과 위험
+<!-- core-payload-level:4 -->
 
 - [Dozzle Compose](../../../../infra/06-observability/dozzle/docker-compose.yml)가
   profile, OIDC, 라우트(`dozzle.${DEFAULT_URL}`), IP 허용목록(`dozzle-admin-ip`, `ADMIN_UI_ALLOWED_CIDRS`), secret, health, 마운트를 정의한다.
@@ -69,19 +95,21 @@ Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 
 - `/data`는 설정을 영속화한다. CA 파일은 issuer 신뢰를 지원한다. health 명령은
   OIDC, socket 인가, 로그 커버리지가 아니라 Dozzle 프로세스 health만 증명한다.
 
-### Authority
+##### Authority
 
 Dozzle은 Keycloak 네이티브 OIDC(`dozzle_client_secret`, 선택 시 `DOZZLE_CLIENT_SECRET_FILE`)와 `dozzle-admin-ip`/`ADMIN_UI_ALLOWED_CIDRS` 허용목록 뒤에 있다. 승인된 사용·설정 복구·업그레이드는 RUN-0072를 따르고 TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
-#### 정상 사용과 준비 조건
+###### 정상 사용과 준비 조건
+<!-- core-payload-level:4 -->
 
 운영자는 허용된 계정으로 로그인한 뒤 필요한 컨테이너·시간 범위만 조회한다. 화면과
 증거에 비밀·개인정보가 섞이지 않도록 범위를 제한한다. `edge_net`에 연결되지만
@@ -89,26 +117,48 @@ Dozzle은 Keycloak 네이티브 OIDC(`dozzle_client_secret`, 선택 시 `DOZZLE_
 socket 준비는 따로 확인한다. 자원 상한은 선언된 템플릿을 따르며 로그 지연과 CPU·메모리
 증가를 함께 관찰한다. TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 Docker socket 위험(`:ro`여도 API 메서드를 제한하지 않음)과 socket proxy 미선언은 Environment의 `현재 구현과 위험`에 기술되어 있다.
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --profile admin-logs config --quiet`
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0072](../../03.runbooks/07.observability/0072-dozzle.md)으로 넘긴다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 OIDC, socket, 로그 스트림, 설정, 업그레이드 복구에는
 [runbook](../../03.runbooks/07.observability/0072-dozzle.md)을 사용한다. 사용·설정 보존·업그레이드 순서는 런북의 `Settings recovery and upgrade`와 `승인된 사용` 절차를 따르며, 데이터와 권한 경계는 [정책](../../02.policies/07.observability/0072-dozzle.md)을 유지한다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0072](../../03.runbooks/07.observability/0072-dozzle.md)의 진단, 재시작, rollback, escalation 기준을 따른다. OIDC, socket, 로그 스트림, 설정, 업그레이드 복구도 같은 runbook을 쓰며, TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

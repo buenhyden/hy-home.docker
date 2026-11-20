@@ -1,10 +1,13 @@
 ---
 title: "Pact Broker Usage Guide"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0093"
 parent_ids:
@@ -19,13 +22,33 @@ next_review_at: "2027-05-13"
 
 # Pact Broker Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 계약 테스트의 pact를 게시하고 검증하는 개발자와 운영자가 게시·검증 흐름과 준비 상태를 확인할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소다.
 소비자 테스트가 pact를 여기에 게시하고, 프로바이더 빌드가 이를 가져와
@@ -34,23 +57,26 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 
 계약 테스트를 게시하고 검증하는 개발자와 운영자를 위한 문서다. pact 게시·검증 흐름과 준비 상태 확인 방법을 이해하는 것이 목표다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/12.testing-and-quality/0093-pact-broker.md) (`POL-0093`)
 - [Runbook](../../03.runbooks/12.testing-and-quality/0093-pact-broker.md) (`RUN-0093`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Pact Broker package README](../../../../infra/11-quality/pact-broker/README.md) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [WireMock guide](0092-wiremock.md)
 - [Pact Broker Docker configuration](https://docs.pact.io/pact_broker/docker_images/pactfoundation)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 - [Pact Broker Compose](../../../../infra/11-quality/pact-broker/docker-compose.yml)는
   `mng-pg`에 기능 전용 역할과 데이터베이스를 생성하는
@@ -69,15 +95,16 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
   Traefik 라우트나 OIDC 클라이언트는 없다.
 - `PACT_DO_NOT_TRACK`은 이미지의 분석 핑을 비활성화한다.
 
-### Authority
+##### Authority
 
 자격 증명은 `pact_broker_basic_auth_password` 시크릿(값은 문서에 적지 않음)이며 클라이언트 환경 변수 `PACT_BROKER_PASSWORD`로 전달한다. 서비스 엔트리포인트가 secret을 프로세스 환경변수로 전달하는 방식은 Environment와 Steps에 적혀 있다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Publishing and verifying
+###### Publishing and verifying
+<!-- core-payload-level:4 -->
 
 | Command | Effect |
 | --- | --- |
@@ -89,7 +116,8 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 자격 증명은 `pact_broker_basic_auth_password` 시크릿이다. 명령줄이 아니라
 클라이언트 환경 변수(`PACT_BROKER_PASSWORD`)로 전달한다.
 
-#### 준비 상태·자원·데이터
+###### 준비 상태·자원·데이터
+<!-- core-payload-level:4 -->
 
 `mng-pg`와 `mng-pg-init`은 `contract-testing` profile에도 속하므로 이 profile만으로
 의존성이 닫힌다. helper는 `mng-pg` health와 공유 init 완료를 기다린다. broker는
@@ -101,27 +129,49 @@ secret은 Compose에 값으로 적히지 않지만 서비스 엔트리포인트�
 이를 확인하려고 환경 전체를 출력하지 않는다. 데이터베이스가 권위 있는 영속 상태이며
 이미지·인증 변경과 삭제 전에 검증 이력·pact 보존 및 공유 DB 영향을 검토한다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES=contract-testing bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 프로비저닝 helper 실패, broker unhealthy, 401, 자격 증명 교체의 진단과 복구는
 [runbook](../../03.runbooks/12.testing-and-quality/0093-pact-broker.md)이 소유한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 프로비저닝 실패, 비정상 브로커, 인증 오류, 자격 증명 교체는
 [runbook](../../03.runbooks/12.testing-and-quality/0093-pact-broker.md)을 사용한다.
 
-### Next Action
+##### Next Action
 
 프로비저닝 helper 실패, broker unhealthy, 401, 자격 증명 교체는 [runbook](../../03.runbooks/12.testing-and-quality/0093-pact-broker.md)을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

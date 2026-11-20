@@ -1,9 +1,12 @@
 ---
 title: "00.workspace"
-version: "1.3.0"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
 updated: "2026-11-20"
 created: "2026-11-18"
 layer: "workspace"
@@ -11,11 +14,32 @@ layer: "workspace"
 
 # 00.workspace
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 Stage 00은 사람과 agent가 함께 따르는 작업공간 공통 업무 정책(W 계층)을 담습니다.
 프로젝트 책임 지도, SDLC·문서·Git·승인 절차, 품질과 완료 기준이 여기에 있습니다.
@@ -26,18 +50,19 @@ agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)�
 [Stage 저작 매트릭스](01.project/stage-authoring-matrix.md#responsibility-layers)가
 소유합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 변경을 계획하거나 검토하는 운영자, 리뷰어, AI agent가 공통 규칙을 찾을 때 읽습니다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - 비소유: 정책 본문(각 문서가 소유), agent 실행 규칙, hookify 기계 규칙과 native
   바인딩, 문서 경로와 profile 계약(Stage 99)
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
@@ -60,19 +85,39 @@ agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)�
 씁니다. 공통 용어와 agent·provider 의미는
 [Repository Vocabulary](../../.agents/knowledge/glossary.md)가 소유합니다.
 
-### Owners
+##### Owners
 
 `@buenhyden`이 변경을 승인하고 `rules-engineer`가 검토합니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
 [bootstrap](../../.agents/governance/bootstrap.md)이 읽기 순서를 정하고, 각 Stage
 문서와 [agent governance](../../.agents/README.md)가 이 정책을 소비합니다. 같은
 의미를 다른 계층에 복제하지 않습니다.
 
-### Checks
+##### Checks
 
 정책 변경은 해당 Spec Package Task에 증거를 남기고 문서 metadata, 링크, agent
 governance contract 검사를 통과해야 합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

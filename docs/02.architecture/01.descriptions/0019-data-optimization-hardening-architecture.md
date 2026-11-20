@@ -1,10 +1,13 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.3.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-28"
 
 # Data Optimization and Hardening Architecture
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - `infra/04-data/**` owns the data service Compose topology and per-engine
   configuration.
@@ -27,26 +50,28 @@ created: "2026-03-28"
 - Product business schema/query and cloud migration are outside this
   architecture.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This document describes the relational, cache, object storage, search, and
 graph/vector service structure of `infra/04-data/`. The
 maintainer and operator manage the common Compose contract and the per-engine
 lifecycle/recovery procedure separately.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Gateway routing, `03-security` secret supply, and `06-observability` telemetry collection come from their own layers.
 
-### Constraints
+##### Constraints
 
 Each engine combines the common optimization, secret, healthcheck, and network contract in Compose; credentials are injected through the Compose secret contract. Additional HA, lifecycle automation, and failover drills are not treated as implemented for every engine and need a separately approved current Requirement and ADR.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - Development databases: `dev-db` (PostgreSQL and Valkey with provisioners
   and exporters)
@@ -64,7 +89,7 @@ promoted.
 Each component keeps its own configuration and volume, and combines the
 common optimization, secret, healthcheck, and network contract in Compose.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -80,11 +105,12 @@ common optimization, secret, healthcheck, and network contract in Compose.
 
 Services connect through SQL, Redis/Valkey, S3-compatible, search, vector, and graph protocols, with credentials injected through the Compose secret contract (see Runtime View).
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 Services connect explicitly through SQL, Redis/Valkey, S3-compatible, search,
 vector, and graph protocols. Compose declares the state path of each service.
@@ -92,7 +118,8 @@ Management PostgreSQL and Valkey use `${DEFAULT_MANAGEMENT_DIR}`; development
 PostgreSQL and Valkey use `${DEFAULT_DATA_DIR}`. The Compose secret contract
 supplies credentials.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The current implementation combines `infra/common-optimizations.yml` with
 each engine Compose file. The hardening and Compose validators check secret,
@@ -101,17 +128,18 @@ automation, and failover drills are not treated as implemented for every
 engine today, and are introduced only through a separately approved current
 Requirement and ADR.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Separate volume paths delimit service state. The [Data hardening runbook](../../05.operations/03.runbooks/05.databases-and-storage/0030-data-optimization-hardening.md)
 owns per-engine recovery. Healthchecks and volume definitions do not establish
 restorability.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Security**: keeps credential injection consistent and reduces unnecessary
   exposure.
@@ -121,7 +149,7 @@ restorability.
 - **Operability**: the static gate, capability Spec, and Operations subject
   must describe the same topology and failure boundary.
 
-### Trade-offs
+##### Trade-offs
 
 - The tier keeps one common Compose contract (optimization, secret, healthcheck
   and network) for every engine and accepts that additional HA, lifecycle
@@ -134,19 +162,21 @@ restorability.
 - Scalability is bounded by the common Compose boundary: an approved
   per-engine expansion must fit it without breaking it (Quality Attributes).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0062](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0004](../../01.requirements/0004-data.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - [AD-0004 Data Tier (04-data) Architecture Description](0004-data-architecture.md)
 
@@ -157,3 +187,23 @@ Operations documents:
 - [Data hardening guide](../../05.operations/01.guides/05.databases-and-storage/0030-data-optimization-hardening.md)
 - [Data hardening policy](../../05.operations/02.policies/05.databases-and-storage/0030-data-optimization-hardening.md)
 - [Data hardening runbook](../../05.operations/03.runbooks/05.databases-and-storage/0030-data-optimization-hardening.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

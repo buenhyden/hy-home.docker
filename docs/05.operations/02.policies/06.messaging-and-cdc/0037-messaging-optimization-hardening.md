@@ -1,10 +1,13 @@
 ---
 title: "05-Messaging Optimization Hardening Operations Policy"
-version: "2.2.0"
+version: "3.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0037"
 parent_ids:
@@ -15,30 +18,52 @@ next_review_at: "2027-05-13"
 
 # 05-Messaging Optimization Hardening Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 현재 소스 구성을 data protection, security, resource, lifecycle 측면에서 독립적으로 검증 가능한 operator control에 결합한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Artifact: `POL-0037`; parent: `AD-0005`.
 - Runtime authority는 연결된 Compose/source file에 남는다; exact pin은
   그곳에 유지된다.
 
-### Applies To
+##### Applies To
 
 이 정책은 현재 optional Kafka-family 소스와 그 static hardening contract에
 적용된다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 활성화나 security migration을 승인하지 않는다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -83,7 +108,8 @@ recovery owner를 보존해야 한다. `labs/kafka-cluster/docker-compose.yml` �
 project·network·cluster ID·data directory를 보존하며 root에 포함하지 않는다.
 현재 유일한 broker family는 Kafka다.
 
-#### Security policy
+###### Security policy
+<!-- core-payload-level:4 -->
 
 - PLAINTEXT Kafka listener는 문서화된 gap이며, sensitive하거나 untrusted된
   traffic을 실어서는 안 된다. TLS/SASL에는 architectural change와 client
@@ -99,7 +125,8 @@ project·network·cluster ID·data directory를 보존하며 root에 포함하�
   1이다. replication factor 3은 `lab-kafka`만의 topic/bootstrap contract이며
   healthy LAB broker 3개가 필요하다.
 
-#### Reliability and recovery policy
+###### Reliability and recovery policy
+<!-- core-payload-level:4 -->
 
 same-host replication은 host availability가 아니다. 새 workload는
 retention, partition, replication, capacity, producer/consumer ownership,
@@ -107,7 +134,8 @@ RPO/RTO, replay source를 정의해야 한다. Recovery는 data, topic config,
 offset, schema, Connect state, KRaft identity를 포함해야 하며, promotion
 전에 isolated cluster에서 rehearsed되어야 한다.
 
-#### Validation contract
+###### Validation contract
+<!-- core-payload-level:4 -->
 
 정상 `messaging`은 [RUN-0037](../../03.runbooks/06.messaging-and-cdc/0037-messaging-optimization-hardening.md#steps)의
 exact root-profile `config --quiet` command로 검증한다. LAB은
@@ -116,32 +144,35 @@ exact root-profile `config --quiet` command로 검증한다. LAB은
 pass는 configuration evidence일 뿐이다. Runtime startup, OIDC login, load
 또는 failover에는 명시적 승인과 기록된 rollback이 필요하다.
 
-#### Accountable lifecycle boundary
+###### Accountable lifecycle boundary
+<!-- core-payload-level:4 -->
 
 적용 identity: 정상 `kafbat-ui`, `kafka-1`, `kafka-exporter`, `kafka-init`; LAB `lab-kafka-1..3`, `lab-kafka-exporter`, `lab-kafka-init`, `lab-schema-registry`, `lab-kafka-connect`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 문서화된 one-shot job exception은 data/security control을 면제하지
 않는다. exception은 runtime mutation, plaintext secret, raw active storage
 copy, same-host availability 주장을 승인하지 않는다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 profile, image, volume, credential, consumer, retention, upstream
 lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 RUN-0037의 root/LAB render와 `bash scripts/hardening/check-all-hardening.sh 05-messaging`로 static 구성을 검증한 다음, promotion이나
 cutover 전에 application-level acceptance를 갖춘 isolated compatible
 restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 
-### Limits
+##### Limits
 
 이 정책에서 이름 붙은 검사는 root/LAB render와 `05-messaging` hardening script뿐이며(검증 행에만 연결), 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
@@ -153,15 +184,35 @@ restore를 요구한다. 검증되지 않은 runtime property는 명시적으로
 - 정책이 밝힌 공백: PLAINTEXT Kafka listener는 문서화된 gap이다.
 - 정책이 밝힌 공백: static pass는 configuration evidence일 뿐이며 runtime startup/OIDC login/load/failover 증거는 이 정책에 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Domain catalog](../../README.md)
 - [Kafka policy](0036-kafka.md)
 - [Kafka security](https://kafka.apache.org/documentation/#security)
 - [Hardening runbook](../../03.runbooks/06.messaging-and-cdc/0037-messaging-optimization-hardening.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

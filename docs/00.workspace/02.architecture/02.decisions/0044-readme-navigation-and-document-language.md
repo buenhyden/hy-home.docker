@@ -1,10 +1,13 @@
 ---
 title: "README Navigation and Document Language"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0044"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-09-27"
 
 # ADR-0044: README Navigation and Document Language
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 On 2026-09-27 the owner asked for README navigation and document language to be
 one enforced contract across the workspace. An audit of the 186 tracked READMEs
@@ -49,20 +72,21 @@ the owner's priority:
 - Frozen Stage 98 bodies, template sources, and generated adapters keep their
   own contracts.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - Requirements: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md)
 - Architecture: [AD-0030](../01.descriptions/0030-document-lifecycle-governance.md)
 - Spec: SPEC-0184
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers README navigation and document language across the workspace, for every managed README and every Registry profile that governs human prose. Frozen Stage 98 bodies, template sources, and generated adapters keep their own contracts.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 1. **Prose-only correction.** Edit the READMEs and the policy text. This is
    cheap, but nothing stops a regression, and the validators that require
@@ -76,7 +100,7 @@ This decision covers README navigation and document language across the workspac
    strong, but it replaces authored explanation with generated lists, and the
    request needs purpose and workflow prose.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -86,9 +110,9 @@ This decision covers README navigation and document language across the workspac
 
 Prose-only correction is cheap but nothing stops a regression; generated routers are strong but replace authored explanation with generated lists; role-contract enforcement (option 2) was chosen. The reasons are stated in each option above.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 Adopt option 2.
 
@@ -125,13 +149,13 @@ record; retired numbers now live in the Registry `reserved_history`.
 type-to-template owner, and the `template_catalog` key and its check are
 retired.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden, who asked for the contract on 2026-09-27; status `accepted`. No separate approval record is linked. Effective from 2026-09-27.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: routers stop drifting from the members their children own. The
   language rule is testable. One validator run proves both rules.
@@ -142,7 +166,7 @@ Decided by the owner, @buenhyden, who asked for the contract on 2026-09-27; stat
 - Language judgment is a heuristic over prose characters. Its limits are
   stated in the validator and in the documentation protocol.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -153,8 +177,29 @@ decision text is unchanged.
   done by SPEC-0187.
 - Script and legacy-code cleanup found by the same audit.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `check-document-links.py --mode all` enforces navigation.
 `check-document-metadata.py` enforces declared language and the Retention
 Catalog profile. The Registry schema rejects an undeclared `language` value.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

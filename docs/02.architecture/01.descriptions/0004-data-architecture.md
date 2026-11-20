@@ -1,10 +1,13 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.4.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-26"
 
 # Data Tier (04-data) Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 Data owns its database and object-store configuration and state contracts. It
 does not own every persistent file: analytics checkpoints, application
@@ -24,7 +47,8 @@ metadata and package-local stores stay with their consumers. Secrets, ingress
 and backup orchestration keep their owners.
 No package is split only to make the folder taxonomy uniform.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 Data provides storage and data-platform packages for HOME applications and
 explicitly selected development workloads. Operators need to tell shared HOME
@@ -33,17 +57,18 @@ direct children of `infra/04-data`; LAB topologies are standalone entrypoints
 under `labs/`. Analytics processing follows ADR-0062 and, since SPEC-0262,
 runs as LAB entrypoints.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Auth, Workflow, Tooling, Observability (Grafana), AI consumers, the analytics LABs and development workloads consume Data packages as described under Runtime View. Secrets, ingress and backup orchestration stay with their owners.
 
-### Constraints
+##### Constraints
 
 Data owns its database and object-store configuration and state contracts only, with no package split merely to make the folder taxonomy uniform. Declared secret, network, port and persistent path boundaries are kept; a folder or a Compose profile adds no isolation, and POL-0078 owns the profile vocabulary.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 | Packages | Responsibility | Classification |
 | --- | --- | --- |
@@ -64,7 +89,7 @@ target engine backups stay with the engine's Data package. Restic stays in
 `09-platform-ops` as cross-platform orchestration. InfluxDB is retired
 (ADR-0047); DEV TimescaleDB owns time-series history.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -76,11 +101,12 @@ target engine backups stay with the engine's Data package. Restic stays in
 
 Consumers use declared `mng-db` identities, Qdrant, SeaweedFS storage identities and the SeaweedFS Iceberg catalog. Infra provisions only approved explicit databases, roles and Valkey ACLs.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 Auth, Workflow, Tooling and Observability (Grafana) use declared `mng-db`
 identities; MLflow and Pact Broker provision their own `mng-pg` databases. AI
@@ -93,7 +119,8 @@ infra provisions only approved explicit databases, roles and Valkey ACLs.
 `perf_db` keeps test results with project-scoped access, not raw business data
 in management databases. No automatic ingestion pipeline exists.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The root Compose includes every `infra/04-data` package; profiles select them:
 `mng-db` by `mng`, `core`, `dev` and `local` (`mng-pg` also by `mlops`,
@@ -110,15 +137,16 @@ The root still declares Neo4j and single-node OpenSearch as optional packages.
 ADR-0062 records the planned Neo4j LAB move and single-node OpenSearch
 retirement. The existing OpenSearch cluster LAB is a separate project.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 `mng-pg` backs most HOME metadata and its loss affects Auth, Workflow, Tooling and Grafana together (see Risks below). Recovery follows each engine's supported backup and restore process and POL-0021; same-host replicas do not give host HA.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - HOME `mng-pg` and `mng-valkey` are shared single-instance dependencies,
   separate from the LAB clusters. Same-host replicas do not give host HA.
@@ -129,12 +157,13 @@ retirement. The existing OpenSearch cluster LAB is a separate project.
 - Recovery follows each engine's supported backup and restore process and
   POL-0021; a volume declaration or a Git rollback is not a verified backup.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 `mng-pg` backs most HOME metadata; its loss affects Auth, Workflow, Tooling and
 Grafana together.
 
-### Trade-offs
+##### Trade-offs
 
 - HOME `mng-pg` and `mng-valkey` are shared single-instance dependencies,
   separate from the LAB clusters; the accepted cost is that `mng-pg` loss
@@ -146,20 +175,22 @@ Grafana together.
 - No package is split only to make the folder taxonomy uniform, and a folder
   or a Compose profile adds no isolation (Constraints).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0062 HOME Membership and Planned LABs](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0004 Data requirements](../../01.requirements/0004-data.md)
 - [REQ-0027 HOME development host](../../01.requirements/0027-home-development-host.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - SPEC-0265 (retired; version history) captured the Hermes report source under ADR-0060.
 - [Data packages](../../../infra/04-data/README.md)
@@ -169,7 +200,28 @@ Grafana together.
 - [Profile vocabulary](../../05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md)
 - [Development database policy](../../05.operations/02.policies/05.databases-and-storage/0100-development-database.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 Promoting a LAB topology into `infra/04-data` is an owner decision under the
 LAB promotion contract.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

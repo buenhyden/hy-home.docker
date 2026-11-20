@@ -175,6 +175,27 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_architecture.py
+- path: scripts/lib/document_governance/common_document.py
+  kind: library
+  authority: docs/99.templates/01.contracts/common-document-contract.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/links.py
+  - scripts/lib/document_governance/metadata/heading.py
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/operations_catalog.py
+  - scripts/lib/document_governance/references.py
+  - scripts/lib/document_governance/registry.py
+  - scripts/lib/document_governance/requirements.py
+  - scripts/lib/document_governance/spec_packages.py
+  - scripts/lib/document_governance/template_definition.py
+  - scripts/lib/gate/ci_gate_contract.py
+  - scripts/operations/provider_surface_renderer.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_template_definition.py
 - path: scripts/lib/document_governance/frontmatter.py
   kind: library
   authority: docs/99.templates/registry.json

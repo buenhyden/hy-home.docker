@@ -1,10 +1,13 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.4.2"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -12,9 +15,29 @@ created: "2026-07-19"
 
 # Operational Readiness Closure Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 Static documents and Compose rendering alone cannot prove startup/readiness,
 artifact trust, or promotion/rollback behavior. This
@@ -22,7 +45,7 @@ requirement reproduces the three behaviors in a locally isolated environment
 using sample artifacts and synthetic state owned by the repository, and
 records the actually verified scope without overstatement.
 
-### Stakeholders
+##### Stakeholders
 
 - The maintainer must distinguish implemented readiness behavior from
   unapproved remote operations.
@@ -35,21 +58,21 @@ records the actually verified scope without overstatement.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - Scope is limited to local isolated Compose readiness, sample-service supply
   chain, and local promotion/rollback.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - Production/shared runtime, real data, registry publication, OIDC signing,
   and remote GitHub configuration and deployment are out of scope.
 - Automatic cleanup is allowed only for precisely identified task-owned
   resources.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -78,7 +101,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 | REQ-0025-NFR-0015 | Traceability | Every link in the chain resolves. | The package records no unit for this measure. | The package records no measurement environment. | Every link from this Requirement through AD-0028, ADR-0028, the implementation scripts, the Operations procedure and the current Task results resolves. |
 | REQ-0025-NFR-0016 | Honest scope | Task evidence names the verified scope only. | The package records no unit for this measure. | The package records no measurement environment. | Task evidence names only the scope actually verified, with no claim beyond it. |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0025-FR-0001**: The approved core service set must start under a
   unique Compose project and provide bounded readiness and teardown results.
@@ -105,7 +128,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   process-local temporary storage; durable evidence must contain only a
   secret-scrubbed summary and immutable subject identity.
 
-### Quality Requirements
+##### Quality Requirements
 
 - **REQ-0025-NFR-0011 — Isolation**: Every resource must be identified by a
   task-owned identity, and cleanup must apply only to that resource; measure: every cleanup targets only task-owned identities.
@@ -123,16 +146,17 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   overstated as production readiness, full-profile coverage, live recovery,
   or remote release completion; measure: Task evidence names the verified scope only.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 This package records the owner's requirements for operational readiness closure; no upstream
 document governs it.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0025-FR-0001**: The core readiness rehearsal starts the approved core
   set under a unique Compose project and verifies readiness, timeout and
@@ -170,7 +194,8 @@ document governs it.
   and claims no production readiness, full-profile coverage, live recovery or
   remote release completion beyond it.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Select registered checks that exercise the condition and follow the execution
 scope in [Quality Standards](../00.workspace/04.quality/quality-standards.md#4-execution-boundary).
@@ -182,7 +207,8 @@ for the work it actually verifies. The owner named in the frontmatter,
 @buenhyden, judges each condition from that evidence and accepts the
 requirement once every condition is met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - **Architecture Description**: [AD-0028 Operational Readiness Closure](../02.architecture/01.descriptions/0028-operational-readiness-closure.md)
 - **Implementation**: `scripts/operations/check-compose-core-readiness.sh`,
@@ -197,3 +223,23 @@ requirement once every condition is met.
   `rehearse-postgres-logical-upgrade.sh` and runbook RUN-0032. Both were
   deleted on 2026-11-10: every HOME PostgreSQL service already runs major 18
   and no later major image exists to rehearse against.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

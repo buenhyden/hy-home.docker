@@ -1,43 +1,70 @@
 ---
 title: "Agent Evaluation Evidence"
-version: "1.5.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-03"
 ---
 
 # .agents/evaluations
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 - 승인된 비교 평가를 설계하고 수행하는 담당자
 - 출력, 채점 근거와 미검증 범위를 검토하는 reviewer
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 같은 작업을 Skill 없이 실행한 결과와 Skill을 명시적으로 호출한 결과를 비교하는
 증거 영역입니다. 작업 정의, 두 출력 원문, 채점과 집계의 관계를 보존하여 활성
 하네스가 선택된 사례에서 더 나은 결과를 내는지 확인합니다. 런타임 동작과 활성
 Skill 구성원 계약은 각각의 원본 소유 문서에서 확인합니다.
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 대표 비교 증거와 작업·출력·점수·집계의 관계
 - 실제 평가 주기의 작성, 보존과 검증 경로
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 제품 요구사항, 공개 승인, Vault 변경과 공급자·Hook·검증 동작 정의
 - 전체 활성 Skill 목록에 대한 대표 PASS 주장
 - 임시 출력을 지속 평가 증거로 대체하거나 점수를 repository 필수 QA로 사용
 
-#### Local Constraints
+###### Local Constraints
+<!-- core-payload-level:4 -->
 
 1. 새 평가의 작업·입력·기준과 실제 두 출력이 같은 비교 범위인지 명시합니다.
    모델·도구·설정·권한 또는 시행 조건의 차이는 결과의 한계로 남깁니다.
@@ -64,28 +91,29 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 분류와 등록은 해당 변경 계약에서 함께 수행하고, 실행 파일은 script manifest의
 실제 소비자와 함께 등록합니다. 이 안내는 새로운 실행 파일이나 Skill을 설치하지 않습니다.
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 없음: 이 README는 실행 하네스나 채점 자동화를 제공하지 않으며, 비교 평가의 도구·모델·권한·예산은 실행 전에 개별 Task에서 선택합니다.
 
-### First Use
+##### First Use
 
 이 README에는 현행 문서 profile, frontmatter와 링크 검사를 적용합니다. 새 증거와
 작성 틀은 Stage 99에 한정된 평가 증거 profile과 binding을 등록한 뒤 작성합니다.
 그 분류는 점수 정확성이나 실행 완료를 증명하지 않습니다. 실제 비교·채점·검토는
 출력 원문과 실행 증거를 대조하며 별도의 Task가 수용을 기록합니다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
 | Path | Purpose |
 | --- | --- |
 | [README.md](README.md) | Skill 비교 평가 증거 영역의 역할과 작성·보존 안내 |
 
-#### Directories
+###### Directories
+<!-- core-payload-level:4 -->
 
 현재 이 범주에는 이 README만 있습니다. 아래는 새 평가 주기에서 등록할 증거의
 구조이며, 해당 파일이나 평가가 이미 존재한다는 목록이 아닙니다.
@@ -99,30 +127,32 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 | `results.md` | 대표 결과의 점수·상태·검토자·날짜와 원문 참조 |
 | `templates/` | 새 작업·출력·채점의 등록된 작성 틀 |
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 상시 합성 출력 채점기와 고정 fixture QA는 폐기했습니다. 비교 평가의 도구, 모델,
 시행 수, 권한과 예산은 실행 전에 개별 Task에서 선택합니다. 현재 이 README는
 실행 하네스나 채점 자동화를 제공하지 않습니다.
 
-#### Canonical Entry Points
+###### Canonical Entry Points
+<!-- core-payload-level:4 -->
 
 수정 전에 위 Local Constraints와 [평가 실행 정책](../governance/agentic.md#evaluation-evidence)
 에서 소유자와 실행 경계를 확인합니다. 현재 구성원은 [Provider Registry](../governance/providers/registry.yaml)의
 등록과 [canonical Skill 소유 규칙](../README.md#inputs-and-outputs)에 따라 실제 `skills/<skill_id>/SKILL.md`에서 확인합니다. [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)은
 공식 출처와 native schema 비교의 별도 절차이며 Skill 출력 비교 평가를 대신하지 않습니다.
 
-### Owners
+##### Owners
 
 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
 
-### Related Documentation
+##### Related Documentation
 
 - [Agent execution and evaluation policy](../governance/agentic.md)
 - [Quality policy](../../docs/00.workspace/04.quality/quality-standards.md)
@@ -131,3 +161,23 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 - [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)
 - [Script manifest](../../scripts/manifest.yaml)
 - [Root README](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

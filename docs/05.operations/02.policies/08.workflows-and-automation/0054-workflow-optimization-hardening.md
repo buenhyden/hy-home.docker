@@ -1,10 +1,13 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -15,19 +18,40 @@ next_review_at: "2027-05-13"
 
 # 07-Workflow Optimization Hardening Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 `07-workflow` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, health 기반 의존성, n8n 컨테이너 하드닝, 카탈로그 기반 확장 승인 기준을 통제한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/01.descriptions/0007-workflow-architecture.md) (`AD-0007`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-### Applies To
+##### Applies To
 
 - `infra/07-workflow/airflow/docker-compose.yml`
 - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,dev.Dockerfile,docker-entrypoint.sh,docker-entrypoint.dev.sh}`
@@ -36,13 +60,14 @@ next_review_at: "2027-05-13"
 - **Systems**: Airflow, Flower, n8n, n8n-worker, n8n-task-runner-worker, workflow Valkey
 - **Environments**: 로컬·개발·검증 및 운영 환경에 준하는 환경
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -92,7 +117,8 @@ next_review_at: "2027-05-13"
   - root runtime 복귀
   - 검증 게이트 우회 배포
 
-#### Catalog Expansion Approval Gates
+###### Catalog Expansion Approval Gates
+<!-- core-payload-level:4 -->
 
 - **Airflow 승인 조건**:
   - DAG parse/schedule/delay 기준 품질 게이트 문서화 및 CI 반영
@@ -102,29 +128,32 @@ next_review_at: "2027-05-13"
   - workflow Git backup 표준 운영 절차 수립
   - credential store OpenBao 연계 모델 및 롤백 절차 문서화
 
-#### Static gate boundary
+###### Static gate boundary
+<!-- core-payload-level:4 -->
 
 `check_07_workflow`는 파일과 일부 인증 문자열을 확인하고 Airflow double proxy-auth를 거부한다. Runner 호환성, 선택 Dockerfile/guard, 모든 probe, DB/broker readiness와 로그인 성공까지 증명하지 않는다. 필수 통제에는 추가 소스 검토와 승인된 런타임 근거가 필요하다. 문자열 검사 통과로 n8n 버전·timeout·guard 결함을 닫지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 장애 대응 시 일시적 접근제어 완화는 허용될 수 있다.
 - 단, 변경 승인 기록과 동일 릴리스 내 원상 복구/재검증이 필수다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 월 1회 정기 검토
 - Airflow/n8n 버전 변경 또는 인증/보안 이슈 발생 시 수시 검토
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 점검 명령은 [가이드의 Common Checks](../../01.guides/08.workflows-and-automation/0054-workflow-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
 
-### Limits
+##### Limits
 
 이 정책은 hardening 스크립트와 CI 게이트를 지정하지만 그 범위는 정적 검사에 한정되며, 아래 규칙에는 지정된 검사가 없거나 수동 검토에 의존한다.
 
@@ -141,16 +170,36 @@ next_review_at: "2027-05-13"
 - 필수 통제에는 추가 소스 검토와 승인된 런타임 근거가 필요하다.
 - 점검 명령은 가이드 Common Checks에 위임되어 있다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/08.workflows-and-automation/0054-workflow-optimization-hardening.md) (`GDE-0054`), [Runbook](../../03.runbooks/08.workflows-and-automation/0054-workflow-optimization-hardening.md) (`RUN-0054`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../01.guides/08.workflows-and-automation/0054-workflow-optimization-hardening.md)
 - [Recovery runbook](../../03.runbooks/08.workflows-and-automation/0054-workflow-optimization-hardening.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

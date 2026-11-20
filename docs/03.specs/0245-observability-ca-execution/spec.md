@@ -1,10 +1,13 @@
 ---
 title: "Observability CA Execution"
-version: "0.1.5"
+version: "1.0.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0245"
 parent_ids:
@@ -16,9 +19,29 @@ created: "2026-10-16"
 
 # Observability CA Execution
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Intent
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the spec payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Intent
 
 The owner authorized backup and isolated-restore validation followed by a
 bounded CA application and recreation for the current host's Prometheus and
@@ -31,13 +54,13 @@ establish the required CA bundle.
 This package does not open an OpenBao window, render secrets, unseal OpenBao,
 or change any service outside the two named observability services.
 
-### Owning Requirements
+##### Owning Requirements
 
 This Spec makes concrete the frontmatter parents REQ-0003 (security), AD-0003 (security architecture) and ADR-0042 (OpenBao unseal method). The body cites no REQ-####-FR or REQ-####-NFR identifier.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 In scope:
 
@@ -55,7 +78,7 @@ In scope:
   health results, and recovery decisions; and
 - service-specific post-recreate health and CA-consumer checks.
 
-### Non-goals
+##### Non-goals
 
 Out of scope:
 
@@ -67,9 +90,9 @@ Out of scope:
 - any unlisted service, stack-wide restart, deployment, or restoration of a
   production data volume.
 
-## Behavior Contract
+#### Behavior Contract
 
-### Normal Behavior
+##### Normal Behavior
 
 1. The Task identifies the exact current host target and each service's
    Compose files, source commit, running image identity, declared image,
@@ -99,7 +122,7 @@ Out of scope:
 7. Independent operational, security, and data-recovery review plus selected
    source/document checks pass before each execution gate is accepted.
 
-### Failure and Edge Cases
+##### Failure and Edge Cases
 
 Item 6 of the normal behavior also defines the failure and rollback path.
 
@@ -112,9 +135,9 @@ or workaround outside the reviewed procedure is also excluded. Ordinary
 application writes during the reviewed service stop/start are not a data
 replacement claim.
 
-## Acceptance Criteria
+#### Acceptance Criteria
 
-### Criteria
+##### Criteria
 
 1. The Task records the exact two-service target and value-free preflight
    identity for the current host.
@@ -132,15 +155,15 @@ replacement claim.
 7. Independent operational, security, and recovery reviews plus selected
    checks pass without secret or data-payload exposure.
 
-### Evidence Requirements
+##### Evidence Requirements
 
 - Each criterion is evidenced by rows in TSK-0001 under `tasks/`, recording value-free identities, checksums, exits, health results and recovery decisions with their actual results.
 - A missing, unproved or non-PASS gate keeps the next service action `NOT_RUN` and is recorded as such rather than as a pass.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table, with the independent operational, security and recovery reviews named in criterion 7.
 
-## References
+#### References
 
-### Normative and Evidence
+##### Normative and Evidence
 
 - [REQ-0003](../../01.requirements/0003-security.md)
 - [AD-0003](../../02.architecture/01.descriptions/0003-security-architecture.md)
@@ -150,6 +173,26 @@ replacement claim.
 - [Plan](plan.md)
 - [Task](01.tasks/tsk-0001-observability-ca-execution.md)
 
-### Historical and Navigation
+##### Historical and Navigation
 
 - SPEC-0243 is a retired Spec package; it is non-authoritative history and not current authority.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

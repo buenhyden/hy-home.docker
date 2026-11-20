@@ -1,31 +1,57 @@
 ---
 title: "개발 Valkey"
-version: "0.2.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-02"
 ---
 
 # 개발 Valkey
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 `dev-valkey`는 개발 프로젝트가 명시적으로 등록될 때 사용하는 단일 Valkey입니다.
 관리용·LAB Valkey의 데이터와 계정을 공유하지 않습니다. 이 디렉터리는 설정과
 ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../docker-compose.yml)가
 소유합니다. 소스 선언은 승인된 기동 전까지 실행 상태가 아닙니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 개발 DB 운영자, 프로젝트 provision 담당자, 보안 검토자를 대상으로 합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 서비스는 새 `${DEFAULT_DATA_DIR}/dev-valkey/data` 영속 경로와
 `dev_data_net`을 사용하고 호스트 포트를 게시하지 않습니다. 관리자 자격 증명은
@@ -43,7 +69,8 @@ ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../
 프로젝트/계정/prefix/비밀 파일명·symlink·여러 줄의 비밀값은 기동을
 거절합니다. 실제 비밀값은 추적된 소스나 문서에 두지 않습니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - `config/valkey.conf`: 128 MiB `maxmemory`, `noeviction`, AOF `everysec`,
   정기 RDB snapshot.
@@ -61,7 +88,7 @@ ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../
 않습니다. 메모리 한도에 도달하면 쓰기를 거절합니다. 큐의 `noeviction`과
 캐시의 LRU가 동시에 필요하면 별도 크기의 캐시 인스턴스를 승인받아야 합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -69,11 +96,13 @@ ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../
 | `config/projects.tsv`와 `DEV_VALKEY_PROJECT_SECRETS_DIR` | 이 README는 생산자를 기록하지 않는다. | `scripts/render-acl.sh` | 승인된 행은 `project_id`·`acl_user`·`key_prefix`·`secret_filename` 네 필드를 명시한다. | 누락·형식 오류·중복·symlink·여러 줄의 비밀값은 기동을 거절한다. |
 | `dev-valkey-exporter` 지표 `http://localhost:9121/metrics` | `dev-valkey-exporter` | 이 README는 소비자를 기록하지 않는다. | `devmonitor` 계정으로 `PING`·`INFO` 등 허용 명령만 써서 지표를 낸다. | `wget` healthcheck(30s)를 쓴다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 `dev_data_net`과 별도 `/data` bind 경로를 사용합니다. 관리자 비밀은 Docker secret으로, 프로젝트 ACL은 승인된 `projects.tsv`와 별도 비밀 디렉터리로 공급합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 전 요청을 차단할 수 있어 끕니다. 서비스는 `dev_data_net`에만 expose하고 host port를 게시하지 않으며 `default off`와 필수 named-user ACL로 접근을 제한합니다. 격리 실행에서는 같은 network의 peer에서 `AUTH <user> <password>`/PING, 다른 prefix 접근 거절, 익명 접근 거절을 함께 확인해야 합니다.
 
@@ -82,17 +111,19 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
 보조 명령 경계이며 DB 번호 자체는 프로젝트 격리 수단이 아닙니다. 이 ACL의
 2026-10-03 합성 A/B 프로젝트의 prefix·관리 명령·DB1 접근 거절을 격리 엔진에서 확인했습니다. HOME 실행은 `NOT_RUN`입니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 [상위 Compose](../docker-compose.yml)가 Valkey 이미지를 선언하고, [`config/`](config/)와 [`scripts/`](scripts/)가 ACL·시작 절차를 소유합니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 합성 비밀값을 쓰는 집중 검사는 저장소 루트에서 다음과 같이 실행합니다.
 
@@ -105,17 +136,19 @@ python3 -m unittest tests/validation/test_dev_valkey_acl.py
 소유권을 맞춰야 합니다. 이미지 기본 UID/GID는 실제 이미지 검사로 확인해야 합니다.
 격리 기동과 ACL 동작은 별도 Task에서 확인했고, HOME 기동·백업·복구는 `NOT_RUN`입니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 Selected Start의 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
@@ -123,12 +156,34 @@ Selected Start의 단위 검사는 ACL 생성 입력을 확인합니다. 실제 
 - RUN-0100: `docs/05.operations/03.runbooks/05.databases-and-storage/0100-development-database.md`
 - RUN-0021: `docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 [문서 진입점](../../../../docs/README.md)에서 개발 데이터 계약과 운영
 문서를 찾습니다. 공식 [Valkey ACL](https://valkey.io/topics/acl/) 및
 [지속성](https://valkey.io/topics/persistence/) 문서를 참고합니다.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 헬스체크: `dev-valkey` 서비스는 `REDISCLI_AUTH=$$(tr -d "\n" </run/secrets/dev_valkey_admin_password) valkey-cli --user devadmin -h 127.0.0.1 -p 6379 ping | grep -qx PONG` (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

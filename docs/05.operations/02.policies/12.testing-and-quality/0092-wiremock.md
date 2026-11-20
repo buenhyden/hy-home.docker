@@ -1,10 +1,13 @@
 ---
 title: "WireMock Operations Policy"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0092"
 parent_ids:
@@ -15,30 +18,52 @@ next_review_at: "2027-05-13"
 
 # WireMock Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 WireMock은 추적되는 stub으로 HTTP 요청에 응답한다. 기능 모드는 bounded request
 journal을 기록하고, load override 모드는 journal을 기록하지 않는다. admin API에는
 인증이 없으므로 노출과 stub 내용이 곧 control이다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 - [WireMock Compose source](../../../../infra/11-quality/wiremock/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 기능·부하 모드 선택, 네트워크 노출, stub 내용, request journal, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -84,34 +109,37 @@ journal을 기록하고, load override 모드는 journal을 기록하지 않는�
   읽을 수 있다. 부하 모드는 `--no-request-journal`을 유지하며 journal reset이나
   조회를 성능 증거로 사용하지 않는다.
 
-#### 소유권과 자원
+###### 소유권과 자원
+<!-- core-payload-level:4 -->
 
 책임자는 `@buenhyden`이다. 기능 모드의 journal 개수 한도와 컨테이너 자원 제한을
 유지한다. 삭제·재시작으로 사라지는 메모리 자료는 복구 약속 대상이 아니며 민감한
 요청을 보존 근거로 복제해서는 안 된다. mapping·이미지 변경은 합성 canary와 검토된
 rollback 원본을 확보하고 적용한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 현재 승인된 예외는 없다. 새로운 consumer의 네트워크 연결은 범위와 admin API
 권한을 검토한 변경이어야 한다. host binding이나 기본 네트워크 참여를 자동으로 넓히지 않는다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 WireMock major 업그레이드, 신규 consumer, loopback을 넘는 노출이 제안될 때마다
 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 각 모드의 Compose 렌더링, 운영 catalog 검사, 추적되는 stub, non-root user,
 read-only root filesystem을 확인한다. 기능 모드는 bounded journal/reset, load 모드는
 host port 없음과 `--no-request-journal`을 격리된 실행에서 별도로 확인한다.
 
-### Limits
+##### Limits
 
 다음 규칙은 정책이 이름 있는 자동 검사를 연결하지 않았다.
 
@@ -127,14 +155,34 @@ host port 없음과 `--no-request-journal`을 격리된 실행에서 별도로 �
 - 기능 모드에서는 프로젝트 기본 네트워크의 컨테이너가 admin 권한을 가지며 stub에 보낸 요청의 테스트 credential은 실행 중 admin API로 읽을 수 있다.
 - 삭제·재시작으로 사라지는 메모리 자료는 복구 약속 대상이 아니다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Guide](../../01.guides/12.testing-and-quality/0092-wiremock.md) (`GDE-0092`)
 - [Runbook](../../03.runbooks/12.testing-and-quality/0092-wiremock.md) (`RUN-0092`)
 - [Compose profile vocabulary](../01.common/0078-compose-profile-vocabulary.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

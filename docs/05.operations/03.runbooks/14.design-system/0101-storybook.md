@@ -1,10 +1,13 @@
 ---
 title: "Shared Storybook Source Preflight Runbook"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0101"
 parent_ids:
@@ -15,15 +18,35 @@ next_review_at: "2027-05-13"
 
 # Shared Storybook Source Preflight Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 공유 Storybook 정적 origin과 문서 MCP의 빌드, 기동, 검증, 복구를 다루는 런북이다.
 
 `storybook` 정적 origin의 소스, route 또는 image 변경을 검토할 때 사용한다.
 
-### Targets
+##### Targets
 
 - Artifact: `RUN-0101`; parent guide: `GDE-0101`.
 - 역사적 source/static 완료 근거: `SPEC-0206`. 런타임 선언:
@@ -32,21 +55,21 @@ next_review_at: "2027-05-13"
 - [Shared Storybook policy](../../02.policies/14.design-system/0101-storybook.md)
 - [Traefik runbook](../02.gateway-and-networking/0013-traefik.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원격 MCP 공개는 별도
 구체적 승인이 필요하다. SPEC-0206은 source/static completion의 역사적 근거이며,
 이 runbook은 이후 운영 trigger와 evidence handoff를 소유한다.
 
-### Environment
+##### Environment
 
 정적 origin은 업무 데이터를 소유하지 않으므로 backup은 요구하지 않고, 읽기 전용 사전 점검은 Steps의 1~2단계(작업 revision 일치 확인과 정적 Compose 검증)에서 수행한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -131,26 +154,28 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
    bundle은 `projects/storybook/nextjs/design-export.allowlist.json`의 파일과
    `export-manifest.json`만 담는다. 계정 로그인과 업로드는 담당자가 수행한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 다음이 확인되면 배포를 중단한다: 잘못된 관리자 허용 범위, 비인증 asset 노출, 로그인 HTML의 asset/MCP 응답 혼입, image/context에 비밀값 유입, port 충돌, read-only runtime 실패, manifest revision 불일치.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 정적 구성 검증 명령 세 개가 성공하고 `storybook_image.py verify`가 통과해야 하며, 격리 rehearsal에서 비인증 요청이 200을 받지 않고 관리자만 각 경로를 받아야 한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 운영 Task에 기준/작업 SHA, 변경 파일, 명령·exit code, 정적·격리·HOME 결과를 구분해
 기록한다. Trigger는 HOME route 활성화, `/admins` 이외 reviewer 승인, remote MCP
 issuer/audience/client 승인, DNS/TLS 관찰 요청 또는 external design account 승인이다. host secret, 세션 cookie, 인증 HTML 원문, private Compose 전체 출력,
 실사용자 데이터와 원시 로그는 기록하지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
 
@@ -159,18 +184,38 @@ issuer/audience/client 승인, DNS/TLS 관찰 요청 또는 external design acco
 - 격리 rehearsal(`StorybookIngressRehearsalTests`)과 image `verify`: 이 문서에는 실행 결과가 기록되어 있지 않다. 명령 종료 코드와 비인증 200 부재, 관리자 응답 확인이 검증 근거가 된다.
 - Claude Design 전달: 계정 로그인과 업로드는 담당자가 수행하며 이 문서에는 기록이 없다. bundle과 `export-manifest.json` 확인이 검증 근거가 된다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 잘못된 관리자 허용 범위, 비인증 asset 노출, 로그인 HTML의 asset/MCP 응답 혼입,
 image/context에 비밀값 유입, port 충돌, read-only runtime 실패 또는 manifest
 revision 불일치가 확인되면 배포를 중단하고 @buenhyden에게 SHA와 대상·증거·복구
 경계를 전달한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 정적 구성 오류는 Storybook leaf Compose와 root include/profile 문서 변경만 되돌린 뒤
 같은 검사를 재실행한다. HOME 실행 이후에는 승인된 운영 Task가 이전 image와
 route를 복원하고 브라우저 경로를 다시 검사한다. 정적 origin은 업무 데이터를
 소유하지 않으므로 DB·volume 삭제나 migration은 복구 절차가 아니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

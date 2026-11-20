@@ -1,44 +1,69 @@
 ---
 title: "Library Tests"
-version: "1.2.0"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-27"
 ---
 
 # tests/lib
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 - Developers
 - QA Engineers
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 `tests/lib/<domain>/`은 `scripts/lib/<domain>/`의 주 책임을 그대로 따라가는
 library-unit 테스트 공간입니다. library 도메인마다 짝이 되는 테스트
 디렉터리가 하나씩 있고, 여러 도메인에 걸친 검증과 entrypoint 동작은
 `tests/validation/`이 맡습니다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - 포함: `scripts/lib/<domain>/` 모듈의 동작 테스트.
 - 제외: CLI 파싱, 렌더링, 실행 context 라우팅, 여러 도메인을 묶는 gate
   실행. 이들은 `tests/validation/`이 소유합니다.
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다.
 
-### First Use
+##### First Use
 
 1. 유지하는 library 동작에는 추적되고 등록된 테스트 소유자가 있어야 합니다.
    `tests/lib/<domain>/`이 기본 위치이며, 여러 모듈이나 entrypoint를 함께
@@ -52,11 +77,12 @@ Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requireme
 3. 등록된 suite는 정확한 dotted module 이름으로 실행되므로, 모듈 경로를
    바꾸면 등록 이름도 함께 바꿉니다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
-#### Directories
+###### Directories
+<!-- core-payload-level:4 -->
 
 직접 하위 디렉터리는 `scripts/lib/`의 도메인 이름과 같습니다. 도메인과
 테스트 파일의 정확한 대응은 [Script Manifest](../../scripts/manifest.yaml)의
@@ -67,21 +93,42 @@ Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requireme
 schema 1 보존, current 재사용, 재시도/conflict, 용량 경쟁, 재연결 page 상한과
 동시 backup/restore를 포함하며 실제 private DB/native memory는 사용하지 않습니다.
 
-#### Canonical Entry Points
+###### Canonical Entry Points
+<!-- core-payload-level:4 -->
 
 여러 도메인과 entrypoint를 함께 검증하는 테스트의 진입점은 [tests/validation](../validation/README.md)입니다.
 
-### Owners
+##### Owners
 
 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
 
-### Related Documentation
+##### Related Documentation
 
 - [Test Surface](../README.md)
 - [Validation contract tests](../validation/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,10 +1,13 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.1.1"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-09-17"
 
 # ADR-0037: Package Waiting, Cancellation and Archive Reassessment
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 ADR-0036 admitted completed Tasks inside unfinished packages but rejected
 cancelled Tasks and completed packages in Stage 03. Completion and disposition
@@ -35,7 +58,8 @@ completion approval, and exact capture preparation difficult.
 - Current citation permission depends on assessment before source-profile exceptions.
 - Registry owns shapes, states and ordered judgments; code implements those contracts.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [AD-0030](../01.descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
@@ -43,13 +67,13 @@ completion approval, and exact capture preparation difficult.
 - SPEC-0179
 - [Retention policy](../../03.process/documentation-protocol.md#retention-by-status)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers package waiting, task cancellation and archive reassessment for Stage 03 packages, and is implemented by SPEC-0179. Its approval does not authorize actual payload removal, commits, remote integration, runtime operations or secret access.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
    this cannot express approved waiting, truthful cancellation or reassessment.
@@ -60,7 +84,7 @@ This decision covers package waiting, task cancellation and archive reassessment
 4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
    and historical transformations cannot be retroactively manufactured.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -71,9 +95,9 @@ This decision covers package waiting, task cancellation and archive reassessment
 
 Each rejected option is rejected for the reason stated in its entry above: retained-only storage cannot express waiting, cancellation or reassessment; a duplicate machine catalog creates conflicting authority; rewriting old captures cannot manufacture original lifecycle evidence. The selected option preserves identities and historical rows while making current management explicit.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. A completed Spec may wait in Stage 03 when its Plan is completed and
    every Task is completed or validly cancelled. Nonterminal members fail. Waiting
@@ -129,7 +153,7 @@ Each rejected option is rejected for the reason stated in its entry above: retai
     Postmortem `reviewed_at`, whole-unit preservation and external-route-only records
     remain required. No new document ID or second recovery ledger is needed.
 
-### Authority and Effect
+##### Authority and Effect
 
 On 2026-09-28 the repository owner explicitly approved this decision's acceptance,
 waiting/cancellation, reassessment/history-only adoption, and completing Standard
@@ -139,7 +163,8 @@ commits, remote integration, runtime operations or secret access.
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. The effective date is not recorded separately; the document was created on 2026-09-17.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 ADR-0036 predecessor; its number is reserved in the Registry and its body is in version history.
 
@@ -162,9 +187,9 @@ completion-receipt clauses.
 
 - **Superseded archive-model decisions**: ADR-0030 made a Tombstone the record of a retirement; ADR-0031 made Stage 98 a preserved record keyed by Retired Path; ADR-0033 preserved whole Spec packages; ADR-0035 introduced Stage 98 retention classes and route dispositions; ADR-0036 added occupancy, citation, and frozen identity rules. This decision replaces ADR-0036. Under SPEC-0249 the Stage 98 records were later summarized into Stage 01 and Stage 02 and deleted; version history is their record and retired numbers live in the Registry.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Authors can record cancellation and completion without inventing execution states.
 - Assessment is mutable management information; captured lifecycle facts are immutable.
@@ -177,7 +202,7 @@ completion-receipt clauses.
 - Rollback restores the scoped current-contract diff before integration; later rollback
   uses an approved change and never rewrites frozen records or published history.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -189,7 +214,8 @@ registered integration edges; the adoption approval does not fabricate interveni
 commits or authorize remote integration. A real unit disposition remains a separate
 scoped operation after recoverability and consumer checks.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 Policy owns meaning; Registry owns shapes and generation boundaries; validators own
 executable judgments. SPEC-0179 recorded actual RED/GREEN, snapshot, metadata, corpus,
@@ -200,3 +226,23 @@ Amended in place on 2026-11-15 at the owner's direction (SPEC-0255
 TSK-0001, criterion 2): SPEC-0179 is retired, so the two sentences above
 now say it owned and recorded these, in the past tense. The decision does not
 change.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

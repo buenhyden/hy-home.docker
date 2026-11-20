@@ -77,12 +77,17 @@ def _validate_template_source(
         for name, role in template_roles.items()
         if isinstance(name, str)
         and isinstance(role, dict)
-        and role.get("source") == record.path.as_posix()
+        and record.path.as_posix() in {role.get("source"), role.get("native_source")}
     ]
     if not matching_roles:
         return None
     _, role = matching_roles[0]
-    target_type = role.get("artifact_profile")
+    native_definition = (
+        bool(role.get("native_source")) and role.get("source") == record.path.as_posix()
+    )
+    target_type = (
+        "template-source" if native_definition else role.get("artifact_profile")
+    )
     if not isinstance(target_type, str):
         return [
             _finding(
@@ -106,6 +111,8 @@ def _validate_template_source(
     required_placeholder_keys = set(
         common_contract.get("template_required_placeholders", ())
     )
+    if native_definition:
+        required_placeholder_keys = set()
     registered_placeholder_values = set(placeholders.values())
     findings: list[Finding] = []
     if _declares_provider_binding(target_profile):
@@ -801,7 +808,7 @@ def _source_roles_for_path(
             for name, role in roles.items()
             if isinstance(name, str)
             and isinstance(role, dict)
-            and role.get("source") == path.as_posix()
+            and path.as_posix() in {role.get("source"), role.get("native_source")}
         ),
         key=lambda item: item[0],
     )
@@ -1499,6 +1506,9 @@ def _runtime_version_findings(
     )
     if not in_scope:
         return []
+    from scripts.lib.document_governance.common_document import payload_text
+
+    text = payload_text(text)
     body = re.sub(r"\A---\r?\n.*?\r?\n---(?:\r?\n|$)", "", text, count=1, flags=re.S)
     try:
         all_entries = _runtime_version_entries(root)
@@ -1683,7 +1693,7 @@ def _registered_table_findings(
             )
         spec = template_definition(registry, role)
         titles: dict[str, tuple[str, str | None]] = {}
-        for heading in spec["headings"]:  # type: ignore[union-attr]
+        for heading in spec.get("payload", {}).get("headings", spec["headings"]):  # type: ignore[union-attr]
             titles[str(heading["section_id"])] = (str(heading["title"]), None)
             for child in heading["children"]:
                 titles[str(child["section_id"])] = (
@@ -1799,6 +1809,52 @@ def _registered_table_findings(
     return findings
 
 
+def _common_document_view(
+    record: Record, text: str, profiles: dict[str, object]
+) -> tuple[str, bool, list[Finding]]:
+    """Share current common metadata/envelope validation with active and changed checks."""
+    from scripts.lib.document_governance.common_document import (
+        CommonDocumentError,
+        common_metadata,
+        is_enveloped,
+        payload_text,
+        requires_envelope,
+    )
+
+    envelope_findings = []
+    registry = profiles.get("_registry")
+    try:
+        enveloped = is_enveloped(text)
+        if (
+            isinstance(registry, DocumentRegistry)
+            and requires_envelope(registry, record.path.as_posix())
+            and not enveloped
+        ):
+            envelope_findings.append(
+                _finding(
+                    record,
+                    "common-envelope-missing",
+                    "current normative document requires the common envelope",
+                )
+            )
+        if enveloped:
+            if isinstance(registry, DocumentRegistry):
+                values = record.metadata
+                source = record.path.as_posix().startswith(
+                    "docs/99.templates/02.templates/"
+                )
+                common_metadata(
+                    registry,
+                    record.path.as_posix(),
+                    resolve_template_placeholders(values) if source else values,
+                )
+            text = payload_text(text)
+    except (CommonDocumentError, RegistryError) as error:
+        return text, False, [_finding(record, "common-document-contract", str(error))]
+
+    return text, enveloped, envelope_findings
+
+
 def validate_body_contract(
     record: Record,
     text: str,
@@ -1807,10 +1863,43 @@ def validate_body_contract(
 ) -> list[Finding]:
     """Validate role headings, source tokens, and current authored residue."""
 
+    text, enveloped, envelope_findings = _common_document_view(record, text, profiles)
+    if any(finding.code == "common-document-contract" for finding in envelope_findings):
+        return envelope_findings
+    registry = profiles.get("_registry")
+
+    if isinstance(registry, DocumentRegistry):
+        native_definition = any(
+            role.get("native_source") and role["source"] == record.path.as_posix()
+            for role in registry.template_roles.values()
+        )
+        if native_definition:
+            return (
+                []
+                if enveloped
+                else [
+                    _finding(
+                        record,
+                        "common-envelope-missing",
+                        "native definition needs the common envelope",
+                    )
+                ]
+            )
+
+        native_asset = any(
+            role.get("native_source") == record.path.as_posix()
+            for role in registry.template_roles.values()
+        )
+        if native_asset and _path_profile_declares_provider_binding(
+            record.path, registry
+        ):
+            # Typed source slots are checked as templates; the real producer owns emitted headings.
+            return []
+
     if _machine_template_path(record.path):
         return _machine_template_findings(record, text)
 
-    section_findings = (
+    section_findings = envelope_findings + (
         _authored_residue_findings(record, text)
         if _authored_body_target(record, profiles)
         else []

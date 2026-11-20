@@ -1,21 +1,45 @@
 ---
 title: "Local-Isolated Readiness Evidence"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0028"
 parent_ids:
 - "AD-0028"
 created: "2026-07-19"
 ---
+
 # ADR-0028: Local-Isolated Readiness Evidence
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 Compose rendering and static validation do not prove observed readiness,
 artifact trust, or promotion/rollback. The repository
@@ -28,7 +52,8 @@ lanes, and their execution must not encroach on other workloads or remote state.
 - Bind supply-chain and delivery judgments to an immutable image digest.
 - Do not let network-dependent observation destabilize blocking CI.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [REQ-0025 Operational Readiness Closure](../../01.requirements/0025-operational-readiness-closure.md)
 - [AD-0028 Operational Readiness Closure](../01.descriptions/0028-operational-readiness-closure.md)
@@ -37,31 +62,34 @@ lanes, and their execution must not encroach on other workloads or remote state.
 - `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`
 
-### Decision Scope
+##### Decision Scope
 
 The decision covers the three lanes of compose readiness, supply chain, and delivery, run as local-isolated rehearsal. It does not claim production topology, full Compose profile, live data recovery, or remote release control completion.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
-#### Static-only validation
+###### Static-only validation
+<!-- core-payload-level:4 -->
 
 Safe and fast, but does not prove runtime, recovery, tamper, or rollback
 behavior.
 
-#### Local-isolated contract-first rehearsal
+###### Local-isolated contract-first rehearsal
+<!-- core-payload-level:4 -->
 
 Independently validates the three lanes using synthetic input and a unique
 project identity. Production realism is limited, but blast radius and
 reproducibility are clear.
 
-#### Remote-first validation
+###### Remote-first validation
+<!-- core-payload-level:4 -->
 
 Can validate real registry and control plane, but requires credential and
 external state changes that exceed the current approval scope.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -71,9 +99,9 @@ external state changes that exceed the current approval scope.
 
 Static-only validation was not chosen because it does not prove runtime, recovery, tamper, or rollback behavior. Remote-first validation was not chosen because it requires credential and external state changes that exceed the current approval scope. The chosen rehearsal accepts limited production realism for a clear blast radius and reproducibility.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 Adopt local-isolated contract-first rehearsal.
 
@@ -87,13 +115,13 @@ Adopt local-isolated contract-first rehearsal.
 - Network-dependent remote observation is advisory; deterministic local policy
   and fixtures own the blocking judgment.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-07-19. On 2026-11-10 the owner directed the amendment recorded under Follow-up.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Real-behavior evidence can be reproduced with a small local blast radius.
 - Cannot claim production topology, full Compose profile, live data recovery,
@@ -101,7 +129,7 @@ Decided by the owner, @buenhyden; status `accepted`. No separate approval record
 - Raw output and ephemeral key material cannot become tracked evidence, and the
   current Task retains only a secret-scrubbed summary.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -115,3 +143,23 @@ oracle rehearsal with runbook RUN-0032. Every HOME PostgreSQL service already
 runs major 18 and no later major image exists, so the pinned 17 to 18 harness
 had nothing left to rehearse and could not follow image updates. The harness,
 its fixture, test, and runbook were deleted and REQ-0025-FR-0003 retired.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

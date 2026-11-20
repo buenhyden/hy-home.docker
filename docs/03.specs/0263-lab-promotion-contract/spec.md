@@ -1,10 +1,13 @@
 ---
 title: "LAB Promotion Contract Specification"
-version: "0.4.3"
+version: "1.0.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0263"
 parent_ids:
@@ -15,9 +18,29 @@ created: "2026-11-05"
 
 # LAB Promotion Contract Specification
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Intent
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the spec payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Intent
 
 A LAB under `labs/` is a service that does not yet run in `infra/`. It is run
 there to test it and later move it into `infra/` for continuous operation.
@@ -30,7 +53,7 @@ This Spec defines four things:
 - the check that decides whether a LAB may be promoted;
 - the procedure for each kind.
 
-### Owning Requirements
+##### Owning Requirements
 
 The owner stated the following on 2026-11-05:
 
@@ -76,9 +99,9 @@ The owner removed the supabase LAB on 2026-11-06; no LAB binds the Docker socket
 
 This Spec makes concrete REQ-0004 and AD-0026, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - The standard LAB layout and the promotion manifest every LAB carries.
 - LAB secret copies and their catalog and registry rows.
@@ -90,7 +113,7 @@ This Spec makes concrete REQ-0004 and AD-0026, its frontmatter `parent_ids`. The
 - Bringing the 15 LABs present on 2026-11-05 into the standard layout, and
   retiring the supabase LAB on 2026-11-06.
 
-### Non-goals
+##### Non-goals
 
 - Promoting any LAB. Each promotion is a later Task under this Spec with its
   own owner approval and operating window.
@@ -100,15 +123,16 @@ This Spec makes concrete REQ-0004 and AD-0026, its frontmatter `parent_ids`. The
   `volumes_from`, host `pid` or `network_mode`, `cap_add`). These stay a
   recorded residual risk.
 
-## Behavior Contract
+#### Behavior Contract
 
-### Normal Behavior
+##### Normal Behavior
 
 The POL-0078 profile vocabulary, the `infra/` tier layout tests and the LAB
 isolation tests stay authoritative. Document moves keep artifact identifiers
 and creation dates. No secret value is read or written.
 
-#### 1. Standard LAB layout
+###### 1. Standard LAB layout
+<!-- core-payload-level:4 -->
 
 Every LAB is one folder, `labs/<name>/`, shaped like an `infra/` service
 folder. It contains:
@@ -126,7 +150,8 @@ A LAB keeps its own Compose project `hy-home-lab-<name>`, its LAB networks,
 its `LAB_*` endpoint inputs, its data under `LAB_DATA_DIR`, and the isolation
 that `lab.py check` enforces.
 
-#### 2. Promotion manifest
+###### 2. Promotion manifest
+<!-- core-payload-level:4 -->
 
 `labs/<name>/promotion.yaml` declares where and how the LAB would be promoted:
 
@@ -153,7 +178,8 @@ inconsistent manifest, including:
 - a secret without a catalog row;
 - `resources` that disagree with the rendered limits.
 
-#### 3. Secrets
+###### 3. Secrets
+<!-- core-payload-level:4 -->
 
 During the LAB phase every secret file is a LAB copy under
 `secrets/labs/<name>/`. Each copy has its own catalog row (`LAB-*`, scope
@@ -178,7 +204,8 @@ On promotion:
 - each destination gets a new `root` catalog row, or an existing one gains the
   new consumer.
 
-#### 4. Destination rules
+###### 4. Destination rules
+<!-- core-payload-level:4 -->
 
 | LAB source | Destination on promotion |
 | --- | --- |
@@ -193,7 +220,8 @@ The tier follows the function of the service. Operations documents follow the
 domain of the service, which need not share the tier number. No LAB copy of a
 file, document, secret or catalog row is left behind.
 
-#### 5. Promotion readiness check
+###### 5. Promotion readiness check
+<!-- core-payload-level:4 -->
 
 Before any promotion, a readiness check produces a report and fails closed.
 It covers:
@@ -235,7 +263,8 @@ item is reported as owner judgment; it is neither a measurement nor a block.
 The LAB check (`lab.py check`) sums the same reservations against its host
 budget.
 
-#### 6. Promotion procedures
+###### 6. Promotion procedures
+<!-- core-payload-level:4 -->
 
 **`add`:**
 
@@ -261,7 +290,8 @@ data format to the new one, because the products differ.
 Each procedure is a Runbook in the target role folder. The promotion Task
 records the actual results.
 
-#### 7. Drafting calls
+###### 7. Drafting calls
+<!-- core-payload-level:4 -->
 
 These were decided while drafting the Spec, not by the owner:
 
@@ -280,7 +310,7 @@ These were decided while drafting the Spec, not by the owner:
 Moving each Compose file one folder deeper changes the base that relative
 paths resolve against, so every relative path in a moved LAB is adjusted.
 
-### Failure and Edge Cases
+##### Failure and Edge Cases
 
 Bringing LABs into the standard layout moves sources, documents and catalog
 rows only, and starts nothing.
@@ -309,9 +339,9 @@ Any of these is a failure:
 This Spec promotes no LAB and starts no container. The owner applies every
 change to `secrets/SENSITIVE_ENV_VARS.md.example`.
 
-## Acceptance Criteria
+#### Acceptance Criteria
 
-### Criteria
+##### Criteria
 
 1. Every LAB lives in `labs/<name>/` with its `docker-compose.yml`, `README.md`
    and assets. Only `labs/README.md` and `labs/.env.example` remain at the
@@ -337,7 +367,7 @@ change to `secrets/SENSITIVE_ENV_VARS.md.example`.
    sum reservations plus the external-workload allowance, and report owner
    check items as owner judgment.
 
-### Evidence Requirements
+##### Evidence Requirements
 
 - Criteria 1 and 2 are verified by the layout tests and the manifest and `check` tests (`layout tests`, `manifest and check tests` rows in TSK-0001).
 - Criterion 3 is verified by the LAB and secret suites, the catalog and owner registry checks, the root render and `lab.py check` runs (TSK-0001 and TSK-0003); a check needing owner inputs that was not run stays `NOT_RUN`.
@@ -346,14 +376,34 @@ change to `secrets/SENSITIVE_ENV_VARS.md.example`.
 - Per the package [Plan](plan.md), criterion 7 is verified by the root and LAB `docker compose config` renders, the full unit suite, `check-all-hardening.sh`, the metadata, links, lifecycle, operations catalog and script manifest checks, and the hosted CI row.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
-## References
+#### References
 
-### Normative and Evidence
+##### Normative and Evidence
 
 - [LAB operations guides](../../05.operations/01.guides/15.labs/README.md)
 - [Analytics LAB migration](../0262-analytics-labs-migration/spec.md)
 
-### Historical and Navigation
+##### Historical and Navigation
 
 - [LAB README](../../../labs/README.md)
 - [infra README](../../../infra/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Locust Recovery Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다.
 시나리오 파일 복구와 승인된 upgrade canary도 다룬다.
@@ -26,7 +49,7 @@ test 중 target health가 저하되거나, worker 연결이 끊기거나, headle
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
 사용한다.
 
-### Targets
+##### Targets
 
 - [Guide](../../01.guides/15.labs/0062-locust.md) (`GDE-0062`)
 - [Policy](../../02.policies/15.labs/0062-locust.md) (`POL-0062`)
@@ -37,20 +60,21 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 - [Locust distributed mode](https://docs.locust.io/en/stable/running-distributed.html)
 - [Operations index](../../README.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 저장소 루트에서 실행한다. 정적 render는 `labs/.env.example`와 합성 경로만 사용한다.
 실제 진단·정지는 승인된 Docker context, `hy-home-lab-locust` project와 실행 당시
 입력을 확인한 뒤에만 한다. `LAB_ENV_FILE`은 그 실행에 사용한 LAB 환경 파일 경로다.
 필요한 환경 입력과 경로는 승인된 실행 도구가 주입하며 값은 증거에 남기지 않는다.
 
-### Environment
+##### Environment
 
 읽기 전용 사전 점검은 Steps의 1단계(target·users·scenario digest 기록), 3단계(bounded status와 로그), 4단계(`config --quiet`와 master health failure 점검)이다. 시나리오 backup과 upgrade 전 점검은 다음과 같다.
 
-#### 시나리오 보존과 업그레이드
+###### 시나리오 보존과 업그레이드
+<!-- core-payload-level:4 -->
 
 Locust에는 application database가 없다. Bind-backed scenario/result directory가
 유일한 local persistent scope다. Test가 쓰고 있지 않을 때만 ordinary file로
@@ -60,9 +84,9 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
 승인된 canary를 실행한 뒤 worker registration과 aggregate metrics를 비교한다.
 이 documentation task에서는 backup, restore, load execution을 수행하지 않았다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -120,7 +144,8 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
    벌어지면 image/build 변경을 롤백한다. 시도 사이에는 Locust master와 worker를 중지 상태로 유지한다. 대상 애플리케이션을
    임의로 중지하지 않는다.
 
-#### 실패 유형별 판단
+###### 실패 유형별 판단
+<!-- core-payload-level:4 -->
 
 - `deadline_exceeded`(124)·`cancelled`(130): CSV는 멈춘 시점까지의 집계다. 목표 시간을
   채운 결과로 보고하지 않는다.
@@ -138,15 +163,16 @@ python3 examples/operations/locust-telemetry/lifecycle.py \
   --mock-image '<approved-wiremock@sha256:digest>'
 ```
 
-### Stop Conditions
+##### Stop Conditions
 
 target SLI가 회복되지 않았으면 Locust를 중지 상태로 두고 target owner에게 escalation한다. worker 등록에 실패하거나 통계가 벌어지면 image/build 변경을 롤백하고, 시도 사이에는 Locust master와 worker를 중지 상태로 유지한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 - Headless master의 TCP healthcheck가 성공하고 예상 worker count가 등록된다.
 - 별도로 승인된 canary가 지정된 target SLI 범위 내에 머문다.
@@ -154,12 +180,13 @@ target SLI가 회복되지 않았으면 Locust를 중지 상태로 두고 target
 - scenario/result restore와 upgrade rehearsal은 Task가 protected path, command,
   관찰된 결과를 기록할 때까지 **미실행** 상태로 남는다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 명령 종료·시각·설정 커밋·시나리오 digest·worker 수·정제된 집계·대상 SLI와 최종
 중지/실행 상태를 기록한다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 일부 항목을 Task가 기록할 때까지 미실행 상태로 둔다고 적고 있다.
 
@@ -169,9 +196,9 @@ target SLI가 회복되지 않았으면 Locust를 중지 상태로 두고 target
 - headless master TCP healthcheck와 예상 worker count 등록: 이 문서에는 실행 결과가 기록되어 있지 않다.
 - 격리 재현 harness(`lifecycle.py`): 실행 결과가 기록되어 있지 않다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
@@ -179,8 +206,28 @@ load 중지 후에도 target health가 회복되지 않거나, worker가 healthy
 않거나, scenario provenance를 알 수 없거나, log/result에 secret이나 personal data가
 나타날 때 escalation한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 Locust를 중지하고, 이전에 검토된 scenario/build를 격리된 상태로 복원한 뒤, static
 validation과 소규모 승인된 canary를 반복한다. 이 런북의 어떤 조치도 target service를
 롤백하거나 target data를 복구하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

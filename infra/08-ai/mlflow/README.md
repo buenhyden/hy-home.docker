@@ -1,20 +1,43 @@
 ---
 title: "MLflow Tracking Server"
-version: "1.1.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-21"
 ---
 
 # MLflow Tracking Server
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > 관리 PostgreSQL과 전용 SeaweedFS 버킷을 기반으로 하는 실험 추적 및 모델 레지스트리입니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
 MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트를 기록합니다.
 추적 저장소는 `mng-pg`의 전용 데이터베이스에 있으며 아티팩트는
@@ -24,18 +47,21 @@ MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트�
 프로필에서만 선택됩니다. HOME이나 현재 8개 프로필 운영 선택에는 포함되지
 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - **Data scientists and ML engineers**: JupyterLab이나 스크립트에서 실험 기록.
 - **Operators**: 추적 저장소와 아티팩트의 프로비저닝, 백업, 복구.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - **Included**: 추적 서버, 기능 소유 데이터베이스 프로비저닝 작업, 게이트웨이 라우트.
 - **Excluded**: SeaweedFS(버킷 및 identity)와 `mng-pg` 서버 운영(각자의 패키지), JupyterLab, 모델 서빙,
   MLflow 인증 플러그인(채택되지 않음; Guide 참고).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 .
@@ -47,7 +73,7 @@ MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트�
 └── README.md
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -56,7 +82,8 @@ MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트�
 | `mng-pg` 전용 추적 데이터베이스 | `mng-pg` (`mlflow-db-provision`이 프로비저닝) | `mlflow` | 비밀번호 `mlflow_db_password`를 `PGPASSWORD`로 libpq에 전달한다. | 서버는 오래된 schema로 시작하지 않으며 업그레이드·복구는 RUN-0088을 따른다. |
 | SeaweedFS 버킷 `mlflow-artifacts` | SeaweedFS | `mlflow` (identity `mlflow`) | identity `mlflow`는 `mlflow-artifacts`만 읽기·쓰기·목록 조회하며 시크릿은 `AWS_SECRET_ACCESS_KEY`로 전달한다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 | Field | Value |
 | --- | --- |
@@ -76,13 +103,14 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
 ([identities](../../04-data/seaweedfs/config/s3-identities.conf)),
 다른 버킷에는 접근할 수 없습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 `mlflow.${DEFAULT_URL}` 라우트는 `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거치고 호스트 포트는 게시하지 않습니다. Docker Secret `mlflow_db_password`와 `seaweedfs_s3_mlflow_secret_key`(프로비저닝 작업은 `mng_postgres_password`도)를 읽으며 값은 `PGPASSWORD`·`AWS_SECRET_ACCESS_KEY`로만 전달됩니다. 허용 host 목록이 DNS 리바인딩을 막고, 브라우저 SSO는 내부망 직접 SDK 접근을 보호하지 않습니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Component | Source | Purpose |
 | --- | --- | --- |
@@ -92,7 +120,7 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증에 쓰입니다.
 
-### Selected Start
+##### Selected Start
 
 1. 프로필을 선택하기 전에 등록된 시크릿 워크플로우를 통해 `secrets/db/mng-pg/mlflow_password.txt`와
    `secrets/storage/seaweedfs/seaweedfs_s3_mlflow_secret_key.txt`가 존재하는지 확인합니다.
@@ -106,24 +134,46 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
    런북은 [문서 인덱스](../../../docs/README.md)에서 찾습니다.
    노트북 클라이언트 고정 값은 서버와 같은 버전으로 맞춥니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 - `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates` (정적 프로비저닝 계약)
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests` (별도 실행 승인 및 일회용 PostgreSQL·Docker 필요)
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - **Guide**: MLflow usage guide (`docs/05.operations/01.guides/13.analytics-and-data-quality/0088-mlflow.md`)
 - **Policy**: MLflow operations policy (`docs/05.operations/02.policies/13.analytics-and-data-quality/0088-mlflow.md`)
 - **Runbook**: MLflow recovery runbook (`docs/05.operations/03.runbooks/13.analytics-and-data-quality/0088-mlflow.md`)
 - [Documentation index](../../../docs/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 `mlflow`에는 Compose 헬스체크(`GET /health`)가 있으며 DB/버킷 쓰기 접근은 증명하지 않습니다. 복구와 추적 DB schema 업그레이드는 `docs/05.operations/03.runbooks/13.analytics-and-data-quality/0088-mlflow.md`(RUN-0088)를 따릅니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

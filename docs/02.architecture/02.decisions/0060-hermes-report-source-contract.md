@@ -1,10 +1,13 @@
 ---
 title: "Hermes Report Source Contract"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0060"
 parent_ids:
@@ -15,9 +18,29 @@ created: "2026-11-06"
 
 # ADR-0060: Hermes Report Source Contract
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 The Hermes `research-report` plugin (0.3.0) sends the Gateway an `ingestion-v1`
 request whose `source_text` is the canonical JSON of the collector receipt rows
@@ -68,14 +91,15 @@ untracked draft, treated as data). On 2026-11-06 the owner answered "초안 작�
   independent Attestation, and the Attester verifies items by independent fetch
   without reading `source_text`. These trust boundaries stay distinct.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - SPEC-0265 (retired; its capture contract lives in this decision and the workload README; version history)
 - [Workload README](../../../infra/07-workflow/n8n/workloads/hermes-blog-ingestion/README.md)
 - [SPEC-0212 TSK-0050](../../03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0050-hermes-provenance-trust-export.md)
 - [Home and Development Host Architecture](../01.descriptions/0031-home-development-host.md)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the meaning of `source_text`, `source_sha256` and
 `source_ref` in the Hermes `research-report` plugin's `ingestion-v1` request,
@@ -83,9 +107,9 @@ and how the plugin stores the report. `ingestion-v1`, attestation/2 and the
 export contract do not change. The sidecar `84d3f689378b` failure streak is out
 of scope here.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 1. **Receipt JSON as `source_text` (status quo).** No change. Rejected: it
    violates the ADR-0097 meaning of `source_text`, publishes a JSON array as the
@@ -108,7 +132,7 @@ of scope here.
    report once to `submit_research_report`; the plugin stores it immutably and
    derives the other outputs from the stored file.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -122,9 +146,9 @@ Each rejected option carries its reason in the list above; the chosen option
 keeps one stored byte string as the source of the Gateway, email and Telegram
 outputs.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. `source_text` is the finalized full daily report Markdown, exact UTF-8 bytes.
    `source_sha256` is the SHA-256 of those bytes. `ingestion-v1` fields,
@@ -153,15 +177,15 @@ outputs.
    in the report body (its section 3); the sidecar `84d3f689378b` failure
    streak is a separate defect, out of scope here (its section 4).
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. On 2026-11-06 the owner
 answered "초안 작성 (권장)" to drafting this contract. The owner approved the SPEC-0265 work on 2026-11-06 ("승인"), and this ADR moved to `accepted` after #774 merged it as `proposed`; an accepted ADR is replaced only by a new ADR.
 Effective from 2026-11-06.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - The vault note shows the real report. Report size is bounded by the Gateway
   limits (524288 code points; the whole request at most 1 MiB), so a larger
@@ -176,7 +200,7 @@ Effective from 2026-11-06.
   cutover restores the schema-4 backup and loses later records.
 - The 16 existing reports keep their fragments and stay out of the vault.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -187,8 +211,29 @@ decision text is unchanged.
   `backfill-reports`, and its runbook correction (server A state is stale).
 - Owner-approved operations for the schema 5 rollout, outside this change.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 SPEC-0265 states testable criteria: the same stored bytes feed the Gateway,
 the email and the Telegram text; a pre-final or oversized submission is
 rejected; a receipt-set record exists beside every submission.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

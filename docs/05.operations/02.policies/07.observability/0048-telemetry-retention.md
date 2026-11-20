@@ -1,10 +1,13 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.2.1"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -15,22 +18,43 @@ next_review_at: "2027-05-13"
 
 # Retention and Performance Policies
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 `06-observability` tier의 metrics, logs, traces, profiles 보관
 경계와 performance guardrail을 정의한다. 현재 storage 구현과 요구되는 retention을 구분하며, external long-term archive
 또는 S3 Glacier 같은 미구현 보관 계층은 승인된 config 변경과 task evidence
 없이는 active 요구사항으로 취급하지 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/01.descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-### Applies To
+##### Applies To
 
 이 정책은 observability stack의 storage, retention, cardinality, resource,
 backup 책임 경계를 다룬다.
@@ -38,13 +62,14 @@ backup 책임 경계를 다룬다.
 - **Systems**: Prometheus local TSDB, Loki SeaweedFS bucket `loki-bucket`, Tempo SeaweedFS bucket `tempo-bucket`, Pyroscope local filesystem backend `/var/lib/pyroscope`, Grafana dashboard JSON assets
 - **Environments**: 로컬·개발·홈랩 운영
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -99,7 +124,8 @@ backup 책임 경계를 다룬다.
   - secret 값, credential, token, certificate 원문을 정책 문서나 검증
     evidence에 기록하는 행위
 
-#### Implementation and recovery gaps
+###### Implementation and recovery gaps
+<!-- core-payload-level:4 -->
 
 Loki marker는 영속 `/loki` 밖의 `/tmp/loki/compactor`에 있고 object-store prefix도 없다. 재생성 시 marker가 사라질 수 있으며 `loki-data`만 백업하면 보존되지 않는다. 168h 요구와 지속적인 삭제 처리는 유지하되 이 결함은 별도 구현 변경으로 닫아야 한다. 동일 컨테이너 재시작과 재생성의 상태 영향을 구분한다.
 
@@ -107,24 +133,26 @@ Loki와 Tempo의 SeaweedFS collection(`loki-bucket`, `tempo-bucket`)은 Restic s
 
 Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본값을 따른다. 이는 실제 보존 이력을 관찰한 결과가 아니다. Pyroscope는 `retention_period: 168h`를 선언하지만 삭제는 block 단위·유예 이후이며 backup/archive가 아니다. Pushgateway는 process restart 때 metric을 잃는다. 어느 것도 승인된 backup/archive를 대신하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - Retention, archive, resource cap 예외는 사용자 승인과 관련 plan/task
   evidence가 있을 때만 허용한다.
 - 긴급 장애 대응으로 임시 보관 또는 삭제 정책을 조정한 경우, 변경 후
   incident 또는 task evidence에 원인, 범위, rollback 상태를 기록한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 서비스 storage, retention, resource cap, SeaweedFS bucket, dashboard provisioning
   config가 변경될 때 검토한다.
 - 정기 검토는 분기마다 수행한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - Loki retention config:
   `rg -n 'retention_enabled: true|retention_period: 168h' infra/06-observability/loki/config/loki-config.yaml`
@@ -135,7 +163,7 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 - Documentation contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
-### Limits
+##### Limits
 
 정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
@@ -146,13 +174,13 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 - 정책은 보존 설정 문자열 점검만 이름 붙여 두며 실제 삭제 동작은 증명하지 않는다고 명시한다.
 - Tempo 필수값은 현재 `tempo.yaml`에 없어 미준수이며 PASS가 아니라 구현 결함이다. Loki marker 위치 결함도 열려 있다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: 없음. 번호 `0048`을 공유하는 Guide나 Runbook은 없다.
 
@@ -164,3 +192,23 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 - [Pyroscope policy](0047-pyroscope.md)
 - [Loki guide](../../01.guides/07.observability/0043-loki.md)
 - [Tempo runbook](../../03.runbooks/07.observability/0049-tempo.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.7.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-26"
 
 # 02-Auth Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Owns:** the Keycloak identity boundary, the choice between ForwardAuth and
   native OIDC, the OAuth2 Proxy session boundary, and the OIDC issuer and
@@ -32,7 +55,8 @@ created: "2026-03-26"
 AD-0014, the former auth hardening description, is retired into this document;
 its hardening substance is owned by ADR-0017.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `02-auth` centers on Keycloak, the central identity provider, and OAuth2 Proxy,
 the gateway authentication layer. Services with their own OIDC and RBAC connect
@@ -42,7 +66,8 @@ enforcement per service, no ForwardAuth in front of a native-OIDC service by
 default, fail-closed access, and file-based secrets. Stakeholders are the
 platform, DevOps and security owners.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Browsers reach HOME's Keycloak-backed services through `01-gateway` (Traefik).
 Keycloak stores state in `mng-pg` and OAuth2 Proxy sessions live in
@@ -50,13 +75,13 @@ Keycloak stores state in `mng-pg` and OAuth2 Proxy sessions live in
 The standalone Open WebUI LAB reaches Keycloak through its configured issuer
 and has its own browser entrypoint.
 
-### Constraints
+##### Constraints
 
 Access is fail-closed with one identity source (Keycloak), OIDC as the protocol, and file-based secrets read from `/run/secrets`. No ForwardAuth sits in front of a native-OIDC service by default, and a fail-open default is a non-goal.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 ```mermaid
 graph TD
@@ -96,7 +121,7 @@ OpenBao maps the Keycloak group `/openbao-admins` to its OIDC role
 `home-admin`, which issues a token under the `hy-home-operator` policy.
 Keycloak groups and OpenBao roles and policies are separate objects.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -110,11 +135,12 @@ Keycloak groups and OpenBao roles and policies are separate objects.
 
 ForwardAuth services use the `/oauth2/auth` check through `gateway-standard-chain@file,sso-errors@file,sso-auth@file`; native-OIDC applications talk OIDC to Keycloak directly and receive no injected `Authorization` header. OpenBao maps the Keycloak group `/openbao-admins` to its OIDC role `home-admin`.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 ```text
 HOME ForwardAuth:  Browser -> Traefik -> /oauth2/auth check -> Traefik -> service
@@ -128,24 +154,26 @@ sessions in `mng-valkey`. Compose-injected client, cookie, database and JWT
 secrets are read from `/run/secrets`. The OpenBao OIDC client secret lives in
 the OpenBao auth backend and is not in Compose files or documents.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 `keycloak` (`infra/02-auth/keycloak/`) and `oauth2-proxy`
 (`infra/02-auth/oauth2-proxy/`) are selected by `core`, `auth`, `dev` and
 `local`. Its session store is the shared `mng-valkey`.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 An outage of Keycloak or its single `mng-pg` instance blocks new logins
 that depend on Keycloak. A ForwardAuth route that loses its middleware label
 loses that gateway protection. Keycloak, Valkey and PostgreSQL health are
 checked separately from each application's login flow.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Performance:** ForwardAuth uses the lightweight `/oauth2/auth` check.
 - **Security:** native-OIDC applications do not receive injected
@@ -155,13 +183,14 @@ checked separately from each application's login flow.
 - **Observability:** failures must be attributable to Keycloak, OAuth2 Proxy
   or the application from their logs.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 Keycloak and `mng-pg` are single-instance dependencies for Keycloak-backed
 login. A ForwardAuth route loses its gateway protection if its middleware
 label is removed.
 
-### Trade-offs
+##### Trade-offs
 
 - Keycloak and `mng-pg` are single-instance dependencies for Keycloak-backed
   login; an outage blocks new logins that depend on Keycloak (Risks, Failure
@@ -172,22 +201,24 @@ label is removed.
   its gateway protection if its middleware label is removed (Risks).
 - Access is fail-closed; a fail-open default is a non-goal (Constraints).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0002 Keycloak and OAuth2 Proxy choice](../02.decisions/0002-keycloak-oauth2-proxy-choice.md)
 - [ADR-0017 Runtime hardening and fail-closed](../02.decisions/0017-auth-hardening-runtime-and-fail-closed.md)
 - [ADR-0038 Selective Native OIDC](../02.decisions/0038-selective-native-oidc-for-native-auth-apps.md)
 - [ADR-0062 Open WebUI and Kafka CDC LAB moves](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0002 Auth requirements](../../01.requirements/0002-auth.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 Moving a service between patterns follows ADR-0038 and the application
 authentication guide.
@@ -196,3 +227,23 @@ authentication guide.
 - [OAuth2 Proxy guide](../../05.operations/01.guides/03.identity-and-access/0015-oauth2-proxy.md)
 - [Application authentication integration](../../05.operations/01.guides/03.identity-and-access/0079-application-auth-integration.md)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

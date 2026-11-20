@@ -1,10 +1,13 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: "3.3.0"
+version: "4.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0003"
 created: "2026-06-04"
@@ -13,13 +16,33 @@ next_review_at: "2027-05-13"
 
 # `.env.example` vs `.env` Key Comparison
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 환경변수를 추가·폐기하거나 `.env.example`과 `.env`의 키 정합성을 점검하는 운영자와 agent.
 
-### Outcome
+##### Outcome
 
 이 가이드는 공개 `.env.example`과 로컬 `.env`의 키 집합을 비교하는 기준과 방법을 설명한다.
 
@@ -27,7 +50,8 @@ next_review_at: "2027-05-13"
 
 목표는 두 파일의 값 이외 구조를 비교하고, 모든 공개 키에 실제 소비자가 있음을 확인하는 것이다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - 같은 번호 `0003`의 Policy/Runbook은 없다.
 
@@ -36,9 +60,9 @@ next_review_at: "2027-05-13"
 - [Secrets Key Comparison](../04.security-and-secrets/0010-sensitive-env-vars-comparison.md)
 - [Secret management](../../../../secrets/README.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 공개 `.env.example`은 현재 환경변수 계약을 소유하고, 로컬 `.env`는 운영자 값을
 보존한다. 키 추가·폐기 시 Compose, Dockerfile, 스크립트의 직접·간접 소비자를
@@ -51,23 +75,25 @@ next_review_at: "2027-05-13"
 과거 감사 숫자를 현재 상태로 유지하지 않는다. 값, 원문 환경, 확장된 private
 Compose 모델은 증거에 포함하지 않는다.
 
-### Authority
+##### Authority
 
 private metadata와 `.env`를 읽는 비교는 해당 접근 승인이 있을 때만 실행한다. `--sync-metadata-prune`은 소비자 조사 뒤 승인된 경우에만 실행하며 0600 권한을 확인한다. 값은 증거에 기록하지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 키 집합 비교 명령과 결과 판정은 Procedure의 Expected Results에 둔다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 저장소 루트에서 기존 메타데이터 도구를 사용한다.
 
@@ -111,16 +137,37 @@ registry와 `.env` 값을 프로세스 내부에서 읽되 출력하지 않고 �
 0600 권한을 확인한다. 기존 `--sync-metadata`는 미등록 항목 보존 모드이므로
 이 엄격한 정리의 완료 검사로 사용하지 않는다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 Expected Results가 실패하면 누락·추가된 키 이름만 기록하고(값은 기록하지 않는다), 아래 Runbook Handoff가 지정한 서비스 Runbook으로 넘긴다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 값 생성·회전·런타임 재시작은 이 키 비교의 범위가 아니다. [Secret 관리 안내](../../../../secrets/README.md)와 해당 서비스 Runbook에서 대상, 승인, 백업 및 복구 절차를 확인한다.
 
-### Next Action
+##### Next Action
 
 누락·추가된 키 이름만 기록하고(값은 기록하지 않는다) 해당 서비스 Runbook으로 넘긴다. 값 생성·회전·런타임 재시작은 [Secret 관리 안내](../../../../secrets/README.md)와 서비스 Runbook에서 대상, 승인, 백업 및 복구 절차를 확인한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

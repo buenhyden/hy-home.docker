@@ -1,16 +1,39 @@
 ---
 title: "Handoff Prompt"
-version: "1.0.2"
+version: "2.0.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Handoff Prompt
+  layer: agent
+updated: "2026-11-20"
 created: "2026-09-06"
 ---
 
 # Handoff Prompt
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the prompt payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
 
 Produce a handoff that lets the next session reconstruct its working state
 from tracked files and Git. The receiving session may be a different provider,
@@ -18,7 +41,7 @@ a different model, or the same agent after a context reset. The controller
 resolves current authorization through
 [Approval Boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records).
 
-## Inputs
+#### Inputs
 
 - The current Spec Package Task path and its `Work Performed`, `Results`, and
   `Next Owner` subsections.
@@ -47,9 +70,9 @@ mutation and additional spending, record the missing binding, and return to
 `workflow-supervisor`. A digest records resume evidence. Ask for missing input
 only when it is needed for the dependent work.
 
-## Instructions
+#### Instructions
 
-### Constraints
+##### Constraints
 
 - Conversation transcripts, chat excerpts, or reasoning narration.
 - Secret values, credentials, private keys, tokens, auth files, raw logs, or
@@ -61,7 +84,7 @@ only when it is needed for the dependent work.
   Hosted CI, or remote acceptance.
 - Restating a policy body. Link the owning policy instead.
 
-### Applies To
+##### Applies To
 
 - Roles: any role may consume a handoff; `workflow-supervisor` owns producing
   one at a boundary. Consuming a handoff grants no permission beyond the
@@ -72,7 +95,7 @@ only when it is needed for the dependent work.
   name the next action, the owned paths, and the unverified state without
   opening the previous conversation.
 
-## Outputs
+#### Outputs
 
 A single block with exactly these labeled parts, in this order:
 
@@ -100,7 +123,7 @@ A single block with exactly these labeled parts, in this order:
 Every claim is traceable to a tracked file or a Git fact. Where a claim is not,
 the handoff says so.
 
-## Failure Handling
+#### Failure Handling
 
 If the Task's recorded state disagrees with observed Git state, report the
 disagreement and stop; do not reconcile it inside the handoff. If the Task is
@@ -108,9 +131,29 @@ absent or terminal while work remains, route to `workflow-supervisor` rather
 than opening a new ledger. If a required input is unavailable, emit the handoff
 with that part marked unavailable and name what is needed.
 
-## Related Documents
+#### Related Documents
 
 - [Prompt index](README.md)
 - [Workflows](../governance/workflows.md)
 - [Task checklists](../../docs/00.workspace/04.quality/task-checklists.md)
 - [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

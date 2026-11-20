@@ -1,35 +1,60 @@
 ---
 title: "Documentation Protocol"
-version: "7.6.0"
+version: "8.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Documentation Protocol
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Keep one document authority per role and preserve truthful provenance throughout authoring and retirement.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of document authority, authoring, and retirement under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Current authored documents, registered machine inputs, and retained historical units.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 A provider-owned runtime projection is exempt from the metadata envelope. Operator-created files under `secrets/` and the body of a terminal Task at a registered Task path are outside the fenced-path check of `check-document-links.py`.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -155,13 +180,13 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R120 | Historical heading | Forbidden: treating the heading alone as an exception | none | none |
 | DOCUMENTATION-PROTOCOL-R121 | Machine-consumed historical table | Required: place `<!-- Historical evidence table (not current authority; source: Git history). -->` immediately before the table header and separator | none | none |
 | DOCUMENTATION-PROTOCOL-R122 | Instructions around a historical evidence table | Required: remain current and validated normally | none | none |
-| DOCUMENTATION-PROTOCOL-R123 | Common role | Required: move to the H2 and H3 sections of `COMMON-DOC-FORM-1` 1.0.0 that the Registry declares | the validator checks the order of required sections and subsections | none |
-| DOCUMENTATION-PROTOCOL-R124 | Different roles | Forbidden: forcing them into one form | none | none |
-| DOCUMENTATION-PROTOCOL-R125 | A role moves to the common form | Required: move in one change covering all its current documents, completed and approved ones included | none | none |
+| DOCUMENTATION-PROTOCOL-R123 | Governed Markdown definition/output | Required: use the common core outer sections and the Registry role payload | the validator checks the order of required sections and subsections | none |
+| DOCUMENTATION-PROTOCOL-R124 | Different role payloads | Forbidden: merging their distinct responsibilities | none | none |
+| DOCUMENTATION-PROTOCOL-R125 | A role moves to the common form | Required: move in one change covering current normative sources while preserving past Task bodies and dated evidence | none | none |
 | DOCUMENTATION-PROTOCOL-R126 | A role moves to the common form | Required: keep existing procedures, commands and evidence in the matching section | none | none |
 | DOCUMENTATION-PROTOCOL-R127 | Role has moved (profile declares `required_subsections`) | Forbidden: the old form, or a section body that is only TODO, TBD, N/A or `-` | none | none |
 | DOCUMENTATION-PROTOCOL-R128 | Inapplicable section in a moved role | Required: say why | none | none |
-| DOCUMENTATION-PROTOCOL-R129 | Role not yet moved | Required: keep its `SDLC-COMMON-r10-local-v1` H2 sections until it moves | none | none |
+| DOCUMENTATION-PROTOCOL-R129 | Role not yet moved | Required: retain observed historical form until its P05/P17 disposition | none | none |
 | DOCUMENTATION-PROTOCOL-R130 | Product difference from the common form | Required: record it as an Exception under quality standards with approved condition, scope, reason, end or review condition and verification | none | none |
 | DOCUMENTATION-PROTOCOL-R131 | Requirement Package | Required: write an interface need as a functional requirement and a quality need under Quality Requirements | none | none |
 | DOCUMENTATION-PROTOCOL-R132 | Requirement Package | Forbidden: issuing a separate interface section or `IF` child identity | none | none |
@@ -294,13 +319,15 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R256 | Capability implemented in this workspace | Required: keep one Stage 01 Requirement owner for its obligation and one Stage 02 Description or ADR owner for its structure and durable decision | none | none |
 | DOCUMENTATION-PROTOCOL-R257 | Retiring a Stage 03 package | Required: move the implemented outcome to those owners before retirement, never removing that coverage | none | none |
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 The Stage 99 registry is the only machine authority for paths, profiles,
 required sections, lifecycle values, and identifier relations. agent governance owns
 authoring behavior and `scripts/` owns executable validation.
 
-#### Document Boundaries
+###### Document Boundaries
+<!-- core-payload-level:4 -->
 
 - Stage 01 owns long-lived solution-independent requirements.
 - Stage 02 owns current architecture descriptions and durable decisions.
@@ -316,7 +343,8 @@ Do not create parallel PRD, SRS, interface-requirement, design, tests, release,
 progress, or handoff authorities when the canonical package already owns the
 content. Root `DESIGN.md` remains UI and design-system authority only.
 
-#### Entry point for documents outside `docs/`
+###### Entry point for documents outside `docs/`
+<!-- core-payload-level:4 -->
 
 Inside `docs/`, a document may link to Stage 99 templates and Stage 05
 operations documents for their shape or procedure; anything else it relies on
@@ -356,7 +384,8 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
 [Document Retention and Retirement](#document-retention-and-retirement) governs
 retired identities.
 
-#### Link types and document relations
+###### Link types and document relations
+<!-- core-payload-level:4 -->
 
 Every link in a governed document has one of four types, and every link points
 forward from the document that writes it. A link never asks its target to
@@ -446,7 +475,8 @@ untitled link is Normative or Navigation, and whether an author chose the
 right type, stay a review. The link checker runs in the local profile;
 its hosted CI route is not wired yet. Existing links are not retyped by this rule.
 
-#### Authoring Rules
+###### Authoring Rules
+<!-- core-payload-level:4 -->
 
 1. Select the registry profile before creating or moving a document.
 2. Use four-digit numbered slugs where the profile requires an identity.
@@ -537,7 +567,8 @@ its hosted CI route is not wired yet. Existing links are not retyped by this rul
     a terminal Task status qualifies; a `type: sdlc/task` frontmatter elsewhere
     does not.
 
-#### Document language
+###### Document language
+<!-- core-payload-level:4 -->
 
 The Registry `language` field of a document's profile decides the language of
 its prose. The profiles follow one priority order:
@@ -579,7 +610,8 @@ every document whose profile declares a language, and the metadata body
 contract applies the same judgment to each changed document. Conversational responses are not artifacts and
 follow [output style](../../../.agents/governance/output-style.md).
 
-#### README navigation
+###### README navigation
+<!-- core-payload-level:4 -->
 
 A README whose directory holds at least one subdirectory and no direct files,
 apart from itself and placeholders such as `.gitkeep`, is a folder router. Within its own directory,
@@ -594,7 +626,8 @@ citation rules in this protocol apply to it. The `navigation` mode of
 `check-document-links.py` enforces this rule. A folder `AGENTS.md` does not
 count as a direct file, so it leaves a folder router a router.
 
-#### README and AGENTS.md
+###### README and AGENTS.md
+<!-- core-payload-level:4 -->
 
 A `README.md` is written for people: what the folder is for, what it holds,
 and how to find or use it. A folder `AGENTS.md` is written for AI agents: the
@@ -645,26 +678,40 @@ For machine-consumed historical tables, place
 immediately before the table header and separator. Only that contiguous table is
 evidence; surrounding instructions remain current and validated normally.
 
-#### Role-Specific Authoring
+###### Role-Specific Authoring
+<!-- core-payload-level:4 -->
 
-- Each common role moves to one form, the H2 and H3 sections of
-  `COMMON-DOC-FORM-1` 1.0.0; different roles are never forced into one form.
-  The Registry declares each profile's sections (`required_sections`,
-  `optional_sections`, `required_subsections`, `optional_subsections`), and
-  the validator checks the order of required sections and subsections only.
-  A role moves in one change that covers all of its current documents,
-  completed and approved ones included, and keeps their existing procedures,
-  commands and evidence in the matching section. From then on the old form is
-  rejected for that role, as is a section body that is only TODO, TBD, N/A or
-  `-`; an inapplicable section says why. A role not yet moved keeps its
-  `SDLC-COMMON-r10-local-v1` H2 sections until it moves. A role has moved
-  when its Registry profile declares `required_subsections`. A product difference from the form
-  is an Exception under [quality standards](../04.quality/quality-standards.md), with its
-  approved condition, scope, reason, end or review condition and verification.
+Cross-link semantics are explicit link titles: `requires`, `designs`,
+`implements`, `verifies`, `operates`, `defines`, or `cites`; a semantic title
+may also name the existing trust category (for example `"verifies evidence"`).
+The trust category and content pin remain separate from the relation meaning.
+External sources use `cites` and grant no authority. Untitled historical links
+retain their existing trust classification without guessing semantic intent.
+Local targets use the document directory, renderer anchors and NFC collision
+checks; examples/placeholders are not fabricated file dependencies. Daily
+selection follows changed paths and affected inbound links, without reciprocal
+links or external HTTP checks at commit.
+
+- Every Markdown template definition and new governed Markdown output uses
+  `WORKSPACE-DOCUMENT-CORE` 1.0.0's four shared H2/eight H3 sections.
+  Stage99's formal common document contract owns their names, order and meaning.
+  Role-specific headings, tables, conditions and prohibitions remain inside
+  `내용 계약` / `본문과 규칙`; Registry section names identify this logical
+  payload, restored by the common reader without changing diagnostic lines.
+  The pinned role-design core and `COMMON-DOC-FORM-1` keep owning payload
+  semantics, not a competing outer form. Native SKILL/agent Markdown and typed
+  interface assets keep their native syntax through separate definitions and
+  payload producers. A definition's authoring comments never enter actual docs.
+  Current normative sources migrate together with their readers. Past Task
+  bodies and dated terminal evidence retain their observed form; P05/P17 own
+  their subsequent disposition, without changing past verification or acceptance.
+  Empty required payload sections remain invalid; inapplicable content says why.
 - A Requirement Package combines PRD, SRS, and implementation-independent
   interface perspectives. An interface need is written as a functional
   requirement and a quality need under Quality Requirements; no separate
-  interface section or `IF` child identity is issued. Its requirements table
+  interface section or `IF` child identity is issued. Optional `interface_refs`
+  attach scoped interface needs to an existing full FR/NFR identity; references
+  do not issue a third identity or prove an implementation. Its requirements table
   lists every declared FR and NFR once, with the declaration as its Statement.
   A declaration in an approved Requirement Package that has no modal verb binds
   as `must`; one written with `should` or `could` takes that priority. A
@@ -725,7 +772,8 @@ evidence; surrounding instructions remain current and validated normally.
   applicable. Registered generators own generated outputs, whose freshness is
   verified without turning evidence into current policy.
 
-#### Version objects
+###### Version objects
+<!-- core-payload-level:4 -->
 
 Each version below has one authored value; every other place reads it. A
 SemVer value is a SemVer 2.0.0 string: `MAJOR.MINOR.PATCH`, with no `v`
@@ -748,7 +796,7 @@ publication applies it to the highest published release or tag, refuses a
 version of equal precedence to a published release, tag or CHANGELOG entry, and
 allows no backport: a version below the highest published release or tag is
 always refused. The document check applies it as the Document content row
-states. A product version row is checked in the same `check-changed` run, by
+states. Document MAJOR changes reset MINOR/PATCH to zero; MINOR changes reset PATCH. Structure or meaning that breaks an existing valid consumer is MAJOR; compatible additions are MINOR and compatible corrections are PATCH. Product SemVer keeps its separate rules. A product version row is checked in the same `check-changed` run, by
 its `version` field only: a changed value must be a valid SemVer value not
 lower than the merge base (`version-malformed`, `version-downgrade`), and an
 unchanged value with other edits to the file is allowed, because the product
@@ -806,7 +854,8 @@ Not versions: `common.contract_id` and other contract identifiers, the
 baselines, and input-package labels such as `v14.7`. A Task completion, a
 merge or a Q-07 renumbering changes none of the values above.
 
-#### Release Evidence Boundary
+###### Release Evidence Boundary
+<!-- core-payload-level:4 -->
 
 The repository uses `external-release-evidence`: the Release Runbook owns the
 repeatable readiness procedure; the current Task owns a particular execution's
@@ -830,7 +879,8 @@ removes no GitHub Release, tag, CHANGELOG entry or release workflow. Remote rele
 deployment actions wait for their exact target under
 [Approval boundaries](../04.quality/approval-boundaries.md).
 
-#### Reference Framework Adoption
+###### Reference Framework Adoption
+<!-- core-payload-level:4 -->
 
 These sources inform the rules above; they do not replace stage taxonomy or
 machine contracts. Templates use concise repository-specific forms, not copies
@@ -845,7 +895,8 @@ of external templates.
 | [arc42](https://arc42.org/) | partial | proportionate context, structure, flow, deployment, quality, and risk views in registered Description sections |
 | [Google SRE incident management](https://sre.google/resources/practices-and-processes/incident-management-guide/) | partial | factual Incident coordination and blameless Postmortem follow-through; no implied live-response authority |
 
-#### Gap-to-Stage Routing
+###### Gap-to-Stage Routing
+<!-- core-payload-level:4 -->
 
 | Gap Type | Owner | Rule |
 | --- | --- | --- |
@@ -863,7 +914,8 @@ of external templates.
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
-#### Document Retention and Retirement
+###### Document Retention and Retirement
+<!-- core-payload-level:4 -->
 
 Retirement is a disposition inside the current approved Task, never a new Spec
 project of its own, and a closed Spec gets no new standing verification
@@ -898,7 +950,8 @@ Current documents do not link into `docs/98.archive/` and do not name a retired
 identity in `parent_ids`, `supersedes`, or `superseded_by`. A retired identity
 may still appear in prose where it explains lineage.
 
-#### Retention by status
+###### Retention by status
+<!-- core-payload-level:4 -->
 
 The Registry owns each profile's entry state, transition edges, and terminal
 states. Apply that lifecycle before disposition; do not infer permission from
@@ -943,7 +996,8 @@ No rule here renames lifecycle statuses or applies a union of terminal sets to
 other stages.
 Stage 03 may be empty when no package remains.
 
-#### Retirement preconditions
+###### Retirement preconditions
+<!-- core-payload-level:4 -->
 
 Retire a package or a standalone document only when all of these hold.
 
@@ -978,7 +1032,8 @@ investigate, not permission to delete. Record the summary map and consumer
 cutover in the current Task. Age may trigger a disposition review. It never
 triggers a deletion.
 
-#### Implementation coverage
+###### Implementation coverage
+<!-- core-payload-level:4 -->
 
 Every capability implemented in this workspace has one Stage 01 Requirement
 owner for its obligation and one Stage 02 Description or ADR owner for its
@@ -986,19 +1041,21 @@ structure and durable decision. Retiring a Stage 03 package never removes that
 coverage: the package's implemented outcome moves to those owners before the
 package is retired.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](../04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `python scripts/validation/check-document-metadata.py --mode check-active`
 - `python scripts/validation/check-document-links.py --mode all` (links, entry
@@ -1006,7 +1063,7 @@ None: no exception exists to approve.
 - Stage checks selected by the
   [change-type verification matrix](../04.quality/quality-standards.md#5-change-type-verification-matrix).
 
-### Limits
+##### Limits
 
 Named checks cover the rules whose Enforcement names one; the other rules name no check, and the manual rules rest on the review or manual record the policy names for them.
 
@@ -1033,13 +1090,13 @@ Named checks cover the rules whose Enforcement names one; the other rules name n
 - Retirement precondition 5 is a manual record, not a gate.
 - Rules stated under Enforcement and Mechanisms, and the Exceptions section, are outside the table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -1048,3 +1105,23 @@ Changes land in place with Task evidence; related documents:
 - [Documentation index](../../README.md)
 - [Stage authoring matrix](../01.project/stage-authoring-matrix.md)
 - Stage 99 registry (`docs/99.templates/registry.json`)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

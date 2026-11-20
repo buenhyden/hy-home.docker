@@ -1,0 +1,518 @@
+{
+  "contract_id": "WORKSPACE-DOCUMENT-CORE",
+  "version": "1.0.0",
+  "state": "proposed-for-local-adoption",
+  "authority": "이번 사용자 요구와 D04 목표 설계. 기존 저장소 계약의 자동 승계가 아님.",
+  "required_metadata_meanings": [
+    "title",
+    "version",
+    "kind",
+    "owner",
+    "lifecycle",
+    "scope"
+  ],
+  "version_pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?![\\s\\S])",
+  "headings": {
+    "문서 개요": [
+      "목적과 독자",
+      "책임과 적용 범위"
+    ],
+    "내용 계약": [
+      "입력과 전제",
+      "본문과 규칙"
+    ],
+    "적용과 확인": [
+      "적용 방법",
+      "확인 기준"
+    ],
+    "관계와 출처": [
+      "관련 문서",
+      "외부 근거"
+    ]
+  },
+  "relation_kinds": [
+    "requires",
+    "designs",
+    "implements",
+    "verifies",
+    "operates",
+    "defines",
+    "cites"
+  ],
+  "native_asset_policy": "Markdown 이외 형식은 원래 문법을 보존하고 동일 의미의 template definition을 결합한다.",
+  "release_is_document_lifecycle": false,
+  "profile_payload_owner": "이 파일의 payload_profiles와 field_adapter_rules. D04는 적용 설계와 이유를 설명한다.",
+  "adoption_rule": "각 workspace의 실제 생산자·소비자에 대한 호환성과 변경 근거를 확인한 뒤 로컬에서 채택한다.",
+  "metadata": {
+    "title": {
+      "type": "string",
+      "rule": "공백이 아닌 문서 제목. 별도 상태나 실행 이력을 제목에 누적하지 않음."
+    },
+    "version": {
+      "type": "string",
+      "rule": "정확한 숫자 X.X.X, 엄격 전체문자열 일치. 문서 내용 계약의 판본."
+    },
+    "kind": {
+      "type": "string",
+      "rule": "아래 payload_profiles 중 정확히 하나의 공통 kind. 별칭은 adapter에서 일대일 변환."
+    },
+    "owner": {
+      "type": "string",
+      "rule": "현재 유지 책임 역할/팀. 실제 승인·권한을 부여하는 인증 필드가 아님."
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "deprecated"
+      ],
+      "rule": "이 문서의 규범 사용 가능성. draft는 작성/검토 가능하나 구현 권위가 아님. active는 해당 권위자의 명시적 채택/승인 근거가 있는 현재 문서. deprecated는 이행 중에만 남는 이전 규범이며 최종 clean cutover에는 old alias로 남기지 않음. 실행/검증/인수 상태는 이 필드와 별개."
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "subject",
+        "layer"
+      ],
+      "properties": {
+        "subject": {
+          "type": "string",
+          "rule": "현재 workspace identity 또는 적용되는 제품/서비스 식별"
+        },
+        "layer": {
+          "enum": [
+            "workspace",
+            "product",
+            "agent",
+            "provider",
+            "template",
+            "reference"
+          ]
+        }
+      },
+      "rule": "실제 설명/규범의 대상. 비밀 root path나 repo명만으로 권한/공유 범위를 추정하지 않음."
+    }
+  },
+  "payload_profiles": {
+    "requirement": {
+      "required_content": [
+        "문제와 실제 소비자",
+        "기능·품질 요구",
+        "제약과 인터페이스 참조",
+        "관찰 가능한 수용 조건"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "architecture-description": {
+      "required_content": [
+        "설명 대상과 경계",
+        "구조와 인터페이스",
+        "실행·배포 관점",
+        "품질 속성과 관련 결정"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "architecture-decision": {
+      "required_content": [
+        "현재 맥락",
+        "고려한 대안",
+        "선택과 이유",
+        "현재 영향과 관련 설명"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "spec": {
+      "required_content": [
+        "동작·오류 계약",
+        "입출력 및 인터페이스",
+        "수용 기준",
+        "검증 경계와 비대상"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "plan": {
+      "required_content": [
+        "작업 단위와 소비자",
+        "의존성과 병렬 가능 범위",
+        "소유 경로·권한·자원",
+        "구현·검증·복구 계획"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "task": {
+      "required_content": [
+        "요청·실행 범위",
+        "변경 및 유지 결과",
+        "검증 대상·실행·결과",
+        "사용자 인수·잔여 조건"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "data-model": {
+      "required_content": [
+        "개체와 식별",
+        "필드 자료형·제약",
+        "관계와 상태",
+        "읽기·쓰기·이관 경계"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "policy": {
+      "required_content": [
+        "적용 대상과 규범",
+        "집행 소유자",
+        "예외와 결정 권한",
+        "변경·검토 조건"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "rule": {
+      "required_content": [
+        "한 가지 강제 규칙",
+        "적용 조건",
+        "판정과 예외",
+        "정책 소유자 링크"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "guide": {
+      "required_content": [
+        "독자의 목적과 전제",
+        "설명과 사용 예",
+        "결과 확인",
+        "관련 참조"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "runbook": {
+      "required_content": [
+        "운영 목적·전제·권한",
+        "실행 순서",
+        "성공·중단 조건",
+        "복구·정리"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "incident": {
+      "required_content": [
+        "현재 사건 범위와 영향",
+        "관찰된 사실과 가설",
+        "대응 및 상태",
+        "후속 의무와 책임"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "postmortem": {
+      "required_content": [
+        "사건 범위",
+        "근거가 있는 원인·기여 조건",
+        "개선 조치와 책임",
+        "효과 확인"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "research": {
+      "required_content": [
+        "조사 질문과 범위",
+        "1차 출처·확인 시점",
+        "사실·추론·한계",
+        "채택·제외와 적용 설계"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "audit": {
+      "required_content": [
+        "판정 대상과 기준",
+        "증거 수준·조사 범위",
+        "발견·유지·미관측",
+        "개선·검증·인수 경계"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "data-reference": {
+      "required_content": [
+        "자료 출처와 획득 범위",
+        "형식·필드 의미",
+        "품질·유효성·제약",
+        "소비자와 사용 방법"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "reference-pack": {
+      "required_content": [
+        "질문·자료 묶음 목적",
+        "소속 자료·소유자",
+        "읽는 순서와 관계",
+        "공통 적용 한계"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "contract": {
+      "required_content": [
+        "생산자·소비자와 권위",
+        "입출력·의미·불변조건",
+        "상태·오류·호환성",
+        "검증 경계"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "control": {
+      "required_content": [
+        "정책 근거와 위험",
+        "집행 표면·입출력",
+        "판정·실패·예외",
+        "검증과 관측"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "knowledge": {
+      "required_content": [
+        "재사용 주장과 범위",
+        "현재 출처와 신뢰",
+        "적용·제외 조건",
+        "갱신·폐기 조건"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "knowledge-index": {
+      "required_content": [
+        "정본 지식 소유자",
+        "현재 분류와 탐색",
+        "범위별 읽기 순서",
+        "최신성 확인"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "prompt": {
+      "required_content": [
+        "실행 목표와 범위",
+        "확인된 입력·의존 설계",
+        "무엇을 어떻게 구현할지",
+        "검증·완료·정리·다음 단계"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "prompt-index": {
+      "required_content": [
+        "프롬프트 목록과 적용 범위",
+        "실제 의존성 순서",
+        "비적용·재실행 조건",
+        "완료 상태 해석"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "provider": {
+      "required_content": [
+        "지원 제품·버전·실행면",
+        "native 설정·event·권한",
+        "공통 계약 adapter",
+        "지원·미지원·실제 관측"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "provider-index": {
+      "required_content": [
+        "공급자와 실행면 목록",
+        "공통 규범 소유자",
+        "지원 조건과 진입점",
+        "현재 관측 상태"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "role": {
+      "required_content": [
+        "역할 목적과 입력",
+        "허용 작업·쓰기 경계",
+        "전달·검토 책임",
+        "결과와 실패 처리"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "skill": {
+      "required_content": [
+        "사용 목적과 진입 조건",
+        "필요 입력·도구·권한",
+        "절차와 선택 조건",
+        "결과·실패·정리"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "agent-guide": {
+      "required_content": [
+        "공통 실행 규범의 소유자",
+        "현재 workspace 적용 순서",
+        "권한·상충 처리",
+        "실행 도구와 결과"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "glossary": {
+      "required_content": [
+        "용어",
+        "적용 범위",
+        "정의와 독자",
+        "정본 소유자·관련 규칙"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "readme": {
+      "required_content": [
+        "해당 경로의 목적",
+        "현행 내용과 소유자",
+        "읽기·사용 순서",
+        "관련 링크"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "evaluation": {
+      "required_content": [
+        "검증할 주장과 대상",
+        "선택한 기준과 실제 입력",
+        "실행/관측 결과와 증거 수준",
+        "한계·후속 조치"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    },
+    "native-asset": {
+      "required_content": [
+        "원래 형식과 실제 소비자",
+        "필수 native 필드·기능",
+        "공통 계약과의 대응",
+        "생성·파싱·실행 확인"
+      ],
+      "placement": "내용 계약 / 본문과 규칙",
+      "rule": "해당 kind의 내용만 소유. 구체 표는 실제 소비자에 필요한 열로 구성하며 아래 공통 표 의미를 보존."
+    }
+  },
+  "kind_mapping": {
+    "requirement-package": "requirement",
+    "description": "architecture-description",
+    "decision": "architecture-decision",
+    "vocabulary": "glossary",
+    "audit-pack": "reference-pack",
+    "research-pack": "reference-pack",
+    "data-pack": "reference-pack",
+    "data": "data-reference",
+    "readme-category": "readme",
+    "readme-documentation": "readme",
+    "readme-incident-year": "readme",
+    "readme-package": "readme",
+    "readme-repository": "readme",
+    "readme-runtime-governance": "readme",
+    "readme-stage": "readme",
+    "claude-agent": "native-asset",
+    "codex-agent": "native-asset",
+    "codex-config": "native-asset",
+    "claude-skill": "native-asset",
+    "codex-skill": "native-asset",
+    "codex-skill-policy": "native-asset",
+    "openapi": "native-asset",
+    "schema-graphql": "native-asset",
+    "service-proto": "native-asset",
+    "evaluation-record": "evaluation"
+  },
+  "field_adapter_rules": [
+    "type는 의미가 맞는 kind에만 매핑한다. filename으로 미지정 kind를 조용히 추론하지 않는다.",
+    "status가 Task의 todo/ready/in-progress/completed이면 implementation state다. lifecycle active와 자동 동치로 보지 않는다.",
+    "approved/accepted/published 등의 현행 문서 상태는 의미와 권위 근거를 확인한 뒤 lifecycle에 매핑한다. 실제 사용자 인수 상태는 별도 payload에 둔다.",
+    "layer 단독은 scope.layer에만 매핑한다. scope.subject는 현재 문서가 설명하는 대상에서 얻는다.",
+    "필드의 기존 값을 외피 변경으로 조작하지 않는다. 이행 중 adapter는 하나의 의미 원본만 읽는다.",
+    "알 수 없는 kind/상태는 신규 의미 결정이 필요한 변환 오류로 반환하며 기본 active로 승격하지 않는다."
+  ],
+  "common_table_semantics": {
+    "spec_acceptance": [
+      "기준 식별자",
+      "요구 참조",
+      "관찰할 동작",
+      "성공·실패 조건",
+      "검증 방법",
+      "적용 범위"
+    ],
+    "plan_work_unit": [
+      "작업 식별자",
+      "목표",
+      "의존",
+      "소유 경로",
+      "권한·자원",
+      "구현 방법",
+      "검증 범위"
+    ],
+    "task_evidence": [
+      "검증할 주장",
+      "대상 입력/의존성",
+      "방법/명령",
+      "결과",
+      "증거 종류",
+      "한계"
+    ],
+    "task_acceptance": [
+      "기준",
+      "구현 상태",
+      "검증 상태",
+      "인수 주체와 실제 결정",
+      "잔여 조건"
+    ],
+    "glossary": [
+      "용어",
+      "범위",
+      "정의",
+      "정본 소유자",
+      "소비자",
+      "관련 규칙",
+      "구분할 의미"
+    ]
+  },
+  "identifier_semantics": {
+    "requirement": "기능/품질 요구와 인터페이스 표면을 분리한다. 인터페이스 요구는 해당 기능 또는 품질 요구와 interface_refs로 연결한다. 기존 IF 항목의 의미를 누락하지 않고 이 구조로 매핑하며 새로운 제3의 문서 책임으로 증식시키지 않는다.",
+    "acceptance": "Spec 범위 내 AC-0001부터 증가. 전역 참조는 Spec의 현행 ID와 결합한다. 코드가 관찰하는 의미 ID와 문서 표시 번호를 구분하여 최종 renumber에서 동시 갱신한다.",
+    "evidence": "검증 후보와 실제 의존 입력을 식별한다. 모든 PASS row에 독립 full SHA나 전체 corpus pin을 보편 의무로 강제하지 않는다. 대상/도구/설정이 같으면 HEAD 차이만으로 재실행하지 않는다."
+  },
+  "section_rules": {
+    "목적과 독자": "Identify the information or judgment this document gives its readers; route to the role payload instead of copying its rules.",
+    "책임과 적용 범위": "Name the maintained subject, scope and owner; do not grant authority through document metadata.",
+    "입력과 전제": "State actual inputs, constraints or preconditions, and distinguish facts from assumptions.",
+    "본문과 규칙": "Keep the kind-specific payload here with its conditions, tables and one canonical responsibility.",
+    "적용 방법": "Explain how the intended reader uses this document or its native output; do not invent an operational step.",
+    "확인 기준": "Use only checks appropriate to this kind; distinguish implementation, verification and actual acceptance.",
+    "관련 문서": "Use purpose-bearing owner and dependency references; reciprocal links are not universally required.",
+    "외부 근거": "Identify external basis and its application or limits; a citation grants no execution or approval authority."
+  },
+  "payload_encoding": {
+    "marker": "<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->",
+    "heading_shift": 2,
+    "deep_heading_annotation": "core-payload-level",
+    "rule": "Role H2/H3 become H4/H5. Role H4/H5/H6 become valid Markdown H6 followed immediately by a separate core-payload-level:4/5/6 comment line. Only that structurally associated annotation is blanked in the line-preserving semantic view and omitted from compact role output; it never enters a heading title or anchor. Fenced, quoted and commented examples remain literal. Pre-H1 comment preambles stay above the H1. Native output assets are read separately, never wrapped."
+  }
+}

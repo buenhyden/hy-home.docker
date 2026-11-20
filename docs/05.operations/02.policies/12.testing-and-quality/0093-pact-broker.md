@@ -1,10 +1,13 @@
 ---
 title: "Pact Broker Operations Policy"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0093"
 parent_ids:
@@ -15,29 +18,51 @@ next_review_at: "2027-05-13"
 
 # Pact Broker Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 브로커의 검증 결과가 어떤 버전을 배포할 수 있는지 정하므로, 누가 publish와
 verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 통제 대상이다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 - [Pact Broker Compose source](../../../../infra/11-quality/pact-broker/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 프로비저닝, 인증, 노출, 자격 증명, 데이터 보존 및 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -82,34 +107,37 @@ verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 �
   안전한 접근 경계를 보장한다고 해석하지 않는다. 새 라우트 전에는 base URL·인증·TLS
   경계를 검토한다.
 
-#### 책임과 비밀 전달 경계
+###### 책임과 비밀 전달 경계
+<!-- core-payload-level:4 -->
 
 책임자는 `@buenhyden`이다. 서비스 엔트리포인트의 프로세스 환경변수 전달은 허용된 입력 방식이나
 Compose literal·argv·로그·pact에 비밀 값을 남기는 것은 금지된다. 새 network consumer와
 DB 보존·복원·삭제는 영향을 받는 소유자를 확인하고 승인한다. raw 환경 조회를 검증
 방법으로 사용하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 없음. 읽기 전용인 두 번째 자격 증명은 consumer가 필요로 할 때만 추가한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 브로커 major 업그레이드, 새 publishing 파이프라인, loopback을 넘어서는 노출이
 제안될 때마다 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 정적 렌더링과 프로비저닝 계약 테스트, 그리고 자격 증명 없이 401이 나오는지,
 heartbeat가 공개되는지, 자격 증명으로 publish와 read-back이 되는지, 컨테이너가
 non-root이고 읽기 전용인지, Compose 설정·argv·로그에 비밀 값이 노출되지 않는지를 확인하는
 격리된 실행.
 
-### Limits
+##### Limits
 
 다음 규칙은 정책이 이름 있는 자동 검사를 연결하지 않았다.
 
@@ -126,14 +154,34 @@ non-root이고 읽기 전용인지, Compose 설정·argv·로그에 비밀 값�
 - 정책이 스스로 밝힌 한계: Host 기반 링크는 안전한 접근 경계를 보장하지 않으며 호스트 loopback과 management-data peer 경로가 함께 있다.
 - Mechanisms의 정적 렌더링과 프로비저닝 계약 테스트는 어느 규칙에 대응하는지 정책이 연결하지 않았다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [가이드](../../01.guides/12.testing-and-quality/0093-pact-broker.md) (`GDE-0093`)
 - [런북](../../03.runbooks/12.testing-and-quality/0093-pact-broker.md) (`RUN-0093`)
 - [Management database policy](../05.databases-and-storage/0028-management-database.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

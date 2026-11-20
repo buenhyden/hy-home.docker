@@ -1,10 +1,13 @@
 ---
 title: "OpenTofu Guide"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0082"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # OpenTofu Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 DEV IaC 작업으로 OpenTofu CLI를 실행하는 운영자와 기존 Terraform workspace를 이관하는 운영자가 plan/apply 전 경계를 확인할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 시 실행하는 DEV IaC CLI 작업이다.
 `iac` profile에서만 선택된다.
@@ -32,7 +55,8 @@ OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 �
 대상 독자는 IaC plan과 apply를 승인하고 실행하는 운영자다. 목표는 실행 경계, state와 명령의 의미,
 일반 사용 순서를 확인하는 것이다. state 복구와 lock 진단은 [OpenTofu Runbook](../../03.runbooks/10.platform-and-backup/0082-opentofu.md)이 맡는다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/10.platform-and-backup/0082-opentofu.md) (`POL-0082`)
 - [Runbook](../../03.runbooks/10.platform-and-backup/0082-opentofu.md) (`RUN-0082`)
@@ -45,11 +69,12 @@ OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 �
 - [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
 - [Operations index](../../README.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 실행 경계
+###### 실행 경계
+<!-- core-payload-level:4 -->
 
 OpenTofu는 요청 시 실행하는 DEV IaC CLI 작업이다. `iac` profile에만 속하며
 HOME과 일반 `tooling`에서는 제외된다. root project는 inline Dockerfile로 로컬
@@ -61,13 +86,13 @@ credential 마운트라도 원격 API 권한을 부여한다.
 resource/security 기준선을 정의한다. 네트워크를 선언하지 않으므로 Compose 기본 네트워크에 붙으며, 그 도달 가능성을 별도로 확인한다. private `object_net`의
 tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가는 별도 검토가 필요하다. 이 leaf에는 Docker secret이나 공개된 port가 없다.
 
-### Authority
+##### Authority
 
 state 변경 작업과 IaC apply는 정확한 별도 승인이 필요하며, 실행이 승인된 경우에만 credential·workspace를 마운트한다. 이 leaf에는 Docker secret이 없다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -77,7 +102,8 @@ state 변경 작업과 IaC apply는 정확한 별도 승인이 필요하며, 실
 | 4 | read-only provider/backend 권한으로 정확한 workspace에 대해 initialization, formatting, validation, 검토된 plan을 실행한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 5 | 저장된 plan의 적용 여부를 따로 결정하고 plan digest, 리소스 수, 승인, exit status, apply 후 점검을 secret 없이 기록한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
-#### State와 명령 의미
+###### State와 명령 의미
+<!-- core-payload-level:4 -->
 
 - 선택된 workspace 설정이 state를 `/workspace`의 로컬 파일로 둘지 원격
   backend로 둘지 결정한다. Compose 파일은 backend를 선택하지 않는다.
@@ -89,7 +115,8 @@ state 변경 작업과 IaC apply는 정확한 별도 승인이 필요하며, 실
   비활성화하지 않는다. `force-unlock`은 writer가 남아 있지 않다고 증명한
   후, 운영자 자신이 남긴 lock에만 사용한다.
 
-#### 일반적인 사용
+###### 일반적인 사용
+<!-- core-payload-level:4 -->
 
 1. repository root에서 작업하며 `infra/09-platform-ops/opentofu/workspace` 아래의
    정확한 디렉터리(추적되지 않는 bind 원본이며 저장소에는 없다), backend, workspace 이름, account, 예상 리소스를 식별한다.
@@ -105,35 +132,59 @@ state 변경 작업과 IaC apply는 정확한 별도 승인이 필요하며, 실
 5. 저장된 plan을 적용할지는 따로 결정한다. plan digest, 리소스 수,
    승인, exit status, apply 후 점검을 secret 없이 기록한다.
 
-#### 백업과 업그레이드
+###### 백업과 업그레이드
+<!-- core-payload-level:4 -->
 
 실행 순서와 실패·복구 판단은 [런북](../../03.runbooks/10.platform-and-backup/0082-opentofu.md)의 `State 백업과 복구`와 `Lock과 업그레이드 복구` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-#### Terraform 이관
+###### Terraform 이관
+<!-- core-payload-level:4 -->
 
 기존 Terraform workspace를 옮기기 전에 state와 lock 정보를 보호한다. 독립 Terraform Compose 서비스가 없다는 사실은 Terrakube workspace의 엔진까지 OpenTofu로 고정되었다는 뜻이 아니다. Terrakube executor는 외부 도구·엔진 목록을 참조하므로 이관 대상별 실제 엔진, provider 및 state 호환성을 확인하고, Terraform configuration과 state가 자동으로 호환된다고 가정하지 않는다. 민감한 state와 plan payload는 문서나 로그에 넣지 않는다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 `force-unlock`은 writer 부재를 증명한 자신의 lock에만 쓰며, Terraform 이관은 엔진·provider·state 호환을 대상별로 확인해야 한다(Steps).
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --profile iac config --quiet`
 - `docker compose --profile iac config --services`
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../03.runbooks/10.platform-and-backup/0082-opentofu.md)의 절차로 진단한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 state 복구, lock 진단, plan/apply 분리, upgrade에는
 [runbook](../../03.runbooks/10.platform-and-backup/0082-opentofu.md)을 사용한다.
 
-### Next Action
+##### Next Action
 
 state 복구, lock 진단, plan/apply 분리, upgrade 문제는 [runbook](../../03.runbooks/10.platform-and-backup/0082-opentofu.md)을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

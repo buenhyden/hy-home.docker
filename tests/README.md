@@ -1,20 +1,43 @@
 ---
 title: "Test Surface"
-version: "1.4.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-02-21"
 ---
 
 # tests
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > 저장소 전역 검증과 테스트 자산의 진입점
 
-## Purpose
+#### Purpose
 
-### Audience
+##### Audience
 
 이 README의 주요 독자:
 
@@ -22,35 +45,38 @@ created: "2026-02-21"
 - QA Engineers
 - Operators
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 `tests/`는 저장소 전역 테스트와 검증 자산을 두는 공간입니다. 주요 품질
 게이트는 `scripts/`와 GitHub Actions에 정의되어 있으며, 이 트리는
 `scripts/lib/<domain>/`의 library-unit 소유권과 validation/entrypoint 소유권을
 서로 분리합니다.
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 저장소 전역 테스트 정책과 테스트 자산 위치 안내
 - 여러 서비스나 문서 계약을 함께 검증하는 테스트 진입점
 - CI에서 실행되는 검증 스크립트와의 연결
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 개별 서비스의 Docker Compose 원문
 - `scripts/`가 소유하는 검증 스크립트 구현
 - secret 값, credential, token, 인증서 원문
 - 하위 프로젝트의 package-local 테스트 설정
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 Python 3와 [scripts/README.md](../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다. `tests/validation/test_mng_pg_init_sql.py` opt-in 통합 테스트에는 Docker daemon과 `tests/requirements-integration.txt`의 의존성이 추가로 필요합니다.
 
-### First Use
+##### First Use
 
 1. 새 테스트 자산을 만들기 전에 같은 검증이 이미 `scripts/` 또는 하위 프로젝트 package script에 있는지 확인합니다.
 2. repository contract, doc traceability, Compose validation처럼 전역 검증에 가까운 항목은 [`../scripts/README.md`](../scripts/README.md)에 있는 기존 진입점을 우선 사용합니다.
@@ -60,7 +86,8 @@ Python 3와 [scripts/README.md](../scripts/README.md)의 hash lock(`requirements
 4. 새 unit·implementation fixture 테스트 파일은 workflow contract의 해당 LOCAL suite에 등록합니다. 실제 corpus·브라우저·HTTP 통합 검증은 등록된 hosted owner가 유지합니다. 실행·결과·미실행 범위는 소유 Task에 기록하며 CLI/API·README에 별도 명령 목록이나 결과 원장을 복제하지 않습니다.
 5. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
 
-#### 통합 테스트 (opt-in)
+###### 통합 테스트 (opt-in)
+<!-- core-payload-level:4 -->
 
 `tests/validation/test_mng_pg_init_sql.py`처럼 실제 컨테이너를 띄워야만
 증명되는 계약은 opt-in 통합 테스트로 둡니다. CI gate adapter는
@@ -104,9 +131,9 @@ PASS로 대체하지 않습니다. 정확한 mode·argv는 canonical `--explain`
 읽지 않습니다. 과거 사건의 문자열·수량·폐기 파일 부재만을 검사하는 fixture는
 현재 보장 이전과 caller 정리 후 폐기합니다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
 | Path | Purpose |
 | --- | --- |
@@ -115,7 +142,8 @@ PASS로 대체하지 않습니다. 정확한 mode·argv는 canonical `--explain`
 | [validation/](validation/README.md) | validation/entrypoint 및 실행-context 테스트 |
 | `requirements-integration.txt` | opt-in 통합 테스트 전용 의존성 (수동 갱신) |
 
-#### Directories
+###### Directories
+<!-- core-payload-level:4 -->
 
 ```text
 tests/
@@ -132,24 +160,45 @@ builder 모듈이며, 테스트가 필요한 최소 입력만 만들어 씁니�
 읽어야 하거나 형식 재현이 복잡해 builder로 감당되지 않는 입력이 생길 때만
 `tests/fixtures/`에 추가합니다.
 
-#### Canonical Entry Points
+###### Canonical Entry Points
+<!-- core-payload-level:4 -->
 
 하위 트리의 진입점은 [tests/lib](lib/README.md)와 [tests/validation](validation/README.md)입니다.
 
-### Owners
+##### Owners
 
 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
 
-### Related Documentation
+##### Related Documentation
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Root README](../README.md)
 - [Scripts README](../scripts/README.md)
 - [Documentation protocol](../docs/00.workspace/03.process/documentation-protocol.md)
 - [Task checklists](../docs/00.workspace/04.quality/task-checklists.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

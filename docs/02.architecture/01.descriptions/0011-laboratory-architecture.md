@@ -1,10 +1,13 @@
 ---
 title: "Administration and Experimentation Architecture Description"
-version: "1.4.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-26"
 
 # Administration and Experimentation Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Dozzle:** `admin`/`admin-logs`; reads Docker logs through a read-only socket,
   stores settings under `/data`, and uses both native OIDC configuration and the
@@ -34,22 +57,24 @@ created: "2026-03-26"
   logs, production notebook workloads, or Metabase. No current Metabase service is
   declared in this tier.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 The former Laboratory capabilities now reside in their owning Data, Observability, AI and Analytics tiers; SPEC-0197 moved them there and is retired (its body is in version history). This description records the structure of those operator and knowledge-work services; their obligations are owned by [REQ-0012](../../01.requirements/0012-laboratory.md).
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Operators reach Dozzle, RedisInsight and Open Notebook through the gateway; Dozzle reads the Docker API/logs, RedisInsight connects to Redis/Valkey targets, and Open Notebook calls approved model/provider APIs and persists records in SurrealDB.
 
-### Constraints
+##### Constraints
 
 Preserve gateway/allowlist/authentication controls, protect local settings databases, and never expose provider credentials, target passwords, logs, notebook content, or encryption keys in evidence. Provider/API egress is a distinct authorization boundary, and a read-only Docker socket does not restrict Docker API reads. Runtime pins are owned by Compose/Dockerfile declarations; the
 [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 ```mermaid
 flowchart LR
@@ -61,7 +86,7 @@ flowchart LR
   Notebook --> Providers[approved model/provider APIs]
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -77,18 +102,20 @@ flowchart LR
 - Dozzle uses native OIDC configuration with the tracked gateway controls; MLflow's browser uses ForwardAuth.
 - Open Notebook uses password/encryption-key Docker Secrets and connects to SurrealDB within the `08-ai/open-notebook` package.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 Dozzle requests Docker log streams, RedisInsight opens operator-defined target
 connections, and Open Notebook sends approved provider requests while persisting
 application records in SurrealDB. These flows are independent; selecting one
 narrow profile must not grant another tool's target or API access.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 `admin` selects Dozzle and RedisInsight; `admin-logs`/`admin-data` select each
 separately. Dozzle has its own Observability Compose leaf, included by the
@@ -98,15 +125,16 @@ to a standalone LAB. `mlops` and `data-science` select MLflow and its
 provisioner. JupyterLab is the standalone `labs/jupyterlab` LAB; its promotion
 record has `kind: undecided`.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Runtime flows are independent: selecting one narrow profile must not grant another tool's target or API access. Restore rehearsals block provider egress, production Docker API, and production data targets until sanitized acceptance passes; recovery per service is described under Recoverability in Scenarios.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Security:** preserve gateway/allowlist/authentication controls, protect local
   settings databases, and never expose provider credentials, target passwords,
@@ -119,7 +147,7 @@ Runtime flows are independent: selecting one narrow profile must not grant anoth
 - **Isolation:** restore rehearsals block provider egress, production Docker API,
   and production data targets until sanitized acceptance passes.
 
-### Trade-offs
+##### Trade-offs
 
 - Dozzle reads Docker logs through a read-only socket, which does not restrict
   Docker API reads (System Boundary, Constraints).
@@ -131,19 +159,21 @@ Runtime flows are independent: selecting one narrow profile must not grant anoth
 - Current Compose does not declare `RI_ENCRYPTION_KEY` for RedisInsight
   (System Boundary).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0062 HOME Membership and Planned LABs](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [Laboratory requirement](../../01.requirements/0012-laboratory.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 The description reflects the current tree at its `updated` date and history lives in Git. Operations guides:
 
@@ -157,3 +187,23 @@ The description reflects the current tree at its `updated` date and history live
   SPEC-0197 removed that tier and deleted on 2026-11-04. RedisInsight, Dozzle and
   Open Notebook with SurrealDB remain current under this description; Homer and
   Portainer have no current service.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "BLOCKED: incomplete logical commits"
-version: "1.0.10"
+version: "2.0.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: 'BLOCKED: incomplete logical commits'
+  layer: agent
+updated: "2026-11-20"
 action: "block"
 enabled: true
 event: "stop"
@@ -14,29 +17,49 @@ pattern: ".*"
 
 # BLOCKED: incomplete logical commits
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the rule payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Objective
 
 Apply the declared `block` action for require-logical-commits-before-stop.
 
-### Authority
+##### Authority
 
 Owning policy: [Git workflow](../../../docs/00.workspace/03.process/git-workflow.md#5-agent-completion-commit-discipline).
 
-## Scope
+#### Scope
 
-### Applies To
+##### Applies To
 
 The `require-logical-commits-before-stop` rule applies on the `stop` event and matches the end of an agent turn ("BLOCKED: incomplete logical commits"); [Enforcement](#enforcement) states how it is enforced.
 
-### Exclusions
+##### Exclusions
 
 None.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 **Logical commit completion check**
 
@@ -59,26 +82,46 @@ A repeated Stop payload (`stop_hook_active: true`) returns without another
 block or verification run. The first attempt retains the uncommitted-change
 check; a retry does not certify completion.
 
-### Enforcement
+##### Enforcement
 
 `scripts/hooks/hook_rules.py` does not evaluate `event: stop` rules; their `pattern: .*` is a placeholder. The enforcing code is `logical_commit_stop_gate` in `scripts/hooks/agent-event-hook.sh`. Native event delivery remains a separate observation.
 
-## Exceptions
+#### Exceptions
 
-### Exception Conditions
+##### Exception Conditions
 
 No exception is declared by this rule.
 
-### Approval and Review
+##### Approval and Review
 
 None.
 
-## Ownership
+#### Ownership
 
-### Responsibilities
+##### Responsibilities
 
 `@buenhyden`.
 
-### Change and Adoption
+##### Change and Adoption
 
 None.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

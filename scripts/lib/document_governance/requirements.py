@@ -8,7 +8,13 @@ import os
 import pathlib
 import re
 import stat
+import urllib.parse
+from collections.abc import Mapping
 
+from scripts.lib.document_governance.common_document import (
+    CommonDocumentError,
+    payload_text,
+)
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
@@ -139,6 +145,7 @@ class RequirementItem:
     kind: str
     text: str
     line_number: int
+    interface_refs: tuple[str, ...] = ()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -514,6 +521,10 @@ def _required_sections(registry: DocumentRegistry) -> tuple[str, ...]:
 
 
 def _parse_items(text: str, package_number: str) -> tuple[RequirementItem, ...]:
+    try:
+        text = payload_text(text)
+    except CommonDocumentError as error:
+        raise RequirementPackageError(str(error)) from error
     items: list[RequirementItem] = []
     seen: set[str] = set()
     last_numbers = {kind: 0 for kind in _ALLOCATED_KINDS}
@@ -524,7 +535,7 @@ def _parse_items(text: str, package_number: str) -> tuple[RequirementItem, ...]:
                 f"requirement section is not current: {section.group('name')}"
             )
         section_line = text.count("\n", 0, section.start("body")) + 1
-        for offset, line in enumerate(section.group("body").splitlines(), start=1):
+        for offset, line in enumerate(section.group("body").splitlines()):
             declaration = _LIST_DECLARATION.fullmatch(line)
             if declaration is None:
                 declaration = _TABLE_DECLARATION.fullmatch(line)
@@ -583,6 +594,72 @@ def _parse_items(text: str, package_number: str) -> tuple[RequirementItem, ...]:
                     "requirement package exceeds the item limit"
                 )
     return tuple(items)
+
+
+def _safe_interface_reference(value: object) -> bool:
+    if not isinstance(value, str) or not value:
+        return False
+    try:
+        decoded = urllib.parse.unquote(value, errors="strict")
+        target = urllib.parse.urlsplit(value)
+        decoded_path = urllib.parse.unquote(target.path, errors="strict")
+        _ = target.port
+    except (ValueError, UnicodeError):
+        return False
+    if any(
+        character.isspace() or ord(character) < 32 or ord(character) == 127
+        for character in decoded
+    ):
+        return False
+    if any(character in decoded for character in "\\{}"):
+        return False
+    if any(part in {".", ".."} for part in decoded_path.split("/")):
+        return False
+    if target.scheme in {"http", "https"}:
+        return (
+            bool(target.hostname)
+            and target.username is None
+            and target.password is None
+        )
+    if target.scheme == "urn":
+        return bool(target.path) and not target.netloc
+    return (
+        not target.scheme
+        and not target.netloc
+        and not decoded_path.startswith("/")
+        and ":" not in decoded_path
+        and bool(target.path or target.fragment)
+    )
+
+
+def _with_interface_refs(
+    items: tuple[RequirementItem, ...], references: object
+) -> tuple[RequirementItem, ...]:
+    if not isinstance(references, Mapping):
+        raise RequirementPackageError(
+            "interface_refs must map requirement IDs to references"
+        )
+    declared = {item.identity for item in items}
+    for owner, values in references.items():
+        if not isinstance(owner, str) or owner not in declared:
+            raise RequirementPackageError(
+                "interface_refs owner is not a declared FR/NFR requirement"
+            )
+        if (
+            not isinstance(values, (list, tuple))
+            or not values
+            or not all(_safe_interface_reference(value) for value in values)
+            or len(set(values)) != len(values)
+        ):
+            raise RequirementPackageError(
+                "interface_refs values must be unique safe nonempty references"
+            )
+    return tuple(
+        dataclasses.replace(
+            item, interface_refs=tuple(references.get(item.identity, ()))
+        )
+        for item in items
+    )
 
 
 def _allocation_space(
@@ -693,7 +770,10 @@ def parse_requirement_package(
     if path_match is None:
         raise RequirementPackageError("requirement package path is not canonical")
     package_number = path_match.group("number")
-    text = _read_regular_utf8(path)
+    try:
+        text = payload_text(_read_regular_utf8(path))
+    except CommonDocumentError as error:
+        raise RequirementPackageError(str(error)) from error
     if _contains_retired_requirement_reference(text):
         if _BARE_CHILD_ID.search(text):
             raise RequirementPackageError(
@@ -735,7 +815,9 @@ def parse_requirement_package(
         raise RequirementPackageError(
             "requirement package is missing required sections: " + ", ".join(missing)
         )
-    items = _parse_items(text, package_number)
+    items = _with_interface_refs(
+        _parse_items(text, package_number), record.metadata.get("interface_refs", {})
+    )
     if not items:
         raise RequirementPackageError("requirement package declares no requirements")
     _validate_item_allocations(items, package_number, active_registry)

@@ -1,10 +1,13 @@
 ---
 title: "Management Database Operations Policy"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -15,31 +18,53 @@ next_review_at: "2027-05-13"
 
 # Management Database Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
 운영 통제에 묶는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Artifact: `POL-0028`; parent: `AD-0004`.
 - Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
 
-### Applies To
+##### Applies To
 
 여섯 개의 `mng-db` 서비스(`mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`)는 HOME 대상이다. 공유 의존성이므로 database,
 role, broker, credential 변경은 consumer를 인지하는 유지보수와 rollback을
 요구한다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 애플리케이션 인증 연동은 이 정책이 아니라 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)가 정한다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -106,7 +131,8 @@ role, broker, credential 변경은 consumer를 인지하는 유지보수와 roll
 - Valkey를 폐기 가능한 cache가 아니라 workflow broker state로 취급한다. 오래된
   queue를 복원하면 작업이 중복되거나 순서가 바뀔 수 있다.
 
-#### Backup and restore
+###### Backup and restore
+<!-- core-payload-level:4 -->
 
 아래는 필수 보존 계약이다. 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와 RDB만 제공하며 database별 logical/AOF capture 및 앱 quiescence는 별도 구현·승인 작업이다. Restic 30일 archive가 broker 7일 업무 replay 승인을 대신하지 않는다.
 
@@ -124,39 +150,43 @@ schema, credential, queue가 마이그레이션되고 rollback-tested 상태여�
 workflow owner가 queue replay semantics를 승인한 뒤에만 복원한다. Production
 cutover나 data 교체는 별도 승인이 필요하다.
 
-#### Upgrade policy
+###### Upgrade policy
+<!-- core-payload-level:4 -->
 
 모든 pin 변경에 대해 공식 release note, extension/client 호환성, rollback을
 검토한다. PostgreSQL major upgrade는 isolated logical restore/rehearsal을
 요구한다. `PGDATA`를 직접 재사용하는 것은 금지한다. Acceptance와 rollback
 만료 시점까지 이전 volume을 보존한다.
 
-#### Accountable lifecycle boundary
+###### Accountable lifecycle boundary
+<!-- core-payload-level:4 -->
 
 적용 identity: `mng-pg`, `mng-pg-exporter`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-valkey`, `mng-valkey-exporter`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 Workflow queue state에는 cache-only 예외가 적용되지 않는다. 예외는 runtime
 mutation, plaintext secret, raw active storage 복사, 동일 host 가용성 주장을
 허용하지 않는다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 Profile, image, volume, credential, consumer, retention 또는 upstream
 lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 `docker compose --env-file .env.example --profile mng config --quiet`와 `tests/validation/test_compose_baseline_gates.py` contract test로 root 구성을 정적 검증한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 
-### Limits
+##### Limits
 
 이 정책에서 이름 붙은 검사는 root `config --quiet`와 contract test(`Init SQL` psql 변수 전달 규칙)뿐이며, 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
@@ -173,16 +203,36 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 - 정책이 밝힌 공백: 계획된 RPO 24시간/RTO 4시간을 증명하는 HOME rehearsal이 없다.
 - 정책이 밝힌 공백: 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와 RDB만 제공하며 database별 logical/AOF capture와 앱 quiescence는 별도 구현·승인 작업이다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Domain catalog](../../README.md)
 - [Runbook](../../03.runbooks/05.databases-and-storage/0028-management-database.md)
 - [PostgreSQL backup](https://www.postgresql.org/docs/current/backup.html)
 - [pg_restore security and options](https://www.postgresql.org/docs/current/app-pgrestore.html)
 - [Valkey persistence](https://valkey.io/topics/persistence/)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

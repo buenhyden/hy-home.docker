@@ -1,10 +1,13 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Architecture Description"
-version: "2.3.0"
+version: "3.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-28"
 
 # Platform Operations and Quality Optimization Hardening Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Owns**: the gateway and SSO contract of the tooling routes, tooling network
   membership, the k6 runtime contract and the `09-platform-ops` and
@@ -29,7 +52,8 @@ created: "2026-03-28"
 - **Non-goals**: a multi-cluster toolchain and adopting a replacement
   toolchain.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This Description records the hardening structure of the `09-platform-ops` and
 `11-quality` tiers: the gateway and SSO boundary of their management routes,
@@ -38,17 +62,18 @@ These are control-plane services for platform operational quality. Requirement
 owners, implementers and operators share these concerns; the tier structure
 itself is in [AD-0009](0009-tooling-architecture.md).
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The Description consumes the `01-gateway` middleware chain, the `02-auth` SSO middleware, and `04-data` management PostgreSQL, Valkey and SeaweedFS. Traefik `websecure` routes the Terrakube and Mailpit UIs, and Keycloak serves them through the SSO middleware.
 
-### Constraints
+##### Constraints
 
 Every routed tooling UI passes the gateway chain and SSO, and the registry stays loopback-only. The tooling tiers own operational tool metadata and execution policy, not application data, and the hardening checks are static, so they prove no running service.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - **Platform operations** (`infra/09-platform-ops/`): OpenTofu and Terrakube
   (`iac` profile), the image registry (`tooling` profile), Renovate
@@ -66,7 +91,7 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
 - **Shared dependencies**: management PostgreSQL and Valkey on `mng_data_net`,
   SeaweedFS on `object_net`, and Keycloak through the SSO middleware.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -81,11 +106,12 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
 - The registry has no Traefik route and publishes only on loopback.
 - Management PostgreSQL and Valkey are reached on `mng_data_net`, SeaweedFS on `object_net`.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 - **Entities**: OpenTofu state and Terrakube workspace metadata, contract and
   test results, performance metrics and image artifacts.
@@ -94,7 +120,8 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
 - **Boundary**: the tooling tiers own operational tool metadata and execution
   policy, not application data.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 - **Platform**: Docker Compose packages under `infra/09-platform-ops/` and
   `infra/11-quality/`, included by the root `docker-compose.yml` and selected
@@ -104,15 +131,16 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
   rendering runs only when runtime evidence is approved. These are static
   checks; they prove no running service.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Healthchecks and the Compose contract order startup. Job-style tools without a peer share the project default network, which is their trust boundary, and the registry's loopback publication is acceptable only while the host is trusted. Change and recovery follow the guide, policy and runbook linked under Currentness and Lineage.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Security**: every routed tooling UI passes the gateway chain and SSO; the
   registry stays loopback-only.
@@ -121,14 +149,15 @@ Healthchecks and the Compose contract order startup. Job-style tools without a p
 - **Operability**: change and recovery follow the linked guide, policy and
   runbook.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 - The registry's loopback publication is a host exposure outside the gateway;
   it is acceptable only while the host itself is trusted.
 - Job-style tools share the project default network when they have no peer, so
   that network is their trust boundary.
 
-### Trade-offs
+##### Trade-offs
 
 - The registry publishes only on loopback instead of through the gateway;
   this host exposure outside the gateway is acceptable only while the host
@@ -139,26 +168,29 @@ Healthchecks and the Compose contract order startup. Job-style tools without a p
   Compose rendering runs only when runtime evidence is approved (Constraints,
   Deployment View).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - **ADR**: [ADR-0062](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - **PRD**: [REQ-0010](../../01.requirements/0010-tooling.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - **Tier Architecture Description**: [AD-0009 Platform Operations and Software Verification Architecture Description](0009-tooling-architecture.md)
 - **Guide**: [Tooling optimization hardening guide](../../05.operations/01.guides/10.platform-and-backup/0063-tooling-optimization-hardening.md)
 - **Policy**: [Tooling optimization hardening policy](../../05.operations/02.policies/10.platform-and-backup/0063-tooling-optimization-hardening.md)
 - **Runbook**: [Tooling optimization hardening runbook](../../05.operations/03.runbooks/10.platform-and-backup/0063-tooling-optimization-hardening.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 - **OpenTofu**: a plan/apply approval gate, state locking and backup, drift
   detection.
@@ -167,3 +199,23 @@ Healthchecks and the Compose contract order startup. Job-style tools without a p
 - **k6**: storing and comparing performance baselines, standard scenario tags.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "LGTM Stack Usage Guide"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0042"
 created: "2026-03-25"
@@ -13,13 +16,33 @@ next_review_at: "2027-05-13"
 
 # LGTM Stack Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 개발자, 운영자, SRE, AI Agent. `06-observability` tier의 service role, data path, storage 경계를 파악하고 Grafana 탐색 시 확인할 datasource와 backend를 연결할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 이 가이드는 `hy-home.docker`의 `06-observability` tier가 제공하는 통합 관측성 stack을 설명한다. 현재 stack은 Prometheus, Loki, Tempo, Grafana에 Alloy, Alertmanager, Pushgateway, node-exporter, cAdvisor, Pyroscope, Gatus, `obs-gpu` 전용 dcgm-exporter, 일회성 `grafana-db-provision`을 더해 metrics, logs, traces, alerts, profiles, availability를 연결한다. OPTIONAL admin 로그 뷰어 Dozzle은 `infra/06-observability/dozzle/docker-compose.yml`에 따로 있다.
 
@@ -29,7 +52,8 @@ next_review_at: "2027-05-13"
 - Grafana에서 metrics/logs/traces/profiles/alerts를 탐색할 때 어떤 datasource와 backend를 확인해야 하는지 연결한다.
 - 개별 서비스 장애 대응은 service별 runbook으로 넘긴다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Governing authority: [Observability Architecture Description](../../../02.architecture/01.descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: 없음. 번호 `0042`를 공유하는 Policy나 Runbook은 없다.
@@ -44,22 +68,22 @@ next_review_at: "2027-05-13"
 - [Pushgateway guide](0046-pushgateway.md)
 - [Pyroscope guide](0047-pyroscope.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 사용 전에 다음을 확인한다.
 
 - Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
 
-### Authority
+##### Authority
 
 - `infra/06-observability/docker-compose.yml`과 service README를 읽을 수 있는 권한.
 - Grafana UI `https://grafana.${DEFAULT_URL}` 접근 권한.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -69,7 +93,8 @@ next_review_at: "2027-05-13"
 | 4 | Storage와 retention boundary를 `rg`로 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 5 | 서비스별 문서로 이동한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 일반 순서는 다음과 같다.
 
@@ -112,11 +137,13 @@ next_review_at: "2027-05-13"
    - Gatus: availability probe
    - Dozzle: admin 로그 조회
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
-#### 운영 시 주의점
+###### 운영 시 주의점
+<!-- core-payload-level:4 -->
 
 - **Single-pane assumption**: Grafana UI가 정상이어도 backend datasource가 unhealthy이면 일부 panels만 실패할 수 있다.
 - **Retention assumption**: Loki `168h` 요구에는 marker persistence gap이 있고 Tempo `24h` 요구는 source에서 설정되지 않았다. [POL-0048](../../02.policies/07.observability/0048-telemetry-retention.md)의 미준수 구분과 Pyroscope capacity 경계를 따른다. 다른 항목의 regex match는 retention 검증이 아니다.
@@ -124,30 +151,52 @@ next_review_at: "2027-05-13"
 - **Secret evidence**: SeaweedFS, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
 - **Runbook scope**: 이 stack guide는 복구 절차가 아니다. 장애 대응은 service별 runbook을 따른다.
 
-### Expected Results
+##### Expected Results
 
 확인 항목과 기대 결과는 아래와 같다.
 
-#### Common Checks
+###### Common Checks
+<!-- core-payload-level:4 -->
 
 - `docker compose --profile obs ps`
 - `rg -n '^  (prometheus|loki|tempo|alloy|grafana|grafana-db-provision|node-exporter|cadvisor|gatus|pyroscope|alertmanager|pushgateway|dcgm-exporter|dozzle):' infra/06-observability/docker-compose.yml infra/06-observability/dozzle/docker-compose.yml`
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
 - `bash scripts/validation/validate-docker-compose.sh`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0045](../../03.runbooks/07.observability/0045-prometheus.md)으로 넘긴다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 stack 전체를 다루는 runbook은 없다. 반복 실행 절차와 장애 대응은 서비스별 runbook을 따른다: [Prometheus](../../03.runbooks/07.observability/0045-prometheus.md), [Loki](../../03.runbooks/07.observability/0043-loki.md), [Tempo](../../03.runbooks/07.observability/0049-tempo.md), [Grafana](../../03.runbooks/07.observability/0041-grafana.md), [Alloy](../../03.runbooks/07.observability/0040-alloy.md), [Alertmanager](../../03.runbooks/07.observability/0039-alertmanager.md), [Pushgateway](../../03.runbooks/07.observability/0046-pushgateway.md), [Pyroscope](../../03.runbooks/07.observability/0047-pyroscope.md).
 
 - [Operations index](../../README.md)
 - [Runbook index](../../README.md)
 
-### Next Action
+##### Next Action
 
 stack 전체를 다루는 runbook은 없다. 서비스별 runbook(Prometheus [RUN-0045](../../03.runbooks/07.observability/0045-prometheus.md) 등)을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

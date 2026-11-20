@@ -1,46 +1,72 @@
 ---
 title: "Architecture Descriptions"
-version: "1.4.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 ---
 
 # Architecture Descriptions
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `docs/02.architecture/01.descriptions`는 시스템 또는 관심사별 현재 아키텍처를
 설명한다. 각 문서는 이해관계자와 경계, 구성 요소, runtime과 배포 view,
 품질 속성·위험·발전 방향, 관련 Requirement·ADR·Spec·Operations 문서를
 기록한다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - System Architects
 - Developers
 - Operators
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 이 디렉터리는 현재 유효한 Description을 보유한다. Description은 구현
 계획이나 운영 절차를 소유하지 않고 실제로 연결된 Requirement Package, ADR, Spec과
 Operations 문서의 역할을 대체하지 않는다. 개수는 유지 기준이 아니므로 아래
 Current Inventory와 실제 파일 목록이 권위이다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 Description은 구현 계획이나 운영 절차를 소유하지 않고, 실제로 연결된 Requirement Package, ADR, Spec과 Operations 문서의 역할을 대체하지 않는다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
@@ -70,7 +96,8 @@ Description은 구현 계획이나 운영 절차를 소유하지 않고, 실제�
 | [0031-home-development-host.md](0031-home-development-host.md) | Home and Development Host Architecture |
 | [0032-experience-architecture.md](0032-experience-architecture.md) | Experience Tier Architecture Description |
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 ```text
 docs/02.architecture/01.descriptions/
@@ -85,7 +112,8 @@ docs/02.architecture/01.descriptions/
 └── README.md
 ```
 
-#### Current Inventory
+###### Current Inventory
+<!-- core-payload-level:4 -->
 
 `AD-0001`부터 `AD-0013`은 기본 tier와 서비스, `AD-0018`부터 `AD-0025`는
 각 tier의 hardening, `AD-0026` 이후는 network와 cross-cutting 아키텍처이다.
@@ -118,7 +146,8 @@ docs/02.architecture/01.descriptions/
 | [`AD-0031`](0031-home-development-host.md) | Home and Development Host Architecture | `approved` |
 | [`AD-0032`](0032-experience-architecture.md) | Experience Tier Architecture Description | `approved` |
 
-#### C4 and arc42 Placement
+###### C4 and arc42 Placement
+<!-- core-payload-level:4 -->
 
 C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 [공통 Agent 거버넌스 작성 정책](../../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)이
@@ -128,15 +157,16 @@ C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 빈 framework section이나 병렬 문서를 만들지 않으며 선택·대안·근거는 ADR이
 소유한다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`이다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않는다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [Architecture](../README.md)
 - [Product Requirements](../../01.requirements/README.md)
@@ -144,16 +174,18 @@ C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 - [Specifications](../../03.specs/README.md)
 - [Operations](../../05.operations/README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [에이전트 작업 규칙](../AGENTS.md)
 - [Architecture Description Template](../../99.templates/02.templates/02.architecture/description.template.md)
 - [문서 작성 계약](../../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Authoring Flow
+###### Authoring Flow
+<!-- core-payload-level:4 -->
 
 1. 상위 [Requirement Package](../../01.requirements/README.md)를 확인한다.
 2. 같은 system, tier 또는 concern을 설명하는 문서가 있는지 확인한다.
@@ -163,7 +195,8 @@ C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
    않는다.
 5. material choice는 [ADR](../02.decisions/README.md)에 기록한다.
 
-#### Documentation Standards
+###### Documentation Standards
+<!-- core-payload-level:4 -->
 
 - `<4-digit-id>-<slug>.md`, `artifact_id: AD-<4-digit-id>`,
   `type: sdlc/architecture-description`을 일치시킨다.
@@ -171,6 +204,27 @@ C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 - 관련 결정과 구현 명세가 존재하면 typed link로 연결한다.
 - Description은 selection rationale나 실행 절차를 복제하지 않는다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 Architecture Description은 draft → in-review → approved로 전이하며 approved에서 in-review로 돌아갈 수 있다. 더 이상 현재 구조를 설명하지 않는 문서는 내용을 현재 소유자에 요약하고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,10 +1,13 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # 01-Gateway Traefik Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 Infra/DevOps 엔지니어, 운영자, 기여자가 Traefik dashboard 라우터 하드닝과 `gateway-standard-chain` 구성요소 및 적용 범위를 이해하고 적용할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. Traefik의 lifecycle class는 **HOME**이다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다. Compose 고정은 2026-11-09에 Traefik v3.7.17로 올렸으며(GHSA-xv5x-242w-7hf7), 실행 중인 컨테이너는 아직 바뀌지 않았다. 이 문서의 라우터·체인 절차는 v3.7 계열에서 달라지지 않는다.
 
@@ -40,7 +63,8 @@ Infra/DevOps 엔지니어, 운영자, 기여자가 Traefik dashboard 라우터 �
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - root `core` profile compose validation 실행 가능
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Declared parent: [01-Gateway Traefik Operations Policy](../../02.policies/02.gateway-and-networking/0013-traefik.md) (`POL-0013`)
 - Governing authority: [Gateway Tier Architecture Description](../../../02.architecture/01.descriptions/0001-gateway-architecture.md) (`AD-0001`)
@@ -55,25 +79,27 @@ Infra/DevOps 엔지니어, 운영자, 기여자가 Traefik dashboard 라우터 �
 - [Operations policy](../../02.policies/02.gateway-and-networking/0013-traefik.md)
 - [Recovery runbook](../../03.runbooks/02.gateway-and-networking/0013-traefik.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 구현 소스는 [infra/01-gateway/traefik/docker-compose.yml](../../../../infra/01-gateway/traefik/docker-compose.yml)이다.
 
-### Authority
+##### Authority
 
 Docker Secret `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`를 참조하며 값은 문서에 남기지 않는다. healthcheck는 승인된 root stack이 실행 중일 때만 쓴다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용 절차는 아래 항목에 정리한다.
 
-#### Source, activation and middleware behavior
+###### Source, activation and middleware behavior
+<!-- core-payload-level:4 -->
 
 `traefik`은 HOME이며 `core`/`dev`/`local`로 선택한다. host bind는
 `HOST_LAN_BIND_IP`, host 포트는 `HTTP_HOST_PORT`/`HTTPS_HOST_PORT`에서 정한다.
@@ -97,7 +123,8 @@ sign-in 서비스의 응답으로 바꾸며 401은 machine client에게 그대�
 [Errors statusRewrites](https://doc.traefik.io/traefik/v3.7/reference/routing-configuration/http/middlewares/errorpages/#statusrewrites)와
 [인증 통합 Guide](../03.identity-and-access/0079-application-auth-integration.md)를 함께 확인한다.
 
-#### Configuration, state and signals
+###### Configuration, state and signals
+<!-- core-payload-level:4 -->
 
 필수 입력은 `DEFAULT_URL`, `DEFAULT_CERT_DIR`, `DEFAULT_SECURITY_DIR`의
 `openbao/tls/ca.pem`, `CERT_GROUP_GID`·`SECRETS_GID`, root network와
@@ -119,11 +146,12 @@ metrics는 host에 게시하지 않으며, OTLP는 `tempo:4317`로 전달한다.
 backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file watch 대상이고,
 정적 단일 파일 변경은 [POL-0006 적용 통제](../../02.policies/01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)를 따른다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-### Expected Results
+##### Expected Results
 
 1. 미들웨어 파일 `infra/01-gateway/traefik/dynamic/middleware.yml`에서 `req-rate-limit`, `req-retry`, `req-circuit-breaker`, `gateway-standard-chain` 블록과 실제 chain 멤버십을 따로 확인한다.
 2. 라우터 라벨(`infra/01-gateway/traefik/docker-compose.yml`)에서 dashboard 라우터에 `dashboard-auth@file,gateway-standard-chain@file`이 적용됐는지 확인한다.
@@ -133,18 +161,39 @@ backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file wat
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `docker compose exec traefik traefik healthcheck --ping`은 승인된 root stack이 실행 중일 때만 사용한다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - `gateway-standard-chain` 이름 오타는 middleware resolve 실패로 이어진다.
 - dashboard middleware의 순서나 구분자(`,`) 오류를 확인한다.
 - 게이트웨이 소유가 아닌 라우터에까지 체인을 무분별하게 확장하지 않는다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 장애 대응, 구성·private 인증서 복구, upgrade 수용 검증, prior-image rollback과 escalation은 [Runbook](../../03.runbooks/02.gateway-and-networking/0013-traefik.md#rollback-or-recovery)이 소유한다. 공통 변경 흐름은 [RUN-0086](../../03.runbooks/10.platform-and-backup/0086-dependency-version-management.md), 여러 서비스 장애는 [RUN-0099](../../03.runbooks/01.common/0099-system-operations.md)로 연결한다.
 
-### Next Action
+##### Next Action
 
 장애 대응, 구성·private 인증서 복구, upgrade 수용 검증, prior-image rollback, escalation은 [Runbook](../../03.runbooks/02.gateway-and-networking/0013-traefik.md#rollback-or-recovery)이 소유한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

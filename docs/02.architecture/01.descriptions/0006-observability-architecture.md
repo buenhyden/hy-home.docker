@@ -1,10 +1,13 @@
 ---
 title: "Observability Architecture Description"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-26"
 
 # Observability Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Owns:** centralized logs (Loki), metrics and alerting (Prometheus,
   Alertmanager), traces (Tempo), profiles (Pyroscope), dashboards (Grafana),
@@ -29,7 +52,8 @@ created: "2026-03-26"
   statistics.
 - **Non-goals:** dependence on external cloud monitoring vendors.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `06-observability` collects, stores and shows platform telemetry so incidents
 can be correlated across logs, metrics, traces and profiles. It runs Loki,
@@ -37,17 +61,18 @@ Grafana, Tempo and Prometheus with Grafana Alloy, Alertmanager, Pushgateway,
 cAdvisor, node-exporter, Gatus, Pyroscope and a DCGM GPU exporter,
 fully self-hosted.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Alloy collects Docker logs, OTLP traces and pprof targets; Prometheus scrapes exporters and services; Traefik sends traces straight to Tempo; k6 sends OTLP to an authenticated Alloy receiver. Loki and Tempo store objects in SeaweedFS (`04-data`), and Grafana, Gatus and Dozzle use Keycloak OIDC (`02-auth`).
 
-### Constraints
+##### Constraints
 
 The stack is fully self-hosted with no dependence on external cloud monitoring vendors. Prometheus keeps a local TSDB as the durable authority, and approved Kubernetes LAN ingress and query exceptions stay under POL-0096.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 All core services are in `infra/06-observability/docker-compose.yml`; Dozzle
 is in `infra/06-observability/dozzle/docker-compose.yml`. Alloy discovers
@@ -56,7 +81,7 @@ to Tempo, and declares pprof scrape targets for Pyroscope. Prometheus scrapes
 exporters, services and Alloy self-metrics directly. Grafana queries each
 datasource. Traefik sends its own traces straight to Tempo.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -73,11 +98,12 @@ datasource. Traefik sends its own traces straight to Tempo.
 
 Scrapes and datasource queries use `obs_net`, object storage uses `object_net`, and UI routes use `edge_net`. The Alloy receiver is authenticated; the Prometheus API route uses `prometheus-api-auth@file`.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 - **Metrics:** cAdvisor, exporters and services -> Prometheus; Alloy
   self-metrics -> Prometheus scrape.
@@ -95,7 +121,8 @@ Prometheus keeps a local TSDB. Scrapes and datasource queries use `obs_net`,
 object storage `object_net`, UI routes `edge_net`. Approved Kubernetes LAN
 ingress and query exceptions stay under POL-0096.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 `obs` selects the full set; `obs-core` (Prometheus, Grafana), `obs-host`
 (node-exporter, cAdvisor), `logs`, `tracing`, `profiling`, `alerting`,
@@ -107,18 +134,19 @@ node-exporter, cAdvisor, Gatus, Alertmanager and `dcgm-exporter` are HOME;
 Pushgateway is OPTIONAL. Starting a HOME profile does not stop an already
 running optional container.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 The HOME Restic state set excludes SeaweedFS `loki-bucket` and `tempo-bucket`
 volume files. Lost object history is outside HOME backup recovery, and the
 services collect new data. The [backup policy](../../05.operations/02.policies/10.platform-and-backup/0021-backup-and-restore.md)
 owns the recovery boundary. The open Tempo retention gap is recorded below.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Performance:** Alloy batches traces before export.
 - **Security:** Grafana, Gatus and Dozzle use native Keycloak OIDC; the other
@@ -130,12 +158,13 @@ owns the recovery boundary. The open Tempo retention gap is recorded below.
   enabled remote-write receiver does not imply an external long-term store.
 - **Observability:** the stack includes self-monitoring dashboards.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 The Tempo policy targets 24h retention, but `tempo/config/tempo.yaml` sets no
 `block_retention`, so the version default (336h) applies. This gap is open.
 
-### Trade-offs
+##### Trade-offs
 
 - The stack is fully self-hosted with no dependence on external cloud
   monitoring vendors (Constraints).
@@ -149,23 +178,46 @@ The Tempo policy targets 24h retention, but `tempo/config/tempo.yaml` sets no
   Recovery).
 - The Tempo retention gap (policy 24h, version default 336h) is open (Risks).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0053 Observability object storage on SeaweedFS](../02.decisions/0053-observability-storage-on-seaweedfs.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0007 Observability requirements](../../01.requirements/0007-observability.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 A long-term metrics store or a Tempo retention setting needs a Stage 03
 change.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

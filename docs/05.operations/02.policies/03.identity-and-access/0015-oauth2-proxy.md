@@ -1,10 +1,13 @@
 ---
 title: "02-Auth OAuth2 Proxy Operations Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0015"
 parent_ids:
@@ -15,17 +18,38 @@ next_review_at: "2027-05-13"
 
 # 02-Auth OAuth2 Proxy Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 `02-auth` OAuth2 Proxy 운영 정책을 정의한다. 시크릿 주입 경로, 세션/쿠키 표준, fail-closed 및 degraded-mode 운영 통제를 명시한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [02-Auth Architecture Description](../../../02.architecture/01.descriptions/0002-auth-architecture.md) (`AD-0002`)
 
-### Applies To
+##### Applies To
 
 - `infra/02-auth/oauth2-proxy/docker-compose.yml`
 - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
@@ -37,13 +61,14 @@ next_review_at: "2027-05-13"
 - **Systems**: OAuth2 Proxy ForwardAuth gateway
 - **Environments**: Local, Dev, Stage, Production-like
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 Keycloak realm/client 운영은 [POL-0014](0014-keycloak.md)가 다룬다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -111,12 +136,14 @@ Keycloak realm/client 운영은 [POL-0014](0014-keycloak.md)가 다룬다.
   - fail-open 상시 운영
   - 시크릿을 Compose/문서에 평문으로 저장
 
-#### Session boundaries
+###### Session boundaries
+<!-- core-payload-level:4 -->
 
 Valkey AOF는 세션 persistence이며 백업을 대신하지 않는다. 세션 손실 시 재로그인
 영향을 고지하고 공유 `mng-valkey`를 Proxy 복구만을 위해 비우거나 삭제하지 않는다.
 
-#### Credential exposure boundary
+###### Credential exposure boundary
+<!-- core-payload-level:4 -->
 
 Proxy는 entrypoint가 Secret 파일에서 읽어 `OAUTH2_PROXY_REDIS_PASSWORD` 환경 변수로
 password를 소비한다. Docker daemon/host process 접근도 credential 신뢰 경계다. full
@@ -124,7 +151,8 @@ password를 소비한다. Docker daemon/host process 접근도 credential 신뢰
 `.State.Health.Log`는 기록하지 않는다. 서비스명·image identity·health 상태·재시작
 횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았다.
 
-#### Shared controls and accountability
+###### Shared controls and accountability
+<!-- core-payload-level:4 -->
 
 공통 자원 상한과
 mount 적용은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md), profile·
@@ -133,7 +161,8 @@ mount 적용은 [POL-0006](../01.common/0006-infrastructure-optimization-governa
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-#### Session and Upgrade Controls
+###### Session and Upgrade Controls
+<!-- core-payload-level:4 -->
 
 - Cookie, client, Valkey credential 값은 각각의 secret 소유자가 관리한다.
   회전할 때는 모든 활성 session이 무효화되는지 명시해야 한다.
@@ -143,30 +172,32 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 격리된 OIDC/PKCE/ForwardAuth/logout test 후에만 upgrade한다.
   이전 image 선언을 보존하고 session 무효화 계획을 기록한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
 - 단, 승인자 기록과 종료 조건(원복 기준)을 사전에 명시해야 한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 월 1회 정기 점검
 - OAuth2 Proxy/Keycloak 버전 변경 시 수시 점검
 
 - OOM·반복 재시작·인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - Runtime-only: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`(기본 `OAUTH2_PROXY_PORT` 기준)
 
-### Limits
+##### Limits
 
 이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
@@ -178,17 +209,37 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 세션/업그레이드: 명명된 검사 없음 R33, R35~R40; 수동 검토 R34 (`POL-0015-` 접두)
 - `/ping` runtime 점검(`docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`)은 runtime-only이며 어느 규칙을 검증하는지 본문이 연결하지 않는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
 종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/03.identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`), [Runbook](../../03.runbooks/03.identity-and-access/0015-oauth2-proxy.md) (`RUN-0015`)
 
 - 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Operations index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

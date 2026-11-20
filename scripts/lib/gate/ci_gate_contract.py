@@ -2011,6 +2011,11 @@ def validate_rule_owners(
 def _heading_anchors(root: pathlib.Path, document: str) -> frozenset[str]:
     """GitHub-style heading anchors of one tracked canonical document."""
 
+    from scripts.lib.document_governance.common_document import (
+        CommonDocumentError,
+        payload_text,
+    )
+
     path = pathlib.PurePosixPath(document)
     if (
         not _RULE_OWNER.fullmatch(f"{document}#x")
@@ -2019,8 +2024,8 @@ def _heading_anchors(root: pathlib.Path, document: str) -> frozenset[str]:
     ):
         return frozenset()
     try:
-        text = (root / document).read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
+        text = payload_text((root / document).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, CommonDocumentError):
         return frozenset()
     anchors = set()
     for line in text.splitlines():

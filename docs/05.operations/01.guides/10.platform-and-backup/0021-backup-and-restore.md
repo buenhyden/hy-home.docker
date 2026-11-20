@@ -1,10 +1,13 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -20,30 +23,52 @@ next_review_at: "2027-05-13"
 
 # Backup and Restore Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 백업을 운영하거나 복구 가능성을 판단하는 운영자와 검토자.
 
-### Outcome
+##### Outcome
 
 HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackRest, Restic, R2 오프사이트 사본, SQLite export, host orchestrator가 각각 무엇을 보호하고 무엇을 보호하지 않는지 설명한다.
 
 백업을 운영하거나 복구 가능성을 판단하는 운영자와 검토자를 위한 문서다. 목표는 도구별 소유 범위, 저장 위치, 일정과 부하, 용량 증가, 키 보관 규칙을 이해하고 정상 상태를 확인하는 것이다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Policy: [POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)
 - Implementation: [Restic Compose](../../../../infra/09-platform-ops/restic/docker-compose.yml),
   [Restic package](../../../../infra/09-platform-ops/restic/README.md),
   [pgBackRest image](../../../../infra/04-data/mng-db/pg/backup/Dockerfile)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### What owns which copy
+###### What owns which copy
+<!-- core-payload-level:4 -->
 
 | 도구 | 소유 범위 | 소유하지 않는 범위 |
 | --- | --- | --- |
@@ -56,15 +81,16 @@ HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackR
 실행 중인 PostgreSQL data directory의 복사본은 database backup이 아니다.
 구현된 자동 PostgreSQL 경로는 pgBackRest이며 database별 logical 복구 요구를 대체하지 않는다.
 
-### Authority
+##### Authority
 
 암호화 키는 `secrets/backup/mng-pg/pgbackrest_cipher_pass.txt`(BKP-001)와 `secrets/backup/restic/restic_password.txt`(BKP-002)이며 값은 기록하지 않는다. 배포 전 두 repository 디렉터리와 용량·키 보관·일정 승인이 필요하다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Destinations
+###### Destinations
+<!-- core-payload-level:4 -->
 
 두 repository는 서로 다른 physical disk에 두어야 한다. source의 `st_dev` 비교는 filesystem 구분만 확인하며 별도 partition/LVM이 같은 physical disk일 가능성을 배제하지 못한다. 실제 disk mapping은 owner 확인이 필요하다.
 
@@ -81,14 +107,16 @@ Cloudflare R2 repository 하나로 복사한다(ADR-0056). owner가
 [RUN-0021](../../03.runbooks/10.platform-and-backup/0021-backup-and-restore.md) 8단계의 R2 설정을 마치기
 전까지는 모든 복사본이 한 host에 있어 offsite recovery를 할 수 없다.
 
-#### Schedule and load
+###### Schedule and load
+<!-- core-payload-level:4 -->
 
 `hyhome-backup.timer`는 매일 KST 03:30에 최대 30분의 random delay를 두고
 실행되며 4시간이 지나면 실행이 중단된다. pgBackRest는 일요일에 full backup을,
 다른 날에는 differential backup을 수행한다. `archive_timeout=300`은 WAL segment 전환을 유도하며 successful archive를 5분 이내로 보장하지 않는다. 4 GiB archive queue 한도 초과로 segment가 폐기되면 새 유효 backup 전 PITR chain이 끊긴다. unit은 idle I/O class와 `Nice=10`으로 실행되고
 Restic은 낮은 block-I/O weight를 받는다. Spark는 LAB(`labs/lakehouse/`)의 수동 `spark` job이며 workspace에 예약된 table maintenance가 없으므로, 운영자가 그 시간대에 직접 실행할 때만 겹친다. `Persistent=true`의 catch-up도 시간대를 바꾸며 `flock`은 backup끼리만 직렬화한다. Renovate/Spark와의 상호 배제는 구현되어 있지 않다.
 
-#### Capacity and growth (measured 2026-09-22)
+###### Capacity and growth (measured 2026-09-22)
+<!-- core-payload-level:4 -->
 
 | 저장소 | 측정한 입력 | 범위·한계 |
 | --- | --- | --- |
@@ -105,7 +133,8 @@ log(175 MB, 약 64 MB/day)와 cache는 의도적으로 allowlist에서 제외한
 `BACKUP_STATE_MAX_GIB` 이상이면 아무것도 삭제하지 않고 Restic 단계를
 건너뛰며 실행을 실패시킨다. 표의 2026-09-22 추정치는 현재 보장이 아니며 2026-09-23 429 MiB → 09-30 1679 MiB(약 180 MiB/day) state repository 기록으로 대체되었다. 20 GiB free-space floor는 state repository filesystem의 실행 전 검사이며 host repository·scratch·실행 중 여유를 보장하지 않는다.
 
-#### Development database handoff
+###### Development database handoff
+<!-- core-payload-level:4 -->
 
 개발 repository는 별도 stanza `dev`와 `dev_pgbackrest_cipher_pass`를 사용하며
 관리 repository·PGDATA와 공유하지 않는다. Restic은 이 경로를 읽기 전용으로
@@ -130,7 +159,8 @@ repository→새 빈 볼륨 복구에서 row·extension·migration·role 비교�
 쓰기/DDL 거절은 통과했습니다. 이 격리 결과는 online WAL/PITR·HOME·R2 복구
 성공이나 운영 용량 실측을 뜻하지 않습니다.
 
-#### Keys
+###### Keys
+<!-- core-payload-level:4 -->
 
 `secrets/backup/mng-pg/pgbackrest_cipher_pass.txt`(BKP-001)는 pgBackRest repository를
 암호화하고, `secrets/backup/restic/restic_password.txt`(BKP-002)는 두 Restic
@@ -138,7 +168,8 @@ repository를 암호화한다. 이 값들은 host repository 내부에도 backup
 repository를 열려면 같은 Restic password가 필요하므로 두 값의 offline
 복사본을 이 host 밖에 보관한다. 이를 잃으면 모든 backup을 읽을 수 없게 된다.
 
-#### Identity-specific behavior
+###### Identity-specific behavior
+<!-- core-payload-level:4 -->
 
 restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune 는 각각 다른 쓰기 효과다. SQLite helper는 Grafana와 Gatus의 Online Backup API와 integrity check로 staging을 만들며 원본 WAL/SHM 처리를 위해 source mount가 rw다. 공유 기억은 별도의 호스트 CLI가 내보낸다. local restic은 network none이고 offsite만 전용 outbound network를 쓴다. unit 종료와 timestamp를 보고 각 복구 대상의 export와 snapshot 포함 여부를 따로 확인한다. 공유 기억 export가 용량 제한으로 생략되어도 일일 unit은 성공할 수 있다. 복구·용량·custody는 RUN/POL-0021의 계약을 따른다.
 
@@ -150,7 +181,7 @@ restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune �
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 backup data를 변경하지 않는 점검이다(Restic은 여전히 짧게 유지되는 lock을 기록한다):
 
@@ -164,13 +195,14 @@ journalctl -u hyhome-backup.service -n 50 --no-pager
 정상이면 output에 최근 backup과 WAL archive range가 담긴 `status: ok`,
 최근 `hyhome-state`와 `hyhome-host` snapshot, 성공한 마지막 실행이 나온다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../03.runbooks/10.platform-and-backup/0021-backup-and-restore.md)의 절차로 진단한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 초기 설정, manual 실행, restore, point-in-time recovery, retention delete
 절차는 [RUN-0021](../../03.runbooks/10.platform-and-backup/0021-backup-and-restore.md)에 있다.
@@ -178,6 +210,26 @@ journalctl -u hyhome-backup.service -n 50 --no-pager
 - [Management database runbook](../../03.runbooks/05.databases-and-storage/0028-management-database.md)
 - [Storage exhaustion runbook](../../03.runbooks/05.databases-and-storage/0035-storage-exhaustion.md)
 
-### Next Action
+##### Next Action
 
 Expected Results 점검이 실패하거나 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [RUN-0021](../../03.runbooks/10.platform-and-backup/0021-backup-and-restore.md)로 진단한다. 관련 Runbook은 [Management database](../../03.runbooks/05.databases-and-storage/0028-management-database.md)와 [Storage exhaustion](../../03.runbooks/05.databases-and-storage/0035-storage-exhaustion.md)이다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

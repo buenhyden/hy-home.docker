@@ -1,33 +1,58 @@
 ---
 title: "Infrastructure Surface"
-version: "1.6.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-24"
 ---
 
 # Hy-Home Infrastructure (infra/)
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > hy-home.docker 생태계를 위한 통합 서비스 정의 및 오케스트레이션 계층입니다.
 
-## Purpose
+#### Purpose
 
-### Audience
+##### Audience
 
 이 README의 주요 독자:
 
 - **Operators**: 인프라 배포 및 서비스 라이프사이클 관리.
 - **Developers**: 애플리케이션 개발을 위한 인프라 서비스 소비.
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 `infra/` 디렉터리는 전체 홈 서버와 AI 개발 환경의 **서비스 정의**를 관리합니다. 티어와 컴포넌트 디렉터리는 Compose 선언, 빌드 소스, 마운트된 설정을 소유합니다. 루트 `docker-compose.yml`은 `include`로 등록된 fragment들을 집계하며 일부 fragment는 여러 서비스를 소유합니다. 디렉터리 구성과 프로필은 런타임 격리를 보장하지 않습니다.
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 13개 기능 티어에 걸친 서비스 정의.
 - 루트 `docker-compose.yml`을 통한 전역 오케스트레이션.
@@ -35,13 +60,15 @@ created: "2025-11-24"
 - **Docker Profiles**(`core`, `mng`, `obs` 등)를 사용한 표준화된 실행 모델.
 - 리소스 최적화 및 보안 하드닝 템플릿.
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 세부 내부 서비스 설정 (`docs/05.operations/` 또는 하위 모듈 README 참고).
 - 애플리케이션 비즈니스 로직과 프론트엔드 소스 코드.
 - 자격 증명 및 민감 변수 (`secrets/`에서 관리).
 
-#### Service Documentation Rubric
+###### Service Documentation Rubric
+<!-- core-payload-level:4 -->
 
 각 서비스 README는 같은 서비스 디렉터리의 Compose/설정 파일과 정합성을 유지해야 하며
 다음의 agent 검증 가능 필드를 다뤄야 합니다.
@@ -62,16 +89,16 @@ created: "2025-11-24"
 | Validation | 관련 compose, hardening, repo-contract 점검 |
 | Troubleshooting | 알려진 실패 모드와 첫 진단 명령 |
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 저장소 루트에서 Docker Engine과 Compose `include` 지원을 확인한다. 공개
 환경 스키마는 [.env.example](../.env.example), secret 참조 계약은
 [Secret Management](../secrets/README.md)를 따른다. 비밀 값은 문서와 명령 출력에
 넣지 않는다. NVIDIA workload는 호스트 드라이버와 Container Toolkit이 필요하다.
 
-### First Use
+##### First Use
 
 ```bash
 # 구성 검증만 수행하며 컨테이너를 시작하지 않는다.
@@ -88,7 +115,8 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 4. **Operations and documentation**: 서비스 Guide의 `implementation_services` 매핑에 정확한 Compose 경로/서비스 바인딩을 추가하고 Policy/Runbook, 서비스 README, 현재 Spec/Task를 같은 변경에서 갱신합니다. operations catalog가 전역 조인을 검증하므로 별도 registry/checker를 만들지 않습니다.
 5. **Validation**: `scripts/validation/validate-docker-compose.sh`, operations catalog, metadata 및 link 점검을 변경 범위에 맞게 실행합니다.
 
-#### Execution Model
+###### Execution Model
+<!-- core-payload-level:4 -->
 
 HOME은 접근·인증·비밀 기반, 관리 PostgreSQL/Valkey, 단일 노드 오브젝트 저장소,
 AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와 워크플로우의 상시
@@ -115,9 +143,9 @@ AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼
 초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·maintenance
 프로파일은 업무 소비자와 검증 목적이 확인될 때만 별도로 선택한다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
 | Path | Purpose |
 | --- | --- |
@@ -135,7 +163,8 @@ AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼
 | [12-analytics/](12-analytics/README.md) | Analytics tier 색인(현재 root 패키지 없음) |
 | [13-experience/](13-experience/README.md) | Experience tier 패키지 |
 
-#### Directories
+###### Directories
+<!-- core-payload-level:4 -->
 
 각 tier의 기능과 현재 패키지 배치는 다음과 같습니다.
 
@@ -179,7 +208,8 @@ tier Compose가 여러 하위 설정 폴더를 묶고 Dozzle만 별도 leaf Comp
 사용하는 예외입니다. 디렉터리
 번호는 기동 순서가 아니며 root include와 service profile이 선택을 결정합니다.
 
-#### Compose Inventory Snapshot
+###### Compose Inventory Snapshot
+<!-- core-payload-level:4 -->
 
 루트 [Compose](../docker-compose.yml)의 `include`가 파일 목록을, 각 서비스의
 `profiles`가 활성화 범위를 소유한다. 파일 수와 서비스 수를 문서 상수로
@@ -197,7 +227,8 @@ Compose Profile Vocabulary Policy로 이동한다. Canonical path는
 `docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md`다. 전수 분류와 관측 일자는 Stage 90의
 기존 local Docker service consolidation 연구에 기록한다.
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 실행 version pin의 원본은 각 Compose/Dockerfile 선언이다.
 [version projection](tech-stack.versions.json)은 tracked Compose image 선언에서
@@ -213,21 +244,22 @@ projection이 그것들의 완전한 목록이라고 주장하지 않는다. REA
 | 인증 | Keycloak / OIDC | 중앙 집중식 IAM |
 | 옵저버빌리티 | LGTM Stack | Loki, Grafana, Tempo, Prometheus |
 
-#### Canonical Entry Points
+###### Canonical Entry Points
+<!-- core-payload-level:4 -->
 
 서비스 구현은 `infra/<tier>/<service>/`의 Compose/Dockerfile 소스가 소유하고, AI 에이전트의 작업 규칙은 [AGENTS.md](AGENTS.md)가 소유합니다.
 
-### Owners
+##### Owners
 
 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않는다.
 
-### Related Documentation
+##### Related Documentation
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [독립 LAB 인덱스](../labs/README.md)
@@ -239,3 +271,23 @@ projection이 그것들의 완전한 목록이라고 주장하지 않는다. REA
 - [Root Compose](../docker-compose.yml)
 - [Tech Stack Versions](./tech-stack.versions.json)
 - [Documentation index](../docs/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

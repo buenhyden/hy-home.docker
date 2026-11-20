@@ -1,45 +1,71 @@
 ---
 title: "Architecture Decision Records"
-version: "1.8.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 ---
 
 # Architecture Decision Records
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `docs/02.architecture/02.decisions`는 중요한 아키텍처 선택의 맥락과 동인,
 고려한 대안, 선택, 근거, 결과, 확인 방법과 supersession을 보존한다.
 ADR은 구현 명세나 운영 절차가 아니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - System Architects
 - Developers
 - Reviewers
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 이 디렉터리는 현재 유효한 ADR을 보유한다. 각 ADR은 하나의 material
 choice를 소유하고 실제 Architecture Description을 parent로 연결한다.
 개수는 유지 기준이 아니므로 아래 Current Inventory와 실제 파일 목록이
 권위이다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 ADR은 구현 명세나 운영 절차가 아니므로 이 디렉터리는 그것을 소유하지 않는다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
@@ -59,7 +85,8 @@ ADR은 구현 명세나 운영 절차가 아니므로 이 디렉터리는 그것
 | [0061-dedicated-ingress-for-sso-only-backends.md](0061-dedicated-ingress-for-sso-only-backends.md) | `sso-auth`만으로 보호되는 Traefik backend를 공유 `edge_net`에서 빼고 Traefik만 함께 붙는 전용 내부 ingress 망에 두는 proposed decision |
 | [0062-home-lab-membership.md](0062-home-lab-membership.md) | HOME 구성원을 root include로, LAB을 `labs/`로 나누는 ADR-0058 규칙을 유지하면서 comfyui·neo4j·open-notebook·pact-broker·wiremock·terrakube를 LAB으로 옮기고 단일 노드 opensearch 등을 퇴역시키는 accepted decision |
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 ```text
 docs/02.architecture/02.decisions/
@@ -92,7 +119,8 @@ docs/02.architecture/02.decisions/
 └── README.md
 ```
 
-#### Current Inventory
+###### Current Inventory
+<!-- core-payload-level:4 -->
 
 - `ADR-0001`부터 `ADR-0028`: 기본 tier와 service selection, hardening, HA, network,
   readiness evidence decisions. 위 Current Items의 파일 목록이 현재 남은 번호이다.
@@ -141,19 +169,21 @@ docs/02.architecture/02.decisions/
 - [`ADR-0062`](0062-home-lab-membership.md):
   HOME 구성원을 root include로, LAB을 `labs/`로 나누는 ADR-0058 규칙을 유지하면서 comfyui·neo4j·open-notebook·pact-broker·wiremock·terrakube를 LAB으로 옮기고 단일 노드 opensearch 등을 퇴역시키는 accepted decision.
 
-#### Classification
+###### Classification
+<!-- core-payload-level:4 -->
 
 이 디렉터리의 문서는 모두 ADR 유형이며 `ADR-NNNN` 식별자를 쓴다. 삭제된 ADR의 본문은 비권위 이력으로 Git에만 남고, 삭제된 번호는 Registry `reserved_history`가 보관한다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`이다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않는다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [Architecture](../README.md)
 - [Architecture Descriptions](../01.descriptions/README.md)
@@ -161,16 +191,18 @@ docs/02.architecture/02.decisions/
 - [Specifications](../../03.specs/README.md)
 - [Operations](../../05.operations/README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [에이전트 작업 규칙](../AGENTS.md)
 - [ADR Template](../../99.templates/02.templates/02.architecture/decision.template.md)
 - [문서 작성 계약](../../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Authoring Flow
+###### Authoring Flow
+<!-- core-payload-level:4 -->
 
 1. 상위 [Architecture Description](../01.descriptions/README.md)을 확인한다.
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.
@@ -181,7 +213,8 @@ docs/02.architecture/02.decisions/
    ADR은 삭제한 뒤 번호를 Registry `reserved_history`에 둔다. `supersedes`,
    `superseded_by` metadata와 `deprecated`·`superseded` 상태는 쓰지 않는다.
 
-#### Documentation Standards
+###### Documentation Standards
+<!-- core-payload-level:4 -->
 
 - `<4-digit-id>-<slug>.md`, `artifact_id: ADR-<4-digit-id>`,
   `type: sdlc/architecture-decision`을 일치시킨다.
@@ -189,6 +222,27 @@ docs/02.architecture/02.decisions/
 - 구현 계약과 검증 기준은 관련 Spec, 운영 절차는 Stage 05에 둔다.
 - 결정 확인 근거가 없는 runtime 상태는 주장하지 않는다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 ADR는 `architecture-decision` 수명주기를 따라 proposed에서 accepted 또는 rejected로 전이하며 둘 다 종료 상태이다. 다른 ADR이 대체한 ADR은 남아야 할 내용을 대체 ADR에 두고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

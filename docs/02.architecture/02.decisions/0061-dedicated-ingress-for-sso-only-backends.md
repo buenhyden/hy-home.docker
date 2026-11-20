@@ -1,10 +1,13 @@
 ---
 title: "Dedicated Ingress for SSO-Only Backends"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0061"
 parent_ids:
@@ -15,9 +18,29 @@ created: "2026-11-07"
 
 # ADR-0061: Dedicated Ingress for SSO-Only Backends
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 ADR-0055 segments the root Compose into per-flow networks and states that a
 compromised container reaches only the peers it is wired to. Traefik reaches
@@ -36,22 +59,23 @@ listener to its Traefik-only ingress address.
 - Change only what lacks its own authentication.
 - Stay within Compose, without a service mesh or extra proxy.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [ADR-0055](0055-segmented-per-flow-networks.md)
 - [AD-0026](../01.descriptions/0026-standardize-infra-net.md)
 - [AD-0001](../01.descriptions/0001-gateway-architecture.md)
 - SPEC-0266 (retired; its body is in Git history)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers routed backends whose only access control is the gateway
 `sso-auth` middleware. Backends with their own login, OIDC or API credential
 stay on `edge_net`.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep the shared `edge_net` and accept the risk: rejected; one compromised
   backend opens every SSO-only one.
@@ -66,7 +90,7 @@ stay on `edge_net`.
 - One internal ingress network per SSO-only backend, shared only with Traefik:
   selected.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -81,9 +105,9 @@ stay on `edge_net`.
 - Trade-off: each moved backend needs a `traefik.docker.network` label, and a
   missing label shows up as a broken route.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. Each routed backend whose only access control is `sso-auth` is attached to
    one internal ingress network that only Traefik shares, and sets
@@ -97,21 +121,21 @@ stay on `edge_net`.
 5. ADR-0055's rules for subnets, `internal: true` and GDE-0077 updates apply to
    every new network.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. The owner accepted this
 decision on 2026-11-07 together with the SPEC-0266 Spec and Plan. Effective
 from 2026-11-07.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: a compromised backend no longer reaches an SSO-only backend unless
   a declared flow connects them.
 - Positive: the network graph states each backend's real peers.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -121,8 +145,29 @@ decision text is unchanged.
 SPEC-0266 confirms the backend list and flows, implements the networks, and
 applies the change in HOME under its own approval.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 A render test in `tests/validation/test_p02_service_contracts.py` fails when an
 SSO-only backend is on `edge_net` or shares a network with anything other than
 Traefik and its declared flow peers.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

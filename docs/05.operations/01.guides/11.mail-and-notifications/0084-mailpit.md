@@ -1,10 +1,13 @@
 ---
 title: "Mailpit Guide"
-version: "0.4.0"
+version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0084"
 parent_ids:
@@ -18,19 +21,40 @@ next_review_at: "2027-05-13"
 
 # Mailpit Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 애플리케이션과 integration test의 발송 메일을 Mailpit으로 확인하는 개발자와 운영자가 읽는다.
 
-### Outcome
+##### Outcome
 
 이 가이드는 DEV 메일 캡처 서비스 Mailpit의 구성, 접근 경계, 일반 사용 방법을 설명한다. Mailpit은 전달용 MTA가 아니며 `dev`, `local`, `mail-dev` profile에서만 선택된다.
 
 대상 독자는 애플리케이션과 integration test에서 발송 메일을 확인하는 개발자와 운영자다. 목표는 테스트 메일을 안전하게 캡처하고 조회하며, 접근 경계와 데이터 취급 범위를 이해하는 것이다. 복구와 업그레이드 절차는 [RUN-0084](../../03.runbooks/11.mail-and-notifications/0084-mailpit.md)가 소유한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/11.mail-and-notifications/0084-mailpit.md) (`POL-0084`)
 - [Runbook](../../03.runbooks/11.mail-and-notifications/0084-mailpit.md) (`RUN-0084`)
@@ -41,18 +65,20 @@ next_review_at: "2027-05-13"
 - [Mailpit import and export](https://mailpit.axllent.org/docs/usage/import-export/)
 - [Operations index](../../README.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### Purpose and classification
+###### Purpose and classification
+<!-- core-payload-level:4 -->
 
 Mailpit은 application과 integration test를 위한 DEV mail-capture
 service이다. delivery MTA가 아니며 독립 LAB `labs/stalwart/docker-compose.yml`의 Stalwart를 대체하지 않는다. Stalwart는 HOME network에 없으므로 HOME 앱 메일 캡처는 Mailpit만 받는다.
 `dev`, `local`, `mail-dev`에 속하며 HOME에서는 제외된다. UI와 SMTP host
 port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅된다.
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 - [Mailpit Compose](../../../../infra/11-quality/mailpit/docker-compose.yml)가
   image, profile, port, environment, healthcheck, volume을 관장한다.
@@ -69,13 +95,13 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 - `/mailpit readyz` healthcheck는 process readiness만 증명하며, 메시지
   capture, UI 인증, retention, restoration은 증명하지 않는다.
 
-### Authority
+##### Authority
 
 UI 접근은 gateway SSO 경로를 거치며, 직접 loopback UI와 peer listener에는 네이티브 UI 인증이 없다. 합성 또는 승인된 test mail만 전송하고 책임자 `@buenhyden`이 경계를 확인한다. 상세는 Steps에 있다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -84,7 +110,8 @@ UI 접근은 gateway SSO 경로를 거치며, 직접 loopback UI와 peer listene
 | 3 | 합성 또는 승인된 test mail만 전송한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 4 | gateway 인증 경로 또는 승인된 loopback/peer 경로의 제한된 조회로 capture를 확인한 뒤 retention policy에 따라 test data를 삭제/만료시킨다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
-#### Normal use
+###### Normal use
+<!-- core-payload-level:4 -->
 
 1. root에서 `docker compose --profile mail-dev config --quiet`로
    validate한다.
@@ -97,28 +124,50 @@ UI 접근은 gateway SSO 경로를 거치며, 직접 loopback UI와 peer listene
    확인한 뒤, retention policy에
    따라 test data를 삭제/만료시킨다.
 
-#### 접근 경계
+###### 접근 경계
+<!-- core-payload-level:4 -->
 
 gateway 경로만 SSO를 거치고, 직접 loopback UI와 두 네트워크의 peer listener에는 동등한 네이티브 UI 인증이 없다. 통제는 [POL-0084](../../02.policies/11.mail-and-notifications/0084-mailpit.md)가 소유한다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터 소유자를 확인한다.
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --profile mail-dev config --quiet`
 - `docker compose --profile mail-dev config --services`
 - `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - `readyz` 실패, SMTP 캡처 누락, UI 접근 실패는 [RUN-0084](../../03.runbooks/11.mail-and-notifications/0084-mailpit.md)의 `Procedure` 진단 순서로 구분한다.
 - UI만 실패하면 gateway·SSO 경로를 SMTP 캡처와 별도로 점검한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade에는
 [runbook](../../03.runbooks/11.mail-and-notifications/0084-mailpit.md)을 사용한다. 백업과 업그레이드 순서는 런북의 `Consistent export and restore`와 `Upgrade` 절차를 따르며, 데이터와 권한 경계는 [정책](../../02.policies/11.mail-and-notifications/0084-mailpit.md)을 유지한다.
 
-### Next Action
+##### Next Action
 
 capture 실패, export/restore, retention incident, 이미지 upgrade는 [RUN-0084](../../03.runbooks/11.mail-and-notifications/0084-mailpit.md)를 따른다. 접근 경계와 테스트 데이터 책임은 `@buenhyden`이 확인한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

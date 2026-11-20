@@ -1,10 +1,13 @@
 ---
 title: "ComfyUI Guide"
-version: "0.5.0"
+version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # ComfyUI Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden`.
 
-### Outcome
+##### Outcome
 
 ComfyUI는 현재 루트 Compose에서 `ai-image`로 선택하는 이미지 워크플로 UI이다.
 HOME 기본 선택에는 포함되지 않으며 별도 LAB 이동은 아직 적용되지 않았다.
@@ -42,7 +65,8 @@ drift 확인용 뷰일 뿐이다.
 
 AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden`이 대상이다. 목표는 승인된 워크플로로 ComfyUI를 쓰고, 모델·custom node·사용자 데이터의 보존 경계를 알고 운영하는 것이다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Governing architecture: [AD-0008](../../../02.architecture/01.descriptions/0008-ai-architecture.md)
 - [Policy](../../02.policies/09.ai-and-search/0081-comfyui.md), [Runbook](../../03.runbooks/09.ai-and-search/0081-comfyui.md)
@@ -51,11 +75,12 @@ AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden
 - [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 데이터와 설정 경계
+###### 데이터와 설정 경계
+<!-- core-payload-level:4 -->
 
 아래는 Compose가 `/root/ComfyUI/{models,custom_nodes,input,output,user}`에 mount하는 역할이다(2026-11-08에 다시 mount하고 데이터를 옮김). Hugging Face와 Torch 캐시는 `/home/comfyui/.cache` 아래에 따로 mount된다.
 
@@ -71,15 +96,16 @@ AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden
 `gpus: all`과 linked Compose의 CPU/memory 설정은 선언된 소스 한도일 뿐 측정된 여유 자원이
 아니다. Ollama와의 공유 GPU 피크 동시성은 검증되지 않았다.
 
-### Authority
+##### Authority
 
 모델 교체는 출처와 checksum/라이선스 증거를 기록한 후에만, custom node 설치·업데이트는 검토 후에만 한다. 승인 게이트된 런타임 점검과 복구는 Runbook이 소유한다. registry/다운로드 토큰이 도입되면 secret 소유자 경계를 따른다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### 일반적인 운영
+###### 일반적인 운영
+<!-- core-payload-level:4 -->
 
 승인된 워크플로를 사용하고 필요한 모델과 custom-node 리비전을 기록한 다음
 UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가 응답한다는
@@ -87,7 +113,8 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 않는다. 승인 게이트된 런타임 점검과 복구에는
 [runbook](../../03.runbooks/09.ai-and-search/0081-comfyui.md)을 사용한다.
 
-#### 소스 기반 라이프사이클 계약
+###### 소스 기반 라이프사이클 계약
+<!-- core-payload-level:4 -->
 
 - 선택된 `yanwk/comfyui-boot:cu126-slim` 이미지가 권위를 갖는다. 로컬
   Dockerfile은 현재 선택되지 않았다. 업그레이드 전에 이미지 digest,
@@ -108,11 +135,12 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
   [공식 저장소](https://github.com/Comfy-Org/ComfyUI)와
   [Manager 가이드](https://docs.comfy.org/manager/overview)를 사용한다.
 
-#### Active-image persistence stop condition
+###### Active-image persistence stop condition
+<!-- core-payload-level:4 -->
 
 활성 이미지의 영속성 중단 조건은 [정책의 Active-image persistence stop condition](../../02.policies/09.ai-and-search/0081-comfyui.md#active-image-persistence-stop-condition)이 소유한다. 해소되기 전에는 재생성, 이미지 업그레이드, cache/volume 정리, 완전한 백업 판정을 하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 - [Compose 소스](../../../../infra/08-ai/comfyui/docker-compose.yml)에서 profile,
   라우트, 마운트, 리소스, healthcheck를 점검한다.
@@ -121,20 +149,41 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 - 영속 콘텐츠를 변경하기 전에 중앙 [백업 정책](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)을
   사용한다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - `/system_stats`가 실패하면 [runbook](../../03.runbooks/09.ai-and-search/0081-comfyui.md)의 진단 단계를 따른다. 응답이 와도 모델 로드나 workflow 안전을 증명하지 않는다.
 - 재생성·upgrade 전 활성 image 경로 불일치는 위 Active-image persistence stop condition을 따른다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 승인 게이트된 진단과 복구에는 [ComfyUI Runbook](../../03.runbooks/09.ai-and-search/0081-comfyui.md)을
 사용한다.
 
 - [Policy](../../02.policies/09.ai-and-search/0081-comfyui.md), [Runbook](../../03.runbooks/09.ai-and-search/0081-comfyui.md)
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [ComfyUI Runbook](../../03.runbooks/09.ai-and-search/0081-comfyui.md)의 승인 게이트된 진단과 복구를 따른다. 활성 이미지 경로 불일치는 정책의 Active-image persistence stop condition을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.
