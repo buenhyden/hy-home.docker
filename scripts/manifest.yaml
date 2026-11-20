@@ -181,6 +181,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
+  - scripts/lib/document_governance/language.py
   - scripts/lib/document_governance/links.py
   - scripts/lib/document_governance/metadata/heading.py
   - scripts/lib/document_governance/metadata/reference.py

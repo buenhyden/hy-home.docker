@@ -16,6 +16,7 @@ from jsonschema import Draft202012Validator
 
 import scripts.lib.document_governance.registry as registry_module
 from scripts.lib.document_governance import metadata_validator
+from scripts.lib.document_governance.common_document import wrap_document
 from scripts.lib.document_governance.metadata_validator import (
     Record,
     _parse_frontmatter_text,
@@ -3154,6 +3155,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "owner": "@buenhyden",
             "version": "0.1.0",
             "type": "",
+            "document_scope": {"subject": "Example", "layer": "workspace"},
             "parent_ids": [],
             "created": "2026-08-20",
             "updated": "2026-08-20",
@@ -3496,16 +3498,24 @@ class DocumentRegistryTests(unittest.TestCase):
             "| --- | --- | --- | --- | --- |",
             1,
         )
+        body = wrap_document(body, kind="requirement")
         record = Record(
             pathlib.Path("docs/01.requirements/0001-example.md"),
-            {},
+            {
+                "title": "Example",
+                "version": "0.1.0",
+                "status": "draft",
+                "owner": "@buenhyden",
+                "document_scope": {"subject": "Example", "layer": "workspace"},
+            },
             "requirements-package",
         )
 
         self.assertEqual(
             [], validate_body_contract(record, body, adapted, changed_boundary=True)
         )
-        missing = body.replace("## Traceability\n\nContract content.\n\n", "", 1)
+        missing = body.replace("#### Traceability\n\nContract content.\n\n", "", 1)
+        self.assertNotEqual(body, missing)
         self.assertIn(
             "body-heading-missing",
             {
@@ -3522,7 +3532,14 @@ class DocumentRegistryTests(unittest.TestCase):
         path = pathlib.Path("docs/00.workspace/03.process/sdlc.md")
         valid = Record(
             path,
-            {"profile_id": "governance-sdlc"},
+            {
+                "title": "Lifecycle",
+                "version": "0.1.0",
+                "status": "active",
+                "owner": "@buenhyden",
+                "document_scope": {"subject": "Example", "layer": "workspace"},
+                "profile_id": "governance-sdlc",
+            },
             "governance-sdlc",
             frontmatter_present=True,
         )
@@ -3531,6 +3548,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "## Sequence\n\nSequence.\n\n## Stop Conditions\n\nStop.\n\n"
             "## Outputs\n\nOutputs.\n\n## Related Documents\n\nLinks.\n"
         )
+        body = wrap_document(body, kind="contract")
         self.assertEqual(
             [],
             validate_body_contract(
@@ -3540,9 +3558,11 @@ class DocumentRegistryTests(unittest.TestCase):
                 changed_boundary=True,
             ),
         )
+        missing = body.replace("#### Inputs\n\nInputs.\n\n", "", 1)
+        self.assertNotEqual(body, missing)
         findings = validate_body_contract(
             valid,
-            body.replace("## Inputs\n\nInputs.\n\n", ""),
+            missing,
             adapted,
             changed_boundary=True,
         )

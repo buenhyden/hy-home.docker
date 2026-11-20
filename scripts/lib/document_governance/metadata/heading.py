@@ -1837,6 +1837,7 @@ def validate_body_contract(
 ) -> list[Finding]:
     """Validate role headings, source tokens, and current authored residue."""
 
+    source_text = text
     text, enveloped, envelope_findings = _common_document_view(record, text, profiles)
     if any(finding.code == "common-document-contract" for finding in envelope_findings):
         return envelope_findings
@@ -1924,7 +1925,7 @@ def validate_body_contract(
             declared = profile.get("language")
             # The message carries no ratio: it is the deficit identity, so an
             # edit to a body already in the wrong language is not "introduced".
-            if isinstance(declared, str) and language_mismatch(text, declared):
+            if isinstance(declared, str) and language_mismatch(source_text, declared):
                 section_findings.append(
                     _finding(
                         record,

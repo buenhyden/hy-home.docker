@@ -4,6 +4,11 @@ from __future__ import annotations
 
 import re
 
+from scripts.lib.document_governance.common_document import (
+    CommonDocumentError,
+    payload_text,
+)
+
 LANGUAGES = ("ko", "en")
 # ponytail: character-ratio heuristic; it sees script, not meaning. Calibrated
 # against the tracked corpus in SPEC-0184 TSK-0001; recalibrate there, never
@@ -27,6 +32,7 @@ _LATIN = re.compile(r"[A-Za-z]")
 def prose(text: str) -> str:
     """Remove structure tokens that keep their form in every language."""
 
+    text = payload_text(text)
     for pattern in (
         _FRONTMATTER,
         _FENCE,
@@ -55,7 +61,10 @@ def hangul_ratio(text: str) -> float | None:
 def language_mismatch(text: str, declared: str) -> str | None:
     """Return a reason when prose does not read as the declared language."""
 
-    ratio = hangul_ratio(text)
+    try:
+        ratio = hangul_ratio(text)
+    except CommonDocumentError as error:
+        return f"invalid common document envelope: {error}"
     if ratio is None:
         return None
     if declared == "ko" and ratio < KO_MIN_RATIO:
