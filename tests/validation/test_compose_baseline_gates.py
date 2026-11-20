@@ -30,6 +30,7 @@ from scripts.lib.document_governance.operations_catalog import (
     _ComposeLoader,
     conftest_source_context,
 )
+from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
 ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_SECURITY = ROOT / "scripts/validation/check-template-security-baseline.sh"
@@ -5571,6 +5572,7 @@ sys.exit(37 if "run" in args else 0)
                 capture_output=True,
                 text=True,
                 check=False,
+                pass_fds=gate_root_pass_fds(ROOT),
             )
             log = root / "docker.log"
             records = (
@@ -5590,6 +5592,18 @@ sys.exit(37 if "run" in args else 0)
         result, records = self._run_conftest_wrapper(reject_preparation=True)
         self.assertEqual(2, result.returncode, result.stderr)
         self.assertEqual([], records)
+
+    def test_wrapper_preserves_held_gate_root_for_nested_preparation(self):
+        descriptor = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+        try:
+            with mock.patch.dict(
+                os.environ, {"HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{descriptor}"}
+            ):
+                result, records = self._run_conftest_wrapper()
+        finally:
+            os.close(descriptor)
+        self.assertEqual(37, result.returncode, result.stderr)
+        self.assertTrue(any("down" in record["args"] for record in records))
 
     def test_wrapper_binds_canonical_inputs_and_cleans_after_down(self):
         import hashlib

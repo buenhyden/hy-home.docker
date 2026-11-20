@@ -1,6 +1,6 @@
 ---
 title: "P04 Templates Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -68,10 +68,10 @@ F-DKR-008 final identities/history stay P17.
 Original request3813b76d759f7346fea44792f2cbe189 and digest
 365eea4842f66aebf6e88aa9f43cace34e758c430d581340886a56643c38e3a2,
 session01a1f47d-2e14-7c32-b0f7-008007421623 and brief
-P04-TEMPLATES-docker-1.1.0 revision7 bind current baseline and candidate
+P04-TEMPLATES-docker-1.1.0 revision8 bind current baseline and candidate
 paths. Resume request5f2b1af5dd1703b591dcb29bde04b8b7, digest
 7b3757f6774bcd7f85ddda3bcb85d0f1b95e8fcf636cf271a215081b9a3441e9,
-retains the same authorized P04 scope and delivery actions at HEAD8f5c872. Continuation request3b3ef58005784277d534b2e12f3ffad7 retains the same digest; Revisions2–6 explicitly include registered outside-docs Markdown consumers and the script manifest. Two inspectors performed read-only discovery. The coordinator writes
+retains the same authorized P04 scope and delivery actions at HEAD8f5c872; revision8 rebinds bf02d355 and the newly observed Conftest subprocess consumer regression. Continuation request3b3ef58005784277d534b2e12f3ffad7 retains the same digest; Revisions2–6 explicitly include registered outside-docs Markdown consumers and the script manifest. Two inspectors performed read-only discovery. The coordinator writes
 shared bindings/migration and assigns bounded disjoint reader/native scopes;
 no worker may infer extra authority. Q-01–Q-04 add no unresolved P04 choice.
 The direct new envelope supersedes earlier outer formatting only; existing
@@ -143,6 +143,8 @@ active, PASS or Task completed into owner acceptance.
 | E14 | 158 | W174 | Hosted candidate CI | PR1134 source8f5c872; run44646723082 routing job135991080698; merge4473b3e118f09d88c4ca688fb0d05fc5655cc636 | FAIL | Select document shard fails before dependency installation: gate heading adapter imports full payload reader and operations_catalog→yaml. Hosted source did not pass; no merge performed. Preserve P01 standard-library routing boundary by using actual heading anchors and formal common structure without the post-install parser | required | - |
 | E15 | 158 | W174 | Bootstrap routing regression | Actual public CLI with Python -ES and current caller-root formal contract | PASS | YAML import RED reproduced. GateCrosswalk20+CLI1 pass1.159s; common/section25 pass5.447s. Anchored I/O helper class+three functions AST-equal to prior implementation, existing FIFO/symlink/race/cap4 pass0.260s; operations catalogPASS. No workflow/setup order changed, full post-install CommonMark parser retained; hosted retry still required to resolve E14 | required | - |
 | E16 | 158 | W174 | Bootstrap adapter correction review regressions | Current root contract and isolated -ES public CLI | PASS | Initial independent review found visibility regressions for fences inside comments and headings inside HTML blocks; both reproduced RED and joint states repaired them. Subsequent review found quoted comment tokens in HTML attributes, including multiline inline tags; single-line and fence-info correction adds six witnessed failures then22 tests pass1.272s including actual -ES CLI. Four multiline variants then reproduced RED and now22 selected tests pass1.358s, including trailing actual-comment negative and isolated -ES CLI. Final native CLI re-review timed out240s without a verdict and is NOT_RUN for approval; a separate independent read-only reviewer approves spec compliance and quality with no findings, exact two-file diff against8f5c872 and22 focused tests pass1.249s; reviewed bytes unchanged. Registered final staged checks exit0. Hosted retry still required for E14. Prior security axisPASS is reused only for unchanged file-access guards | required | - |
+| E17 | 158 | W174 | Hosted candidate CI | PR1134 sourcebf02d355; run44656519731 merge02bd28056138762aa87aab861d711c23e9f9fd03; core job136024098873 | FAIL | Routing succeeds; core finds existing Conftest wrapper fixture closes its inherited held-root descriptor, then newly connected document consumer rejects invalid HYHOME_CI_GATE_ROOT. Exact test5602 expects37 and gets1. Preserve product guard, repair fixture descriptor forwarding; document job136024098900 also fails two existing Stage90 authority-override negatives because payload-only prose omits visible common outer text. Final aggregate fails; no merge or whole-run success claimed | required | - |
+| E18 | 158 | W174 | Hosted consumer RED to GREEN | Exact existing failures from run44656519731 and persistent held-root regression | PASS | Reference override negatives both fail locally19.324s; full visible-body authority scan and explicit redirect payload selection repair them, affected3 pass30.605s with rendered-lexer/code/negation controls. Conftest exact adapter failure1.573s and new held-root regression1.591s reproduced; secure existing descriptor helper fixes fixture only,13 pass standalone5.148s and held-root adapter5.081s, preparation/cleanup guards preserved. Independent read-only reviewer confirms cause and passes affected3 reference tests30.502s and actual sanitized held-root adapter13 tests5.072s, no candidate finding; specification, security and quality APPROVE. Final registered staged checks exit0; hosted retry pending, does not resolve E17 | required | - |
 
 ##### Resolution Links
 

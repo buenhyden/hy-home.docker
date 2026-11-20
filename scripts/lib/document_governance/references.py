@@ -607,15 +607,11 @@ def _finding(code: str, path: str | pathlib.PurePosixPath, detail: str) -> Findi
 
 
 def _rendered_lines(text: str) -> tuple[str, ...]:
-    from scripts.lib.document_governance.common_document import payload_text
-
     try:
         body = frontmatter_record_from_text(pathlib.Path("document.md"), text).body
     except FrontmatterError:
         body = text
-    return tuple(
-        _without_inline_code(line) for _, line in _unfenced_lines(payload_text(body))
-    )
+    return tuple(_without_inline_code(line) for _, line in _unfenced_lines(body))
 
 
 def _asserts_normative_authority(text: str) -> bool:
@@ -717,7 +713,11 @@ def _is_confined_redirect_target(link: DocumentLink) -> bool:
 
 
 def _is_redirect_only(text: str) -> bool:
-    lines = tuple(line.strip() for line in _rendered_lines(text) if line.strip())
+    from scripts.lib.document_governance.common_document import payload_text
+
+    lines = tuple(
+        line.strip() for line in _rendered_lines(payload_text(text)) if line.strip()
+    )
     if not lines or lines[0].lower() not in {"# redirect", "# moved", "# deprecated"}:
         return False
     transition = lines[1:]
