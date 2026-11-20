@@ -1,6 +1,6 @@
 ---
 title: "P06 Independent Review Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -135,6 +135,9 @@ Known failed enforcement is never relabelled as mere unobserved environment.
 | E12 | 160 | W176 | automated: final changed document/governance boundary | Staged P0614path source, before final contract repairs | FAIL | Governance/renderer found a version-field indentation error introduced during E11 edits; metadata found pre-commit minor versions with nonzero PATCH, links found the same malformed frontmatter, corpus rejected BLOCKED outside the existing result enum; a subsequent metadata run identified the added row separated by a blank line. Actual native findings unchanged; action readiness is correctly NOT_RUN, not a provider execution failure | required | - |
 | E13 | 160 | W176 | automated: final changed document/governance boundary | Repaired staged14path source over2088329, before this result-only addition | PASS | Metadata check-changed --base-ref origin/main:114selected0violations; links --mode all --changed:928documents/218selected0failures0warnings; corpus lifecycle and active-stage occupancy0violations; governance --mode repository0failures; provider renderer --check2providers0drift, all exit0. Same actual consumers after format/version/enum/contiguity repair; no altered threshold or corpus count gate | required | E12 |
 | E14 | 160 | W176 | automated: staged secrets and owned probe cleanup | Exact indexed P06 patch and both manifested temporary native sources | PASS | gitleaks stdin --config .gitleaks.toml --redact=100 --no-banner exit0,63901bytes0findings. Both native source manifests rehashed unchanged; owned snapshots, dummy targets, controller reports deleted. No raw stream retained. CORE sha256f9368ee8e4ed1484fba7ae31ef39e74c1f5adcaff52ec41508735e85fea2993f unchanged; matching package retained; unrelated preexisting P05 scratch preserved | required | - |
+| E15 | 160 | W176 | observation: hosted source candidate and integration | Source9f29fd14b53edc5416287e77d5b64b39d2d88fde; PR1138 over2088329 | PASS | Normal commit/push hooks exit0; CI44713935274 candidate-core/routing/quality success, documents correctly skipped; exact head CodeQL analyses and GitGuardian success. Rechecked no reviews/threads; protected main requires strict candidate-quality app15368, no required reviewer count, admins/conversations enforced. Expected-head normal merge produced a030d1331cd214bb33bb9ab2fa40d2e9afdfe6df; fetched/ff-only, clean. This is source integration, not human acceptance | required | - |
+| E16 | 160 | W176 | observation: main security after source merge | Main a030d1331cd214bb33bb9ab2fa40d2e9afdfe6df | PASS | Actual push CI44714702507 main-security success; candidate jobs correctly skipped on push. This selected check establishes neither every operating service nor global security status | required | - |
+| E17 | 160 | W176 | review: result-only delivery record | Current Task over integrated a030d133; private brief revision4 narrows writer to this Task | PASS | Author compares actual API results, source candidate log and bounded native observations with this receipt. Only observed delivery, corrected status wording and document PATCH change; no policy/authority/scope or criterion semantics changed, so prior independent source review is carried. Not called an independent review. Source log explicitly keeps package readiness residuals separate from gate success; human acceptance stays pending | required | - |
 
 ##### Resolution Links
 
@@ -152,13 +155,13 @@ Carry uses real same-condition proof, not input order or a not-required label.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 160 | pending | E01,E02,E03,E04,E07,E10,E11,E13,E14 | Implementation, final local checks and scoped native review observed; hosted integration recorded separately when actual. Human acceptance remains unrecorded; intent undecided, accepted by nobody | @buenhyden |
+| 160 | pending | E01,E02,E03,E04,E07,E10,E11,E13,E14,E15,E16 | Implementation, final local checks and scoped native review observed; hosted source integration observed at E15/E16. Human acceptance remains unrecorded; intent undecided, accepted by nobody | @buenhyden |
 
 ##### Remaining Conditions
 
 The routine-route finding is repaired and its planned correction-slice review
 is complete; unchanged initial source is carried at its reviewed scope. Final
-local checks passed at E13; hosted delivery remains to be recorded when observed. Native
+local checks passed at E13; hosted source delivery passed at E15/E16. Native
 observations are two bounded sequential Claude calls, not per-commit gates;
 total SDK list-price estimate1.3092962USD is not subscription billing. First
 control started2026-11-20T08:59:59.361839Z and finished09:02:34.317839Z
@@ -175,6 +178,13 @@ verdict or record-only change claims missing enforcement or runtime success.
 
 The existing quality/process/environment and authored provider documents own
 durable review semantics and launch syntax; roles/skills/prompts consume them.
+Source PR1138 and its normal required candidate are integrated; source commit
+9f29fd14b53edc5416287e77d5b64b39d2d88fde, merge
+a030d1331cd214bb33bb9ab2fa40d2e9afdfe6df. This result-only receipt does not
+re-execute source review or native probes. Owned P06 diagnostic logs and both
+manifested native cases are deleted; matching package, private brief state,
+persistent regressions and unowned P05 scratch are retained.
+
 This Task owns only criterion160/W176 execution evidence. No permanent parallel
 approval ledger, fake completed-case count or universal SHA ceremony is added.
 
