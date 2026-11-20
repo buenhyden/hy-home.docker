@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -639,13 +639,12 @@ restore는 HOME/offsite custody를 대신하지 않는다.
 관측 보고의 운영 절은 제품 백업 절차가 아니므로
 [harness maintenance](../../../00.workspace/06.maintenance/harness-maintenance.md)로
 옮겼다(SPEC-0212 TSK-0097). 명령·저장 경로·상한·종료 코드는 그 문서와 각 스크립트가
-소유한다. 그 문서가 active가 되어 script manifest의 runtime authority를 넘겨받을 때까지
-이 Runbook이 `scripts/operations/agent_memory.py`, `scripts/lib/ops/memory_cli.py`,
-`scripts/lib/ops/memory_capacity.py`, `scripts/operations/session_analysis.py`,
-`scripts/operations/task_forecast.py`, `scripts/operations/work_dispatch.py`,
-`scripts/operations/observe.py`의 등록된 runtime authority로 남는다. 운영 절차는
-harness maintenance를 따른다. 이 Runbook의 운영 내용은 관측 보고가 가리키는
-`hyhome-backup.service` 실패와 아래 공유 기억 백업 제외다.
+소유한다. P05(SPEC-0212 TSK-0103)에서 검토한 active workspace-maintenance
+profile이 해당 일곱 memory·분석·예측·병렬 실행·관측 script manifest 항목의 문서
+소유자로 등록됐다. 세션 수집의 agent 정책 소유자는 유지한다. 이 등록은 명령 실행
+권한이나 도구 인수를 뜻하지 않는다. 제품 백업·복원, PostgreSQL 복원 리허설,
+관측 보고가 가리키는 `hyhome-backup.service` 실패와 아래 공유 기억 백업 제외는
+이 Runbook이 계속 소유한다.
 
 ###### 공유 기억 백업 제외 (2026-11-18)
 <!-- core-payload-level:4 -->

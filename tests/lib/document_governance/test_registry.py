@@ -1459,6 +1459,100 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIn("Troubleshooting", guide["required_sections"])
         self.assertIn("Next Action", guide["required_subsections"]["Troubleshooting"])
 
+    def test_workspace_guides_have_narrow_shared_typed_profiles(self) -> None:
+        registry = load_registry()
+        metadata_profiles = build_registry_profiles(registry)
+        paths = {
+            "docs/00.workspace/05.environment/onboarding.md": "workspace-environment",
+            "docs/00.workspace/06.maintenance/harness-maintenance.md": "workspace-maintenance",
+        }
+        self.assertTrue(
+            "governance/workspace-guide" in registry.template_roles,
+            "The shared workspace guide template must be registered",
+        )
+        for path, profile_id in paths.items():
+            with self.subTest(path=path):
+                self.assertEqual(profile_id, classify_path(path, registry))
+                profile = registry.profiles[profile_id]
+                self.assertEqual("governance/workspace-guide", profile["type"])
+                self.assertEqual("governance/workspace-guide", profile["template_id"])
+                self.assertEqual("en", profile["language"])
+                binding = registry.common["document_core"]["profile_bindings"][
+                    profile_id
+                ]
+                self.assertEqual("guide", binding["kind"])
+                self.assertEqual(("workspace",), binding["scope_layers"])
+                self.assertNotIn(
+                    path, registry.profiles["governance-knowledge"]["additional_paths"]
+                )
+                record = metadata_validator._record_from_text(
+                    pathlib.Path(path),
+                    (ROOT / path).read_text(encoding="utf-8"),
+                    profiles=metadata_profiles,
+                )
+                self.assertEqual([], validate_record(record, metadata_profiles, {}))
+        self.assertEqual(
+            tuple(paths.values()),
+            registry.template_roles["governance/workspace-guide"]["profiles"],
+        )
+        self.assertIsNone(
+            classify_path("docs/00.workspace/06.maintenance/unregistered.md", registry)
+        )
+
+    def test_workspace_guide_shared_type_rejects_divergent_contracts(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        self.assertTrue(
+            any(
+                profile["id"] == "workspace-maintenance" for profile in raw["profiles"]
+            ),
+            "The maintenance guide profile must be registered",
+        )
+        profile = next(
+            item for item in raw["profiles"] if item["id"] == "workspace-maintenance"
+        )
+        profile["required_sections"] = [
+            section
+            for section in profile["required_sections"]
+            if section != "Procedure"
+        ]
+        self.assertIn(
+            "profile-type-duplicate",
+            {finding.code for finding in validate_registry(raw)},
+        )
+
+    def test_shared_template_rejects_incompatible_rendering_contracts(self) -> None:
+        schema = json.loads(registry_module.DEFAULT_PROFILE_SCHEMA.read_text())
+        schema["$defs"]["templateRole"]["properties"]["profiles"].pop("maxItems", None)
+        for field, value in (
+            ("type", "governance/control"),
+            ("language", "ko"),
+            ("optional_frontmatter", ["next_review_at"]),
+            ("scope_layers", ["product"]),
+            ("kind", "knowledge"),
+        ):
+            with self.subTest(field=field):
+                raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+                profile = next(
+                    item
+                    for item in raw["profiles"]
+                    if item["id"] == "workspace-maintenance"
+                )
+                if field in {"scope_layers", "kind"}:
+                    raw["common"]["document_core"]["profile_bindings"][
+                        "workspace-maintenance"
+                    ][field] = value
+                elif field == "optional_frontmatter":
+                    profile[field] = [*profile[field], *value]
+                else:
+                    profile[field] = value
+                self.assertIn(
+                    "template-profile-contract-mismatch",
+                    {
+                        item.code
+                        for item in validate_registry(raw, profile_schema=schema)
+                    },
+                )
+
     def test_conditional_frontmatter_contract_rejects_unknown_status_or_key(
         self,
     ) -> None:
@@ -2209,9 +2303,17 @@ class DocumentRegistryTests(unittest.TestCase):
                 self.assertLessEqual(set(definition), TEMPLATE_ROLE_KEYS)
                 profiles = definition["profiles"]
                 self.assertIsInstance(profiles, list)
-                self.assertEqual(1, len(profiles))
+                self.assertTrue(profiles)
                 self.assertEqual(len(profiles), len(set(profiles)))
                 self.assertLessEqual(set(profiles), known_profiles)
+                self.assertEqual(
+                    set(profiles),
+                    {
+                        profile["id"]
+                        for profile in raw["profiles"]
+                        if profile.get("template_id") == role
+                    },
+                )
                 sources.append(definition["source"])
 
         self.assertEqual(len(sources), len(set(sources)))

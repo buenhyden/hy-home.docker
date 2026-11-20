@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -442,6 +442,51 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W172 | 156 | Observe installed local hooks and timings; repair source-index drift, unborn/empty staged diagnostics and complete fail-closed push records while retaining narrow checks | W171 | TSK-0100 | Same-input offline timing; RED/GREEN existing shell and installed-guard regressions; scoped syntax, document and manifest checks; independent delta review; normal hooks and hosted candidate |
 | W173 | 157 | Reconcile policy and architecture ownership, separate common/local vocabulary with complete consumer updates, remove copied bootstrap order and align rule_owner prose | W172 | TSK-0101 | Profile and route RED/GREEN, pinned vocabulary/template/heading regressions, existing rule-owner negatives, changed document and canonical/provider checks, independent review and required hosted candidate |
 | W174 | 158 | Adopt common envelope, metadata and payload bindings; migrate actual template/native/semantic consumers and current normative sources while preserving historical evidence | W173 | TSK-0102 | Envelope/metadata/IF/AC/native/relation/version RED/GREEN, representative output consumption, affected regressions, one justified corpus validation, independent protected-surface review and actual current candidate |
+| W175 | 159 | Reconcile current SDLC duties and typed workspace-guide authority; align normative relation rules and migrate actual owners/consumers while preserving incomplete obligations | W174 | TSK-0103 | Draft/active/type/scope/script-use RED/GREEN; affected Registry/manifest/document regressions and corpus checks; independent policy/security review; normal hooks and current hosted candidate |
+
+###### Current P05 document and SDLC implementation
+<!-- core-payload-level:4 -->
+
+The direct P05 request authorizes scoped implementation, commit, push, PR and
+merge. [TSK-0103](01.tasks/tsk-0103-p05-docs-sdlc.md) owns criterion159/W175
+and current execution evidence from clean3ea422ae1. P04 PR1134/1135 and
+matching completed11/P00–P04 behavior remain reusable at their verified scope.
+No current Task acceptance is inferred from those integrations.
+
+Use two narrow profiles, workspace-environment and workspace-maintenance,
+sharing an English WorkspaceGuide definition and governance/workspace-guide
+type. Bind both to the existing guide kind and workspace scope. Only the
+active workspace-maintenance profile is eligible for mutating harness
+documentation ownership; onboarding and generic governance/control remain
+ineligible. Preserve the existing product Runbook path. The real manifest
+validator must check syntax, registered profile, status/type/scope and actual
+script use consistently, using the caller's root rather than a live-parent
+contract fallback. No new type namespace or immutable CORE change is needed.
+
+The coordinator owns this Spec/Plan/Task and current responsibility/disposition
+records. Bounded implementers own disjoint Registry/template/guide/manifest
+integration and validator/caller/test integration after exact path assignment.
+Normative reciprocity corrections belong at REQ-0026 and their canonical
+governance owner; current document lifecycle architecture and SDLC explain
+the same boundary. The maintenance guide takes workspace procedures and
+operation ownership; RUN-0021 retains product backup/restore and the shared
+memory backup exclusion. Existing commands, limits and real operating behavior
+are retained. Correct only actually conflicting guidance or consumers.
+
+First witness draft/active admission and preservation failures, then update
+typed profiles, real consumers and current guidance together. Check current
+affected metadata, links, manifest and repository contracts; reuse P04 tests
+whose guarantee and inputs still match. New behavioral branches retain small
+persistent regressions. Review the final protected change independently and
+use normal hooks plus the actual hosted candidate for delivery. Result-only
+Task additions receive minimum document checks, not another full source QA.
+
+Existing product/runtime duties stay with their current packages and owners.
+TSK-0097 retains criterion153, its historical required NOT_RUN alert dismissal
+and actual acceptance state; this unit supplies its separately deferred guide
+promotion/owner transition. Terminal Task bodies are unchanged. P17 owns final
+package removal, numbering and history after obligation readiness and receipt
+checks; no file-count or permanent historical-preservation gate is added here.
 
 ###### Current P04 template implementation
 <!-- core-payload-level:4 -->

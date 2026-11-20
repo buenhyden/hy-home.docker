@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -14,8 +14,10 @@ parent_ids:
 - "REQ-0004"
 - "REQ-0005"
 - "REQ-0024"
+- "REQ-0026"
 - "REQ-0027"
 - "AD-0004"
+- "AD-0030"
 - "AD-0031"
 created: "2026-10-07"
 ---
@@ -298,7 +300,18 @@ relevant stages. No other workspace, new subscription, unlimited call budget,
 permission bypass or unrelated external deletion is inferred. Q-04 has no
 Docker publication implementation scope.
 
-This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005, REQ-0024 and REQ-0027 together with AD-0004 and AD-0031. The body also cites REQ-0003 (the ISO/IEC measurement wording in the acceptance text, and criterion 114), REQ-0025 and REQ-0026 (criterion 114) and ADR-0050, ADR-0003 and ADR-0018 (the Vault ADR acceptance and archival recorded for criterion 49/W54); it cites no REQ-####-FR or REQ-####-NFR identifier.
+This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005,
+REQ-0024, REQ-0026 and REQ-0027 together with AD-0004, AD-0030 and AD-0031.
+The body also cites REQ-0003 (the ISO/IEC measurement wording and criterion114),
+REQ-0025 (criterion114), and ADR-0050, ADR-0003 and ADR-0018 (criterion49/W54).
+It cites no REQ-####-FR or REQ-####-NFR identifier.
+
+The direct P05-DOCS-SDLC1.1.0 request adds criterion159/W175 in TSK-0103.
+It reconciles current document responsibilities and real consumers, resolves
+the draft workspace-guide ownership gap and conflicting universal reciprocity
+wording, and preserves unfinished product, observation and acceptance duties.
+Existing accepted work and P00–P04 implementation are reused. This approval
+does not execute P06 or final P17 numbering, deletion or history work.
 
 #### Scope
 
@@ -1344,6 +1357,34 @@ target, backup, recovery boundary, and action-specific authorization.
      representative generation/consumption, required negatives, one justified
      related corpus check and independent review. Deliver checked source and
      results normally; do not execute P05 or final numbering/history work.
+
+159. TSK-0103 applies P05-DOCS-SDLC1.1.0 to this Docker workspace. Classify
+     current workspace, requirement, architecture, Spec, operation, reference,
+     archive and template files with their real consumers and disposition.
+     Keep draft authoring and review distinct from implementation permission:
+     only the applicable direct authorization permits work, and a draft
+     document never becomes an operation owner through its existence or a
+     successful check. Add narrow workspace-environment and workspace-maintenance
+     profiles on the existing common guide kind, preserving CORE1.0.0 and the
+     current locked-venv and harness procedures. Admit only an active registered
+     maintenance guide with the correct type, workspace scope and actual script
+     use as a workspace runtime documentation owner; retain product Runbook
+     admission and all existing path, provenance and script-use guards. Convert
+     actual manifest, validator, template, navigation and reporting consumers
+     together, then remove RUN-0021's superseded workspace ownership while
+     preserving its product backup/restore and shared-memory backup exclusion.
+     Correct universal reciprocal-link and document-set mandates at their
+     current owners and clarify historical applicability without discarding
+     accepted product decisions. Preserve incomplete obligations, failed evidence
+     and owner acceptance with their existing Tasks, including criterion153;
+     record scoped supersession and continuing owners rather than silently
+     completing or deleting old work. Keep source, local/hosted verification,
+     runtime observations and owner acceptance separate. Reuse completed Release
+     role removal, directional relations and current readiness guards; add no
+     per-task SHA, full-corpus, file-count or parallel-ledger completion gate.
+     Prove relevant admission/refusal boundaries and current corpus consistency,
+     review the protected logical change independently and deliver it normally.
+     P06 and P17 do not execute in this unit.
 
 ##### Evidence Requirements
 

@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "8.0.0"
+version: "8.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -193,6 +193,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R258 | Requirement Package | Required: list every declared FR and NFR once in the requirements table, with the declaration as its Statement | none | none |
 | DOCUMENTATION-PROTOCOL-R259 | Declaration in an approved Requirement Package without a modal verb | Required: bind it as `must` | none | none |
 | DOCUMENTATION-PROTOCOL-R260 | Declaration written with `should` or `could` | Required: give it that priority | none | none |
+| DOCUMENTATION-PROTOCOL-R261 | Workspace setup or harness maintenance guidance | Required: use the registered workspace guide role; runtime documentation ownership requires the active maintenance profile, its declared type and workspace scope, and actual script use | Registry and TemplateDefinition contract checks; `check-script-manifest.py` (maintenance admission) | none |
 | DOCUMENTATION-PROTOCOL-R133 | Architecture authority | Required: a Description owns current structure and an ADR owns one consequential choice | none | none |
 | DOCUMENTATION-PROTOCOL-R134 | Decision changes | Required: preserve accepted decisions and use explicit supersession | none | none |
 | DOCUMENTATION-PROTOCOL-R135 | Architecture views | Required: use the Description core (`Context and Boundaries`, `Structure`, `Runtime Behavior`, `Quality Scenarios`) | none | none |
@@ -203,7 +204,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R140 | A diagram | Required: identify title, scope, audience, legend, element responsibilities and labeled relationships, and keep editable source | none | none |
 | DOCUMENTATION-PROTOCOL-R141 | A diagram | Forbidden: treating a generated image alone as the authority | none | none |
 | DOCUMENTATION-PROTOCOL-R142 | Guide | Required: state its primary reader need and include prerequisites, intended outcome, checks and relevant troubleshooting within its registered sections | none | none |
-| DOCUMENTATION-PROTOCOL-R143 | Guide with repeatable operator procedures | Required: hand them off to an actual Runbook | none | none |
+| DOCUMENTATION-PROTOCOL-R143 | Stage 05 Operations Guide with repeatable operator procedures | Required: hand them off to an actual Runbook | none | none |
 | DOCUMENTATION-PROTOCOL-R144 | Diataxis technical reference | Forbidden: treating it as the Stage 90 evidence family | none | none |
 | DOCUMENTATION-PROTOCOL-R145 | Operations Policy | Required: own obligations, prohibitions, exceptions, accountable owners, enforcement and review cadence | none | none |
 | DOCUMENTATION-PROTOCOL-R146 | Operations Policy | Forbidden: owning command sequences or redefining agent governance rules | none | none |
@@ -729,11 +730,23 @@ links or external HTTP checks at commit.
   deployment diagrams for environment topology. A diagram identifies its title,
   scope, audience, legend, element responsibilities, and labeled relationships.
   Keep editable diagram source; a generated image alone is not the authority.
-- A Guide states its primary reader need: tutorial, how-to, technical reference,
-  or explanation. Include prerequisites, intended outcome, checks, and relevant
-  troubleshooting within its registered sections. Hand off repeatable operator
+- A Stage 05 Operations Guide states its primary reader need: tutorial, how-to,
+  technical reference, or explanation. Include prerequisites, intended outcome,
+  checks and relevant troubleshooting within its registered sections. Hand off repeatable operator
   procedures to an actual Runbook. Diataxis technical reference is a reader
   purpose, not the Stage 90 evidence family.
+- A workspace Guide owns local setup or harness maintenance procedures in the
+  narrow `workspace-environment` or `workspace-maintenance` Registry profile.
+  Both use the shared English `governance/workspace-guide` template and CORE
+  `guide` kind with workspace scope. Only the active maintenance profile with
+  that declared type, workspace scope and an actual use of the script can be
+  its runtime documentation owner. An onboarding guide or generic knowledge
+  document cannot take that ownership. Draft guidance is not active authority;
+  active adoption, a document link and a passing check grant neither command
+  permission nor owner acceptance. Approval remains with the applicable direct
+  authorization and [approval boundaries](../04.quality/approval-boundaries.md).
+  Product backup and restore procedures stay with their Operations Runbook,
+  and agent execution policy stays with its canonical governance owner.
 - An Operations Policy owns obligations, prohibitions, exceptions, accountable
   owners, enforcement, and review cadence. It does not own command sequences or
   redefine agent governance rules governing agents.
@@ -1073,7 +1086,9 @@ Named checks cover the rules whose Enforcement names one; the other rules name n
 - Authoring: no named check (R46-R60, R63-R83, R85-R86).
 - Language: no named check (R88-R94).
 - Folder guides: no named check (R100-R102, R104-R111, R113-R122).
-- Roles: no named check (R124-R162, R258-R260).
+- Roles: no named check (R124-R162, R258-R260). R261 is consumed by the Registry,
+  TemplateDefinition and Script Manifest checks; these checks establish document
+  eligibility, not runtime execution or acceptance.
 - Versions: no named check (R163-R165, R167-R168, R173, R175-R184, R186).
 - Release: no named check (R187-R191, R194-R195).
 - Frameworks: no named check (R196-R203).

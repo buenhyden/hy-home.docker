@@ -139,8 +139,8 @@ def reference_proves_use(reference: str, target: str, *, is_test: bool = False) 
     )
 
 
-def is_runbook_authority(path: str) -> bool:
-    return load_manifest_checker()._registered_runbook_authority(ROOT, path)
+def is_runtime_authority(path: str) -> bool:
+    return load_manifest_checker()._runtime_authority_type(ROOT, path) is not None
 
 
 __all__ = tuple(name for name in globals() if not name.startswith("__"))

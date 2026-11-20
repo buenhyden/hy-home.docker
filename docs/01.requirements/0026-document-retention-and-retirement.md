@@ -1,6 +1,6 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "4.0.0"
+version: "5.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -84,7 +84,7 @@ This package covers how documents are retained, retired and summarized into a cu
 | REQ-0026-FR-0005 | Every implemented capability has a Stage 01 Requirement owner and a Stage 02 Description or ADR owner. Stage 03 retirement preserves that coverage. | This package records no rationale for this requirement. | Every implemented capability names a Stage 01 Requirement owner and a Stage 02 Description or ADR owner, and no Stage 03 retirement removes either. | must |
 | REQ-0026-FR-0009 | Stage 03 occupancy is judged per package using registered Spec, Plan, and Task terminal sets. A package is ready for removal review when its Spec and Plan are approved (or validly cancelled), every Task or Execution Item is terminal, every numbered Spec criterion is accepted or `not-required`, and no required non-PASS observation is unresolved; an older Task format without the typed Criterion Acceptance table counts when it records every criterion as PASS or accepted and leaves no required non-PASS observation unresolved. Readiness is derived and never stored. A ready package with an approved Spec may wait in Stage 03 until its removal is approved, then is deleted with its number reserved. A terminal Task's link into a deleted package whose number is reserved is not a link failure. In an unfinished package, completed and validly cancelled Tasks may remain but a terminal Plan may not. A cancelled Spec keeps no member in the active stage. Other stages keep per-document disposition rules. Cancelling a Task requires a trusted approval and a record of its approving authority and date. The Task records the reason, an authorization reference and each criterion disposition. A disposition identifies a successor non-cancelled package Task or references an approved withdrawal. An empty disposition list means there were no assigned criteria. A criterion still numbered in the Spec keeps its completion obligations after withdrawal. A separate `not-required` decision may close it without PASS evidence. Waiting grants neither new work nor removal permission. | Agents need enforceable lifecycle, approval, retirement and citation boundaries. | A waiting package passes occupancy only with terminal members and valid cancellations, and withdrawal alone never satisfies a still-numbered criterion. | must |
 | REQ-0026-FR-0010 | Stage 03 packages contract bounded changes. Steady-state meaning belongs to Stage 02 Descriptions and Stage 05 subjects and transfers there before retirement. | This package records no rationale for this requirement. | Before a Stage 03 package retires, its steady-state meaning is present in a Stage 02 Description or Stage 05 subject. | must |
-| REQ-0026-FR-0011 | Stages 01 through 05 maintain bidirectional traceability through cross-links; domain requirements need not duplicate this obligation. | Auditors need discoverable lineage and the original context of decisions. | Cross-links between Stages 01 to 05 resolve in both directions under the registered link checks. | must |
+| REQ-0026-FR-0011 | Stages 01 through 05 preserve discoverable lineage through purpose-bearing directional references and their required structural relations. Domain requirements need not duplicate this obligation; reciprocal links and a complete document set are not universal requirements. | Auditors need discoverable lineage and the original context of decisions. | Required references resolve with their declared meaning, and changed or removed targets identify affected inbound consumers without requiring a reciprocal link or an unrelated artifact. | must |
 | REQ-0026-FR-0013 | Stage 98 holds no records. Only its README, which describes the disposition scheme, is tracked there, and a registered check fails on any other tracked file under `docs/98.archive/`. No gate validates Stage 98 content beyond that. | The lineage of a removed record lives in the lineage section of its Stage 01 or Stage 02 owner, never in a Stage 98 copy. | Any tracked file under `docs/98.archive/` other than its README fails the corpus lifecycle occupancy check. | must |
 | REQ-0026-FR-0014 | Current documents do not link into `docs/98.archive/` and do not name a retired identity in `parent_ids`, `supersedes`, or `superseded_by`. A retired identity may appear in prose where it explains lineage. | This package records no rationale for this requirement. | No current document links into Stage 98 or names a retired identity in a typed reference. | must |
 | REQ-0026-FR-0015 | No recovery ledger is introduced: version history is the record of removed bodies. Existing Task Commit Ledgers remain original execution evidence. | Version history is the record of the removed body. | No recovery ledger exists in the tree, and existing Task Commit Ledgers are left unchanged. | must |
@@ -142,8 +142,11 @@ This package covers how documents are retained, retired and summarized into a cu
 - **REQ-0026-FR-0010**: Stage 03 packages contract bounded changes. Steady-state
   meaning belongs to Stage 02 Descriptions and Stage 05 subjects and transfers
   there before retirement.
-- **REQ-0026-FR-0011**: Stages 01 through 05 maintain bidirectional traceability
-  through cross-links; domain requirements need not duplicate this obligation.
+- **REQ-0026-FR-0011**: Stages 01 through 05 preserve discoverable lineage through
+  purpose-bearing directional references and required structural relations.
+  Domain requirements need not duplicate this obligation. Reciprocal links and
+  a complete document set are not universal requirements; changed or removed
+  targets identify their affected inbound consumers.
 - **REQ-0026-FR-0013**: Stage 98 holds no records. Only its README, which
   describes the disposition scheme, is tracked there, and a registered check
   fails on any other tracked file under `docs/98.archive/`. No gate validates
@@ -200,8 +203,10 @@ This package covers how documents are retained, retired and summarized into a cu
   still-numbered criterion.
 - **REQ-0026-FR-0010**: Before a Stage 03 package retires, its steady-state
   meaning is present in a Stage 02 Description or Stage 05 subject.
-- **REQ-0026-FR-0011**: Cross-links between Stages 01 to 05 resolve in both
-  directions under the registered link checks.
+- **REQ-0026-FR-0011**: Purpose-bearing references between Stages 01 to 05
+  and their required structural relations resolve under the registered link
+  checks. Changes identify affected inbound consumers without requiring
+  reciprocal links or an unrelated artifact.
 - **REQ-0026-FR-0013**: Any tracked file under `docs/98.archive/` other than
   its README fails the corpus lifecycle occupancy check.
 - **REQ-0026-FR-0014**: No current document links into Stage 98 or names a

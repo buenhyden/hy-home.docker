@@ -1,8 +1,8 @@
 ---
 title: "Harness Maintenance"
-version: "1.0.0"
-type: "governance/control"
-status: "draft"
+version: "2.0.0"
+type: "governance/workspace-guide"
+status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
@@ -10,6 +10,7 @@ document_scope:
 updated: "2026-11-20"
 created: "2026-11-19"
 observed_at: "2026-11-19"
+reviewed_at: "2026-11-20"
 review_cycle: "on-tool-change"
 ---
 
@@ -21,7 +22,7 @@ review_cycle: "on-tool-change"
 
 ### 목적과 독자
 
-Readers use the knowledge payload below for this document's information and judgments.
+Readers use the guide payload below for this document's information and judgments.
 
 ### 책임과 적용 범위
 
@@ -35,7 +36,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 ### 본문과 규칙
 
-#### Overview
+#### Purpose
 
 How a person keeps the workspace's local agent tooling healthy: the shared
 agent memory store, session capture, scheduled session analysis, task
@@ -46,7 +47,7 @@ these tools is agent procedure in `.agents/governance/`, and product backup and
 restore stays in
 [RUN-0021](../../05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md).
 
-#### Scope
+#### Prerequisites
 
 Included: `scripts/operations/agent_memory.py`, `scripts/lib/hooks/session_capture.py`,
 `scripts/operations/session_analysis.py`, `scripts/operations/task_forecast.py`,
@@ -56,7 +57,18 @@ Excluded: product services, backups (the shared memory store is excluded from
 backup, as RUN-0021 records), and any approval, gate or Task acceptance. No
 store here is evidence of approval or acceptance.
 
-#### Rules
+This active workspace-maintenance guide is the registered documentation owner
+for the seven memory, analysis, forecast, dispatch and observe manifest entries
+that name it. Session capture retains its agent-policy owner. This registration
+does not grant execution permission or accept those tools;
+[approval boundaries](../04.quality/approval-boundaries.md) remain applicable.
+
+The memory, capture, deterministic analysis and shell workers below describe the
+current implementation. Further memory, native session integration and provider
+work dispatch changes remain with P09, P10 and P12 respectively; this guide
+adoption implements none of those later changes.
+
+#### Procedure
 
 ##### Shared agent memory store
 
@@ -307,7 +319,7 @@ failure is resolved in its owner record.
 python3 scripts/operations/observe.py report --since 2026-11-12T00:00:00+00:00
 ```
 
-#### Evidence
+#### Verification
 
 ##### Provenance
 
@@ -316,6 +328,11 @@ session analysis, forecast, dispatch and observe sections of RUN-0021 (1.22.0)
 here, translated from Korean without changing a command, limit or exit code.
 RUN-0021 keeps product backup and restore and the backup exclusion of shared
 memory.
+
+The P05 [typed-guide adoption Task](../../03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0103-p05-docs-sdlc.md)
+records the 2026-11-20 role and contract review. The original observations above
+remain dated to their actual inputs. This adoption executes no maintenance
+command and does not complete any outstanding runtime or owner acceptance.
 
 ##### Refresh Triggers
 

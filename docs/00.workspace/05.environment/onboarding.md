@@ -1,8 +1,8 @@
 ---
 title: "Environment Onboarding"
-version: "1.0.0"
-type: "governance/control"
-status: "draft"
+version: "2.0.0"
+type: "governance/workspace-guide"
+status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
@@ -10,6 +10,7 @@ document_scope:
 updated: "2026-11-20"
 created: "2026-11-19"
 observed_at: "2026-11-19"
+reviewed_at: "2026-11-20"
 review_cycle: "on-tool-change"
 ---
 
@@ -21,7 +22,7 @@ review_cycle: "on-tool-change"
 
 ### 목적과 독자
 
-Readers use the knowledge payload below for this document's information and judgments.
+Readers use the guide payload below for this document's information and judgments.
 
 ### 책임과 적용 범위
 
@@ -35,7 +36,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 ### 본문과 규칙
 
-#### Overview
+#### Purpose
 
 What a contributor prepares once to work in this workspace, and the first
 checks that show the environment is ready. The setup steps themselves stay with
@@ -44,14 +45,19 @@ their owners: the [repository README](../../../README.md) for the Docker host,
 validation toolchain, and the [tests README](../../../tests/README.md) for test
 runs. This guide connects them and names the boundaries between environments.
 
-#### Scope
+#### Prerequisites
 
 Included: a local development checkout on Linux with Git, Docker Engine and
 Docker Compose v2, Python 3 and Bash. Excluded: the operating host's services,
 real secret values, provider accounts and hosted CI, whose results a local run
 never stands in for.
 
-#### Rules
+This active workspace-environment guide owns the local setup reading route. It
+is not a runtime authority for harness mutations. Document adoption, a local
+check and a link to a command do not authorize that command or accept a feature;
+[approval boundaries](../04.quality/approval-boundaries.md) remain applicable.
+
+#### Procedure
 
 ##### Supported environment
 
@@ -104,7 +110,7 @@ evidence only; the pull request's hosted checks own candidate acceptance.
 - Secret values are never copied into a checkout, a log or evidence; only
   paths and IDs are recorded.
 
-#### Evidence
+#### Verification
 
 ##### Provenance
 
@@ -112,6 +118,11 @@ Written on 2026-11-19 by SPEC-0212 TSK-0097 from the repository, scripts and
 tests READMEs at `main` `eadd81adc`. On that day nine test modules failed under
 the system `python3` for lack of `referencing` and passed with the hash-locked
 venv first on `PATH`.
+
+The P05 [typed-guide adoption Task](../../03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0103-p05-docs-sdlc.md)
+records the 2026-11-20 role and contract review. The original observations above
+remain dated to their actual inputs. This adoption executes no maintenance
+command and does not complete any outstanding runtime or owner acceptance.
 
 ##### Refresh Triggers
 

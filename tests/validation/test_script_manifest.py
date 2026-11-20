@@ -1,6 +1,8 @@
 import ast
 import importlib.util
 import io
+import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -23,13 +25,15 @@ from tests.validation._script_manifest_support import (
     OPERATIONS_MANIFEST_PATHS,
     REQUIRED_FIELDS,
     ROOT,
-    is_runbook_authority,
+    is_runtime_authority,
     reference_proves_use,
     tracked_paths,
 )
 
 MANIFEST = ROOT / "scripts/manifest.yaml"
 MANIFEST_CHECKER = ROOT / "scripts/validation/check-script-manifest.py"
+WORKSPACE_MAINTENANCE = "docs/00.workspace/06.maintenance/harness-maintenance.md"
+WORKSPACE_ENVIRONMENT = "docs/00.workspace/05.environment/onboarding.md"
 _DOCUMENT_PATH_DECLARATIONS = {
     "scripts/lib/document_governance/registry.py": "_NON_DOCS_FILES",
     "scripts/lib/document_governance/metadata/profile.py": "TARGET_MARKDOWN_FILES",
@@ -331,7 +335,7 @@ class ScriptManifestTests(unittest.TestCase):
                 with self.subTest(path=row["path"]):
                     self.assertTrue(row["consumers"])
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
-                    self.assertTrue(is_runbook_authority(row["authority"]))
+                    self.assertTrue(is_runtime_authority(row["authority"]))
                     self.assertTrue(row["tests"])
                 if (
                     row["kind"] in {"generator", "validator"}
@@ -374,7 +378,7 @@ class ScriptManifestTests(unittest.TestCase):
                 ):
                     self.assertEqual(row["path"], row["check_command"][1])
 
-    def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
+    def test_authority_is_specific_and_runtime_retention_is_owner_bound(self) -> None:
         unrelated = {
             "docs/05.operations/03.runbooks/04.security-and-secrets/0031-vault.md",
             "docs/05.operations/03.runbooks/15.labs/0031-postgresql-cluster.md",
@@ -398,12 +402,12 @@ class ScriptManifestTests(unittest.TestCase):
                         f"blanket authority {authority} does not govern {row['path']}"
                     )
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
-                    self.assertTrue(is_runbook_authority(authority))
+                    self.assertTrue(is_runtime_authority(authority))
                     self.assertTrue(
                         basename in authority_text or row["path"] in authority_text,
-                        f"runtime Runbook does not name {row['path']}",
+                        f"runtime owner does not name {row['path']}",
                     )
-                elif row["mutation"] == "runtime" and not is_runbook_authority(
+                elif row["mutation"] == "runtime" and not is_runtime_authority(
                     authority
                 ):
                     self.assertNotEqual("retain", row["disposition"])
@@ -419,9 +423,9 @@ class ScriptManifestTests(unittest.TestCase):
                 self.assertNotIn("current_authorities", row)
                 self.assertNotIn("semantic_witnesses", row)
 
-    def test_runbook_authority_accepts_only_canonical_role_leaf_shape(self) -> None:
+    def test_runtime_authority_preserves_canonical_product_runbook_paths(self) -> None:
         self.assertTrue(
-            is_runbook_authority(
+            is_runtime_authority(
                 "docs/05.operations/03.runbooks/"
                 "05.databases-and-storage/"
                 "0028-management-database.md"
@@ -445,7 +449,7 @@ class ScriptManifestTests(unittest.TestCase):
         )
         for path in rejected:
             with self.subTest(path=path):
-                self.assertFalse(is_runbook_authority(path))
+                self.assertFalse(is_runtime_authority(path))
 
     def test_semantic_helpers_reject_inventory_only_evidence(self) -> None:
         taxonomy = "scripts/lib/document_governance/taxonomy.py"
@@ -895,6 +899,250 @@ class ScriptManifestValidationTests(unittest.TestCase):
                 )
             ),
         )
+
+    def test_retained_runtime_admits_workspace_maintenance_path_shape(self) -> None:
+        self.assertNotIn(
+            "runtime-authority-invalid",
+            self.codes(
+                self.row(
+                    kind="operations",
+                    mutation="runtime",
+                    authority=WORKSPACE_MAINTENANCE,
+                ),
+                self.tracked | {WORKSPACE_MAINTENANCE},
+            ),
+        )
+
+    def _runtime_authority_fixture(
+        self,
+        root: Path,
+        authority: str = WORKSPACE_MAINTENANCE,
+        script: str = "scripts/operations/session_analysis.py",
+    ) -> tuple[dict, dict, str]:
+        shutil.copytree(ROOT / "docs/99.templates", root / "docs/99.templates")
+        _, frontmatter, body = (ROOT / authority).read_text().split("---\n", 2)
+        metadata = {
+            **yaml.safe_load(frontmatter),
+            "status": "active",
+            "type": "governance/workspace-guide",
+            "document_scope": {"subject": "fixture workspace", "layer": "workspace"},
+        }
+        self._write_runtime_authority(root, authority, metadata, body)
+        return (
+            {
+                "schema_version": 1,
+                "files": [
+                    self.row(path=script, mutation="runtime", authority=authority)
+                ],
+            },
+            metadata,
+            body,
+        )
+
+    @staticmethod
+    def _write_runtime_authority(
+        root: Path, authority: str, metadata: dict, body: str
+    ) -> None:
+        path = root / authority
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            "---\n" + yaml.safe_dump(metadata, sort_keys=False) + "---\n" + body
+        )
+
+    def test_runtime_owner_accepts_active_registered_workspace_maintenance(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            document, _, _ = self._runtime_authority_fixture(root)
+            self.assertEqual([], self.checker._authority_findings(root, document))
+
+    def test_workspace_runtime_owner_rejects_draft_type_and_scope_mismatches(
+        self,
+    ) -> None:
+        mutations = (
+            {"status": "draft"},
+            {"status": "in-review"},
+            {"type": "governance/control"},
+            {"document_scope": {"subject": "fixture workspace", "layer": "product"}},
+            {"document_scope": {"subject": "", "layer": "workspace"}},
+            {
+                "document_scope": {
+                    "subject": "fixture workspace",
+                    "layer": "workspace",
+                    "extra": True,
+                }
+            },
+            {"document_scope": None},
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            document, metadata, body = self._runtime_authority_fixture(root)
+            for mutation in mutations:
+                with self.subTest(mutation=mutation):
+                    self._write_runtime_authority(
+                        root, WORKSPACE_MAINTENANCE, {**metadata, **mutation}, body
+                    )
+                    self.assertEqual(
+                        {"runtime-authority-inactive"},
+                        {
+                            finding.code
+                            for finding in self.checker._authority_findings(
+                                root, document
+                            )
+                        },
+                    )
+
+    def test_workspace_runtime_owner_rejects_other_registered_profiles(self) -> None:
+        for authority in (
+            WORKSPACE_ENVIRONMENT,
+            "docs/00.workspace/01.project/glossary.md",
+        ):
+            with (
+                self.subTest(authority=authority),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = Path(directory)
+                document, _, _ = self._runtime_authority_fixture(root, authority)
+                self.assertEqual(
+                    {"runtime-authority-invalid"},
+                    {
+                        finding.code
+                        for finding in self.checker._authority_findings(root, document)
+                    },
+                )
+
+    def test_workspace_runtime_owner_rejects_a_third_profile_with_the_same_type(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            document, metadata, body = self._runtime_authority_fixture(root)
+            alias_id, authority = self._register_runtime_alias(root)
+            registry_path = root / "docs/99.templates/registry.json"
+            self.assertEqual(
+                alias_id,
+                self.checker.classify_path(
+                    PurePosixPath(authority), self.checker.load_registry(registry_path)
+                ),
+            )
+            self._write_runtime_authority(root, authority, metadata, body)
+            rows = [{**document["files"][0], "authority": authority}]
+            self.assertEqual(
+                {"runtime-authority-invalid"},
+                {
+                    finding.code
+                    for finding in self.checker._authority_findings(
+                        root, {**document, "files": rows}
+                    )
+                },
+            )
+
+    @staticmethod
+    def _register_runtime_alias(root: Path) -> tuple[str, str]:
+        registry_path = root / "docs/99.templates/registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        profiles = registry["profiles"]
+        source_id = "workspace-maintenance"
+        source = next(row for row in profiles if row["id"] == source_id)
+        alias_id = "workspace-other"
+        authority = "docs/00.workspace/06.maintenance/other-maintenance.md"
+        role_id = source["template_id"]
+        role = registry["template_roles"][role_id]
+        common = registry["common"]
+        archive = common["archive_retention"]
+        core = common["document_core"]
+
+        def extend(mapping: dict) -> dict:
+            return {**mapping, alias_id: mapping[source_id]}
+
+        changed = {
+            **registry,
+            "profiles": [
+                *profiles,
+                {**source, "id": alias_id, "path_pattern": authority},
+            ],
+            "template_roles": {
+                **registry["template_roles"],
+                role_id: {**role, "profiles": [*role["profiles"], alias_id]},
+            },
+            "transitions": extend(registry["transitions"]),
+            "common": {
+                **common,
+                "archive_retention": {
+                    **archive,
+                    "disposition_entry_statuses": extend(
+                        archive["disposition_entry_statuses"]
+                    ),
+                },
+                "document_core": {
+                    **core,
+                    "profile_bindings": extend(core["profile_bindings"]),
+                },
+            },
+        }
+        registry_path.write_text(json.dumps(changed), encoding="utf-8")
+        return alias_id, authority
+
+    def test_workspace_runtime_owner_requires_actual_script_use(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            document, metadata, body = self._runtime_authority_fixture(root)
+            self.assertIn("session_analysis.py", body)
+            changed = body.replace("session_analysis.py", "unrelated.py")
+            self.assertNotEqual(body, changed)
+            self._write_runtime_authority(
+                root, WORKSPACE_MAINTENANCE, metadata, changed
+            )
+            self.assertEqual(
+                {"runtime-authority-unproven"},
+                {
+                    finding.code
+                    for finding in self.checker._authority_findings(root, document)
+                },
+            )
+
+    def test_workspace_runtime_owner_uses_only_the_callers_registry(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            document, _, _ = self._runtime_authority_fixture(root)
+            (root / "docs/99.templates/registry.json").unlink()
+            self.assertEqual(
+                {"runtime-authority-invalid"},
+                {
+                    finding.code
+                    for finding in self.checker._authority_findings(root, document)
+                },
+            )
+
+    def test_workspace_runtime_owner_rejects_linked_authority(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            document, _, _ = self._runtime_authority_fixture(root)
+            path = root / WORKSPACE_MAINTENANCE
+            target = root / "linked-guide.md"
+            path.rename(target)
+            path.symlink_to(target)
+            self.assertEqual(
+                {"runtime-authority-unreadable"},
+                {
+                    finding.code
+                    for finding in self.checker._authority_findings(root, document)
+                },
+            )
+
+    def test_runtime_owner_preserves_product_runbook_admission(self) -> None:
+        authority = "docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md"
+        script = "scripts/operations/mng-pg-immediate-restore-rehearsal.py"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            document, metadata, body = self._runtime_authority_fixture(
+                root, authority, script
+            )
+            self._write_runtime_authority(
+                root, authority, {**metadata, "type": "operation/runbook"}, body
+            )
+            self.assertEqual([], self.checker._authority_findings(root, document))
 
     def _generator_repo(
         self, root: Path, script: str, script_path: str = "scripts/example.py"

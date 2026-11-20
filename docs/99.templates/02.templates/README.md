@@ -1,6 +1,6 @@
 ---
 title: "Template Catalog"
-version: "4.0.0"
+version: "4.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -72,6 +72,7 @@ layer: "templates"
 
 | Path | Purpose |
 | --- | --- |
+| [00.workspace/](00.workspace/) | 좁은 workspace Guide와 로컬 용어 source |
 | [02.architecture/](02.architecture/) | Description과 ADR source |
 | [93.common/](93.common/) | README source |
 | [91.agent-governance/](91.agent-governance/) | 공유 governance source |

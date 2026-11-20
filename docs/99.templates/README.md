@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "3.0.0"
+version: "3.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -57,6 +57,7 @@ Stage 99가 소유하는 것:
 
 - the Requirement Package and Architecture Description profiles;
 - the Guide, Policy, Runbook, Incident, and Postmortem profiles;
+- the narrow workspace-environment and workspace-maintenance Guide profiles;
 - the Research, Audit, Data publication roles;
 - canonical path와 안정 ID 패턴;
 - profile별 frontmatter와 section 계약;
@@ -130,6 +131,7 @@ docs/99.templates/
 │   ├── document-profile.schema.json
 │   └── template-definition.schema.json
 └── 02.templates/
+    ├── 00.workspace/
     ├── 01.requirements/
     ├── 02.architecture/
     ├── 03.specs/
@@ -151,6 +153,16 @@ Markdown에서는 H4/H5로 표현됩니다. 깊은 절은 H6와 구조 표식으
 [문서 프로토콜](../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)은
 각 역할의 책임, 네이티브 경계, 과거 증거 보존을 정합니다. 완료한 역할별 양식은
 외피 안의 payload로 유지하며 다른 저장소의 채택·실행 성공을 추정하지 않습니다.
+
+workspace의 환경 준비와 harness 유지보수는 각각 `workspace-environment`,
+`workspace-maintenance`의 정확한 기존 경로만 분류합니다. 두 profile은 하나의
+영문 `governance/workspace-guide` source를 공유하며 CORE kind는 `guide`, scope는
+`workspace`입니다. 공유 source의 profile은 경로 선택자를 제외한 rendering 계약과
+CORE binding이 같아야 하며, Registry 검사가 다른 language·metadata·절·type·binding을
+거부합니다. generic knowledge는 이 두 실행 절차의 소유자가 아닙니다.
+active maintenance profile의 실제 script 사용만 runtime 문서 소유권 후보가 되며,
+onboarding은 해당 소유권을 갖지 않습니다. 이 계약은 실행 권한이나 기능 인수를
+부여하지 않습니다. 제품 Operations Guide의 Runbook 이관 의무는 별도로 유지합니다.
 
 ###### Stage 03 Evidence
 <!-- core-payload-level:4 -->
@@ -250,7 +262,7 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   공간·접두사·폭을 가지며, 전환 전에는 어떤 번호도 발급하거나 예약하지
   않습니다. `identity_history.py`의 `rehearse_allocation`은 복사본에서만
   SPEC-0001부터 발급을 시험합니다.
-- Guide, Policy, Runbook은 `next_review_at`을 필수로 두며 값은 `updated`로부터
+- Stage 05 Operations Guide, Policy, Runbook은 `next_review_at`을 필수로 두며 값은 `updated`로부터
   180일 이내여야 합니다.
   terminal 상태에는 나가는 전이가 없습니다.
 

@@ -786,7 +786,7 @@ files:
   - tests/lib/ops/test_compose_start.py
 - path: scripts/lib/ops/memory_capacity.py
   kind: library
-  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -799,7 +799,7 @@ files:
   - tests/validation/test_agent_memory_capacity.py
 - path: scripts/lib/ops/memory_cli.py
   kind: library
-  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -1054,12 +1054,12 @@ files:
   - tests/validation/test_script_manifest.py
 - path: scripts/operations/agent_memory.py
   kind: operations
-  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
   lifecycle: active
   mutation: runtime
   consumers:
   - .agents/governance/environment-constraints.md
-  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  - docs/00.workspace/06.maintenance/harness-maintenance.md
   disposition: retain
   successor: null
   tests:
@@ -1149,11 +1149,11 @@ files:
   - tests/validation/test_p03_notebook_models.py
 - path: scripts/operations/observe.py
   kind: operations
-  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  - docs/00.workspace/06.maintenance/harness-maintenance.md
   disposition: retain
   successor: null
   tests:
@@ -1286,11 +1286,11 @@ files:
   - tests/lib/ops/test_secret_structure.py
 - path: scripts/operations/session_analysis.py
   kind: operations
-  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  - docs/00.workspace/06.maintenance/harness-maintenance.md
   disposition: retain
   successor: null
   tests:
@@ -1353,11 +1353,11 @@ files:
   - tests/lib/supply_chain/test_ledger_rebind.py
 - path: scripts/operations/task_forecast.py
   kind: operations
-  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  - docs/00.workspace/06.maintenance/harness-maintenance.md
   disposition: retain
   successor: null
   tests:
@@ -1376,11 +1376,11 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/work_dispatch.py
   kind: operations
-  authority: docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md
+  - docs/00.workspace/06.maintenance/harness-maintenance.md
   disposition: retain
   successor: null
   tests:
