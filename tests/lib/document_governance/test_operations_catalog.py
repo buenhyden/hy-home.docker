@@ -1021,10 +1021,12 @@ sys.exit(1)
                     read_bounded_regular(root, pathlib.PurePosixPath("input"))
 
     def test_reader_clamps_caller_limit_to_hard_maximum(self) -> None:
+        from scripts.lib.document_governance import file_access
+
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             (root / "input").write_text("content", encoding="utf-8")
-            with mock.patch.object(operations_catalog, "MAX_FILE_BYTES", 2):
+            with mock.patch.object(file_access, "MAX_FILE_BYTES", 2):
                 with self.assertRaisesRegex(OperationsAuthorityError, "bound"):
                     read_bounded_regular(
                         root,

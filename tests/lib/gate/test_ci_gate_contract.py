@@ -1603,6 +1603,14 @@ class DocumentGovernanceSelectionTests(unittest.TestCase):
 
 
 class GateCrosswalkTests(unittest.TestCase):
+    @staticmethod
+    def copy_core_contract(root: pathlib.Path) -> None:
+        from scripts.lib.document_governance.common_document import CORE_PATH
+
+        target = root / CORE_PATH
+        target.parent.mkdir(parents=True)
+        target.write_bytes((ROOT / CORE_PATH).read_bytes())
+
     """QA-C05: one producer per guarantee; a leaf with no aggregate parent is
     consumed by its suite root, so `consumers` may be empty but `suites` is not."""
 
@@ -1652,6 +1660,7 @@ class GateCrosswalkTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
+            self.copy_core_contract(root)
             path = root / document
             path.parent.mkdir(parents=True)
             for level in (5, 6):
@@ -1683,6 +1692,7 @@ class GateCrosswalkTests(unittest.TestCase):
         text = wrap_document("# Gate Policy\n\n## Rules\n\nAn owner.\n", kind="policy")
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
+            self.copy_core_contract(root)
             path = root / document
             path.parent.mkdir(parents=True)
             path.write_text(text + "\n## Forged Ownership\n", encoding="utf-8")
@@ -1701,6 +1711,108 @@ class GateCrosswalkTests(unittest.TestCase):
             self.assertEqual(
                 ("ci-gate-rule-owner",), tuple(item.code for item in findings)
             )
+
+    def test_only_actual_document_headings_can_supply_a_rule_owner(self) -> None:
+        document = ".agents/governance/fixture-policy.md"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.copy_core_contract(root)
+            path = root / document
+            path.parent.mkdir(parents=True)
+            path.write_text(
+                "---\nexample: |\n# Frontmatter Forgery\n---\n"
+                "# Actual Policy\n\n## Actual Owner\n\n"
+                "```markdown\n## Backtick Forgery\n```\n\n"
+                "~~~\n## Tilde Forgery\n~~~\n\n"
+                "<!--\n## Comment Forgery\n-->\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                frozenset({"actual-policy", "actual-owner"}),
+                contract._heading_anchors(root, document),
+            )
+
+    def test_common_owner_validation_uses_the_callers_formal_contract(self) -> None:
+        from scripts.lib.document_governance.common_document import (
+            CORE_PATH,
+            wrap_document,
+        )
+
+        document = ".agents/governance/fixture-policy.md"
+        text = wrap_document(
+            "# Gate Policy\n\n## Actual Owner\n\nOwner.\n", kind="policy"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.copy_core_contract(root)
+            core_path = root / CORE_PATH
+            core = json.loads(core_path.read_text(encoding="utf-8"))
+            first = next(iter(core["headings"]))
+            replacement = "Fixture Common Overview"
+            core["headings"] = {
+                replacement if title == first else title: children
+                for title, children in core["headings"].items()
+            }
+            core_path.write_text(json.dumps(core), encoding="utf-8")
+            path = root / document
+            path.parent.mkdir(parents=True)
+            path.write_text(text, encoding="utf-8")
+            self.assertEqual(frozenset(), contract._heading_anchors(root, document))
+            path.write_text(
+                text.replace(f"## {first}\n", f"## {replacement}\n", 1),
+                encoding="utf-8",
+            )
+            self.assertIn("actual-owner", contract._heading_anchors(root, document))
+
+    def test_examples_do_not_hide_real_owners_or_create_common_headings(self) -> None:
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        examples = (
+            "<!--\n```markdown\n## Comment Example\n-->\n",
+            "<!--\n~~~\n## Comment Example\n-->\n",
+            "<div>\n## HTML Example\n</div>\n",
+            '<div title="<!--">\n## HTML Example\n</div>\n',
+            "<div title='<!--'>\n## HTML Example\n</div>\n",
+            "<pre>\n## HTML Example\n</pre>\n",
+            "<script>\n## HTML Example\n</script>\n",
+            "<custom-tag title='literal'>\n## HTML Example\n</custom-tag>\n",
+            "<?instruction\n## HTML Example\n?>\n",
+            "<!DECLARATION\n## HTML Example\n>\n",
+            "<![CDATA[\n## HTML Example\n]]>\n",
+            "```markdown\n<!-- unclosed example comment\n```\n",
+            "~~~\n<!-- unclosed example comment\n~~~\n",
+            "```markdown <!--\n## Comment Example\n```\n",
+            "~~~ <!--\n## Comment Example\n~~~\n",
+            'A paragraph\n<span title="<!--">literal</span>\n',
+            'A paragraph with <span title="<!--">literal</span>.\n',
+            'A paragraph with <span\ntitle="<!--">literal</span>.\n',
+            "A paragraph with <span\ntitle='<!--'>literal</span>.\n",
+            'A paragraph with <span title=\n"<!--">literal</span>.\n',
+            'A paragraph with <span title="first line\n<!--">literal</span>.\n',
+            'A paragraph with <span title="<!--">literal</span>. <!--\n## Comment Example\n-->\n',
+            'A paragraph with <span\ntitle="<!--">literal</span>. <!--\n## Comment Example\n-->\n',
+        )
+        document = ".agents/governance/fixture-policy.md"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.copy_core_contract(root)
+            path = root / document
+            path.parent.mkdir(parents=True)
+            for example in examples:
+                with self.subTest(example=example):
+                    text = wrap_document(
+                        "# Gate Policy\n\n## Actual Owner\n\nOwner.\n", kind="policy"
+                    )
+                    # Insert a literal example without passing it through a
+                    # payload decoder: it must never become a structural H2.
+                    text = text.replace(
+                        "#### Actual Owner\n", example + "\n#### Actual Owner\n"
+                    )
+                    path.write_text(text, encoding="utf-8")
+                    anchors = contract._heading_anchors(root, document)
+                    self.assertIn("actual-owner", anchors)
+                    self.assertNotIn("comment-example", anchors)
+                    self.assertNotIn("html-example", anchors)
 
     def test_promotion_readiness_is_reported_by_the_lifecycle_leaf(self) -> None:
         """H-W04-2: SDLC-PROMOTION reuses the lifecycle check's --readiness

@@ -14,6 +14,9 @@ from collections.abc import Mapping, Sequence
 
 from markdown_it import MarkdownIt
 
+from scripts.lib.document_governance.common_document import (
+    _markdown_unfenced_lines as _markdown_unfenced_lines,
+)
 from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
@@ -293,35 +296,6 @@ def _validate_template_source(
                 )
             )
     return sorted(set(findings))
-
-
-def _markdown_unfenced_lines(text: str) -> list[str]:
-    """Return Markdown lines outside backtick and tilde fenced blocks."""
-
-    lines: list[str] = []
-    fence_character: str | None = None
-    fence_length = 0
-    for line in text.splitlines():
-        if fence_character is None:
-            opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
-            if opening:
-                marker = opening.group(1)
-                info_string = opening.group(2)
-                if marker[0] == "`" and "`" in info_string:
-                    lines.append(line)
-                    continue
-                fence_character = marker[0]
-                fence_length = len(marker)
-                continue
-            lines.append(line)
-            continue
-        if re.match(
-            rf"^ {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*$",
-            line,
-        ):
-            fence_character = None
-            fence_length = 0
-    return lines
 
 
 def _strip_inline_code_spans(text: str) -> str:

@@ -2008,12 +2008,173 @@ def validate_rule_owners(
     return tuple(findings)
 
 
+_OWNER_HTML_TAG = (
+    r"(?:<[A-Za-z][A-Za-z0-9-]*(?:\s+[a-zA-Z_:][a-zA-Z0-9:._-]*"
+    r"(?:\s*=\s*(?:[^\"'=<>`\x00-\x20]+|'[^']*'|\"[^\"]*\"))?)*\s*/?>"
+    r"|</[A-Za-z][A-Za-z0-9-]*\s*>)"
+)
+
+
+def _owner_html_end(line: str, *, paragraph: bool) -> str | None:
+    """CommonMark HTML block boundaries relevant to literal ATX visibility."""
+    line = re.sub(r"^ {0,3}", "", line)
+    for opening, closing, flags in (
+        (
+            r"<(script|pre|style|textarea)(?=\s|>|$)",
+            r"</(?:script|pre|style|textarea)>",
+            re.I,
+        ),
+        (r"<\?", r"\?>", 0),
+        (r"<!\[CDATA\[", r"\]\]>", 0),
+        (r"<![A-Z]", r">", 0),
+    ):
+        if re.match(opening, line, flags):
+            return closing
+    tags = (
+        "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|"
+        "dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|"
+        "frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|"
+        "nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|"
+        "td|tfoot|th|thead|title|tr|track|ul"
+    )
+    if re.match(rf"</?(?:{tags})(?=\s|/?>|$)", line, re.I):
+        return r"^[ \t]*$"
+    return (
+        r"^[ \t]*$"
+        if not paragraph and re.fullmatch(_OWNER_HTML_TAG + r"\s*", line)
+        else None
+    )
+
+
+def _owner_comment_line(
+    text: str, start: int, stop: int, active: bool, tag_until: int
+) -> tuple[str, bool, int]:
+    """Mask comments without ever treating their contents as block openers."""
+    position = start
+    visible = ""
+    while position < stop:
+        if position < tag_until:
+            end = min(stop, tag_until)
+            visible += text[position:end]
+            position = end
+            continue
+        if active:
+            boundary = text.find("-->", position, stop)
+        else:
+            boundary = text.find("<", position, stop)
+            token = (
+                re.compile(_OWNER_HTML_TAG).match(text, boundary)
+                if boundary >= 0
+                else None
+            )
+            if token:
+                visible += text[position:boundary]
+                position, tag_until = boundary, token.end()
+                continue
+            if boundary >= 0 and not text.startswith("<!--", boundary):
+                visible += text[position : boundary + 1]
+                position = boundary + 1
+                continue
+        if boundary < 0:
+            return (
+                visible + (" " * (stop - position) if active else text[position:stop]),
+                active,
+                tag_until,
+            )
+        end = boundary + (3 if active else 4)
+        visible += (
+            " " * (end - position) if active else text[position:boundary] + " " * 4
+        )
+        position, active = end, not active
+    return visible, active, tag_until
+
+
+def _owner_visible_lines(lines: list[str], marker: str) -> tuple[list[str], bool]:
+    """Track mutually exclusive literal blocks before recognizing headings."""
+    visible: list[str] = []
+    marked = comment = paragraph = False
+    fence: str | None = None
+    html_end: str | None = None
+    text = "\n".join(lines)
+    position = tag_until = 0
+    for line in lines:
+        start = position
+        position += len(line) + 1
+        if fence is not None:
+            if re.fullmatch(
+                rf" {{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*", line
+            ):
+                fence = None
+            continue
+        if html_end is not None:
+            if re.search(html_end, line, re.I):
+                html_end = None
+            continue
+        literal_tag = start < tag_until
+        opening = (
+            None
+            if comment or literal_tag
+            else re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+        )
+        if opening and not (opening[1][0] == "`" and "`" in opening[2]):
+            fence, paragraph = opening[1], False
+            continue
+        ending = (
+            None
+            if comment or literal_tag
+            else _owner_html_end(line, paragraph=paragraph)
+        )
+        if ending is not None:
+            html_end = None if re.search(ending, line, re.I) else ending
+            paragraph = False
+            continue
+        marked |= not comment and line == marker
+        masked, comment, tag_until = _owner_comment_line(
+            text, start, position - 1, comment, tag_until
+        )
+        visible.append(masked)
+        paragraph = bool(masked.strip()) and not re.match(
+            r"^ {0,3}#{1,6}(?:\s|$)", masked
+        )
+    return visible, marked
+
+
+def _rule_owner_headings(text: str, core: Mapping) -> tuple[tuple[int, str], ...]:
+    """Read real headings without loading optional Markdown or YAML parsers."""
+
+    lines = text.splitlines()
+    if lines[:1] == ["---"]:
+        end = next(
+            (index for index in range(1, len(lines)) if lines[index] == "---"), -1
+        )
+        if end < 0:
+            return ()
+        lines = lines[end + 1 :]
+    visible, marked = _owner_visible_lines(lines, core["payload_encoding"]["marker"])
+    headings = tuple(
+        (len(match[1]), match[2])
+        for line in visible
+        if (match := re.fullmatch(r"(#{1,6})\s+(.+?)\s*", line))
+    )
+    if marked or any(
+        level == 2 and title in core["headings"] for level, title in headings
+    ):
+        expected = tuple(
+            pair
+            for parent, children in core["headings"].items()
+            for pair in ((2, parent), *((3, child) for child in children))
+        )
+        if tuple(item for item in headings if item[0] in (2, 3)) != expected:
+            return ()
+    return headings
+
+
 def _heading_anchors(root: pathlib.Path, document: str) -> frozenset[str]:
     """GitHub-style heading anchors of one tracked canonical document."""
 
     from scripts.lib.document_governance.common_document import (
         CommonDocumentError,
-        payload_text,
+        load_contract,
     )
 
     path = pathlib.PurePosixPath(document)
@@ -2024,16 +2185,15 @@ def _heading_anchors(root: pathlib.Path, document: str) -> frozenset[str]:
     ):
         return frozenset()
     try:
-        text = payload_text((root / document).read_text(encoding="utf-8"))
+        text = (root / document).read_text(encoding="utf-8")
+        headings = _rule_owner_headings(text, load_contract(root=root))
     except (OSError, UnicodeDecodeError, CommonDocumentError):
         return frozenset()
     anchors = set()
-    for line in text.splitlines():
-        match = re.fullmatch(r"#{1,6}\s+(.+?)\s*", line)
-        if match:
-            slug = re.sub(r"[`*_~]", "", match.group(1).lower())
-            slug = re.sub(r"[^\w\- ]", "", slug)
-            anchors.add(re.sub(r" ", "-", slug).strip("-"))
+    for _, title in headings:
+        slug = re.sub(r"[`*_~]", "", title.lower())
+        slug = re.sub(r"[^\w\- ]", "", slug)
+        anchors.add(re.sub(r" ", "-", slug).strip("-"))
     return frozenset(anchors)
 
 

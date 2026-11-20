@@ -1,6 +1,6 @@
 ---
 title: "P04 Templates Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -68,8 +68,10 @@ F-DKR-008 final identities/history stay P17.
 Original request3813b76d759f7346fea44792f2cbe189 and digest
 365eea4842f66aebf6e88aa9f43cace34e758c430d581340886a56643c38e3a2,
 session01a1f47d-2e14-7c32-b0f7-008007421623 and brief
-P04-TEMPLATES-docker-1.1.0 revision4 bind current baseline and candidate
-paths. Continuation request3b3ef58005784277d534b2e12f3ffad7 retains the same digest; Revisions2–4 explicitly include registered outside-docs Markdown consumers and the script manifest. Two inspectors performed read-only discovery. The coordinator writes
+P04-TEMPLATES-docker-1.1.0 revision7 bind current baseline and candidate
+paths. Resume request5f2b1af5dd1703b591dcb29bde04b8b7, digest
+7b3757f6774bcd7f85ddda3bcb85d0f1b95e8fcf636cf271a215081b9a3441e9,
+retains the same authorized P04 scope and delivery actions at HEAD8f5c872. Continuation request3b3ef58005784277d534b2e12f3ffad7 retains the same digest; Revisions2–6 explicitly include registered outside-docs Markdown consumers and the script manifest. Two inspectors performed read-only discovery. The coordinator writes
 shared bindings/migration and assigns bounded disjoint reader/native scopes;
 no worker may infer extra authority. Q-01–Q-04 add no unresolved P04 choice.
 The direct new envelope supersedes earlier outer formatting only; existing
@@ -138,6 +140,9 @@ active, PASS or Task completed into owner acceptance.
 | E11 | 158 | W174 | Final independent delta review | Enforced read-only native CLI, affected producer/header/shared-check slices only | PASS | Prior source approvals reused. Final delta review approves spec/quality and observes four focused passes; final report-consumer review reconstructs three failures then observes both consumer tests pass, unchanged nonempty row states/counts and current metadata/body/Korean checks. Schema read-once1 passes2.227s; no native runtime or owner acceptance asserted | required | - |
 | E12 | 158 | W174 | Local staged delivery hooks | First ordinary source commit; current P04 staged document set | FAIL | Canonical commit hook reports83 Markdown errors: whitespace, six descriptor punctuation cases, source-only native H1 and inline deep-heading anchor conflicts. Commit aborted, HEAD unchanged. Root causes repaired in wrapper/decoder/native producer; successful canonical rerun still required. A worker's direct formatter diagnostic is excluded from delivery evidence | required | - |
 | E13 | 158 | W174 | Local staged delivery hooks | Registered run-ci-precommit.sh --mode local-staged after actual encoding/native fixes | PASS | Canonical installed0.22.1 Markdown hook and all applicable configured staged checks pass, exit0. Separate global0.23.3 diagnostic666 files0 issues is not used as canonical delivery proof. Common12 pass5.305s; native+structural8 pass1.022s; actual links925/9073 zero failures; independent format integration review approves spec/quality, authoring directive absent from native output and runtime H1 enforcement retained | required | E12 |
+| E14 | 158 | W174 | Hosted candidate CI | PR1134 source8f5c872; run44646723082 routing job135991080698; merge4473b3e118f09d88c4ca688fb0d05fc5655cc636 | FAIL | Select document shard fails before dependency installation: gate heading adapter imports full payload reader and operations_catalog→yaml. Hosted source did not pass; no merge performed. Preserve P01 standard-library routing boundary by using actual heading anchors and formal common structure without the post-install parser | required | - |
+| E15 | 158 | W174 | Bootstrap routing regression | Actual public CLI with Python -ES and current caller-root formal contract | PASS | YAML import RED reproduced. GateCrosswalk20+CLI1 pass1.159s; common/section25 pass5.447s. Anchored I/O helper class+three functions AST-equal to prior implementation, existing FIFO/symlink/race/cap4 pass0.260s; operations catalogPASS. No workflow/setup order changed, full post-install CommonMark parser retained; hosted retry still required to resolve E14 | required | - |
+| E16 | 158 | W174 | Bootstrap adapter correction review regressions | Current root contract and isolated -ES public CLI | PASS | Initial independent review found visibility regressions for fences inside comments and headings inside HTML blocks; both reproduced RED and joint states repaired them. Subsequent review found quoted comment tokens in HTML attributes, including multiline inline tags; single-line and fence-info correction adds six witnessed failures then22 tests pass1.272s including actual -ES CLI. Four multiline variants then reproduced RED and now22 selected tests pass1.358s, including trailing actual-comment negative and isolated -ES CLI. Final native CLI re-review timed out240s without a verdict and is NOT_RUN for approval; a separate independent read-only reviewer approves spec compliance and quality with no findings, exact two-file diff against8f5c872 and22 focused tests pass1.249s; reviewed bytes unchanged. Registered final staged checks exit0. Hosted retry still required for E14. Prior security axisPASS is reused only for unchanged file-access guards | required | - |
 
 ##### Resolution Links
 

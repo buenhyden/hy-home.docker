@@ -46,6 +46,26 @@ SHELL_ENTRYPOINTS = (
 
 
 class ValidatorEntrypointTests(unittest.TestCase):
+    def test_ci_routing_explain_needs_no_site_packages(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "-ES",
+                "scripts/validation/run-ci-gate.py",
+                "--profile",
+                "changed",
+                "--explain",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            pass_fds=gate_root_pass_fds(ROOT),
+        )
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        self.assertIn("leaf.", completed.stdout)
+
     def test_python_entrypoints_expose_closed_cli_help(self) -> None:
         for entrypoint in PYTHON_ENTRYPOINTS:
             with self.subTest(entrypoint=entrypoint):

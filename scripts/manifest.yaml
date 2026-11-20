@@ -196,6 +196,19 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_template_definition.py
+- path: scripts/lib/document_governance/file_access.py
+  kind: library
+  authority: docs/99.templates/01.contracts/common-document-contract.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/common_document.py
+  - scripts/lib/document_governance/operations_catalog.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_operations_catalog.py
+  - tests/lib/document_governance/test_template_definition.py
 - path: scripts/lib/document_governance/frontmatter.py
   kind: library
   authority: docs/99.templates/registry.json

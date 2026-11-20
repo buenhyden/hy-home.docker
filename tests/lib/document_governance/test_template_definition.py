@@ -5,6 +5,8 @@ import importlib
 import json
 import pathlib
 import re
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -26,6 +28,44 @@ LOCAL_GLOSSARY = ROOT / "docs/00.workspace/01.project/glossary.md"
 
 
 class CommonDocumentContractTests(unittest.TestCase):
+    def test_common_contract_load_is_stdlib_only_before_dependency_installation(
+        self,
+    ) -> None:
+        program = """import sys
+from scripts.lib.document_governance.common_document import load_contract
+core = load_contract()
+assert core['contract_id'] == 'WORKSPACE-DOCUMENT-CORE'
+assert not {'yaml', 'markdown_it', 'jsonschema'} & sys.modules.keys()
+assert isinstance(core['headings']['문서 개요'], tuple)
+try:
+    core['headings']['문서 개요'] = ()
+except TypeError:
+    pass
+else:
+    raise AssertionError('the JSON contract must be deeply immutable')
+from scripts.lib.document_governance.common_document import _markdown_unfenced_lines
+assert _markdown_unfenced_lines('# Actual\\n```md\\n# Example\\n```\\n') == ['# Actual']
+assert not {'yaml', 'markdown_it', 'jsonschema'} & sys.modules.keys()
+"""
+        result = subprocess.run(
+            [sys.executable, "-ES", "-c", program],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_existing_unfenced_reader_is_reexported_without_a_second_implementation(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance import common_document
+        from scripts.lib.document_governance.metadata import heading
+
+        self.assertIs(
+            common_document._markdown_unfenced_lines, heading._markdown_unfenced_lines
+        )
+
     def test_deep_encoding_keeps_annotations_out_of_actual_heading_titles(self) -> None:
         from scripts.lib.document_governance.common_document import (
             compact_payload,

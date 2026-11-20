@@ -7,6 +7,7 @@ import json
 import pathlib
 import re
 from collections.abc import Mapping
+from types import MappingProxyType
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 CORE_PATH = "docs/99.templates/01.contracts/common-document-contract.json"
@@ -23,9 +24,19 @@ def _unique(pairs: list[tuple[str, object]]) -> dict:
     return value
 
 
+def _immutable_json(value: object) -> object:
+    """Freeze a JSON tree; JSON has neither YAML aliases nor custom values."""
+    if isinstance(value, dict):
+        return MappingProxyType(
+            {key: _immutable_json(child) for key, child in value.items()}
+        )
+    if isinstance(value, list):
+        return tuple(_immutable_json(child) for child in value)
+    return value
+
+
 @functools.lru_cache(maxsize=4)
 def _decode_contract(raw: bytes) -> Mapping:
-    from scripts.lib.document_governance.frontmatter import _freeze
     from scripts.lib.document_governance.semver import is_numeric_version
 
     try:
@@ -93,12 +104,12 @@ def _decode_contract(raw: bytes) -> Mapping:
         or len(relations) != len(set(relations))
     ):
         raise CommonDocumentError("common semantic relations must be unique names")
-    return _freeze(document)
+    return _immutable_json(document)
 
 
 def load_contract(*, root: pathlib.Path = ROOT) -> Mapping:
     """Read a bounded regular source; cached parsing is keyed by actual bytes."""
-    from scripts.lib.document_governance.operations_catalog import read_bounded_regular
+    from scripts.lib.document_governance.file_access import read_bounded_regular
 
     try:
         return _decode_contract(
@@ -112,6 +123,35 @@ def load_contract(*, root: pathlib.Path = ROOT) -> Mapping:
         raise CommonDocumentError("cannot read the common document contract") from error
 
 
+def _markdown_unfenced_lines(text: str) -> list[str]:
+    """Return Markdown lines outside backtick and tilde fenced blocks."""
+
+    lines: list[str] = []
+    fence_character: str | None = None
+    fence_length = 0
+    for line in text.splitlines():
+        if fence_character is None:
+            opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+            if opening:
+                marker = opening.group(1)
+                info_string = opening.group(2)
+                if marker[0] == "`" and "`" in info_string:
+                    lines.append(line)
+                    continue
+                fence_character = marker[0]
+                fence_length = len(marker)
+                continue
+            lines.append(line)
+            continue
+        if re.match(
+            rf"^ {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*$",
+            line,
+        ):
+            fence_character = None
+            fence_length = 0
+    return lines
+
+
 def _headings(text: str) -> list[tuple[int, int, str]]:
     from scripts.lib.document_governance.metadata.heading import _markdown_form_lines
 
@@ -123,10 +163,6 @@ def _headings(text: str) -> list[tuple[int, int, str]]:
 
 
 def is_enveloped(text: str) -> bool:
-    from scripts.lib.document_governance.metadata.heading import (
-        _markdown_unfenced_lines,
-    )
-
     core = load_contract()
     marker = core["payload_encoding"]["marker"]
     body = re.sub(r"\A---\r?\n.*?\r?\n---(?:\r?\n|$)", "", text, count=1, flags=re.S)
@@ -435,7 +471,7 @@ def template_payload(
     registry: object, template_id: str, *, root: pathlib.Path = ROOT
 ) -> str:
     """Read the real typed output asset, or the Markdown definition's role payload."""
-    from scripts.lib.document_governance.operations_catalog import read_bounded_regular
+    from scripts.lib.document_governance.file_access import read_bounded_regular
 
     role = registry.template_roles.get(template_id)
     if not isinstance(role, Mapping):
