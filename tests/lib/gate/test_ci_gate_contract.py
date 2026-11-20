@@ -6,6 +6,7 @@ import json
 import os
 import pathlib
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -1813,6 +1814,49 @@ class GateCrosswalkTests(unittest.TestCase):
                     self.assertIn("actual-owner", anchors)
                     self.assertNotIn("comment-example", anchors)
                     self.assertNotIn("html-example", anchors)
+
+    def test_malformed_attribute_runs_do_not_stall_or_hide_the_owner(self) -> None:
+        program = """import pathlib, re, sys
+sys.path.insert(0, sys.argv[1])
+from scripts.lib.gate import ci_gate_contract as contract
+from scripts.lib.document_governance.common_document import load_contract
+bad = '<A\\t:=' + '!\\u00a0\\u00a0:=' * 24 + '!'
+assert re.fullmatch(contract._OWNER_HTML_TAG, bad) is None
+assert re.fullmatch(contract._OWNER_HTML_TAG, bad + '>') is not None
+source = '# Policy\\n\\n' + bad + '\\n\\n## Actual Owner\\n\\nActual rule.\\n'
+headings = contract._rule_owner_headings(source, load_contract(root=pathlib.Path(sys.argv[1])))
+assert (2, 'Actual Owner') in headings
+assert not {'yaml', 'markdown_it', 'jsonschema'} & sys.modules.keys()
+"""
+        result = subprocess.run(
+            [sys.executable, "-ES", "-c", program, str(ROOT)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_html_attributes_keep_boolean_quoted_multiline_and_unicode_values(
+        self,
+    ) -> None:
+        import re
+
+        from markdown_it.common.html_re import HTML_OPEN_CLOSE_TAG_RE
+
+        for text in (
+            "<span>",
+            "</span>",
+            "<input disabled checked/>",
+            "<span a=value b='quoted > value' c=\"line\n<!--\">",
+            "<span a=foo\u00a0b=x>",
+            "<span a=\u00a0>",
+            "<span a=foo\u00a0\u00a0:=!>",
+        ):
+            with self.subTest(text=text):
+                self.assertIsNotNone(HTML_OPEN_CLOSE_TAG_RE.fullmatch(text))
+                self.assertIsNotNone(re.fullmatch(contract._OWNER_HTML_TAG, text))
 
     def test_promotion_readiness_is_reported_by_the_lifecycle_leaf(self) -> None:
         """H-W04-2: SDLC-PROMOTION reuses the lifecycle check's --readiness

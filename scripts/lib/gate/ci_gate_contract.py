@@ -2008,9 +2008,11 @@ def validate_rule_owners(
     return tuple(findings)
 
 
+# Commit only complete attributes: Unicode whitespace is also legal inside an
+# unquoted value, so check the boundary before making the repetition possessive.
 _OWNER_HTML_TAG = (
     r"(?:<[A-Za-z][A-Za-z0-9-]*(?:\s+[a-zA-Z_:][a-zA-Z0-9:._-]*"
-    r"(?:\s*=\s*(?:[^\"'=<>`\x00-\x20]+|'[^']*'|\"[^\"]*\"))?)*\s*/?>"
+    r"(?:\s*=\s*(?:[^\"'=<>`\x00-\x20]+|'[^']*'|\"[^\"]*\"))?(?=\s|/?>))*+\s*/?>"
     r"|</[A-Za-z][A-Za-z0-9-]*\s*>)"
 )
 
