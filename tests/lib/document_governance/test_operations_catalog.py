@@ -17,6 +17,7 @@ from unittest import mock
 import yaml
 
 from scripts.lib.document_governance import operations_catalog
+from scripts.lib.document_governance.common_document import payload_text
 from scripts.lib.document_governance.operations_catalog import (
     REGISTRY_PATH,
     OperationsAuthorityError,
@@ -170,16 +171,24 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                 if domain_index.exists()
                 else "# 실험 문서\n"
             )
-            domain_index.write_text(
-                domain_text + "\n[합성 예제](0999-lab-example.md)\n",
-                encoding="utf-8",
+            payload_end = "\n## 적용과 확인\n"
+            row = "[합성 예제](0999-lab-example.md)\n"
+            updated_domain_text = domain_text.replace(
+                payload_end, f"\n{row}{payload_end}", 1
             )
+            self.assertNotEqual(domain_text, updated_domain_text)
+            self.assertIn(row.strip(), payload_text(updated_domain_text))
+            domain_index.write_text(updated_domain_text, encoding="utf-8")
             domain_link = f"({domain}/README.md)"
             if domain_link not in index_text:
-                index.write_text(
-                    index_text + f"\n[합성 문서]({domain}/README.md)\n",
-                    encoding="utf-8",
+                updated_index_text = index_text.replace(
+                    payload_end,
+                    f"\n[합성 문서]{domain_link}\n{payload_end}",
+                    1,
                 )
+                self.assertNotEqual(index_text, updated_index_text)
+                index.write_text(updated_index_text, encoding="utf-8")
+            self.assertIn(domain_link, payload_text(index.read_text(encoding="utf-8")))
         self._track(root, root / "docs/05.operations")
         return context, root
 
@@ -223,20 +232,23 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     if mutation == "missing-readme":
                         index.unlink()
                     else:
+                        text = index.read_text(encoding="utf-8")
                         replacement = {
                             "missing": "",
                             "duplicate": row + row,
                             "stale": "[합성 예제](0098-gone.md)\n",
                         }[mutation]
-                        index.write_text(
-                            "# 실험 문서\n\n" + replacement, encoding="utf-8"
-                        )
+                        updated = text.replace(row, replacement, 1)
+                        self.assertNotEqual(text, updated)
+                        index.write_text(updated, encoding="utf-8")
                     self._track(root, index.parent)
                     codes = finding_codes(root)
-                    self.assertTrue(
-                        {"role-index-invalid", "role-index-membership-invalid"} & codes,
-                        codes,
+                    expected = (
+                        "role-index-invalid"
+                        if mutation == "missing-readme"
+                        else "role-index-membership-invalid"
                     )
+                    self.assertIn(expected, codes)
 
     def test_domain_and_readme_symlinks_and_untracked_members_are_rejected(
         self,

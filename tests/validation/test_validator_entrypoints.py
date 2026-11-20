@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import shutil
 import subprocess
@@ -47,24 +48,85 @@ SHELL_ENTRYPOINTS = (
 
 class ValidatorEntrypointTests(unittest.TestCase):
     def test_ci_routing_explain_needs_no_site_packages(self) -> None:
-        completed = subprocess.run(
-            [
+        from scripts.lib.document_governance.common_document import CORE_PATH
+        from scripts.lib.gate import ci_gate_contract as contract
+        from tests.validation.test_ci_gate_plan import CiGateRunnerContractTests
+
+        registry = contract.parse_gate_registry(
+            contract.load_contract_document(ROOT), ".github/workflow-contract.yml"
+        )
+        inputs = {".github/workflow-contract.yml", "scripts/manifest.yaml", CORE_PATH}
+        inputs.update(
+            node.entrypoint.as_posix() for node in registry.nodes if node.entrypoint
+        )
+        inputs.update(
+            node.rule_owner.partition("#")[0]
+            for node in registry.nodes
+            if node.rule_owner
+        )
+        fixture = CiGateRunnerContractTests()
+        with tempfile.TemporaryDirectory() as directory:
+            planning_root = fixture._changed_path_repo(Path(directory))
+            for relative in sorted(inputs):
+                target = planning_root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, target)
+            for node in registry.nodes:
+                if node.cwd is not None:
+                    (planning_root / node.cwd).mkdir(parents=True, exist_ok=True)
+            fixture._git(planning_root, "add", "-A")
+            fixture._git(planning_root, "commit", "-qm", "planning inputs")
+            candidate = planning_root / "scripts/lib/document_governance/example.py"
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            candidate.write_text("candidate\n", encoding="utf-8")
+            command = [
                 sys.executable,
                 "-ES",
-                "scripts/validation/run-ci-gate.py",
+                str(ROOT / "scripts/validation/run-ci-gate.py"),
                 "--profile",
                 "changed",
                 "--explain",
-            ],
-            cwd=ROOT,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=30,
-            pass_fds=gate_root_pass_fds(ROOT),
-        )
-        self.assertEqual(0, completed.returncode, completed.stderr)
-        self.assertIn("leaf.", completed.stdout)
+            ]
+            evidence = Path(directory) / "evidence"
+            environment = {
+                **os.environ,
+                "HYHOME_CI_GATE_ROOT": str(planning_root),
+                "CI_GATE_EVIDENCE_DIR": str(evidence),
+            }
+            completed = subprocess.run(
+                command,
+                cwd=planning_root,
+                env=environment,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                pass_fds=gate_root_pass_fds(ROOT),
+            )
+            self.assertEqual(0, completed.returncode, completed.stderr)
+            self.assertIn("leaf.", completed.stdout)
+            descriptor = os.open(
+                planning_root, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC
+            )
+            try:
+                rejected = subprocess.run(
+                    command,
+                    cwd=planning_root,
+                    env={
+                        **environment,
+                        "HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{descriptor}",
+                    },
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                    pass_fds=(*gate_root_pass_fds(ROOT), descriptor),
+                )
+            finally:
+                os.close(descriptor)
+            self.assertEqual((1, ""), (rejected.returncode, rejected.stdout))
+            self.assertIn("ci-gate-path-noncanonical", rejected.stderr)
+            self.assertFalse(evidence.exists())
 
     def test_python_entrypoints_expose_closed_cli_help(self) -> None:
         for entrypoint in PYTHON_ENTRYPOINTS:
