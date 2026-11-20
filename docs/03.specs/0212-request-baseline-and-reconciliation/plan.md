@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.1.0"
+version: "2.2.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -443,6 +443,41 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W173 | 157 | Reconcile policy and architecture ownership, separate common/local vocabulary with complete consumer updates, remove copied bootstrap order and align rule_owner prose | W172 | TSK-0101 | Profile and route RED/GREEN, pinned vocabulary/template/heading regressions, existing rule-owner negatives, changed document and canonical/provider checks, independent review and required hosted candidate |
 | W174 | 158 | Adopt common envelope, metadata and payload bindings; migrate actual template/native/semantic consumers and current normative sources while preserving historical evidence | W173 | TSK-0102 | Envelope/metadata/IF/AC/native/relation/version RED/GREEN, representative output consumption, affected regressions, one justified corpus validation, independent protected-surface review and actual current candidate |
 | W175 | 159 | Reconcile current SDLC duties and typed workspace-guide authority; align normative relation rules and migrate actual owners/consumers while preserving incomplete obligations | W174 | TSK-0103 | Draft/active/type/scope/script-use RED/GREEN; affected Registry/manifest/document regressions and corpus checks; independent policy/security review; normal hooks and current hosted candidate |
+| W176 | 160 | Align impact-based review policy, real native parent/tool boundaries and reporting; reuse valid Codex spawned proof and observe only the missing current Claude route | W175 | TSK-0104 | Focused existing policy/producer checks, bounded real read/refusal/review evidence, protected boundary review and normal current-candidate delivery |
+
+###### Current P06 independent-review boundary
+<!-- core-payload-level:4 -->
+
+The direct P06 request authorizes scoped implementation and normal Git/PR
+integration. [TSK-0104](01.tasks/tsk-0104-p06-independent-review.md) owns
+criterion160/W176. Completed11 and P00–P05 are maintained, not reimplemented.
+Risk classification belongs to workspace quality; procedure and carry belong
+to workflows; effective environment prerequisites belong to the existing
+workspace environment guide; provider syntax stays in authored adapters.
+Roles and review skills/prompts consume those owners and report actual
+surface, enforcement, source write and scope-limited judgments. Regenerate
+only registered provider projections when their canonical inputs change.
+
+Keep the Codex0.169.0 read-only-parent child read/write-refusal proof in
+TSK-0079 at its actual OS-write and pattern-hook-read scope. Its writable-parent
+failures remain failed; no current obligation is dismissed by old exemptions.
+Current Claude2.1.329 adds installed restrictive controls needing a bounded
+actual selected-route observation. Use only native capabilities verified by
+installed help/source, existing account and allowed model, at most600 seconds
+per representative attempt and at most two actual workers; providers execute
+sequentially. Use a supported turn/cost cap only when actually supported,
+without presenting an estimate as billing. Plan one first attempt and one
+repair-specific retry; no probe repeats on every commit or CI event.
+
+Read-only discovery precedes exact writer scope binding. Separate policy and
+native-adapter/environment ownership; no two writers share a file. The final
+high-risk review covers actual authority/boundary changes once. A native
+observation may supply that review only if it reads the real frozen inputs
+and returns a genuine independent disposition. Record-only later additions
+carry that result. Source setup and unsupported/missing runtime are distinct;
+only a genuine environment-dependent observation may transfer to P07 with an
+explicit check and owner. No work-dispatch rewrite, live service operation,
+secret read, new subscription or final history/number reset is authorized.
 
 ###### Current P05 document and SDLC implementation
 <!-- core-payload-level:4 -->

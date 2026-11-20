@@ -1,6 +1,6 @@
 ---
 title: "Claude Provider Adapter"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -109,6 +109,67 @@ projection of either, and their absence under `.claude/` is not a defect.
   from `SessionEnd`, so this repository registers no reminder there. The
   `Stop` decision asks Claude to continue the turn. It does not record
   implementation acceptance or grant permission.
+
+##### Selected restricted CLI review
+
+Installed Claude Code2.1.329 supports a foreground review using the existing
+account, with file tools confined to an owned disposable working directory.
+The controller provides the review request on stdin and starts this command
+in that directory:
+
+```bash
+claude --print --safe-mode --restricted --permission-mode dontAsk \
+  --tools Read,Grep,Glob --allowedTools Read,Grep,Glob \
+  --settings '{"permissions":{"deny":["Write","Edit","NotebookEdit","Bash","PowerShell","Agent"]}}' \
+  --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+  --setting-sources '' --disable-slash-commands --no-session-persistence \
+  --model claude-opus-5-5 --effort high --output-format stream-json --verbose
+```
+
+The model/effort match the current Registry review selection; a flag does not
+prove entitlement or runtime acceptance. Safe mode keeps normal authentication
+and permissions while disabling user customizations, including auto-discovered
+instruction files, installed plugins, hooks and custom agents. Built-in
+plugins and admin-managed policy are not disabled by that claim. Restricted mode also
+ignores user/project/local settings and confines file tools to the working
+directories. Explicitly provide the canonical loading/role context. This fresh
+CLI context is the independent reviewer; the routine route offers no Agent or
+writer tool and also denies writer, command and Agent APIs in native policy.
+Do not claim the disabled project agent was discovered or that a child review
+occurred. Verify the actual offered tools and effective restrictions.
+Do not use `--bare` as an authentication substitute: this installed version
+would not read the existing OAuth account on that route.
+
+Admin-managed settings and hooks still apply in safe/restricted mode; inspect
+the effective sources without printing credentials. Empty strict MCP and the
+explicit tool list address review-tool access, not the model provider's
+necessary authentication traffic or a blanket whole-process network sandbox.
+The shell sandbox alone also does not cover file tools, MCP or hooks. A
+managed setting that prevents the planned restriction is a real prerequisite
+or failure, never a reason to bypass that setting.
+
+For a synthetic negative control only, a controller may offer the Write API
+while applying a path-scoped native deny such as `Write(./**)` to the owned
+source working directory with `dontAsk`. Catalog availability is not write
+permission. Record the actual permission-denial event and unchanged dummy
+hash; if Write is absent, or the call never occurs, do not report that as an
+observed native write refusal. Keep this instrumented control distinct from
+the generated inspection role's Read/Grep/Glob catalog. No control targets an
+operating file or actual secret. An instrumented parent/child case proves only
+its recorded catalog and permission configuration; it is not evidence that
+the no-Writer/no-Agent routine route attempted a Write call. The routine
+route's actual catalog and review need their own bounded observation. Keep
+older2.1.326/327 witnesses and any current instrumented case at their original
+scope, without silently relabelling them as this routine route's result.
+
+Consume a required structured stream in memory and retain only the selected,
+redacted permission witnesses and final review in the current Task; do not
+write a raw session JSONL copy. The [workspace environment guide](../docs/00.workspace/05.environment/onboarding.md#independent-review-environment)
+owns the finite case and cleanup. Installed help supports `--max-budget-usd`
+in print mode, but no existing numeric per-call cap is known here; an estimate
+is not a billing guarantee. Do not invent a `--max-turns` option from its
+presence in bundled strings: installed help does not expose it. Use the
+controller's bounded time and worker limits and record unobservable usage.
 
 #### Limitations
 

@@ -1,6 +1,6 @@
 ---
 title: "code-reviewer"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
@@ -54,7 +54,10 @@ Provide independent, evidence-backed review of exact changes without editing the
 
 ##### Success Criteria
 
-Every finding cites reproducible evidence, severity matches impact, and the verdict distinguishes defects from forward dependencies.
+Every finding cites reproducible evidence, severity matches impact, and the
+verdict distinguishes defects from forward dependencies. The report names the
+actual review context, scope and enforcement evidence; role intent alone is
+never recorded as an enforced read-only boundary.
 
 #### Allowed Changes
 
@@ -64,11 +67,20 @@ Read-only. Do not patch reviewed files, broaden scope, or infer passes from miss
 
 - Exact diff or commit range, governing specification, and implementation report.
 - Observed validation results and declared out-of-scope boundaries.
+- Actual execution surface, effective parent/worker restrictions and a
+  current or reusable same-condition enforcement witness, with its limits.
 
 ##### Outputs
 
-- File-and-line findings classified as Critical, Important, or Minor.
+- File-and-line findings using the shared `blocker`, `high`, `medium` and
+  `low` severity vocabulary, with concrete failure scenarios.
 - Separate specification and quality verdicts with unverified items identified.
+- Independence, actual scope, input identity and carried review slice;
+  `execution_surface`, `read_only_status` and `source_write` observations with
+  their mechanism and limits, as the shared diff-review prompt requires.
+  Distinguish unavailable tools, tool-policy refusal and OS write denial;
+  neither a source verdict nor a role label grants operational permission or
+  records user acceptance.
 
 #### Handoff
 

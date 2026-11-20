@@ -1,6 +1,6 @@
 ---
 title: "Provider Capability Matrix"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -103,8 +103,26 @@ None: this document states no exclusion.
 | Explicit invocation | skill-local control and shared approval | `disable-model-invocation: true` | `agents/openai.yaml`: `policy.allow_implicit_invocation: false` |
 | Model and effort | Provider Registry | native model and effort | native model and reasoning |
 | Permissions | role plus Provider Registry | permission mode | sandbox mode |
-| Spawned reviewer read-only enforcement | Review Risk in `workflows.md` | tool allowlist of the generated reviewer agent; a spawned reviewer was observed with no write or shell tool and a refused sensitive read (SPEC-0212 TSK-0079) | on 0.169.0 a spawned reviewer keeps its parent's sandbox despite `sandbox_mode = "read-only"`; a read-only parent enforces it |
+| Independent reviewer read-only enforcement | Workflow execution boundary and workspace environment guidance | Claude2.1.329 restricted CLI: an instrumented child actually received Write and outside-Read native policy refusals; the separate routine fresh CLI exposes only Read/Grep/Glob with no child, writer, shell or MCP tool. That routine removes capabilities; it made no write attempt and proves no OS write denial | Codex0.169.0 TSK-0079 actual read-only-parent child proof is reusable for OS source-write refusal; writable-parent role overrides failed and remain failed |
 | Semantic events | Registry plus native hook config | Claude adapter | Codex adapter |
+
+The selected review route and the configured role are distinct capability
+facts. Authored provider adapters own native syntax; the workspace environment
+guide owns source/probe/scratch prerequisites. Actual review reports identify
+surface, enforced/failed/unobserved/unsupported boundary status, observed
+source-write result and the mechanism and limits of that witness. Unavailable
+tools, a native permission refusal and an OS write refusal are different facts.
+A shell/FS read-only result does not prove arbitrary MCP, network, Docker socket
+or whole-home isolation. Narrow those surfaces using supported native controls;
+never infer their denial from a role name or instruction text.
+
+The current Codex carry covers the 0.169.0 read-only-parent inheritance and OS
+write refusal in TSK-0079. The recorded secret-pattern hook refusal is historical
+and bounded; the matcher has since received focused regression fixes. Current
+CLI preflight can disable configured MCP services and app/browser/skill-MCP
+startup without changing user-global configuration. This is not a new paid
+reviewer call or proof of every native surface. The writable-parent and managed
+Desktop route failures are not resolved by successful CLI alternatives.
 
 Native skill frontmatter uses `name`, `description`, and nested governance
 `metadata`; the folder, name, and stable function identity agree. Discovery is
