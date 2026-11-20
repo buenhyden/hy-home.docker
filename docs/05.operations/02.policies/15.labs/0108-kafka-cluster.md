@@ -1,10 +1,13 @@
 ---
 title: "Kafka Cluster LAB Operations Policy"
-version: "0.3.0"
+version: "1.0.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0108"
 parent_ids:
@@ -15,33 +18,55 @@ next_review_at: "2027-05-13"
 
 # Kafka Cluster LAB Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 `labs/kafka-cluster/docker-compose.yml`의 LAB 전용 세 broker KRaft cluster를 격리, 데이터,
 자원과 승격 통제에 묶는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Runtime source: [Kafka LAB Compose](../../../../labs/kafka-cluster/docker-compose.yml).
 - Artifact: `POL-0108`; parent: `AD-0026`.
 - Version projection: [tech-stack versions](../../../../infra/tech-stack.versions.json)는 Compose에서 파생된 drift 증거이며 정확한 pin은 Compose가 소유한다.
 
-### Applies To
+##### Applies To
 
 LAB 전용 `lab-kafka` profile과 project `hy-home-lab-kafka`에 적용된다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 [ADR-0062의 Kafka CDC 개정](../../../02.architecture/02.decisions/0062-home-lab-membership.md#amendment-of-2026-11-10-kafka-cdc-kafka-connect-and-schema-registry)은
 HOME 단일 broker를 유지한다. LAB의 `replace-same` manifest는 교체 검토용 후보이며 승인 근거로
 쓰지 않는다. HOME 교체는 변경된 구조 결정의 승인과 [POL-0107](0107-lab-promotion.md)의 별도
 Task를 요구한다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -80,26 +105,28 @@ Task를 요구한다.
 - 데이터 보존과 삭제는 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)과 별도 승인을
   따른다. 이 LAB 데이터는 HOME 데이터와 섞지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 명명된 실험이 없을 때 LAB은 정지 상태로 둘 수 있다. 예외는 runtime 변경, HOME 데이터 재사용, host
 노출을 승인하지 않는다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 image, profile, network, 데이터 경로, 승격 manifest가 바뀔 때와 승격 Task를 열기 전에 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 [RUN-0108](../../03.runbooks/15.labs/0108-kafka-cluster.md)의 정적 render와 `lab.py check kafka-cluster`로
 검증한다. HOME 입력의 render와 runtime은 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면
 `labs/.env`에 `LAB_KAFKA_CLUSTER_ID`가 없으며, agent는 그 파일을 읽지 않았다.
 
-### Limits
+##### Limits
 
 정책은 `RUN-0108`의 정적 render와 `lab.py check kafka-cluster`를 개별 규칙과 연결하지 않으며, 아래 규칙은 승인/검토에 의존하거나 강제 수단이 없다.
 
@@ -111,15 +138,35 @@ image, profile, network, 데이터 경로, 승격 manifest가 바뀔 때와 승�
 - HOME 입력의 render와 runtime은 `NOT_RUN`이며 `labs/.env`에 `LAB_KAFKA_CLUSTER_ID`가 없다는 controller 보고가 있다.
 - PLAINTEXT(인증/TLS 없음)이며 host 가용성은 주장할 수 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Kafka LAB guide](../../01.guides/15.labs/0108-kafka-cluster.md)
 - [Kafka LAB runbook](../../03.runbooks/15.labs/0108-kafka-cluster.md)
 - [LAB promotion policy](0107-lab-promotion.md)
 - [Domain catalog](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

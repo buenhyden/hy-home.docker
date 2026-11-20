@@ -1,20 +1,43 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.7.1"
+version: "2.0.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: codex provider adapter
+  layer: provider
+updated: "2026-11-20"
 runtime: "codex"
 ---
 
 # Codex Provider Adapter
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the provider payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
 
 Translate provider-neutral canonical governance into Codex native syntax.
 
-## Loading
+#### Loading
 
 Codex enters through root `AGENTS.md`, which explicitly instructs reading the
 [bootstrap policy](../.agents/governance/bootstrap.md) and this authored adapter.
@@ -39,7 +62,7 @@ The folder `CLAUDE.md` import shims are Claude's route; Codex does not read
 them. The bootstrap step that requires reading that guide applies when the
 hook does not run.
 
-## Native Controls
+#### Native Controls
 
 - `.codex/agents/*.toml` contains generated role adapters.
 - `.agents/skills/<skill_id>/SKILL.md` is the authored native skill source.
@@ -72,7 +95,7 @@ hook does not run.
   `memories.use_memories = false` in `.codex/config.toml`. Whether Codex
   honours `[memories]` in a trusted project has not been observed.
 
-## Limitations
+#### Limitations
 
 - A nested launcher in the managed shell failed to create a Bubblewrap
   namespace. In a separately approved host launch, installed Codex CLI
@@ -121,8 +144,28 @@ there; a read-only review on that route needs a read-only parent.
 Respect the active sandbox and approval boundary; do not mutate user-global or
 ignored local configuration or install global skill copies.
 
-## Related Documents
+#### Related Documents
 
 - [Canonical governance](../.agents/README.md)
 - <https://learn.chatgpt.com/docs/config-file/config-reference>
 - <https://learn.chatgpt.com/docs/hooks>
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Qdrant Operations Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -15,19 +18,40 @@ next_review_at: "2027-05-13"
 
 # Qdrant Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 root-active `HOME` Qdrant 운영 기준을 정의한다. 기준은 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)의 단일 service, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, API key secret, SSO 뒤의 REST route와 `/readyz` healthcheck다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/01.descriptions/0004-data-architecture.md) (`AD-0004`)
 
 - [Infra README](../../../../infra/04-data/qdrant/README.md)
 
-### Applies To
+##### Applies To
 
 - `infra/04-data/qdrant/docker-compose.yml`
 - `qdrant` service와 `qdrant-data` volume
@@ -37,13 +61,14 @@ next_review_at: "2027-05-13"
 - `QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/storage/snapshots`
 - `docs/05.operations` 아래에 연결된 guide와 runbook
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -82,30 +107,33 @@ next_review_at: "2027-05-13"
 - **Disallowed**: 별도의 owner 승인과 검증된 runbook evidence 없이 승인된 정책으로 제시되는 collection delete, snapshot restore, volume replacement, cluster repair, data mutation 단계.
 - **Disallowed**: API key를 제거하거나 key 없이 Qdrant를 호출하는 client를 추가하는 행위.
 
-#### Accountable lifecycle boundary
+###### Accountable lifecycle boundary
+<!-- core-payload-level:4 -->
 
 적용 identity: `qdrant`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 N/A - 현재 승인된 예외 없음.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - Qdrant compose image/profile/secret/route/snapshot-path 변경 시 검토한다.
 - Stage 05 운영 문서 audit 주기 동안 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - compose 변경 후 이 정책을 [Qdrant guide](../../01.guides/09.ai-and-search/0034-qdrant.md), [Qdrant runbook](../../03.runbooks/09.ai-and-search/0034-qdrant.md), [infra README](../../../../infra/04-data/qdrant/README.md)와 비교한다.
 - service-name, image, route, secret, healthcheck, volume 문서 갱신을 승인하기 전에 `docker compose --profile qdrant config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
-### Limits
+##### Limits
 
 이 정책의 이름 붙은 검사는 문서 비교, `docker compose --profile qdrant config --quiet`, `check-document-links.py --mode all` 세 가지이며 모두 정적 문서 검증이라 아래 규칙은 검사 없이 수동 검토나 runbook 증거에 의존한다.
 
@@ -118,13 +146,13 @@ N/A - 현재 승인된 예외 없음.
 - 세 검사는 runtime 운영 승인이나 실제 backup/restore를 증명하지 않는다.
 - secret/key 취급, 백업 inventory, restore rehearsal, promotion 검증, 변경 금지 단계는 수동 검토와 runbook 증거에 의존하며 지정된 검사가 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/09.ai-and-search/0034-qdrant.md) (`GDE-0034`), [Runbook](../../03.runbooks/09.ai-and-search/0034-qdrant.md) (`RUN-0034`)
 
@@ -133,3 +161,23 @@ N/A - 현재 승인된 예외 없음.
 - [Operations index](../../README.md)
 - [Usage guide](../../01.guides/09.ai-and-search/0034-qdrant.md)
 - [Recovery runbook](../../03.runbooks/09.ai-and-search/0034-qdrant.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

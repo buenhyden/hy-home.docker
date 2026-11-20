@@ -14,6 +14,12 @@ from collections.abc import Mapping, Sequence
 
 from markdown_it import MarkdownIt
 
+from scripts.lib.document_governance.common_document import (
+    _markdown_form_lines as _markdown_form_lines,
+)
+from scripts.lib.document_governance.common_document import (
+    _markdown_unfenced_lines as _markdown_unfenced_lines,
+)
 from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
@@ -77,12 +83,17 @@ def _validate_template_source(
         for name, role in template_roles.items()
         if isinstance(name, str)
         and isinstance(role, dict)
-        and role.get("source") == record.path.as_posix()
+        and record.path.as_posix() in {role.get("source"), role.get("native_source")}
     ]
     if not matching_roles:
         return None
     _, role = matching_roles[0]
-    target_type = role.get("artifact_profile")
+    native_definition = (
+        bool(role.get("native_source")) and role.get("source") == record.path.as_posix()
+    )
+    target_type = (
+        "template-source" if native_definition else role.get("artifact_profile")
+    )
     if not isinstance(target_type, str):
         return [
             _finding(
@@ -106,6 +117,8 @@ def _validate_template_source(
     required_placeholder_keys = set(
         common_contract.get("template_required_placeholders", ())
     )
+    if native_definition:
+        required_placeholder_keys = set()
     registered_placeholder_values = set(placeholders.values())
     findings: list[Finding] = []
     if _declares_provider_binding(target_profile):
@@ -288,35 +301,6 @@ def _validate_template_source(
     return sorted(set(findings))
 
 
-def _markdown_unfenced_lines(text: str) -> list[str]:
-    """Return Markdown lines outside backtick and tilde fenced blocks."""
-
-    lines: list[str] = []
-    fence_character: str | None = None
-    fence_length = 0
-    for line in text.splitlines():
-        if fence_character is None:
-            opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
-            if opening:
-                marker = opening.group(1)
-                info_string = opening.group(2)
-                if marker[0] == "`" and "`" in info_string:
-                    lines.append(line)
-                    continue
-                fence_character = marker[0]
-                fence_length = len(marker)
-                continue
-            lines.append(line)
-            continue
-        if re.match(
-            rf"^ {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*$",
-            line,
-        ):
-            fence_character = None
-            fence_length = 0
-    return lines
-
-
 def _strip_inline_code_spans(text: str) -> str:
     """Remove CommonMark code spans closed by an equal backtick run."""
 
@@ -363,45 +347,6 @@ def extract_markdown_headings(text: str) -> tuple[list[str], list[str]]:
             level, title = heading
             (h1 if level == 1 else h2).append(f"{'#' * level} {title}")
     return h1, h2
-
-
-@functools.lru_cache(maxsize=8)
-def _markdown_form_lines(
-    text: str,
-) -> tuple[tuple[int, str, tuple[int, str] | None], ...]:
-    """Map source lines to real headings and exclude blocks used as examples."""
-
-    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
-    lines = normalized.split("\n")
-    tokens = MarkdownIt("commonmark").parse(normalized)
-    headings: dict[int, tuple[int, str]] = {}
-    hidden: set[int] = set()
-    for index, token in enumerate(tokens):
-        if token.map is None:
-            continue
-        start, end = token.map
-        if (
-            token.type == "heading_open"
-            and token.level == 0
-            and token.markup.startswith("#")
-        ):
-            title = tokens[index + 1].content
-            if title:
-                headings[start] = (len(token.markup), title)
-        elif token.type in {"fence", "code_block", "blockquote_open"}:
-            hidden.update(range(start, end))
-        elif token.type in {"bullet_list_open", "ordered_list_open"}:
-            hidden.update(
-                line
-                for line in range(start, end)
-                if lines[line].lstrip().startswith("|")
-            )
-        elif token.type == "html_block" and end > start + 1:
-            hidden.update(range(start, end))
-    return tuple(
-        (index, "" if index in hidden else line, headings.get(index))
-        for index, line in enumerate(lines)
-    )
 
 
 def _body_target_scan_text(text: str) -> str:
@@ -801,7 +746,7 @@ def _source_roles_for_path(
             for name, role in roles.items()
             if isinstance(name, str)
             and isinstance(role, dict)
-            and role.get("source") == path.as_posix()
+            and path.as_posix() in {role.get("source"), role.get("native_source")}
         ),
         key=lambda item: item[0],
     )
@@ -1499,6 +1444,9 @@ def _runtime_version_findings(
     )
     if not in_scope:
         return []
+    from scripts.lib.document_governance.common_document import payload_text
+
+    text = payload_text(text)
     body = re.sub(r"\A---\r?\n.*?\r?\n---(?:\r?\n|$)", "", text, count=1, flags=re.S)
     try:
         all_entries = _runtime_version_entries(root)
@@ -1683,7 +1631,7 @@ def _registered_table_findings(
             )
         spec = template_definition(registry, role)
         titles: dict[str, tuple[str, str | None]] = {}
-        for heading in spec["headings"]:  # type: ignore[union-attr]
+        for heading in spec.get("payload", {}).get("headings", spec["headings"]):  # type: ignore[union-attr]
             titles[str(heading["section_id"])] = (str(heading["title"]), None)
             for child in heading["children"]:
                 titles[str(child["section_id"])] = (
@@ -1799,6 +1747,52 @@ def _registered_table_findings(
     return findings
 
 
+def _common_document_view(
+    record: Record, text: str, profiles: dict[str, object]
+) -> tuple[str, bool, list[Finding]]:
+    """Share current common metadata/envelope validation with active and changed checks."""
+    from scripts.lib.document_governance.common_document import (
+        CommonDocumentError,
+        common_metadata,
+        is_enveloped,
+        payload_text,
+        requires_envelope,
+    )
+
+    envelope_findings = []
+    registry = profiles.get("_registry")
+    try:
+        enveloped = is_enveloped(text)
+        if (
+            isinstance(registry, DocumentRegistry)
+            and requires_envelope(registry, record.path.as_posix())
+            and not enveloped
+        ):
+            envelope_findings.append(
+                _finding(
+                    record,
+                    "common-envelope-missing",
+                    "current normative document requires the common envelope",
+                )
+            )
+        if enveloped:
+            if isinstance(registry, DocumentRegistry):
+                values = record.metadata
+                source = record.path.as_posix().startswith(
+                    "docs/99.templates/02.templates/"
+                )
+                common_metadata(
+                    registry,
+                    record.path.as_posix(),
+                    resolve_template_placeholders(values) if source else values,
+                )
+            text = payload_text(text)
+    except (CommonDocumentError, RegistryError) as error:
+        return text, False, [_finding(record, "common-document-contract", str(error))]
+
+    return text, enveloped, envelope_findings
+
+
 def validate_body_contract(
     record: Record,
     text: str,
@@ -1807,10 +1801,44 @@ def validate_body_contract(
 ) -> list[Finding]:
     """Validate role headings, source tokens, and current authored residue."""
 
+    source_text = text
+    text, enveloped, envelope_findings = _common_document_view(record, text, profiles)
+    if any(finding.code == "common-document-contract" for finding in envelope_findings):
+        return envelope_findings
+    registry = profiles.get("_registry")
+
+    if isinstance(registry, DocumentRegistry):
+        native_definition = any(
+            role.get("native_source") and role["source"] == record.path.as_posix()
+            for role in registry.template_roles.values()
+        )
+        if native_definition:
+            return (
+                []
+                if enveloped
+                else [
+                    _finding(
+                        record,
+                        "common-envelope-missing",
+                        "native definition needs the common envelope",
+                    )
+                ]
+            )
+
+        native_asset = any(
+            role.get("native_source") == record.path.as_posix()
+            for role in registry.template_roles.values()
+        )
+        if native_asset and _path_profile_declares_provider_binding(
+            record.path, registry
+        ):
+            # Typed source slots are checked as templates; the real producer owns emitted headings.
+            return []
+
     if _machine_template_path(record.path):
         return _machine_template_findings(record, text)
 
-    section_findings = (
+    section_findings = envelope_findings + (
         _authored_residue_findings(record, text)
         if _authored_body_target(record, profiles)
         else []
@@ -1861,7 +1889,7 @@ def validate_body_contract(
             declared = profile.get("language")
             # The message carries no ratio: it is the deficit identity, so an
             # edit to a body already in the wrong language is not "introduced".
-            if isinstance(declared, str) and language_mismatch(text, declared):
+            if isinstance(declared, str) and language_mismatch(source_text, declared):
                 section_findings.append(
                     _finding(
                         record,

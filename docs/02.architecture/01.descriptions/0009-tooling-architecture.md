@@ -1,10 +1,13 @@
 ---
 title: "Platform Operations and Software Verification Architecture Description"
-version: "2.6.0"
+version: "3.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-26"
 
 # Platform Operations and Software Verification Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Owns:** OpenTofu (IaC CLI helper) and Terrakube (API, UI, executor);
   Registry (private images); Renovate (manual dependency updates); Restic,
@@ -29,7 +52,8 @@ created: "2026-03-26"
 - **Not in this tier:** SonarQube (`labs/sonarqube`), Locust (`labs/locust`)
   and dbt (`labs/dbt`) are standalone LABs; dbt belongs to Analytics.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This description covers platform operations in `09-platform-ops` and software
 verification in `11-quality`: infrastructure automation, backup orchestration,
@@ -37,17 +61,18 @@ image storage, dependency updates, load, contract, API-mock and policy tests,
 and development mail capture. Public admin UIs sit behind the gateway SSO
 boundary, and only services that need it use the data tier.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Public admin UIs sit behind the gateway SSO boundary through ForwardAuth. The tier consumes `mng-pg` and SeaweedFS (`04-data`), Keycloak (`02-auth`), and `06-observability` for k6 and Registry metrics.
 
-### Constraints
+##### Constraints
 
 Only services that need it use the data tier, and each tool uses its own database or schema. Capabilities other than Registry are not activated implicitly, and SonarQube, Locust and dbt remain standalone LABs.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - **Profile-selected services:** the Terrakube API, UI and executor, Pact
   Broker, Registry, WireMock and Mailpit. WireMock serves requests while its
@@ -59,7 +84,7 @@ Directories under `infra/09-platform-ops/` without a Compose file
 (`project-registration`, `resource-optimization`, `security-updates`,
 `service-integration`) hold no service.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -72,11 +97,12 @@ Directories under `infra/09-platform-ops/` without a Compose file
 
 The Terrakube API, UI and executor routes and the Mailpit UI use the ForwardAuth chain; Registry has no gateway route and publishes only on `127.0.0.1:${REGISTRY_PORT:-5000}`. k6 sends per-run OTLP to an authenticated Alloy receiver, and Terrakube state uses the SeaweedFS S3 backend.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 ```text
 IaC configuration -> OpenTofu or Terrakube plan -> approved apply
@@ -89,7 +115,8 @@ Terrakube state and objects use the SeaweedFS S3 backend and its metadata
 OpenTofu workspace use local persistence. Each tool uses its own database or
 schema.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The root `docker-compose.yml` includes every leaf; a profile selects the
 service. `tooling` and `registry` select Registry, published only on
@@ -103,15 +130,16 @@ packages. Their standalone LAB moves are planned in ADR-0062. Registry and
 Mailpit remain in root Compose. Membership in the root project does not
 indicate which profiles are active.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 SeaweedFS and PostgreSQL on one host are not independent failure domains, so a host failure breaks continuity (see Quality Attributes and Risks below). The description records no failure boundary beyond the linked operations documents.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Security:** the Terrakube API, UI and executor routes and the Mailpit UI
   use the ForwardAuth chain. Registry has no gateway route.
@@ -121,12 +149,13 @@ SeaweedFS and PostgreSQL on one host are not independent failure domains, so a h
 - **Scalability:** Terrakube execution capacity changes only through approved
   configuration; no auto-scaling is implemented.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 Restic, the only cross-platform backup path, runs only when `backup` is
 selected; Compose declares no schedule for it.
 
-### Trade-offs
+##### Trade-offs
 
 - SeaweedFS and PostgreSQL run on one host and are not independent failure
   domains, so a host failure breaks continuity; backup and isolated recovery
@@ -138,25 +167,48 @@ selected; Compose declares no schedule for it.
 - Capabilities other than Registry are not activated implicitly, and
   SonarQube, Locust and dbt stay standalone LABs (Constraints).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0062 HOME Membership and Planned LABs](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0010 Tooling requirements](../../01.requirements/0010-tooling.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - [OpenTofu operations](../../05.operations/01.guides/10.platform-and-backup/0082-opentofu.md)
 - [Pact Broker operations](../../05.operations/01.guides/12.testing-and-quality/0093-pact-broker.md)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 Promoting SonarQube, Locust or dbt back into a root tier is an owner decision
 under the LAB promotion contract.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

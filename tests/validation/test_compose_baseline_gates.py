@@ -30,6 +30,7 @@ from scripts.lib.document_governance.operations_catalog import (
     _ComposeLoader,
     conftest_source_context,
 )
+from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
 ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_SECURITY = ROOT / "scripts/validation/check-template-security-baseline.sh"
@@ -5571,6 +5572,7 @@ sys.exit(37 if "run" in args else 0)
                 capture_output=True,
                 text=True,
                 check=False,
+                pass_fds=gate_root_pass_fds(ROOT),
             )
             log = root / "docker.log"
             records = (
@@ -5590,6 +5592,18 @@ sys.exit(37 if "run" in args else 0)
         result, records = self._run_conftest_wrapper(reject_preparation=True)
         self.assertEqual(2, result.returncode, result.stderr)
         self.assertEqual([], records)
+
+    def test_wrapper_preserves_held_gate_root_for_nested_preparation(self):
+        descriptor = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+        try:
+            with mock.patch.dict(
+                os.environ, {"HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{descriptor}"}
+            ):
+                result, records = self._run_conftest_wrapper()
+        finally:
+            os.close(descriptor)
+        self.assertEqual(37, result.returncode, result.stderr)
+        self.assertTrue(any("down" in record["args"] for record in records))
 
     def test_wrapper_binds_canonical_inputs_and_cleans_after_down(self):
         import hashlib
@@ -5824,7 +5838,8 @@ class ImageTagPolicyTests(unittest.TestCase):
     # ponytail: a 1-2 digit tag counts as a channel; a 3+ digit release number
     # (trino 483) counts as a version. Tighten if a 3-digit channel appears.
     VERSIONED = re.compile(r"v?\d+\.\d+(\.\d+)*([-._+].*)?|\d{3,}|[0-9a-f]{40}")
-    FROM = re.compile(r"\s*FROM\s+(?:--\S+\s+)*(\S+)(?:\s+AS\s+(\S+))?", re.I)
+    # Keep whole-option backtracking so the final option-shaped argument can be the image.
+    FROM = re.compile(r"\s*FROM\s+(?:--\S++\s++)*(\S+)(?:\s+AS\s+(\S+))?", re.I)
     FIELDS = ("owner", "reason", "risk", "review_cadence", "exit_condition")
 
     def test_floating_images_read_tracked_corpus_including_overlay_images(self):
@@ -5923,6 +5938,34 @@ class ImageTagPolicyTests(unittest.TestCase):
             self.assertIsNotNone(self.VERSIONED.fullmatch(tag), tag)
         for tag in ("alpine", "latest", "cu126-slim", "local", "stable", "v2", "18"):
             self.assertIsNone(self.VERSIONED.fullmatch(tag), tag)
+
+    def test_from_rule_preserves_flags_alias_case_and_unicode_whitespace(self):
+        cases = {
+            "FROM --platform=linux/amd64 --example=value example/app:latest AS build": (
+                "example/app:latest",
+                "build",
+            ),
+            "fRoM\u2003--platform=linux/arm64\u2003example/app:latest\u2003aS\u2003Final": (
+                "example/app:latest",
+                "Final",
+            ),
+            "FROM --platform=linux/amd64 --flag-looking-image": (
+                "--flag-looking-image",
+                None,
+            ),
+        }
+        for line, expected in cases.items():
+            with self.subTest(line=line):
+                match = self.FROM.match(line)
+                self.assertIsNotNone(match)
+                self.assertEqual(expected, match.groups())
+        for line in (
+            "FROM",
+            "RUN FROM example/app:latest",
+            "# FROM example/app:latest",
+        ):
+            with self.subTest(line=line):
+                self.assertIsNone(self.FROM.match(line))
 
 
 ROUTES_WITHOUT_SSO = {

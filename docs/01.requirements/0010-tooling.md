@@ -1,10 +1,13 @@
 ---
 title: "Platform Operations and Software Verification Requirements"
-version: "2.4.1"
+version: "3.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0010"
 created: "2026-03-26"
@@ -12,9 +15,29 @@ created: "2026-03-26"
 
 # Platform Operations and Software Verification Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 Manual infrastructure changes are hard to track, and fragmented code quality
 and performance checks leave the platform's stability unverified. This package
@@ -24,7 +47,7 @@ backup) and software verification (static analysis, load testing, API mocking,
 contract testing and policy checks; the SMTP sandbox is REQ-0011's). The goal is a supporting
 toolset that removes manual work and gives data for engineering decisions.
 
-### Stakeholders
+##### Stakeholders
 
 - **DevOps engineer**: manages infrastructure consistently through IaC and has
   every infrastructure plan reviewed before it is applied (Terrakube).
@@ -35,15 +58,15 @@ toolset that removes manual work and gives data for engineering decisions.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - Infrastructure automation and its orchestration, the private
   image registry, static code analysis, load testing, and the shared
   verification tools of the quality tier.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - **Out of scope**: servers that run business logic; service monitoring and
   logging, owned by the observability tier; mail capture requirements, owned by
@@ -70,7 +93,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   host; preserving that host's storage alone is not backup or host-failure
   recovery.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -81,7 +104,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 | REQ-0010-FR-0006 | Propose dependency and image updates automatically for review, and take scheduled encrypted backups with both a local and an offsite copy. | The toolset removes manual work; preserving the single host's storage alone is not backup or host-failure recovery. | The update tool opens reviewable change requests and applies nothing itself, and a backup run leaves an encrypted snapshot in the local and the offsite repository. | must |
 | REQ-0010-FR-0007 | Provide shared verification tools: API mocking, consumer contract testing through a contract broker, and policy checks over tracked configuration. | Fragmented checks leave the platform's stability unverified; the goal is a supporting toolset that gives data for engineering decisions. | The mock server, the contract broker and the policy checker each render in the quality tier, and the policy check runs as a registered CI gate. | must |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0010-FR-0001**: Provide an infrastructure-as-code command-line helper
   for execution and state management, plus a centralized orchestration service
@@ -103,20 +126,21 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   consumer contract testing through a contract broker, and policy checks over
   tracked configuration.
 
-### Quality Requirements
+##### Quality Requirements
 
 This package declares no quality requirement and records no reason why none applies.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 This package records the owner's requirements for the tooling tier; no upstream
 document governs it.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0010-FR-0001**: Every tracked infrastructure change is applied through
   the IaC helper or the orchestration service, and an unauthenticated request
@@ -136,11 +160,13 @@ document governs it.
   checker each render in the quality tier, and the policy check runs as a
   registered CI gate.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Render and policy conditions (REQ-0010-FR-0003, REQ-0010-FR-0007, the rendering, HOME selection and port bindings in REQ-0010-FR-0002, and the port binding in REQ-0010-FR-0004) are judged by reviewing the rendered root composition, the isolated LAB compositions and the registered CI policy gate. The change-path conditions (infrastructure changes applied only through the IaC helper or the orchestration service in REQ-0010-FR-0001, and an update tool that opens change requests and applies nothing in REQ-0010-FR-0006) are judged by reviewing the tracked configuration of those tools and the change history they produce. Behavior conditions need runtime observations: the SSO redirect of REQ-0010-FR-0001, the refusal to start without an approved database endpoint in REQ-0010-FR-0002, the registry push and pull in REQ-0010-FR-0004, and the encrypted local and offsite snapshot in REQ-0010-FR-0006. The criteria are verification targets, not evidence that they are met on the current host. SPEC-0262 cites REQ-0010, and its Task evidence rows record the results it produces; a later Spec records any runtime observation it makes in its own Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence and accepts the requirement once every condition is judged met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/01.descriptions/0009-tooling-architecture.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
@@ -154,3 +180,23 @@ Render and policy conditions (REQ-0010-FR-0003, REQ-0010-FR-0007, the rendering,
   traceability clause moved to REQ-0026-FR-0011.
 - **Retired Terraform operations documents**: retired when OpenTofu became the
   infrastructure-as-code tool.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -527,6 +527,7 @@ class TechStackVersionContractTests(unittest.TestCase):
         document = load_contract_document(ROOT)
         public = parse_public_gate_contract(document)
         registry = parse_gate_registry(document, ".github/workflow-contract.yml")
+        changed_paths = ("scripts/operations/sync-update-ledger.sh",)
         leaf = next(
             node
             for node in document["gate_nodes"]
@@ -544,10 +545,15 @@ class TechStackVersionContractTests(unittest.TestCase):
             ("full", ExecutionContext.WORKFLOW_DISPATCH),
         ):
             with self.subTest(profile=profile, context=context):
-                suites = select_public_suites(public, profile, ())
+                paths = changed_paths if profile == "changed" else ()
+                suites = select_public_suites(public, profile, paths)
                 plan = build_public_validation_plan(
                     registry,
-                    public_root_gate_ids(public, suites),
+                    public_root_gate_ids(
+                        public,
+                        suites,
+                        changed_paths=paths if profile == "changed" else None,
+                    ),
                     public,
                     suites,
                     context,
@@ -592,15 +598,24 @@ class TechStackVersionContractTests(unittest.TestCase):
         document = load_contract_document(ROOT)
         public = parse_public_gate_contract(document)
         registry = parse_gate_registry(document, ".github/workflow-contract.yml")
+        changed_paths = ("scripts/operations/sync-update-ledger.sh",)
+        drift = next(
+            node
+            for node in document["gate_nodes"]
+            if node["gate_id"] == "leaf.local-tech-stack-version-drift"
+        )
 
-        # An empty change set selects the declared fallback for this explicit
-        # planner context; it does not claim that a hosted PR consumer exists.
-        suites = select_public_suites(public, "changed", ())
+        self.assertEqual((), select_public_suites(public, "changed", ()))
+        self.assertNotIn(drift["entrypoint"], changed_paths)
+        suites = select_public_suites(public, "changed", changed_paths)
         self.assertIn("repository-integrity", suites)
+        roots = public_root_gate_ids(public, suites, changed_paths=changed_paths)
+        self.assertIn("leaf.repository-integrity-regressions", roots)
+        self.assertIn(drift["gate_id"], roots)
 
         plan = build_public_validation_plan(
             registry,
-            public_root_gate_ids(public, suites),
+            roots,
             public,
             suites,
             ExecutionContext.PULL_REQUEST,
@@ -608,7 +623,7 @@ class TechStackVersionContractTests(unittest.TestCase):
             root=ROOT,
         )
         self.assertIn(
-            "leaf.local-tech-stack-version-drift",
+            drift["gate_id"],
             {invocation.gate_id for invocation in plan},
         )
 

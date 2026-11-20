@@ -1,10 +1,13 @@
 ---
 title: "CouchDB Usage Guide"
-version: "2.2.0"
+version: "3.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0026"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # CouchDB Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 3노드 CouchDB LAB의 HTTP API, cluster-init job, secret 기반 설정을 사용하고 점검하는 운영자, 개발자, AI Agent가 읽는다.
 
-### Outcome
+##### Outcome
 
 이 문서는 [CouchDB Compose 구현](../../../../labs/couchdb/docker-compose.yml)의 3노드 클러스터 사용 기준을 설명한다. `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`는 정확히 `couchdb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이며 세 노드는 한 Docker host에 있으므로 host-level HA가 아니다.
 
@@ -29,13 +52,15 @@ next_review_at: "2027-05-13"
 
 목적: CouchDB HTTP API, cluster-init job, 독립 LAB network, Docker Secret 기반 admin/cookie 설정을 현재 compose 이름과 맞춰 사용할 수 있게 한다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - Declared parent: [CouchDB Operations Policy](../../02.policies/15.labs/0026-couchdb.md) (`POL-0026`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/01.descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](../../02.policies/15.labs/0026-couchdb.md) (`POL-0026`), [Runbook](../../03.runbooks/15.labs/0026-couchdb.md) (`RUN-0026`)
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [CouchDB backup guidance](https://docs.couchdb.org/en/stable/maintenance/backups.html)
 - [CouchDB upgrade guidance](https://docs.couchdb.org/en/stable/install/upgrading.html)
@@ -47,11 +72,12 @@ next_review_at: "2027-05-13"
 - [Recovery runbook](../../03.runbooks/15.labs/0026-couchdb.md)
 - [LAB 설명](../../../../labs/couchdb/README.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 | 항목 | 이 저장소의 구현 결정 |
 | --- | --- |
@@ -66,15 +92,16 @@ next_review_at: "2027-05-13"
 | Backup·upgrade | replication을 우선한다. file backup은 쓰기를 멈춘 일관된 상태에서 생성해야 한다. 격리된 restore evidence를 확보한 후에만 upstream upgrade 순서를 따른다. |
 | License·edition | Apache CouchDB source에는 Apache-2.0이 적용되며 상용 clustering 기능을 가정하지 않는다. |
 
-### Authority
+##### Authority
 
 secret은 `lab_couchdb_password`와 `lab_couchdb_cookie`이며 승인된 credential custody와 비공개 실제 TTY가 필요하다. 상태 점검은 별도 승인 후 client의 native password prompt로 수행한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Identity-specific behavior
+###### Identity-specific behavior
+<!-- core-payload-level:4 -->
 
 couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin secret 을 읽는 startup command 를 공유한다. `_up`은 membership/quorum 확인이 아니다. init은 HTTP 오류에서 실패하고 재실행 때 system DB를 다시 확인한다. exit0 뒤에도 `_membership`의 all_nodes/cluster_nodes와 system DB를 별도 확인한다. `_membership`의 all_nodes/cluster_nodes 와 system DB 를 별도 검증한다. profile 의 3nodes 는 한 host 이며 host HA 가 아니다. 재실행은 cluster setup mutation 으로 사전 승인한다.
 
@@ -87,7 +114,8 @@ couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-#### Preflight and normal use
+###### Preflight and normal use
+<!-- core-payload-level:4 -->
 
 이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/couchdb/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
@@ -97,29 +125,51 @@ couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin
 
 별도 승인 후 상태 점검은 LAB Compose 렌더링, 클러스터/init job 상태, `couchdb-1` 내부 client의 native password prompt를 통한 `_up` 및 `_membership` 확인으로 구성된다. 현재 독립 network는 HOME Traefik과 연결되지 않으므로 label의 route와 sticky cookie는 동작 경로가 아니다. 직접 host port publish도 없다. 실행 가능한 명령 순서와 기대 결과는 [CouchDB runbook](../../03.runbooks/15.labs/0026-couchdb.md#steps)을 따른다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile couchdb config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml logs couchdb-cluster-init`
 - `_membership` 확인은 [CouchDB runbook의 private TTY/native-prompt 절차](../../03.runbooks/15.labs/0026-couchdb.md#steps)를 따른다. Password를 URL·argv·환경 변수·history·로그에 넣지 않으며 custody/TTY가 없으면 중단한다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`이다. 예전 node-style 이름을 현재 서비스명처럼 사용하지 않는다.
 - Erlang cookie는 legacy shared-secret env var가 아니라 `/run/secrets/lab_couchdb_cookie`에서 읽어 `ERL_FLAGS`에 주입된다.
 - 클러스터 init은 [curlimages/curl image declaration](../../../../labs/couchdb/docker-compose.yml) 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
 - backup/restore는 database 단위 replication을 우선한다. file backup이 승인되면 config와 cluster metadata를 보존하고 upstream 순서대로 index files를 database files보다 먼저 복원한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [CouchDB runbook](../../03.runbooks/15.labs/0026-couchdb.md)을 따른다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [RUN-0026](../../03.runbooks/15.labs/0026-couchdb.md)를 따른다. 클러스터 init이 반복 실패하면 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남긴다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

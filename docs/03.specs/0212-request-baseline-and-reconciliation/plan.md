@@ -1,9 +1,12 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.99.0"
+version: "2.0.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
 updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
@@ -14,9 +17,29 @@ created: "2026-10-07"
 
 # Request Baseline and Reconciliation Plan
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Goal and Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the plan payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Goal and Boundary
 
 The current 11–30 request preserves completed P00 Tasks. SEC01 delivers first,
 SMTP01 owns the source transition second, and CLN01 deletes the old file third.
@@ -222,26 +245,26 @@ Secret access or remote integration.
 
 Parent Spec: [Spec](spec.md)
 
-### Assumptions
+##### Assumptions
 
 The plan works under the approved SPEC-0212; the direct user request authorizes this bounded local contract and Plan, and it assumes no authority beyond it.
 
-## Dependencies
+#### Dependencies
 
-### Prerequisites
+##### Prerequisites
 
 The approved Spec, and the related current owners this plan coordinates with (Spec 0270 and the 0204 Plan):
 
 - [Spec](spec.md)
 - [Integration plan](../0204-service-integration-security-and-operations/plan.md)
 
-### Dependency Order
+##### Dependency Order
 
 Work units order by the Dependencies column of the Work Breakdown table and by the dependency and integration order recorded in its subsections.
 
-## Implementation Strategy
+#### Implementation Strategy
 
-### Work Breakdown
+##### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -418,8 +441,49 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W171 | 155 | Split document regressions by actual consumers, restrict content validation to changed/inbound scope, share immutable parsing/history inputs and preserve fail-closed candidate aggregation | W170 | TSK-0099 | RED/GREEN gate and document tests; same-input timing; workflow/manifest/ownership/document checks; independent review and hosted PR checks |
 | W172 | 156 | Observe installed local hooks and timings; repair source-index drift, unborn/empty staged diagnostics and complete fail-closed push records while retaining narrow checks | W171 | TSK-0100 | Same-input offline timing; RED/GREEN existing shell and installed-guard regressions; scoped syntax, document and manifest checks; independent delta review; normal hooks and hosted candidate |
 | W173 | 157 | Reconcile policy and architecture ownership, separate common/local vocabulary with complete consumer updates, remove copied bootstrap order and align rule_owner prose | W172 | TSK-0101 | Profile and route RED/GREEN, pinned vocabulary/template/heading regressions, existing rule-owner negatives, changed document and canonical/provider checks, independent review and required hosted candidate |
+| W174 | 158 | Adopt common envelope, metadata and payload bindings; migrate actual template/native/semantic consumers and current normative sources while preserving historical evidence | W173 | TSK-0102 | Envelope/metadata/IF/AC/native/relation/version RED/GREEN, representative output consumption, affected regressions, one justified corpus validation, independent protected-surface review and actual current candidate |
 
-#### Current P03 ownership implementation
+###### Current P04 template implementation
+<!-- core-payload-level:4 -->
+
+The direct P04 1.1.0 request authorizes this unit's implementation and normal
+commit, push, PR and merge. [TSK-0102](01.tasks/tsk-0102-p04-templates.md)
+owns criterion158/W174 and all execution evidence. Baseline562878ae9 includes
+P03 source and receipt; matching completed P00–P03 and the eleven earlier
+areas remain reused. New uniform outer structure is expanded scope, not a
+retroactive failed judgment of the completed role payload work.
+
+The coordinator owns the formal common contract, shared common_document.py
+payload/metadata API, Registry/schema/TemplateDefinition integration, common
+Markdown definitions, current-source format migration, manifest inventory and
+this Spec/Plan/Task. Disjoint workers own: requirement/Spec semantic readers
+and their tests; link/relation/NFC and document-version reset readers/tests;
+and the native renderer with its existing entrypoint regression owner.
+Workers do not edit shared Registry/contract/manifest or each other's files.
+Native payload sources remain syntax-specific; canonical SKILL.md and native
+projections keep their actual format. The renderer owns generated outputs.
+
+Use a shared payload view to preserve hardened existing readers and source
+locations. General current documents gain the prescribed common envelope;
+profile-specific content stays under Content Contract/Body and Rules in the
+role payload, with conditions retained. Explicit profile/path adapters map
+kind and actual subject/layer. Existing stage layer and workload scope are
+not common scope; Task implementation status cannot grant normative active.
+Old Task bodies and completed evidence remain immutable and have bounded
+transition readers through P05/P17. AC display adaptation precedes final
+renumbering; no old identity is recycled here.
+
+First establish behavioral RED cases, then common binding/API, independent
+reader/producer changes, current-source migration and representative outputs.
+Run the affected regressions and one corpus validation justified by global
+contract changes, reusing P01 selection. Review the coherent protected-source
+diff independently; fixes receive affected-delta review. Revert the coherent
+binding/source/consumer unit together for rollback. No service operation,
+private provider settings, new dependency or later prompt is authorized by
+this implementation sequence.
+
+###### Current P03 ownership implementation
+<!-- core-payload-level:4 -->
 
 The direct P03 1.1.0 request authorizes only this ownership unit and its
 ordinary commit, push, PR and merge. [TSK-0101](01.tasks/tsk-0101-p03-ownership.md)
@@ -447,7 +511,8 @@ Rollback reverts this unit's coherent owners, bindings and consumers together.
 No service operation or private settings change. P04 is the next input only
 after the P03 result; it never executes automatically.
 
-#### Current P02 local feedback implementation
+###### Current P02 local feedback implementation
+<!-- core-payload-level:4 -->
 
 The direct P02 1.1.0 request authorizes only this local-feedback unit and its
 normal commit, push, PR and merge. [TSK-0100](01.tasks/tsk-0100-p02-local-feedback.md)
@@ -469,7 +534,8 @@ before ordinary hooks and remote candidate checks. Revert this unit's files
 to reverse it; no product runtime or user data changes. P03 is the next
 input only after this result is recorded, and never runs automatically.
 
-#### Current P01 routing implementation
+###### Current P01 routing implementation
+<!-- core-payload-level:4 -->
 
 W171's earlier direct P01 request authorized local commit, branch push, pull
 request and merge after required checks. That unit reuses P00 and prior
@@ -492,7 +558,8 @@ P02 local timing work and later memory/session/identity changes stay outside
 this unit. Durable consumers are the workflow contract and document libraries;
 the Task records their promotion and any unobserved boundary.
 
-#### Current P00 remediation sequence
+###### Current P00 remediation sequence
+<!-- core-payload-level:4 -->
 
 The direct 2026-11-20 P00 1.1.0 request reuses this package's reconciliation ownership.
 The doc-writer owns only `spec.md`, `plan.md` and
@@ -521,7 +588,8 @@ sequence is not evidence that any follow-up ran. Read-only PR discovery,
 document checks and owner acceptance are recorded separately; full suites,
 native workers and live services are not P00 checks.
 
-#### Current v30 continuation and delivery
+###### Current v30 continuation and delivery
+<!-- core-payload-level:4 -->
 
 The direct 2026-10-26 request extends W24's previous 11–31 routing scope to
 R32 without a new Task, criterion, inventory authority, or duplicate prompt
@@ -554,7 +622,8 @@ alone. Runtime, credential, deletion, host and external-cluster actions retain
 their exact target, approval and recovery gates. Independent review and final
 verification precede local delivery; no future result is recorded as PASS.
 
-#### W25 file map and checks
+###### W25 file map and checks
+<!-- core-payload-level:4 -->
 
 The link slice owns `scripts/lib/document_governance/links.py`,
 `scripts/validation/check-document-links.py`, and
@@ -587,7 +656,8 @@ exceptions clarify the full-commit/current-byte source-pin contract and the
 observed protection state; they do not change a policy schema, runtime
 procedure, or historical record.
 
-#### Exact writer map
+###### Exact writer map
+<!-- core-payload-level:4 -->
 
 The historical P00 doc-writer owned this Spec, this Plan and TSK-0003 for the
 first reviewable current-contract unit. The current COORD writer owns only this
@@ -641,7 +711,8 @@ acceptance fixtures; SPEC01 active-contract documents. The coordinator may
 propose a shared-file change, but the lease holder integrates it after the
 preceding source identity and review are fixed.
 
-#### Dependency and P08 integration order
+###### Dependency and P08 integration order
+<!-- core-payload-level:4 -->
 
 1. P00 fixes baseline, ownership and exclusions first. Applied work stays
    NO_CHANGE and genuine gaps keep their existing acceptance owner.
@@ -671,7 +742,8 @@ preceding source identity and review are fixed.
    documentation owner; requirement 31 is completed in the same unit as its
    actual ROOT-image change.
 
-#### R10 ownership and integration
+###### R10 ownership and integration
+<!-- core-payload-level:4 -->
 
 The coordinator assigns one writer per slice. The documentation writer owns
 this Spec, Plan and TSK-0007. Hook/CI implementation, Stage 99 and governance
@@ -687,7 +759,8 @@ The controller sequences any table/lifecycle/memory amendment after its exact
 consumer impact and compatibility are reviewable; unimplemented targets stay
 pending in TSK-0007 rather than being treated as completed by this Plan.
 
-#### Current P01 implementation and ownership
+###### Current P01 implementation and ownership
+<!-- core-payload-level:4 -->
 
 The qa-engineer writes the inventory CLI/library and its tests; the doc-writer
 writes this package amendment, TSK-0040 and DATA-0096; the ci-cd-engineer
@@ -704,7 +777,7 @@ Review receipts bind reviewer, time, fingerprint and scope. Publication validate
 before atomic replacement and excludes its own payload from recursive hashing.
 No service starts, host edits, credential actions or remote writes occur here.
 
-### Change and Rollback
+##### Change and Rollback
 
 Revert only the logical W13 documentation commit through a protected PR to
 restore the prior active contract; preserve historical Tasks and issued IDs.
@@ -714,11 +787,12 @@ rollback is claimed.
 Revert W24 as its isolated documentation unit through the protected PR path;
 do not revert an independent owner’s implementation with it.
 
-## Verification Plan
+#### Verification Plan
 
-### Verification Matrix
+##### Verification Matrix
 
-#### Current P06 implementation and ownership
+###### Current P06 implementation and ownership
+<!-- core-payload-level:4 -->
 
 TSK-0045 issues per-path single-writer leases and public fingerprints before
 each edit. The structural tool, SMTP readers, QA helpers, documentation and CI
@@ -736,7 +810,8 @@ separate evidence. The existing catalog destination state is not independent
 approval for a new OpenBao copy. n8n producer and native-credential updates are
 handed to their owner; no private mutation or runtime service change is implied.
 
-#### Current P05 implementation and ownership
+###### Current P05 implementation and ownership
+<!-- core-payload-level:4 -->
 
 The documentation writer issues TSK-0044 and per-path baseline fingerprints
 before source edits. The SQL writer alone owns new 007/008 SQL plus its tests;
@@ -763,7 +838,8 @@ graphify freshness, source fingerprint comparison and local logical delivery.
 Operating services, real secrets, external mail, remote CI and P12 final
 acceptance remain NOT_RUN unless separately authorized and observed.
 
-#### Current P04 implementation and ownership
+###### Current P04 implementation and ownership
+<!-- core-payload-level:4 -->
 
 The P04 source writer integrates DAG, adapter and SQL changes. One infrastructure
 writer integrates the Airflow Compose/Dockerfile slice; QA, documentation and CI
@@ -852,13 +928,13 @@ operation, credential rotation, independent restore, hosted CI and final operato
 acceptance stay NOT_RUN unless separately observed. Compare the initial and
 final public manifests and review only affected rows after a source change.
 
-### Stage Placement
+##### Stage Placement
 
 The Plan places two stage-specific steps: W13 and W24 reverts go through a protected PR, and independent review and final verification precede local delivery. The Task records each run.
 
-## Risks
+#### Risks
 
-### Risks and Mitigations
+##### Risks and Mitigations
 
 Equal baseline, merged draft and historical runtime PASS
 must not be promoted to fresh validation. A concurrent shared-writer/path
@@ -870,17 +946,17 @@ concrete target, backup identity, restore boundary, compatibility result,
 operator/window, stop condition, and rollback. Missing prerequisites block
 only that dependent operation.
 
-### Escalation
+##### Escalation
 
 The Spec states: "Missing target/tool permission stops only that dependent operation."
 
-## Promotion Map
+#### Promotion Map
 
-### Durable Meaning
+##### Durable Meaning
 
 The durable contract is the current request baseline and reconciliation recorded in SPEC-0212 and in the Tasks named in the Work Breakdown.
 
-### Owner and Receipt
+##### Owner and Receipt
 
 The owner is @buenhyden; the receipts are the Tasks named in the Work Breakdown.
 
@@ -969,3 +1045,23 @@ runner and workflow. TSK-0077 records native, fixture and hosted boundaries.
 - [Completed P00 Task](01.tasks/tsk-0003-active-contract-and-exclusions.md)
 - [Historical baseline Task](01.tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](01.tasks/tsk-0002-twenty-item-reconciliation.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

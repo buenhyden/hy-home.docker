@@ -1,10 +1,13 @@
 ---
 title: "Summarize-and-Delete Retirement"
-version: "0.3.1"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0051"
 parent_ids:
@@ -15,9 +18,29 @@ created: "2026-11-03"
 
 # ADR-0051: Summarize-and-Delete Retirement
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 [ADR-0037](0037-package-disposition-wait-and-task-cancellation.md) made Stage 98
 (`docs/98.archive/`) a preserved record: the last sentence of decision 1 required
@@ -36,7 +59,8 @@ preservation model has no records left to govern.
 - The record of a removal must live in one place that current checks already
   read.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [REQ-0026 Document retention and retirement](../../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 Document lifecycle governance](../01.descriptions/0030-document-lifecycle-governance.md)
@@ -44,13 +68,13 @@ preservation model has no records left to govern.
 - SPEC-0249 Stage 98 archive deletion (retired; version history)
 - [Documentation protocol](../../03.process/documentation-protocol.md#document-retention-and-retirement)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers how a document that leaves an active stage is retired: Stage 98 (`docs/98.archive/`) holds no records, and retired numbers are kept in the Registry. It affects the lineage sections of Stage 01 and Stage 02 owners, Stage 03 removals and the checks that read Stage 98.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep the Stage 98 preservation model with its catalog and Tombstones:
   rejected; it duplicates version history, and its checks failed unrelated
@@ -62,7 +86,7 @@ This decision covers how a document that leaves an active stage is retired: Stag
   preservation bookkeeping under a different name.
 - Summarize, delete, and keep only retired numbers in the Registry: selected.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -73,9 +97,9 @@ This decision covers how a document that leaves an active stage is retired: Stag
 
 Each rejected alternative is rejected for the reason stated in its entry above: duplication of version history, dependence on history depth and recovery pins, or preservation bookkeeping under a different name. The selected option keeps retirement traceable without a second copy of every removed body.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. A document that leaves an active stage is summarized into the lineage section
    of its Stage 01 or Stage 02 owner and deleted in the same change.
@@ -93,11 +117,12 @@ Each rejected alternative is rejected for the reason stated in its entry above: 
 6. Current documents do not link into Stage 98 or name a retired identity in a
    typed reference; prose may name it to explain lineage.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden, who decided on 2026-11-03 to accept this record; status `accepted`, set in change #723 as the Follow-up records. Effective from 2026-11-03.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This decision supersedes ADR-0037 decision items 4 to 10 and the last sentence
 of its decision 1 ("Whole-package disposition still requires approval and
@@ -108,9 +133,9 @@ replaced their completion-receipt clauses. It also supersedes the archive and
 preservation wording of ADR-0048 decision 4; the readiness conditions there
 stay.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Removed bodies are recovered from version history at the revision that last
   carried them; checks no longer read them.
@@ -121,7 +146,7 @@ stay.
 - Reversal restores the archive files and readers from version history; no
   outside state changes.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -135,8 +160,29 @@ The owner decided on 2026-11-03 to accept this record. A new ADR must enter as
 SPEC-0249 merged (#723), as ADR-0049 did. Completed Spec packages in Stage 03 are retired
 under it in the next phase.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `check-document-corpus-lifecycle.py` enforces the empty Stage 98 and the
 reserved-number rule for Stage 03; the Requirement loader enforces it for Stage
 01; allocation-transition checks reject dropping a reserved number.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

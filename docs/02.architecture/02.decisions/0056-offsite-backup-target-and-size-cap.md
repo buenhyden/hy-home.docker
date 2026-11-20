@@ -1,10 +1,13 @@
 ---
 title: "Offsite Backup Target with an Enforced Size Cap"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0056"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-11-06"
 
 # ADR-0056: Offsite Backup Target with an Enforced Size Cap
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 Per POL-0021 control 1, the Restic and pgBackRest repositories sit on a
 different physical disk from their source, but every copy is on one host. Host
@@ -52,7 +75,8 @@ Drivers:
 - The remote copy must not be deletable by ransomware or mistake.
 - The remote repository must never pass the owner's 10 GB ceiling.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 Size evidence was the `repository sizes` line of the `hyhome-backup.service`
 journal (429 to 777 MiB, 2026-09-23 to 25). No runtime state is claimed.
@@ -64,16 +88,16 @@ journal (429 to 777 MiB, 2026-09-23 to 25). No runtime state is claimed.
 - [ADR-0042 OpenBao unseal method](0042-openbao-unseal-method.md)
 - [Restic repositories](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the offsite copy of the local Restic and pgBackRest
 repositories: the remote target, its size cap, its credentials and its egress
 boundary. WAL-level remote RPO through `repo2-type=s3` is left to a new
 decision.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 Costs are order-of-magnitude list-price estimates from 2026-09-25.
 
@@ -84,7 +108,7 @@ Costs are order-of-magnitude list-price estimates from 2026-09-25.
 | (c) SFTP or rest-server on a peer device | Peer device | Covered if remote | Peer maintenance and VPN | SSH key or account |
 | (d) Defer | $0 | None | None | None |
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -108,9 +132,9 @@ Costs are order-of-magnitude list-price estimates from 2026-09-25.
 - Trade-off: the R2 account is a new single point of failure for the offsite
   copy.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. One remote Restic repository in a Cloudflare R2 bucket receives the state
    and host snapshots by `restic copy` after the local backup and `check`.
@@ -128,13 +152,14 @@ Costs are order-of-magnitude list-price estimates from 2026-09-25.
    as Docker Secrets) plus an offline copy; they are never stored in OpenBao.
 6. Only `restic-offsite` has egress, on `restic_offsite_net`.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. The owner ruled the 10 GB
 ceiling on 2026-10-20; no separate approval record is linked. Effective from
 2026-11-06.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This record replaces ADR-0041, deleted in the same change (ADR-0051); ADR-0041
 is historical and non-authoritative. ADR-0041,
@@ -149,14 +174,14 @@ OpenBao. It sized the copy against a 5 GiB cap that "fits inside the free tier
 (10 GB)". Every decision carries forward; the cap is now the enforced 9 GB
 upload limit under the owner's 10 GB ceiling.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: host loss no longer loses every copy.
 - Positive: the size cap keeps the copy inside the free tier and fails closed.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -167,8 +192,29 @@ If a cloud KMS is later chosen for OpenBao unseal
 ([ADR-0042](0042-openbao-unseal-method.md)), decide whether it shares the R2
 provider account.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `offsite.sh`, `hyhome-backup.sh` and the Compose baseline tests enforce the cap,
 the egress boundary and the no-delete daily run. POL-0021 control 1 records the
 remote copy and its RPO; RUN-0021 holds the host-loss recovery order.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

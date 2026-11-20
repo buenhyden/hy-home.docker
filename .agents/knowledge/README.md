@@ -1,20 +1,44 @@
 ---
 title: "Agent Knowledge"
-version: "0.7.0"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
+document_scope:
+  subject: Agent Knowledge
+  layer: agent
 updated: "2026-11-20"
 created: "2026-09-06"
 ---
 
 # Agent Knowledge
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `.agents/knowledge/`는 독자를 canonical owner로 route하는 검증된 living
 knowledge를 보관합니다. agent가 매 session마다 추론하는 대신 등록된 파일을
@@ -24,7 +48,8 @@ knowledge를 보관합니다. agent가 매 session마다 추론하는 대신 등
 Knowledge는 authority가 아닙니다. member는 무엇이 사실이고 누가 그 규칙을
 소유하는지를 기술하며 규칙 자체는 그 owner에게 남습니다.
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 - 포함: surface-to-authority routing, 저장소 vocabulary, verification
   coverage map, 그리고 검증되어 재사용되는 domain knowledge.
@@ -32,18 +57,19 @@ Knowledge는 authority가 아닙니다. member는 무엇이 사실이고 누가 
 obligation을 명시하는 member는 결함입니다. 그 내용을 `governance/`로
 route하고 link를 남깁니다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - 제외: `governance/`에 속하는 obligation과 prohibition, `skills/`에 속하는
   순서화된 절차, Stage 02와 Stage 03에 속하는 상세 설계와 specification,
   Stage 05에 속하는 operator 절차, Stage 90에 속하는 일자 지정 단발성 관찰,
   현재 Spec Package Task에 속하는 실행 상태.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | --- | --- |
@@ -65,33 +91,37 @@ route하고 link를 남깁니다.
 섹션을 갖습니다. source 변경·삭제·정정 또는 review expiry가 발생하면 다시
 읽기 전까지 해당 fact는 invalid입니다.
 
-#### Classification
+###### Classification
+<!-- core-payload-level:4 -->
 
 member는 세 종류입니다. `glossary.md`는 공통 용어와 agent·provider 의미(Docker 로컬 의미는 `docs/00.workspace/01.project/glossary.md`), `repository-map.md`는 표면에서 canonical owner로의 routing, `verification-surface-map.md`는 검증 진입점이며, 모두 authority가 아니라 owner로 route하는 지식입니다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [Prompt index](../prompts/README.md)
 - Canonical knowledge and prompt surfaces decision (`docs/00.workspace/02.architecture/02.decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
 - [Documentation index](../../docs/README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [Agent governance index](../README.md)
 - [Documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)
 - README 템플릿 `docs/99.templates/02.templates/91.agent-governance/knowledge-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
-### Checks
+##### Checks
 
-#### Create and Review
+###### Create and Review
+<!-- core-payload-level:4 -->
 
 1. 기존 member가 이미 해당 내용을 소유하는지 확인합니다. 두 번째 owner를
    추가하는 대신 기존 member를 확장합니다.
@@ -107,7 +137,8 @@ member는 세 종류입니다. `glossary.md`는 공통 용어와 agent·provider
 5. Provider Registry의 `canonical_sources`에 파일을 등록한 뒤 document
    metadata와 agent governance contract 점검을 실행합니다.
 
-#### Curation Lifecycle
+###### Curation Lifecycle
+<!-- core-payload-level:4 -->
 
 | Stage | Condition | Owner |
 | --- | --- | --- |
@@ -123,3 +154,23 @@ member는 세 종류입니다. `glossary.md`는 공통 용어와 agent·provider
 
 age와 file count는 retention 기준이 아닙니다. member는 routing이 올바른 동안
 유지되며 여전히 유효한 의미가 canonical owner로 이동했을 때 폐기됩니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

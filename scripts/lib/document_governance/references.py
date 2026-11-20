@@ -713,7 +713,11 @@ def _is_confined_redirect_target(link: DocumentLink) -> bool:
 
 
 def _is_redirect_only(text: str) -> bool:
-    lines = tuple(line.strip() for line in _rendered_lines(text) if line.strip())
+    from scripts.lib.document_governance.common_document import payload_text
+
+    lines = tuple(
+        line.strip() for line in _rendered_lines(payload_text(text)) if line.strip()
+    )
     if not lines or lines[0].lower() not in {"# redirect", "# moved", "# deprecated"}:
         return False
     transition = lines[1:]

@@ -1,39 +1,70 @@
 ---
-title: "{{TITLE}}"
-version: "0.1.0"
-type: "reference/research-pack"
-status: "draft"
-owner: "{{OWNER}}"
-updated: "{{UPDATED}}"
-layer: "references"
-artifact_id: "{{ARTIFACT_ID}}"
-created: "{{CREATED}}"
-observed_at: "{{OBSERVED_AT}}"
+title: '{{TITLE}}'
+version: 0.1.0
+type: reference/research-pack
+status: draft
+owner: '{{OWNER}}'
+document_scope:
+  subject: '{{DOCUMENT_SUBJECT}}'
+  layer: reference
+updated: '{{UPDATED}}'
+layer: references
+artifact_id: '{{ARTIFACT_ID}}'
+created: '{{CREATED}}'
+observed_at: '{{OBSERVED_AT}}'
 ---
+
+# {{TITLE}}
+
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+<!-- 작성 규칙: Identify the information or judgment this document gives its readers; route to the role payload instead of copying its rules. -->
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+<!-- 작성 규칙: Name the maintained subject, scope and owner; do not grant authority through document metadata. -->
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+<!-- 작성 규칙: State actual inputs, constraints or preconditions, and distinguish facts from assumptions. -->
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+<!-- 작성 규칙: Keep the kind-specific payload here with its conditions, tables and one canonical responsibility. -->
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: `observed_at` is the observation date and keeps its original value; add optional `reviewed_at` (and `next_review_at` for research and data) after it only when a later review happens. -->
 <!-- Author prompt: Write body prose in Korean; keep headings, paths, identifiers, and commands unchanged. -->
 
-# {{TITLE}}
+#### Responsibility
 
-## Responsibility
-
-### Purpose
+##### Purpose
 
 <!-- Author prompt: State the research question and the scope of this package. -->
 
 {{RESEARCH_QUESTION_AND_SCOPE}}
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 <!-- Author prompt: Name what this package does not cover and its limitations. -->
 
 {{EXCLUSIONS_AND_LIMITATIONS}}
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 <!-- Author prompt: List each member that exists now, one Path and Purpose row per member. -->
 
@@ -41,22 +72,50 @@ observed_at: "{{OBSERVED_AT}}"
 | --- | --- |
 | {{DIRECT_CHILD_PATH}} | {{RESEARCH_MEMBER_PURPOSE}} |
 
-### Owners
+##### Owners
 
 <!-- Author prompt: Name the owner of this README and the owner of a listed document only where that document or this README states it; say so in a sentence when it records none. -->
 
 {{OWNERS}}
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
 <!-- Author prompt: Link the current authority documents and state the implications for them. -->
 
 {{IMPLICATIONS_AND_AUTHORITY_LINKS}}
 
-### Checks
+##### Checks
 
 <!-- Author prompt: State the method, the primary sources and the findings that support this package. -->
 
 {{METHOD_SOURCES_AND_FINDINGS}}
+
+## 적용과 확인
+
+### 적용 방법
+
+<!-- 작성 규칙: Explain how the intended reader uses this document or its native output; do not invent an operational step. -->
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+<!-- 작성 규칙: Use only checks appropriate to this kind; distinguish implementation, verification and actual acceptance. -->
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+<!-- 작성 규칙: Use purpose-bearing owner and dependency references; reciprocal links are not universally required. -->
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+<!-- 작성 규칙: Identify external basis and its application or limits; a citation grants no execution or approval authority. -->
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

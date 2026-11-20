@@ -1,35 +1,60 @@
 ---
 title: "Git Workflow Governance"
-version: "1.10.0"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
 updated: "2026-11-20"
 ---
 
 # Git Workflow Governance
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 This rule defines the mandatory git workflow for all contributors and agents.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of local Git authoring, branch integration, commits, review, and remote delivery boundaries under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Local Git authoring, branch integration, commits, review, and remote delivery boundaries.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -117,7 +142,8 @@ None: this document states no exclusion.
 | GIT-WORKFLOW-R82 | Local staged diagnosis | Required: support an unborn index, report a valid empty index as NOT_APPLICABLE, and reject changed source index/HEAD or cancelled execution instead of reusing its result | `run-ci-precommit.sh --mode local-staged` | none |
 | GIT-WORKFLOW-R83 | Native pre-push ref input | Required: inspect every update including an unterminated final record; reject malformed records and any main target update while retaining the empty-update no-op | `pre-push-guard.sh` | none |
 
-#### 1. Commit Standards
+###### 1. Commit Standards
+<!-- core-payload-level:4 -->
 
 Use Conventional Commits with explicit scopes where possible.
 
@@ -168,7 +194,8 @@ diagnosis uses an unreferenced empty base for that worktree and does not
 create or advance a source branch. These diagnostic results do not replace
 the installed normal commit or remote candidate checks.
 
-#### 2. Branching Strategy
+###### 2. Branching Strategy
+<!-- core-payload-level:4 -->
 
 - Protected baseline: `main`
 - Short-lived human branches use `<type>/<short-description>`, where `type` is
@@ -190,7 +217,8 @@ the installed normal commit or remote candidate checks.
   stash, reset, discard, or force-commit uncommitted user work to make room;
   stop and ask instead.
 
-#### 3. Pull Request Protocol
+###### 3. Pull Request Protocol
+<!-- core-payload-level:4 -->
 
 1. Self-review changes before opening or updating a PR.
 2. Run focused authoring checks and inspect the selected prerequisites; the
@@ -214,7 +242,8 @@ the installed normal commit or remote candidate checks.
 9. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
 10. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 
-#### 4. Operational Best Practices
+###### 4. Operational Best Practices
+<!-- core-payload-level:4 -->
 
 - Use `fix` for user-visible or operational defect corrections and include regression evidence.
 - Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
@@ -237,7 +266,8 @@ the installed normal commit or remote candidate checks.
   approved target and recovery path. Select `RUN-0009` through the
   [platform and backup runbook index](../../05.operations/03.runbooks/10.platform-and-backup/README.md).
 
-#### 5. Agent Completion Commit Discipline
+###### 5. Agent Completion Commit Discipline
+<!-- core-payload-level:4 -->
 
 - For repository-modifying agent work, the completion default is to create
   logical Conventional Commits after verification and before declaring the task
@@ -252,26 +282,30 @@ the installed normal commit or remote candidate checks.
   would include secrets or unrelated changes. In that case, report the reason and
   remaining state.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](../04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
-#### 6. Enforcement
+###### 6. Enforcement
+<!-- core-payload-level:4 -->
 
 Changes that bypass checks or violate secret safety must not be merged.
 GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `docs/00.workspace/03.process/github-governance.md`.
 
-#### 7. Git action stages
+###### 7. Git action stages
+<!-- core-payload-level:4 -->
 
 Each Git action is checked before, during or after it only where a real
 trigger exists. A check after the fact records; it never claims to have
@@ -306,7 +340,7 @@ list.
 SDLC phases and document Stages are separate axes from these cells, and the
 current Task records each binding's evidence.
 
-### Limits
+##### Limits
 
 Only the commit grammar rows and the merge-subject exemption name a check, and deleting a historical ref rests on owner approval; the other rules name none.
 
@@ -320,13 +354,13 @@ Only the commit grammar rows and the merge-subject exemption name a check, and d
 - The policy states that client hooks, including the `commit-msg` hook named for the grammar rows, can be bypassed with `--no-verify`.
 - Rules stated under Enforcement / Mechanisms are outside this table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -334,3 +368,23 @@ Changes land in place with Task evidence; related documents:
 - [Operations runbook index](../../05.operations/03.runbooks/README.md)
 - [GitHub governance](github-governance.md)
 - [Bootstrap policy](../../../.agents/governance/bootstrap.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

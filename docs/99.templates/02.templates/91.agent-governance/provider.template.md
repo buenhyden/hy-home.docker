@@ -1,51 +1,110 @@
 ---
-title: "{{TITLE}}"
-version: "0.1.0"
-type: "governance/provider"
-status: "draft"
-owner: "{{OWNER}}"
-updated: "{{UPDATED}}"
+title: '{{TITLE}}'
+version: 0.1.0
+type: governance/provider
+status: draft
+owner: '{{OWNER}}'
+document_scope:
+  subject: '{{DOCUMENT_SUBJECT}}'
+  layer: provider
+updated: '{{UPDATED}}'
 ---
+
+# {{TITLE}}
+
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+<!-- 작성 규칙: Identify the information or judgment this document gives its readers; route to the role payload instead of copying its rules. -->
+
+Readers use the provider payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+<!-- 작성 규칙: Name the maintained subject, scope and owner; do not grant authority through document metadata. -->
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+<!-- 작성 규칙: State actual inputs, constraints or preconditions, and distinguish facts from assumptions. -->
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+<!-- 작성 규칙: Keep the kind-specific payload here with its conditions, tables and one canonical responsibility. -->
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
 
-# {{TITLE}}
-
-## Overview
+#### Overview
 
 {{TRANSLATION_PURPOSE_FOR_THIS_RUNTIME}}
 
-## Loading
+#### Loading
 
-### Entry Shim
+##### Entry Shim
 
 {{ENTRY_SHIM}}
 
-### Bootstrap Order
+##### Bootstrap Order
 
 {{BOOTSTRAP_ORDER}}
 
-## Native Controls
+#### Native Controls
 
-### Generated Surfaces
+##### Generated Surfaces
 
 {{GENERATED_SURFACES}}
 
-### Authored Native Surfaces
+##### Authored Native Surfaces
 
 {{AUTHORED_NATIVE_SURFACES}}
 
-## Limitations
+#### Limitations
 
-### Registered Gate
+##### Registered Gate
 
 {{REGISTERED_GATE_COMMAND}}
 
-### Unsupported Behavior
+##### Unsupported Behavior
 
 {{UNSUPPORTED_OR_UNOBSERVED_BEHAVIOR}}
 
-## Related Documents
+#### Related Documents
 
 {{REGISTRY_AND_RUNTIME_DOCUMENTATION_LINKS}}
+
+## 적용과 확인
+
+### 적용 방법
+
+<!-- 작성 규칙: Explain how the intended reader uses this document or its native output; do not invent an operational step. -->
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+<!-- 작성 규칙: Use only checks appropriate to this kind; distinguish implementation, verification and actual acceptance. -->
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+<!-- 작성 규칙: Use purpose-bearing owner and dependency references; reciprocal links are not universally required. -->
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+<!-- 작성 규칙: Identify external basis and its application or limits; a citation grants no execution or approval authority. -->
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

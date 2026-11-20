@@ -1,10 +1,13 @@
 ---
 title: "OpenBao Prometheus Metrics Credential"
-version: "0.5.0"
+version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0104"
 parent_ids:
@@ -15,15 +18,35 @@ next_review_at: "2027-05-13"
 
 # OpenBao Prometheus Metrics Credential
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 Prometheus가 OpenBao `sys/metrics`를 읽는 전용 token의 발급·검증·회전·폐기를 다룬다. 공통 운영은 [RUN-0085](0085-openbao.md)가 소유한다.
 
 metrics token을 처음 발급하거나, 만료 전에 회전하거나, 이미 만료된 token을 교체할 때 사용한다. 만료된 경우는 아래 `만료된 이전 token` 분기를 따른다.
 
-### Targets
+##### Targets
 
 - 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
 - [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
@@ -32,22 +55,22 @@ metrics token을 처음 발급하거나, 만료 전에 회전하거나, 이미 �
 
 - [운영 인덱스](../../README.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 승인이 OpenBao policy/token 변경과 Prometheus 재생성을 정확한 대상으로 명시해야 한다. root는 [RUN-0105](0105-openbao-maintenance-window.md) W1 ceremony가 custody에 남긴 임시 root를 쓰고 W7 `revoke-root`로 폐기한다. operator policy는 `prometheus` policy를 가진 token을 발급할 수 없다.
 
 이 절차는 승인이 OpenBao policy/token 변경과 Prometheus 재생성을 정확한 대상으로 명시한
 경우에만 사용한다.
 
-### Environment
+##### Environment
 
 시작 상태 조건(OpenBao initialized/unsealed, 검토된 `prometheus.hcl`, 대기 중인 승인된 관리자, 현재 configuration 기준의 rollback)은 Steps의 Rotation Rules 1번에 있다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -64,11 +87,13 @@ metrics token을 처음 발급하거나, 만료 전에 회전하거나, 이미 �
 | 11 | Rotation Steps(`metrics-rotate` 5-6): custody를 새 accessor·만료일로 교체하고 이전 token을 accessor로 폐기, 작업 파일 삭제 | `new: expires <날짜>`와 `old: revoked` 또는 `old: expired (<날짜>)` | 폐기를 확인하지 못하면 `NOT confirmed revoked`로 멈추며 root를 이미 폐기했다면 다음 window의 W1 root로 `metrics-revoke`를 실행한다 |
 | 12 | Agent and Root Boundary: Agent 재시작 전 RUN-0103으로 새 SecretID 전달 | 문서에 기록 없음 | 발급자 신원이 없으면 RUN-0085 break-glass의 별도 승인된 loopback recovery 절차를 사용하며 영구 root token을 저장하지 않는다 |
 
-#### Prometheus Metrics Credential
+###### Prometheus Metrics Credential
+<!-- core-payload-level:4 -->
 
 metrics token의 회전 규칙, 단계와 경계는 다음과 같다.
 
-##### Rotation Rules
+###### Rotation Rules
+<!-- core-payload-level:5 -->
 
 회전은 다음 규칙을 따르며, 아래 `metrics-rotate`가 이 규칙을 그대로 실행한다.
 
@@ -107,7 +132,8 @@ source/runtime 구성을 계속 사용 가능하게 유지하고, 새 token을 �
 Prometheus만 재생성한다. source rollback은 `vault_token`을 다시 도입해서는 안 된다.
 전용 credential 경로가 복구될 때까지 OpenBao metrics는 비활성 상태로 둔다.
 
-##### Rotation Steps
+###### Rotation Steps
+<!-- core-payload-level:5 -->
 
 `owner-window.sh metrics-rotate`가 위 규칙의 발급·교체·이전 token 처리를 한 번에 실행한다. root는
 [RUN-0105](0105-openbao-maintenance-window.md) W1 source bootstrap과 W1 ceremony로 얻고, W7
@@ -178,7 +204,8 @@ accessor 조회의 `invalid accessor`와 양성 대조이다.
 `cleanup --discard-metrics`로 지우지 않는다. 변경은 policy(같은 내용), tune, 새 token뿐이며 accessor
 폐기와 tune 원복으로 되돌릴 수 있으므로 Raft snapshot은 만들지 않는다.
 
-##### Agent and Root Boundary
+###### Agent and Root Boundary
+<!-- core-payload-level:5 -->
 
 Agent 재시작 전에 승인된 운영자는 보호된 채널을 통해 새 SecretID를 전달해야 한다([RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)).
 RoleID/SecretID 파일(0600, 컨테이너 UID 100/GID 1000)을 배치하는 동안 Agent만 중단한
@@ -189,23 +216,25 @@ credential이 필요하다. 발급에는 승인된 운영자 신원이 필요하
 인증된 권한이 필요하다. quorum key만으로는 그 endpoint를 승인할 수 없다. 자동화 지름길로
 활성 영구 root token을 저장하지 않는다.
 
-### Stop Conditions
+##### Stop Conditions
 
 배포된 token 조회 결과가 custody와 다르면 custody가 오래된 것이므로 멈추고, 실패 시 exit 1로 멈추는 경우는 Steps의 Rotation Steps 실패 목록과 Rollback이 정한다. 또한 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 `metrics: allowed`, `policy list: denied`, `up{job="openbao"}` 값 1, 이전 token의 `old: revoked` 또는 `old: expired (<날짜>)`와 새 만료일을 확인한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 Service Checks의 확인 결과를 값 없이 Task에 기록한다. 회전은 custody를 새 accessor·만료일로 교체하고, 확인하지 못한 폐기나 custody 쓰기는 작업 디렉터리의 `new.unrevoked`, `old.unrevoked`, `custody.unwritten` 표시로 남는다(Steps의 Rotation Steps).
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
 
@@ -216,13 +245,33 @@ Service Checks의 확인 결과를 값 없이 Task에 기록한다. 회전은 cu
 - 일회용 SecretID의 Agent 소비: 문서는 Agent가 소비하기 전에 test-login하지 않도록 하며, 새 SecretID 전달 결과는 RUN-0103의 검증으로 확인한다.
 - tune의 영구적 잔여 위험: 문서는 owning Task에 기록하도록 하며 이 문서에는 그 기록이 없다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
 중단하고 @buenhyden에게 연락한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 실패 시 동작은 [Rotation Steps](#rotation-steps)의 실패 목록을 따른다. 이전 token이 유효하면 이전 파일과 Prometheus를 되돌리고 새 token을 폐기한다. 이전 token이 이미 만료됐으면 검증된 새 token을 배포한 채 custody에 기록하고 Prometheus를 점검한다. 확인하지 못한 폐기는 W7 `revoke-root` 전에 `metrics-revoke`로 다시 확인한다. source rollback은 `vault_token`을 다시 도입하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

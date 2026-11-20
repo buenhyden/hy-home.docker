@@ -5,12 +5,14 @@ from __future__ import annotations
 import argparse
 import collections
 import dataclasses
+import hashlib
 import pathlib
 import posixpath
 import re
 import stat
 import sys
 from collections.abc import Mapping, Sequence
+from datetime import date
 from types import MappingProxyType
 
 from scripts.lib.document_governance.architecture import (
@@ -30,6 +32,7 @@ from scripts.lib.document_governance.identity_history import (
 )
 from scripts.lib.document_governance.links import document_controls_changed
 from scripts.lib.document_governance.metadata.heading import (
+    _common_document_view,
     _introduced_body_findings,
     _machine_template_findings,
     _runtime_version_findings,
@@ -360,12 +363,231 @@ def _role_design_findings(
 
     registry = profiles["_registry"]
     assert isinstance(registry, DocumentRegistry)
-    return [
+    return _common_core_findings(root, registry) + [
         Finding(location, code, message)
         for code, location, message in role_design_contract_findings(
             registry, root=root
         )
     ]
+
+
+_COMMON_DOCUMENT_MAX_BYTES = 256 * 1024
+
+
+def _common_definition_findings(
+    root, registry, template_id, role, core
+) -> list[Finding]:
+    """Check the real Markdown definition, independently of native output."""
+    from scripts.lib.document_governance.common_document import _headings
+
+    source = str(role.get("source", ""))
+    try:
+        text = read_bounded_regular(
+            root, pathlib.PurePosixPath(source), max_bytes=_COMMON_DOCUMENT_MAX_BYTES
+        ).decode("utf-8")
+    except (OSError, OperationsAuthorityError, UnicodeError) as error:
+        return [Finding(source, "document-core-definition-unreadable", str(error))]
+    findings: list[Finding] = []
+    try:
+        metadata = _parse_frontmatter_text(text)
+    except FrontmatterError:
+        metadata = {}
+    output_types = {
+        registry.profiles[name].get("type")
+        for name in role["profiles"]
+        if name in registry.profiles
+    }
+    descriptor = metadata.get("type") == "common/template-source"
+    if (
+        pathlib.PurePosixPath(source).suffix != ".md"
+        or (not descriptor and metadata.get("type") not in output_types)
+        or (descriptor and metadata.get("template_id") != template_id)
+        or metadata.get("template_id", template_id) != template_id
+    ):
+        findings.append(
+            Finding(source, "document-core-definition-binding", template_id)
+        )
+    expected = [
+        pair
+        for parent, children in core["headings"].items()
+        for pair in [(2, parent), *((3, child) for child in children)]
+    ]
+    headings = _headings(text)
+    if (
+        core["payload_encoding"]["marker"] not in text
+        or sum(level == 1 for _, level, _ in headings) != 1
+        or [(level, title) for _, level, title in headings if level in (2, 3)]
+        != expected
+    ):
+        findings.append(
+            Finding(source, "document-core-definition-envelope", template_id)
+        )
+    return findings
+
+
+def _common_native_findings(root, registry, template_id, role) -> list[Finding]:
+    """A native payload is a separate, owned regular source, never its definition."""
+    exception = role.get("core_exception", {})
+    required = isinstance(exception, Mapping) and exception.get("kind") == "native"
+    native = role.get("native_source")
+    if native is None and not required:
+        return []
+    try:
+        if (
+            not isinstance(native, str)
+            or not pathlib.PurePosixPath(native).is_relative_to(
+                "docs/99.templates/02.templates"
+            )
+            or any(
+                native == item.get("source")
+                for item in registry.template_roles.values()
+            )
+            or sum(
+                native == item.get("native_source")
+                for item in registry.template_roles.values()
+            )
+            != 1
+            or classify_registered_path(native, registry)
+            not in {None, "template-source", *role["profiles"]}
+        ):
+            raise ValueError("native payload must be distinct and owned by this role")
+        if not read_bounded_regular(
+            root, pathlib.PurePosixPath(native), max_bytes=_COMMON_DOCUMENT_MAX_BYTES
+        ):
+            raise ValueError("native payload is empty")
+    except (OSError, OperationsAuthorityError, ValueError) as error:
+        return [Finding(template_id, "document-core-native-binding", str(error))]
+    return []
+
+
+def _common_core_findings(
+    root: pathlib.Path, registry: DocumentRegistry
+) -> list[Finding]:
+    """Validate the actual pinned common core and complete explicit bindings."""
+    from scripts.lib.document_governance.common_document import (
+        CORE_PATH,
+        CommonDocumentError,
+        _decode_contract,
+    )
+
+    binding = registry.common.get("document_core")
+    if not isinstance(binding, Mapping):
+        return [Finding("common", "document-core-binding-missing", "document_core")]
+    source = binding.get("source_path")
+    if source != CORE_PATH:
+        return [Finding("common", "document-core-identity", "unexpected common source")]
+    try:
+        raw = read_bounded_regular(
+            root, pathlib.PurePosixPath(source), max_bytes=_COMMON_DOCUMENT_MAX_BYTES
+        )
+    except (OSError, OperationsAuthorityError) as error:
+        return [Finding(source, "document-core-source-unreadable", str(error))]
+    if hashlib.sha256(raw).hexdigest() != binding.get("source_sha256"):
+        return [
+            Finding(
+                source, "document-core-source-changed", "sha256 differs from Registry"
+            )
+        ]
+    try:
+        core = _decode_contract(raw)
+    except (CommonDocumentError, KeyError, TypeError) as error:
+        return [Finding(source, "document-core-source-invalid", str(error))]
+    if (core.get("contract_id"), core.get("version")) != (
+        binding.get("contract_id"),
+        binding.get("contract_version"),
+    ):
+        return [Finding(source, "document-core-identity", "id or version differs")]
+    if (
+        not core["headings"]
+        or not core["payload_profiles"]
+        or core["payload_encoding"].get("marker")
+        != f"<!-- document-core: {core['contract_id']}/{core['version']} -->"
+        or any(
+            not isinstance(payload, Mapping)
+            or not isinstance(payload.get("required_content"), (tuple, list))
+            or not payload["required_content"]
+            or any(
+                not isinstance(item, str) or not item.strip()
+                for item in payload["required_content"]
+            )
+            or any(
+                not isinstance(payload.get(key), str) or not payload[key].strip()
+                for key in ("placement", "rule")
+            )
+            for payload in core["payload_profiles"].values()
+        )
+    ):
+        return [
+            Finding(
+                source,
+                "document-core-source-invalid",
+                "incomplete envelope or payload profile",
+            )
+        ]
+    profiles = binding.get("profile_bindings", {})
+    expected = {
+        name
+        for name, profile in registry.profiles.items()
+        if profile.get("template_id") is not None
+    }
+    findings: list[Finding] = []
+    if not isinstance(profiles, Mapping) or set(profiles) != expected:
+        findings.append(
+            Finding(
+                source,
+                "document-core-profile-binding",
+                "output profile coverage differs",
+            )
+        )
+    if not isinstance(profiles, Mapping):
+        return findings
+    for name, profile in profiles.items():
+        if (
+            not isinstance(profile, Mapping)
+            or profile.get("kind") not in core["payload_profiles"]
+        ):
+            findings.append(
+                Finding(
+                    str(name), "document-core-profile-binding", "unknown payload kind"
+                )
+            )
+    for path, override in binding.get("path_bindings", {}).items():
+        if (
+            classify_registered_path(path, registry) not in expected
+            or not isinstance(override, Mapping)
+            or ("kind" in override and override["kind"] not in core["payload_profiles"])
+        ):
+            findings.append(
+                Finding(
+                    path,
+                    "document-core-profile-binding",
+                    "unknown path override or payload kind",
+                )
+            )
+    for template_id, role in registry.template_roles.items():
+        role_profiles = role["profiles"]
+        kinds = {
+            profiles[name].get("kind")
+            for name in role_profiles
+            if isinstance(profiles.get(name), Mapping)
+        }
+        if len(kinds) != 1 or any(
+            name not in expected
+            or registry.profiles[name].get("template_id") != template_id
+            for name in role_profiles
+        ):
+            findings.append(
+                Finding(
+                    template_id,
+                    "document-core-profile-binding",
+                    "role and output profile bindings differ",
+                )
+            )
+        findings.extend(
+            _common_definition_findings(root, registry, template_id, role, core)
+        )
+        findings.extend(_common_native_findings(root, registry, template_id, role))
+    return findings
 
 
 def _workspace_inventory_findings() -> list[Finding]:
@@ -724,7 +946,18 @@ def _validate_repository_contracts(
             # wrong, so the previous code checked only `readme` documents and
             # skipped the other 131, leaving every other profile's declared
             # sections unenforced.
-            _, h2 = extract_markdown_headings(text)
+            from scripts.lib.document_governance.common_document import (
+                CommonDocumentError,
+                payload_text,
+            )
+
+            try:
+                _, h2 = extract_markdown_headings(payload_text(text))
+            except CommonDocumentError as error:
+                findings.append(
+                    Finding(path.as_posix(), "readme-envelope-invalid", str(error))
+                )
+                continue
             raw_readme = active_registry.profiles.get(readme_profile, {})
             required_sections = raw_readme.get("required_sections", ())
             if isinstance(required_sections, Sequence) and not isinstance(
@@ -1232,9 +1465,12 @@ def render_report(
     profiles: dict[str, object],
     findings_by_path: dict[str, list[Finding]],
 ) -> str:
-    """Render the deterministic exhaustive advisory Markdown inventory."""
+    """Render the current advisory inventory with its actual observation date."""
+
+    from scripts.lib.document_governance.common_document import wrap_document
 
     _, profile_map = _profile_mapping(profiles)
+    observed_on = date.today().isoformat()
     profile_counts = collections.Counter(record.artifact_type for record in records)
     finding_counts = collections.Counter(
         finding.code for findings in findings_by_path.values() for finding in findings
@@ -1244,16 +1480,18 @@ def render_report(
     lines = [
         "---",
         'title: "Reference: Frontmatter Semantic Inventory"',
-        'version: "1.1.0"',
+        'version: "2.0.0"',
         'type: "reference/audit-pack"',
         'status: "published"',
         'owner: "@buenhyden"',
-        'updated: "2026-11-17"',
+        "document_scope:",
+        '  subject: "hy-home.docker"',
+        '  layer: "reference"',
+        f'updated: "{observed_on}"',
         'layer: "references"',
         'artifact_id: "AUD-0023"',
-        "parent_ids: []",
         'created: "2026-07-05"',
-        'observed_at: "2026-09-06"',
+        f'observed_at: "{observed_on}"',
         "generated_by: scripts/validation/check-document-metadata.py",
         "---",
         "",
@@ -1263,47 +1501,47 @@ def render_report(
         "",
         "### Purpose",
         "",
-        "This generated advisory reference inventories tracked and selected new target-stage and",
-        "governance/template Markdown document except this self-referential output. It records inferred profiles",
-        "and metadata findings without printing body content, secret values, or raw logs.",
-        "The original snapshot supported Spec 123 Tasks 7 and 8; this regeneration measures the current worktree.",
+        "이 참고 보고서는 추적 중인 문서와 선별한 새 문서를 조사합니다.",
+        "대상은 관리되는 문서 단계와 거버넌스·템플릿의 Markdown이며 자기 자신은 제외합니다.",
+        "본문·비밀값·원시 로그를 출력하지 않고 profile과 메타데이터 발견 사항만 기록합니다.",
+        "원래 관측은 Spec 123의 Task 7·8을 지원했으며, 이번 재생성은 현재 작업 상태를 측정합니다.",
         "",
         "#### Repository Role",
         "",
-        "`.agents/governance` and Stage 99 own active metadata policy. This Stage 90 snapshot is",
-        "generated evidence only; regenerate it with `check-document-metadata.py`.",
+        "현행 메타데이터 정책은 `.agents/governance`와 Stage 99가 소유합니다. 이 Stage 90 보고서는",
+        "생성된 근거이며 `check-document-metadata.py`로 다시 관측합니다.",
         "",
         "#### In Scope",
         "",
-        "- Tracked and selected new managed Markdown paths, inferred profiles, safe frontmatter parse state, and finding codes",
-        "- Identity, parent, lifecycle, freshness, README, generated, governance, template, and archive profiles",
+        "- 관리되는 Markdown 경로, 추론한 profile, 안전한 frontmatter 해석 상태와 발견 코드",
+        "- 식별자·부모·수명주기·최신성 및 README·생성물·거버넌스·템플릿·보존 profile",
         "",
         "### Excluded Responsibilities",
         "",
-        "- Automatic document rewrites, corpus-wide blocking, or lifecycle changes",
-        "- Filesystem modification times as freshness evidence",
-        "- Raw document bodies, logs, credentials, or secret values",
+        "- 문서 자동 수정, 전체 문서 차단 또는 수명주기 변경은 수행하지 않습니다.",
+        "- 파일 수정 시각을 문서 최신성의 근거로 사용하지 않습니다.",
+        "- 원시 본문·로그·자격 증명·비밀값은 포함하지 않습니다.",
         "",
         "## Current Contents",
         "",
         "### Paths",
         "",
-        "This generated report is one file and lists no member documents.",
+        "이 생성 보고서는 단일 파일이며 하위 문서를 나열하지 않습니다.",
         "",
         "| Path | Purpose |",
         "| --- | --- |",
         "",
         "### Owners",
         "",
-        "- **Owner**: Metadata program owner / rules-engineer",
+        "- **소유자**: 메타데이터 프로그램 담당자 / rules-engineer",
         "",
         "## Usage",
         "",
         "### Entry Points",
         "",
-        "- [Document Registry](../../../99.templates/registry.json) - metadata ownership and exception rules",
-        "- [Template governance](../../../99.templates/README.md) - lifecycle vocabulary and transitions",
-        "- [Semantic audit](../0024-frontmatter-template-readme-implementation/README.md) - historical pre-remediation criteria and baseline",
+        "- [Document Registry](../../../99.templates/registry.json) - 메타데이터 소유권과 예외 규칙",
+        "- [Template governance](../../../99.templates/README.md) - 수명주기 용어와 전이",
+        "- [Semantic audit](../0024-frontmatter-template-readme-implementation/README.md) - 수정 전의 과거 기준과 관측",
         "- [Audit pack README](./README.md)",
         "- [Frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md)",
         "- [SDLC and document-contract audit](../0029-sdlc-document-contracts-implementation/README.md)",
@@ -1312,16 +1550,16 @@ def render_report(
         "",
         "#### Criteria",
         "",
-        "Use the Stage 99 Registry's profile, identity, relation, lifecycle, and freshness contracts.",
-        "Historical semantic findings remain advisory here; the separate changed/new",
-        "checker enforces only its safely selected diff scope.",
+        "Stage 99 Registry의 profile·식별자·관계·수명주기·최신성 계약을 적용합니다.",
+        "과거 발견 사항은 이 보고서에서 참고 근거로 남습니다. 별도의 변경·신규 검사는",
+        "안전하게 선택한 차이 범위만 집행합니다.",
         "",
         "#### Evidence",
         "",
-        f"- **Current records**: {len(records)}",
-        f"- **Records with findings**: {semantic_count}",
-        f"- **Frontmatter parser failures**: {parse_count}",
-        "- **Enforcement state**: full inventory advisory; changed/new selection blocking",
+        f"- **현재 기록**: {len(records)}",
+        f"- **발견 사항이 있는 기록**: {semantic_count}",
+        f"- **Frontmatter 해석 실패**: {parse_count}",
+        "- **집행 상태**: 전체 목록은 참고용이며 변경·신규 선택 범위는 차단 검사 대상입니다.",
         "",
         "#### Profile Summary",
         "",
@@ -1386,25 +1624,25 @@ def render_report(
             "",
             "#### Source Rules",
             "",
-            "- Paths come from bounded Git tracked and changed/new Markdown discovery filtered to managed document roots; ignored files are excluded. Non-Git fixtures use sorted recursive discovery.",
-            "- YAML is parsed with PyYAML `safe_load` behavior plus duplicate-key rejection.",
-            "- Every row states parse, identity, relation, lifecycle, transition-evidence, freshness, and exception semantics; unavailable history is never inferred.",
-            "- The report shows only bounded metadata states, safe repository paths, counts, and finding codes.",
-            "- Graphify is advisory and is not used as inventory proof.",
+            "- 경로는 관리 루트로 제한한 Git 추적·변경·신규 Markdown 탐색에서 가져오며 무시된 파일은 제외합니다. Git이 없는 시험 입력은 정렬된 재귀 탐색을 사용합니다.",
+            "- YAML은 PyYAML `safe_load` 동작에 중복 키 거부를 추가해 해석합니다.",
+            "- 각 행은 해석·식별자·관계·수명주기·전이 근거·최신성·예외 의미를 기록하며 확인할 수 없는 이력은 추정하지 않습니다.",
+            "- 보고서는 제한된 메타데이터 상태, 안전한 저장소 경로, 집계와 발견 코드만 표시합니다.",
+            "- Graphify는 탐색 참고이며 목록의 증거로 사용하지 않습니다.",
             "",
             "#### Conformance",
             "",
-            f"The inventory contains {semantic_count} records with findings and {parse_count} parser failures. These counts describe static document checks; they do not establish execution or provider-runtime conformance.",
-            "The separate official checks determine acceptance for their selected scope.",
+            f"발견 사항이 있는 기록은 {semantic_count}개, 해석 실패는 {parse_count}개입니다. 이 집계는 정적 문서 검사 결과이며 실행이나 provider runtime 적합성을 증명하지 않습니다.",
+            "별도의 공식 검사는 선택 범위의 결과를 제공하며, 실제 인수 결정은 해당 권한자가 기록합니다.",
             "",
             "#### Actions",
             "",
-            "- **Review Cadence**: Regenerate when tracked Markdown or metadata profiles change",
-            "- **Update Trigger**: Profile, parser, lifecycle, relation, exception, or corpus changes",
+            "- **검토 주기**: 추적 Markdown이나 메타데이터 profile이 바뀌면 다시 관측합니다.",
+            "- **갱신 조건**: profile·파서·수명주기·관계·예외·문서 집합의 변경",
             "",
         ]
     )
-    return "\n".join(lines)
+    return wrap_document("\n".join(lines), kind="reference-pack")
 
 
 def _managed_document_change(path: str) -> str | None:
@@ -1608,7 +1846,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             else FrontmatterValidator(template_schema)
         )
         for role, definition in registry.template_roles.items():
-            source = definition.get("source")
+            source = definition.get("native_source", definition.get("source"))
             if not isinstance(source, str):
                 continue
             template = root / source
@@ -1712,8 +1950,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                                 f"status is outside lifecycle: {lifecycle_id}",
                             )
                         )
-                h1, h2 = extract_markdown_headings(text)
-                if len(h1) != 1:
+                from scripts.lib.document_governance.common_document import payload_text
+
+                h1, h2 = extract_markdown_headings(payload_text(text))
+                if len(h1) != 1 and not provider_owned:
                     contract_findings.append(
                         Finding(
                             source,
@@ -1975,6 +2215,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             path_text = record.path.as_posix()
             findings_by_path[path_text] = [
                 *findings_by_path[path_text],
+                *_common_document_view(record, text, profiles)[2],
                 *_runtime_version_findings(record, text, root),
             ]
     changed_body_findings: dict[str, list[Finding]] = {}

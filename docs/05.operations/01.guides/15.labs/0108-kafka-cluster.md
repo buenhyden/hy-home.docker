@@ -1,10 +1,13 @@
 ---
 title: "Kafka Cluster LAB Usage Guide"
-version: "0.3.0"
+version: "1.0.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0108"
 parent_ids:
@@ -24,13 +27,33 @@ next_review_at: "2027-05-13"
 
 # Kafka Cluster LAB Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 세 broker KRaft cluster LAB의 구성, 격리 경계와 정적 검증을 이해하려는 운영자, 개발자, AI Agent가 읽는다.
 
-### Outcome
+##### Outcome
 
 [`labs/kafka-cluster/docker-compose.yml`](../../../../labs/kafka-cluster/docker-compose.yml)은
 독립 Compose project `hy-home-lab-kafka`의 세 broker KRaft cluster LAB이다. 정상 root는 이 파일을
@@ -41,13 +64,15 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
 목적: Kafka LAB의 구성, 격리 경계와 정적 검증을 현재 Compose와 맞춰 이해한다. HOME의
 단일 broker는 [GDE-0036](../06.messaging-and-cdc/0036-kafka.md)이 다룬다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - Artifact: `GDE-0108`; governing policy: `POL-0108`.
 - Version projection: [tech-stack versions](../../../../infra/tech-stack.versions.json)는 Compose에서 파생된 drift 증거이며 정확한 pin은 Compose가 소유한다.
 - Runtime authority: `labs/kafka-cluster/docker-compose.yml`.
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Operations policy](../../02.policies/15.labs/0108-kafka-cluster.md)
 - [Kafka LAB README](../../../../labs/kafka-cluster/README.md)
@@ -56,9 +81,9 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
 - [HOME Kafka guide](../06.messaging-and-cdc/0036-kafka.md)
 - [Apache Kafka KRaft](https://kafka.apache.org/documentation/#kraft)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 `lab-kafka` profile이 전체 closure를 선택한다.
 
@@ -85,21 +110,23 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
   connector 예시, 복제 role provisioning SQL과 secret renderer는 제거했으며 Git 이력이 보존한다.
   Connect 상태(`_connect-*` topic)는 broker에 있고 별도 data volume이 없다.
 
-### Authority
+##### Authority
 
 이 LAB은 host port, HOME `kafka_net`, secret을 연결하지 않으며 connector 등록은 운영자 승인 단계다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Operator input
+###### Operator input
+<!-- core-payload-level:4 -->
 
 `LAB_KAFKA_CLUSTER_ID`는 필수이며 HOME `KAFKA_CLUSTER_ID`와 달라야 하고 KRaft 형식이어야 한다.
 HOME 입력의 render는 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면 `labs/.env`에 이 값이
 없다(agent는 그 파일을 읽지 않는다). owner가 `labs/.env`에 값을 넣어야 HOME render, `lab.py check`와 readiness 검사를 실행할 수 있다.
 
-#### Static check
+###### Static check
+<!-- core-payload-level:4 -->
 
 repository root에서 합성 LAB 경로와 HOME과 다른 LAB ID로 render한다. 이 명령은 서비스를 시작하지
 않는다.
@@ -111,7 +138,8 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 기동과 정지는 [RUN-0108](../../03.runbooks/15.labs/0108-kafka-cluster.md)의 `lab.py` 절차만 쓴다.
 이 LAB은 HOME에서 기동된 기록이 없으므로 runtime 동작, topic 생성과 복구는 미검증이다.
 
-#### Promotion
+###### Promotion
+<!-- core-payload-level:4 -->
 
 [ADR-0062의 Kafka CDC 개정](../../../02.architecture/02.decisions/0062-home-lab-membership.md#amendment-of-2026-11-10-kafka-cdc-kafka-connect-and-schema-registry)은
 HOME 단일 broker와 초기화·exporter·UI를 유지하고 Schema Registry와 Connect를 이 LAB으로 옮긴
@@ -120,27 +148,49 @@ HOME 단일 broker와 초기화·exporter·UI를 유지하고 Schema Registry와
 현행 구조 결정의 변경을 승인받고 [POL-0107](../../02.policies/15.labs/0107-lab-promotion.md)의
 별도 Task 절차를 따른다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-### Expected Results
+##### Expected Results
 
 정확한 profile, 세 data 경로의 분리, internal network, 서로 다른 cluster ID와 limit을 render로
 확인한다. 정적 통과는 configuration 증거일 뿐이다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - render가 `set a unique LAB KRaft cluster ID`로 실패하면 `LAB_KAFKA_CLUSTER_ID`가 없다.
 - render가 `set isolated LAB data root`로 실패하면 `LAB_DATA_DIR`이 없다.
 - broker가 healthy가 되지 않으면 [RUN-0108](../../03.runbooks/15.labs/0108-kafka-cluster.md)의 진단으로 넘긴다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 정적 점검, 기동·정지와 복구 계획은 [RUN-0108](../../03.runbooks/15.labs/0108-kafka-cluster.md)을 따른다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [RUN-0108](../../03.runbooks/15.labs/0108-kafka-cluster.md)를 따른다. broker가 healthy가 되지 않으면 이 runbook의 진단으로 넘긴다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

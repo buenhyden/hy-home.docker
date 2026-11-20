@@ -1,35 +1,62 @@
 ---
 title: "개발 PostgreSQL"
-version: "0.3.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-02"
 ---
 
 # 개발 PostgreSQL
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 `dev-pg`는 Compose와 Dockerfile에 선언된 TimescaleDB Community/PG 단일 인스턴스의 **소스 선언**입니다. `dev-data` 프로파일은 개발 PostgreSQL과 Valkey만 선택합니다. `dev-platform-provision`은 `analytics-engineering` 프로파일에서만 선택되며 명시된 `hyhome-platform` 기술 fixture의 `platform_dev` 데이터베이스를 만들도록 설계됐습니다. 공무원·언어 학습 앱이나 외부 업무 프로젝트 데이터베이스는 기본 설치에서 생성하지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 개발 PostgreSQL과 프로젝트별 데이터 권한을 검토하는 maintainer와 operator를 대상으로 합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - 입력: `DEFAULT_DATA_DIR`의 새로운 `dev-pg` 디렉터리, 별도의 `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest`, `DEV_PG_HOST_PORT`(기본 25433, localhost), `DEV_PG_ADMIN_USER`(기본 postgres), root의 `dev_data_net`, `dev_pg_admin_password`, `dev_pgbackrest_cipher_pass`, 플랫폼 fixture의 세 역할 비밀번호 secret. 실제 값은 저장소 밖 Docker secret으로 공급합니다.
 - 출력: `dev-pg:5432` endpoint와 `platform_dev`의 `platform_owner`(NOLOGIN), `platform_migrator`, `platform_runtime`, `platform_reader` 역할. DB와 schema `app`의 소유자는 `platform_owner`이며 migrator는 migration 때 `SET ROLE platform_owner`를 실행해야 새 객체에 기본 권한이 적용됩니다. Runtime과 reader는 DDL 권한이 없습니다.
 - 범위: 별도 `dev` pgBackRest stanza, 새 PGDATA `/var/lib/postgresql/18/docker`, 2 CPU/2 GiB RAM/256 MiB SHM, 100 연결(프로젝트 login role 예산: migrator 2, runtime 10, reader 5), 연속 WAL archive(`archive_mode=on`, 보존 full 2·differential 6, `archive-push-queue-max=2GiB`). 활성화 순서는 RUN-0021이 소유하며 `dev` stanza가 먼저 있어야 합니다. `max_wal_size=2GB`는 PostgreSQL WAL 디스크 사용의 강제 상한이 아닙니다. WAL/저장소 여유를 관측해야 합니다.
 - 검증: 2026-10-03 새 secret 경로 발급, 격리 이미지 빌드, Timescale 확장 로드, 플랫폼 역할의 읽기·쓰기·DDL 권한, pgBackRest 오프라인 전체 백업과 별도 볼륨 복원을 합성 상태에서 확인했습니다. retention(full 2·differential 6)은 소스에 선언되어 백업마다 만료가 적용됩니다. HOME stanza·WAL 활성화·최초 full·격리 restore canary는 2026-10-08 통과했고, HOME PITR·R2 복구는 미실행이며 그 검증은 POL-0021이 소유합니다. 5분 RPO는 archive 성공 시의 계획값이고 RTO 실측은 없습니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 [`Dockerfile`](Dockerfile)은 TimescaleDB 이미지에 pgBackRest를 추가하고, [`backup/`](backup/)은 비활성 백업 설정을 소유합니다. [`provision/`](provision/)은 승인된 프로젝트의 role/DB 경계를 소유합니다. 루트 [`docker-compose.yml`](../docker-compose.yml)이 서비스를 선언합니다.
 
@@ -39,7 +66,7 @@ created: "2026-10-02"
 
 `platform_dev`은 승인된 시간 이력 테이블을 만들지 않습니다. 업무 migration은 외부 프로젝트 소유이며 UTC/단위/정밀도/NULL/중복/지연 도착, partition 차원을 포함한 유일키, chunk·index·continuous aggregate·refresh·raw retention과 백필/삭제 승인을 명시해야 합니다. 개발 DB 세부 운영 계약은 [운영 가이드 목록](../../../../docs/05.operations/01.guides/README.md)에서 확인합니다. 승인된 프로젝트 계약 전에는 hypertable과 retention 정책을 추가하지 않습니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -47,11 +74,13 @@ created: "2026-10-02"
 | `dev-pg-exporter` 지표 `http://localhost:9187/metrics` | `dev-pg-exporter` | 이 README는 소비자를 기록하지 않는다. | `dev_pg_monitor` role로 `postgres` DB에만 접속해 통계·설정 지표를 노출한다. | `wget` healthcheck(15s)를 쓰며 규칙에 맞지 않는 비밀은 role 변경 전 거부한다. |
 | `provision/project.py` 프로젝트 JSON 입력 | 이 README는 생산자를 기록하지 않는다. | `dev-platform-provision`의 `provision/project.py` | JSON schema v1과 `environment=development`만 받고 값은 실행 시 `/run/secrets/`에서 읽는다. | comment가 맞지 않는 기존 DB는 자동 인수하지 않고 소유자 검토가 필요하다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 상위 [Compose](../docker-compose.yml)의 `dev-pg`와 `dev-platform-provision`이 `dev_data_net`, 새 PGDATA 경로, 역할별 Docker secret, 비활성 백업 설정을 연결합니다.
 
-##### 함수 전용 프로젝트의 cluster CONNECT 경계
+###### 함수 전용 프로젝트의 cluster CONNECT 경계
+<!-- core-payload-level:5 -->
 
 Schema v2 provisioner는 다섯 marked role을 확인한 뒤 DB 생성·ACL·LOGIN 변경 전에
 모든 `datallowconn` database의 유효 CONNECT를 검사합니다. 대상 DB 밖의 PUBLIC,
@@ -70,45 +99,72 @@ PUBLIC template1이나 새 DB를 통해 접근할 수 있으면 NOLOGIN 상태�
 접근을 추가하지 않습니다. 기존 활성 role의 권한 변경·세션 종료는 별도 운영 조정 대상입니다. 복원 순서는 globals/roles,
 검토된 cluster ACL, 프로젝트 DB 복원과 실제 역할별 거부 시험입니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_password`, `dev_pgbackrest_cipher_pass`이며, 이 폴더를 마운트하는 `dev-platform-provision`은 `dev_pg_platform_migrator_password`, `dev_pg_platform_runtime_password`, `dev_pg_platform_reader_password`, `dev_pg_opsflow_migrator_password`, `dev_pg_opsflow_ingest_password`, `dev_pg_opsflow_notifier_password`, `dev_pg_opsflow_reader_password`를 추가로 쓰고, `dev-perf-provision`은 위 목록의 `dev_pg_admin_password`만 쓴다. 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432`이다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-pg`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dev-platform-provision`, `dev-perf-provision` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 [Dockerfile](Dockerfile)이 TimescaleDB Community 기반 PostgreSQL 이미지와 pgBackRest 패키지를 선언합니다. 실제 호환성은 이미지 빌드와 격리 복원으로 확인해야 합니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 정적 확인: `python3 -m unittest tests.validation.test_dev_pg_provision` 및 `python3 infra/04-data/dev-db/pg/provision/project.py infra/04-data/dev-db/pg/provision/platform.json --validate-only`. 백업 운영 절차는 Stage 05의 기존 백업 정책·런북 소유자가 별도로 갱신합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 `python3 -m unittest tests.validation.test_dev_pg_provision`과 `project.py --validate-only`를 저장소 루트에서 실행합니다. 이미지·권한·복구의 실제 결과는 Task에 별도로 기록합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0100: `docs/05.operations/03.runbooks/05.databases-and-storage/0100-development-database.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 [문서 진입점](../../../../docs/README.md)에서 현재 개발 DB 계약의
 POL-0100·RUN-0100과 백업·복구 RUN-0021을 참조하십시오.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 헬스체크: `dev-pg` 서비스는 `pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres` (interval 15s); `dev-pg-exporter` 서비스는 `wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1` (interval 15s).
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,10 +1,13 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.7.1"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-06-01"
 
 # Agent Governance Canonical Adapter Architecture
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - `.agents/` owns policy, workflow, canonical roles/skills, and the provider
   boundary.
@@ -44,7 +67,8 @@ created: "2026-06-01"
   the current Task owns execution and acceptance. New evidence requires bounded
   Stage 99 classification; representative scores grant no runtime authority.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 Policy, provider translation, document shape and execution evidence have
 separate canonical owners. Both providers read the same repository-owned
@@ -56,17 +80,18 @@ reviews the norm in `.agents/`, the agent consumes the same norm through the
 provider adapter in native runtime form, and the reviewer independently
 verifies projection drift.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The maintainer reviews the norm in `.agents/`, the agent consumes it through the provider adapter in native runtime form, and the reviewer verifies projection drift. Claude and Codex read the same repository-owned instructions and share one memory store through `scripts/operations/agent_memory.py`.
 
-### Constraints
+##### Constraints
 
 Policy, roles, skills, SDLC and approval boundaries must stay single even when several AI providers modify the same repository. The canonical `.agents/` sources are never generated output, native Claude memory is off, and user-global configuration, credentials and deployment state are outside this architecture.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 | Component | Responsibility |
 | --- | --- |
@@ -86,7 +111,7 @@ Governance, role, skill, knowledge and prompt documents are English and every
 the documentation protocol owns the rule. Native adapters consume the same
 meaning without creating another language or policy authority.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -101,11 +126,12 @@ meaning without creating another language or policy authority.
 - The Provider Registry carries provider identity and translation facts, and the Stage 99 Registry carries document shape and lifecycle.
 - The canonical `SKILL.md` uses `name`, `description` and `metadata`, and native adapters require explicit invocation.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 Bootstrap moves from the root shim to the shared agent governance policy and
 the matching provider adapter. It selectively loads only the canonical
@@ -124,22 +150,24 @@ authorization scope and conditions, evidence and shared allocations under
 [Approval Boundaries](../../04.quality/approval-boundaries.md#authorization-source-and-records).
 A material mismatch stops dependent work until it is reconciled.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 The implementation surface is tracked Markdown, YAML, JSON, TOML, and
 validation scripts. Provider sync and governance tests check projection
 freshness. A document or adapter change alone does not require Docker
 runtime, a remote service, or secret mutation.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 This description records no failure boundary beyond its Risks: static renderer parity proves tracked configuration only, and a provider runtime change can alter the loading behavior that an authored adapter describes. An adapter cannot relax the shared approval boundary.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Determinism**: the same source and registry must produce the same
   projection and verdict.
@@ -152,14 +180,15 @@ This description records no failure boundary beyond its Risks: static renderer p
 - **Recoverability**: use Git diff and history instead of separate snapshots
   or SHA pins.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 - Static renderer parity proves tracked configuration only; native invocation, hook
   trust and runtime acceptance need direct evidence.
 - A provider runtime change can alter loading behavior that the authored
   adapter describes.
 
-### Trade-offs
+##### Trade-offs
 
 - Keeping one canonical `.agents/` source with generated native adapters
   gives single ownership and deterministic projection, but static renderer
@@ -172,20 +201,22 @@ This description records no failure boundary beyond its Risks: static renderer p
 - Recoverability relies on Git diff and history instead of separate snapshots
   or SHA pins (Quality Attributes).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0032 Canonical Agent Governance Home](../02.decisions/0032-canonical-agent-governance-home.md)
 - [ADR-0034 Canonical Knowledge and Prompt Surfaces](../02.decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0024 Agent Governance Standardization](../../../01.requirements/0024-agent-governance-standardization.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - [canonical agent governance bootstrap](../../../../.agents/governance/bootstrap.md)
 - [Stage 99 Registry](../../../99.templates/registry.json)
@@ -195,7 +226,28 @@ This description records no failure boundary beyond its Risks: static renderer p
 - SPEC-0254 (retired; version history) delivered the plain-text stage identities in infra READMEs, the agent-governance suite selection for folder guide edits, the `common/agent-guide` type and the active folder guides.
 - SPEC-0251 (retired; version history) split folder README (people) from folder AGENTS.md (agents), added the placement rule and the nine first folder guides.
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 - A new provider enters through a Provider Registry entry and an authored
   adapter, never a second policy copy.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Crawl4AI Operations Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0091"
 parent_ids:
@@ -15,30 +18,52 @@ next_review_at: "2027-05-13"
 
 # Crawl4AI Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 때까지 격리하고
 인증을 적용한 채 사용하지 않는 상태로 유지한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [AI architecture](../../../02.architecture/01.descriptions/0008-ai-architecture.md)
 
 - [Crawl4AI Compose source](../../../../infra/08-ai/crawl4ai/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 활성화, 네트워크 배치, 인증, consumer, provider key, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -84,22 +109,24 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 - `dedicated-crawl` 작업은 실행 전에 목적, consumer와 호출 경로, 대상 범위, 동시성·속도, 사용 endpoint, 보존 기간과 저장 위치, 하류 사용, 삭제 책임자를 기록한 승인 변경으로 위 표에 행을 추가한다.
 - 가져온 내용은 데이터다. 그 내용을 근거로 secret 접근, 도구 실행, 정책 변경을 허용하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 선언 버전의 `/health`, `/token`, root/monitor 및 UI/static shell 예외를 인정하되 protected data/admin API 인증은 유지한다. `/token`은 별도 key/email 검증을 하며 임의 token 발급 예외가 아니다. 새로운 예외는 승인된 변경 없이는 추가하지 않는다. `crawl4ai-loopback`은 소유자가 승인한 유일한 host 게시로, `127.0.0.1:11235`에서 받은 연결을 `crawl4ai:11235`로만 전달한다. 호스트 consumer는 등록된 작업만 이 경로를 쓰며 Bearer token을 추적되지 않는 자기 설정으로 보관한다(Hermes: `~/.hermes/.env`의 `CRAWL4AI_API_TOKEN`). 컨테이너 consumer는 기존처럼 `crawl4ai_net` 합류 검토를 따른다. 크롤러는 internal 네트워크에 그대로 둔다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 이미지 업그레이드나 consumer 연결 시, 그리고 service rationalization 검토 때마다
 검토한다. consumer가 여전히 없으면 @buenhyden의 승인된 제거 변경으로 넘긴다. Secret 폐기는 소비자·유출·보존 상태를 확인한 별도 결정이다.
 
 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 정적 렌더링과 template baseline을 확인한다. 승인된 런타임 검증은 `/health`와
 명시된 공개 shell/토큰 경로를 구분하고, protected data/admin API의 토큰 없는 요청은
@@ -107,7 +134,7 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 
 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Limits
+##### Limits
 
 정책은 정적 렌더링/baseline, 런타임 검증, `tests.validation.test_crawl4ai_egress`를 지정하지만 아래 항목은 기계적으로 강제되지 않는다.
 
@@ -123,13 +150,33 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 - `dedicated-crawl` 등급은 등록된 작업이 없고 `open-web-fallback` 건별 기록은 소유자 승인에 의존한다.
 - provider key가 추적 파일에 없음을 확인하는 전용 검사는 정책에 명시되지 않는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Guide](../../01.guides/09.ai-and-search/0091-crawl4ai.md) (`GDE-0091`)
 - [Runbook](../../03.runbooks/09.ai-and-search/0091-crawl4ai.md) (`RUN-0091`)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

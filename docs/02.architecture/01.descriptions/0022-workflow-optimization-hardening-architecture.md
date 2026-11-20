@@ -1,10 +1,13 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.3.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0022"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-28"
 
 # 07-Workflow Optimization Hardening Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 The workflow tier operates with two execution planes.
 
@@ -43,26 +66,28 @@ UI uses ForwardAuth.
   - immediate multi-region/cluster workflow operation
   - immediate full activation of a new workflow service deployment
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This document defines the optimization/hardening reference architecture of
 the `07-workflow` layer. It organizes the gateway boundary security,
 health-based dependency, n8n image hardening, and catalog-based expansion
 roadmap from an architecture perspective.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The tier consumes the `01-gateway` Traefik middleware chain, `02-auth` SSO middleware and `04-data` management PostgreSQL; clients reach the Airflow and n8n UIs through Traefik.
 
-### Constraints
+##### Constraints
 
 The gateway-standard-chain is enforced (plus the SSO chain on Flower only; Airflow and n8n use their own login), and n8n runs non-root with a secret guard.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - **Ingress path**:
   - Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI
@@ -72,7 +97,7 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Data/control dependencies**:
   - PostgreSQL (metadata), Valkey (queue/broker), SSO middleware
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -84,11 +109,12 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - Ingress path: Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI.
 - Data/control dependencies: PostgreSQL (metadata), Valkey (queue/broker), SSO middleware.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 - **Key Entities / Flows**:
   - DAG metadata, workflow executions, queue tasks
@@ -98,7 +124,8 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
   - the workflow tier owns orchestration metadata, and each domain owns its
     business payload schema.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 - **Runtime / Platform**: Docker Compose (`infra/07-workflow/*`)
 - **Deployment Model**:
@@ -108,15 +135,16 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Verification**: the registered `infrastructure-hardening` gate in
   `.github/workflow-contract.yml` and Compose validation
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Health-based boot order reduces initial failure/restart bursts, and worker/task-runner healthcheck and dependency gating strengthen stability. The description records no failure boundary beyond the linked operations documents under Interfaces.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Performance**: reduces initial failure/restart bursts through
   health-based boot order.
@@ -130,7 +158,7 @@ Health-based boot order reduces initial failure/restart bursts, and worker/task-
 - **Observability**: verifies workflow stack health at the compose/CI level.
 - **Operability**: uses the registered hardening gate as the baseline.
 
-### Trade-offs
+##### Trade-offs
 
 - The SSO chain applies to Flower only; Airflow and n8n keep their own login
   behind the gateway standard chain (Constraints, Quality Attributes).
@@ -144,27 +172,30 @@ Health-based boot order reduces initial failure/restart bursts, and worker/task-
 - The description records no failure boundary beyond the linked operations
   documents (Failure and Recovery).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../02.decisions/0059-native-oidc-open-webui-and-airflow.md)
 - **ADR**: [ADR-0062 optional Flower activation](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - **Requirement**: [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - **Tier Architecture Description**: [AD-0007 Workflow Tier (07-workflow) Architecture Description](0007-workflow-architecture.md)
 - **Guide**: [Workflow optimization hardening guide](../../05.operations/01.guides/08.workflows-and-automation/0054-workflow-optimization-hardening.md)
 - **Policy**: [Workflow optimization hardening policy](../../05.operations/02.policies/08.workflows-and-automation/0054-workflow-optimization-hardening.md)
 - **Runbook**: [Workflow optimization hardening runbook](../../05.operations/03.runbooks/08.workflows-and-automation/0054-workflow-optimization-hardening.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 - **Airflow**:
   - DAG quality gate (parse/schedule/delay) CI
@@ -174,3 +205,23 @@ Health-based boot order reduces initial failure/restart bursts, and worker/task-
   - strengthening credential store OpenBao integration
 
 A new workflow service without a tracked infra artifact is excluded from the active workflow architecture scope.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

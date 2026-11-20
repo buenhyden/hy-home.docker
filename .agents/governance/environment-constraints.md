@@ -1,35 +1,60 @@
 ---
 title: "Environment Constraints"
-version: "1.26.1"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Environment Constraints
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Environment Constraints
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Detailed execution boundaries, verification rules, Graphify behaviors, and shared agent memory rules for the `hy-home.docker` workspace.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of execution boundaries, verification, Graphify, and shared agent memory under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Local repository work, infrastructure execution, secrets handling, verification environment, and the shared agent memory store.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -191,7 +216,8 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R122 | Reported quarantine | Required: treat it as a nonzero cleanup handoff, not successful regeneration | none | none |
 | ENVIRONMENT-CONSTRAINTS-R123 | Reported quarantine | Required: follow the exact-path procedure in `.agents/governance/providers/README.md` before rerunning write and check | none | none |
 
-#### 1. Hard Constraints
+###### 1. Hard Constraints
+<!-- core-payload-level:4 -->
 
 - `_workspace` is an ignored repo-support staging surface, not an active stage.
   The seven contract READMEs listed in `_workspace/README.md` are its only
@@ -212,7 +238,8 @@ None: this document states no exclusion.
 - A provider sandbox that cannot start on this host is recorded in that
   provider's adapter. Recording it grants no sandbox relaxation.
 
-#### 2. Infrastructure Constraints
+###### 2. Infrastructure Constraints
+<!-- core-payload-level:4 -->
 
 - **Networking**: inter-service traffic must stay on the repository-owned
   Compose networks, and a service joins one only for a peer it uses. Direct
@@ -241,7 +268,8 @@ None: this document states no exclusion.
   profile for `up`, `start` or `create` would start the whole stack and is
   forbidden; rendering it with `config` stays allowed.
 
-#### 2.1 Approved Runtime Mutation Protocol
+###### 2.1 Approved Runtime Mutation Protocol
+<!-- core-payload-level:4 -->
 
 When the user approves live runtime or Docker mutation, the agent still needs a
 concrete target before changing service state. The co-located Task evidence must
@@ -257,7 +285,8 @@ record:
 Approval without a concrete runtime target authorizes planning and validation
 only; it does not require starting, stopping, rebuilding, or recreating services.
 
-#### 2.2 Approved Secrets Work Protocol
+###### 2.2 Approved Secrets Work Protocol
+<!-- core-payload-level:4 -->
 
 When the user separately approves a concrete secret operation, agents may
 inspect repository-local secret metadata needed for the task, but secret values
@@ -271,7 +300,8 @@ Secret value reads, writes, or rotations require a concrete target and task
 evidence that records the redaction boundary, validation command, and rollback
 or recovery path. Do not commit, print, summarize, or quote secret values.
 
-#### 4. Graphify
+###### 4. Graphify
+<!-- core-payload-level:4 -->
 
 This project has a graphify knowledge graph at `graphify-out/`.
 
@@ -294,7 +324,8 @@ This project has a graphify knowledge graph at `graphify-out/`.
   tool writes alongside a refusal is a byproduct, not a release, and is not
   committed without checking its node count against the tracked graph.
 
-#### 5. Shared Agent Memory
+###### 5. Shared Agent Memory
+<!-- core-payload-level:4 -->
 
 - Every supported provider shares one memory store,
   `.workspace-memory/memory.sqlite3` in the main checkout, which Git ignores.
@@ -465,7 +496,8 @@ This project has a graphify knowledge graph at `graphify-out/`.
   policy changes only through a separate approved Task. A failed or
   missing analysis never blocks commit, push or other work.
 
-#### Provider Surface Regeneration
+###### Provider Surface Regeneration
+<!-- core-payload-level:4 -->
 
 - Provider surface `--write` is allowed once only after an approved canonical
   agent governance or Provider Registry change. Ordinary postflight and CI use
@@ -475,21 +507,24 @@ This project has a graphify knowledge graph at `graphify-out/`.
   the exact-path procedure in `.agents/governance/providers/README.md`
   before rerunning write and check.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations wait for their exact target under [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 Separately authorized operations follow the [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md) policy.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
-#### 3. Verification
+###### 3. Verification
+<!-- core-payload-level:4 -->
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
 - For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all`.
@@ -499,7 +534,7 @@ Separately authorized operations follow the [Approval boundaries](../../docs/00.
   authorize direct invocation, ignored/outside writes, or a sandbox bypass.
 - Run the completion checklist in `docs/00.workspace/04.quality/task-checklists.md` before declaring done.
 
-### Limits
+##### Limits
 
 Most rules name no check; named mechanisms cover only the memory writer, expected revisions, logical growth limits and concurrent allocation.
 
@@ -530,13 +565,13 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Enforcement gap: the memory limits are logical; no filesystem quota enforces them, the 64 MiB budgets are not hard quotas and the journal budget is observed only.
 - Rules stated under Enforcement (Mechanisms) are outside this table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -545,3 +580,23 @@ Changes land in place with Task evidence; related documents:
 - [Agentic policy](agentic.md)
 - [GitHub governance](../../docs/00.workspace/03.process/github-governance.md)
 - [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

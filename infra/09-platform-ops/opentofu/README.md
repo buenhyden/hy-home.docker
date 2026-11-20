@@ -1,17 +1,40 @@
 ---
 title: "OpenTofu Implementation"
-version: "0.3.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # OpenTofu
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 운영자가 트리거하는 인프라 CLI입니다. 인라인 Dockerfile이 도구 이미지의
 소스이며 워크스페이스와 자격 증명 마운트는 실제 원격 변경 능력을 부여합니다.
@@ -21,21 +44,25 @@ updated: "2026-11-19"
 Lifecycle: **DEV job**. 루트 Compose가 이 정의를 include하며 명시적 프로필이
 활성화를 제어합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 구현, 설정, 검증을 검토하는 운영자와 개발자.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 로컬 서비스 정의와 구현 탐색. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/01.guides/10.platform-and-backup/0082-opentofu.md`, `docs/05.operations/02.policies/10.platform-and-backup/0082-opentofu.md`, `docs/05.operations/03.runbooks/10.platform-and-backup/0082-opentofu.md`(ID: `GDE-0082`, `POL-0082`, `RUN-0082`)가 담당합니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - [docker-compose.yml](docker-compose.yml)
 
-### Interfaces
+##### Interfaces
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 | Service | Profiles | Networks | Host ports | Secret references |
 | --- | --- | --- | --- | --- |
@@ -47,21 +74,23 @@ Compose의 서비스 바인드 마운트를 참고합니다. 최상위 명명된
 
 환경 변수 키 이름과 기본값은 Compose와 [공개 환경 변수 예시](../../../.env.example)에 선언되어 있습니다. Compose의 마운트 권한과 헬스체크 명령은 구현을 설명할 뿐이며, 설정 검사를 통과했다고 해서 런타임 준비 상태가 증명되는 것은 아닙니다. 비공개 환경 변수 값, 자격 증명 파일, 원본 렌더링된 설정은 출력하지 않습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 호스트 포트를 게시하지 않고 Compose Secret도 부여하지 않지만, 워크스페이스와 읽기 전용 provider 자격 증명 마운트가 실제 원격 변경 능력을 줍니다. 네트워크는 project default이며 변경은 별도 검토·승인 대상입니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 런타임 고정 값은 [Compose](docker-compose.yml)와 그 참조 빌드 소스에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션이며 배포 매니페스트가 아닙니다.
 
-### Selected Start
+##### Selected Start
 
 Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되게 유지합니다. 게이트웨이 인증, 영속화, 리소스 예산, 버전 예외를 변경하기 전에 검토합니다. 여기에 명령을 중복 기록하지 말고 기존 운영 주제(operations subject)를 업데이트합니다.
 
-#### SEC01 후보와 상태 호환성
+###### SEC01 후보와 상태 호환성
+<!-- core-payload-level:4 -->
 
 실제 빌드 소스의 태그와 OCI index digest, 로컬 이미지 태그는
 [Compose](docker-compose.yml)의 인라인 Dockerfile과 이미지 선언이 소유한다.
@@ -79,15 +108,16 @@ CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버�
 새 버전 apply 이후
 이미지만 되돌리면 복구된다고 간주하지 않는다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 저장소 루트에서 문서화된 프로필을 선택하고 `scripts/validation/validate-docker-compose.sh`를 사용합니다. 대상별 런타임 확인과 승인 후 복구는 소유 운영 Runbook을 사용합니다. 마운트 누락, 예상치 못한 노출, 초기화 실패 시에는 중지합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
@@ -95,6 +125,27 @@ CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버�
 
 - Runbook: `docs/05.operations/03.runbooks/10.platform-and-backup/0082-opentofu.md`(RUN-0082)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 `opentofu`는 `iac` 프로필의 운영자 트리거 CLI job이며 Compose 헬스체크가 선언되어 있지 않습니다. 복구와 backend·state 복원은 `docs/05.operations/03.runbooks/10.platform-and-backup/0082-opentofu.md`(RUN-0082)를 따르고, 새 버전 apply 뒤 이미지만 되돌리는 것은 복구로 보지 않습니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

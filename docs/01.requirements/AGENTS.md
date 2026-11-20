@@ -1,19 +1,43 @@
 ---
 title: "Requirements Agent Guide"
-version: "0.4.2"
+version: "1.0.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Requirements Agent Guide
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Requirements Agent Guide
 
-## Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Allowed Scope
+## 문서 개요
 
-#### Allowed Surface
+### 목적과 독자
+
+Readers use the agent-guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Scope
+
+##### Allowed Scope
+
+###### Allowed Surface
+<!-- core-payload-level:4 -->
 
 Stage 01 holds Requirement Packages: the problem, stakeholder value, scope,
 functional and quality requirements (with solution-independent interface needs
@@ -24,12 +48,13 @@ to the owners that decide how. The human guide is [README.md](README.md).
 Every `docs/01.requirements/####-<slug>.md` Requirement Package and this
 folder's README.
 
-#### Non-goals
+###### Non-goals
+<!-- core-payload-level:4 -->
 
 Architecture, implementation contracts and operating procedures are out of
 scope; they belong to Stage 02, Stage 03 and Stage 05.
 
-### Instruction Precedence
+##### Instruction Precedence
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
@@ -38,9 +63,9 @@ and this guide is corrected
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
 
-## Workflow
+#### Workflow
 
-### Intake
+##### Intake
 
 - Load order and authority: [bootstrap](../../.agents/governance/bootstrap.md).
 - Authoring, identity, language and retirement rules:
@@ -58,9 +83,10 @@ canonical governance or a Stage contract.
 - Provider loading: [Claude adapter](../../.claude/provider.md),
   [Codex adapter](../../.codex/provider.md).
 
-### Execution
+##### Execution
 
-#### Inspect and Change
+###### Inspect and Change
+<!-- core-payload-level:4 -->
 
 - Create a package from the Requirement template
   [`requirement-package.template.md`](../99.templates/02.templates/01.requirements/requirement-package.template.md)
@@ -72,7 +98,8 @@ canonical governance or a Stage contract.
 - Add a traceability link only when the linked Description, ADR, Spec or
   Operations document exists.
 
-#### Local Obligations
+###### Local Obligations
+<!-- core-payload-level:4 -->
 
 - Write child IDs in full (`REQ-####-FR-####`, `REQ-####-NFR-####`); no
   `IF` child identity is issued. Never reuse a number or lower a high-water mark; a
@@ -82,30 +109,32 @@ canonical governance or a Stage contract.
   policy that owns the implementation.
 - Write prose in English, per the profile `language`.
 
-## Boundaries
+#### Boundaries
 
-### Authority
+##### Authority
 
-#### Stop and Escalate
+###### Stop and Escalate
+<!-- core-payload-level:4 -->
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
 [approval boundaries](../00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
-#### Protected Actions
+###### Protected Actions
+<!-- core-payload-level:4 -->
 
 - Edit only with an authorizing request; Stage documents are read-only by
   default.
 
-### Secrets and External Effects
+##### Secrets and External Effects
 
 This guide adds no secret or external-effect rule;
 [approval boundaries](../00.workspace/04.quality/approval-boundaries.md) owns both.
 
-## Verification
+#### Verification
 
-### Checks
+##### Checks
 
 - `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`
 - `python3 scripts/validation/check-document-links.py --mode alignment`
@@ -115,18 +144,40 @@ This guide adds no secret or external-effect rule;
 - `python3 scripts/validation/run-ci-gate.py --profile changed --explain` shows
   the selected checks without running them.
 
-### Reporting
+##### Reporting
 
-#### Evidence and Limits
+###### Evidence and Limits
+<!-- core-payload-level:4 -->
 
 Record each check's command, revision and exit in the current Task. These
 checks are static or local; they do not prove runtime state, native provider
 delivery, remote enforcement or owner acceptance.
 
-#### Handoff
+###### Handoff
+<!-- core-payload-level:4 -->
 
 Record progress, decisions and evidence in the current Task, and leave the
 next owner named there. Human-facing and related documents:
 
 - [Requirement Packages README](README.md)
 - [Requirement template](../99.templates/02.templates/01.requirements/requirement-package.template.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

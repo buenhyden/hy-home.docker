@@ -1,32 +1,58 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "0.3.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Independent Manifest Pipeline
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 합성 운영 문서 목록을 S3에서 읽어 검증·readback한 뒤 DEV PostgreSQL에
 게시하는 단일 Airflow workload입니다. 입력의 해시 형식은 실제 Git 내용의
 인증 증거가 아닙니다. 원문 수집이나 Wiki 구현을 하지 않습니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 DAG `source_manifest_ingest`, pool `manifest_ingest`, DB `opsflow_dev`, schema
 `ops_flow`, bucket `opsflow-dev`의 전용 배치입니다. P04가 SQL 단독 작성자이며
 P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다. 소스 회귀시험은
 실제 권한·배포·복구 수용과 별개이며 이번 P04에서 P05 실제 통지는 NOT_RUN입니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - [dags/](dags/README.md): 수동·paused DAG.
 - [workflow_lib/](workflow_lib/README.md): parser와 전용 adapter.
@@ -34,7 +60,7 @@ P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다
 - [fixtures/](fixtures/README.md): 공개 합성 manifest와 값 없는 접속 예시.
 - Compose 변경은 [airflow Compose](../../docker-compose.yml)에 합쳐져 있고 별도 override는 없습니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -42,7 +68,8 @@ P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다
 | DEV PostgreSQL `opsflow_dev` schema `ops_flow` | DAG `source_manifest_ingest` (P04 SQL) | P05와 runtime 역할 | P05는 고정한 SQL 버전·hash와 함수 계약을, runtime은 승인된 함수/view만 소비하며 TLS는 `verify-full`만 지원한다. | Rollback은 DAG pause와 검토한 migration 복구이며 RUN-0050을 따른다. |
 | `/run/opsflow` mount (`OPSFLOW_SECRET_DIR`) | worker 전용 보호 디렉터리 `OPSFLOW_SECRET_DIR` (없으면 `secret-placeholder/`) | Airflow worker | `pg.json`, `s3.json`과 TLS 선택 시 `ca.pem`을 읽는다. | memfd·seal·procfs가 없거나 CA 검증에 실패하면 연결을 거부한다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 SEC01의 호환 이미지·dependencies와 P03의 endpoint·실제 worker UID/GID 계약을
 받아야 합니다. 이미지에는 필요한 패키지를 빌드 시 설치하며 startup pip를
@@ -54,7 +81,8 @@ overlay 규칙은 POL-0078이 소유하며 이 workload는 overlay를 쓰지 않
 `OPSFLOW_SECRET_DIR`에는 worker 전용 보호 디렉터리의 정확한 경로를 지정합니다. 기본 이미지를 그대로 쓰며
 n8n 변경은 없습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Worker는 `pg.json`, `s3.json`과 TLS를 선택한 경우 같은 보호 폴더의
 `ca.pem`을 읽습니다. CA 전달(`workflow_lib/tls.py`)은 보호된 경로·소유자·권한·
@@ -82,26 +110,28 @@ Owner는 NOLOGIN이며 migrator만 명시적 SET ROLE 권한을 갖고 runtime�
 항목입니다. pool 한 slot 생성도 별도 실행 대상입니다. 기존 generic table-grant 계약을 이 workload에
 대입하거나 미지정 자격을 자동 발급하지 않습니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 별도 이미지는 없다. Airflow 기본 이미지와 `infra/07-workflow/airflow/docker-compose.yml`가 이 폴더의 DAG와 `workflow_lib`를 읽기 전용으로 mount해 실행한다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 저장소 root에서 전용 `tests.lib.ops.test_opsflow_manifest`,
 `tests.lib.ops.test_opsflow_adapters`, `tests.lib.ops.test_opsflow_provision_contract`,
 `tests.validation.test_opsflow_airflow_contract` unittest를 실행합니다.
 SDK double·driver double의 PASS는 실제 DAG import나 DEV 실행의 증거가 아닙니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 실제 실행은 고정 이미지의 DAG import, SQL 직접 호출·역할/다른 DB/S3 거부,
 Celery worker 게시·재실행·경합·backfill·객체 후 DB 실패 및 빈 대상 복원이
@@ -118,15 +148,17 @@ UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED입니다. Task0018(`docs/03.specs/0
 별도로 기록합니다. 정제된 명령·결과만 공개하고 원시 payload·자격·운영 로그는
 남기지 않습니다. 직렬 lock·소유 자원·cleanup HOLD는 기존 fixture 경계를 따릅니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0050: `docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Workloads](../README.md)
 - [Airflow](../../README.md)
@@ -134,9 +166,30 @@ UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED입니다. Task0018(`docs/03.specs/0
 - [Task SDK](https://airflow.apache.org/docs/task-sdk/stable/api.html)
 - [Compose merge](https://docs.docker.com/reference/compose-file/merge/)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 PG/S3는 하나의 원자적 트랜잭션이 아니므로 DB 실패 후 객체는 unpublished로
 남고 같은 bytes를 readback한 뒤 재사용합니다. Orphan 삭제는 게시 장부와 별도
 보존 정책으로만 판단합니다. Rollback은 이 DAG pause와 검토한 migration 복구이며
 MNG reset·공유 volume 초기화·전체 restart를 사용하지 않습니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

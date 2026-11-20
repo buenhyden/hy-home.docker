@@ -1,10 +1,13 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.21.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -13,15 +16,36 @@ next_review_at: "2027-05-13"
 
 # Compose Profile Vocabulary Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 추적된 Compose profile의 이름·분류·목적을 소유한다. `include`는 파일을 병합하고
 profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 보안 격리를 제공하지
 않는다. 서비스 수는 구현에서 계산하며 본문에 고정하지 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Workspace catalog](../../README.md)
 - [Independent LAB entrypoints](../../../../labs/postgresql-ha/README.md)
@@ -31,13 +55,14 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 - Sibling resolution: SPEC-0171 (retired)
 - `nginx` profile와 `infra/01-gateway/nginx`는 2026-11-10 소유자 결정으로 퇴역했다. 근거와 기록은 SPEC-0212 TSK-0048에 있다.
 
-### Applies To
+##### Applies To
 
 - **Systems**: 정상 root가 include하는 `infra/**/{compose,docker-compose}*.{yml,yaml}`와 독립 `labs/*/docker-compose.yml` entrypoint.
 - **Optional overlays**: 아래 typed 계약으로 분류한 추적된 root 서비스 확장 소스. 독립 entrypoint나 새 서비스 inventory가 아니다.
 - **Environments**: HOME, DEV, OPTIONAL, LAB 및 명시적 migration/maintenance 작업. LAB은 root의 profile 선택 대상이 아니다.
 
-#### Definitions
+###### Definitions
+<!-- core-payload-level:4 -->
 
 각 이름은 정확히 한 행, 한 category와 비어 있지 않은 purpose를 가진다.
 `baseline`은 공통 출발점, `domain`은 기능 영역, `capability`는 선택 기능,
@@ -124,13 +149,14 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `workflow-airflow` | capability | Airflow 스케줄링·worker·초기화 | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `airflow-statsd-exporter` | No | initialization: airflow-init | current |
 | `workflow-n8n` | capability | n8n 자동화와 worker·task runner; Assistant 웹 검색은 `searxng` profile | `n8n`, `n8n-worker`, `n8n-task-runner-worker` | No | normal service startup | current |
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 독립 LAB entrypoint는 root의 profile 선택 대상이 아니다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -287,7 +313,8 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
   부수 효과가 있는 update/IaC/load-test 작업을 상시 기동하는 것. LAB 파일을
   root에서 include하거나 LAB profile을 HOME 이름 선택에 넣는 것.
 
-#### Typed optional root overlays
+###### Typed optional root overlays
+<!-- core-payload-level:4 -->
 
 선택형 overlay는 `x-hyhome-overlay: {version: 1, base: <repository-relative-path>}`로
 역할을 명시한다. 이는 작성된 소스의 분류이며 이미지·권한·실행 준비 수용이 아니다.
@@ -326,7 +353,8 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 성공만으로 공급자 이미지, 설치 dependency, DB/S3 grant, private 파일 전달이나
 DEV/HOME 실행·복구가 검증된 것은 아니다.
 
-#### HOME activation
+###### HOME activation
+<!-- core-payload-level:4 -->
 
 | Named selection | Profiles | Forbidden categories |
 | --- | --- | --- |
@@ -350,7 +378,8 @@ broker·영속 저장소·관측 종속성을 함께 유지한다. `core`만으�
 DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이다. config 성공은
 무인 재기동이나 live readiness를 증명하지 않는다.
 
-#### HOME Compose overlay 등록부와 적용 규칙
+###### HOME Compose overlay 등록부와 적용 규칙
+<!-- core-payload-level:4 -->
 
 이 절이 overlay 적용 규칙의 유일한 소유자다. 다른 문서는 이 절을 링크하고 규칙을
 다시 쓰지 않는다. 절차는
@@ -384,7 +413,8 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | `infra/08-ai/comfyui/docker-compose.egress.yml` | `infra/08-ai/comfyui/docker-compose.yml` | ComfyUI 외부 망(유지보수 한정) | 없음 | 명시적 `-f`, HOME 미적용 | [RUN-0081](../../03.runbooks/09.ai-and-search/0081-comfyui.md) |
 | `infra/01-gateway/traefik/compose.window-ca.override.yml` | `infra/01-gateway/traefik/docker-compose.yml` | Traefik owner-window CA mount | 없음 | 명시적 `-f`, owner window 한정 | [RUN-0105](../../03.runbooks/04.security-and-secrets/0105-openbao-maintenance-window.md) |
 
-#### Companion, exclusion and side effects
+###### Companion, exclusion and side effects
+<!-- core-payload-level:4 -->
 
 Producer의 모든 profile은 기존 Exporter와 필요한 monitor provision job을 함께
 선택한다. 선택 범위가 늘어난 `core`·`local`·기능 profile도 monitor Secret과
@@ -436,7 +466,8 @@ Grafana query와 선택 profile의 예상 상태는 별도로 확인한다.
 | experience | Storybook은 `internal: true`인 `experience_ingress_net`에만 연결; Traefik만 이 망과 `edge_net`을 함께 사용. 원격 문서 MCP `storybook-mcp`는 `edge_net`에서 Keycloak issuer를 읽고 Traefik TLS 뒤에서 자기 URL을 audience로 가진 `/admins` bearer token만 받음. HOME 기본 선택에는 포함하지 않음. 브라우저는 기존 `/admins` 인증을 먼저 수행 |
 | api-mock load mode | root Compose와 `infra/11-quality/wiremock/wiremock.load.yml`을 같은 model로 결합해 같은 `api-mock` profile의 `wiremock` 설정을 대체; host port와 request journal이 없으며 mock performance만 판정 |
 
-#### LAB lifecycle and budget
+###### LAB lifecycle and budget
+<!-- core-payload-level:4 -->
 
 - profile은 서비스 선택일 뿐 보안 경계가 아니다. 정상 root에서 서비스 이름을 직접
   지정하면 profile과 무관하게 그 서비스가 선택된다. LAB은 root에 없으므로 root의
@@ -462,9 +493,11 @@ Grafana query와 선택 profile의 예상 상태는 별도로 확인한다.
 - AI·workflow HOME 상주 결정은 유지한다. LAB, lakehouse·analytics 대량 작업, GPU 이미지
   생성은 위 예산 검사와 별도 승인으로 켠다.
 
-#### Optional service disposition
+###### Optional service disposition
+<!-- core-payload-level:4 -->
 
-##### Current-source reconciliation (P09, 2026-11-03)
+###### Current-source reconciliation (P09, 2026-11-03)
+<!-- core-payload-level:5 -->
 
 이 표는 현재 공개 Compose와 당시 host 관찰을 함께 읽는 운영 안내이며, 삭제 권한이나
 현재 운영 성공의 정본이 아니다. P09는 15개 역할 비교에서 현재 source와 named consumer를
@@ -515,23 +548,25 @@ exporter는 퇴역했다(SPEC-0215).
 이 표는 서비스를 삭제하지 않는다. 퇴역은 소비자 부재를 다시 확인한 별도 변경에서
 source·문서·secret을 함께 제거한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 정상 root profile은 같은 daemon, network, disk, GPU를 공유할 수 있다. 여러
 노드는 물리
 고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
 않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - **Cadence**: profile 또는 서비스 선언을 변경할 때.
 - **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 ```bash
 bash scripts/validation/validate-docker-compose.sh
@@ -561,7 +596,7 @@ category와 필수 dependency 폐포를 검사한다.
 보장하지 않는다. 예를 들어 Grafana DB provisioning 선택과 실제 앱 사용 준비는
 [Grafana Guide](../../01.guides/07.observability/0041-grafana.md)에서 확인한다.
 
-### Limits
+##### Limits
 
 이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
@@ -579,13 +614,33 @@ category와 필수 dependency 폐포를 검사한다.
 - Overlay 분류 성공만으로 공급자 이미지/설치 dependency/DB/S3 grant/private 파일 전달/DEV·HOME 실행·복구가 검증되지는 않는다.
 - 2026-10-08 host 관찰과 비용은 그 시점 값이며 현재 상태를 보장하지 않는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 - **Owner**: @buenhyden. Infra/DevOps 역할은 책임 설명이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Infrastructure optimization governance](0006-infrastructure-optimization-governance.md)
 - [Developer environment](../../01.guides/10.platform-and-backup/0002-developer-environment.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,30 +1,56 @@
 ---
 title: "OpenSearch"
-version: "1.1.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-12"
 ---
 
 # OpenSearch
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 이 패키지는 정상 root Compose의 선택형 단일 OpenSearch와 해당
 OpenSearch Dashboards를 소유합니다. 검색 API와 Dashboard는 기존 Traefik
 라우트를 사용합니다. 소스 변경만으로 실행 중인 서비스가 바뀌지는 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 검색 서비스의 developer, operator, 보안 검토자를 대상으로 합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 `docker-compose.yml`의 `opensearch` profile은 `opensearch`와
 `opensearch-dashboards`만 선택합니다. API는 HTTPS와 관리자 secret 기반
@@ -51,7 +77,8 @@ snapshot 복원 성공을 뜻하지 않습니다. 업그레이드한 노드는 �
 내릴 수 없으며, 운영 복구에는 새 설치와 이전 snapshot의 복원이 필요합니다.
 현재 변경은 소스 준비이고 실행·서명·전체 이미지 scan 수용은 `NOT_RUN`입니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - `docker-compose.yml`: 정상 단일 엔진, Dashboard, 네트워크, 인증,
   영속 경로와 healthcheck.
@@ -59,32 +86,36 @@ snapshot 복원 성공을 뜻하지 않습니다. 업그레이드한 노드는 �
 - `opensearch/`: 엔진 보안 설정, 사전, secret 기반 사용자 렌더러.
 - `opensearch-dashboards/`: 정상 Dashboard의 HTTPS/OIDC 설정.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | `opensearch.${DEFAULT_URL}` 검색 API route | `opensearch` 서비스 | 이 README는 소비자를 기록하지 않는다. | HTTPS API이며 관리자 secret 기반 healthcheck를 사용하고 호스트 포트는 게시하지 않는다. | Compose healthcheck(interval 15s)로 상태를 확인하고 RUN-0019 런북을 따른다. |
 | `opensearch-dashboard.${DEFAULT_URL}` Dashboard route | `opensearch-dashboards` 서비스 | 이 README는 소비자를 기록하지 않는다. | HTTPS/OIDC 설정을 쓰며 `200` 또는 `401` 상태를 준비 신호로 받는다. | Compose healthcheck(interval 15s)로 상태를 확인하고 RUN-0019 런북을 따른다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 `opensearch` profile, `edge_net`·`obs_net`, 기존 영속 경로와 secret·인증서 bind를 사용합니다. 서비스별 실제 참조는 Compose가 소유합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `oauth2_proxy_client_secret`, `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/opensearch/docker-compose.yml`의 `opensearch`, `opensearch-dashboards` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 [Dockerfile](Dockerfile)과 [Compose](docker-compose.yml)가 단일 OpenSearch, Dashboards, exporter plugin을 선언합니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 저장소 루트에서 정상 구성만 정적으로 확인합니다.
 
@@ -97,23 +128,26 @@ docker compose --profile opensearch config --services
 빌드 호환성, 비밀·인증서, 실제 consumer, host 용량, 복구 지점을 먼저
 확인합니다. runtime 검사를 수행하지 않았다면 `NOT_RUN`으로 기록합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 Selected Start의 Compose 렌더를 정적으로 확인합니다. 이미지 빌드와 인증·readiness·복구는 별도 실행 결과가 필요합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0019: `docs/05.operations/03.runbooks/05.databases-and-storage/0019-opensearch.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 [문서 진입점](../../../docs/README.md)에서 OpenSearch 운영 정책·가이드·런북을
 찾습니다. 공식 [Docker 설치](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)와
@@ -121,6 +155,27 @@ Selected Start의 Compose 렌더를 정적으로 확인합니다. 이미지 빌�
 문서를 참고합니다. 빌드 선언은 [Dockerfile](Dockerfile)이 소유하며 이미지
 투영은 [tech-stack.versions.json](../../tech-stack.versions.json)에서 확인합니다.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 헬스체크: `opensearch` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s); `opensearch-dashboards` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s).
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

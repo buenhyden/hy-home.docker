@@ -1,20 +1,43 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.7.7"
+version: "2.0.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: claude provider adapter
+  layer: provider
+updated: "2026-11-20"
 runtime: "claude"
 ---
 
 # Claude Provider Adapter
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the provider payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
 
 Translate provider-neutral canonical governance into Claude Code syntax.
 
-## Loading
+#### Loading
 
 Root `CLAUDE.md` imports the shared
 [bootstrap policy](../.agents/governance/bootstrap.md) and this authored adapter.
@@ -41,7 +64,7 @@ route runs.
 directly, in the order the bootstrap policy sets. Claude has no generated
 projection of either, and their absence under `.claude/` is not a defect.
 
-## Native Controls
+#### Native Controls
 
 - `.claude/agents/` and `.claude/skills/` contain generated native adapters.
   Thin skill adapters point to `.agents/skills/<skill_id>/SKILL.md`; they do not
@@ -87,7 +110,7 @@ projection of either, and their absence under `.claude/` is not a defect.
   `Stop` decision asks Claude to continue the turn. It does not record
   implementation acceptance or grant permission.
 
-## Limitations
+#### Limitations
 
 Select checks through the [shared verification matrix](../docs/00.workspace/04.quality/quality-standards.md#5-change-type-verification-matrix)
 and [completion checklist](../docs/00.workspace/04.quality/task-checklists.md#before-completion).
@@ -100,8 +123,28 @@ Static configuration and renderer parity prove tracked configuration only; nativ
 invocation, hook trust, entitlement, and runtime acceptance need direct evidence.
 Do not change user-global or ignored local settings under this adapter's authority.
 
-## Related Documents
+#### Related Documents
 
 - [Canonical governance](../.agents/README.md)
 - <https://code.claude.com/docs/en/sub-agents>
 - <https://code.claude.com/docs/en/hooks>
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

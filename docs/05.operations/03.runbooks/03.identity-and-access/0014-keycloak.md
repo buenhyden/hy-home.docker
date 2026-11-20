@@ -1,10 +1,13 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.6.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # 02-Auth Keycloak Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 Keycloak readiness 실패, DB 연결 오류, issuer/redirect 불일치, proxy header 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다. 값이 필요한 점검은 secret 값을 출력하지 않는 방식으로만 수행한다.
 
@@ -32,7 +55,7 @@ next_review_at: "2027-05-13"
 - logout 후 즉시 재로그인되는 세션 경계 문제
 - token, session, client secret 노출 후 폐기가 필요할 때
 
-### Targets
+##### Targets
 
 > Scope: Keycloak Runtime Recovery and OIDC Issuer Diagnostics
 
@@ -57,13 +80,14 @@ next_review_at: "2027-05-13"
 - [Operations policy](../../02.policies/03.identity-and-access/0014-keycloak.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 승인 대상과 증거 처리 기준은 다음과 같다.
 
-#### Target, approval and safe evidence
+###### Target, approval and safe evidence
+<!-- core-payload-level:4 -->
 
 저장소 루트의 승인된 Docker context에서 아래에 명시한 서비스만 다룬다.
 명령이 runtime을 변경하는 단계는 대상, 영향받는 사용자·소비자, 이전 image/config,
@@ -73,19 +97,20 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 여러 앱 공통 장애는 [RUN-0099](../01.common/0099-system-operations.md), cold-start는
 [RUN-0098](../01.common/0098-cold-start-and-reboot.md)이 소유한다.
 
-### Environment
+##### Environment
 
 조치 전에 확인할 항목은 다음과 같다.
 
-#### Preflight checks
+###### Preflight checks
+<!-- core-payload-level:4 -->
 
 - [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 결과 확인
 - [ ] 승인된 `docker compose ps keycloak mng-pg`에서 `keycloak`, `mng-pg` 상태 확인
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -101,7 +126,8 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 | 10 | Lifecycle and configuration changes: 승인된 `keycloak` 대상 기동/중지와 설정·Secret 교체 시 `--force-recreate` | 문서에 기록 없음 | startup/readiness 실패이면 추가 migration/재시작을 반복하지 말고 DB/host/config 문제를 먼저 분류한다 |
 | 11 | Application authorization provisioning: Airflow `keycloak-auth-manager create-all` / `create-permissions` 실행 | HTTP method/menu/list scope, Dag/Asset/Pool/View resource, role policy와 permission이 생성된다 | `invalid_scope` 또는 realm-role 404이면 중단하고 선행 입력을 확인한다. realm 전체 초기화는 금지하고 owner가 복원 범위를 정한다 |
 
-#### Diagnosis and recovery steps
+###### Diagnosis and recovery steps
+<!-- core-payload-level:4 -->
 
 1. 설정/로그 확인
    - Keycloak의 정제된 DB/OIDC 오류 요약(Compose 검증은 Preflight에서 수행)
@@ -165,7 +191,8 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
    - readiness 재확인
    - OAuth2 Proxy login/logout 플로우와 해당 native OIDC client login을 각각 별도 증거로 기록한다.
 
-#### Lifecycle and configuration changes
+###### Lifecycle and configuration changes
+<!-- core-payload-level:4 -->
 
 `keycloak`의 DB인 `mng-pg`가 먼저 준비되어야 하지만 Compose startup edge는 없다.
 기존 로컬 image, DB schema 호환성, conf/providers/themes mount와 두 Secret 참조를
@@ -193,7 +220,8 @@ restore 명령이 없으며 @buenhyden과 DB owner가 별도 복구 계약을 �
 
 `KC_HTTP_MANAGEMENT_HOST`는 build에 영향을 주는 옵션이다. 값을 바꾸면 Keycloak이 기동 시 server image를 다시 build한다(2026-11-08에는 SSO가 약 12분 중단되었고, 그동안 oauth2-proxy와 Gatus가 OIDC discovery에 실패했다). 재생성·upgrade 시 같은 시간을 예상하고, oauth2-proxy와 Gatus는 Keycloak이 healthy가 된 뒤에 시작한다.
 
-#### Application authorization provisioning
+###### Application authorization provisioning
+<!-- core-payload-level:4 -->
 
 Airflow Keycloak Auth Manager bootstrap은 Keycloak client와 realm role
 `Viewer`, `User`, `Op`, `Admin`, `SuperAdmin`을 먼저 준비하고, 승인된
@@ -225,40 +253,45 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 설치 성공은 관찰하지 않았다. 로그인 성공 외에 Pool/DAG/Asset별 허용·거부를 확인하고
 [Airflow Runbook](../08.workflows-and-automation/0050-airflow.md)으로 후속 앱 검증을 전달한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority). `invalid_scope` 또는 realm-role 404이면 중단한다(Steps의 Application authorization provisioning). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 수용 확인은 다음과 같다.
 
-#### Acceptance checks
+###### Acceptance checks
+<!-- core-payload-level:4 -->
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
 - [ ] `docker compose --profile auth exec keycloak bash -ec 'exec 3<>/dev/tcp/10.250.44.2/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'`에서 공백과 무관하게 status가 UP인지 확인(관리 listener는 `keycloak_management_net`의 `10.250.44.2:9000`에만 바인딩되며 loopback에는 없다; 기본9000 기준, listener 변경 시 승인된 관리 포트와 함께 조정)
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 관측 신호와 증거 기록은 다음과 같다.
 
-#### Observability and evidence sources
+###### Observability and evidence sources
+<!-- core-payload-level:4 -->
 
 - **Signals**: readiness 상태, Keycloak 로그의 DB/OIDC 오류
 - **Evidence to Capture**:
   - Keycloak의 정제된 DB/OIDC 오류 요약
   - `check-all-hardening.sh 02-auth` 실행 결과
 
-#### 증거 기록
+###### 증거 기록
+<!-- core-payload-level:4 -->
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
 
@@ -269,15 +302,16 @@ runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤�
 - stateful DB 복구: 격리 DB 복구 입력·custody·검증 계획이 없어 BLOCKED이며 검증된 DB restore 명령이 없다.
 - Acceptance checks(`check-all-hardening.sh 02-auth`, `/health/ready`): 체크리스트 항목이며 이 문서에는 통과 기록이 없다. 해당 명령의 실행 결과로 검증한다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
-#### Rollback or Recovery
+###### Rollback or Recovery
+<!-- core-payload-level:4 -->
 
 격리 복구 절차는 다음과 같다.
 
@@ -294,3 +328,23 @@ Realm export는 database backup을 대신하지 않는다. 공식 절차는 일�
 모든 Keycloak node를 중지한 export를 권장한다. 업그레이드 rollback에는 이전
 image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구 절차는 계획된
 절차이며 2026-09-20 문서 교정 중 실행되지 않았다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

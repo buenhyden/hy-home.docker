@@ -1,20 +1,44 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.11.2"
+version: "3.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "templates"
 ---
 
 # Stage 99 Document Contracts and Templates
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 Stage 99는 문서 경로, profile, identifier, section, lifecycle 상태와 전이,
 traceability 형태, 복사용 template의 유일한 권위입니다. machine authority는
@@ -26,7 +50,8 @@ registry와 문서 frontmatter를 검증합니다. 사람과 AI agent를 위한 
 이전 계약은 Git history로 복구할 수 있으나, 현재 작성이나 검증 입력이
 아닙니다.
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 Stage 99가 소유하는 것:
 
@@ -42,29 +67,27 @@ Stage 99가 소유하는 것:
 - 정확한 Stage 03 package-index와 contract-payload 파일명 및 media type;
 - 네 자리 Operations subject route 형태.
 
-#### Authority Model
+###### Authority Model
+<!-- core-payload-level:4 -->
 
 | Surface | Authority | Purpose |
 | :--- | :--- | :--- |
 | [`registry.json`](./registry.json) | machine | profiles, paths, identities, lifecycle, traceability, template registration |
 | [`contracts/document-profile.schema.json`](01.contracts/document-profile.schema.json) | machine | registry shape |
 | [`contracts/document-frontmatter.schema.json`](01.contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
-| [`contracts/template-definition.schema.json`](01.contracts/template-definition.schema.json) | machine | TemplateDefinition 출력 계약 2.0.0. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
+| [`contracts/template-definition.schema.json`](01.contracts/template-definition.schema.json) | machine | TemplateDefinition 출력 계약 3.0.0. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
 | [`contracts/document-role-design.json`](01.contracts/document-role-design.json) | machine | 공통 문서 역할 설계 core `workspace-document-role-design`. 거버넌스 패키지 원본과 같은 바이트이며 판본과 SHA-256은 Registry `common.role_design_contract`가 고정합니다 |
 | [`contracts/document-role-design.schema.json`](01.contracts/document-role-design.schema.json) | machine | 위 core의 구조 schema. Registry가 이 파일도 SHA-256으로 고정합니다 |
 | [`02.templates/`](02.templates/) | copy source | profile-referenced authoring forms |
 
-TemplateDefinition의 `contract_id`는 적용 양식을 식별하고
-`contract_version`은 그 양식의 숫자 판본을 나타냅니다. Profile이
-`required_subsections`를 선언하면 Registry의 `common.common_form_contract`에서
-두 값을 읽습니다. 다른 profile은 `common`의 식별자와 판본을 사용합니다.
-`core_role`을 선언한 template role은 `common.role_design_contract`의 값을
-쓰고, `check-document-metadata.py --mode check-contracts`가 그 H2, H3,
-필수 여부와 표 열을 core 역할과 비교합니다. 나머지 template role은
-`core_exception`으로 이관 대기, 도메인 전용, native 전용 중 하나와 사유를
-선언합니다.
-이 출력 형식 변경으로 Registry 직렬화 판본은 2가 됩니다. 과거 Registry 검증은
-해당 Git 판본의 스키마를 사용합니다.
+TemplateDefinition의 공통 `contract_id`와 `contract_version`은
+[공통 문서 계약](01.contracts/common-document-contract.json)의 독립 의미를 나타냅니다.
+Registry `common.document_core`는 실제 파일의 ID·판본·SHA-256과 각 profile의
+kind/lifecycle/scope adapter를 결합합니다. 상위 `headings`는 네 공통 H2와 여덟 H3이며,
+`payload`는 기존 역할 계약 ID·판본·절·실제 출력 source·형식을 보존합니다.
+기존 공통 definition20개 필드, section13개 필드와 역할별 조건·표는 유지합니다.
+네이티브 정의의 `source`와 `native_source`는 구분되며, 실제 생성기는 후자의
+문법을 읽습니다. 저장 형식 migration 번호3은 공통 계약 판본과 별개입니다.
 
 Consumer는 `scripts.lib.document_governance.registry`를 통해 Registry를
 로드해야 합니다. README 본문이나 template 본문을 machine policy로
@@ -80,16 +103,17 @@ fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycl
 `deprecated`, `superseded`, `retired`, `archived` 상태를 두지 않습니다.
 대체되거나 철회된 문서는 현재 owner에 요약한 뒤 삭제하고 번호를 예약합니다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 Stage 99는 agent 행동, 제품 사실, 아키텍처 결정, 구현 증거, 운영 정책,
 reference finding을 소유하지 않습니다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | --- | --- |
@@ -117,16 +141,19 @@ docs/99.templates/
     └── 93.common/
 ```
 
-#### Common Role Forms
+###### Common Role Forms
+<!-- core-payload-level:4 -->
 
-공통 역할 16개를 공통 절 계약 `COMMON-DOC-FORM-1` 1.0.0으로 옮기는 규칙은
-[문서 프로토콜](../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)이
-정한다. 옮기는 단위, 구 양식과 빈 절의 거부, 아직 옮기지 않은 역할의 양식,
-예외 조건이 모두 그곳에 있다. 역할별 절 이름은 Registry가 선언하며, 진행
-상황은 SPEC-0212 TSK-0059가 기록한다. 이 표기는 네 저장소 공동 채택을 뜻하지
-않는다.
+공통 외피의 이름·순서·뜻과 작성 안내는 공통 문서 계약이 소유합니다.
+Registry의 역할 H2/H3 이름은 공통 외피 안의 논리 payload 절이며 실제
+Markdown에서는 H4/H5로 표현됩니다. 깊은 절은 H6와 구조 표식으로 보존하고,
+소비자는 공통 reader로 원래 역할 깊이를 복원합니다.
+[문서 프로토콜](../00.workspace/03.process/documentation-protocol.md#role-specific-authoring)은
+각 역할의 책임, 네이티브 경계, 과거 증거 보존을 정합니다. 완료한 역할별 양식은
+외피 안의 payload로 유지하며 다른 저장소의 채택·실행 성공을 추정하지 않습니다.
 
-#### Stage 03 Evidence
+###### Stage 03 Evidence
+<!-- core-payload-level:4 -->
 
 Task 상태는 frontmatter 하나에 둡니다. 여러 항목을 따로 추적하는 Task는
 Execution Log의 Work Performed 아래 `Execution Items` 표의 각 행이 상태를
@@ -135,7 +162,7 @@ unit, 실제 check와 input, result, location, 그리고 같은 Task에서 crite
 공유하고 Check·Work Unit이 같은 앞선 non-PASS 관측을 해소하는 `Resolves`를
 기록합니다. 수용 판정은 criterion마다 한 번, Task의
 `Criterion Acceptance` 표에 둡니다. Plan의 `Work Breakdown`은 여섯 열이고
-새 Task의 `Evidence`는 필수성을 포함한 아홉 열이고 수용 표에는 현재 owner를
+Task Evidence 열은 해당 package의 기록된 generation을 따르고 수용 표에는 현재 owner를
 기록합니다. 이전 판본의 보존 기록은 당시 표로 읽습니다. 정확한 열 순서와 vocabulary는 Registry가
 소유합니다. Registry `common`의 절 이름 값(`plan_section` 등)은 이전 H2 이름을
 가리키는 논리 이름입니다. 공통 양식으로 옮긴 문서에서는 같은 절이 새 H2 아래
@@ -153,13 +180,15 @@ Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 �
 승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
 [SDLC](../00.workspace/03.process/sdlc.md)가 소유합니다.
 
-#### Registered Identity Shapes
+###### Registered Identity Shapes
+<!-- core-payload-level:4 -->
 
 `registry.json`은 profile별 identity 형태를 `artifact_id_pattern`에,
 소유 container를 `identity_relation`에 명시합니다. 이 절은 그 필드들이
 표현하는 규칙을 설명할 뿐, 필드 자체를 다시 정의하지 않습니다.
 
-#### Required Frontmatter Envelope
+###### Required Frontmatter Envelope
+<!-- core-payload-level:4 -->
 
 profile의 `required_frontmatter`와 `optional_frontmatter`는 문서가
 선언해야 하는 key를, `common.frontmatter_order`는 순서를,
@@ -200,7 +229,7 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - Requirement 자식은 owner를 완전히 포함한 ID를 사용합니다:
   `REQ-####-FR-####`, `REQ-####-NFR-####`. `IF` 자식은 더 발급하지 않으며,
   기존 `REQ-####.IF` 공간은 예약 이력을 보존하는 append-only 기록으로만 남습니다.
-- FR, NFR, IF 카운터는 package가 소유합니다. Registry 발급 key는 전체
+- FR, NFR 카운터는 package가 소유하며, IF는 새 발급 대상이 아닙니다. Registry 발급 key는 전체
   owner를 포함하므로(예: `REQ-0001.FR`), 같은 자식 번호가 서로 다른 두
   Requirement Package에서 독립적으로 발급될 수 있습니다.
 - 발급된 번호는 다시 사용하지 않습니다. `high_water`는 절대 감소하지
@@ -225,19 +254,21 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   180일 이내여야 합니다.
   terminal 상태에는 나가는 전이가 없습니다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 [docs 색인](../README.md)이 stage 전체의 진입점이며, Stage 99는 다른 stage 문서의 profile, 경로, 식별자, template을 등록합니다.
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Template catalog](02.templates/README.md)
@@ -245,9 +276,10 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - [문서 작성 계약](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Create and Review
+###### Create and Review
+<!-- core-payload-level:4 -->
 
 1. 등록된 profile과 template 역할을 선택합니다.
 2. 선언된 `type` 계약을 바꾸지 않고 등록된 source를 복사합니다.
@@ -257,7 +289,8 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 6. 계약 자체가 바뀔 때는 Registry, schema, template, consumer, test를 하나의
    검토된 논리적 단위에서 함께 바꿉니다.
 
-#### Template Rules
+###### Template Rules
+<!-- core-payload-level:4 -->
 
 - `template_id`/template 역할이 등록한 source를 복사합니다.
 - Markdown template frontmatter는 profile의 `type`을 선언하며 구체적인
@@ -278,7 +311,8 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - `DESIGN.md`는 root UI/design-system 권위로 남으며 Stage 03 design
   artifact가 아닙니다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 의미적 흐름은 profile마다 다릅니다: Requirement는 검토 후 승인하고, ADR은
 수락하거나 거부합니다. Spec과 Plan은 계약·계획의 승인 권한만 나타내며,
@@ -290,7 +324,8 @@ active로 유지됩니다. `registry.json`이 모든 진입 상태, edge, termin
 전체 Git history 발급 검증은 전체 문서 계약 profile이 소유합니다. 변경
 검증은 저장된 Registry 발급 상태를 사용합니다.
 
-#### Cancellation
+###### Cancellation
+<!-- core-payload-level:4 -->
 
 `cancelled` Task에는 `cancellation`이 필요합니다. 실제 `reason`과 `authorization_ref`,
 `criteria_disposition`을 작성합니다. 각 `criterion`에는 `successor` 또는 승인된
@@ -302,3 +337,23 @@ active로 유지됩니다. `registry.json`이 모든 진입 상태, edge, termin
 Package의 `Traceability`, Architecture Description의 `Adoption Boundaries`, ADR의
 `Authority and Effect`)에 요약하고 원본을 삭제한 뒤, 그 번호를 `reserved_history`에 추가합니다. Stage 98은 기록을 담지
 않습니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

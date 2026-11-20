@@ -1,50 +1,77 @@
 ---
 title: "통지 workflow 생성 도구"
-version: "0.2.0"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # 통지 workflow 생성 도구
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 공개 import JSON을 결정적으로 생성합니다. module import는 파일을 쓰지 않습니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 외부 I/O·n8n import·SQL 설치·mail 전송·credential 작업을 수행하지 않습니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - [생성기](build_workflow.py): 순수 생성·닫힌 claim 검사·합성 상태 판정입니다.
 - [preflight](preflight.py): 계약의 구조적 대기 조건을 보고합니다. 기록 자체로 운영 권한을 부여하지 않습니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | `workflows/manifest-outbox-mailpit.json` 생성 파일 | `build_workflow.py` | 이 README는 소비자를 기록하지 않는다. | 입력은 `--output` 경로와 `--check` 옵션이며 credential placeholder만 든 공개 import JSON을 결정적으로 생성한다. | `--check`가 drift를 보고하면 `--check` 없이 다시 생성하거나 Git 변경을 되돌린다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 입력은 `--output` 경로와 `--check` 옵션이고 출력은 `workflows/manifest-outbox-mailpit.json` 파일입니다. 네트워크 입출력은 없습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 없음: 외부 I/O·SQL 설치·mail 전송·credential 작업을 하지 않으며 생성된 JSON에는 credential placeholder만 들어갑니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 Python 스크립트(`build_workflow.py`, `preflight.py`)이며 표준 라이브러리(`argparse`, `json`, `pathlib`, `datetime`, `re`)만 가져옵니다. 별도 이미지나 서비스는 없습니다.
 
-### Selected Start
+##### Selected Start
 
 저장소 루트에서 실행합니다.
 
@@ -61,19 +88,41 @@ workflow의 120초 timeout만으로 socket 취소를 주장하지 않습니다. 
 소유 socket을 취소·정리하며, 실제 DB cancellation과 Worker 동작은 별도 native 증거입니다.
 현재 P05는 기본 plain export를 유지하고 인증 capture profile을 fixture에서만 명시 선택합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 `--check` 옵션이 생성 결과와 `workflows/manifest-outbox-mailpit.json`의 drift를 보고하며 파일은 수정하지 않습니다(위 Selected Start 명령).
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [워크로드](../README.md)
 - [소비자 계약](../outbox-contract.json)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 실행 후 종료하는 도구라 헬스체크·지표가 없습니다. `--check`가 drift를 보고하면 같은 명령에서 `--check`를 빼고 다시 생성하거나 Git 변경을 되돌려 복구합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

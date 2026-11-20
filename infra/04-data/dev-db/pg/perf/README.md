@@ -1,30 +1,56 @@
 ---
 title: "성능 시험 결과 데이터베이스"
-version: "0.2.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # 성능 시험 결과 데이터베이스
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 이 패키지는 개발 PostgreSQL의 공유 `perf_db`와 `quality` schema에 정규화된
 시험 결과를 보관하는 소스 계약입니다. 엔진을 추가하지 않으며 관리 데이터베이스나
 외부 프로젝트의 업무 데이터베이스를 사용하지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 성능 시험 결과 importer, 프로젝트별 권한, Grafana 읽기 경계를 구현하거나
 검토하는 maintainer를 대상으로 합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 `run_id`와 `attempt`의 변경 불가능한 실행 신원, artifact checksum, metric summary,
 실행기가 보고한 판정과 별도 판정 권한의 이력을 저장합니다. 프로젝트 writer,
@@ -33,7 +59,8 @@ reader, verdict 역할은 명시적 manifest로 등록되며 모두 `NOLOGIN` gr
 실행 전 중단은 시작·종료 시각을 `NULL`로 보존하며 완료 실행은 두 시각과 순서를
 모두 검증합니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - [`bootstrap.sql`](bootstrap.sql)은 고정된 `perf_db`, `perf_owner`,
   `perf_migrator` 경계를 만들고 schema migration을 호출합니다.
@@ -43,7 +70,7 @@ reader, verdict 역할은 명시적 manifest로 등록되며 모두 `NOLOGIN` gr
 - [`register.py`](register.py)는 프로젝트 manifest를 검증하고 등록 SQL만 출력합니다.
 - [`project.example.json`](project.example.json)은 비밀값 없는 schema v1 예제입니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -52,7 +79,8 @@ reader, verdict 역할은 명시적 manifest로 등록되며 모두 `NOLOGIN` gr
 | 프로젝트 등록 manifest(`register.py`) | `register.py` | `perf_db` migration 적용 후 등록 SQL을 실행하는 admin | `schema_version`, `project_id`, `roles.reader`, `roles.writer`, `roles.verdict`만 허용하고 credential 없는 등록 SQL만 출력한다. | 이 README는 실패 처리를 기록하지 않는다. |
 | `dev-perf-provision` one-shot job(`quality-results` profile) | `infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` | 결과 적재가 필요한 시험 실행(`testing` profile과 함께 선택) | admin secret을 프로세스 환경으로만 전달하고 `pg_try_advisory_lock`을 bootstrap 종료까지 유지한다. | 동시 job은 exit 75로 종료되며 재실행이 필요하다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
 등록 manifest는 `schema_version`, `project_id`, `roles.reader`, `roles.writer`,
 `roles.verdict`만 허용합니다. 역할 이름은 임의 조합하지 않고 승인된 manifest에
@@ -71,24 +99,27 @@ INSERT만 받습니다. UPDATE, DELETE, 소유권, `BYPASSRLS`는 부여하지 �
 bootstrap 종료까지 유지합니다. 동시 job은 exit 75로 종료되며 재실행이
 필요합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `dev_pg_admin_password`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 상위 개발 PostgreSQL [Dockerfile](../Dockerfile)과
 [Compose](../../docker-compose.yml)에 선언된 이미지에서 PostgreSQL RLS, role
 membership, JSONB와 core SHA-256 함수를 사용합니다. 별도 데이터베이스 이미지나
 Python 의존성을 추가하지 않습니다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 schema 변경은 새 migration version과 replay/conflict 검사를 함께 갱신합니다.
 project 등록 SQL은 admin이 `perf_db` migration 적용 후 실행하며 출력에
@@ -99,11 +130,12 @@ canonical UTF-8 bytes를 전달합니다. DB가 JSON 동등성과 SHA-256을 다
 `inserted`일 때만 자식 행을 적재하고 `exact_replay`에서는 기존 행을 변경하지
 않습니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 저장소 루트에서 다음 정적 검사를 실행합니다.
 
@@ -116,19 +148,42 @@ python3 infra/04-data/dev-db/pg/perf/register.py \
 실제 SQL 권한 검사는 고유 project, network, volume과 합성 비밀값을 사용하는
 승인된 격리 PostgreSQL에서 수행해야 합니다. HOME 적용 결과로 해석하지 않습니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0100: `docs/05.operations/03.runbooks/05.databases-and-storage/0100-development-database.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 [문서 진입점](../../../../../docs/README.md)에서 SPEC-0203과 개발 데이터 운영
 문서를 확인하십시오.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 `infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` 서비스에 `healthcheck` 선언이 없다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

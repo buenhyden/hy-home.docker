@@ -1,10 +1,13 @@
 ---
 title: "Authority Parents and Criterion Acceptance"
-version: "1.1.0"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0048"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-10-13"
 
 # ADR-0048: Authority Parents and Criterion Acceptance
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 Lifecycle generation 5 records execution state twice: a Task's frontmatter
 `status`, and Spec and Plan statuses that must project it as `in-progress`,
@@ -31,20 +54,21 @@ One writer per fact; no status copied between documents. Acceptance decided
 once per criterion. Readiness computed, never stored. Frozen records keep the
 meaning of the generation that wrote them.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [AD-0030](../01.descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](0037-package-disposition-wait-and-task-cancellation.md)
 - SPEC-0231
 - SPEC-0233
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers execution state, criterion acceptance and archive readiness for Spec, Plan and Task documents under lifecycle generation 6. It affects REQ-0026-FR-0009, AD-0030 and the ADR-0037 waiting rule, and leaves ADR-0037 decisions 4 onward unchanged.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep projected parent statuses and only relax the waiting rule: rejected;
   the duplicate execution state stays.
@@ -52,7 +76,7 @@ This decision covers execution state, criterion acceptance and archive readiness
   criterion would still carry several independent decisions.
 - Defer the multi-item mode: rejected by the owner on 2026-10-13.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -63,9 +87,9 @@ This decision covers execution state, criterion acceptance and archive readiness
 
 Each rejected option is rejected for the reason stated in its entry above: projected parent statuses keep the duplicate execution state, per-row acceptance still carries several independent decisions per criterion, and deferring the multi-item mode was rejected by the owner on 2026-10-13.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. Spec and Plan statuses record authority only: `draft`, `in-review`,
    `approved`, `cancelled`, `superseded`. A Plan is never ahead of its Spec,
@@ -89,11 +113,12 @@ Each rejected option is rejected for the reason stated in its entry above: proje
    preserved copy keeps every base member with its status. Readiness is
    derived and is not disposition approval.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. The Follow-up records that the owner accepted this decision on 2026-10-13. Effective from 2026-10-13.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 These replace ADR-0037 decision 1, except its last sentence, and the
 completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
@@ -117,9 +142,9 @@ The `superseded` Spec and Plan status named in decision 1 and decision 4 no
 longer exists: SPEC-0256 (retired; version history) removed it from the Stage 01 to 03 lifecycles. The
 decision body above is unchanged.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 Lifecycle generation 6 adds a Registry migration and a Git-bound proof. Active
 Tasks were rewritten mechanically; terminal Tasks unchanged since the source
@@ -127,7 +152,7 @@ revision keep their generation's reader. A branch still writing generation 5
 Evidence must take the same rewrite. REQ-0026-FR-0009 and AD-0030 state the
 new waiting rule.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -138,8 +163,29 @@ Proposed on 2026-10-13 from the owner's choice of these options. SPEC-0231
 implements and verifies it, and SPEC-0233 corrects its reader and text. The
 owner accepted this decision on 2026-10-13.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 SPEC-0231 proves each rule with passing and failing fixtures, loads every
 active package under generation 6, and keeps generation 4 and 5 terminal Tasks
 byte-identical.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

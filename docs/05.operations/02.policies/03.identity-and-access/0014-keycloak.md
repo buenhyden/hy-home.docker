@@ -1,10 +1,13 @@
 ---
 title: "02-Auth Keycloak Operations Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0014"
 parent_ids:
@@ -15,17 +18,38 @@ next_review_at: "2027-05-13"
 
 # 02-Auth Keycloak Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 `02-auth` Keycloak 운영 정책을 정의한다. DB/관리자 시크릿 처리, readiness 검증, 변경 통제 기준을 명시한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [02-Auth Architecture Description](../../../02.architecture/01.descriptions/0002-auth-architecture.md) (`AD-0002`)
 
-### Applies To
+##### Applies To
 
 - `infra/02-auth/keycloak/docker-compose.yml`
 - Keycloak secret injection and healthcheck contract
@@ -34,13 +58,14 @@ next_review_at: "2027-05-13"
 - **Systems**: Keycloak (Quarkus)
 - **Environments**: Local, Dev, Stage, Production-like
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 OAuth2 Proxy ForwardAuth는 [POL-0015](0015-oauth2-proxy.md)가 다룬다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -85,7 +110,8 @@ OAuth2 Proxy ForwardAuth는 [POL-0015](0015-oauth2-proxy.md)가 다룬다.
   - 시크릿 평문 하드코딩
   - 인증 우회 목적 설정 변경
 
-#### Shared controls and accountability
+###### Shared controls and accountability
+<!-- core-payload-level:4 -->
 
 공통 자원 상한과
 mount 적용은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md), profile·
@@ -94,7 +120,8 @@ mount 적용은 [POL-0006](../01.common/0006-infrastructure-optimization-governa
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-#### Backup and Upgrade Controls
+###### Backup and Upgrade Controls
+<!-- core-payload-level:4 -->
 
 - `mng-pg`의 Keycloak database를 권위 백업으로 취급한다. realm export만으로
   사용자, 세션, 자격 증명, 실행 중 변경의 완전한 복구를 주장하지 않는다.
@@ -105,28 +132,30 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - upgrade 전에 복구 가능한 database backup을 확인하고 격리 복제본에서 migration과
   대표 OIDC 흐름을 검증한다. rollback에는 이전 image와 이전 database가 함께 필요하다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - 월 1회 정기 점검
 - Keycloak 버전/realm 정책 변경 시 수시 점검
 
 - OOM·반복 재시작·인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 
-### Limits
+##### Limits
 
 이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
@@ -137,14 +166,14 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 백업/업그레이드: 명명된 검사 없음 R18~R26 (`POL-0014-` 접두)
 - 명명된 검사는 hardening 점검과 `auth`/`core` profile 정적 렌더링뿐이다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
 종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/03.identity-and-access/0014-keycloak.md) (`GDE-0014`), [Runbook](../../03.runbooks/03.identity-and-access/0014-keycloak.md) (`RUN-0014`)
 
@@ -153,3 +182,23 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Operations index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

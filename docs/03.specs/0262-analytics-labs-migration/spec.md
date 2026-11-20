@@ -1,10 +1,13 @@
 ---
 title: "Analytics Labs Migration Specification"
-version: "0.1.4"
+version: "1.0.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0262"
 parent_ids:
@@ -19,15 +22,35 @@ created: "2026-11-04"
 
 # Analytics Labs Migration Specification
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Intent
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the spec payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Intent
 
 Move the OPTIONAL analytics services, SonarQube and Stalwart out of the root
 Compose into standalone LAB entrypoints under `labs/`, so the root model only
 holds HOME and the remaining OPTIONAL services.
 
-### Owning Requirements
+##### Owning Requirements
 
 On 2026-11-04 the owner chose to move the lakehouse bundle (Spark, Flink
 JobManager and TaskManager, Trino, Great Expectations and the SeaweedFS table
@@ -38,9 +61,9 @@ its own cluster; all are OPTIONAL in the service consolidation ledger.
 
 This Spec makes concrete REQ-0005, REQ-0010, REQ-0011 and REQ-0012 and the Architecture Descriptions AD-0011 and AD-0012, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - LAB entrypoints `labs/lakehouse/docker-compose.yml`, `labs/dbt/docker-compose.yml`, `labs/superset/docker-compose.yml`,
   `labs/jupyterlab/docker-compose.yml`, `labs/sonarqube/docker-compose.yml` and `labs/stalwart/docker-compose.yml`, with
@@ -50,7 +73,7 @@ This Spec makes concrete REQ-0005, REQ-0010, REQ-0011 and REQ-0012 and the Archi
   supply-chain ledger, READMEs, Stage 01 and 02 statements, and the Stage 05
   documents, which move to the `15-labs` family with their identities kept.
 
-### Non-goals
+##### Non-goals
 
 - Kafka and every `05-messaging` service, MLflow and its provisioner, SeaweedFS
   master, volume, filer, S3 and bucket job, `mng-pg`, `dev-pg`, Keycloak and
@@ -58,9 +81,9 @@ This Spec makes concrete REQ-0005, REQ-0010, REQ-0011 and REQ-0012 and the Archi
 - Making a HOME service reachable from a LAB network, moving existing data,
   migrating OpenBao KV paths, and any runtime start, push or merge.
 
-## Behavior Contract
+#### Behavior Contract
 
-### Normal Behavior
+##### Normal Behavior
 
 Each LAB is its own Compose project `hy-home-lab-<name>`, labelled
 `hy-home.tier: lab`, with no Traefik route and only LAB networks, as POL-0107
@@ -71,7 +94,7 @@ are read-only LAB copies under `LAB_SECRET_DIR`. Data binds under
 Static rendering proves declaration only. A LAB that needs a HOME service is
 render-only until the owner approves a reachable endpoint.
 
-### Failure and Edge Cases
+##### Failure and Edge Cases
 
 A LAB rendered without a required endpoint or data root refuses to render.
 
@@ -87,9 +110,9 @@ current document names a removed path.
 
 This Task pushes, merges and starts nothing.
 
-## Acceptance Criteria
+#### Acceptance Criteria
 
-### Criteria
+##### Criteria
 
 1. The root renders without the moved services; the wildcard service count
    drops by exactly the moved services.
@@ -99,7 +122,7 @@ This Task pushes, merges and starts nothing.
 5. The document, hardening and unit checks pass locally, with actual results
    in the Task.
 
-### Evidence Requirements
+##### Evidence Requirements
 
 - Criterion 1 is observed by `docker compose config` on the root, comparing the `--profile '*' config --services` count before and after (`compose-root` row).
 - Criterion 2 is verified by rendering each LAB file with `docker compose config`, the LAB isolation and infra tier layout unit tests, and the `scripts/operations/lab.py check` controller checks (`compose-lab`, `lab-isolation`, `lab-controller*` and `security-review` rows); a controller check not run stays `NOT_RUN`.
@@ -107,13 +130,33 @@ This Task pushes, merges and starts nothing.
 - Criterion 5 is verified by `check-document-metadata.py`, `check-document-links.py`, `check-document-corpus-lifecycle.py` and the hosted CI row.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
-## References
+#### References
 
-### Normative and Evidence
+##### Normative and Evidence
 
 - [Plan](plan.md)
 - [Task](01.tasks/tsk-0001-analytics-labs-migration.md)
 
-### Historical and Navigation
+##### Historical and Navigation
 
 No retired, superseded or purely navigational link applies to this Spec.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,20 +1,44 @@
 ---
 title: "Template Catalog"
-version: "3.1.1"
+version: "4.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "templates"
 ---
 
 # Template Catalog
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 이 디렉터리는 [`../registry.json`](../registry.json)이 등록한 복사용 원본을
 담습니다. 문서 type과 template 원본의 정확한 대응은 Registry의
@@ -23,25 +47,28 @@ layer: "templates"
 [Stage 99 README](../README.md)에, 완성된 문서가 지켜야 할 규칙은 각 문서를
 소유한 stage에 있습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - Documentation Writers
 - Repository Maintainers
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 - 포함: Registry `template_roles`가 가리키는 template 원본.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - 제외: 완성된 문서, 과거 template, category별 README. 과거 template은 Git
   history로만 복구하며 현재 작성에 복사하지 않습니다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | --- | --- |
@@ -54,35 +81,40 @@ layer: "templates"
 | [92.runtime/](92.runtime/) | native provider projection source |
 | [03.specs/](03.specs/) | Spec·Plan·Task와 interface source |
 
-#### Classification
+###### Classification
+<!-- core-payload-level:4 -->
 
 각 category 안의 template 원본만 정본이며 완성된 문서와 과거 template은 두지 않습니다(과거 template은 Git history로만 복구). template은 복사용 source이므로 복사해 만든 문서가 자기 profile의 수명주기를 시작합니다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [Stage 99 authority](../README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [Registry](../registry.json)
 - [Documentation protocol](../../00.workspace/03.process/documentation-protocol.md)
 - 이 README의 양식 원본은 `common/readme-stage.template.md`이며 형식은 [Stage 99 Registry](../registry.json)의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Create and Review
+###### Create and Review
+<!-- core-payload-level:4 -->
 
-1. [`../registry.json`](../registry.json)의 `template_roles`에서 역할을 찾고
-   등록된 `source`를 복사합니다. 디렉터리를 훑어서 template을 고르지
-   않습니다.
+1. [`../registry.json`](../registry.json)의 `template_roles`에서 역할을 찾습니다.
+   일반 Markdown은 공통 정의 `source`를 복사합니다. `native_source`가 있는
+   역할은 정의를 실제 출력에 넣지 않고 등록된 생성기가 그 native payload를
+   읽도록 합니다. 디렉터리 이름만으로 양식을 고르지 않습니다.
 2. Markdown의 모든 `{{UPPER_SNAKE_CASE}}` 자리 표시자를 채우고 template
    전용 HTML 작성 안내 주석을 지웁니다. 기계용 contract 원본은
    `__UPPER_SNAKE__` token을 씁니다.
@@ -97,6 +129,27 @@ layer: "templates"
    또는 all-files 실행도 Task 범위와 controlled-wrapper 승인 경계를
    따릅니다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 이 README는 `navigation` 수명주기의 `active` 상태만 가지며 다른 상태로 전이하지 않습니다. 목록 항목을 추가·이동·삭제할 때 이 문서를 함께 갱신하고, 삭제한 항목의 이력은 Git이 기록합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

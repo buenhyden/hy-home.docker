@@ -1,10 +1,13 @@
 ---
 title: "Security Tier (03-security) Requirements"
-version: "1.5.1"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0003"
 created: "2026-03-26"
@@ -12,9 +15,29 @@ created: "2026-03-26"
 
 # Security Tier (03-security) Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 The `03-security` tier stores eligible consumer secrets centrally and delivers
 them to services as rendered files. When secrets are scattered across files,
@@ -24,7 +47,7 @@ access must be auditable, and recovery must not depend on the service being
 recovered: bootstrap, recovery and independent backup credentials keep their
 separate custody.
 
-### Stakeholders
+##### Stakeholders
 
 - **Security administrator**: sets fine-grained access policies, holds unseal
   custody and reviews audit logs.
@@ -35,15 +58,15 @@ separate custody.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - The secrets server and its storage, the delivery agent that
   renders secrets into files for consumers, access policies, unseal and recovery
   custody, and audit logging.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - **Out of scope**: managing the external identity provider (Auth tier) and
   issuing browser-facing certificates (Gateway tier).
@@ -62,7 +85,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 - A lost or wrongly held unseal share or recovery credential can make the
   stored secrets unrecoverable.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -80,7 +103,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 | REQ-0003-NFR-0006 | Confidentiality | The server's documented storage encryption for the deployed version, checked at each version change. | The package records no unit for this measure. | The deployed server version. | An authenticated cipher of at least 256-bit key strength. |
 | REQ-0003-NFR-0007 | Performance | Latency distribution under a named load, sample count and tool. | milliseconds | Each consumer's workload under a named load; no baseline is recorded. | Meets the threshold the consumer owner sets before measurement; no global threshold is made. |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0003-FR-0001**: Secrets must be kept in durable integrated storage. The
   current deployment is a single node; expanding to a replicated quorum is a
@@ -94,7 +117,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 - **REQ-0003-FR-0004**: Every request to the secrets server must be written to
   an audit log that does not contain secret values in plaintext.
 
-### Quality Requirements
+##### Quality Requirements
 
 - **REQ-0003-NFR-0005 — Recoverability**: the impact of a single-node failure
   must be detectable, and the stored secrets must be restorable from a snapshot
@@ -112,17 +135,18 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   sets before measurement. No global threshold or caching guarantee is made;
   no baseline is recorded.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 - Quality references: [ISO/IEC 25010](https://www.iso.org/standard/78176.html),
   [ISO/IEC 25023](https://www.iso.org/standard/35747.html),
   [ISO/IEC 25030](https://www.iso.org/standard/72116.html).
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 These are local acceptance measures that apply ISO/IEC 25010, 25023 and 25030
 concepts; they are not a certification claim.
@@ -152,7 +176,8 @@ concepts; they are not a certification claim.
   its owner set before measurement. A consumer with no threshold set stays
   unjudged.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Use synthetic inputs for rendered-output and positive and negative control
 checks. Deployed audit rotation, the exact approved snapshot rehearsal and
@@ -163,7 +188,8 @@ its body. Record each result in the applicable Task. The operator or
 consumer owner sets any unspecified threshold before measurement.
 @buenhyden judges the conditions and accepts the requirement when they are met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - [Security architecture description](../02.architecture/01.descriptions/0003-security-architecture.md)
 - [SPEC-0204: Service integration and security](../03.specs/0204-service-integration-security-and-operations/spec.md)
@@ -176,3 +202,23 @@ consumer owner sets any unspecified threshold before measurement.
   SPEC-0169 because every clause named an implementation artifact; its
   implementation contract lives in the security operations policies and its
   documentation traceability clause moved to REQ-0026-FR-0011.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

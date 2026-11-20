@@ -1,10 +1,13 @@
 ---
 title: "04-Data Optimization Hardening Operations Policy"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0030"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-13"
 
 # 04-Data Optimization Hardening Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
 운영 통제에 묶는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Artifact: `POL-0030`; parent: `AD-0004`.
 - Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
 
-### Applies To
+##### Applies To
 
 모든 data 서비스는 명시적 disposition/profile, 쓰기 가능한 모든 state 경로에
 대한 owner 하나, health check나 문서화된 예외, 공유 리소스 제한, 의도된
 network/노출 경계, credential이 존재하는 경우 secret-file 보관, engine별
 복구 방법을 가져야 한다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 애플리케이션 인증 연동은 이 정책이 아니라 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)가 정한다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -90,7 +115,8 @@ network/노출 경계, credential이 존재하는 경우 secret-file 보관, eng
 - Pin 변경 전에 upstream 보안, upgrade, license 출처를 검토한다. 현재 image
   선언은 지원되는 lifecycle을 증명하지 않는다.
 
-#### Validation and evidence
+###### Validation and evidence
+<!-- core-payload-level:4 -->
 
 영향받는 정확한 profile에 대한 root `config --quiet`와
 `scripts/hardening/check-all-hardening.sh 04-data`는 필수 static check다.
@@ -98,39 +124,43 @@ Evidence는 command, source revision, exit status, scope, 미해결 gap을
 credential이나 data 없이 기록한다. Runtime check는 별도로 승인되며 static
 성공에서 추론해서는 안 된다.
 
-#### Failure handling
+###### Failure handling
+<!-- core-payload-level:4 -->
 
 실패한 health, resource, secret, network, persistence, recovery 통제를
 우회하지 않는다. 승인된 범위 안에서 patch하거나 소유 architecture와 운영
 subject로 escalate한다. Data 삭제, volume 재사용, 파괴적 restore는 명시적
 승인을 요구한다.
 
-#### Accountable lifecycle boundary
+###### Accountable lifecycle boundary
+<!-- core-payload-level:4 -->
 
 적용 identity: GDE-0019/0022/0024/0025/0026/0027/0028/0029/0031/0033/0034/0076/0100의 명명된 data identities. 문서의 정적 검증과 runtime 운영 승인을 분리한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 문서화된 job/health 예외는 소유 profile과 복구 evidence를 요구한다. 예외는
 runtime mutation, plaintext secret, raw active storage 복사, 동일 host
 가용성 주장을 허용하지 않는다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 Profile, image, volume, credential, consumer, retention 또는 upstream
 lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 [RUN-0030](../../03.runbooks/05.databases-and-storage/0030-data-optimization-hardening.md#steps)의 root profile render와 `scripts/hardening/check-all-hardening.sh 04-data`로 static 통제를 검증한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 
-### Limits
+##### Limits
 
 이 정책에서 이름 붙은 검사는 root `config --quiet`와 `scripts/hardening/check-all-hardening.sh 04-data`뿐이며, 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
@@ -144,14 +174,34 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 - 정책이 밝힌 공백: runtime check는 별도 승인 대상이며 정적 성공(root render/hardening script)에서 추론할 수 없고, 승격/cutover 전 isolated restore/application 수준 검증/관측 RPO·RTO 증거는 이 정책에 없다.
 - POL-0030-R1: 정책이 이 규칙에 묶은 검사를 명시하지 않는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Usage guide](../../01.guides/05.databases-and-storage/0030-data-optimization-hardening.md)
 - [Runbook](../../03.runbooks/05.databases-and-storage/0030-data-optimization-hardening.md)
 - [Backup policy](../10.platform-and-backup/0021-backup-and-restore.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

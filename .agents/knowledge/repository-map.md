@@ -1,9 +1,12 @@
 ---
 title: "Repository Authority Map"
-version: "0.5.5"
+version: "1.0.0"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
+document_scope:
+  subject: Repository Authority Map
+  layer: agent
 updated: "2026-11-20"
 created: "2026-09-06"
 observed_at: "2026-10-07"
@@ -12,21 +15,41 @@ review_cycle: "on-surface-change"
 
 # Repository Authority Map
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the knowledge payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
 
 This map answers one question: for a given repository surface, which document
 owns it, who must approve a change to it, and which check proves the change.
 It routes; it never states an obligation. Where a rule is needed, the owner
 column names the document that holds it.
 
-## Scope
+#### Scope
 
 Tracked repository surfaces and their canonical owners. Excluded: runtime state, service health, credential
 contents, user-global provider settings, and anything outside this repository.
 
-## Rules
+#### Rules
 
-### Surface Ownership
+##### Surface Ownership
 
 | Surface | Canonical owner | Approval boundary | Proving check |
 | --- | --- | --- | --- |
@@ -55,13 +78,13 @@ contents, user-global provider settings, and anything outside this repository.
 | `secrets/**` | path and policy context only | metadata-only evidence; values are never read | template security baseline |
 | `graphify-out/**` | untracked local navigation snapshot | advisory when its commit differs from HEAD, and absent until rebuilt | regenerate with the CLI; never hand-edit or track |
 
-### Entry Order
+##### Entry Order
 
 Read the [canonical bootstrap sequence](../governance/bootstrap.md#canonical-load-order)
 for entry and request-scoped loading. This map only locates owners; discovery
 here grants no tool, path, approval or broader permission profile.
 
-### Where Similar Things Differ
+##### Where Similar Things Differ
 
 - A Requirement states a need; a Spec states a bounded change; a Task states
   what actually happened. Execution evidence belongs only to the Task.
@@ -73,7 +96,7 @@ here grants no tool, path, approval or broader permission profile.
 - The workflow contract owns which checks run; the script manifest owns which
   files exist and who consumes them. Neither repeats the other.
 
-## Evidence
+#### Evidence
 
 Current observation on 2026-10-07: the approved retirement input in
 `codex/qa-delivery-rationalization` removes the scoring producer and exclusive
@@ -82,7 +105,7 @@ policy owns mandatory QA and agentic policy owns evaluation authority. No paired
 harness outputs or aggregate results were found in the current tree or ref history.
 Historical reads below are provenance, not a current Task-progress view.
 
-### Provenance
+##### Provenance
 
 At commit `a4e928b668bcfbf24eda54b06c47d030a1eb4786`, SPEC-0211-TSK-0001
 recorded the then-approved patch identity and source authorization. SPEC-0211
@@ -102,7 +125,7 @@ was re-read from the documentation protocol's retention section on 2026-11-03,
 in the change that removed the Stage 98 records. Evaluation-route provenance preceding the current evidence-role alignment is
 preserved in Git history; obsolete scorer paths are no longer loading routes.
 
-### Knowledge Validity
+##### Knowledge Validity
 
 The facts here are valid only while their named sources agree with the stated
 observation range and no refresh trigger has fired. They cover tracked,
@@ -112,7 +135,7 @@ correction, or review expiry invalidates the affected fact until it is re-read.
 An obligation or durable decision routes to its canonical owner; this map is
 then refreshed or retired rather than copied.
 
-### Refresh Triggers
+##### Refresh Triggers
 
 - A canonical category is added to or removed from `.agents/`.
 - `bootstrap.md` changes the canonical load order this map restates.
@@ -121,10 +144,30 @@ then refreshed or retired rather than copied.
 - A Stage 99 profile path pattern changes.
 - A stage directory is added, renamed, or retired.
 
-## Related Documents
+#### Related Documents
 
 - [Knowledge index](README.md)
 - [Bootstrap policy](../governance/bootstrap.md)
 - [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)
 - [Documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md)
 - [Stage authoring matrix](../../docs/00.workspace/01.project/stage-authoring-matrix.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,28 +1,53 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.5.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Restic Backup Jobs
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 HOME 상태를 서로 다른 물리 디스크에 있는 두 개의 암호화된 Restic 저장소로
 스냅샷하고, 두 저장소를 오프사이트의 Cloudflare R2 저장소 하나로 복사하는
 1회성 작업입니다(ADR-0056). `mng-pg`의 pgBackRest도 함께 구동하는 호스트
 오케스트레이터와 타이머를 포함합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 백업을 실행·검증·복구하는 운영자와 백업 경계를 검토하는 담당자.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 범위 내: [`sets/state-include.txt`](sets/state-include.txt)에 allowlist로
 등록된 파일 안전 data-disk 트리, 일관된 내보내기 결과(PostgreSQL globals,
@@ -31,7 +56,8 @@ Valkey RDB, SQLite 데이터베이스 세 개), `secrets/`와 `.env`.
 엔진 디렉터리. pgBackRest 저장소는 state Restic 저장소에 담겨 R2로 갑니다
 (원격 RPO 하루). pgBackRest가 S3로 직접 보내는 저장소는 없습니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 restic/
@@ -44,7 +70,7 @@ restic/
 └── systemd/               # hyhome-backup.service and .timer
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -52,7 +78,8 @@ restic/
 | R2 저장소 `s3:https://<BACKUP_OFFSITE_R2_ACCOUNT_ID>.r2.cloudflarestorage.com/<BACKUP_OFFSITE_R2_BUCKET>` | `restic-offsite` (`restic_offsite_net`) | Cloudflare R2 오프사이트 저장소 | `restic copy --no-lock --from-repo`로 복사하며 R2 키는 환경 변수로만 넘긴다. | 원격이 9 GB를 넘을 수 있으면 exit 66으로 끝나고 실패하면 unit도 실패한다. |
 | 지표 `hyhome_backup_offsite_repo_bytes` | 호스트 오케스트레이터 `bin/hyhome-backup.sh` | 이 README는 소비자를 기록하지 않는다. | `copy`가 남긴 원격 저장 byte 수를 기록한다. | run이 실패해도 기록하며 복구는 RUN-0021을 따른다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 - 프로필 `backup` (분류는 automation이며 HOME이 아님). `restic`은 기본값이
   `snapshots`이므로 `up`을 실행해도 아무것도 바뀌지 않습니다.
@@ -99,20 +126,21 @@ restic/
   snapshot에 남은 기억 export와 수동 백업의 제거는 RUN-0021 "공유 기억 백업
   제외"를 따릅니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 `restic`은 `network_mode: none`과 읽기 전용 소스 마운트로 실행하고, 외부 네트워크는 `restic-offsite`(`restic_offsite_net`)만 가진다. 사용하는 secret은 `restic_password`, `restic_offsite_password`, `r2_access_key_id`, `r2_secret_access_key`이며 R2 키는 출력하지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고정되어
 있으며 pgBackRest는
 [`mng-pg` 이미지](../../04-data/mng-db/pg/backup/Dockerfile)에
 고정되어 있습니다.
 
-### Selected Start
+##### Selected Start
 
 새 소스를 추가할 때는 먼저 일관된 방식을 결정합니다. 파일 안전 트리는
 allowlist 한 줄을 추가하고, live 엔진은 `bin/hyhome-backup.sh`에 내보내기
@@ -127,9 +155,9 @@ allowlist 한 줄을 추가하고, live 엔진은 `bin/hyhome-backup.sh`에 내�
 그대로 유지하며, 활성화·catch-up 실행·수동 백업은 별도 승인 대상입니다.
 이 저장소 변경은 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않습니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 ```bash
 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupContractTests
@@ -137,9 +165,10 @@ HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_base
 systemd-analyze verify infra/09-platform-ops/restic/systemd/hyhome-backup.service infra/09-platform-ops/restic/systemd/hyhome-backup.timer
 ```
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 [documentation entry point](../../../docs/README.md)를 통해 Stage 05 대상
 `04-data/0021-backup-and-restore`(GDE/POL/RUN-0021)로 이동합니다. 오프사이트
@@ -147,6 +176,27 @@ systemd-analyze verify infra/09-platform-ops/restic/systemd/hyhome-backup.servic
 
 - [10-platform-and-backup runbooks](../../../docs/05.operations/03.runbooks/10.platform-and-backup/README.md): RUN-0021 backup-and-restore
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 오케스트레이터는 run이 실패해도 `hyhome_backup_offsite_repo_bytes`를 기록하고, 저장소가 소스와 같은 파일시스템이면 종료 코드 64, 잠금 사용 중이면 75, 원격 용량 초과 위험이면 66으로 중단한다. 복구 절차는 [10-platform-and-backup runbooks](../../../docs/05.operations/03.runbooks/10.platform-and-backup/README.md)의 RUN-0021 백업·복구 Runbook을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

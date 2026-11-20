@@ -1,10 +1,13 @@
 ---
 title: "SonarQube Operations Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0066"
 parent_ids:
@@ -15,31 +18,53 @@ next_review_at: "2027-05-13"
 
 # SonarQube Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 독립 LAB `labs/sonarqube/docker-compose.yml`의 SonarQube Community Build 배포를 다루며 유료 에디션 기능,
 네이티브 Keycloak 통합, 범용 CI 게이트는 가정하지 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 - SPEC-0262 Analytics labs migration(LAB 이전)
 - [SonarQube Compose 소스](../../../../labs/sonarqube/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 활성화, 애플리케이션 인증, LAB 노출, 토큰, 데이터베이스/인덱스/로그 데이터, 리소스
 제한, 백업/복구, 업그레이드, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 유료 에디션 기능, 네이티브 Keycloak 통합, 범용 CI 게이트는 이 정책이 가정하지 않는다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -99,32 +124,35 @@ next_review_at: "2027-05-13"
 - **Removal:** 데이터베이스/스키마 또는 볼륨을 삭제하기 전에 프로젝트, 설정,
   이슈, 사용자, 토큰, 백업 증거를 보존하거나 명시적으로 폐기한다.
 
-#### 운영 책임
+###### 운영 책임
+<!-- core-payload-level:4 -->
 
 승인·예외·데이터 복구 책임자는 `@buenhyden`이다. 인증 실패를 해결하기 위해 SonarQube
 인증을 완화하거나 port를 넓게 게시할 수 없다. 공유 PostgreSQL
 전체를 복원하는 변경은 다른 데이터 소유자의 영향 검토와 별도 승인을 요구한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 유료 기능, 네이티브 SAML/OIDC 프로비저닝, 더 넓은 품질 게이트 요구사항은
 각자의 소유 requirement/policy가 필요하며 여기서 유추할 수 없다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 릴리스, DB/플러그인/인증/토큰, 리소스, 보존 정책 변경 시 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 헬스는 부분적이다. 런타임 수용 기준에는 승인된 endpoint로의 DB 접근, 앱 권한 부여,
 백그라운드 작업 완료, 대표 분석이 포함되며 백업/복구를 주장하는 경우 그
 증거도 포함된다.
 
-### Limits
+##### Limits
 
 정책은 요구사항별 이름 붙은 검사를 지정하지 않으며, 아래 규칙은 승인/검토에 의존하거나 강제 수단이 없다.
 
@@ -138,15 +166,35 @@ next_review_at: "2027-05-13"
 - 네이티브 SAML/OIDC 위임 인증은 구성/테스트되기 전까지 존재하지 않는다.
 - 헬스는 부분적이며 runtime 수용 기준(DB 접근, 앱 권한 부여, 백그라운드 작업 완료, 대표 분석, 백업/복구 증거)은 실행 시 기록에 의존한다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [가이드](../../01.guides/15.labs/0066-sonarqube.md) (`GDE-0066`)
 - [런북](../../03.runbooks/15.labs/0066-sonarqube.md) (`RUN-0066`)
 - [Community Build 인증](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
 - [SonarQube 토큰 관리](https://docs.sonarsource.com/sonarqube-community-build/user-guide/managing-tokens)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

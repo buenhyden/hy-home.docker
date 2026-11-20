@@ -1,10 +1,13 @@
 ---
 title: "Canonical Agent Governance Home"
-version: "1.1.0"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0032"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-09-06"
 
 # ADR-0032: Canonical Agent Governance Home
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 ADR-0029 separated the responsibilities of common norms, document machine
 contracts, executors, and native adapters. While keeping that separation, the
@@ -41,7 +64,8 @@ approval timestamps, and native execution results are not backfilled.
 - Do not modify archived Tasks or already-frozen bodies for the sake of path
   cleanup.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [Agent governance requirement](../../../01.requirements/0024-agent-governance-standardization.md)
 - [Canonical adapter architecture](../01.descriptions/0027-agent-governance-canonical-adapter.md)
@@ -50,13 +74,13 @@ approval timestamps, and native execution results are not backfilled.
 - Owning specification: SPEC-0173 (retired)
 - Plan: SPEC-0173-PLAN-0001 (retired)
 
-### Decision Scope
+##### Decision Scope
 
 The decision covers the location and loading of the common canonical source: `.agents/` replaces the old governance directory as the home of common policy, roles, skills, and the provider mapping. It does not grant execution approval to access operational input, and archived Tasks and already-frozen bodies are not modified.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 | Alternative | Effect and cost | Judgment |
 | --- | --- | --- |
@@ -64,7 +88,7 @@ The decision covers the location and loading of the common canonical source: `.a
 | Keep the canonical source at the current document Stage | Preserves existing explicit reads; misses the requested canonical location/discovery goal | Not adopted for this request |
 | Full duplication or root symlink | Duplicate authority, format mixing, output/input cycle and boundary risk | Not adopted |
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -74,9 +98,9 @@ The decision covers the location and loading of the common canonical source: `.a
 
 Moving the canonical source aligns native skill discovery with ownership but requires converting all consumers. Keeping it at the current document Stage preserves existing explicit reads but misses the requested location/discovery goal. Full duplication or a root symlink brings duplicate authority, format mixing, and output/input cycle and boundary risk.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 Adopt the following location model after an independent design review.
 
@@ -103,7 +127,7 @@ Adopt the following location model after an independent design review.
   and fallback targets. Old paths in frozen records and regression-test
   strings are classified as history/negative examples.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. The approval basis is the explicit relocation request in the current
 conversation and the actual independent review recorded in the Task. No
@@ -111,7 +135,8 @@ commit, remote, operations, secret, or global setting changes are approved.
 Protected-path writes are performed only through the normal approval procedure
 with a bounded target and action. Effective from 2026-09-06.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 Change only ADR-0029's reciprocal supersession metadata and the lawful
 lifecycle metadata immediately before initial preservation. The decision body
@@ -122,9 +147,9 @@ were.
 - Predecessor authority decision: ADR-0029 (retired, historical)
 - **Superseded decisions**: ADR-0027 defined the Stage 00 canonical adapter model, and ADR-0029 replaced it with a separated workspace governance authority model. This decision replaces ADR-0029.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Common skills become native discovery targets, so controls that block
   implicit execution expansion must be checked separately from actual
@@ -140,15 +165,36 @@ were.
 - Local syntax/contract success, native discovery, invocation, permission
   enforcement, and actual hook receipt are separate pieces of evidence.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
 options table under Trade-offs was derived from the options it records. The
 decision text is unchanged.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 Required static checks, protected-path
 approval status, and pending native verification continue to be tracked in the
 current Task.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

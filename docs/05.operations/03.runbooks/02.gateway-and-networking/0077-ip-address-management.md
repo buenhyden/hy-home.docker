@@ -1,10 +1,13 @@
 ---
 title: "Compose Network Membership Runbook"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0077"
 parent_ids:
@@ -15,16 +18,36 @@ next_review_at: "2027-05-13"
 
 # Compose Network Membership Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 Compose 서비스의 network membership과 고정 주소를 변경하거나 DNS/IP 충돌을 진단하는 절차다.
 
 신규 서비스의 peer 연결, 기존 membership·고정 주소 변경 또는 DNS/IP 충돌을
 검토할 때 사용한다.
 
-### Targets
+##### Targets
 
 - 상위 Guide: [GDE-0077](../../01.guides/02.gateway-and-networking/0077-ip-address-management.md)
 - 구조: [AD-0026](../../../02.architecture/01.descriptions/0026-standardize-infra-net.md)
@@ -33,19 +56,20 @@ Compose 서비스의 network membership과 고정 주소를 변경하거나 DNS/
 - [Operations index](../../README.md)
 - [시스템 진단](../01.common/0099-system-operations.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 저장소 루트에서 정확한 Compose service·fragment·network·peer,
 선택 profile과 변경 이유를 기록한다. 공개 source 검토와 runtime 조회·변경은
 별도다. 승인된 Docker context와 기존 대상이 없으면 runtime 단계는 `NOT_RUN`이다.
 
-### Environment
+##### Environment
 
 변경 전에 선언과 대상을 읽기 전용으로 확인한다.
 
-#### 선언과 대상 확인
+###### 선언과 대상 확인
+<!-- core-payload-level:4 -->
 
 [Guide](../../01.guides/02.gateway-and-networking/0077-ip-address-management.md)의 flow와
 [Policy](../../02.policies/02.gateway-and-networking/0077-ip-address-management.md)의 static-address 제한을 대조한다.
@@ -59,16 +83,17 @@ rg -n "ipv4_address:" infra docker-compose.yml
 trusted-proxy·`RI_APP_HOST`·egress gateway 같은 고정 주소 소비자를 함께 확인한다. target·peer·alias가 불명확하면
 수정하지 않고 @buenhyden에게 전달한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
 | 1 | 범위를 정한 source 변경과 검증: 승인된 fragment의 dictionary membership만 수정하고 `validate-docker-compose.sh`와 network 계약 unittest 실행 | 성공 종료와 실제 검사 범위를 기록한다 | 실패하면 적용을 중단한다 |
 | 2 | 승인된 실행 대상 관찰: `docker context show`, `docker inspect`, `docker network inspect`로 peer의 network 주소 확인 | 해당 peer의 선언된 network와 올바른 subnet 주소다 | 컨테이너가 없거나 DNS/주소가 다르면 원인을 기록하고 service Runbook으로 넘긴다 |
 
-#### 범위를 정한 source 변경과 검증
+###### 범위를 정한 source 변경과 검증
+<!-- core-payload-level:4 -->
 
 승인된 fragment의 dictionary membership만 수정하고 root include와 profile을
 확인한다. 다른 service의 주소나 외부 network를 함께 바꾸지 않는다.
@@ -86,7 +111,8 @@ python3 -m unittest tests.validation.test_compose_baseline_gates.NetworkSegmenta
 실제 검사 범위를 기록한다. 실패하면 적용을 중단한다. 이 결과는 static-IP 전체
 충돌 검사나 live reachability가 아니며 수정만으로 기존 컨테이너 network가 바뀌지 않는다.
 
-#### 승인된 실행 대상 관찰
+###### 승인된 실행 대상 관찰
+<!-- core-payload-level:4 -->
 
 현재 context가 승인된 대상인지 확인한 뒤 실제 이름으로 대체한다. 아래 placeholder는
 운영자가 확인한 값이며 전체 inspect나 Config.Env를 출력하지 않는다.
@@ -104,25 +130,27 @@ network connect/disconnect, 전체 restart나 network/volume 삭제를 실행하
 [RUN-0086](../10.platform-and-backup/0086-dependency-version-management.md#runtime-configuration-apply)에 따라
 수행하며, 이후 membership과 기능을 다시 확인한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 target·peer·alias가 불명확하면 수정하지 않고 @buenhyden에게 전달한다(Environment의 선언과 대상 확인). 검증 명령이 실패하면 적용을 중단한다(Steps의 범위를 정한 source 변경과 검증).
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 해당 peer의 선언된 network membership과 subnet 주소, 검증 명령의 성공 종료를 확인한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 시각·context·service/profile·source commit·변경 hunk·network별 주소 대조와 검사
 종료 상태를 기록한다. runtime 미실행은 명시한다. 원문 환경, 전체 inspect, secret,
 개인 path나 payload를 기록하지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
 
@@ -130,16 +158,36 @@ target·peer·alias가 불명확하면 수정하지 않고 @buenhyden에게 전�
 - 승인된 실행 대상 관찰: 이 문서에는 `docker inspect` 결과가 기록되어 있지 않으며 runtime 미실행은 명시하도록 되어 있다. 승인된 context에서의 주소 대조 결과로 검증한다.
 - 실제 반영: 소비자·중단·복구 계획의 승인이 필요하며 이 문서에는 실행 결과가 기록되어 있지 않다. 반영 뒤 membership과 기능을 다시 확인한 결과로 검증한다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 검증 실패, 잘못된 context, 알 수 없는 peer·주소 충돌, secret 노출 위험 또는 파괴적
 복구가 필요하면 멈추고 @buenhyden에게 대상·값 없는 증거·시도 단계·복구 상태를 전달한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 source 오류는 해당 Compose/network hunk만 이전 승인 상태로 복원하고 다시 검증한다.
 Git rollback은 실행 중인 membership을 복원하지 않는다. runtime이 별도 승인으로
 변경되었다면 그 서비스의 승인된 이전 구성 반영·검증 절차로 넘긴다. 삭제나 광범위한
 network 재생성이 필요하면 incident와 별도 복구 승인을 요구한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

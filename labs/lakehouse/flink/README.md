@@ -1,10 +1,13 @@
 ---
 title: "Flink (Iceberg)"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-23"
 ---
 
@@ -12,11 +15,31 @@ created: "2026-09-23"
 
 # Flink (Iceberg)
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > 승인된 Iceberg REST catalog의 table에 스트리밍/배치 SQL을 쓰는 lakehouse LAB의 on-demand Flink session cluster입니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
 Flink는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 stream processing engine입니다. JobManager 하나와
@@ -28,25 +51,29 @@ source/sink는 승인된 Kafka endpoint가 있을 때만 씁니다. REST API와 
 수도 없습니다. HOME은 SeaweedFS를 LAB network에 게시하지 않으므로 owner가 endpoint를
 승인하기 전(미결정)까지는 render 검증만 합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
 - Data engineers
 - Operators
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - Iceberg, AWS, Kafka, Hadoop client jar를 포함한 session cluster(JobManager, TaskManager).
 - `lakehouse` catalog statement, 범위 S3 identity, file checkpoint.
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 고가용성, TLS, 인증, Traefik route.
 - Application mode와 REST API를 통한 JAR 제출.
 - 배치 유지보수([Spark](../spark/README.md))와 대화형 SQL([Trino](../trino/README.md)).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 flink/
@@ -57,7 +84,7 @@ flink/
 
 서비스 정의(`flink-jobmanager`, `flink-taskmanager`)는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -65,11 +92,13 @@ flink/
 | `LAB_LAKEHOUSE_CATALOG_URI`·`LAB_LAKEHOUSE_S3_ENDPOINT` | 승인된 Iceberg REST catalog와 S3 endpoint | `flink-jobmanager`, `flink-taskmanager` | SigV4 REST catalog와 S3FileIO를 쓰며 access key ID `lakehouse`와 LAB 전용 secret을 사용한다. | secret이 없으면 exit `64`이고 catalog 누락·S3 `403`은 `hyhome-flink.sh`로 다시 실행한다. |
 | `${LAB_DATA_DIR}/lakehouse/flink/checkpoints` | `flink-jobmanager`, `flink-taskmanager` | 두 컨테이너가 공유 | file checkpoint이며 스트리밍 `INSERT`는 checkpoint(기본 60초)마다 커밋된다. | `AccessDeniedException`은 group-writable 권한 문제이므로 lakehouse runbook을 따른다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 `127.0.0.1:${LAB_FLINK_HOST_PORT:-18091}` -> 8081에서 JobManager REST API/UI를 제공하고 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT` 입력을 읽으며 checkpoint는 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`에 기록한다. 환경 변수는 아래 표와 같다.
 
-#### Environment Variables
+###### Environment Variables
+<!-- core-payload-level:4 -->
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
@@ -84,13 +113,14 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 `lakehouse`입니다. HOME 값을 복사하려면 별도 승인이 필요합니다. Flink 설정은
 Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 않습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 호스트 게시는 loopback뿐이며 TLS, 인증, Traefik route는 구성되지 않는다. `lab_lakehouse_net`에만 연결되고 HOME network는 없다. secret은 `lab_lakehouse_s3_lakehouse_secret_key`(-> `seaweedfs_s3_lakehouse_secret_key`)만 사용하고 값은 문서에 쓰지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -99,7 +129,7 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 | **Streaming source** | Kafka SQL connector | 승인된 Kafka endpoint 필요; HOME Kafka는 LAB network에 없음 |
 | **State** | File checkpoint | `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`, 두 컨테이너가 공유 |
 
-### Selected Start
+##### Selected Start
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
@@ -115,7 +145,8 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 | `LAB exec flink-jobmanager /opt/flink/bin/flink list -a` | job 목록. |
 | `LAB exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | job 중지. |
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 1. Flink와 Spark Dockerfile의 Iceberg 버전을 함께 올리십시오. Flink runtime jar 이름에는 Flink minor 버전이 들어갑니다.
 2. Renovate는 `FROM` 이미지만 갱신하며 jar는 새 checksum으로 수동 갱신합니다. Flink minor 버전이 오르면 대응하는 `iceberg-flink-runtime-<minor>`와 Kafka connector jar도 필요합니다.
@@ -124,16 +155,17 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - **Guide**: Lakehouse Usage Guide (`docs/05.operations/01.guides/15.labs/0094-lakehouse.md`)
 - **Policy**: Lakehouse Operations Policy (`docs/05.operations/02.policies/15.labs/0094-lakehouse.md`)
@@ -141,7 +173,8 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 - Exit `64`: `lakehouse` secret이 없거나 비어 있습니다.
 - `ClassNotFoundException: org.apache.hadoop.conf.Configuration`: 이미지에 Hadoop client jar가 없습니다.
@@ -149,7 +182,8 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 - 스트리밍 `INSERT`가 커밋되지 않음: checkpointing이 꺼져 있습니다. wrapper는 60초 간격을 설정하며 세션 `SET`으로 이를 끄면 안 됩니다.
 - Checkpoint `AccessDeniedException`: 호스트 checkpoint 디렉터리가 group-writable이 아닙니다. lakehouse runbook을 따르십시오.
 
-#### Service Readiness
+###### Service Readiness
+<!-- core-payload-level:4 -->
 
 | Field | Evidence |
 | --- | --- |
@@ -166,3 +200,23 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 | Operations | Guide (`docs/05.operations/01.guides/15.labs/0094-lakehouse.md`), Policy (`docs/05.operations/02.policies/15.labs/0094-lakehouse.md`), Runbook (`docs/05.operations/03.runbooks/15.labs/0094-lakehouse.md`) |
 | Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
 | Troubleshooting | 활성 lease 안에서 `flink list -a`를 실행한 뒤 runbook을 따름 |
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

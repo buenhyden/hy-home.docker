@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import contextlib
+import dataclasses
+import hashlib
 import io
 import json
 import pathlib
+import re
 import shutil
 import subprocess
 import tempfile
 import unittest
+from datetime import date
 from unittest import mock
 
 from scripts.lib.document_governance import registry as registry_module
@@ -89,9 +93,19 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
             )
 
     def test_generated_inventory_has_registered_audit_metadata(self) -> None:
+        from scripts.lib.document_governance.common_document import (
+            common_metadata,
+            load_contract,
+            payload_text,
+        )
         from scripts.lib.document_governance.registry import validate_frontmatter
 
-        rendered = reference_module.render_report([], current_profiles(), {})
+        observed_on = date(2030, 6, 7)
+        profiles = current_profiles()
+        with mock.patch.object(reference_module, "date", create=True) as clock:
+            clock.today.return_value = observed_on
+            rendered = reference_module.render_report([], profiles, {})
+        clock.today.assert_called_once_with()
         values = metadata._parse_frontmatter_text(rendered)
         self.assertEqual((), validate_frontmatter(values))
         self.assertLessEqual(
@@ -105,15 +119,58 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
         self.assertEqual("reference/audit-pack", values["type"])
         self.assertEqual("AUD-0023", values["artifact_id"])
         self.assertEqual("published", values["status"])
-        self.assertEqual("1.1.0", values["version"])
+        self.assertEqual("2.0.0", values["version"])
         self.assertEqual("2026-07-05", str(values["created"]))
-        self.assertEqual("2026-09-06", str(values["observed_at"]))
+        self.assertEqual(observed_on.isoformat(), str(values["observed_at"]))
+        self.assertEqual(observed_on.isoformat(), str(values["updated"]))
+        registry = profiles["_registry"]
+        audit_path = (
+            registry.profiles["audit"]["path_pattern"]
+            .replace("{number:4}", "0023")
+            .replace("{slug}", "frontmatter-semantic-inventory")
+        )
+        self.assertNotIn("{", audit_path)
+        common = common_metadata(registry, audit_path, values)
+        self.assertEqual("reference-pack", common["kind"])
+        self.assertEqual("active", common["lifecycle"])
+        self.assertEqual(
+            {"subject": "hy-home.docker", "layer": "reference"}, dict(common["scope"])
+        )
         _, h2 = extract_markdown_headings(rendered)
+        self.assertEqual(
+            [f"## {title}" for title in load_contract()["headings"]], list(h2)
+        )
+        _, h2 = extract_markdown_headings(payload_text(rendered))
         headings = {heading.removeprefix("## ") for heading in h2}
         self.assertLessEqual(
             set(current_profiles()["_registry"].profiles["audit"]["required_sections"]),
             headings,
         )
+
+    def test_generated_inventory_passes_current_profile_and_language_consumers(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.language import language_mismatch
+
+        profiles = current_profiles()
+        rendered = reference_module.render_report([], profiles, {})
+        path = pathlib.Path(
+            "docs/90.references/02.audits/0023-frontmatter-semantic-inventory/README.md"
+        )
+        record = dataclasses.replace(
+            reference_module._record_from_text(path, rendered), artifact_type="audit"
+        )
+        with self.subTest(consumer="metadata"):
+            self.assertEqual([], reference_module.validate_record(record, profiles, {}))
+        with self.subTest(consumer="body"):
+            self.assertEqual(
+                [],
+                reference_module.validate_body_contract(
+                    record, rendered, profiles, True
+                ),
+            )
+        with self.subTest(consumer="language"):
+            self.assertFalse(language_mismatch(rendered, "ko"))
 
     def test_report_includes_new_managed_governance_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -186,6 +243,270 @@ class FixtureGitTests(unittest.TestCase):
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):
+    def common_fixture(self, root: pathlib.Path):
+        registry = registry_module.load_registry()
+        roles = {
+            name: registry.template_roles[name]
+            for name in ("sdlc/task", "governance/codex-agent")
+        }
+        profile_ids = {name for role in roles.values() for name in role["profiles"]}
+        binding = registry.common["document_core"]
+        common = {
+            **registry.common,
+            "document_core": {
+                **binding,
+                "profile_bindings": {
+                    name: binding["profile_bindings"][name] for name in profile_ids
+                },
+                "path_bindings": {},
+            },
+        }
+        for relative in {
+            binding["source_path"],
+            *(role["source"] for role in roles.values()),
+            *(
+                role["native_source"]
+                for role in roles.values()
+                if "native_source" in role
+            ),
+        }:
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / relative).read_bytes())
+        return dataclasses.replace(
+            registry,
+            profiles={
+                name: registry.profiles[name]
+                for name in profile_ids | {"template-source"}
+            },
+            template_roles=roles,
+            common=common,
+        )
+
+    def common_codes(self, root, registry):
+        with mock.patch(
+            "scripts.lib.document_governance.template_definition.role_design_contract_findings",
+            return_value=[],
+        ) as old_binding:
+            result = reference_module._role_design_findings(
+                root, {"_registry": registry}
+            )
+        old_binding.assert_called_once_with(registry, root=root)
+        return {finding.code for finding in result}
+
+    def test_common_core_checks_actual_pinned_sources_and_preserves_role_binding(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            registry = self.common_fixture(root)
+            self.assertEqual(set(), self.common_codes(root, registry))
+
+    def test_common_core_missing_tampered_or_wrong_identity_fails_closed(self):
+        for change, expected in (
+            ("binding-missing", "document-core-binding-missing"),
+            ("source-missing", "document-core-source-unreadable"),
+            ("source-tampered", "document-core-source-changed"),
+            ("invalid-json", "document-core-source-invalid"),
+            ("invalid-payload", "document-core-source-invalid"),
+            ("invalid-headings", "document-core-source-invalid"),
+            ("missing-marker", "document-core-source-invalid"),
+            ("wrong-id", "document-core-identity"),
+            ("wrong-version", "document-core-identity"),
+        ):
+            with (
+                self.subTest(change=change),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                registry = self.common_fixture(root)
+                binding = registry.common["document_core"]
+                source = root / binding["source_path"]
+                if change == "binding-missing":
+                    registry = dataclasses.replace(
+                        registry,
+                        common={
+                            key: value
+                            for key, value in registry.common.items()
+                            if key != "document_core"
+                        },
+                    )
+                elif change == "source-missing":
+                    source.unlink()
+                elif change == "source-tampered":
+                    source.write_bytes(source.read_bytes() + b" ")
+                elif change in {
+                    "invalid-json",
+                    "invalid-payload",
+                    "invalid-headings",
+                    "missing-marker",
+                }:
+                    document = json.loads(source.read_bytes())
+                    if change == "invalid-payload":
+                        document["payload_profiles"]["task"] = {}
+                    elif change == "invalid-headings":
+                        document["headings"] = {"invalid": 1}
+                    elif change == "missing-marker":
+                        document["payload_encoding"] = {}
+                    raw = (
+                        b"{"
+                        if change == "invalid-json"
+                        else json.dumps(document).encode()
+                    )
+                    source.write_bytes(raw)
+                    registry = dataclasses.replace(
+                        registry,
+                        common={
+                            **registry.common,
+                            "document_core": {
+                                **binding,
+                                "source_sha256": hashlib.sha256(raw).hexdigest(),
+                            },
+                        },
+                    )
+                else:
+                    field = (
+                        "contract_id" if change == "wrong-id" else "contract_version"
+                    )
+                    registry = dataclasses.replace(
+                        registry,
+                        common={
+                            **registry.common,
+                            "document_core": {**binding, field: "other"},
+                        },
+                    )
+                self.assertIn(expected, self.common_codes(root, registry))
+
+    def test_common_core_requires_exact_profile_coverage_and_known_payload_kinds(self):
+        for change in ("missing", "extra", "unknown-kind", "wrong-role"):
+            with (
+                self.subTest(change=change),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                registry = self.common_fixture(root)
+                binding = registry.common["document_core"]
+                profiles = dict(binding["profile_bindings"])
+                if change == "missing":
+                    del profiles["task"]
+                elif change == "extra":
+                    profiles["undeclared"] = profiles["task"]
+                elif change == "unknown-kind":
+                    profiles["task"] = {**profiles["task"], "kind": "unknown-kind"}
+                else:
+                    registry = dataclasses.replace(
+                        registry,
+                        profiles={
+                            **registry.profiles,
+                            "task": {
+                                **registry.profiles["task"],
+                                "template_id": "governance/codex-agent",
+                            },
+                        },
+                    )
+                registry = dataclasses.replace(
+                    registry,
+                    common={
+                        **registry.common,
+                        "document_core": {**binding, "profile_bindings": profiles},
+                    },
+                )
+                self.assertIn(
+                    "document-core-profile-binding", self.common_codes(root, registry)
+                )
+
+    def test_common_core_definition_sources_must_be_wrapped_and_bound_to_the_role(self):
+        for change, expected in (
+            ("unwrapped", "document-core-definition-envelope"),
+            ("wrong-template", "document-core-definition-binding"),
+        ):
+            with (
+                self.subTest(change=change),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                registry = self.common_fixture(root)
+                name = (
+                    "sdlc/task" if change == "unwrapped" else "governance/codex-agent"
+                )
+                source = root / registry.template_roles[name]["source"]
+                if change == "unwrapped":
+                    source.write_text("# Unwrapped\n\n## Scope\n\nExisting content.\n")
+                else:
+                    text = source.read_text()
+                    self.assertIn("template_id: governance/codex-agent", text)
+                    source.write_text(
+                        text.replace(
+                            "template_id: governance/codex-agent",
+                            "template_id: sdlc/spec",
+                        )
+                    )
+                self.assertIn(expected, self.common_codes(root, registry))
+
+    def test_common_core_native_payload_is_separate_existing_and_owned(self):
+        for change in ("missing", "alias", "unknown", "no-binding"):
+            with (
+                self.subTest(change=change),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                registry = self.common_fixture(root)
+                name = "governance/codex-agent"
+                role = registry.template_roles[name]
+                if change == "missing":
+                    (root / role["native_source"]).unlink()
+                elif change == "alias":
+                    role = {**role, "native_source": role["source"]}
+                elif change == "unknown":
+                    (root / "unowned.toml").write_text("name='unowned'\n")
+                    role = {**role, "native_source": "unowned.toml"}
+                else:
+                    role = {
+                        key: value
+                        for key, value in role.items()
+                        if key != "native_source"
+                    }
+                registry = dataclasses.replace(
+                    registry, template_roles={**registry.template_roles, name: role}
+                )
+                self.assertIn(
+                    "document-core-native-binding", self.common_codes(root, registry)
+                )
+
+    def test_common_core_sources_reject_symlinks_and_oversize_inputs(self):
+        for subject in ("contract", "definition", "native"):
+            for change in ("symlink", "parent-symlink", "oversize"):
+                with (
+                    self.subTest(subject=subject, change=change),
+                    tempfile.TemporaryDirectory() as directory,
+                ):
+                    root = pathlib.Path(directory)
+                    registry = self.common_fixture(root)
+                    role = registry.template_roles["governance/codex-agent"]
+                    relative = (
+                        registry.common["document_core"]["source_path"]
+                        if subject == "contract"
+                        else role[
+                            "source" if subject == "definition" else "native_source"
+                        ]
+                    )
+                    source = root / relative
+                    if change == "symlink":
+                        replacement = root / "replacement"
+                        replacement.write_bytes(source.read_bytes())
+                        source.unlink()
+                        source.symlink_to(replacement)
+                    elif change == "parent-symlink":
+                        replacement = root / "relocated"
+                        source.parent.rename(replacement)
+                        source.parent.symlink_to(replacement, target_is_directory=True)
+                    else:
+                        source.write_bytes(b"x" * (256 * 1024 + 1))
+                    expected = {
+                        "contract": "document-core-source-unreadable",
+                        "definition": "document-core-definition-unreadable",
+                        "native": "document-core-native-binding",
+                    }[subject]
+                    self.assertIn(expected, self.common_codes(root, registry))
+
     def test_generation_byte_snapshot_keeps_exact_and_bounded_worktree_proof(self):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -982,29 +1303,44 @@ This synthetic fixture names no next owner.
             )
 
     def test_registry_contracts_parse_profile_and_section_contracts(self) -> None:
+        from scripts.lib.document_governance.common_document import (
+            compact_payload,
+            wrap_document,
+        )
+
         relative_path = "docs/99.templates/02.templates/01.requirements/requirement-package.template.md"
         cases = (
-            (
-                "profile",
-                'type: "sdlc/requirement"',
-                'type: "sdlc/spec"',
-                "template-artifact-type-mismatch",
-            ),
-            (
-                "heading",
-                "## Traceability",
-                "## Verification Contract",
-                "template-section-missing",
-            ),
+            ("profile", "template-artifact-type-mismatch"),
+            ("heading", "template-section-missing"),
         )
-        for label, before, after, expected in cases:
+        for label, expected in cases:
             with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
                 root, profiles = self.fixture(directory)
                 path = root / relative_path
-                path.write_text(
-                    path.read_text(encoding="utf-8").replace(before, after, 1),
-                    encoding="utf-8",
-                )
+                original = path.read_text(encoding="utf-8")
+                if label == "profile":
+                    self.assertEqual(
+                        "sdlc/requirement",
+                        reference_module._parse_frontmatter_text(original)["type"],
+                    )
+                    changed, count = re.subn(
+                        r"(?m)^type:[^\n]+$", "type: sdlc/spec", original, count=1
+                    )
+                    self.assertEqual(1, count)
+                    self.assertEqual(
+                        "sdlc/spec",
+                        reference_module._parse_frontmatter_text(changed)["type"],
+                    )
+                else:
+                    payload = compact_payload(original)
+                    marker = "\n## Traceability\n"
+                    self.assertEqual(1, payload.count(marker))
+                    changed = wrap_document(
+                        payload.replace(marker, "\n## Verification Contract\n", 1),
+                        kind="requirement",
+                    )
+                self.assertNotEqual(original, changed)
+                path.write_text(changed, encoding="utf-8")
                 result = self.run_contracts(root, profiles)
                 self.assertEqual(1, result.returncode, result.stdout + result.stderr)
                 self.assertIn(f"{expected}: {relative_path}", result.stdout)
@@ -1327,6 +1663,79 @@ class IndexMembershipTests(unittest.TestCase):
 
 class ReadmeSectionProfileTests(unittest.TestCase):
     """Sections come from the document's own profile, not from `readme`."""
+
+    def _readme_findings(self, text: str):
+        path = pathlib.Path("scripts/README.md")
+        profiles = current_profiles()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            (root / path).parent.mkdir(parents=True)
+            (root / path).write_text(text)
+            with (
+                mock.patch.object(
+                    reference_module,
+                    "_tracked_repository_markdown",
+                    return_value=[path],
+                ),
+                mock.patch.object(reference_module, "collect_records", return_value=[]),
+                mock.patch.object(
+                    reference_module, "_allocation_findings", return_value=[]
+                ),
+                mock.patch.object(
+                    reference_module, "_role_design_findings", return_value=[]
+                ),
+                mock.patch.object(
+                    reference_module, "_reference_delegation_findings", return_value=[]
+                ),
+            ):
+                findings, *_ = reference_module._validate_repository_contracts(
+                    root, profiles, validation_paths={path.as_posix()}
+                )
+        return [finding for finding in findings if finding.path == path.as_posix()]
+
+    def _readme_body(self):
+        registry = metadata.load_registry()
+        profile = classify_registered_path("scripts/README.md", registry)
+        sections = registry.profiles[profile]["required_sections"]
+        return "# Fixture\n\n" + "\n\n".join(
+            f"## {section}\n\nFilled." for section in sections
+        ), sections
+
+    def test_repository_readme_check_reads_legacy_and_common_role_sections(self):
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        body, _ = self._readme_body()
+        for text in (body, wrap_document(body, kind="readme")):
+            with self.subTest(enveloped=text != body):
+                self.assertEqual([], self._readme_findings(text))
+
+    def test_repository_readme_check_still_rejects_a_missing_payload_heading(self):
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        body, sections = self._readme_body()
+        text = wrap_document(body, kind="readme").replace(
+            f"#### {sections[0]}\n", "", 1
+        )
+        findings = self._readme_findings(text)
+        self.assertEqual(
+            ["readme-heading-missing"], [finding.code for finding in findings]
+        )
+        self.assertIn(f"## {sections[0]}", findings[0].message)
+
+    def test_repository_readme_check_fails_closed_for_a_malformed_common_envelope(self):
+        from scripts.lib.document_governance.common_document import (
+            load_contract,
+            wrap_document,
+        )
+
+        body, _ = self._readme_body()
+        title = next(iter(load_contract()["headings"]))
+        text = wrap_document(body, kind="readme").replace(f"## {title}\n", "", 1)
+        self.assertEqual(
+            ["readme-envelope-invalid"],
+            [finding.code for finding in self._readme_findings(text)],
+        )
 
     def test_profiles_beyond_readme_declare_sections(self) -> None:
         """The rule is only worth enforcing if other profiles use it."""

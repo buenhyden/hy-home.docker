@@ -1,41 +1,68 @@
 ---
 title: "Ollama Inference Engine"
-version: "1.1.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-12"
 ---
 
 # Ollama Inference Engine
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 이 경로는 `hy-home.docker` 플랫폼의 핵심 추론 엔진인 Ollama 구성을 담당한다. NVIDIA GPU 가속으로 Llama 3, Mistral 등의 오픈소스 LLM을 로컬에서 효율적으로 구동하며 지표 수집을 위한 Exporter를 포함한다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
 - **AI Engineers**: 모델 라이프사이클 관리 및 성능 튜닝
 - **DevOps Engineers**: 인프라 프로비저닝 및 리소스 통제
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - `docker-compose.yml`: Ollama 및 Ollama-Exporter 컨테이너 오케스트레이션
 - GPU 가속 설정 (NVIDIA CUDA)
 - 로컬 모델 영구 저장소 구성
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - LLM 애플리케이션 로직 (Open WebUI 등 상위 서비스)
 - 모델 학습 및 미세 조정 (Fine-tuning)
 - 벡터 데이터베이스 구성 (`04-data` 계층 담당)
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 ollama/
@@ -43,7 +70,7 @@ ollama/
 └── README.md           # 이 파일 (인프라 진입점)
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -51,11 +78,13 @@ ollama/
 | Traefik 라우터 `ollama` | `ollama` | 이 README는 소비자를 기록하지 않는다. | `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거친다. | Compose 헬스체크가 선언되어 있다. |
 | exporter 지표 `${OLLAMA_EXPORTER_PORT:-8000}` (`ai_net`, `obs_net`) | `ollama-exporter` | 이 README는 소비자를 기록하지 않는다. | 지표 수집 포트로 노출한다. | Compose 헬스체크가 선언되어 있다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 `ollama`는 `ai_net`·`ollama_ingress_net`·`n8n_ollama_net`에 붙어 API를 제공하고, `ollama-exporter`는 `ai_net`·`obs_net`에서 `${OLLAMA_EXPORTER_PORT:-8000}`으로 지표를 노출합니다. 환경 변수는 아래와 같습니다.
 
-#### Environment Variables
+###### Environment Variables
+<!-- core-payload-level:4 -->
 
 | Variable | Required | Default | Description |
 | :--- | :---: | :--- | :--- |
@@ -64,31 +93,33 @@ ollama/
 | `OLLAMA_PORT` | No | 11434 | API 포트 |
 | `OLLAMA_EXPORTER_PORT` | No | `.env.example`에서 8000 | exporter 지표 수집 포트; 설정하지 않으면 compose의 기본값은 `8000`입니다 |
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 API는 `127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`로만 호스트에 게시되고 Traefik 라우터는 `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거칩니다. Docker Secret은 선언되지 않으며 `OLLAMA_NO_CLOUD=1`로 ollama.com 클라우드 모델과 로그인을 끕니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 Compose가 선언한 `ollama/ollama` 이미지를 NVIDIA GPU에서 실행하며 `OLLAMA_LLM_LIBRARY=cuda_v12`로 모델 라이브러리 탐색을 한정합니다. 이미지 태그·digest는 `docker-compose.yml`이 소유하고, 모델은 호스트 바인드 마운트 `${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}`에 저장됩니다.
 
-### Selected Start
+##### Selected Start
 
 1. 상위 사용 가이드인 Ollama usage guide (`docs/05.operations/01.guides/09.ai-and-search/0056-ollama.md`)를 먼저 읽는다.
 2. 리소스 예약 및 모델 거버넌스는 Ollama operations policy (`docs/05.operations/02.policies/09.ai-and-search/0056-ollama.md`)를 따른다.
 3. 장애 발생 시 Ollama recovery runbook (`docs/05.operations/03.runbooks/09.ai-and-search/0056-ollama.md`)에 따라 복구한다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 - Ollama에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/hardening/check-all-hardening.sh 08-ai`를 실행합니다.
 - 현재 루트에서 활성화된 프로필 범위를 확인하려면 `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
 
-#### Testing
+###### Testing
+<!-- core-payload-level:4 -->
 
 ```bash
 # 기본 헬스체크
@@ -103,9 +134,10 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - **Guide**: Ollama usage guide (`docs/05.operations/01.guides/09.ai-and-search/0056-ollama.md`)
 - **Policy**: Ollama operations policy (`docs/05.operations/02.policies/09.ai-and-search/0056-ollama.md`)
@@ -113,7 +145,8 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 - **GPU recovery runbook**: `docs/05.operations/03.runbooks/09.ai-and-search/0055-gpu-recovery.md`
 - [Documentation index](../../../docs/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 - AI compose 계약을 확인하려면 `bash scripts/hardening/check-all-hardening.sh 08-ai`로 시작합니다.
 - 이 서비스 로컬 compose 파일을 독립 설정 검사로 실행하지 않습니다. 루트 네트워크 컨텍스트에 의존합니다.
@@ -122,7 +155,8 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 - API 오류: `docker logs --tail=200 ollama`를 확인하고 API 포트 바인딩이 클라이언트 설정과 일치하는지 확인합니다.
 - GPU 오류: NVIDIA container toolkit이 설치되어 있고 컨테이너 내부에서 GPU에 접근 가능한지 확인합니다.
 
-#### Convergence contract
+###### Convergence contract
+<!-- core-payload-level:4 -->
 
 - Classification: **HOME**. Exact profiles: `ai`, `ai-llm`, `ollama`.
 - Source authority: 이 패키지의 Compose와 선택된 이미지/빌드 입력. `infra/tech-stack.versions.json`은 파생 프로젝션입니다.
@@ -130,7 +164,8 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 - Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/01.guides/09.ai-and-search/0056-ollama.md`; ID: `GDE-0056`, `POL-0056`, `RUN-0056`.
 - 해당 런북의 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다. 모델/콘텐츠 출처를 보존하고 실행 중인 파일시스템 복사본을 복구 근거로 사용하지 않습니다.
 
-#### Service Readiness
+###### Service Readiness
+<!-- core-payload-level:4 -->
 
 | Field | Evidence |
 | --- | --- |
@@ -147,3 +182,23 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 | Operations | Guide (`docs/05.operations/01.guides/09.ai-and-search/0056-ollama.md`), Policy (`docs/05.operations/02.policies/09.ai-and-search/0056-ollama.md`), Runbook (`docs/05.operations/03.runbooks/09.ai-and-search/0056-ollama.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `bash scripts/hardening/check-all-hardening.sh 08-ai`로 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

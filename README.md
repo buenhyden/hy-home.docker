@@ -1,20 +1,43 @@
 ---
 title: "hy-home.docker"
-version: "1.5.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-12"
 ---
 
 # hy-home.docker
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > 모듈형 Docker Compose 홈 인프라를 위한 shared harness-engineering and agent-first engineering workspace.
 
-## Purpose
+#### Purpose
 
-### Audience
+##### Audience
 
 이 README의 주요 독자:
 
@@ -22,29 +45,33 @@ created: "2025-11-12"
 - 개발자 및 서비스 소비자
 - 문서 작성자
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 `hy-home.docker`는 shared harness-engineering and agent-first engineering workspace 저장소입니다. 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결합니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 `include`로 통합해 단일 진입점 역할을 합니다.
 
 이 저장소의 핵심 목적은 세 가지입니다. 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 하고 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보합니다. 여기에 AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지합니다. 이 README는 사람을 위한 안내이며, agent의 작업 규칙은 [`AGENTS.md`](./AGENTS.md)에서 시작합니다.
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 루트 Docker Compose 진입점과 계층별 인프라 구조 안내
 - 문서 체계와 거버넌스 진입 경로 안내
 - 로컬 환경 준비, 사전 점검, 구성 검증, 기본 실행 절차
 - 검증 스크립트와 CI 품질 게이트의 역할 요약
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 개별 서비스의 세부 설정과 운영 절차
 - 비밀값 자체, 자격 증명, 토큰, 인증서 원문
 - 애플리케이션 비즈니스 로직이나 서비스 내부 구현 설명
 - 사용자의 명시적 지시 없이 공식 stage 문서를 수정하는 작업
 
-#### Documentation Standards
+###### Documentation Standards
+<!-- core-payload-level:4 -->
 
 이 저장소의 문서는 다음 기준을 따릅니다.
 
@@ -53,7 +80,8 @@ created: "2025-11-12"
 
 문서 언어는 [문서 언어 규칙](docs/00.workspace/03.process/documentation-protocol.md#document-language)이 정합니다.
 
-#### Documentation Lifecycle
+###### Documentation Lifecycle
+<!-- core-payload-level:4 -->
 
 문서 stage는 역할이 겹치지 않도록 다음 흐름으로 관리합니다.
 
@@ -68,9 +96,9 @@ created: "2025-11-12"
 
 일반 작업 흐름은 요구사항 → 아키텍처 → 명세 → 실행 → 운영 순서입니다. 참고 문서는 active stage를 대체하지 않고, 템플릿은 새 문서 작성 전에 target 위치와 상대 링크를 다시 계산하는 기준으로만 사용합니다.
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 - Git
 - Docker Engine
@@ -78,7 +106,7 @@ created: "2025-11-12"
 - `.env.example`를 기반으로 한 로컬 `.env`
 - `secrets/` 아래의 필수 secret 파일과 인증서 파일
 
-### First Use
+##### First Use
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
@@ -87,14 +115,16 @@ created: "2025-11-12"
 5. GitHub workflow를 바꿀 때는 [`docs/00.workspace/03.process/github-governance.md`](docs/00.workspace/03.process/github-governance.md)와 [`docs/00.workspace/03.process/git-workflow.md`](docs/00.workspace/03.process/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
 
-#### 1. 저장소 클론
+###### 1. 저장소 클론
+<!-- core-payload-level:4 -->
 
 ```bash
 git clone <repository-url>
 cd hy-home.docker
 ```
 
-#### 2. 환경 파일 준비
+###### 2. 환경 파일 준비
+<!-- core-payload-level:4 -->
 
 ```bash
 cp .env.example .env
@@ -102,7 +132,8 @@ cp .env.example .env
 
 `.env`에는 마운트 경로, 네트워크 이름, 서비스별 기본 설정이 포함됩니다. 민감값은 `.env`에 직접 하드코딩하지 말고 [`secrets/`](./secrets) 구조를 따릅니다.
 
-#### 3. 사전 점검 실행
+###### 3. 사전 점검 실행
+<!-- core-payload-level:4 -->
 
 ```bash
 bash scripts/validation/validate-docker-compose.sh --preflight
@@ -110,7 +141,8 @@ bash scripts/validation/validate-docker-compose.sh --preflight
 
 이 모드는 `.env`, 필수 secret 파일, 인증서 파일, 주요 디렉터리, 외부 Docker 네트워크 존재 여부를 점검합니다. 일반 Compose 구조 검증과 달리 `.env`, secret 파일, 인증서 파일, dummy 데이터를 만들지 않습니다.
 
-#### 4. Compose 구조 검증
+###### 4. Compose 구조 검증
+<!-- core-payload-level:4 -->
 
 ```bash
 bash scripts/validation/validate-docker-compose.sh
@@ -118,7 +150,8 @@ bash scripts/validation/validate-docker-compose.sh
 
 기본 검증은 선언된 각 profile과 POL-0078의 HOME named selection을 각각 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 각 선택이 공개하는 host port가 충돌하지 않는지 확인합니다. 따라서 HOME 조합에서만 드러나는 profile 간 port 충돌도 검사합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 선언은 Compose 구성에서 확인하고, 운영 문서는 [문서 인덱스](docs/README.md)에서 탐색합니다. POL-0078의 HOME selection은 검증 스크립트가 조합 검사에 필요한 machine section만 읽는 입력이며 agent 실행 규칙을 소유하지 않습니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
 
-#### 5. 변경 영향 확인
+###### 5. 변경 영향 확인
+<!-- core-payload-level:4 -->
 
 ```bash
 python3 scripts/validation/run-ci-gate.py --profile changed --explain
@@ -129,7 +162,8 @@ profile·관계·링크·상태 검사를 유지하고, 구현 변경은 관련 
 공개 저장소의 후보 QA는 원격 PR에서 한 번 실행하며 개발 push와 main은 이를
 반복하지 않습니다. `full`은 범위·예산을 정한 별도 전체 감사용입니다.
 
-#### 6. 코어 bootstrap과 HOME 선택
+###### 6. 코어 bootstrap과 HOME 선택
+<!-- core-payload-level:4 -->
 
 ```bash
 docker compose --profile core up -d
@@ -146,7 +180,8 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 `iac`은 OpenTofu와 Terrakube의 명시적 운영 작업에만 사용합니다. Renovate는
 `dependency-update` 전용 job이며 `tooling`이나 HOME 선택에 포함되지 않습니다.
 
-#### 7. 주요 진입 문서 확인
+###### 7. 주요 진입 문서 확인
+<!-- core-payload-level:4 -->
 
 1. [`AGENTS.md`](./AGENTS.md) - Agent 작업 진입 규칙
 2. [`docs/README.md`](./docs/README.md) - 문서 체계 개요
@@ -155,7 +190,8 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 5. [`scripts/README.md`](./scripts/README.md) - 검증 및 자동화 스크립트
 6. [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
 
-#### Verification and Quality Gates
+###### Verification and Quality Gates
+<!-- core-payload-level:4 -->
 
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
@@ -186,7 +222,8 @@ revision/version에 대해 단일 수동 workflow가 SemVer tag와 완성된 dra
 
 Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 action step에는 명시적 `name`을 둡니다.
 
-#### Common Documentation Workflows
+###### Common Documentation Workflows
+<!-- core-payload-level:4 -->
 
 | Workflow | Start Here | Then Update | Verify |
 | --- | --- | --- | --- |
@@ -202,11 +239,12 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
-#### Documents
+###### Documents
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | --- | --- |
@@ -238,7 +276,8 @@ hy-home.docker/
 └── README.md             # 이 문서
 ```
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 | Category | Technology | Notes |
 | --- | --- | --- |
@@ -249,7 +288,8 @@ hy-home.docker/
 | CI / Quality | GitHub Actions + pre-commit + zizmor | 문서/보안/품질 게이트 자동화 |
 | Version Drift Gate | [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) | Compose image 선언에서 파생한 기계 판독 projection의 drift 검사. 런타임 pin 원본은 Compose/Dockerfile 선언 |
 
-#### Current Infrastructure Snapshot
+###### Current Infrastructure Snapshot
+<!-- core-payload-level:4 -->
 
 인프라 규모는 문서 상수로 고정하지 않고, 항상 아래 명령과 소유 문서에서 재현합니다.
 
@@ -261,7 +301,8 @@ hy-home.docker/
 
 위 항목의 모든 수치는 추적 트리와 명령 실행에서 재현할 수 있어야 합니다. `secrets/`의 값과 인증서 파일은 추적 대상이 아니므로 개수를 기록하지 않습니다. 추적되지 않는 로컬 상태는 저장소가 재현할 수 없고, 기록하면 검증 없이 낡습니다.
 
-#### 문서·인프라·CI 진입 목록
+###### 문서·인프라·CI 진입 목록
+<!-- core-payload-level:4 -->
 
 - [`docs/`](./docs/README.md) - 요구사항, 아키텍처, 명세, 실행, 운영 지식까지 포함하는 공식 문서 체계
 - `docs/05.operations` - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
@@ -275,17 +316,17 @@ hy-home.docker/
 - [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
 - `docs/90.references/03.data` - Docker image/version drift의 관찰 시점이 명시된 참고 자료
 
-### Owners
+##### Owners
 
 유지 책임은 Help에 적힌 대로 frontmatter `owner`인 `@buenhyden`에게 있습니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 오류 보고는 [bug_report.yml](.github/ISSUE_TEMPLATE/bug_report.yml), 기능 요청은 [feature_request.yml](.github/ISSUE_TEMPLATE/feature_request.yml) 이슈 양식으로, 취약점 보고는 [SECURITY.md](.github/SECURITY.md)의 경로로 합니다. 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-### Related Documentation
+##### Related Documentation
 
 - [`docs/README.md`](./docs/README.md)
 - [`.agents/README.md`](.agents/README.md)
@@ -302,3 +343,23 @@ hy-home.docker/
 - [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)
 - [`scripts/README.md`](./scripts/README.md)
 - [`secrets/README.md`](./secrets/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

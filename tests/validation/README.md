@@ -1,43 +1,68 @@
 ---
 title: "Validation Contract Tests"
-version: "1.1.0"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-27"
 ---
 
 # tests/validation
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 - Developers
 - QA Engineers
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 이 트리는 검증기와 entrypoint의 동작을 소유합니다. CLI 파싱, 렌더링, 실행
 context 라우팅, 여러 검사를 묶는 gate 실행이 여기에 해당합니다. 개별
 library의 단위 테스트는 짝이 되는 `tests/lib/<domain>/`에 둡니다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - 포함: `scripts/validation/`과 `scripts/operations/` entrypoint의 동작,
   gate 계획과 실행 context, 여러 계약을 함께 확인하는 테스트.
 - 제외: 단일 library 모듈의 내부 동작 테스트.
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다. `tests/validation/test_mng_pg_init_sql.py` opt-in 통합 테스트에는 Docker daemon과 `tests/requirements-integration.txt`의 의존성이 추가로 필요합니다.
 
-### First Use
+##### First Use
 
 1. 새 entrypoint나 gate 동작을 바꾸면 이 트리에 실패하는 테스트를 먼저
    추가합니다.
@@ -59,32 +84,54 @@ P06의 `test_openbao_consumer_migration_contract.py`는 bounded 공개 stdin CLI
 P07의 `test_root_resource_contract.py`는 공개 schema·합성 fixture·평가기 CLI의
 허용·거부 경계를 검증합니다. 실제 측정과 자원·권한 변경의 수용은 별도입니다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
-#### Directories
+###### Directories
+<!-- core-payload-level:4 -->
 
 직접 구성원은 `test_*.py` 테스트 모듈과 테스트 전용 지원 모듈입니다.
 `lifecycle/` 하위 디렉터리는 문서 수명주기 CLI의 테스트를 담습니다. 각
 테스트가 검증하는 스크립트는 [Script Manifest](../../scripts/manifest.yaml)의
 `tests` 항목이 소유합니다.
 
-#### Canonical Entry Points
+###### Canonical Entry Points
+<!-- core-payload-level:4 -->
 
 개별 library의 단위 테스트는 [tests/lib](../lib/README.md)가 소유합니다.
 
-### Owners
+##### Owners
 
 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
 
-### Related Documentation
+##### Related Documentation
 
 - [Test Surface](../README.md)
 - [Library tests](../lib/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

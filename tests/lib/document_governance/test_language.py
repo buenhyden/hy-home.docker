@@ -57,6 +57,90 @@ class LanguageJudgeTests(unittest.TestCase):
         )
         self.assertIsNone(language_mismatch(KOREAN + table, "ko"))
 
+    def test_common_outer_cannot_change_the_role_payload_language(self) -> None:
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        for source in (KOREAN, ENGLISH):
+            with self.subTest(source=source):
+                wrapped = wrap_document(source, kind="readme")
+                self.assertEqual(hangul_ratio(source), hangul_ratio(wrapped))
+                for declared in ("ko", "en"):
+                    self.assertEqual(
+                        language_mismatch(source, declared),
+                        language_mismatch(wrapped, declared),
+                    )
+
+    def test_malformed_common_outer_is_not_a_language_pass(self) -> None:
+        from scripts.lib.document_governance.common_document import (
+            load_contract,
+            wrap_document,
+        )
+
+        wrapped = wrap_document(KOREAN, kind="readme")
+        first = next(iter(load_contract()["headings"]))
+        malformed = wrapped.replace(f"## {first}\n", "## Invalid Outer\n", 1)
+        self.assertIsNotNone(language_mismatch(malformed, "ko"))
+
+    def test_metadata_language_reads_the_original_common_source_once(self) -> None:
+        import pathlib
+
+        import yaml
+
+        from scripts.lib.document_governance.common_document import (
+            load_contract,
+            wrap_document,
+        )
+        from scripts.lib.document_governance.metadata.heading import (
+            validate_body_contract,
+        )
+        from scripts.lib.document_governance.metadata.profile import (
+            Record,
+            build_registry_profiles,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+        from tests.lib.document_governance.metadata._support import (
+            common_fixture_metadata,
+        )
+
+        registry = load_registry()
+        profile_id = "governance-knowledge"
+        path = pathlib.Path(".agents/knowledge/repository-map.md")
+        values = {
+            **common_fixture_metadata(registry, profile_id, path=path),
+            "updated": "2026-11-20",
+        }
+        record = Record(path, values, profile_id, frontmatter_present=True)
+        profiles = build_registry_profiles(registry)
+        outer_sections = tuple(load_contract()["headings"])
+        reserved, after_payload = outer_sections[0], outer_sections[2]
+        english = ENGLISH.split("## Overview\n\n", 1)[1]
+        korean = KOREAN.split("## Overview\n\n", 1)[1].split("```", 1)[0]
+        for prose, malformed, expected in (
+            (english, False, []),
+            (korean, False, ["document-language-mismatch"]),
+            (english, True, ["common-document-contract"]),
+        ):
+            with self.subTest(prose=prose, malformed=malformed):
+                body = "# Fixture\n\n" + "".join(
+                    f"## {section}\n\n{prose}\n"
+                    for section in registry.profiles[profile_id]["required_sections"]
+                )
+                source = "---\n" + yaml.safe_dump(values) + "---\n\n" + body
+                wrapped = wrap_document(source, kind="knowledge")
+                wrapped = wrapped.replace(
+                    f"## {after_payload}\n",
+                    f"#### {reserved}\n\n{prose}\n## {after_payload}\n",
+                    1,
+                )
+                if malformed:
+                    wrapped = wrapped.replace(
+                        f"## {reserved}\n", "## Invalid Outer\n", 1
+                    )
+                findings = validate_body_contract(
+                    record, wrapped, profiles, changed_boundary=False
+                )
+                self.assertEqual(expected, [finding.code for finding in findings])
+
 
 class TemplateLanguageProjectionTests(unittest.TestCase):
     """SPEC-0184 rule 8: a filled template reads in its profile's language."""
@@ -72,6 +156,7 @@ class TemplateLanguageProjectionTests(unittest.TestCase):
         import pathlib
         import re
 
+        from scripts.lib.document_governance.common_document import template_payload
         from scripts.lib.document_governance.registry import load_registry
 
         root = pathlib.Path(__file__).resolve().parents[3]
@@ -84,10 +169,14 @@ class TemplateLanguageProjectionTests(unittest.TestCase):
                 if profile_id in registry.profiles
             }
             declared = languages.pop() if len(languages) == 1 else None
-            source = role.get("source")
+            source = role.get("native_source") or role.get("source")
             if declared not in self.SAMPLES or not str(source).endswith(".md"):
                 continue
-            text = (root / str(source)).read_text(encoding="utf-8")
+            text = (
+                template_payload(registry, role_id, root=root)
+                if role.get("native_source")
+                else (root / str(source)).read_text(encoding="utf-8")
+            )
             other = "en" if declared == "ko" else "ko"
             for language, expect_pass in ((declared, True), (other, False)):
                 filled = re.sub(r"\{\{[A-Z0-9_]+\}\}", self.SAMPLES[language] * 3, text)
@@ -100,6 +189,7 @@ class TemplateLanguageProjectionTests(unittest.TestCase):
     def test_every_language_template_tells_its_author_the_language(self) -> None:
         import pathlib
 
+        from scripts.lib.document_governance.common_document import template_payload
         from scripts.lib.document_governance.registry import load_registry
 
         root = pathlib.Path(__file__).resolve().parents[3]
@@ -115,13 +205,16 @@ class TemplateLanguageProjectionTests(unittest.TestCase):
                 if profile_id in registry.profiles
             }
             declared = languages.pop() if len(languages) == 1 else None
-            source = str(role.get("source"))
+            source = str(role.get("native_source") or role.get("source"))
             if declared is None or not source.endswith(".md"):
                 continue
             with self.subTest(role=role_id):
-                self.assertIn(
-                    words[declared], (root / source).read_text(encoding="utf-8")
+                text = (
+                    template_payload(registry, role_id, root=root)
+                    if role.get("native_source")
+                    else (root / source).read_text(encoding="utf-8")
                 )
+                self.assertIn(words[declared], text)
 
 
 if __name__ == "__main__":

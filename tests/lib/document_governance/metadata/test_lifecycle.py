@@ -687,6 +687,19 @@ class VersionChangeTests(unittest.TestCase):
     def test_raised_precedence_passes(self) -> None:
         self.assertEqual([], self.findings("1.2.0", "1.10.0"))
 
+    def test_document_major_and_minor_increases_reset_lower_components(self) -> None:
+        for base, head, code in (
+            ("1.2.3", "2.2.0", "version-major-reset"),
+            ("1.2.3", "2.0.3", "version-major-reset"),
+            ("1.2.3", "1.3.3", "version-minor-reset"),
+            ("1.2.3", "1.10.4", "version-minor-reset"),
+        ):
+            with self.subTest(base=base, head=head):
+                self.assertEqual([code], [f.code for f in self.findings(base, head)])
+        for head in ("2.0.0", "1.3.0", "1.2.4"):
+            with self.subTest(head=head):
+                self.assertEqual([], self.findings("1.2.3", head))
+
     def test_non_numeric_document_versions_only_get_schema_diagnostics(self) -> None:
         for invalid in ("1.0.0-rc.1", "1.2.0+build.2", "1.0.0\n", "１.0.0", 1):
             with self.subTest(invalid=invalid):
@@ -711,6 +724,8 @@ class VersionChangeTests(unittest.TestCase):
         # Status and review dates are lifecycle state, independent of content.
         for extra_base, extra_head in (
             ({"status": "draft"}, {"status": "active"}),
+            ({"lifecycle": "draft"}, {"lifecycle": "active"}),
+            ({"document_lifecycle": "draft"}, {"document_lifecycle": "active"}),
             ({"updated": "2026-01-01"}, {"updated": "2026-02-02"}),
             (
                 {"next_review_at": "2026-03-01"},
@@ -743,6 +758,16 @@ class VersionChangeTests(unittest.TestCase):
             head_body=self.BASE_BODY,
             base_extra={"owner": "@a"},
             head_extra={"owner": "@b"},
+        )
+        self.assertEqual("version-unchanged", finding.code)
+
+    def test_document_scope_is_content_even_beside_a_state_change(self) -> None:
+        (finding,) = self.findings(
+            "1.2.0",
+            "1.2.0",
+            head_body=self.BASE_BODY,
+            base_extra={"document_lifecycle": "draft", "document_scope": "before"},
+            head_extra={"document_lifecycle": "active", "document_scope": "after"},
         )
         self.assertEqual("version-unchanged", finding.code)
 

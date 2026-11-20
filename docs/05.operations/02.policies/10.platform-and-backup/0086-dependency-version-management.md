@@ -1,10 +1,13 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.6.0"
+version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-13"
 
 # Dependency Version Management Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 인프라 버전 변경은 하나의 HOME/DEV 호스트에서 검토 가능하고 재현 가능해야 한다. 버전
 업데이트가 배포나 데이터 마이그레이션을 승인하지는 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Home/Dev architecture](../../../02.architecture/01.descriptions/0031-home-development-host.md) (`AD-0031`)
 
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Repository Renovate policy](../../../../renovate.json5)
 
-### Applies To
+##### Applies To
 
 Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, 현재
 구현/운영 문서의 런타임 버전 참조.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -136,7 +161,8 @@ updater나 manager 범위가 같은 파일을 겹쳐 소유하게 만들지 않�
 (automatic security fixes)는 Renovate의 첫 정상 실행을 확인한 뒤 owner가 별도 단계로 끈다.
 이 문서는 그 원격 설정을 바꾸지 않으며 승인도 주지 않는다.
 
-#### Renovate 운영 규칙
+###### Renovate 운영 규칙
+<!-- core-payload-level:4 -->
 
 이 절이 Renovate의 업데이트 규칙을 소유한다. 값은 `renovate.json5`가 소유하며 이 절은
 의도와 한계만 적는다. 다른 문서는 이 절을 링크하고 규칙을 복제하지 않는다.
@@ -173,23 +199,25 @@ updater나 manager 범위가 같은 파일을 겹쳐 소유하게 만들지 않�
 PR 처리 규칙(rebase 방법, 한 번에 하나씩 머지, 수동 close 금지)은 영문 거버넌스인
 `github-governance.md` 3절이 소유하고, 실행 순서는 [Runbook](../../03.runbooks/10.platform-and-backup/0086-dependency-version-management.md)이 소유한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 변경 가능한 이미지 예외는 owner, reason, risk, review cadence, exit condition과 함께
 `infra/image-tag-policy.exceptions.json`에 둔다. 서술식 예외로는 source-image
 검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
 GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 매월, 그리고 manager 범위, 소스 parser, 이미지 예외, major 업데이트가 변경될 때
 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 기존 synchronization `--check`가 registry drift gate다. 추가, 제거, 중복 저장소와
 소스/분류 drift를 거부한다. write 모드는 derived 항목을 원자적으로 재조정한다. Compose,
@@ -203,7 +231,7 @@ GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 cadence·exit condition이 빠진 항목은 실패한다. local build 서비스의 Compose `image` 이름은 제외하고
 그 Dockerfile의 `FROM`을 본다.
 
-### Limits
+##### Limits
 
 다음 규칙은 정책이 규칙과 직접 연결된 기계적 강제를 보이지 않거나 사람 검토에 의존한다.
 
@@ -221,14 +249,34 @@ cadence·exit condition이 빠진 항목은 실패한다. local build 서비스�
 - fast path는 컨테이너 이미지 CVE 스캐닝이나 설치된 이미지의 취약점 범위를 확립하지 않는다.
 - POL-0086-R39, POL-0086-R40, POL-0086-R41, POL-0086-R44, POL-0086-R45, POL-0086-R46, POL-0086-R49, POL-0086-R50: 정책이 이 규칙에 묶은 검사를 명시하지 않는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Guide](../../01.guides/10.platform-and-backup/0086-dependency-version-management.md), [Runbook](../../03.runbooks/10.platform-and-backup/0086-dependency-version-management.md)
 
 - [Operations index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

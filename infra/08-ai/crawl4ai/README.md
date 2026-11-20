@@ -1,20 +1,43 @@
 ---
 title: "Crawl4AI 웹 크롤러"
-version: "1.3.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-21"
 ---
 
 # Crawl4AI 웹 크롤러
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > 토큰으로 보호되는 웹 크롤러로, Chromium으로 페이지를 렌더링하고 LLM에 바로 사용 가능한 Markdown을 반환합니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
 Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 위조(SSRF)에
 악용될 수 있습니다. 그래서 `crawl4ai`는 `internal: true` 네트워크에만 참여하고, 밖으로 나가는 유일한 길은 `crawl4ai-egress` gateway입니다. gateway는 DNS를 중계하면서 AAAA 질의에는 빈 응답을 주고, 전역 라우팅되는 IPv4의 80·443 포트만 허용하며, 확인한 주소로만 연결합니다. 이미지 안의 egress broker가 먼저 대상을 확인하고 고정한 뒤 `CRAWL4AI_UPSTREAM_PROXY`로 gateway에 연결합니다. 의도된 소비자는 Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 있어 이를 사용하는 서비스가 없습니다. Lifecycle: **OPTIONAL**, `crawl4ai`에서만 선택됩니다. 이전 고정 이미지로 격리 리허설을 실행해 허용 목적지 수집과 private·metadata·redirect·subresource·호출자 proxy 거절, 직접 경로 없음을 확인했습니다(SPEC-0220). HOME 시작과 host 방화벽 적용은 하지 않았습니다.
@@ -26,16 +49,19 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 현재 consumer는 Hermes 리서치 수집의 대체 경로이며, `crawl4ai-loopback`이 `127.0.0.1:11235`를 `crawl4ai:11235`로만 전달합니다(POL-0091). 참조 adapter는 URL·cache mode·page timeout만 전달합니다.
 토큰·internal 망·gateway·읽기 전용 root·tmpfs·사용자·자원 제한은 유지합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - **Operators**: 크롤러를 활성화하고 소비자를 연결할지 결정합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - **Included**: digest로 고정한 업스트림 이미지, 토큰 처리, internal 네트워크와 egress gateway, 리소스 제한.
 - **Excluded**: LLM provider 키(이전에 추적되던 `.llm.env`는 제거됨), 소비자 연결, 출처 registry와 수집 job. 마지막 두 가지는 [수집 adapter](../../../projects/crawl4ai/README.md)를 쓰는 소비 워크스페이스가 소유합니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 .
@@ -44,7 +70,7 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 └── README.md
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -53,7 +79,8 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 | Health `GET /health` | `crawl4ai` | Compose healthcheck | 설계상 인증 없이 API 응답 여부만 증명한다 | 브라우저 렌더링은 증명하지 않으며 복구는 RUN-0091을 따른다 |
 | Egress gateway `10.250.200.2:3128` 및 DNS 중계 | `crawl4ai-egress` | `crawl4ai`(`dns`와 `CRAWL4AI_UPSTREAM_PROXY`) | 전역 IPv4의 80·443만 허용하고 AAAA에는 빈 응답을 주며 확인한 주소로만 연결한다 | IPv6는 모두 거절하며 Compose 헬스체크가 `10.250.200.2:3128` TCP 연결을 확인한다 |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 | Field | Value |
 | --- | --- |
@@ -65,13 +92,14 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 | Persistence | 없음; 출력과 캐시는 tmpfs |
 | Health | `GET /health` (설계상 인증 없음); API 응답 여부만 증명하며 브라우저 렌더링을 증명하지는 않음 |
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 `crawl4ai`는 internal 네트워크에만 참여해 호스트 포트·Traefik 라우트가 없고, 외부로 나가는 길은 전역 IPv4의 80·443만 허용하는 `crawl4ai-egress` gateway 하나뿐입니다. API는 Docker Secret `crawl4ai_api_token`의 Bearer 토큰을 요구하며 값은 저장소에 두지 않습니다. 이 서비스에는 `crawl4ai-loopback`이 `127.0.0.1:11235`만 전달합니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Component | Source | Purpose |
 | --- | --- | --- |
@@ -85,29 +113,51 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포함합니다. 무료 자체 호스팅과
 라이선스 의무를 구분하고 외부 공개 시 해당 조건을 검토합니다.
 
-### Selected Start
+##### Selected Start
 
 1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를 생성합니다.
 2. 승인된 대상으로만 시작합니다: `docker compose --profile crawl4ai up -d crawl4ai` (gateway가 healthy가 된 뒤 크롤러가 시작됩니다).
 3. 소비자는 Crawl4AI 정책(`docs/05.operations/02.policies/09.ai-and-search/0091-crawl4ai.md`)의 승인 변경으로만 `crawl4ai_net`에 추가합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 - `HYHOME_COMPOSE_PROFILES=crawl4ai bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 -m unittest tests.validation.test_crawl4ai_egress` (격리 리허설은 `HYHOME_CRAWL4AI_REHEARSAL=1`)
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - **Guide**: Crawl4AI usage guide (`docs/05.operations/01.guides/09.ai-and-search/0091-crawl4ai.md`)
 - **Policy**: Crawl4AI operations policy (`docs/05.operations/02.policies/09.ai-and-search/0091-crawl4ai.md`)
 - **Runbook**: Crawl4AI recovery runbook (`docs/05.operations/03.runbooks/09.ai-and-search/0091-crawl4ai.md`)
 - [Documentation index](../../../docs/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 Compose 헬스체크가 `crawl4ai`(`GET /health`), loopback 전달 서비스(포트 11235 TCP 연결)와 `crawl4ai-egress`(`10.250.200.2:3128` TCP 연결)에 선언되어 있습니다. `/health`는 API 응답만 증명하고 브라우저 렌더링은 증명하지 않으며, 복구는 `docs/05.operations/03.runbooks/09.ai-and-search/0091-crawl4ai.md`(RUN-0091)를 따릅니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,10 +1,13 @@
 ---
 title: "Gatus Policy"
-version: "0.7.0"
+version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0087"
 parent_ids:
@@ -15,30 +18,52 @@ next_review_at: "2027-05-13"
 
 # Gatus Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability monitor다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Governing architecture: [AD-0031](../../../02.architecture/01.descriptions/0031-home-development-host.md)
 
 - 런타임 고정값은 [observability Compose](../../../../infra/06-observability/docker-compose.yml)와 선택된 [Gatus Dockerfile](../../../../infra/06-observability/gatus/Dockerfile)이 소유하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 
-### Applies To
+##### Applies To
 
 로컬 Gatus 이미지, native OIDC 설정, read-only config mount, `gatus-data` SQLite
 상태, status UI, metrics 경계, probe를 HOME availability 역량 안에서 유지한다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -89,7 +114,8 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
   후에만 업그레이드한다. 승인된 로그인, health, probe 검사가 완료될 때까지 이전
   이미지/설정을 유지한다.
 
-#### Lifecycle and data controls
+###### Lifecycle and data controls
+<!-- core-payload-level:4 -->
 
 - Gatus는 `HOME`으로 유지한다. native Keycloak OIDC, root-CA 검증, 세션 제어, 최소
   권한 endpoint credential이 필요하다.
@@ -103,24 +129,26 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 
 Build 수용에는 source commit·checksum·local patch·생성 image digest가 필요하며 local tag만으로 패치를 증명하지 않는다. Zero-fuzz, 대소문자를 구분하는 정확한 subject, S256 PKCE, Secure/HttpOnly 임시 cookie, state/nonce 검사와 CA 검증을 유지한다. Public health/bootstrap/metrics와 보호 status API를 구분한다. Source/auth/storage 예외와 종료 시점은 @buenhyden이 승인하며 소스 문서 검사는 runtime 예외를 부여하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 매월, 그리고 인증, probe inventory, 소스, storage가 변경될 때 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
 probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 런타임 증거로 남는다.
 
-### Limits
+##### Limits
 
 정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
@@ -140,14 +168,34 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 - read-only root filesystem은 `read_only: false`라 2026-11-06 기준 미준수이며 owner 예외나 Compose 수정 전까지 열려 있다.
 - `/metrics`는 내부 peer에게 인증 없이 열려 있으며 owner 수용(2026-11-07)에 의존한다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Guide](../../01.guides/07.observability/0087-gatus.md), [Runbook](../../03.runbooks/07.observability/0087-gatus.md)
 - [Gatus upstream security policy](https://github.com/TwiN/gatus/security/policy)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

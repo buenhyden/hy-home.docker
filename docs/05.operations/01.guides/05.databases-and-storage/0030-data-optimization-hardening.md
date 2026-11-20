@@ -1,10 +1,13 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # 04-Data Optimization Hardening Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 운영자, 개발자, AI Agent. data tier의 정적 hardening 확인이 증명하는 범위를 이해하고 root profile 렌더링과 점검 스크립트를 사용할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 이 subject는 data tier 전반의 static 제어를 검증한다: root profile 유효성,
 명시적 persistence 소유권, secret, healthcheck, 리소스, 네트워크 경계, 복구
@@ -32,7 +55,8 @@ next_review_at: "2027-05-13"
 
 목적: data tier의 정적 hardening 확인이 무엇을 증명하고 무엇을 증명하지 않는지 이해하고, root profile 렌더링과 점검 스크립트를 올바르게 사용한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Artifact: `GDE-0030`; 거버넌스 정책: `POL-0030`.
 - Runtime authority: root `docker-compose.yml`과 `scripts/hardening/check-all-hardening.sh`.
@@ -42,13 +66,14 @@ next_review_at: "2027-05-13"
 - [Backup policy](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)
 - [Storage exhaustion runbook](../../03.runbooks/05.databases-and-storage/0035-storage-exhaustion.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 이 가이드가 전제하는 구현과 환경 사실은 아래 항목에 정리한다.
 
-#### Root validation
+###### Root validation
+<!-- core-payload-level:4 -->
 
 leaf 파일이 root가 소유하는 네트워크, secret, 공유 템플릿에 의존하므로 저장소
 루트에서 실행한다. leaf 파일을 직접 렌더링하는 대신 대표적인 현재 profile을
@@ -64,47 +89,71 @@ profile 정합성, 고유한 writable volume, 선언된 네트워크, secret 파
 healthcheck, CPU/메모리 제한, 의도된 포트 게시, 엔진별 backup/restore
 소유자를 확인한다.
 
-### Authority
+##### Authority
 
 이 가이드는 service 활성화, 데이터 접근, cleanup, migration, tuning을 승인하지 않는다. leaf Compose source나 공유 템플릿 수정은 승인된 task 안에서만 한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용 절차는 아래 항목에 정리한다.
 
-#### Interpretation
+###### Interpretation
+<!-- core-payload-level:4 -->
 
 static pass는 parse와 정책 준수만 증명한다. runtime health, storage 용량,
 backup 완전성, 복구 시간, encryption at rest, 애플리케이션 호환성, 동일 host
 가용성은 증명하지 않는다. 범위를 정한 runtime test나 격리된 rehearsal로
 증거를 확보하기 전까지는 이들을 unverified로 기록한다.
 
-#### Correction workflow
+###### Correction workflow
+<!-- core-payload-level:4 -->
 
 승인된 task 안에서 소유하는 leaf Compose source나 공유 템플릿을 수정한 뒤
 동일한 root profile을 다시 렌더링한다. 범위를 정한 hardening 확인을
 재실행하고 정확한 diff를 점검한다. 복구에는 엔진 runbook을 사용하며, 일반
 data-copy나 cleanup 명령을 적용하지 않는다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-### Expected Results
+##### Expected Results
 
 - 대표 profile(`mng`, `dev-data`, `seaweedfs`, `storage`, `opensearch`, `graph`, `admin-data`)의 root render와 `bash scripts/hardening/check-all-hardening.sh 04-data`. 명령 순서는 RUN-0030이 소유한다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - render 실패: 대부분 root가 소유하는 network, secret 또는 `extends` 템플릿 누락이다. leaf를 단독 렌더링하지 말고 root에서 같은 profile로 재현한다.
 - `check-all-hardening.sh 04-data` 실패: 보고된 service의 소유 leaf Compose나 공유 템플릿을 고친다. 데이터 손실·손상 증상은 엔진별 runbook으로 넘긴다([RUN-0030](../../03.runbooks/05.databases-and-storage/0030-data-optimization-hardening.md#regression-response)).
 
-### Next Action
+##### Next Action
 
 데이터 손실·손상 증상은 엔진별 runbook으로 넘기고, 회귀 대응은 [RUN-0030](../../03.runbooks/05.databases-and-storage/0030-data-optimization-hardening.md#regression-response)을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

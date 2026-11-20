@@ -1,10 +1,13 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.12.4"
+version: "2.0.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -16,9 +19,29 @@ created: "2026-10-03"
 
 # Service Integration, Security, and Operations Specification
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Intent
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the spec payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Intent
 
 This package owns confirmed shared-service compatibility/security gaps and the
 infrastructure side of external-project connection, signals and recovery.
@@ -99,13 +122,13 @@ secret consumption and backup scheduling when deployed. The exact executing
 stage binds target, impact and recovery before acting. P00 performs no such
 runtime change; authorized delivery is independent of those unexecuted lanes.
 
-### Owning Requirements
+##### Owning Requirements
 
 This Spec makes concrete the frontmatter parents REQ-0027 (HOME development host), AD-0031 and ADR-0062 (HOME LAB membership). The body cites REQ-0026, AD-0030 and ADR-0037 only as traceability links, and cites no REQ-####-FR or REQ-####-NFR identifier.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 Use the current root include graph, service Compose/Dockerfiles/entrypoints,
 tracked configuration and key-only environment contracts, current Stage 01/02/03
@@ -119,7 +142,7 @@ object handoff and live Grafana result reader remain unverified; synthetic
 metrics acceptance is not a live external-project receipt. Archived
 SPEC-0199/0200 provide no current approval.
 
-### Non-goals
+##### Non-goals
 
 No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
@@ -135,9 +158,9 @@ navigation, Registry links and path checks; that documentation exception
 authorizes no LAB runtime action. Do not read secret values, private environment
 files, authentication files, raw HOME logs, or user data.
 
-## Behavior Contract
+#### Behavior Contract
 
-### Normal Behavior
+##### Normal Behavior
 
 1. All changes are classified as confirmed source defects, consumer-dependent
    design, or runtime-unverified conditions. Each service row names the actual
@@ -334,7 +357,7 @@ storage or final delivery.
   evidence separately from the coordinator-owned registration and final
   delivery gates. It changes no operational resource.
 
-### Failure and Edge Cases
+##### Failure and Edge Cases
 
 **Failure Modes and Guardrails.**
 
@@ -353,9 +376,9 @@ not reclassify historical local-main receipts or absorb unrelated
 integration/runtime commits.
 Missing permission or target defers only the dependent operation.
 
-## Acceptance Criteria
+#### Acceptance Criteria
 
-### Criteria
+##### Criteria
 
 1. Current service evidence and owner/file/variable/consumer/regression/
    rollback/approval ledger is complete, and no existing feature acceptance
@@ -613,15 +636,15 @@ Missing permission or target defers only the dependent operation.
     boundary neither authenticates nor accepts another.
 <!-- markdownlint-enable MD029 -->
 
-### Evidence Requirements
+##### Evidence Requirements
 
 - Each criterion is evidenced by rows in the Task under `tasks/` that owns its lane (for example the Hermes transport, P08 layout and P10 opsflow acceptance Tasks); a row records the observation, the check run and its actual result.
 - Source, document and regression checks named by a criterion are run by the executing Task owner and recorded with their real result; `NOT_RUN` results and unknown runtime facts stay visible and are not counted as passes.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; historical receipts are not fresh runtime evidence.
 
-## References
+#### References
 
-### Normative and Evidence
+##### Normative and Evidence
 
 - [Hermes transport Task](01.tasks/tsk-0022-hermes-blog-ingestion.md)
 
@@ -638,6 +661,26 @@ Missing permission or target defers only the dependent operation.
 - [ADR-0037](../../00.workspace/02.architecture/02.decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [CLN01 material retirement Task](01.tasks/tsk-0007-cln01-material-retirement.md)
 
-### Historical and Navigation
+##### Historical and Navigation
 
 SPEC-0201, SPEC-0202 and SPEC-0203 are retired Spec packages; they are non-authoritative history and not current authority.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

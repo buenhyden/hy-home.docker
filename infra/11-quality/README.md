@@ -1,28 +1,53 @@
 ---
 title: "품질 계층 (11-quality)"
-version: "0.4.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-01"
 ---
 
 # 품질 계층 (11-quality)
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 소프트웨어·설정·계약·성능과 테스트 메일을 검증하는 패키지를 모았습니다.
 데이터 품질 검증인 Great Expectations는 [lakehouse LAB](../../labs/lakehouse/docker-compose.yml)에
 남습니다. 폴더 이름은 profile·기동 순서·network 격리를 대신하지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 개발자, 품질·성능 검증 담당자와 플랫폼 운영자를 위한 인덱스입니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - [k6](k6/README.md)는 root의 1회성 기본 부하 작업입니다.
 - [WireMock](wiremock/README.md)은 추적 합성 HTTP stub을 제공합니다. 기능 모드는
@@ -34,7 +59,8 @@ created: "2026-10-01"
   권한·상태 경계를 따릅니다. SonarQube는 독립 [LAB](../../labs/sonarqube/docker-compose.yml)으로
   옮겼습니다(SPEC-0262).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ~~~text
 11-quality/
@@ -45,21 +71,23 @@ created: "2026-10-01"
 └── mailpit/
 ~~~
 
-### Interfaces
+##### Interfaces
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 각 package의 Compose/Dockerfile이 image, profile, network, volume과 health
 계약을 소유합니다. WireMock load 모드는 root Compose와
 **wiremock/wiremock.load.yml**을 같은 명령에서 결합합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 이 tier는 인덱스이며 network, secret, 노출은 각 package의 Compose가 선언한다. WireMock 기능 모드는 loopback에만 게시하고 fixture에는 합성 데이터만 쓰며, admin API는 공용 route에 연결하지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Package | 선택 profile 또는 진입점 | 실행·상태 경계 |
 | --- | --- | --- |
@@ -69,7 +97,7 @@ created: "2026-10-01"
 | [conftest](conftest/) | **policy-check** | 읽기 전용 infra 검증, network 없음 |
 | [mailpit](mailpit/) | **dev**, **local**, **mail-dev** | 테스트 메시지 SQLite capture |
 
-### Selected Start
+##### Selected Start
 
 1. 대상 소유자, network, 자원과 종료 조건을 승인받은 뒤에만 트래픽을 생성합니다.
 2. WireMock fixture에는 합성 데이터만 사용하고 admin API를 공용 route에 연결하지
@@ -77,9 +105,9 @@ created: "2026-10-01"
 3. 운영 문서는 [문서 진입점](../../docs/README.md)의 해당 Guide, Policy,
    Runbook을 따릅니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 - **bash scripts/hardening/check-all-hardening.sh 11-quality**
 - **bash scripts/validation/validate-docker-compose.sh**
@@ -88,9 +116,10 @@ created: "2026-10-01"
 정적 통과는 실제 부하 생성, image build, target 승인 또는 결과 완전성의 증거가
 아닙니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [테스트·품질 Runbook 목록](../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md)
 - [독립 LAB 인덱스](../../labs/README.md)
@@ -100,6 +129,27 @@ created: "2026-10-01"
 - [Communication](../10-communication/README.md)
 - [문서 진입점](../../docs/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 인덱스 문서라 직접 관측 대상이 없다. 각 package의 Service Readiness와 [테스트·품질 Runbook 목록](../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md)을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,20 +1,44 @@
 ---
 title: "98.archive"
-version: "3.1.2"
+version: "4.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "archive"
 ---
 
 # 98.archive
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합니다. 현재 이 스테이지는
 보존 기록을 담지 않으며, 이 `README.md`만 남아 있습니다.
@@ -27,26 +51,29 @@ Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합�
 처분 정책은 [문서 보존 및 은퇴 정책](../00.workspace/03.process/documentation-protocol.md)이
 소유합니다. 이 README는 탐색과 체계 설명만 맡습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 운영자, 리뷰어, AI agent가 "이 문서는 왜 사라졌는가"를 조회할 때 사용합니다. 답은
 요약을 받은 현재 소유자 문서와 Git 이력에 있습니다.
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 - 소유: Stage 98의 처분 분류와 폴더 체계 설명
 - Stage 98에 대한 검사는 corpus lifecycle의 occupancy 검사 하나뿐이며, README가 아닌
   tracked 파일이 있으면 실패합니다. 이 README는 다른 README와 같은 문서 검사를 받습니다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - 비소유: 처분 정책, 경로와 profile 계약, 폐기 번호 목록
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | --- | --- |
@@ -69,37 +96,62 @@ template은 없습니다. 기록이 없으므로 각 폴더는 지금 존재하�
 └── README.md
 ```
 
-#### Classification
+###### Classification
+<!-- core-payload-level:4 -->
 
 Stage 98은 현재 보존 기록을 담지 않으며 활성 문서가 아닙니다. 삭제된 문서의 본문은 이 stage가 아니라 Git 이력이 보관합니다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [REQ-0026 문서 보존 및 은퇴](../01.requirements/0026-document-retention-and-retirement.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [문서 보존 및 은퇴 정책](../00.workspace/03.process/documentation-protocol.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../00.workspace/02.architecture/01.descriptions/0030-document-lifecycle-governance.md)
 - [README 템플릿](../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Create and Review
+###### Create and Review
+<!-- core-payload-level:4 -->
 
 1. 문서를 없애는 변경은 먼저 그 내용을 현재 소유자 문서에 요약합니다.
 2. 원본 문서는 삭제합니다. 이 스테이지로 옮겨 보존하지 않습니다.
 3. 폐기된 artifact 번호는 Registry의 `reserved_history`에 추가합니다.
 4. 삭제된 본문이 필요하면 Git 이력에서 복구합니다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 활성 stage에서 문서를 없앨 때는 내용을 현재 소유자 문서에 요약하고 원본을 삭제하며, 삭제된 본문은 Git 이력이 기록하고 폐기된 번호는 Registry `reserved_history`가 보관합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

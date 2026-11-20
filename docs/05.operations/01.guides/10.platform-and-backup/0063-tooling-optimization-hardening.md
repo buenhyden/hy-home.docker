@@ -1,10 +1,13 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # Platform Operations and Quality Optimization Hardening Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 `09-platform-ops`와 `11-quality`의 최적화·하드닝 변경을 적용하는 SRE/Platform Operator, DevOps Engineer, Platform Product Owner.
 
-### Outcome
+##### Outcome
 
 이 가이드는 `09-platform-ops`와 `11-quality`의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다.
 공개 경계 보안, 네트워크 경계 표준화, 테스트 도구 안정성 계약, 검증 절차를 다룬다.
@@ -36,7 +59,8 @@ next_review_at: "2027-05-13"
 - 하드닝 회귀를 script와 CI로 일찍 막는다.
 - 카탈로그 확장 항목을 실행 가능한 로드맵으로 반영한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - 상위 문서: [Platform Operations and Quality Optimization Hardening Operations Policy](../../02.policies/10.platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`)
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md) (`AD-0009`)
@@ -49,56 +73,81 @@ next_review_at: "2027-05-13"
 - [Operations index](../../README.md)
 - [Operations policy](../../02.policies/10.platform-and-backup/0063-tooling-optimization-hardening.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 사전 조건
+###### 사전 조건
+<!-- core-payload-level:4 -->
 
 - Docker와 Docker Compose 실행 환경
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Authority
+##### Authority
 
 - `infra/09-platform-ops`와 `infra/11-quality`의 수정 권한
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 실행 순서와 실패·복구 판단은 [런북](../../03.runbooks/10.platform-and-backup/0063-tooling-optimization-hardening.md)의 `Steps` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 SonarQube는 SPEC-0262로 독립 LAB이 되어 gateway route 없이 loopback port만 게시하고, Syncthing runtime은 제거되어 현재 하드닝 기동 대상에 포함하지 않는다. 자세한 내용은 Outcome과 Boundaries에 있다.
 
-### Expected Results
+##### Expected Results
 
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../03.runbooks/10.platform-and-backup/0063-tooling-optimization-hardening.md)의 절차로 진단한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../03.runbooks/10.platform-and-backup/0063-tooling-optimization-hardening.md)을 따른다.
 
 - [Recovery runbook](../../03.runbooks/10.platform-and-backup/0063-tooling-optimization-hardening.md)
 
-#### 흔한 실수
+###### 흔한 실수
+<!-- core-payload-level:4 -->
 
 - 공개 라우터에 SSO 체인을 빠뜨린다.
 - service-local compose의 단독 config 실패를 root compose context와 구분하지 못한다.
 - 독립 LAB Locust worker의 health 상태를 root profile 검사로 오해한다.
 - k6 leaf에 없는 worker나 Traefik route를 문서에 적는다.
 
-### Next Action
+##### Next Action
 
 Expected Results가 실패하거나 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../03.runbooks/10.platform-and-backup/0063-tooling-optimization-hardening.md)의 절차로 진단한다. 장애 대응, rollback, escalation 기준도 이 Runbook을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,16 +1,50 @@
 ---
-title: "{{TITLE}}"
-version: "0.1.0"
-type: "sdlc/task"
-status: "draft"
-owner: "{{OWNER}}"
-updated: "{{UPDATED}}"
-layer: "specs"
-artifact_id: "{{ARTIFACT_ID}}"
+title: '{{TITLE}}'
+version: 0.1.0
+type: sdlc/task
+status: draft
+owner: '{{OWNER}}'
+document_scope:
+  subject: '{{DOCUMENT_SUBJECT}}'
+  layer: workspace
+document_lifecycle: draft
+updated: '{{UPDATED}}'
+layer: specs
+artifact_id: '{{ARTIFACT_ID}}'
 parent_ids:
-- "{{PARENT_ID}}"
-created: "{{CREATED}}"
+- '{{PARENT_ID}}'
+created: '{{CREATED}}'
 ---
+
+# {{TITLE}}
+
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+<!-- 작성 규칙: Identify the information or judgment this document gives its readers; route to the role payload instead of copying its rules. -->
+
+Readers use the task payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+<!-- 작성 규칙: Name the maintained subject, scope and owner; do not grant authority through document metadata. -->
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+<!-- 작성 규칙: State actual inputs, constraints or preconditions, and distinguish facts from assumptions. -->
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+<!-- 작성 규칙: Keep the kind-specific payload here with its conditions, tables and one canonical responsibility. -->
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
@@ -19,29 +53,28 @@ created: "{{CREATED}}"
 <!-- Author prompt: Evidence records observations only. Evidence ID names the row uniquely. Method is automated, review or observation. Input names the revision or candidate examined; Tool and Config the tool, version and configuration, or `-`. Command is the command run or the observation method, or `-`; Exit is the command's exit code, or `-` when nothing ran, never 0 for a check that did not run. Result is PASS, FAIL, ERROR, NOT_RUN, CANCELLED or NOT_APPLICABLE. Required is true or false and is not an approval; every required non-PASS observation remains open until an equivalent PASS explicitly resolves it. In Resolves, write `-` or the IDs of earlier non-PASS rows with the same Command and Work Unit in this Task that this PASS row resolves for a shared criterion. A checker's own regression test and a document or contract check are different Commands. -->
 <!-- Author prompt: The Criterion Decisions table holds one row for each Spec criterion this Task owns. A criterion the Plan assigns to a current, non-cancelled Task has exactly one row, in one such Task; a criterion whose assigned Tasks are all historical or cancelled has none. Intent is accept, reject, not-required or undecided. Acceptance is pending, accepted, rejected or not-required; accepted needs a PASS for every criterion/Work Unit pair the Plan assigns to a current, non-cancelled Task, cites at least one PASS row for that criterion, cites a non-PASS row only when a later row resolves it, and leaves no unresolved required observation; not-required and rejected need a Decision. Accepted By names who actually judged, or `-`; the name does not authenticate anyone. Current Owner names the durable owner or a reasoned N/A disposition, and Reassigned To the permitted new owner of the obligation, or `-`. The Evidence cell is `-` or Evidence IDs of this Task. Put no other pipe table in the Criterion Decisions subsection. -->
 
-# {{TITLE}}
+#### Scope
 
-## Scope
-
-### Objective and Parent
+##### Objective and Parent
 
 {{OBJECTIVE_AND_PARENT_PLAN_AND_WORK_UNITS}}
 
-### Inputs and Authority
+##### Inputs and Authority
 
 <!-- Author prompt: Name the Spec criteria, Plan work units, request identity and revision supplied by the trusted origin or unknown, authorization source, exact scope and current applicability. Record a changed, expired or withdrawn binding before resuming affected work. Naming an authorization here only records it. -->
 
 {{INPUTS_AND_AUTHORITY}}
 
-## Execution Log
+#### Execution Log
 
-### Work Performed
+##### Work Performed
 
 <!-- Author prompt: Record what was done in order, with the commits or artifacts it produced. Keep each `#### Execution Items`, `#### Lifecycle Events`, `#### Lifecycle Event Reconciliation` and `#### Contract Migration` table under Work Performed as its own `####` heading, and anything a reader links to as a heading of that level or deeper. A section with nothing to record says why in one sentence instead of staying empty. -->
 
 {{WORK_PERFORMED}}
 
-#### Execution Items
+###### Execution Items
+<!-- core-payload-level:4 -->
 
 <!-- Author prompt: Keep this table only for several independently tracked items, with at least two rows, and then remove the frontmatter `status`; each row owns its status, each Work Unit belongs to one item, and a blocked or cancelled item names its Blocker. A Task with one status removes this heading and table. -->
 
@@ -49,42 +82,70 @@ created: "{{CREATED}}"
 | --- | --- | --- | --- | --- |
 | {{ITEM}} | {{ITEM_WORK_UNIT}} | {{ITEM_OWNER}} | {{ITEM_STATUS}} | {{BLOCKER}} |
 
-### Blockers and Decisions
+##### Blockers and Decisions
 
 {{BLOCKERS_DEFERRALS_AND_RULINGS}}
 
-## Verification Evidence
+#### Verification Evidence
 
-### Results
+##### Results
 
 | Evidence ID | Criteria | Work Unit | Method | Input | Tool and Config | Command | Exit | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | {{EVIDENCE_ID}} | {{CRITERIA}} | {{WORK_UNIT}} | {{METHOD}} | {{INPUT}} | {{TOOL_AND_CONFIG}} | {{COMMAND}} | {{EXIT}} | {{RESULT}} | {{LOCATION}} | {{REQUIRED}} | {{RESOLVES}} |
 
-### Resolution Links
+##### Resolution Links
 
 {{LINKS_FROM_FAILED_OBSERVATIONS_TO_THEIR_RESOLUTION}}
 
-## Acceptance Decision
+#### Acceptance Decision
 
-### Criterion Decisions
+##### Criterion Decisions
 
 | Criterion | Intent | Acceptance | Evidence | Decision | Accepted By | Current Owner | Reassigned To |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | {{CRITERION}} | {{INTENT}} | {{ACCEPTANCE}} | {{ACCEPTANCE_EVIDENCE}} | {{DECISION}} | {{ACCEPTED_BY}} | {{CURRENT_OWNER}} | {{REASSIGNED_TO}} |
 
-### Remaining Conditions
+##### Remaining Conditions
 
 {{REMAINING_CONDITIONS_AND_DEFERRED_ITEMS}}
 
-## Handoff
+#### Handoff
 
-### Promotion Receipt
+##### Promotion Receipt
 
 <!-- Author prompt: For each acceptance criterion, name the Plan work unit, the Task result, the durable document and the commit that changed it, the consumer update and check that show it, the criterion's Criterion Decisions row and any residual with its owner, or why no durable update is needed. -->
 
 {{PROMOTION_TARGET_AND_RECEIPT}}
 
-### Next Owner
+##### Next Owner
 
 {{NEXT_OWNER_AND_RESUME_CONDITIONS}}
+
+## 적용과 확인
+
+### 적용 방법
+
+<!-- 작성 규칙: Explain how the intended reader uses this document or its native output; do not invent an operational step. -->
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+<!-- 작성 규칙: Use only checks appropriate to this kind; distinguish implementation, verification and actual acceptance. -->
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+<!-- 작성 규칙: Use purpose-bearing owner and dependency references; reciprocal links are not universally required. -->
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+<!-- 작성 규칙: Identify external basis and its application or limits; a citation grants no execution or approval authority. -->
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

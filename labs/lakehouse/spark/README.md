@@ -1,10 +1,13 @@
 ---
 title: "Spark (Iceberg)"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-23"
 ---
 
@@ -12,11 +15,31 @@ created: "2026-09-23"
 
 # Spark (Iceberg)
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > 승인된 Iceberg REST catalog의 table에 대한 lakehouse LAB의 on-demand 배치/table 유지보수 job입니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
 Spark는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 one-shot 작업입니다. root Compose에 포함되지 않고
@@ -27,24 +50,28 @@ LAB 입력 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT`로 지정하
 합니다. 기본 명령은 namespace 조회만 수행하며 쓰기는 명시적 `run --rm spark ...`로만
 실행합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
 - Data engineers
 - Operators
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 고정된 Iceberg runtime과 AWS bundle을 갖춘 Spark local-mode job 이미지.
 - 시작 시 생성되는 catalog 설정과 범위 S3 identity.
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - Spark cluster(master/worker), Spark UI, history 서버.
 - 대화형 SQL 서비스([Trino](../trino/README.md))와 스트리밍([Flink](../flink/README.md)).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 spark/
@@ -55,18 +82,20 @@ spark/
 
 서비스 정의는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | `LAB_LAKEHOUSE_CATALOG_URI` Iceberg REST catalog | 승인된 Iceberg REST catalog | `spark` | SigV4로 catalog `lakehouse`를 쓰며 출력은 `spark-sql` 질의 결과이다. | 비어 있으면 render가 거부되며 `ForbiddenException`은 lakehouse runbook을 따른다. |
 | `LAB_LAKEHOUSE_S3_ENDPOINT` S3 | 승인된 S3 endpoint | `spark` | `lakehouse` S3 identity와 table bucket을 path-style로 쓴다. | 비어 있으면 render가 거부되고 secret이 없으면 exit `64`, table bucket 부재는 runbook을 따른다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 입력은 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT` 환경 변수가 가리키는 승인된 Iceberg REST catalog와 S3 endpoint이며 출력은 `spark-sql` 질의 결과이다. 환경 변수는 아래 표와 같다.
 
-#### Environment Variables
+###### Environment Variables
+<!-- core-payload-level:4 -->
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
@@ -79,13 +108,14 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 `/run/secrets/seaweedfs_s3_lakehouse_secret_key`로 마운트됩니다. access key ID는
 `lakehouse`입니다. HOME 값을 복사하려면 별도 승인이 필요합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 `lab_lakehouse_net`만 사용하고 호스트 포트를 게시하지 않으며 HOME network에 연결되지 않는다. secret은 `lab_lakehouse_s3_lakehouse_secret_key`(-> `seaweedfs_s3_lakehouse_secret_key`)만 사용하고 값은 문서에 쓰지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -94,7 +124,7 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 | **Catalog** | Iceberg REST(`LAB_LAKEHOUSE_CATALOG_URI`) | SigV4, catalog 이름 `lakehouse`(기본값) |
 | **Storage** | S3(`LAB_LAKEHOUSE_S3_ENDPOINT`) | `lakehouse` table bucket, path-style |
 
-### Selected Start
+##### Selected Start
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
@@ -108,7 +138,8 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 | `LAB run --rm spark` | namespace 목록(읽기 전용, table-bucket job이 먼저 실행됨). |
 | `LAB run --rm --no-deps spark /opt/spark/bin/spark-sql -S -e "SHOW TABLES IN dev"` | provisioning이 끝난 뒤 읽기 전용 조회. |
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 1. Iceberg 버전을 올릴 때는 Spark·Trino·Flink의 jar를 함께 올리고 checksum을 다시 계산한다.
 2. Renovate는 `FROM` 이미지만 갱신하며 Iceberg jar는 수동 소유이다.
@@ -117,16 +148,17 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 런타임 이미지 권한은 [Dockerfile](Dockerfile)과 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - **Guide**: Lakehouse Usage Guide (`docs/05.operations/01.guides/15.labs/0094-lakehouse.md`)
 - **Policy**: Lakehouse Operations Policy (`docs/05.operations/02.policies/15.labs/0094-lakehouse.md`)
@@ -134,12 +166,14 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 - Exit `64`: `lakehouse` secret이 없거나 비어 있습니다.
 - `table bucket … not found` 또는 `ForbiddenException`: lakehouse runbook을 따르십시오.
 
-#### Service Readiness
+###### Service Readiness
+<!-- core-payload-level:4 -->
 
 | Field | Evidence |
 | --- | --- |
@@ -156,3 +190,23 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 | Operations | Guide (`docs/05.operations/01.guides/15.labs/0094-lakehouse.md`), Policy (`docs/05.operations/02.policies/15.labs/0094-lakehouse.md`), Runbook (`docs/05.operations/03.runbooks/15.labs/0094-lakehouse.md`) |
 | Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
 | Troubleshooting | 활성 lease 안에서 기본 명령으로 catalog 접근을 확인한 뒤 runbook을 따름 |
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

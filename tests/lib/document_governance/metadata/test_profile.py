@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 from scripts.lib.document_governance import metadata_contract
+from scripts.lib.document_governance.common_document import load_contract, payload_text
 from scripts.lib.document_governance.metadata import heading as heading_module
 from scripts.lib.document_governance.metadata import profile as profile_module
 from scripts.lib.document_governance.registry import (
@@ -19,6 +20,7 @@ from tests.lib.document_governance.metadata._support import (
     REGISTRY,
     ROOT,
     body_with_headings,
+    common_fixture_metadata,
     current_profiles,
     metadata,
     write_doc,
@@ -168,9 +170,20 @@ class TemplateMetadataTests(unittest.TestCase):
                     continue
                 profile = self.registry.profiles[str(role["profiles"][0])]
                 text = source.read_text(encoding="utf-8")
+                self.assertEqual(
+                    {f"## {title}" for title in load_contract()["headings"]},
+                    {line for line in text.splitlines() if line.startswith("## ")},
+                )
                 headings = [
-                    line for line in text.splitlines() if line.startswith("## ")
+                    line
+                    for line in payload_text(text).splitlines()
+                    if line.startswith("## ")
                 ]
+                if role.get("native_source"):
+                    self.assertEqual(
+                        {"## Native Payload", "## Consumption"}, set(headings)
+                    )
+                    continue
                 required = [f"## {item}" for item in profile["required_sections"]]
                 optional = [f"## {item}" for item in profile["optional_sections"]]
                 self.assertLessEqual(set(required), set(headings))
@@ -201,7 +214,7 @@ class TemplateMetadataTests(unittest.TestCase):
         path = pathlib.Path("docs/00.workspace/04.quality/approval-boundaries.md")
         record = metadata.Record(
             path,
-            {"artifact_type": "governance-policy", "status": "active"},
+            common_fixture_metadata(self.registry, "governance-policy", path=path),
             "governance-policy",
             frontmatter_present=True,
         )
@@ -210,7 +223,7 @@ class TemplateMetadataTests(unittest.TestCase):
             return [
                 finding.code
                 for finding in heading_module._registered_section_findings(
-                    record, body, profile
+                    record, payload_text(body), profile
                 )
             ]
 
@@ -268,6 +281,15 @@ class TemplateMetadataTests(unittest.TestCase):
                 if source.suffix != ".md":
                     continue
                 profile = self.registry.profiles[str(role["profiles"][0])]
+                if role.get("native_source"):
+                    definition = metadata.parse_frontmatter(source)
+                    self.assertEqual("common/template-source", definition["type"])
+                    self.assertEqual(role_name, definition["template_id"])
+                    self.assertEqual("template", definition["document_scope"]["layer"])
+                    source = ROOT / role["native_source"]
+                    self.assertTrue(source.is_file())
+                    if source.suffix != ".md":
+                        continue
                 values = normalize_profile_frontmatter(
                     metadata.parse_frontmatter(source), profile
                 )
@@ -281,6 +303,8 @@ class TemplateMetadataTests(unittest.TestCase):
                     document_type(str(role["profiles"][0])), values.get("type")
                 )
                 text = source.read_text(encoding="utf-8")
+                if role.get("native_source"):
+                    continue
                 for target_prefix in (
                     "docs/01.requirements/",
                     "docs/02.architecture/",
@@ -299,14 +323,17 @@ class TemplateMetadataTests(unittest.TestCase):
             if source.suffix != ".md":
                 continue
             profile = self.registry.profiles[str(role["profiles"][0])]
-            text = source.read_text(encoding="utf-8")
+            text = payload_text(source.read_text(encoding="utf-8"))
             headings = {
                 line.removeprefix("## ")
                 for line in text.splitlines()
                 if line.startswith("## ")
             }
             with self.subTest(role=role_name):
-                self.assertLessEqual(set(profile["required_sections"]), headings)
+                if role.get("native_source"):
+                    self.assertEqual({"Native Payload", "Consumption"}, headings)
+                else:
+                    self.assertLessEqual(set(profile["required_sections"]), headings)
                 self.assertEqual(
                     1, sum(line.startswith("# ") for line in text.splitlines())
                 )
@@ -321,6 +348,10 @@ class TemplateMetadataTests(unittest.TestCase):
                 "type": "common/readme",
                 "status": "active",
                 "owner": "{{OWNER}}",
+                "document_scope": {
+                    "subject": "{{DOCUMENT_SUBJECT}}",
+                    "layer": "workspace",
+                },
                 "updated": "{{UPDATED}}",
                 "layer": "{{LAYER}}",
             },

@@ -1,10 +1,13 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.7.1"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -15,22 +18,43 @@ next_review_at: "2027-05-13"
 
 # Prometheus Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 scrape target registration, alerting rule management, TSDB
 persistence, lifecycle reload, secret file reference, protected access에
 대한 Prometheus control을 정의한다. 순서가 있는 recovery나 reload
 procedure는 해당 runbook에 있다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/01.descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 이 정책은 현재 `infra/06-observability/prometheus` compose, config,
 alert-rule surface에 적용된다.
@@ -38,13 +62,14 @@ alert-rule surface에 적용된다.
 - **Systems**: compose service `prometheus`, container `prometheus`, image [Compose image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.dev.yml`(Compose 기본 `PROMETHEUS_CONFIG_FILE`)와 같은 내용의 `prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -184,14 +209,16 @@ alert-rule surface에 적용된다.
   - compose/config와 retention policy가 뒷받침하지 않는 retention
     동작을 선언하는 행위
 
-#### Lifecycle and data controls
+###### Lifecycle and data controls
+<!-- core-payload-level:4 -->
 
 - Prometheus는 `HOME`으로 유지한다; gateway auth, least-privilege scrape secret, 검증된 rule, 선언된 local TSDB boundary를 유지한다.
 - `prometheus-data`는 현재 source 아래에서 승인된 consistent stopped copy/snapshot으로만 백업한다. 별도 검토를 거쳐 `--web.enable-admin-api`를 활성화하지 않는 한 `/api/v1/admin/tsdb/snapshot`을 호출하지 않는다.
 - isolated TSDB storage에서 rehearse하며 production remote-write/alert는 사용하지 않는다. WAL replay, historical/current query, target label, rule evaluation, Alertmanager delivery, remote-write receiver client를 검증한다.
 - Resource/retention 변경에는 측정된 disk 증가, query/scrape pressure, rollback threshold가 필요하다. Removal에는 scraper/client migration과 명시적인 TSDB-retention/deletion 승인이 필요하다.
 
-#### Host and GPU exporter boundary
+###### Host and GPU exporter boundary
+<!-- core-payload-level:4 -->
 
 `node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다.
 
@@ -204,16 +231,18 @@ alert-rule surface에 적용된다.
 
 보존 기간은 [GDE-0045](../../01.guides/07.observability/0045-prometheus.md#host-and-gpu-exporter-boundary)가 설명하는 기본값을 따르며 무기한 보존을 약속하지 않는다. 일관된 정지 TSDB 백업은 [RUN-0045](../../03.runbooks/07.observability/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - Scrape interval, retention, secret reference, route, rule-loading
   예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
 - 긴급 reload나 target suppression은 rollback evidence와 함께 Prometheus
   runbook을 통해 기록해야 한다.
 
-#### SEC01 image acceptance — 2026-10-15
+###### SEC01 image acceptance — 2026-10-15
+<!-- core-payload-level:4 -->
 
 owner는 SEC01(SPEC-0204 TSK-0009 "Traefik and Prometheus upstream candidates")에서 Compose가 고정한
 Prometheus image(index `efd719c9`)의 잔여 위험을 받아들였다. 적용 가능한 것은 서비스 거부뿐이다.
@@ -229,15 +258,16 @@ GO-2026-6608과 GO-2026-6609는 Traefik 인증 뒤에, 그리고 Docker network 
 offline scan, 독립 applicability 검토, `promtool` 검사, HOME 재생성과 rollback은 아직 `NOT_RUN`이고
 SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - Prometheus image, runtime flags, scrape jobs, alert rules, recording rules,
   secret references, route, retention, mounted paths가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - Compose service boundary:
   `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
@@ -246,7 +276,7 @@ SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
-### Limits
+##### Limits
 
 정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
@@ -267,13 +297,13 @@ SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 - 새 image의 pull, offline scan, 독립 applicability 검토, `promtool` 검사, HOME 재생성과 rollback은 `NOT_RUN`이며 SPEC-0204-TSK-0021이 owner 단계로 기록하고, 이전 image 수용(SEC01)은 대체되었으며 publisher 서명 확인은 열린 증거다.
 - dcgm-exporter는 Compose healthcheck가 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/07.observability/0045-prometheus.md) (`GDE-0045`), [Runbook](../../03.runbooks/07.observability/0045-prometheus.md) (`RUN-0045`)
 
@@ -281,3 +311,23 @@ SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 - [Usage guide](../../01.guides/07.observability/0045-prometheus.md)
 - [Recovery runbook](../../03.runbooks/07.observability/0045-prometheus.md)
 - [Retention policy](0048-telemetry-retention.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

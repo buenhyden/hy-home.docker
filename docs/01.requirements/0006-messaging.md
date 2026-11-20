@@ -1,10 +1,13 @@
 ---
 title: "Messaging Tier (05-messaging) Requirements"
-version: "1.4.1"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0006"
 created: "2026-03-26"
@@ -12,9 +15,29 @@ created: "2026-03-26"
 
 # Messaging Tier (05-messaging) Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 Direct calls between components do not scale and risk data loss and reduced
 availability. The messaging tier (`05-messaging`) of `hy-home.docker` lowers
@@ -23,7 +46,7 @@ the broker, authenticated web administration and metrics. The separate Kafka
 LAB owns schema management and the connector boundary. Streaming SQL on Kafka
 belongs to the optional lakehouse LAB (SPEC-0262).
 
-### Stakeholders
+##### Stakeholders
 
 - **Backend developers**: implement asynchronous patterns and event sourcing,
   for example by collecting system logs and events for analysis and archival.
@@ -34,9 +57,9 @@ belongs to the optional lakehouse LAB (SPEC-0262).
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - HOME: a single Kafka broker in KRaft mode with replication factor 1,
   topic initialization, authenticated HTTP management and broker and consumer
@@ -44,7 +67,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 - Kafka LAB: the separate three-broker topology, schema management and the
   connector boundary.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - **Approved placement**: The `kafka-cluster` LAB hosts the training topology,
   Schema Registry and Kafka Connect. The broker REST proxy was removed from
@@ -69,7 +92,7 @@ data on dedicated persistent storage.
 - Management access depends on the `02-auth` tier. The lakehouse LAB joins no
   messaging network and reaches Kafka only through an approved endpoint.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -78,7 +101,7 @@ data on dedicated persistent storage.
 | REQ-0006-FR-0004 | Provide a web-based management UI for the Kafka cluster. | The HOME placement provides authenticated web administration; SREs manage broker availability, retention and recovery. | The management UI requires a login through the platform's OIDC identity provider. | must |
 | REQ-0006-FR-0005 | Provide an HTTP access path and a metrics collection boundary for the broker and its consumers. | The HOME placement provides authenticated HTTP management and broker and consumer metrics. | The HOME HTTP management route and exporter render, and observability declares broker and consumer metrics scrape targets; live access and scrape success require separate runtime evidence. | must |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0006-FR-0001**: Provide an Apache Kafka event streaming broker in KRaft mode, with multi-broker training kept in a separate LAB.
 - **REQ-0006-FR-0003**: Provide schema management for Avro and JSON events and a connector boundary for moving data between Kafka and external systems.
@@ -88,20 +111,21 @@ data on dedicated persistent storage.
 FR number 0002 (AMQP 0-9-1 task queue on RabbitMQ) is retired because no
 RabbitMQ broker is implemented, and is not reused.
 
-### Quality Requirements
+##### Quality Requirements
 
 This package declares no quality requirement and records no reason why none applies.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 This package records the owner's requirements for the messaging tier; no upstream
 document governs it.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0006-FR-0001**: The root model declares exactly one KRaft broker with
   replication factor 1 and renders without error when the messaging profile is
@@ -115,7 +139,8 @@ document governs it.
   and observability declares broker and consumer metrics scrape targets.
   Live access and scrape success require separate runtime evidence.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Review the selected HOME and LAB Compose configurations separately for the
 broker, schema, UI and metrics declarations. Record live authentication,
@@ -124,9 +149,30 @@ Task. The owner named in the frontmatter, @buenhyden, judges each condition
 from the applicable evidence and accepts the requirement once every condition
 is met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - **Architecture Description**: [Messaging architecture](../02.architecture/01.descriptions/0005-messaging-architecture.md)
 - **ADR**: [ADR-0052 Kafka as the Only Messaging Broker](../02.architecture/02.decisions/0052-kafka-only-messaging-broker.md) (historical; RabbitMQ is not implemented)
 - **Retired domain Spec SPEC-0006** (messaging): replaced by the messaging guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
 - **Retired requirement REQ-0017** (messaging optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the messaging operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

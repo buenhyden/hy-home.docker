@@ -1,37 +1,64 @@
 ---
 title: "RedisInsight"
-version: "1.1.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-03-26"
 ---
 
 # RedisInsight
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > Redis 시각화, 분석, 관리 도구입니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
-#### Overview
+###### Overview
+<!-- core-payload-level:4 -->
 
 RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강력한 GUI입니다. 키 탐색, 메모리 프로파일링, 실시간 모니터링 같은 기능을 제공합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - **Operators**: Redis 상태 및 메모리 사용량 모니터링.
 - **Developers**: 데이터 구조 분석 및 애플리케이션 상태 디버깅.
 - **Data Engineers**: Redis 성능 프로파일링 및 병목 식별.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 - **Included**: 웹 UI를 통한 Redis 키 탐색, 스트림 분석, 메모리 프로파일링, CLI 접근.
 - **Excluded**: Redis 서버 OS의 직접 관리, 하드웨어 수준 성능 튜닝.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 .
@@ -40,9 +67,11 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 └── README.md                # Entry point
 ```
 
-#### Implementation Details
+###### Implementation Details
+<!-- core-payload-level:4 -->
 
-##### Service Configuration
+###### Service Configuration
+<!-- core-payload-level:5 -->
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -50,7 +79,8 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 | Port | `5540` (Internal) | Traefik이 관리 |
 | Storage | `redisinsight-data` | 연결 정보용 영속 볼륨 |
 
-##### Traefik Integration
+###### Traefik Integration
+<!-- core-payload-level:5 -->
 
 게이트웨이 SSO·CIDR 제한은 해당 라우트에 적용된다. RedisInsight에는 자체
 로그인이 없으므로 `RI_APP_HOST`로 listener를 Traefik만 함께 붙는
@@ -66,60 +96,68 @@ labels:
   traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | `https://redisinsight.${DEFAULT_URL}` 웹 UI (내부 `5540`) | `redisinsight` 서비스 | Traefik이 `redisinsight_ingress_net`으로 연결하며 operator와 developer가 접속한다. | 게이트웨이 SSO·CIDR 제한 미들웨어를 거치며 자체 로그인은 없다. | healthcheck `/api/health/`의 `{"status":"up"}`을 보고, 하드닝 점검과 런북을 확인한다. |
 | 사전 등록 연결 `DEV / dev-valkey`, `MNG / mng-valkey` | `redisinsight` 서비스 | `dev_data_net`, `mng_data_net`의 dev·mng Valkey | 읽기 전용 inspector 계정을 쓰며 쓰기는 거부된다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `dev_data_net`, `mng_data_net`, `redisinsight_ingress_net`이다. (출처: `infra/04-data/redisinsight/docker-compose.yml`의 `redisinsight` 서비스)
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_inspector_password`, `redisinsight_encryption_key`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/redisinsight/docker-compose.yml`의 `redisinsight` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 런타임은 `infra/04-data/redisinsight/docker-compose.yml`의 `redisinsight` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `admin`, `admin-data`이다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
-##### 1. Initial Setup
+###### 1. Initial Setup
+<!-- core-payload-level:5 -->
 
 1. `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`로 루트에서 활성화되는 admin 프로필을 검증합니다.
 2. 승인된 실행 환경에서만 `https://redisinsight.${DEFAULT_URL}`에 접속합니다.
 3. 사전 등록된 `DEV / dev-valkey`와 `MNG / mng-valkey`만 보이는지 확인합니다. 연결은 수동으로 추가하지 않습니다.
 
-##### 2. Basic Usage
+###### 2. Basic Usage
+<!-- core-payload-level:5 -->
 
 - 사전 등록 연결을 골라 읽기 전용으로 조회합니다. 쓰기는 거부됩니다.
 - 'Browser' 탭을 사용해 키와 값을 탐색합니다.
 - 'Memory Analysis'를 사용해 메모리를 많이 사용하는 키를 찾습니다.
 
-#### Available Scripts
+###### Available Scripts
+<!-- core-payload-level:4 -->
 
 - `bash scripts/hardening/check-all-hardening.sh 04-data`: RedisInsight 라우트, 이미지, 네트워크 소속, 헬스체크를 검증합니다.
 - `docker logs --tail 100 redisinsight`: 서비스 실행 중 로그를 확인합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 - RedisInsight에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - **Guide**: RedisInsight usage guide (`docs/05.operations/01.guides/05.databases-and-storage/0076-redisinsight.md`)
 - **Policy**: RedisInsight operations policy (`docs/05.operations/02.policies/05.databases-and-storage/0076-redisinsight.md`)
@@ -128,7 +166,8 @@ Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_i
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
-#### Service Readiness
+###### Service Readiness
+<!-- core-payload-level:4 -->
 
 | Field | Evidence |
 | --- | --- |
@@ -146,7 +185,28 @@ Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_i
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `04-data` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `admin` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
-#### Troubleshooting
+###### Troubleshooting
+<!-- core-payload-level:4 -->
 
 - RedisInsight 네트워크, 볼륨, 레이블 참조를 확인하려면 하드닝 점검부터 시작합니다.
 - admin 라우팅이나 연결 설정을 변경하기 전에 RedisInsight 로그와 연결된 런북을 확인합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

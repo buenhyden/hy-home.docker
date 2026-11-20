@@ -1,10 +1,13 @@
 ---
 title: "BLOCKED: git commit --no-verify"
-version: "1.1.5"
+version: "2.0.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: 'BLOCKED: git commit --no-verify'
+  layer: agent
+updated: "2026-11-20"
 action: "block"
 enabled: true
 event: "bash"
@@ -14,22 +17,42 @@ pattern: "git\\s+commit\\s+.*(--no-verify|-n\\s+-m|-n\\s+['\"]|-n$)"
 
 # Git Commit Check Bypass Rule
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the rule payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Objective
 
 **`git commit --no-verify` blocked (project rule)**
 
-### Authority
+##### Authority
 
 Owning policies:
 
 - [Git workflow](../../../docs/00.workspace/03.process/git-workflow.md)
 - [Quality standards execution boundary](../../../docs/00.workspace/04.quality/quality-standards.md#4-execution-boundary)
 
-## Scope
+#### Scope
 
-### Applies To
+##### Applies To
 
 The `block-git-no-verify` rule applies on the `bash` event. `docs/00.workspace/03.process/git-workflow.md` — Enforcement:
 
@@ -39,13 +62,13 @@ The [execution boundary](../../../docs/00.workspace/04.quality/quality-standards
 direct pre-commit prohibition and the sole approved all-files route. This hook
 retains the separate block on bypassing configured commit checks.
 
-### Exclusions
+##### Exclusions
 
 None.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 **Project pre-commit hooks perform:**
 
@@ -73,26 +96,46 @@ git add -p
 git commit -m "fix(scope): Actual fix"
 ```
 
-### Enforcement
+##### Enforcement
 
 The declared Bash event and unchanged native pattern identify matching commands.
 
-## Exceptions
+#### Exceptions
 
-### Exception Conditions
+##### Exception Conditions
 
 No exception is declared by this rule.
 
-### Approval and Review
+##### Approval and Review
 
 None.
 
-## Ownership
+#### Ownership
 
-### Responsibilities
+##### Responsibilities
 
 `@buenhyden`.
 
-### Change and Adoption
+##### Change and Adoption
 
 None.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

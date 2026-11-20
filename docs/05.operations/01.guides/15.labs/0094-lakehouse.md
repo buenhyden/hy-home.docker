@@ -1,10 +1,13 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.6.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0094"
 parent_ids:
@@ -23,13 +26,33 @@ next_review_at: "2027-05-13"
 
 # Lakehouse Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 레이크하우스(Iceberg, Spark, Trino, Flink, Great Expectations)를 사용하는 데이터 엔지니어와 운영자가 LAB 경계와 각 엔진의 역할, 명령의 부작용을 이해하고 점검할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 레이크하우스는 root Compose에서 분리된 독립 LAB이며 `labs/lakehouse/docker-compose.yml`의 `lab-lakehouse`
 profile로 선택된다(SPEC-0262). 테이블은 HOME SeaweedFS `lakehouse` 테이블 버킷 안의
@@ -40,14 +63,16 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
 
 레이크하우스(Iceberg, Spark, Trino, Flink, Great Expectations)를 사용하는 데이터 엔지니어와 운영자를 위한 문서다. LAB 경계, 각 엔진의 역할과 명령의 부작용을 이해하고 안전하게 사용·점검하는 것이 목표다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/15.labs/0094-lakehouse.md) (`POL-0094`)
 - [Runbook](../../03.runbooks/15.labs/0094-lakehouse.md) (`RUN-0094`)
 - [SeaweedFS guide](../05.databases-and-storage/0024-seaweedfs.md)
 - SPEC-0262 Analytics labs migration: LAB 분리와 HOME endpoint 미결정 항목
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [Spark](../../../../labs/lakehouse/spark/README.md) and [Trino](../../../../labs/lakehouse/trino/README.md) package READMEs and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [Independent LAB source](../../../../labs/README.md)
@@ -59,11 +84,12 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
 - [Great Expectations](../../../../labs/lakehouse/great-expectations/README.md) package README
 - [GX Core SQL data sources](https://docs.greatexpectations.io/docs/core/connect_to_data/sql_data/)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 - **Catalog.** HOME `seaweedfs-s3`가 REST 카탈로그를 제공하며 요청은 S3 identity로 SigV4
   서명된다. `lakehouse` 테이블 버킷은 `dev`와 `test` 네임스페이스를 가지며, LAB 작업
@@ -104,15 +130,16 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
   목록을 표시하고, `validate`는 expectation 실패 시 `1`, 검사할 수 없을
   때 `2`로 종료한다.
 
-### Authority
+##### Authority
 
 secret은 LAB 전용 `lab_lakehouse_<purpose>`이며 SeaweedFS admin·`lakehouse` key의 LAB 사본은 별도 승인 아래 준비한다. 실행은 활성 lease 안에서 승인된 S3·카탈로그 endpoint가 있을 때만 한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Identity-specific behavior
+###### Identity-specific behavior
+<!-- core-payload-level:4 -->
 
 `seaweedfs-table-bucket`은 admin 권한으로 policy를 매번 다시 쓰고, namespace/table delete 권한도 scoped identity에 부여한다. Flink JobManager와 TaskManager는 같은 build를 쓰지만 command, heap, slot, health가 다르다. JobManager는 `/overview`를 검사하고 TaskManager의 healthcheck는 JobManager `/taskmanagers` 응답에 등록 ID가 있는지 확인한다. 이 검사는 해당 job의 처리·checkpoint·복원 성공을 뜻하지 않으므로 그 결과는 따로 확인한다. Spark는 local one-shot이고 Trino는 인증 없는 single-node SQL이다. Great Expectations는 임시 context로 suite 목록을 표시하는 것이 기본이며 종료 코드 `0`은 통과, `1`은 expectation 실패, `2`는 검사 불가다. Trino username은 권한 제한이 아니다. build의 JAR 중 일부만 checksum으로 고정되며 Hadoop과 Iceberg 기준선 차이는 (미검증)이다. 재생 가능한 증거 없이 Flink checkpoint와 catalog/object를 삭제하지 않는다.
 
@@ -127,7 +154,8 @@ secret은 LAB 전용 `lab_lakehouse_<purpose>`이며 SeaweedFS admin·`lakehouse
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 LAB Compose가 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-#### Commands and side effects
+###### Commands and side effects
+<!-- core-payload-level:4 -->
 
 아래 명령은 저장소 루트에서 `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`
 접두사(표에서 `LAB`)로 실행한다. 렌더링만 하는 `LAB config`는 안전하다. 무언가를 시작하는
@@ -158,7 +186,8 @@ secret은 LAB 전용 `lab_lakehouse_<purpose>`이며 SeaweedFS admin·`lakehouse
 | `LAB exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | job 중지; 이전 체크포인트에서 커밋된 데이터는 유지 |
 | `LAB run --rm --no-deps great-expectations validate [SUITE...]` | Trino를 통해 테이블을 읽음; expectation 실패 시 `1`로 종료 |
 
-#### LAB boundary
+###### LAB boundary
+<!-- core-payload-level:4 -->
 
 - **Project.** `hy-home-lab-lakehouse` project의 `lab_lakehouse_net` 하나만 사용한다.
   root는 이 파일을 include하지 않고, 모든 서비스는 `hy-home.tier: lab`과
@@ -179,21 +208,42 @@ secret은 LAB 전용 `lab_lakehouse_<purpose>`이며 SeaweedFS admin·`lakehouse
   target에 mount되고 group은 `LAB_SECRETS_GID`다. 값은 복사되지 않았으므로 운영자가 SeaweedFS
   admin·`lakehouse` key의 LAB 사본을 별도 승인 아래 준비해야 한다(미결정 항목).
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `python3 scripts/validation/check-operations-catalog.py`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 카탈로그 오류, 접근 거부, job 실패, 테이블 복구는
 [runbook](../../03.runbooks/15.labs/0094-lakehouse.md)을 사용한다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [RUN-0094](../../03.runbooks/15.labs/0094-lakehouse.md)를 따른다. 카탈로그 오류, 접근 거부, job 실패, 테이블 복구를 다룬다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

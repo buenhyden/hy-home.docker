@@ -16,6 +16,7 @@ from jsonschema import Draft202012Validator
 
 import scripts.lib.document_governance.registry as registry_module
 from scripts.lib.document_governance import metadata_validator
+from scripts.lib.document_governance.common_document import wrap_document
 from scripts.lib.document_governance.metadata_validator import (
     Record,
     _parse_frontmatter_text,
@@ -661,6 +662,10 @@ class DocumentRegistryTests(unittest.TestCase):
             contract._canonical_source_paths(raw)
 
     def test_evaluation_readme_inherits_only_exact_typed_baseline(self) -> None:
+        from scripts.lib.document_governance.common_document import (
+            compact_payload,
+            wrap_document,
+        )
         from scripts.lib.document_governance.metadata import lifecycle
 
         profiles = build_registry_profiles(load_registry())
@@ -685,17 +690,28 @@ class DocumentRegistryTests(unittest.TestCase):
             )
 
             complete = (ROOT / target).read_text(encoding="utf-8")
+            complete_record = metadata_validator._record_from_text(
+                target, complete, profiles=profiles
+            )
             self.assertEqual(
                 [],
-                _introduced_body_findings(record, complete, record, complete, profiles),
+                _introduced_body_findings(
+                    complete_record, complete, complete_record, complete, profiles
+                ),
             )
-            changed = complete.replace("## Purpose", "## Missing Purpose", 1)
+            changed = wrap_document(
+                compact_payload(complete).replace(
+                    "## Purpose", "## Missing Purpose", 1
+                ),
+                kind="readme",
+            )
+            self.assertNotEqual(complete, changed)
             self.assertIn(
                 "body-heading-missing",
                 {
                     finding.code
                     for finding in _introduced_body_findings(
-                        record, changed, record, complete, profiles
+                        complete_record, changed, complete_record, complete, profiles
                     )
                 },
             )
@@ -1426,9 +1442,9 @@ class DocumentRegistryTests(unittest.TestCase):
         path = pathlib.Path("docs/99.templates/02.templates/03.specs/spec.template.md")
         profiles = build_registry_profiles(load_registry())
         source = (ROOT / path).read_text(encoding="utf-8")
-        source = source.replace(
-            'created: "{{CREATED}}"', 'cancellation: []\ncreated: "{{CREATED}}"'
-        )
+        original = source
+        source = re.sub(r"(?m)^(created:.*)$", r"cancellation: []\n\1", source, count=1)
+        self.assertNotEqual(original, source)
         record = metadata_validator._record_from_text(path, source, profiles=profiles)
         self.assertIn(
             "empty-optional-frontmatter",
@@ -1638,7 +1654,9 @@ class DocumentRegistryTests(unittest.TestCase):
             lambda match: values.get(match[1], "Fixture evidence"),
             source,
         )
-        rendered = rendered.replace('status: "draft"', 'status: "cancelled"')
+        draft = rendered
+        rendered = re.sub(r"(?m)^status:.*$", "status: cancelled", rendered, count=1)
+        self.assertNotEqual(draft, rendered)
         profiles = build_registry_profiles(load_registry())
         path = pathlib.Path("docs/03.specs/0001-fixture/01.tasks/tsk-0001-fixture.md")
         manifest = {"SPEC-0001": path.parent.parent / "spec.md"}
@@ -1653,13 +1671,16 @@ class DocumentRegistryTests(unittest.TestCase):
                 "status-frontmatter-required",
                 {item.code for item in validate_record(record, profiles, manifest)},
             )
-            supplied = rendered.replace(
-                'created: "2026-09-28"',
-                'created: "2026-09-28"\ncancellation:\n'
+            supplied = re.sub(
+                r"(?m)^(created:.*)$",
+                r"\1\ncancellation:\n"
                 '  reason: "Scope consolidated"\n'
                 '  authorization_ref: "#inputs-and-authorization"\n'
                 "  criteria_disposition: []",
+                rendered,
+                count=1,
             )
+            self.assertNotEqual(rendered, supplied)
             target.write_text(supplied)
             record = metadata_validator._record_from_text(
                 path, target.read_text(), profiles=profiles
@@ -1742,7 +1763,10 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
         common_six = ["title", "version", "type", "status", "owner", "updated"]
 
-        self.assertEqual(common_six, list(registry.common["frontmatter_order"][:6]))
+        self.assertEqual(
+            common_six,
+            [key for key in registry.common["frontmatter_order"] if key in common_six],
+        )
         for profile_id, profile in registry.profiles.items():
             if profile.get("frontmatter_policy") != "required" or any(
                 item.get("kind") == "provider-owned-binding"
@@ -1752,7 +1776,9 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(profile_id=profile_id):
                 required = list(profile["required_frontmatter"])
                 optional = set(profile["optional_frontmatter"])
-                self.assertEqual(common_six, required[:6])
+                self.assertEqual(
+                    common_six, [key for key in required if key in common_six]
+                )
                 self.assertTrue(set(common_six).isdisjoint(optional))
 
     def test_every_profile_frontmatter_key_has_canonical_order(self) -> None:
@@ -2434,7 +2460,7 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
 
         for role, definition in registry.template_roles.items():
-            source = ROOT / str(definition["source"])
+            source = ROOT / str(definition.get("native_source", definition["source"]))
             text = source.read_text(encoding="utf-8")
             with self.subTest(role=role):
                 if source.suffix == ".md":
@@ -2636,7 +2662,29 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(role=role):
                 text = (ROOT / str(source)).read_text(encoding="utf-8")
                 values = _parse_frontmatter_text(text)
-                profile = registry.profiles[str(template["profiles"][0])]
+                profile = registry.profiles[
+                    "template-source"
+                    if template.get("native_source")
+                    else str(template["profiles"][0])
+                ]
+                self.assertEqual(
+                    (),
+                    validate_frontmatter(
+                        resolve_template_placeholders(
+                            registry_module.normalize_profile_frontmatter(
+                                values, profile
+                            )
+                        )
+                    ),
+                )
+                output = template.get("native_source", source)
+                if str(output).endswith(".md"):
+                    text = (ROOT / str(output)).read_text(encoding="utf-8")
+                    values = _parse_frontmatter_text(text)
+                    profile = registry.profiles[str(template["profiles"][0])]
+                elif template.get("native_source"):
+                    self.assertEqual("common/template-source", values["type"])
+                    self.assertEqual(role, values["template_id"])
                 if _declares_provider_binding(profile):
                     # A provider runtime owns this binding, so it declares no type.
                     self.assertIn("name:", text)
@@ -2679,8 +2727,12 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_every_copy_template_is_registered(self) -> None:
         registry = load_registry()
         registered = {
-            pathlib.Path(str(value["source"]))
+            pathlib.Path(str(source))
             for value in registry.template_roles.values()
+            for source in (
+                value["source"],
+                *([value["native_source"]] if value.get("native_source") else []),
+            )
         }
         actual = {
             path.relative_to(ROOT)
@@ -3103,6 +3155,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "owner": "@buenhyden",
             "version": "0.1.0",
             "type": "",
+            "document_scope": {"subject": "Example", "layer": "workspace"},
             "parent_ids": [],
             "created": "2026-08-20",
             "updated": "2026-08-20",
@@ -3445,16 +3498,24 @@ class DocumentRegistryTests(unittest.TestCase):
             "| --- | --- | --- | --- | --- |",
             1,
         )
+        body = wrap_document(body, kind="requirement")
         record = Record(
             pathlib.Path("docs/01.requirements/0001-example.md"),
-            {},
+            {
+                "title": "Example",
+                "version": "0.1.0",
+                "status": "draft",
+                "owner": "@buenhyden",
+                "document_scope": {"subject": "Example", "layer": "workspace"},
+            },
             "requirements-package",
         )
 
         self.assertEqual(
             [], validate_body_contract(record, body, adapted, changed_boundary=True)
         )
-        missing = body.replace("## Traceability\n\nContract content.\n\n", "", 1)
+        missing = body.replace("#### Traceability\n\nContract content.\n\n", "", 1)
+        self.assertNotEqual(body, missing)
         self.assertIn(
             "body-heading-missing",
             {
@@ -3471,7 +3532,14 @@ class DocumentRegistryTests(unittest.TestCase):
         path = pathlib.Path("docs/00.workspace/03.process/sdlc.md")
         valid = Record(
             path,
-            {"profile_id": "governance-sdlc"},
+            {
+                "title": "Lifecycle",
+                "version": "0.1.0",
+                "status": "active",
+                "owner": "@buenhyden",
+                "document_scope": {"subject": "Example", "layer": "workspace"},
+                "profile_id": "governance-sdlc",
+            },
             "governance-sdlc",
             frontmatter_present=True,
         )
@@ -3480,6 +3548,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "## Sequence\n\nSequence.\n\n## Stop Conditions\n\nStop.\n\n"
             "## Outputs\n\nOutputs.\n\n## Related Documents\n\nLinks.\n"
         )
+        body = wrap_document(body, kind="contract")
         self.assertEqual(
             [],
             validate_body_contract(
@@ -3489,9 +3558,11 @@ class DocumentRegistryTests(unittest.TestCase):
                 changed_boundary=True,
             ),
         )
+        missing = body.replace("#### Inputs\n\nInputs.\n\n", "", 1)
+        self.assertNotEqual(body, missing)
         findings = validate_body_contract(
             valid,
-            body.replace("## Inputs\n\nInputs.\n\n", ""),
+            missing,
             adapted,
             changed_boundary=True,
         )
@@ -4201,15 +4272,21 @@ class VocabularyContractTests(unittest.TestCase):
     in the Registry; meaning stays an independent review."""
 
     def setUp(self) -> None:
+        from scripts.lib.document_governance.common_document import compact_payload
+
         self.common = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))["common"]
         self.path = ROOT / self.common["vocabulary_contract"]["glossary_path"]
-        self.text = self.path.read_text(encoding="utf-8")
+        self.wrapped_text = self.path.read_text(encoding="utf-8")
+        self.text = compact_payload(self.wrapped_text)
 
     def codes(self, text: str | None = None, common: dict | None = None) -> list[str]:
+        from scripts.lib.document_governance.common_document import wrap_document
+
         return [
             finding.code
             for finding in registry_module.vocabulary_contract_findings(
-                common or self.common, self.text if text is None else text
+                common or self.common,
+                wrap_document(self.text if text is None else text, kind="glossary"),
             )
         ]
 
@@ -4219,6 +4296,11 @@ class VocabularyContractTests(unittest.TestCase):
         self.assertEqual("3.0.1", contract["version"])
         self.assertEqual("3.0.1", contract["source_label"])
         self.assertEqual([], self.codes())
+        for text in (self.wrapped_text, self.text):
+            with self.subTest(enveloped=text == self.wrapped_text):
+                self.assertEqual(
+                    [], registry_module.vocabulary_contract_findings(self.common, text)
+                )
 
     def test_a_package_label_is_not_a_contract_version(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))

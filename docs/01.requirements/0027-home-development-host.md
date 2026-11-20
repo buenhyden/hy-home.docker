@@ -1,10 +1,13 @@
 ---
 title: "Home and Development Host Requirements"
-version: "1.2.1"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -12,9 +15,29 @@ created: "2026-09-19"
 
 # Home and Development Host Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 Operate real HOME services and development work on a single Linux host.
 Remove inconsistencies in implementation, operations documentation,
@@ -24,7 +47,7 @@ requirement records the full audit/redesign scope the user requested.
 Authoring documents and implementation does not imply approval to deploy real
 services or change data.
 
-### Stakeholders
+##### Stakeholders
 
 - A HOME user must be able to use the access/authentication foundation and
   AI/workflow features at all times.
@@ -35,13 +58,13 @@ services or change data.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 This package covers real HOME services and development work on a single Linux host, including the full audit and redesign scope the user requested, as stated in the Overview.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 Targets a single physical host with real operational data. Multiple
 containers or profiles on the same host do not provide physical failure
@@ -57,7 +80,7 @@ not a verification result that all concurrent workloads are possible on the
 current hardware, so real resource measurement and recovery rehearsal are
 needed.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -82,7 +105,7 @@ needed.
 | REQ-0027-NFR-0003 | Maintainability | Each exact version has one owning declaration. | The package records no unit for this measure. | The package records no measurement environment. | Each exact version has one owning declaration, and any exception states its reason and basis. |
 | REQ-0027-NFR-0004 | Verifiability | Every non-PASS result is recorded as such. | The package records no unit for this measure. | A run against the latest main. | Every unexecuted, failed or blocked result is recorded as non-PASS, never as success. |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0027-FR-0001**: Every current service must be classified as HOME,
   DEV, OPTIONAL, LAB, REMOVE, or MIGRATE, describing its consumers, data,
@@ -113,7 +136,7 @@ needed.
   administrators, both built from one source commit, and must stay outside
   the default HOME selection.
 
-### Quality Requirements
+##### Quality Requirements
 
 - **REQ-0027-NFR-0001 — Confidentiality**: Passwords, tokens, keys, and
   local secret values must not appear in output, reports, model context, or
@@ -128,15 +151,16 @@ needed.
   latest main, and unexecuted, failed, or blocked results must not be
   recorded as success; measure: every non-PASS result is recorded as such.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 No upstream policy or ADR is cited; the origin is the user's audit and redesign request stated in the Overview.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0027-FR-0001**: The classification of every service, with its
   consumers, data, resources and retention reason, can be confirmed in code and
@@ -174,7 +198,8 @@ No upstream policy or ADR is cited; the origin is the user's audit and redesign 
 - **REQ-0027-NFR-0004**: Every non-PASS result is recorded as such, from a run
   against the latest main.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Run the current-main checks required by REQ-0027-NFR-0004. Identify the
 exact revision and target in each applicable Task. Record pre-merge
@@ -184,8 +209,29 @@ record, and state every non-PASS result and unverified condition.
 SPEC-0204, SPEC-0212 and SPEC-0218 list this requirement as a parent.
 @buenhyden judges the conditions and accepts the requirement once they are met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - [Home and Development Host Architecture](../02.architecture/01.descriptions/0031-home-development-host.md)
 - SPEC-0261 (retired; version history) approved this Requirement and promoted its dependent documents.
 - SPEC-0270 (retired; version history) delivered the shared memory capacity ledger, search and backup source.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

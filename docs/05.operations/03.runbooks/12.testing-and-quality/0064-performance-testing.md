@@ -1,10 +1,13 @@
 ---
 title: "Performance Testing Incident Runbook"
-version: "1.3.1"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0064"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Performance Testing Incident Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 공유 서비스에 영향을 주는 k6·Locust LAB 부하 시험을 중단하고 진단하는 공통 절차다.
 부하를 먼저 멈추고, `quality_run.py` 격리 k6 runner 또는 독립 Locust LAB의 정확한 프로젝트를 확인한 뒤
@@ -30,7 +53,7 @@ next_review_at: "2027-05-13"
 - 결과 원본·checksum·summary·exit metadata가 누락되거나 바뀌어 판정 신뢰도가 떨어진다.
 - 실행 주체가 격리 k6 runner인지 별도 Locust LAB인지 불명확하다.
 
-### Targets
+##### Targets
 
 - 상위 문서: [Performance Testing Usage Guide](../../01.guides/12.testing-and-quality/0064-performance-testing.md) (`GDE-0064`)
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md) (`AD-0009`)
@@ -42,20 +65,20 @@ next_review_at: "2027-05-13"
 - [Locust runbook](../15.labs/0062-locust.md)
 - [k6 runbook](0061-k6.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 - [ ] 테스트 owner, target service owner, platform operator에게 중단 결정을 알린다.
 - [ ] 승인된 run_id·attempt·project_id, target origin, 사용자/요청률·시간 상한, 시나리오 hash와 시작 시각을 기록한다.
 
-### Environment
+##### Environment
 
 - [ ] Docker context, 격리 run 또는 LAB 프로젝트, 포트·네트워크·볼륨·자원과 정확한 중단·정리 범위를 확인한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -94,15 +117,16 @@ next_review_at: "2027-05-13"
    `perf_db` 적재 실패는 원본을 보존하고 동일 checksum 재적재만 시도한다;
    같은 run_id/attempt의 다른 파일은 충돌로 격리한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 부하를 먼저 멈추고 중단 상태를 유지한다. 대상 SLI가 회복되지 않았거나 원본·summary·exit metadata의 checksum 등 증거가 불완전하면 시험 판정을 통과로 확정하지 않으며, 재실행은 target owner 승인과 conservative ramp-up plan이 있을 때만 한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 `--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
 [quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix)의
@@ -113,18 +137,20 @@ next_review_at: "2027-05-13"
 - 관련 guide/policy/runbook이 격리 k6 runner와 독립 Locust LAB의 서비스명·경계를 유지한다.
 - 실행 상태, 시험 판정, 증거 완전성, 적재 상태가 서로 구분돼 있다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 - 명령 결과, 시각, 서비스명, 테스트 매개변수, 대상 SLI 요약과 최종 회복 상태를 기록한다.
 - Locust 또는 k6 중 어떤 절차를 사용했는지 기록한다.
 
-#### Observability and Evidence Sources
+###### Observability and Evidence Sources
+<!-- core-payload-level:4 -->
 
 - **Logs**: 부하 생성기·대상·공유 gateway/auth/data 계층의 정제된 로그
 - **Metrics**: 대상 SLI, 요청 오류율, 응답 지연과 Locust 요청 통계
 - **Evidence to Capture**: 서비스명, 테스트 매개변수, 중단·회복 시각과 실패 검사
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
 
@@ -133,15 +159,15 @@ next_review_at: "2027-05-13"
 - `run-ci-gate.py --profile changed --explain`: 문서가 실행하지 않는 계획 조회라고 밝히며 조회 결과를 검증 PASS로 기록하지 않는다. 후보 aggregate QA는 원격 PR 경로의 결과가 검증 근거가 된다.
 - `perf_db` 재적재와 재실행: target owner 승인과 conservative ramp-up plan이 필요하며 이 문서에는 실행 결과가 기록되어 있지 않다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 부하 중지 후에도 대상이 회복되지 않거나 루트 Compose 문맥이 깨지거나 비밀 노출이 의심되면 플랫폼 책임자와 대상 소유자에게 보고한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 부하 생성기별 중단 절차와 대상별 복구 런북을 사용한다. 중단 후에도 원본 파일과
 격리 결과 디렉터리를 보존하고 승인된 checksum과 대상 프로젝트만 재적재한다.
@@ -150,3 +176,23 @@ next_review_at: "2027-05-13"
 1. load generator를 중단한 상태로 유지한다.
 2. target service recovery는 해당 target의 runbook으로 전환한다.
 3. 재실행은 target owner 승인과 conservative ramp-up plan이 있을 때만 수행한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

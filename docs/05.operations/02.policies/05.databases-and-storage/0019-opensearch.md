@@ -1,10 +1,13 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "2.2.1"
+version: "3.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -15,13 +18,34 @@ next_review_at: "2027-05-13"
 
 # OpenSearch Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 정상 root의 단일 OpenSearch와 별도 standalone LAB 클러스터의 운영 경계를 정의합니다. 정상 구성은 `infra/04-data/opensearch/docker-compose.yml`의 선언된 OpenSearch custom build와 Dashboards 이미지입니다. 세 노드는 [LAB Compose](../../../../labs/opensearch-cluster/docker-compose.yml)에서만 선택하며 root에는 include되지 않습니다. 소스나 문서의 변경은 기동·중단·복구 승인을 부여하지 않습니다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Analytics Tier Architecture Description](../../../02.architecture/01.descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 
@@ -29,20 +53,21 @@ next_review_at: "2027-05-13"
 - [Custom image source: infra/04-data/opensearch/Dockerfile](../../../../infra/04-data/opensearch/Dockerfile)
 - [LAB Compose](../../../../labs/opensearch-cluster/docker-compose.yml) 및 [LAB 설명](../../../../labs/opensearch-cluster/README.md)
 
-### Applies To
+##### Applies To
 
 - **Systems**: 정상 `opensearch`/`opensearch-dashboards`; 별도 LAB의 `opensearch-node1..3`/`lab-opensearch-dashboards`
 - **Secrets**: 정상은 `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`와 API route basic auth `traefik_opensearch_basicauth_password`; LAB는 `${LAB_SECRET_DIR}/opensearch-cluster/`의 별도 `lab_opensearch_*`만 사용
 - **Persistence**: 정상 bind-backed `opensearch-data`/`opensearch-dashboards-data`; LAB는 `${LAB_DATA_DIR}/opensearch-cluster/` 아래 네 bind volume
 - **Environments**: repo-local, development, homelab, production-like rehearsal
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 애플리케이션 인증 연동은 이 정책이 아니라 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)가 정한다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -95,24 +120,27 @@ next_review_at: "2027-05-13"
 - **Allowed**: `-f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster`를 명시한 LAB 정적 render. 이는 기동 허가가 아닙니다.
 - **Disallowed**: unauthenticated bulk load, HTTP-only health check, 또는 index/ISM evidence 없이 replica policy가 존재한다는 주장.
 
-#### Accountable lifecycle boundary
+###### Accountable lifecycle boundary
+<!-- core-payload-level:4 -->
 
 적용 identity: 정상 `opensearch`, `opensearch-dashboards`; LAB `opensearch-node1..3`, `lab-opensearch-dashboards`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 임시 index setting, LAB cluster 실험, security config 변경은 owner의 별도 실행 승인과 before/after health evidence가 필요하다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - image/build, 인증서, secret, security config, cluster topology 변경 시
 - 분기별 문서화된 recovery evidence 검토
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - `test -f infra/04-data/opensearch/docker-compose.yml`
 - `test -f labs/opensearch-cluster/docker-compose.yml`
@@ -122,7 +150,7 @@ next_review_at: "2027-05-13"
 
 custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 실제 빌드 호환성 및 LAB 인증서 검증은 아직 확인되지 않았으며 (미검증), runtime admission blocker로 남는다.
 
-### Limits
+##### Limits
 
 이 정책은 아래 규칙에 명명된 자동 검사를 연결하지 않으며, 해당 규칙은 사전 검증·검토·승인 절차에 의존합니다.
 
@@ -137,16 +165,36 @@ custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버�
 - lifecycle: 자동 검사 없음(none) `POL-0019-R28`, `POL-0019-R30`, `POL-0019-R31`, `POL-0019-R32`, `POL-0019-R33`, `POL-0019-R34`, `POL-0019-R35`, `POL-0019-R36`; 수동 검토/승인 `POL-0019-R29`
 - 정책이 밝힌 공백: custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 실제 빌드 호환성 및 LAB 인증서 검증은 미검증이며 runtime admission blocker로 남는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/05.databases-and-storage/0019-opensearch.md) (`GDE-0019`), [Runbook](../../03.runbooks/05.databases-and-storage/0019-opensearch.md) (`RUN-0019`)
 
 - [OpenSearch snapshot and restore](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
 - [Operations policies index](../../README.md)
 - [Infra README](../../../../infra/04-data/opensearch/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

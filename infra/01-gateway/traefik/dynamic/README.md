@@ -1,13 +1,36 @@
 ---
 title: "Traefik Dynamic Configuration"
-version: "1.1.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Traefik Dynamic Configuration
+
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
 
 Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 
@@ -27,15 +50,17 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 
 ---
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
-#### Overview
+###### Overview
+<!-- core-payload-level:4 -->
 
 `infra/01-gateway/traefik/dynamic`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며 기존 본문과 실제 디렉터리 구조를 함께 기준으로 삼는다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
@@ -43,21 +68,25 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 - Operators
 - Documentation Writers
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
-##### In Scope
+###### In Scope
+<!-- core-payload-level:5 -->
 
 - Compose 서비스 정의와 관련 설정 설명
 - 서비스별 README와 운영 문서 연결
 - 검증 시 참고해야 할 구성 파일 인벤토리
 
-##### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:5 -->
 
 - secret 값 원문
 - 사용자 승인 없는 runtime 동작 변경
 - 다른 tier의 서비스 정책 중복 정의
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 infra/01-gateway/traefik/dynamic/
@@ -69,7 +98,7 @@ infra/01-gateway/traefik/dynamic/
 └── tls.yaml  # 구성 파일
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -79,38 +108,42 @@ infra/01-gateway/traefik/dynamic/
 | `sso-auth`·`dashboard-auth` 미들웨어 (`middleware.yml`) | 이 폴더의 `middleware.yml` | 보호 대상 라우터 | `sso-auth`는 ForwardAuth, `dashboard-auth`는 BasicAuth이며 보호 라우터는 `oauth2-proxy-svc` 서비스를 거친다. | 이 README는 실패 처리를 기록하지 않는다. |
 | `/dynamic` 동적 설정 마운트 | 이 폴더의 동적 설정 파일 | Traefik 파일 공급자 | 상위 Compose가 이 폴더를 `/dynamic`에 읽기 전용으로 마운트하고 Traefik이 재시작 없이 hot-reload한다. | 파일 공급자가 로드 오류를 로그로 남기며 `traefik` 서비스 로그와 헬스체크로 확인한다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 라우터 호스트는 `blog-export.`, `n8n.`, `hermes.` 하위 도메인이며, 도메인 값은 `{{ env "DEFAULT_URL" }}`로 읽는다. 별도 포트는 열지 않는다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 `tls.yaml`은 `/certs/cert.pem`과 `/certs/key.pem` 경로만 참조하며 인증서 본문은 이 폴더에 없다. 보호 대상 라우터는 `middleware.yml`의 미들웨어와 `oauth2-proxy-svc` 서비스를 거친다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 파일 공급자용 동적 설정(`blog-export.yml`, `hermes-webhook.yml`, `hermes.yml`, `middleware.yml`, `tls.yaml`)만 두며 Compose와 Dockerfile은 없다. 상위 Compose가 이 폴더를 `/dynamic`에 읽기 전용으로 마운트한다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
 2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 없음: 이 폴더는 자체 테스트나 검증 스크립트를 두지 않는다. Traefik 파일 공급자가 로드 오류를 로그로 남기며, 로드 결과는 `traefik` 서비스 로그로 확인한다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [infra/README.md](../../../README.md)
 - [Traefik 서비스 README](../README.md)
@@ -119,6 +152,27 @@ infra/01-gateway/traefik/dynamic/
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../../tech-stack.versions.json)으로 drift를 검증합니다.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 이 폴더는 자체 헬스체크를 선언하지 않는다. 라우터와 서비스 로드 상태는 상위 `traefik` 서비스의 헬스체크와 로그가 소유한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

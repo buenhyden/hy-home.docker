@@ -1,10 +1,13 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # 07-Workflow Optimization Hardening Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 `07-workflow` 계층의 최적화/하드닝 변경을 적용하는 SRE/플랫폼 운영자, DevOps 엔지니어, workflow 유지보수자.
 
-### Outcome
+##### Outcome
 
 이 문서는 `07-workflow` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. compose 보안 경계, health 기반 startup 계약, n8n 이미지 하드닝, 검증 절차를 제공한다.
 
@@ -38,7 +61,8 @@ next_review_at: "2027-05-13"
 - workflow 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목의 운영 기준(Airflow/n8n)을 문서화한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Declared parent: [07-Workflow Optimization Hardening Operations Policy](../../02.policies/08.workflows-and-automation/0054-workflow-optimization-hardening.md) (`POL-0054`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/01.descriptions/0007-workflow-architecture.md) (`AD-0007`)
@@ -46,24 +70,25 @@ next_review_at: "2027-05-13"
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 이 가이드가 전제하는 환경과 개념은 아래와 같다.
 
-#### 사전 조건
+###### 사전 조건
+<!-- core-payload-level:4 -->
 
 - Docker / Docker Compose 실행 환경
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Authority
+##### Authority
 
 - `infra/07-workflow` 수정 권한
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -74,11 +99,13 @@ next_review_at: "2027-05-13"
 | 5 | 기준선 검증 실행: hardening, template, traceability 검사 | 문서에 기록 없음 | 변경과 복구는 `RUN-0054`로 넘긴다 |
 | 6 | 카탈로그 확장 운영 기준 반영: Airflow DAG quality gate/worker autoscale, n8n Git backup/OpenBao credential 기준을 정책 문서에 반영하고 미구현 workflow service 문서를 active operations chain에서 제거 | 문서에 기록 없음 | 변경과 복구는 `RUN-0054`로 넘긴다 |
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
-#### 사용 절차
+###### 사용 절차
+<!-- core-payload-level:4 -->
 
 1. 정적 구성 점검
    - 아래 `Expected Results`의 Compose 검증을 실행한다.
@@ -98,19 +125,22 @@ next_review_at: "2027-05-13"
    - n8n workflow Git backup/OpenBao credential 기준을 정책 문서에 반영한다.
    - 미구현 workflow service 문서는 active operations chain에서 제거한다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
-#### Static gate boundary
+###### Static gate boundary
+<!-- core-payload-level:4 -->
 
 정적 게이트의 한계는 [정책의 Static gate boundary](../../02.policies/08.workflows-and-automation/0054-workflow-optimization-hardening.md#static-gate-boundary)를 따른다.
 
-### Expected Results
+##### Expected Results
 
 확인 항목과 기대 결과는 아래와 같다.
 
-#### Common Checks
+###### Common Checks
+<!-- core-payload-level:4 -->
 
 - `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
@@ -118,16 +148,17 @@ next_review_at: "2027-05-13"
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - 일부 라우터에만 SSO 체인을 적용하는 실수
 - worker/task-runner healthcheck 없이 startup 불안정을 방치하는 실수
 - n8n custom image를 compose에서 사용하지 않아 hardening drift가 생기는 실수
 - 카탈로그 확장 항목을 문서만 기록하고 task로 분해하지 않는 실수
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../03.runbooks/08.workflows-and-automation/0054-workflow-optimization-hardening.md)을 따른다.
 
@@ -135,6 +166,26 @@ next_review_at: "2027-05-13"
 - [Operations policy](../../02.policies/08.workflows-and-automation/0054-workflow-optimization-hardening.md)
 - [Recovery runbook](../../03.runbooks/08.workflows-and-automation/0054-workflow-optimization-hardening.md)
 
-### Next Action
+##### Next Action
 
 증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0054](../../03.runbooks/08.workflows-and-automation/0054-workflow-optimization-hardening.md)의 진단, 재시작, rollback, escalation 기준을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

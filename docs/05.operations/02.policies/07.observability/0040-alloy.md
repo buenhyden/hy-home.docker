@@ -1,10 +1,13 @@
 ---
 title: "Alloy Operations Policy"
-version: "1.2.1"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0040"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-13"
 
 # Alloy Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 Grafana Alloy collector의 telemetry ingestion, discovery, relabeling, exporter, route, health, 설정 경계를 정의한다. 사용 흐름은 [GDE-0040](../../01.guides/07.observability/0040-alloy.md)이, 장애 대응 절차는 [RUN-0040](../../03.runbooks/07.observability/0040-alloy.md)이 맡는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/01.descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 이 정책은 `infra/06-observability`의 Alloy Compose 서비스와 두 설정 파일에 선언된 운영 기준을 다룬다.
 
 - **Systems**: compose service `alloy`, container `alloy`, image [Compose image declaration](../../../../infra/06-observability/docker-compose.yml), 설정 `infra/06-observability/alloy/config/config.alloy`(기본 pipeline)와 `config.home.alloy`(기본 pipeline에 품질 metric 수신기 추가), secret `quality_otlp_token`, volume `alloy-data`, Docker socket/container log 읽기 전용 mount
 - **Environments**: 로컬, 개발, 홈랩 운영
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -107,32 +132,35 @@ next_review_at: "2027-05-13"
 - 승인 없이 OTLP port, exporter endpoint, route middleware, Docker discovery project filter, image version을 runtime에서 바꾸는 행위
 - profile source가 연결되지 않았는데 profiling ingestion이 active라고 선언하는 행위
 
-#### Lifecycle and data controls
+###### Lifecycle and data controls
+<!-- core-payload-level:4 -->
 
 - Alloy를 HOME으로 유지하고 socket 읽기 전용과 선언된 network, gateway 경계를 보존한다.
 - 설정이 영속 기준이다. 사용 component를 확인한 상태만 백업하며 전송 중 telemetry의 정확한 복구를 약속하지 않는다.
 - Upgrade 전에 대상 버전 config, 허용 손실, 각 backend 전달을 검증한다. writer만으로 profile 수집을 증명하지 않는다.
 - 제거에는 producer 이전, 관측 공백 승인, route/port 폐쇄, 확인된 WAL/checkpoint 처리가 필요하다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 pipeline, exporter, Docker discovery, route, mount 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다. 장애 대응 중 임시 조치가 필요하면 [RUN-0040](../../03.runbooks/07.observability/0040-alloy.md)에서 최소 조치와 rollback evidence를 기록한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - Alloy image, config, Docker discovery, relabel rule, exporter endpoint, mount 경로, OTLP port, route, healthcheck가 바뀔 때 검토한다.
 - 정기 검토는 분기마다 한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../01.guides/07.observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../03.runbooks/07.observability/0040-alloy.md#steps)가 소유한다.
 - Repository contracts: 원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
-### Limits
+##### Limits
 
 정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
@@ -145,16 +173,36 @@ pipeline, exporter, Docker discovery, route, mount 예외는 사용자 승인과
 - 수명주기/데이터: `POL-0040-R35`는 승인/검토 등 수동 절차에 의존한다.
 - 정책 본문은 개별 확인 명령을 지정하지 않고 Compose/pipeline/수신기 확인 명령의 소유를 guide/runbook에 위임하므로, 이 정책이 직접 이름 붙인 검사는 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외와 통제 변경에는 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/07.observability/0040-alloy.md) (`GDE-0040`), [Runbook](../../03.runbooks/07.observability/0040-alloy.md) (`RUN-0040`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../01.guides/07.observability/0040-alloy.md)
 - [Recovery runbook](../../03.runbooks/07.observability/0040-alloy.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

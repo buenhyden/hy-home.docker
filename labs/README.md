@@ -1,18 +1,41 @@
 ---
 title: "독립 LAB source"
-version: "0.4.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-12"
 ---
 
 # 독립 LAB source
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 이 디렉터리는 정상 root Compose와 분리된 LAB entrypoint, 공개 안내와
 LAB 전용 build·bind source를 보관합니다. LAB 운영 문서는
@@ -20,16 +43,19 @@ LAB 전용 build·bind source를 보관합니다. LAB 운영 문서는
 승격 통제와 절차는 `15-labs`의 LAB 승격 정책과 런북(OPS-0107)이 소유하며,
 각 LAB의 Guide와 Runbook도 같은 폴더에 있습니다. [운영 문서 탐색](../docs/05.operations/README.md)에서 찾습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 LAB source 관리자, 운영자와 정적 검토자입니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 source 경로와 공개 구성의 탐색입니다. 실제 기동, 이미지 업데이트, 비밀값 이관,
 부하 생성, 데이터 삭제·복구를 문서 이동으로 승인하거나 완료로 처리하지 않습니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 모든 LAB은 `labs/<name>/` 폴더 하나입니다(SPEC-0263). 폴더에는 진입점
 `docker-compose.yml`, 서비스 `README.md`, 승격 manifest `promotion.yaml`과 LAB이 쓰는
@@ -56,9 +82,10 @@ build source·설정·helper·Grafana 대시보드가 함께 있습니다. `labs
 
 [공개 환경 예시](.env.example)는 정적 구성 입력이며 실제 비밀값을 저장하지 않습니다.
 
-### Interfaces
+##### Interfaces
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 데이터 LAB의 역할과 선택 경계는 다음과 같습니다. 각 LAB 폴더의 Compose와 안내가
 실제 profile·source·권한 계약을 소유합니다.
@@ -95,17 +122,18 @@ Locust 전용 공개 입력은 [.env.example](.env.example)의 `LAB_LOCUST_*`를
 사용합니다. Locust source는 이 독립 entrypoint용이며 root profile에 추가하지
 않습니다. 실제 부하 target·권한·종료 조건은 별도 수용 입력입니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 LAB은 HOME network, 상태, secret을 공유하지 않으며 기동은 `lab.py`의 목적·lease 검사를 거친다. 비밀값 이관은 문서 이동으로 승인되지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 각 LAB은 `labs/<name>/docker-compose.yml`의 독립 Docker Compose project로 실행하며 `scripts/operations/lab.py`가 정확한 LAB 이름으로 선택한다. image, network, 상태 경로는 각 LAB 폴더가 선언한다.
 
-### Selected Start
+##### Selected Start
 
 각 LAB 폴더의 entrypoint는 기존 `scripts/operations/lab.py`의 exact LAB 이름으로
 선택합니다. 실제 실행 전에는 목적·lease·대상·resource·권한·정리와 복구 경계를
@@ -115,20 +143,22 @@ LAB은 HOME network, 상태, secret을 공유하지 않으며 기동은 `lab.py`
 Compose는 상대 경로와 `LAB_SECRET_DIR`를 `labs/<name>/` 기준으로 해석하므로
 `LAB_SECRET_DIR` 기본값은 `../../secrets/labs`입니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 각 LAB의 정적 render는 `docker compose --env-file labs/.env.example -f labs/<name>/docker-compose.yml --profile '*' config --quiet`로 검증하며 개별 명령은 각 LAB README에 있다. source render 통과는 native 실행 성공의 증거가 아니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [문서 탐색](../docs/README.md)
 - [운영 문서 탐색](../docs/05.operations/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 이 디렉터리는 인덱스라 직접 관측 대상이 없고 복구 경계는 아래와 같다. LAB 운영은 [LAB Runbook 목록](../docs/05.operations/03.runbooks/15.labs/README.md)을 따른다.
 
@@ -136,3 +166,23 @@ Compose는 상대 경로와 `LAB_SECRET_DIR`를 `labs/<name>/` 기준으로 해�
 LAB 클러스터를 구분하고 성능·HA를 측정 없이 보장하지 않습니다. Valkey LAB 복구에는
 조율된 RDB checkpoint와 완전한 AOF set/manifest, 새로운 cluster identity가 필요합니다.
 게시된 client/bus 포트의 노출 경계를 유지합니다. 이 source 정리는 복구 실행 증거가 아닙니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

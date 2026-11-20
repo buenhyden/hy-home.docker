@@ -1,10 +1,13 @@
 ---
 title: "Common Controls and Exceptions Plan"
-version: "1.0.6"
+version: "2.0.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "specs"
 artifact_id: "SPEC-0218-PLAN-0001"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-10-09"
 
 # Common Controls and Exceptions Plan
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Goal and Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the plan payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Goal and Boundary
 
 Convert the schema and validator first, then fix leaves one control at a
 time, each proven by a real run, then record budgets and the remaining
@@ -35,23 +58,23 @@ Parent Spec:
 
 - [Spec](spec.md)
 
-### Assumptions
+##### Assumptions
 
 The plan works under the approved SPEC-0218; it assumes no authority beyond it. Public preparation may begin now; measurements and mutation wait for each service's exact readiness and lease.
 
-## Dependencies
+#### Dependencies
 
-### Prerequisites
+##### Prerequisites
 
 The plan needs the approved Spec, the existing root inventory for P07 consumer assessment, and each service's exact readiness and lease before any measurement or mutation; no new LAB execution is included.
 
-### Dependency Order
+##### Dependency Order
 
 W1 has no dependency. W2, W3 and W6 start after W1; W4 has none. W5 starts after W3, W7 after W5, and W8 after W1 to W7. For P07, W9 has no dependency; W10 starts after W9, W11 after W9 and W10, and W12 and W13 after W11. W14 starts after W12 and W13, W15 after W14, and W16 after W9 to W15.
 
-## Implementation Strategy
+#### Implementation Strategy
 
-### Work Breakdown
+##### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -72,7 +95,7 @@ W1 has no dependency. W2, W3 and W6 start after W1; W4 has none. W5 starts after
 | W15 | 3, 10 | Changed-service rollout, rollback, backup and empty-target recovery after exact target authorization | W14 | TSK-0002 | Actual bounded service receipts and restored usability/function |
 | W16 | 9, 10 | Reconcile owned projections and current-head review/delivery after inventory integration | W9, W10, W11, W12, W13, W14, W15 | TSK-0002 | Selected registered gates, local-staged and independent reviews |
 
-### Change and Rollback
+##### Change and Rollback
 
 Rollback is a revert of the merge; recreated services then
 return to their previous definitions on the next recreation.
@@ -83,9 +106,9 @@ backup/empty-target restore plan. Preserve accepted outbox/data and other
 writers. Never use whole-stack up/down, volume deletion, prune, recursive
 chown, broad credential rotation or a historical recreation list as rollback.
 
-## Verification Plan
+#### Verification Plan
 
-### Verification Matrix
+##### Verification Matrix
 
 Unit tests for the validator, the Conftest verify run, real LAB runs through
 `lab.py` with synthetic inputs, exact-image runs for root services that are
@@ -103,33 +126,53 @@ Prefer exact root leaf changes. A proposed common-template change requires
 a static comparison proving zero LAB effective-config delta and preservation
 of existing LAB exception rows; no LAB runtime execution is authorized.
 
-### Stage Placement
+##### Stage Placement
 
 Future delivery uses one PR for its owning Spec. Before that PR merges, refresh
 it to the current target head and obtain its applicable current-head CI and an
 independent review.
 
-## Risks
+#### Risks
 
-### Risks and Mitigations
+##### Risks and Mitigations
 
 The template changes reach HOME services only when they are recreated. The
 group removal could break a service that reads or writes through group 1000;
 data-directory writers keep the group through recorded exceptions.
 
-### Escalation
+##### Escalation
 
 Work stops and returns to the owner when a required check fails or an approval is missing, per the stop rules in [docs/03.specs/AGENTS.md](../AGENTS.md); a missing service readiness, lease or exact target authorization blocks the dependent measurement or mutation.
 
-## Promotion Map
+#### Promotion Map
 
-### Durable Meaning
+##### Durable Meaning
 
 Schema-v2 exceptions and effective-control validation (W1 to W8) and the P07 measured budgets and least-privilege results (W9 to W16) are the lasting meaning; TSK-0001 and TSK-0002 record the evidence.
 
-### Owner and Receipt
+##### Owner and Receipt
 
 Owner @buenhyden. Receipts are in TSK-0001 (W1 to W8) and TSK-0002 (W9 to W16).
 
 - [Task](01.tasks/tsk-0001-common-controls-and-exceptions.md)
 - [P07 root resource optimization](01.tasks/tsk-0002-p07-root-resource-optimization.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

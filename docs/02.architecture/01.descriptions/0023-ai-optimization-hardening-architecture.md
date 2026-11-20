@@ -1,10 +1,13 @@
 ---
 title: "08-AI Optimization Hardening Architecture Description"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0023"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-28"
 
 # 08-AI Optimization Hardening Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 - **Owns**: Ollama gateway ingress and identity, the Open WebUI LAB access
   and stateful storage boundaries, the Ollama concurrency and queue ceiling,
@@ -30,7 +53,8 @@ created: "2026-03-28"
 - **Non-goals**: a distributed GPU scheduler and parallel external LLM
   providers.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This Description records the hardening scope for HOME Ollama, the local LLM
 inference and embedding engine, and the independent Open WebUI LAB. It covers
@@ -39,14 +63,15 @@ stateful storage and the shared hardening gate.
 Requirement owners, implementers and operators share these concerns; the tier
 structure itself is in [AD-0008](0008-ai-architecture.md).
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 The HOME Ollama route uses Traefik `websecure`. Open WebUI uses a separate
 LAB bind, native Keycloak OIDC, and an approved, reachable Ollama endpoint
 for generation and embedding. The LAB has no gateway route or HOME network
 attachment.
 
-### Constraints
+##### Constraints
 
 The HOME Ollama route passes the standard gateway chain and ForwardAuth.
 LAB login requires a separately approved HTTPS origin and matching identity
@@ -54,9 +79,9 @@ redirect. The Ollama concurrency and queue defaults below bound GPU load.
 Static hardening evidence covers configuration, while service health and
 login require an actual runtime check.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - **Ingress**: Traefik `websecure` routes `ollama.${DEFAULT_URL}` through
   `gateway-standard-chain`, `sso-errors` and `sso-auth`
@@ -69,7 +94,7 @@ login require an actual runtime check.
 - **Control**: the gateway and identity middleware, the hardening script and
   CI job, and the Operations guide, policy and runbook.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -84,11 +109,12 @@ login require an actual runtime check.
 - Open WebUI uses `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` for generation and embedding.
 - Ollama concurrency and queue limits are set in `infra/08-ai/ollama/docker-compose.yml:42-44`.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 - **Entities**: model artifacts, conversation and session metadata, and
   embedding vectors.
@@ -100,7 +126,8 @@ login require an actual runtime check.
   `OLLAMA_MAX_LOADED_MODELS=1` and `OLLAMA_MAX_QUEUE=16`
   (`infra/08-ai/ollama/docker-compose.yml:42-44`).
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 - **Platform**: root Compose includes `infra/08-ai/ollama` (Ollama and
   `ollama-exporter`). Open WebUI lives in a separate Compose project and
@@ -110,7 +137,7 @@ login require an actual runtime check.
   `infrastructure-hardening` job. These are static checks; they prove no
   running service or login.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 LAB health checks do not order startup across projects. Verify access to the
 approved Ollama endpoint before accepting chat or embedding. The Ollama
@@ -118,11 +145,12 @@ concurrency and queue ceiling bounds GPU load. Losing the Open WebUI data bind
 loses the embedded RAG index and application state. The operations owners
 linked under Currentness and Lineage govern change and recovery.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Performance**: the Ollama concurrency and queue ceiling bounds GPU load.
 - **Security**: HOME Ollama uses the gateway standard chain and ForwardAuth.
@@ -132,14 +160,15 @@ linked under Currentness and Lineage govern change and recovery.
 - **Observability**: `ollama-exporter` supplies metrics, and the hardening gate
   detects contract drift.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 - Open WebUI relies on its own OIDC configuration rather than gateway
   ForwardAuth, so a change to that configuration changes its access boundary.
 - The embedded vector store shares the Open WebUI volume; losing it loses the
   RAG index along with the application state.
 
-### Trade-offs
+##### Trade-offs
 
 - The Ollama concurrency and queue ceiling (`OLLAMA_NUM_PARALLEL=2`,
   `OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_MAX_QUEUE=16`) bounds GPU load; a
@@ -153,20 +182,22 @@ linked under Currentness and Lineage govern change and recovery.
 - Static hardening evidence covers configuration only; service health and
   login require an actual runtime check (Constraints).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - **Identity decision**: [ADR-0059](../02.decisions/0059-native-oidc-open-webui-and-airflow.md)
 - **Current placement**: [ADR-0062](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - **PRD**: [REQ-0009](../../01.requirements/0009-ai.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](0008-ai-architecture.md)
 - **Open WebUI Architecture Description**: [AD-0013](0013-open-webui-architecture.md)
@@ -174,7 +205,8 @@ linked under Currentness and Lineage govern change and recovery.
 - **Policy**: [AI optimization hardening policy](../../05.operations/02.policies/09.ai-and-search/0058-ai-optimization-hardening.md)
 - **Runbook**: [AI optimization hardening runbook](../../05.operations/03.runbooks/09.ai-and-search/0058-ai-optimization-hardening.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 - **Ollama**: a model cache and storage policy, a GPU scheduling ceiling and a
   model promotion procedure from experiment to production.
@@ -182,3 +214,23 @@ linked under Currentness and Lineage govern change and recovery.
   log retention and masking policy.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

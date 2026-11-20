@@ -2589,6 +2589,87 @@ Narrative after the registered table.
             ),
         )
 
+    def test_ac_display_ids_preserve_numeric_semantic_identity(self) -> None:
+        module = _spec_packages_module()
+        for number in (1, 3, 158, 10000):
+            with self.subTest(number=number):
+                display = module.acceptance_criterion_id(number)
+                self.assertEqual(f"AC-{number:04d}", display)
+                self.assertEqual(number, module.acceptance_criterion_number(display))
+        for invalid in ("AC-0000", "AC-001", "AC-00001", "AC-0001\n", "1"):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaises(module.SpecPackageError),
+            ):
+                module.acceptance_criterion_number(invalid)
+
+    def test_historical_numeric_criterion_can_start_with_an_ac_citation(self) -> None:
+        module = _spec_packages_module()
+        self.assertEqual(
+            (3,),
+            module.acceptance_criterion_numbers(
+                "## Acceptance Criteria\n\n3. **AC-0001** is cited without redefining criterion three.\n",
+                "Acceptance Criteria",
+            ),
+        )
+
+    def test_acceptance_parser_reads_canonical_ac_declarations_not_examples(
+        self,
+    ) -> None:
+        module = _spec_packages_module()
+        for declaration in (
+            "- **AC-0001**: First.\n- **AC-0003**: Third.\n",
+            "1. **AC-0001**: First.\n3. **AC-0003**: Third.\n",
+            "| Criterion | Outcome |\n| --- | --- |\n"
+            "| AC-0001 | First. |\n| AC-0003 | Third. |\n",
+        ):
+            with self.subTest(declaration=declaration):
+                body = (
+                    "## Acceptance Criteria\n\n"
+                    "```md\n- **AC-0090**: Example.\n```\n"
+                    "<div>\n- **AC-0091**: Example.\n</div>\n\n" + declaration
+                )
+                self.assertEqual(
+                    (1, 3),
+                    module.acceptance_criterion_numbers(body, "Acceptance Criteria"),
+                )
+
+    def test_acceptance_parser_refuses_mixed_or_disagreeing_identities(self) -> None:
+        module = _spec_packages_module()
+        for declarations in (
+            "1. **AC-0002**: Disagreeing ordinal.\n",
+            "- **AC-0001**: First.\n2. A second independent identity form.\n",
+            "- **AC-001**: Malformed identity.\n",
+            "| AC-0000 | Invalid zero. |\n",
+            "| AC-0001 | |\n",
+            "| **AC-0001 | Missing closing markup. |\n",
+        ):
+            with self.subTest(declarations=declarations):
+                with self.assertRaises(module.SpecPackageError):
+                    module.acceptance_criterion_numbers(
+                        "## Acceptance Criteria\n\n" + declarations,
+                        "Acceptance Criteria",
+                    )
+
+    def test_common_envelope_exposes_ac_payload_and_refuses_a_broken_boundary(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        module = _spec_packages_module()
+        text = wrap_document(
+            "# Spec\n\n## Acceptance Criteria\n\n- **AC-0001**: Observable outcome.\n",
+            kind="spec",
+        )
+        self.assertEqual(
+            (1,), module.acceptance_criterion_numbers(text, "Acceptance Criteria")
+        )
+        with self.assertRaises(module.SpecPackageError):
+            module.acceptance_criterion_numbers(
+                text.replace("### 본문과 규칙", "### Broken payload", 1),
+                "Acceptance Criteria",
+            )
+
     def test_acceptance_criteria_read_only_markdown_outside_raw_html(self) -> None:
         module = _spec_packages_module()
         body = "## Acceptance Criteria\n\n<div>\n90. Example.\n</div>\n\n1. Actual.\n"
@@ -2681,6 +2762,14 @@ Narrative after the registered table.
                 '---\ntitle: "Literal <!--"\n---\n\n  ####\tExecution Items ####\n'
             )
         )
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        wrapped = wrap_document(
+            '---\ntitle: "Literal <!--"\n---\n\n# Task\n\n'
+            "## Execution Log\n\n### Execution Items\n\nAn actual item.\n",
+            kind="task",
+        )
+        self.assertTrue(module._has_execution_items(wrapped))
 
     def test_common_key_resolves_the_legacy_h2_or_the_common_form_h3(self) -> None:
         module = _spec_packages_module()

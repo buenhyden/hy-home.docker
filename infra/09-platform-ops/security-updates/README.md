@@ -1,17 +1,40 @@
 ---
 title: "Security update evidence"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # 보안 업데이트 조사 증거
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 이 폴더는 SEC01의 현재 source·runtime 조사 자료와 미실행 경계를 보관합니다.
 수용 책임은 SPEC-0204와 정식 발급된
@@ -23,7 +46,8 @@ JSON 자료는 기존 inventory·버전 projection을 대체하는 Registry가 �
 authority입니다. script manifest는 Task가 아니라 이 README를 authority로
 참조합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 root include closure의 서비스와 선택된 custom build 입력을 조사합니다.
 이 경로의 장부·시험은 source 증거를 보관합니다. 2026-10-11의 전체 이미지
@@ -135,7 +159,8 @@ Supabase 선례처럼 15개 행은 현재 ROOT 장부에서 빼고 원래 행을
 `source_input_sha256`과 `include_inputs`의 source binding만 다시 연결했다. 이 정합화도
 공급자 재조회·서명·SBOM/scan·native·HOME 배포 결과를 만들지 않는다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 | 파일 | 용도 |
 | --- | --- |
@@ -151,7 +176,7 @@ Supabase 선례처럼 15개 행은 현재 ROOT 장부에서 빼고 원래 행을
 | `common-validator-integration.patch` | 수신 당시 공통 runtime·AI 버전·Renovate 검증기 수정 제안; 현재 authoritative diff가 아닌 역사 입력 |
 | `service-inventory-integration.patch` | 수신 당시 renderer Airflow Env 셀 갱신 제안; 현재 authoritative diff가 아닌 역사 입력 |
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -160,25 +185,28 @@ Supabase 선례처럼 15개 행은 현재 ROOT 장부에서 빼고 원래 행을
 | Renovate post-upgrade `--accept-image-updates` | Renovate PR | `update-ledger.json` | 전체 `name:tag@sha256:<64 hex>` 참조로 바뀐 기존 행만 받아들이고 미검증 상태로 남긴다. | 새 서비스·제거·digest 없는 참조·build 변경은 종료 코드 2로 거부하고 아무것도 쓰지 않는다. |
 | `ledger_rebind` 재결합 | `python3 -m scripts.lib.supply_chain.ledger_rebind` | `update-ledger.json`의 `source_refreshes`와 `source_input_sha256` | 기본 dry run으로 계획을 출력하고 `--write --source-revision`일 때만 해시를 다시 묶는다. | 이미지·build 변경이나 행 추가·제거는 목록만 출력하고 종료 코드 2로 끝난다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 입력은 `update-ledger.json`, `release-lookups.json`, `image-source-lookups.json`, `package-lookups.json`, `vendor-channel-references.json` 같은 이 폴더의 JSON 장부이며, gate 모듈이 이를 읽어 판정을 출력한다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 이 폴더는 조회 시각, 응답 SHA, 공식 URL 같은 공개 출처 정보만 보관하며 토큰과 secret 값을 담지 않는다. 운영 변경, 토큰 폐기, 원격 PR은 별도 승인 전까지 실행하지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 저장소 루트에서 실행하는 Python 모듈(`scripts.lib.supply_chain`)과 이 폴더의 JSON 장부로 구성되며 서비스를 기동하지 않는다.
 
-### Selected Start
+##### Selected Start
 
 장부 갱신은 `bash scripts/operations/sync-update-ledger.sh --write`로 하며 Renovate PR의 post-upgrade에서도 사용한다. 장부를 다시 묶을 때는 `python3 -m scripts.lib.supply_chain.ledger_rebind`가 계획을 출력한다.
 
-#### 현재 실행 근거와 과거 집계의 구분
+###### 현재 실행 근거와 과거 집계의 구분
+<!-- core-payload-level:4 -->
 
 OpenBao 두 행의 `current_candidate_receipt`는
 `verification.json#/current_receipt_assessment`를 가리킵니다.
@@ -193,7 +221,8 @@ OpenBao 두 행의 `current_candidate_receipt`는
 latest/security gate는 이 영수증 필드를 소비하지 않습니다. 이번 자료 정합은
 새 실행 입력 검사기나 운영 인수를 추가하지 않습니다.
 
-#### 현재 후보 release-channel provenance
+###### 현재 후보 release-channel provenance
+<!-- core-payload-level:4 -->
 
 이번 service-local 후보를 구성하는 공급자 identity의 exact tag/ref object, annotated-tag
 dereference, full commit, 요청별 종료 코드와 관찰 시각은
@@ -305,7 +334,8 @@ FROM/ARG/COPY/SHELL·설치 입력·constraints hash를 새 snapshot으로 구�
 OpenBao helper 추가 수정 가능성은 수신 당시 상태이며, 현재 final integration은
 TSK-0009의 latest/security gate와 review/delivery receipt가 결정합니다.
 
-#### 2026-10-11 수신된 과거 후보 스캔
+###### 2026-10-11 수신된 과거 후보 스캔
+<!-- core-payload-level:4 -->
 
 다음 수치는 별도 작업자의 보고이며, 기존 로컬 Grype `0.116.0` / Syft `1.48.0` 사용을 자체 보고했습니다. <!-- runtime-version-exception: history — 수신한 과거 scanner 식별이며 현재 운영 pin이 아님 -->
 소스 입력별 불변 archive·publisher 인증·DB readiness·완전한 실행 receipt가 없어
@@ -334,15 +364,16 @@ TSK-0009의 latest/security gate와 review/delivery receipt가 결정합니다.
 
 이 자체 보고만으로 최신 후보 선정, 정확한 build/pull, 보안 수용이 끝났다고 판단하지 않습니다. 수신한 과거 보고에서는 Pyroscope의 match만 0이며, 나머지 후보에는 Critical 또는 High 결과가 남아 있습니다. 다음 SEC01 단계는 JSON별 CVE·package·fix state triage, 공급자 advisory와 false-positive 근거 확인, update/replace 또는 잔여 위험 승인 기록, SBOM·signature·native compatibility·stateful recovery 재실행입니다. 이 절차 전까지 HOME rollout과 전체 최신화·보안 완료 주장은 차단됩니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 `python3 -m scripts.lib.supply_chain.latest_version_gate --input infra/09-platform-ops/security-updates/update-ledger.json`와 `python3 -m scripts.lib.supply_chain.security_update_gate --input <reviewed-security-ledger.json>`로 장부를 판정한다. 장부가 유효하다는 결과는 배포나 복구 PASS가 아니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - `infra/tech-stack.versions.json`: 기존 Compose image projection
 - `docs/90.references/01.research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md`: 기존 현재 서비스 inventory
@@ -353,6 +384,27 @@ HTTP 429를 관찰한 image metadata 조회는 quota/backoff 뒤 다시 확인�
 공급자의 `test` tag나 NGINX mainline을 vendor stable로 자동 승격하지 않습니다.
 Supabase Studio의 monorepo release와 DB image의 test release도 별도 공급 계약입니다.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 상시 실행되는 서비스가 아니라 조사 증거 장부이므로 헬스체크와 메트릭이 없다. 실제 대상·백업·복구·실행 증거는 SPEC-0204-TSK-0009가 기록하며 장부 변경은 Git에서 되돌린다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

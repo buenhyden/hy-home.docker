@@ -1,28 +1,53 @@
 ---
 title: "Root resource optimization preparation"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-11"
 ---
 
 # Root resource optimization preparation
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 P07 W10의 공개 측정 계약과 bounded 평가 자료입니다. 진행·검증 증거는
 현재 Task `SPEC-0218-TSK-0002`에 기록합니다.
 서비스 목록과 소비자 판단은 기존 inventory를 재사용하며 여기서 별도 목록을 만들지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 서비스 소유자, 총괄 통합자와 코드·보안 검토자가 준비 자료를 사용합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 [measurement.schema.json](measurement.schema.json)은 source·배포 식별자, 관측 시간·주기,
 대표 업무 부하, 20개 측정값과 11개 예산, 기존 controls v2의 선택된 root projection을
@@ -46,14 +71,15 @@ source·배포 SHA와 digest의 일치 여부는 입력끼리 비교하며 실�
 외부 schema reference, symlink·hardlink·비정규 파일, private 이름·디렉터리,
 읽는 중 교체·변경된 파일은 고정 오류 코드로 거부합니다. 경로나 입력값을 오류에 출력하지 않습니다.
 
-#### Documents
+###### Documents
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | --- | --- |
 | [measurement.schema.json](measurement.schema.json) | 공개 측정 입력 계약 |
 | [fixtures/README.md](fixtures/README.md) | 합성 입력과 예상 거부 결과 |
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -61,21 +87,23 @@ source·배포 SHA와 digest의 일치 여부는 입력끼리 비교하며 실�
 | `scripts/operations/root-resource-assessment.py` | 평가기(`scripts/lib/ops/root_resource_assessment.py`) | 이 README는 소비자를 기록하지 않는다. | 지정한 공개 JSON 한 파일(256 KiB, 깊이 32, 노드 8192)을 받아 `0`=REVIEWABLE, `1`=BLOCKED, `2`=입력 거부로 종료한다. | 부적합 입력은 고정 오류 코드로 거부하며 경로나 입력값을 출력하지 않는다. |
 | `scripts/operations/storage-write-rate.py` (`collect`, `compare`) | 쓰기율 CLI | 배치 결정을 소유하는 POL-0102와 owner | Docker 메타데이터·`/proc/diskstats`·cgroup `io.stat`과 SMART 값으로 24시간 쓰기량과 SSD 수명을 추정한다. | 조건 미달은 `DEFER`, 잘못된 입력은 거부하며 종료 코드 `1`은 표본 무효, `2`는 입력 오류이다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 CLI는 지정한 JSON 외에 이 디렉터리의 schema를 읽습니다. 실행 환경·Compose·secret 설정을 변경하지 않습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 입력은 지정한 공개 JSON 한 파일뿐이며 Docker, 네트워크, 실제 환경 파일, 로그, secret을 읽지 않고 자원·권한도 변경하지 않는다. 경로나 입력값은 오류에 출력하지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 Python 평가기와 JSON Schema Draft 2020-12를 사용합니다. 기존 controls v2가 정책 소유자입니다.
 
-### Selected Start
+##### Selected Start
 
 저장소 루트에서 [CLI](../../../scripts/operations/root-resource-assessment.py)를 실행합니다.
 
@@ -89,7 +117,8 @@ python scripts/operations/root-resource-assessment.py infra/09-platform-ops/reso
 모든 결과는 `SOURCE/UNIT/STATIC`, `runtime_acceptance=false`,
 `mutation_authorized=false`를 유지합니다.
 
-#### SSD 쓰기율 측정
+###### SSD 쓰기율 측정
+<!-- core-payload-level:4 -->
 
 [쓰기율 CLI](../../../scripts/operations/storage-write-rate.py)는 관측 저장소
 (Prometheus·Loki·Tempo·Pyroscope·Alloy)의 24시간 쓰기량을 비교합니다. SPEC-0246 W7에서
@@ -119,9 +148,9 @@ Boolean, 비유한 값, 음수·중복 장치·잘못된 카운터와 유한 범
 동일 장치 번호의 재할당, 현재 배치·출처를 완전히 입증하지 않습니다. 해당 정보는
 미검증으로 남기며 새 현장 표본이나 담당자 인수를 이 소스 검사로 대신하지 않습니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 [합성 fixture](fixtures/README.md)는 unknown·idle 축소·식별 불일치·예산 모순의
 거부 동작을 검증합니다. 실제 관측은 대상 서비스·정확한 배포 이미지·플랫폼,
@@ -130,14 +159,36 @@ Boolean, 비유한 값, 음수·중복 장치·잘못된 카운터와 유한 범
 대표 업무 부하·백업/복구 계약 및 운영 시간 배정 이후 별도로 진행합니다.
 Wiki·학습 앱·LAB runtime은 이 준비 자료의 범위 밖입니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [상위 platform operations](../README.md)
 - [controls v2 예외 registry](../../common-optimizations.exceptions.json)
 - [프로젝트 문서 진입점](../../../docs/README.md)에서 현재 Task와 기존 서비스 inventory의 소유 문서를 찾습니다.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 상시 실행되는 서비스가 아니라 CLI 평가 자료이므로 헬스체크와 메트릭이 없다. 결과는 종료 코드 `0`(REVIEWABLE), `1`(BLOCKED), `2`(입력 거부)로 확인하고 변경은 Git에서 되돌린다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

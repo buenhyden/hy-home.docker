@@ -1,10 +1,13 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # 02-Auth OAuth2 Proxy Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 OAuth2 Proxy 인증 루프, OIDC 장애, CA/issuer/callback 불일치, Redis/Valkey session 장애, logout 경계 혼동, readonly/tmpfs 관련 오류, 설정 검증 실패 상황에 대한 복구 절차를 정의한다.
 
@@ -35,7 +58,7 @@ next_review_at: "2027-05-13"
 - compose/config 변경 후 런타임 부팅 실패
 - Keycloak `/admins` group 사용자가 거부되거나 비허용 사용자가 통과할 때
 
-### Targets
+##### Targets
 
 > Scope: OAuth2 Proxy ForwardAuth Recovery
 
@@ -54,13 +77,14 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../01.guides/03.identity-and-access/0015-oauth2-proxy.md)
 - [Operations policy](../../02.policies/03.identity-and-access/0015-oauth2-proxy.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 승인 대상과 증거 처리 기준은 다음과 같다.
 
-#### Target, approval and safe evidence
+###### Target, approval and safe evidence
+<!-- core-payload-level:4 -->
 
 저장소 루트의 승인된 Docker context에서 아래에 명시한 서비스만 다룬다.
 명령이 runtime을 변경하는 단계는 대상, 영향받는 사용자·소비자, 이전 image/config,
@@ -70,19 +94,20 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 여러 앱 공통 장애는 [RUN-0099](../01.common/0099-system-operations.md), cold-start는
 [RUN-0098](../01.common/0098-cold-start-and-reboot.md)이 소유한다.
 
-### Environment
+##### Environment
 
 조치 전에 확인할 항목은 다음과 같다.
 
-#### Preflight checks
+###### Preflight checks
+<!-- core-payload-level:4 -->
 
 - [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 실행
 - [ ] Proxy의 정제된 인증/backend 오류 요약 오류 패턴 확인
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -97,7 +122,8 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 | 9 | Diagnosis and recovery steps: config lint 실패 롤백 | 문서에 기록 없음 | Rollback or Recovery의 파일 복원 절차를 따른다 |
 | 10 | Lifecycle, helpers and change acceptance: 승인된 `oauth2-proxy` 대상 기동·중지 후 `/ping`, `/ready`, callback, 비허용 그룹 거부, logout 범위 확인 | `/ping`과 `/ready`, 로그인 callback, 비허용 그룹 거부, logout 범위를 각각 확인한다 | image가 없거나 build 선택이 불명확하면 RUN-0086의 별도 검토·build 절차로 넘기며 임의 build/pull하지 않는다 |
 
-#### Diagnosis and recovery steps
+###### Diagnosis and recovery steps
+<!-- core-payload-level:4 -->
 
 1. 기본 진단
    - `/ping` 확인: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
@@ -134,7 +160,8 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 9. config lint 실패 롤백
    - 아래 Rollback or Recovery의 파일 복원 절차를 따른다
 
-#### Lifecycle, helpers and change acceptance
+###### Lifecycle, helpers and change acceptance
+<!-- core-payload-level:4 -->
 
 Proxy의 issuer·CA와 공유 `mng-valkey`가 준비되어야 한다. 기본 공유 경로에서 `auth`
 선택이 DB/Valkey readiness를 기다린다고 가정하지 않는다. 기존 로컬 image를
@@ -155,19 +182,21 @@ docker compose stop oauth2-proxy
 공유 `mng-valkey`는 이 절차로 중지/flush하지 않는다. 세션 손실 시 재로그인이 기본
 복구이며 cleanup을 위해 `down -v`나 `FLUSHALL`을 사용하지 않는다.
 
-### Stop Conditions
+##### Stop Conditions
 
 runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 수용 확인은 다음과 같다.
 
-#### Acceptance checks
+###### Acceptance checks
+<!-- core-payload-level:4 -->
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
 - [ ] `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping` 성공
@@ -175,11 +204,13 @@ runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤�
 - [ ] `/ready`가 session store 연결까지 성공
 - [ ] `/oauth2/sign_out`과 Keycloak end-session redirect의 효과를 구분해서 기록
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 관측 신호와 증거 기록은 다음과 같다.
 
-#### Observability and evidence sources
+###### Observability and evidence sources
+<!-- core-payload-level:4 -->
 
 - **Signals**: `/ping`, oauth2-proxy 로그, Keycloak 연결 오류율
 - **Evidence to Capture**:
@@ -187,13 +218,15 @@ runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤�
   - Keycloak의 정제된 OIDC 오류 요약
   - check-all-hardening.sh 02-auth 출력
 
-#### 증거 기록
+###### 증거 기록
+<!-- core-payload-level:4 -->
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
 - Valkey credential의 노출 경계는 [Policy](../../02.policies/03.identity-and-access/0015-oauth2-proxy.md#rules)를 따른다. `docker inspect`, `docker top`, `/proc/*/cmdline`·`environ`, 원문 `.State.Health.Log`는 기록하지 않는다.
 
-#### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
+###### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
+<!-- core-payload-level:4 -->
 
 > Historical evidence (not current authority; source: Git history):
 > Source: `c26bc8026254`, `docs/05.operations/03.runbooks/03.identity-and-access/0015-oauth2-proxy.md`, 2026-09-22 owner-approved rehearsal.
@@ -210,7 +243,7 @@ runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤�
 위 outage 관찰은 당시 공유 backend와 unauthenticated 요청만 다룬다. 현재 선언
 이미지에서 재실행한 결과도, 인증된 기존 세션의 fail-closed 검증도 아니다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
 
@@ -219,15 +252,16 @@ runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤�
 - 인증된 기존 세션의 outage 중 fail-closed: 2026-09-22 rehearsal에서 측정하지 않았다고 문서에 기록되어 있다. 현재 선언 이미지에서의 재실행 결과도 없다. 테스트 credential 없이는 검증할 수 없으며 승인된 인증 세션으로 outage를 재현해 검증한다.
 - Acceptance checks(`check-all-hardening.sh 02-auth`, `/ready`, 콜백, `sign_out`과 end-session 구분): 체크리스트이며 이 문서에는 통과 기록이 없다. 각 명령의 실행 결과로 검증한다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
-#### Rollback or Recovery
+###### Rollback or Recovery
+<!-- core-payload-level:4 -->
 
 설정 파일 복원 절차는 다음과 같다.
 
@@ -253,3 +287,23 @@ Valkey session state를 잃었거나 호환되지 않으면 ForwardAuth를 fail-
 cookie/client secret을 노출하지 않는다. cookie secret이 바뀌었다면 이전 cookie를
 명시적으로 무효화하고 새 Keycloak login을 test한다. session-loss 복구와 upgrade
 rollback 경로는 계획된 절차이며 2026-09-20 문서 수정 때 실행하지 않았다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

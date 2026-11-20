@@ -1,10 +1,13 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.6.1"
+version: "3.0.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: Agentic Engineering Research Pack
+  layer: reference
+updated: "2026-11-20"
 layer: "references"
 artifact_id: "RES-0002"
 parent_ids:
@@ -15,15 +18,37 @@ observed_at: "2026-09-05"
 
 # Agentic Engineering Research Pack
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 에이전트 엔지니어링(harness, loop, instruction, 모델 선택, 기억, SDD·SDLC 문서, Compose·인프라, CI/CD, 품질, 보안)에 관한 외부 근거와 과거 워크스페이스 관측을 멤버 m0001–m0021로 묶은 비규범 연구 묶음이다. 현재 규칙은 [거버넌스](../../../../.agents/README.md)와 해당 Stage 문서가 소유한다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 | 구분 | 이번 기록 |
 | --- | --- |
@@ -38,7 +63,8 @@ observed_at: "2026-09-05"
 실제 계정·비용, 환경변수·비밀값·원시 로그 조사는 제외했다. 연구를 근거로 한
 설정·정책 변경, 배포·재시작·push·PR·merge도 수행 범위가 아니다.
 
-#### Question
+###### Question
+<!-- core-payload-level:4 -->
 
 공식 외부 자료에 근거해 agent engineering, SDLC, 문서화, Compose, CI/CD,
 품질과 보안의 선택지를 어떻게 구분하고, 후속 내부 조사에 필요한 질문과
@@ -47,7 +73,7 @@ observed_at: "2026-09-05"
 이번 결과는 비규범적 연구다. 상세 주장은 기존 멤버 한 곳이 소유하며 이
 README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 - 워크스페이스 구현·운영·계정·보안 상태는 새로 평가하지 않았다. 내부 적용
   상태는 모두 `Not assessed in this run`이다.
@@ -58,11 +84,12 @@ README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
 - 문서 검증은 서비스 health, 복구, 성능, 공급자 이용 권한 또는 remote
   enforcement를 증명하지 않는다. 실제 결과와 미실행 사유는 Task에서 구분한다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | --- | --- |
@@ -88,7 +115,8 @@ README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
 | [`m0020-workspace-baseline.md`](m0020-workspace-baseline.md) | Agentic Engineering Workspace Baseline |
 | [`m0021-local-docker-service-consolidation.md`](m0021-local-docker-service-consolidation.md) | Local Docker Service Consolidation |
 
-#### Request Coverage and Member Navigation
+###### Request Coverage and Member Navigation
+<!-- core-payload-level:4 -->
 
 이번 요청 A–L의 다대일 매핑이다. 모든 현재 내부 적용 상태는
 `Not assessed in this run`이다. 상세 분석과 비교는 대표 절이 소유한다.
@@ -112,15 +140,16 @@ README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
 방법·합격/실패·권한·소유 역할은 [m0015](m0015-scope-application-matrix.md#future-internal-checks)가
 통합 안내한다. [m0020](m0020-workspace-baseline.md)은 과거 내부 baseline의 보존 위치다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 member의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Implications
+###### Implications
+<!-- core-payload-level:4 -->
 
 작은 local-first 작업 공간에서는 기존 문서·작업 기록·native 기능으로 필요를
 충족하는지 먼저 평가한다. 새로운 wrapper, tracker, 기억 시스템, agent catalog는
@@ -131,7 +160,8 @@ README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
 복구 시험, 실제 provider 호출, 계정·권한 read-back, 서비스 변경은 권한과 격리
 조건을 먼저 정해야 한다. 이번 연구는 그 실행을 승인하지 않는다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 연구는 비규범적 근거다. 실제 채택과 변경은 [거버넌스](../../../../.agents/README.md),
 [SDLC](../../../00.workspace/03.process/sdlc.md) 및 해당 Requirement·Architecture·Spec·운영
@@ -147,9 +177,10 @@ SPEC-0185 Task에만 기록한다.
 [member template](../../../99.templates/02.templates/90.references/research.template.md).
 탐색: [연구 인덱스](../README.md).
 
-### Checks
+##### Checks
 
-#### Method
+###### Method
+<!-- core-payload-level:4 -->
 
 질문, 증거 모델, 수명주기/관측 시점, 활용 목적이 모두 같을 때 현재 설명을
 동일 주장으로 통합한다. 외부 제품 사양과 과거 내부 실행 결과는 합치지 않는다.
@@ -172,7 +203,8 @@ SPEC-0185 Task에만 기록한다.
 사실/해석/권고, 한계·충돌·재확인 조건을 붙인다. 제품 지원과 계정 entitlement,
 API 요금과 구독 CLI quota를 구분한다. 찾지 못한 기능은 미지원으로 추론하지 않는다.
 
-#### Preservation Declaration
+###### Preservation Declaration
+<!-- core-payload-level:4 -->
 
 SPEC-0158의 보호 대상과 기존 식별자를 유지한다. 고유 관측·출처·승인 이력은
 삭제하지 않으며 역사 구역은 당시 의미로만 읽는다. 기존 보호 집합을 바꾸지 않고
@@ -201,7 +233,8 @@ SPEC-0158의 보호 대상과 기존 식별자를 유지한다. 고유 관측·�
 - `m0020-workspace-baseline.md`
 - `m0021-local-docker-service-consolidation.md`
 
-#### Synthesis
+###### Synthesis
+<!-- core-payload-level:4 -->
 
 instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 아니다.
 외부 제품 지원, 계정 이용 권한, 로컬 채택과 실행 결과도 별개의 주장이다.
@@ -209,7 +242,8 @@ instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 �
 서로 대체할 수 없는 증거다. 이는 연결된 멤버들의 출처를 종합한 연구자의
 해석이며 새 정책이나 내부 평가 결과가 아니다.
 
-#### Historical workspace observations — not reassessed in this refresh
+###### Historical workspace observations — not reassessed in this refresh
+<!-- core-payload-level:4 -->
 
 아래 기록은 이전 관찰의 한국어 보존본입니다. 현재 주장이나 새 승인으로 읽지 않으며, 현재 외부 연구는 위의 갱신된 member 탐색을 따릅니다.
 
@@ -221,7 +255,8 @@ runtime 수용 증거가 아닙니다. Source 링크는 이제 현재 owner로
 연결되며 원래의 `observed_at`, `reviewed_at`, status, 측정된 사실은
 그대로 보존됩니다.
 
-#### Historical question
+###### Historical question
+<!-- core-payload-level:4 -->
 
 모든 claim에 canonical owner 하나와 명시적인 증거 깊이가 있도록,
 이 저장소는 agentic workspace, spec-driven SDLC, operations corpus,
@@ -264,7 +299,8 @@ documentation architecture, Compose platform, quality 체계, 보안 통제를
 구성원을 갱신해야 하며 전문적이고 역사적이며 archive-domain인 finding은
 기존 package에 남습니다.
 
-#### Historical scope
+###### Historical scope
+<!-- core-payload-level:4 -->
 
 > Historical evidence (not current authority; source: Git history): 문서 관찰 baseline 시점에 기록된 source 경로.
 >
@@ -298,7 +334,8 @@ documentation architecture, Compose platform, quality 체계, 보안 통제를
 >   platform 메커니즘의 세부 사항을 소유합니다. 이 package는 주제별 연구와
 >   그 cross-category navigation을 소유합니다.
 
-#### Historical method
+###### Historical method
+<!-- core-payload-level:4 -->
 
 1. 무언가를 발급하거나 재구성하기 전에, 모든 활성 research package와
    구성원을 경로, 제목, `artifact_id`, `parent_ids`, lifecycle metadata,
@@ -321,7 +358,8 @@ documentation architecture, Compose platform, quality 체계, 보안 통제를
    check를 실행한 뒤 canonical full gate를 실행합니다. local, Hosted,
    provider, runtime, remote 결과는 별도 증거 행으로 남깁니다.
 
-##### Historical existing artifact decision record
+###### Historical existing artifact decision record
+<!-- core-payload-level:5 -->
 
 | Existing artifact | Related requested categories | Current problem | Decision | Target artifact |
 | --- | --- | --- | --- | --- |
@@ -331,7 +369,8 @@ documentation architecture, Compose platform, quality 체계, 보안 통제를
 | RES-0085 | 현재 `main` baseline | 그 question이 m0020이 이미 소유한 current-baseline 목적과 중복됨 | 현재 소유권을 m0020으로 통합하고 RES-0085는 `review` 상태의 날짜가 있는 복구 증거로 보존 | RES-0002-m0020과 RES-0085 증거 |
 | New RES-0096 candidate | 같은 question 집합 | 기존 owner와 관찰 주기를 중복함 | 만들지 않음 | 없음 |
 
-##### Historical 2026-09-05 baseline decision record
+###### Historical 2026-09-05 baseline decision record
+<!-- core-payload-level:5 -->
 
 이 pass는 `main@71da6654e2fa3def174b238ad309c92fe46e9dae`에서 같은 question
 집합을 다시 관찰했고 구조적 변화는 없었습니다. 요청된 모든 범주가 이미
@@ -357,9 +396,11 @@ clone은 실패합니다. 두 결과 모두 기록됩니다. 이 관찰이 건�
 계약은 Stage 00과 Stage 99에 속하므로, 후속 작업은 이 package가 아니라
 일반적인 Requirement-to-Task chain으로 진행됩니다.
 
-#### Historical findings
+###### Historical findings
+<!-- core-payload-level:4 -->
 
-##### Historical member navigation
+###### Historical member navigation
+<!-- core-payload-level:5 -->
 
 <!-- Historical evidence table (not current authority; source: Git history). -->
 | Category | Member | Core question | Repository state | Evidence depth | Priority |
@@ -386,7 +427,8 @@ clone은 실패합니다. 두 결과 모두 기록됩니다. 이 관찰이 건�
 | Workspace baseline | [m0020](m0020-workspace-baseline.md) | What is actually present at the repository boundary? | Current baseline and dated measurements are consolidated here; RES-0085 preserves recovery evidence | Configured, Local-executed | High |
 | Local Docker service consolidation | [m0021](m0021-local-docker-service-consolidation.md) | Which local services are open source, overlapping, or safe removal candidates? | Current Compose/runtime inventory and official project sources compared; removal decisions remain user- and data-dependent | Local-executed, External-source-reviewed | High |
 
-##### Historical requested category routing
+###### Historical requested category routing
+<!-- core-payload-level:5 -->
 
 `Current status`와 `Principal gap`은 이 관찰 시점의 평가입니다. `Evidence
 depth`는 Method에서 정의한 통제 어휘(Defined, Configured, Local-executed,
@@ -496,7 +538,8 @@ route 모두의 Hosted 수용, 2026-09-05 remote protection read-back입니다.
 이 변화로 저장소 증거는 강화되지만 live deployment, 영구 memory,
 editor 통합, 비용, provider 결과 gap은 닫히지 않습니다.
 
-#### Historical sources
+###### Historical sources
+<!-- core-payload-level:4 -->
 
 2026-09-05에 다시 연 공통 공식 source:
 
@@ -541,7 +584,8 @@ editor 통합, 비용, provider 결과 gap은 닫히지 않습니다.
 각 구성원이 세부 claim과 source inventory를 소유합니다. 이
 package 수준 목록은 범주 전반에 공유되는 source만 담습니다.
 
-#### Historical implications
+###### Historical implications
+<!-- core-payload-level:4 -->
 
 1. 공통 Agent 거버넌스를 provider-neutral 정책으로, Stage 99를 문서 계약
    권위로 보존합니다; Stage 90 finding을 어느 쪽으로도 승격하지
@@ -562,7 +606,8 @@ package 수준 목록은 범주 전반에 공유되는 source만 담습니다.
    Research → Requirement → Architecture/ADR → Spec → Plan → Task →
    Verification → Independent Review.
 
-#### Historical traceability
+###### Historical traceability
+<!-- core-payload-level:4 -->
 
 - 구성원: [m0001](m0001-agent-instructions-vibe-coding.md),
   [m0002](m0002-agent-model-selection.md),
@@ -608,7 +653,8 @@ package 수준 목록은 범주 전반에 공유되는 source만 담습니다.
   [research-member template](../../../99.templates/02.templates/90.references/research.template.md),
   [Registry](../../../99.templates/registry.json).
 
-#### Historical preservation declaration
+###### Historical preservation declaration
+<!-- core-payload-level:4 -->
 
 SPEC-0158은 아래 나열된 모든 파일을 consumer가 없더라도 보호합니다. 이
 선언은 내구성 있는 경로 oracle이며 고정된 개수, hash, commit을 담지
@@ -646,7 +692,8 @@ identity와 정확한 구성원 집합을 보존합니다. 이후의 baseline �
 보호된 어떤 경로도 바꾸지 않으며 m0020을 단일 현재 workspace-baseline
 owner로 만듭니다.
 
-#### Historical limitations
+###### Historical limitations
+<!-- core-payload-level:4 -->
 
 - 사용자 전역 Claude/Codex 설정, secret, credential, 개인 key,
   environment 값, shell history, raw log는 이 갱신에서 읽지
@@ -666,7 +713,8 @@ owner로 만듭니다.
   취급합니다; 현재 생성된 LLM Wiki 신선도는 오직 등록된 generator와
   check만이 결정합니다.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 원문별 상세 절·확인일·제품 범위는 멤버의 `Claims and Sources`에서 직접 확인한다.
 공급자·모델은 [m0012](m0012-provider-implementation-comparison.md#claims-and-sources)와
@@ -680,3 +728,23 @@ owner로 만듭니다.
 
 역사 인용을 이번 확인 날짜로 다시 지정하지 않았다. 접근 불가, 발행일 미표시,
 draft/preview와 문서 간 차이는 해당 주장 옆에 한계로 남긴다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

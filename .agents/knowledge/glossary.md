@@ -1,9 +1,12 @@
 ---
 title: "Repository Vocabulary"
-version: "0.13.0"
+version: "1.0.0"
 type: "governance/vocabulary"
 status: "draft"
 owner: "@buenhyden"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
 updated: "2026-11-20"
 created: "2026-09-06"
 observed_at: "2026-11-20"
@@ -12,7 +15,27 @@ review_cycle: "on-contract-change"
 
 # Repository Vocabulary
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the glossary payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
 
 This is the meaning owner for the shared governance terms used in this
 repository. Each entry gives the meaning and names the policy that owns the
@@ -20,7 +43,7 @@ rule. The policy owns the procedure, the allowed commands, the state
 transitions and the check algorithm; this file never restates them. A passing
 check does not stand in for a policy approval or an owner acceptance.
 
-## Scope
+#### Scope
 
 Included: the adopted common Term IDs and shared execution, review and
 agent/provider meanings. The pinned Repository Vocabulary table remains the
@@ -31,7 +54,7 @@ bindings and narrower local uses belong to the
 Excluded: policy procedures, vendor identities owned by the Provider Registry,
 service inventories and private session content.
 
-## Normative Language
+#### Normative Language
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY in governance
 documents are interpreted as described in RFC 2119 and RFC 8174 when, and only
@@ -41,7 +64,7 @@ user and the canonical owner named in
 not from the RFCs. A stronger keyword does not make an unenforced rule
 enforced.
 
-## Repository Vocabulary
+#### Repository Vocabulary
 
 | Term ID | Term | Korean | Definition | Not to Confuse | Policy Owner | Contract Version |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,7 +112,7 @@ enforced.
 | TERM-READINESS | Readiness | 착수 준비 | The state in which the current inputs, environment, permissions and scope meet the conditions to start a piece of work | Approval or acceptance | [Task checklists](../../docs/00.workspace/04.quality/task-checklists.md#before-editing) | 3.0.1 |
 | TERM-DESIGN-FIT | Design Fitness | 설계 적합성 | The result of comparing the target design derived from the current requirement with an existing implementation in meaning, interface and guarantee | Past completion or identical structure | [SDLC](../../docs/00.workspace/03.process/sdlc.md#sequence) | 3.0.1 |
 
-## Local Extensions
+#### Local Extensions
 
 These supplemental shared meanings are outside the pinned table above; the
 registered heading is retained for its existing form. Repository-specific
@@ -117,9 +140,9 @@ narrowings are defined only in the linked local vocabulary.
 | Permission profile | `read-only` or `workspace-write`, translated per provider | Approval | Provider Registry |
 | Explicit invocation | A skill runs only when named; discovery alone never selects or empowers it | Discovery | [Agentic policy](../governance/agentic.md) |
 
-## Maintenance
+#### Maintenance
 
-### Provenance
+##### Provenance
 
 Compiled from tracked sources at repository commit
 `9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06 and revalidated on
@@ -164,14 +187,14 @@ Term IDs, names, Korean labels, definitions, order and contract version remain
 unchanged apart from rebased links. Supplemental foundation meanings are
 not a new version of the adopted shared contract.
 
-### Refresh Triggers
+##### Refresh Triggers
 
 - A governance policy introduces, renames or retires a term.
 - The shared Repository Vocabulary contract changes version.
 - A Stage 99 lifecycle, profile or identity relation changes.
 - A public suite or profile name changes in the workflow contract.
 
-## References
+#### References
 
 - [Knowledge index](README.md)
 - [Repository authority map](repository-map.md)
@@ -180,3 +203,23 @@ not a new version of the adopted shared contract.
 - [SDLC](../../docs/00.workspace/03.process/sdlc.md)
 - [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md)
 - [Quality standards](../../docs/00.workspace/04.quality/quality-standards.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

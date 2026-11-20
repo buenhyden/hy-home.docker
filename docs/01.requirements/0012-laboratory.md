@@ -1,10 +1,13 @@
 ---
 title: "Administration and Experimentation Requirements"
-version: "1.6.1"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0012"
 created: "2026-03-26"
@@ -12,9 +15,29 @@ created: "2026-03-26"
 
 # Administration and Experimentation Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 When service access points, container state, data store debugging tools and
 notebook-style experiment tools are scattered, operators waste time on status
@@ -26,7 +49,7 @@ and safely use these tools, and how an isolated LAB is kept apart from HOME
 until the owner promotes it. The retired Laboratory directory does not retire
 these requirements.
 
-### Stakeholders
+##### Stakeholders
 
 - **System administrator**: monitors container state and logs (Dozzle).
 - **Backend developer**: inspects and debugs Redis data (RedisInsight).
@@ -36,14 +59,14 @@ these requirements.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - RedisInsight, Dozzle, Open Notebook with SurrealDB, MLflow and
   JupyterLab; the isolation and promotion readiness of every LAB.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - **Out of scope**: admin UIs of individual business applications.
 - **Non-goals**: hardware-level monitoring, owned by the observability tier;
@@ -61,7 +84,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 - These tools see Docker, Redis/Valkey, provider APIs and notebook content, so
   a weak boundary exposes the whole host.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -70,7 +93,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 | REQ-0012-FR-0004 | Root composition validation must cover the selections `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB), `surrealdb`, and `mlops` and `data-science` (each MLflow and its database provisioner). JupyterLab is outside root validation; it renders on its own and selects no root service. | This package records no rationale for this requirement. | Root validation renders each listed selection without failure, and the JupyterLab LAB renders alone; this is not evidence of a running service. | must |
 | REQ-0012-FR-0005 | These capabilities are optional and outside the always-on HOME set; their absence must not affect core traffic. Each LAB keeps its own project, network, endpoint inputs, data root and secret copies, and declares where and how it would be promoted. A LAB is promoted only when the owner approves it and a fail-closed readiness report passes, judged on declared resource reservations; an unmeasured value is not a pass. | The package states how an isolated LAB is kept apart from HOME until the owner promotes it; each promotion is a separate, owner-approved change. | Every LAB passes the LAB isolation check, and no LAB is promoted without an owner-approved readiness report whose criteria all pass. | must |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0012-FR-0001**: Every administration and experimentation tool must have
   one documented access point that an operator or agent can find from the
@@ -94,20 +117,21 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   owner approves it and a fail-closed readiness report passes, judged on
   declared resource reservations; an unmeasured value is not a pass.
 
-### Quality Requirements
+##### Quality Requirements
 
 This package declares no quality requirement and records no reason why none applies.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 This package records the owner's requirements for the laboratory tier; no upstream
 document governs it.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0012-FR-0001**: Each tool in scope has a guide in the operations catalog
   that names its access point.
@@ -121,7 +145,8 @@ document governs it.
 - **REQ-0012-FR-0005**: Every LAB passes the LAB isolation check, and no LAB is
   promoted without an owner-approved readiness report whose criteria all pass.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Review the catalog guides, the named root selections and the standalone LAB
 isolation checks. Use SPEC-0262 Task evidence for the migration or rendering
@@ -131,7 +156,8 @@ readiness result and owner approval in its applicable Task under the
 SPEC-0263 contract. @buenhyden judges the conditions and accepts the
 requirement once they are met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - **Architecture Description**: [Laboratory architecture](../02.architecture/01.descriptions/0011-laboratory-architecture.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
@@ -146,3 +172,23 @@ requirement once they are met.
   under SPEC-0169 because every clause named an implementation artifact; its
   contract lives in the laboratory operations policy, and its documentation
   traceability clause moved to REQ-0026-FR-0011.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

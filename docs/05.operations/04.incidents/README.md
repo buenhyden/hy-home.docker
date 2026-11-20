@@ -1,10 +1,13 @@
 ---
 title: "05.operations/incidents"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 ---
 
@@ -12,13 +15,34 @@ layer: "operations"
 
 # 05.operations/incidents
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > 사고 기록과 사후 분석을 보관하는 공식 incident stage
 
-## Responsibility
+#### Responsibility
 
-### Purpose
+##### Purpose
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 이 폴더는 사고 사실 기록(Incident Record)과 사후 분석(Postmortem)을
 저장합니다. Incident는 실시간 또는 최근 종료된 대응 흐름을 기록하고
@@ -27,7 +51,8 @@ Postmortem은 사고 안정화 이후 구조적 원인과 재발 방지 조치�
 따르며 timestamps, IDs, commands, evidence labels, service names,
 environment variables는 원형을 유지합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
@@ -35,7 +60,8 @@ environment variables는 원형을 유지합니다.
 - Security Auditors
 - Incident Responders
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - Incident ID, 영향 범위, 상태, 타임라인
 - 현재 가설, 대응 및 완화 조치, 증거
@@ -43,23 +69,25 @@ environment variables는 원형을 유지합니다.
 - SEV1/SEV2 사고의 구조적 원인, 기여 요인, 재발 방지 조치
 - Agent 사고의 model, prompt, tool, guardrail, trace, eval metadata
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 실행 가능한 복구 절차 자체 (Runbook 담당)
 - 장기 운영 정책 (Operations 담당)
 - 요구사항, 설계, 구현 계획
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
 | [2026/](2026/) | 연도 폴더 아래의 사고 기록과 사후 분석 |
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 ```text
 05.operations/04.incidents/
@@ -70,37 +98,42 @@ environment variables는 원형을 유지합니다.
 연도 폴더 아래 각 사고는 `inc-####-<slug>/incident.md`와
 `inc-####-<slug>/postmortem.md`로 구성됩니다.
 
-#### Current Incidents
+###### Current Incidents
+<!-- core-payload-level:4 -->
 
 사고 기록과 사후 분석은 연도 폴더 아래에 있습니다: [`2026/`](2026/).
 
-#### Classification
+###### Classification
+<!-- core-payload-level:4 -->
 
 Incident Record(`incident.md`)는 사고 사실과 대응 상태의 정본이고, Postmortem(`postmortem.md`)은 사고 안정화 이후의 구조적 원인과 재발 방지 조치를 기록하며 `parent_ids`로 해당 Incident를 연결합니다. 둘 다 사고별 폴더에 두며 서로의 내용을 대체하지 않습니다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [Operations index](../README.md)
 - [Runbooks](../03.runbooks/README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [Incident template](../../99.templates/02.templates/05.operations/incident.template.md)
 - [Postmortem template](../../99.templates/02.templates/05.operations/postmortem.template.md)
 - [문서 작성 계약](../../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Create and Review
+###### Create and Review
+<!-- core-payload-level:4 -->
 
 1. 새 사고는 `docs/05.operations/04.incidents/<year>/inc-####-<slug>/incident.md`
    경로에서 시작합니다.
@@ -116,6 +149,27 @@ Incident Record(`incident.md`)는 사고 사실과 대응 상태의 정본이고
    구분합니다. Postmortem은 blameless 서술을 사용하며 각 corrective action에
    owner, tracking ID/link, verification 조건을 기록하고 완료 기한은 두지 않습니다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태입니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

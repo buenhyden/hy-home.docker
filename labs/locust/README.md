@@ -1,10 +1,13 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.4.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-10-03"
 ---
 
@@ -12,28 +15,51 @@ created: "2026-10-03"
 
 # Locust 분산 부하 LAB
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 이 문서는 root Compose에서 분리된 Locust master/worker LAB 계약을 설명한다.
 독립 project, network, scenario volume과 result volume을 사용하며 HOME 상태나
 정상 profile을 공유하지 않는다. 실행은 headless이고 승인된 제한 안에서 종료한다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - Python 기반 분산 부하 실습을 준비하는 품질 담당자
 - LAB의 대상·자원·정리 경계를 승인하는 운영자
 - root와 LAB 분리를 검토하는 인프라 담당자
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - master 한 개와 `LAB_LOCUST_EXPECT_WORKERS`개 worker의 독립 LAB closure
 - 승인된 scenario의 읽기 전용 mount
 - fresh result directory의 CSV summary와 full-history 출력
 - worker 수, 사용자 수, 생성률, 실행 시간, 종료 코드 제한. 전체 상한은 worker 대기 상한 + `--run-time` + `--stop-timeout`이며, master가 끝나면 worker는 quit 메시지로 종료한다. pin된 image에는 OpenTelemetry SDK가 없어 `--otel`은 사용하지 않는다(SPEC-0214).
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - HOME 서비스 기동·재시작과 실제 target traffic
 - 외부 프로젝트 scenario 작성과 업무 API fixture의 의미 검증
@@ -41,7 +67,8 @@ created: "2026-10-03"
 - 실행 결과를 **perf_db**에 가져오는 절차
 - DB·Kafka 장애 주입처럼 WireMock 범위를 벗어나는 Toxiproxy 검토
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ~~~text
 labs/locust/
@@ -62,7 +89,7 @@ labs/locust/
 컨테이너의 메트릭과 로그를 수집하지 않는다. Locust의 관측 연결은 별도 계약과 실제 검증을
 마친 뒤 구성한다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -70,7 +97,8 @@ labs/locust/
 | Results `LAB_LOCUST_RESULT_DIR` -> `/mnt/locust/results:rw` | `lab-locust-master` | 운영자(실행 결과 판정) | 실행별 빈 디렉터리에 CSV summary와 시간대별 full-history aggregate를 쓴다 | master 종료 코드와 CSV가 모두 있어야 판정하며 상한 124, 취소 130으로 끝나고 RUN-0062를 따른다 |
 | Master TCP `5557` | `lab-locust-master` | `lab-locust-worker` | LAB 전용 `lab_locust_net`에서 master가 `LAB_LOCUST_EXPECT_WORKERS`개 worker 접속을 기다린다 | 대기 상한 안에 worker가 부족하면 부하 없이 non-zero로 종료하며 master readiness는 TCP 5557을 확인한다 |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 | Variable | Required | Description |
 | --- | ---: | --- |
@@ -92,13 +120,14 @@ client timeout을 명시해야 한다. master readiness는 이미지에 있는 P
 별도 `pgrep` 실행 파일의 설치를 가정하지 않는다. 사용하는 client가 OpenTelemetry를 직접 지원하지
 않으면 Locust request event에서 별도 계측하는 계약을 외부 프로젝트가 소유한다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose에 선언된 호스트 게시와 secret 참조가 없고 독립 project network와 scenario·result volume만 쓴다. scenario는 읽기 전용으로 mount하며 실제 target traffic은 승인된 제한 안에서만 생성한다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Category | Contract |
 | --- | --- |
@@ -110,7 +139,7 @@ Compose에 선언된 호스트 게시와 secret 참조가 없고 독립 project 
 | Results | **LAB_LOCUST_RESULT_DIR** → **/mnt/locust/results:rw**; master만 mount |
 | Host exposure | 없음 |
 
-### Selected Start
+##### Selected Start
 
 1. Docker context, project, target origin, network, volume, CPU/RAM/디스크와 정확한
    정리 대상을 먼저 기록한다.
@@ -121,9 +150,9 @@ Compose에 선언된 호스트 게시와 secret 참조가 없고 독립 project 
 5. 정리는 이 LAB가 소유한 project와 경로만 대상으로 하며 **down -v**와 volume
    prune을 사용하지 않는다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 실제 컨테이너를 만들지 않는 정적 render 예시:
 
@@ -146,15 +175,37 @@ client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로
 같은 디렉터리의 `lifecycle.py`는 `lab.py`의 감독 아래에서 완료·종료 코드 전달·상한·
 취소·master 비정상 종료·worker 탈락을 재현한다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [LAB 탐색](../README.md)
 - [운영 문서 색인](../../docs/05.operations/README.md) — `GDE-0062`, `POL-0062`, `RUN-0062`
 - [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0062 locust, RUN-0107 lab-promotion
 - [12-testing-and-quality runbooks](../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md): RUN-0064 performance-testing
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 master와 worker 모두 Compose 헬스체크를 선언한다. 결과는 새 result directory의 CSV summary로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md)의 RUN-0062 Locust Runbook를 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

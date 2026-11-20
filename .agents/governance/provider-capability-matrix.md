@@ -1,37 +1,62 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.4.1"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Provider Capability Matrix
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Provider Capability Matrix
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Canonical agent governance supports exactly Claude and Codex. Capability
 documentation separates provider support, repository adoption, and observed
 runtime acceptance.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of the provider capability matrix and authority namespaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Canonical ownership, provider adapters, tracked configuration, and observed runtime capabilities.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -60,7 +85,8 @@ None: this document states no exclusion.
 | PROVIDER-CAPABILITY-MATRIX-R23 | Unknown or unsafe entries | Required: preserve them for review | none | none |
 | PROVIDER-CAPABILITY-MATRIX-R24 | Canonical files | Forbidden: deleting or quarantining them as stale projections | none | none |
 
-#### Authority Namespaces
+###### Authority Namespaces
+<!-- core-payload-level:4 -->
 
 | Namespace | Owns | Does not own |
 | --- | --- | --- |
@@ -88,19 +114,21 @@ not invocation or approval. No skill adds tool grants or installers.
 roots. Unknown or unsafe entries fail closed and are preserved for review;
 canonical files are never deleted or quarantined as stale projections.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 Provider-native files may narrow behavior to actual capabilities. They cannot
 invent shared policy, roles, skills, approvals, or unsupported parity. A documented capability, configured source, observed runtime result, and
@@ -111,7 +139,7 @@ limits remain unknown until directly observed. Git hooks, provider hooks, editor
 actions, and CI are separate surfaces; an editor action requires its observed
 version and action ID.
 
-### Limits
+##### Limits
 
 The policy names no check for any rule in Requirements.
 
@@ -122,13 +150,13 @@ The policy names no check for any rule in Requirements.
 - Enforcement gap: a configured event or discoverable source proves tracked configuration only, and runtime acceptance and account or subscription limits stay unknown until directly observed.
 - Rules stated under Enforcement (Mechanisms) are outside this table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -136,3 +164,23 @@ Changes land in place with Task evidence; related documents:
 - [Agentic policy](agentic.md)
 - [Claude adapter](../../.claude/provider.md)
 - [Codex adapter](../../.codex/provider.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

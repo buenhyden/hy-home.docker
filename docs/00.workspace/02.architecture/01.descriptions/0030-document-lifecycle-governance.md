@@ -1,10 +1,13 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "3.1.1"
+version: "4.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-09-01"
 
 # Document Lifecycle Governance Architecture
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 Inside the boundary are the Stage 99 Registry, current stage trees, and
 registered document validators. Stage 98 holds only its README. Git provides
@@ -24,7 +47,8 @@ removed bodies and historical approval context. CI chooses trusted comparison
 snapshots but does not grant retirement authority. Runtime systems, secret
 access, and remote integration remain separately authorized actions.
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 The Registry defines document shape and retired numbers; current stage owners
 retain durable meaning, Tasks record actual execution, and version history is the
@@ -36,17 +60,18 @@ reassessed, and may be removed from the working tree. This Description explains
 which components read which authority and what their checks establish.
 Maintainers and agents use the same contracts before claiming completion.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 Maintainers and agents read the Stage 99 Registry, current stage trees and registered validators. CI chooses trusted comparison snapshots, and Git supplies removed bodies and historical approval context.
 
-### Constraints
+##### Constraints
 
 Runtime systems, secret access and remote integration remain separately authorized actions. Validators are read-only, fail closed on unsafe traversal or an invalid Registry, and keep Git reads, enumeration and file data within resource limits.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - `scripts/lib/document_governance/registry.py` loads profiles, lifecycles, and
   identity spaces, including each space's `reserved_history` of retired
@@ -70,7 +95,7 @@ Runtime systems, secret access and remote integration remain separately authoriz
   these judgments through gate profiles. `metadata/heading.py` enforces the
   Registry's section contracts so authored declarations and checks agree.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -83,11 +108,12 @@ Runtime systems, secret access and remote integration remain separately authoriz
 - Metadata, document-link and corpus-lifecycle entrypoints expose the judgments through gate profiles registered in `scripts/manifest.yaml` and selected by `scripts/validation/run-ci-gate.py`.
 - `metadata/heading.py` enforces the Registry's section contracts.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 Load Registry contracts before classifying documents. Enumerate the selected
 current snapshot and read the comparison base through bounded Git operations.
@@ -122,7 +148,8 @@ change. The Registry `reserved_history` gains its number and never loses one.
 Current documents do not link into Stage 98 or name a retired identity in a
 typed reference.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 Validators are registered in `scripts/manifest.yaml` and selected by
 `scripts/validation/run-ci-gate.py`. Local comparison normally uses `HEAD`; CI
@@ -131,7 +158,7 @@ worktree, index, target commit, or historical source context. These read-only
 checks do not write documents or operate services. Full gate or remote runs
 retain their own authorization and execution evidence requirements.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Unsafe traversal, unresolved required approval references, unsupported source
 labels, and a missing, symlinked, unreadable or invalid Registry yield findings.
@@ -139,11 +166,12 @@ Exceeding a resource limit is a diagnostic. A missing source object or
 insufficient history prevents recovering a removed body, and the checker
 reports that limit.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - Fail closed: unsafe traversal, invalid recorded approval references and
   a missing, symlinked, unreadable or invalid Registry yield findings.
@@ -156,7 +184,8 @@ reports that limit.
 - Separable: governance explains the rule without loading a package; this
   Description explains enforcement without relying on a past execution Task.
 
-#### Risks
+###### Risks
+<!-- core-payload-level:4 -->
 
 - Metadata `check-changed` compares current and base bodies with
   `changed_boundary=True` to reject newly introduced template instructions and
@@ -176,7 +205,7 @@ reports that limit.
 - Deleting a document does not erase Git history, clones, caches, or forks.
   Security response remains a separate workflow.
 
-### Trade-offs
+##### Trade-offs
 
 - Retirement summarizes and deletes instead of keeping copies, so version
   history is the only record of removed bodies; a missing source object or
@@ -192,22 +221,24 @@ reports that limit.
 - Deleting a document does not erase Git history, clones, caches or forks;
   security response remains a separate workflow (Risks).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - [ADR-0037 Package waiting and Task cancellation](../02.decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [ADR-0051 Summarize-and-delete retirement](../02.decisions/0051-summarize-and-delete-retirement.md)
 - [ADR-0032 Canonical agent governance home](../02.decisions/0032-canonical-agent-governance-home.md)
 - [ADR-0048 Authority parents and criterion acceptance](../02.decisions/0048-authority-parents-and-criterion-acceptance.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - [REQ-0026 Document retention and retirement](../../../01.requirements/0026-document-retention-and-retirement.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 - ADR-0030, ADR-0031, ADR-0033, ADR-0035 and ADR-0036 were retired; their numbers are reserved and version history holds their bodies.
 - SPEC-0257 and SPEC-0261 (retired; version history) delivered the second implementation-alignment corrections of paths, links, Registry exceptions and secret names, and the REQ-0027 approval with the promotion of its dependent documents.
@@ -216,7 +247,28 @@ reports that limit.
 - SPEC-0248, SPEC-0249, SPEC-0250 and SPEC-0260 (retired; version history) delivered the Stage 98 check removal and deletion, the completed-package deletion rule and the generation 6 proof source.
 - [Documentation protocol](../../03.process/documentation-protocol.md)
 
-#### Evolution
+###### Evolution
+<!-- core-payload-level:4 -->
 
 - A new lifecycle rule enters through the Registry and its validator together,
   so the declaration and the check never diverge.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

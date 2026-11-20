@@ -1,10 +1,13 @@
 ---
 title: "Airflow Operations Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -15,19 +18,40 @@ next_review_at: "2027-05-13"
 
 # Airflow Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 운영 정책을 정의한다. 현재 구현은 Airflow와 `airflow-apiserver` 기반 Airflow 3 서비스 구성을 기준으로 한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/01.descriptions/0007-workflow-architecture.md) (`AD-0007`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-### Applies To
+##### Applies To
 
 - Airflow 코어 컴포넌트(`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter`) 관리
 - 메타데이터 DB 및 브로커(Valkey) 연결 정책
@@ -36,13 +60,14 @@ next_review_at: "2027-05-13"
 - **Systems**: Apache Airflow, CeleryExecutor
 - **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`workflow-airflow` profile, homelab operations
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -90,7 +115,8 @@ next_review_at: "2027-05-13"
   - Scheduler 노드에서의 직접적인 대용량 외부 API 호출 또는 파일 입출력.
   - Airflow native Keycloak 인증 또는 Flower proxy SSO가 비활성화된 상태에서의 UI 노출. Airflow에는 표준 gateway chain과 native SSO를 유지하며 추가 proxy SSO를 강제하지 않는다.
 
-#### Lifecycle and data controls
+###### Lifecycle and data controls
+<!-- core-payload-level:4 -->
 
 - Airflow 코어는 HOME이고 broker는 공유 `mng-valkey`다. broker 이전에는 drain 계획이 필요하다.
 - PostgreSQL metadata, 현재 `airflow_fernet_key`, DAG/plugin/config와 필요한 log는 한 복구 단위다. 같은 Fernet key 없는 DB copy로 암호화 Connections를 복구하지 못한다.
@@ -98,26 +124,28 @@ next_review_at: "2027-05-13"
 - 격리 project/network와 복원 copy로 rehearsal하며 production volume을 덮어쓰지 않는다. Migration level, DAG parse, 값 비노출 복호화, worker/broker health, login과 canary를 검증한다.
 - 자원 변경에는 전후 측정이 필요하다. 한도는 여유 증거가 아니다. 제거에는 export, 복구 집합 보존, client/secret 폐기와 삭제 승인이 필요하다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - **Emergency Hotfix**: 중대한 파이프라인 중단 시, 사후 보고를 조건으로 수동 DB 수정 또는 워커 강제 재시작 가능 (관리자 승인 필요).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - **Quarterly**: 매 분기별 리소스 사용량 분석 및 쿼터 조정.
 - **Per Release**: 새로운 Airflow 버전 또는 Provider 업데이트 시 정책 재검토.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 점검 명령은 [가이드의 Common Checks](../../01.guides/08.workflows-and-automation/0050-airflow.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
 
 - **Runtime Check**: 실행 중인 환경에서 `docker compose --profile workflow-airflow exec airflow-apiserver airflow db check`와 `docker compose --profile workflow-airflow exec airflow-apiserver airflow dags list` 결과를 확인한다.
 
-### Limits
+##### Limits
 
 이 정책은 정적 검사와 hardening 검사 결과를 변경 증거로 남기도록 하지만 각 규칙과 검사의 대응은 가이드에 위임하므로 표의 모든 규칙에 규칙별 검사가 지정되어 있지 않다.
 
@@ -130,16 +158,36 @@ next_review_at: "2027-05-13"
 - Runtime Check(`airflow db check`, `airflow dags list`)는 실행 중인 환경이 있을 때에 한하며 어느 규칙을 검증하는지 지정되지 않고 이 문서에 결과 증거가 없다.
 - 복구 단위 보존과 rehearsal 검증은 runbook 절차에 의존한다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/08.workflows-and-automation/0050-airflow.md) (`GDE-0050`), [Runbook](../../03.runbooks/08.workflows-and-automation/0050-airflow.md) (`RUN-0050`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../01.guides/08.workflows-and-automation/0050-airflow.md)
 - [Recovery runbook](../../03.runbooks/08.workflows-and-automation/0050-airflow.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

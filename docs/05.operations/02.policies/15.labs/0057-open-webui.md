@@ -1,10 +1,13 @@
 ---
 title: "Open WebUI Operations Policy"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0057"
 parent_ids:
@@ -15,33 +18,55 @@ next_review_at: "2027-05-13"
 
 # Open WebUI Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 독립 LAB `labs/open-webui/docker-compose.yml`로 옮긴 Open WebUI의 운영 정책을 정의한다
 (ADR-0062, 2026-11-10 owner 개정). 인증, LAB 경계, data와 secret 취급, 구성 변경 승인을 통제한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/01.descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Governing decision: [ADR-0062](../../../02.architecture/02.decisions/0062-home-lab-membership.md)
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-### Applies To
+##### Applies To
 
 - **Systems**: LAB `open-webui`(profile `lab-open-webui`), 그 LAB data root(SQLite·로컬 vector store·upload·session key),
   LAB 전용 OIDC client secret, 승인된 Ollama endpoint와 Keycloak client `home-openwebui`. HOME에 남은
   컨테이너 `open-webui`와 volume `hy-home-infra_open-webui`는 퇴역 승인 전까지 이 정책의 data 보존 규칙을 따른다.
 - **Environments**: LAB 실험. HOME 사용은 [POL-0107](0107-lab-promotion.md) 승격으로만 돌아온다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -83,7 +108,8 @@ next_review_at: "2027-05-13"
   - 승인 없는 SSO 우회, password/signup 경로 활성화.
   - HOME volume을 LAB data root로 지정하거나 승인 없이 HOME data를 복사·삭제하는 것.
 
-#### Lifecycle and data controls
+###### Lifecycle and data controls
+<!-- core-payload-level:4 -->
 
 - SQLite·upload·로컬 vector·session key와 맞는 OIDC secret을 한 복구 경계로 취급한다. HOME Restic은 LAB
   data를 백업하지 않으므로 보존이 필요한 실험 data는 lease 종료 전에 별도 승인으로 백업한다.
@@ -91,20 +117,22 @@ next_review_at: "2027-05-13"
   승인 단계이며 쓰기를 멈춘 일관 backup이 선행한다.
 - Upgrade에는 복구 가능한 copy, migration 검토, image identity와 rollback 근거가 필요하다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - LAB lease 안에서 SSO 우회를 검토해야 하면 loopback 게시, 명시 승인, lease 종료 즉시 복구가 필수다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - **Quarterly**: 정책/권한/데이터 취급 기준 검토
 - **Per Release**: 모델/임베딩/연동 구성 변경 시 사전 검토
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - 배포 전 체크:
   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -115,7 +143,7 @@ next_review_at: "2027-05-13"
 - 증적:
   - 변경 티켓(또는 PR), 검증 로그, 롤백 결과
 
-### Limits
+##### Limits
 
 정책은 배포 전 체크와 운영 중 체크를 개별 규칙과 연결하지 않으므로 아래 규칙은 이름 붙은 검사로 강제되지 않으며, 일부는 승인/검토에 의존한다.
 
@@ -127,15 +155,35 @@ next_review_at: "2027-05-13"
 - 운영 중 체크(인증 실패율, 5xx 비율, 인덱싱 실패율)는 모니터링 항목이며 이름 붙은 게이트나 임계값이 없다.
 - 분기별 정책 검토와 릴리스별 사전 검토는 수동이다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/15.labs/0057-open-webui.md) (`GDE-0057`), [Runbook](../../03.runbooks/15.labs/0057-open-webui.md) (`RUN-0057`)
 - [Operations index](../../README.md)
 - [Usage guide](../../01.guides/15.labs/0057-open-webui.md)
 - [Recovery runbook](../../03.runbooks/15.labs/0057-open-webui.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

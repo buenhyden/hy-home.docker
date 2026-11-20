@@ -1,10 +1,13 @@
 ---
 title: "SurrealDB Guide"
-version: "0.4.0"
+version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0080"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # SurrealDB Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 운영자, 개발자, AI Agent. Open Notebook용 SurrealDB의 profile, 노출, 영속성, 인증, 버전 제약(v2 전용), 복원 계약을 확인할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 SurrealDB는 Open Notebook을 위한 `OPTIONAL` 데이터베이스로, 업스트림 호환성을 위해
 운영 계약이 SurrealDB v2로 제한되어 있다.
@@ -39,7 +62,8 @@ root 사용자 이름은 `SURREALDB_USERNAME` 환경 변수, 비밀번호는 `su
 목적: 라이브 복구 테스트를 주장하지 않으면서 현재 profile, 노출, 영속성, 인증,
 namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - 선언된 상위 문서: [SurrealDB Policy](../../02.policies/05.databases-and-storage/0080-surrealdb.md) (`POL-0080`)
 - 관장 아키텍처: [AD-0011](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md)
@@ -53,13 +77,14 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
 - [Operations index](../../README.md)
 - [Infrastructure README](../../../../infra/08-ai/open-notebook/README.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 이 가이드가 전제하는 구현과 환경 사실은 아래 항목에 정리한다.
 
-#### 현재 구현
+###### 현재 구현
+<!-- core-payload-level:4 -->
 
 | Field | Repository-specific decision |
 | --- | --- |
@@ -73,13 +98,13 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
 | 백업 / 업그레이드 | 새로 호환되는 대상으로의 명시적 namespace/database export/import; 부분 import 대상은 격리 보존하고 재사용하지 않는다; v2 내에서 업스트림 스토리지 형식 순서를 따른다. |
 | 라이선스 / edition | SurrealDB 사용은 현재 공식 라이선스 조건을 준수해야 한다. 이 문서는 프로덕션이나 상업적 권리를 확장하지 않는다. |
 
-### Authority
+##### Authority
 
 root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_password` Docker Secret이며 값은 출력하거나 복사하지 않는다. v3 변경, 기존 대상 삭제, export 사용은 별도 승인이 필요하다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -87,11 +112,13 @@ root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_passw
 | 2 | `ai_net`의 애플리케이션은 `ws://surrealdb:8000/rpc`로 연결한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 3 | 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준, 스키마/데이터 범위, checksum, 보존 기간, 격리된 복원 결과와 연결한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용 절차는 아래 항목에 정리한다.
 
-#### Preflight and normal use
+###### Preflight and normal use
+<!-- core-payload-level:4 -->
 
 - 저장소 루트에서 작업한다. root Compose가 포함 여부를 소유한다.
 - 값을 출력하거나 복사하지 않고 `surreal_db_password` Docker Secret을 준비한다.
@@ -106,26 +133,28 @@ root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_passw
 3. 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준,
    스키마/데이터 범위, checksum, 보존 기간, 격리된 복원 결과와 연결한다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 특수 사례와 한계는 아래 항목에 정리한다.
 
-#### 빌드·상태와 버전 한계
+###### 빌드·상태와 버전 한계
+<!-- core-payload-level:4 -->
 
 선택한 Dockerfile은 v2 이미지의 바이너리를 Debian 기반 이미지로 복사한다.
 복사된 entrypoint가 secret을 읽고 `rocksdb:/mydata/db.db`로 시작하므로 README의
 다른 저장 엔진 이름을 복구 근거로 사용하지 않는다. base 이미지는 Dockerfile에서 v2 계열의 정확한 태그와 digest로 고정되어 있으며, 그 선언이 실행 버전의 권위다. 업그레이드·export/import 전에 그 선언과 저장 형식 근거를 확인하며, v3 전환 금지 정책은 유지한다. 상태·준비 명령은 실제
 컨테이너 접근이므로 정적 문서 검증과 구분한다.
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --profile surrealdb config --quiet`
 - `docker compose --profile surrealdb ps surrealdb`
 - `docker compose --profile surrealdb exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - 준비 상태는 도달 가능성만 증명한다. 인증, namespace, database, 스키마, 영속성은
   검증하지 않는다.
@@ -141,12 +170,33 @@ root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_passw
 - 라이브 `/mydata` 디렉터리를 복사하지 않는다. 승인된 export나 별도로 승인된
   정지 상태 스토리지 절차를 사용한다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 [Runbook](../../03.runbooks/05.databases-and-storage/0080-surrealdb.md)이 health triage와 계획된 격리 export/import
 리허설을 소유한다. [Policy](../../02.policies/05.databases-and-storage/0080-surrealdb.md)가 백업, 인증, 보존,
 업그레이드, 제거 통제를 소유한다.
 
-### Next Action
+##### Next Action
 
 health triage와 격리 export/import 리허설은 [Runbook](../../03.runbooks/05.databases-and-storage/0080-surrealdb.md)이, 백업·인증·보존·업그레이드·제거 통제는 [Policy](../../02.policies/05.databases-and-storage/0080-surrealdb.md)가 소유한다. v3 변경과 기존 대상 삭제는 별도 승인이 필요하다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

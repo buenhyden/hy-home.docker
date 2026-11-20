@@ -1,13 +1,36 @@
 ---
 title: "sample-web-service"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # sample-web-service
+
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
 
 <!-- Target: examples/sample-web-service/README.md -->
 
@@ -15,11 +38,12 @@ updated: "2026-11-19"
 > 서비스를 시작할 때 이 폴더를 복사한 뒤, 이름, 이미지, 포트, 설정을 대상
 > 서비스에 맞게 바꿉니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
-#### Overview
+###### Overview
+<!-- core-payload-level:4 -->
 
 최소한의 정적 웹 서비스로 이 저장소의 컨테이너 하드닝과 Compose 관례(pinned image,
 non-root 런타임, read-only root filesystem, capability 제거, healthcheck, 리소스 제한,
@@ -27,7 +51,8 @@ secret-free 설정)를 보여 줍니다. Compose 정의는
 고정된 top-level project 이름과 `container_name`을 의도적으로 생략하므로,
 호출자는 `docker compose --project-name`으로 복사본을 격리할 수 있습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
@@ -35,22 +60,26 @@ secret-free 설정)를 보여 줍니다. Compose 정의는
 - Operations/SRE Engineers
 - Documentation Writers
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
-##### In Scope
+###### In Scope
+<!-- core-payload-level:5 -->
 
 - 복사 가능한 정적 웹 서비스 scaffold 파일
 - 컨테이너 하드닝, healthcheck, 리소스 제한, 로그 보존 예시
 - `.env.example`을 통한 secret이 아닌 로컬 환경 설정
 - 현재 README와 서비스 scaffold 템플릿으로의 링크
 
-##### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:5 -->
 
 - 프로덕션 서비스 소유권, SLA, 장애 대응 기록
 - TLS 종료, ingress 라우팅, 영속 데이터 서비스
 - secret 값, 자격 증명, 토큰, private key, raw 로그, shell history, `.env` 값
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 sample-web-service/
@@ -63,7 +92,8 @@ sample-web-service/
 └── site/index.html    # 서비스가 서빙하는 정적 콘텐츠
 ```
 
-#### Files
+###### Files
+<!-- core-payload-level:4 -->
 
 | File                 | Role                                                            |
 | -------------------- | --------------------------------------------------------------- |
@@ -74,29 +104,32 @@ sample-web-service/
 | `.env.example`       | secret이 아닌 환경 변수 템플릿; `.env`로 복사해서 사용           |
 | `service.md`         | canonical Service 계약의 sample 전용 인스턴스                   |
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | `${WEB_HOST_PORT:-8080}:8080` 호스트 게시 HTTP | `web` 서비스(unprivileged nginx) | 이 README는 소비자를 기록하지 않는다. | `nginx.conf`가 `8080`에서 listen하며 `site/index.html` 정적 콘텐츠를 서빙한다. | 포트 충돌 시 `.env`의 `WEB_HOST_PORT`를 바꾸고 재시작 시 `docker compose logs web`으로 확인한다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 호스트 게시 포트는 `${WEB_HOST_PORT:-8080}:8080`이다. 연결 네트워크는 `sample-internal`이다. (출처: `examples/sample-web-service/docker-compose.yml`의 `web` 서비스)
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시되는 포트는 `${WEB_HOST_PORT:-8080}:8080`이다. (출처: `examples/sample-web-service/docker-compose.yml`의 `web` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 런타임은 `examples/sample-web-service/docker-compose.yml`의 `web` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 1. 새 컨테이너 서비스 예시를 시작할 때 이 폴더를 복사합니다.
 2. 새 서비스에 맞게 이름, 이미지 태그, 포트, healthcheck, secret이 아닌 환경
@@ -105,20 +138,22 @@ sample-web-service/
 4. 병렬 로컬 인스턴스가 필요하면 명시적인 project 이름을 선택합니다.
 5. 서비스를 사용하기 전에 Compose를 검증합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 - `docker compose config`가 오류 없이 파싱됩니다.
 - `start_period` 이후 `docker compose ps`가 `healthy`를 보고합니다.
 - `python3 -m unittest tests.validation.test_sample_service_delivery_rehearsal`는
   Docker 리소스를 시작하지 않고 로컬 delivery 계약을 검증합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - README template (`docs/99.templates/02.templates/93.common/readme-package.template.md`)
 - Spec contract template (`docs/99.templates/02.templates/03.specs/spec.template.md`)
@@ -126,7 +161,8 @@ sample-web-service/
 - Release management runbook (`docs/05.operations/03.runbooks/10.platform-and-backup/0009-release-management.md`)
 - [Documentation index](../../docs/README.md)
 
-#### Service Readiness
+###### Service Readiness
+<!-- core-payload-level:4 -->
 
 | Control              | Status | Evidence                                                   |
 | -------------------- | ------ | ---------------------------------------------------------- |
@@ -140,7 +176,8 @@ sample-web-service/
 | Log rotation         | Ready  | `max-size`/`max-file`를 사용하는 `json-file`                |
 | Project isolation    | Ready  | 고정된 project나 container identity 없음                   |
 
-#### Operations
+###### Operations
+<!-- core-payload-level:4 -->
 
 ```bash
 cp .env.example .env
@@ -159,8 +196,29 @@ wrapper는 또한 승인된 각 digest에 대해 정확한 로컬 image-object I
 Spec 126 baseline/candidate 쌍이 존재하고 모든 상위 게이트를 통과할 때까지
 runtime 명령은 fail-closed 상태를 유지합니다.
 
-#### Troubleshooting
+###### Troubleshooting
+<!-- core-payload-level:4 -->
 
 - 포트가 이미 사용 중: `.env`의 `WEB_HOST_PORT`를 바꿉니다.
 - 컨테이너가 재시작됨: read-only root filesystem 아래에서 nginx 권한이나
   tmpfs 경로 오류가 있는지 `docker compose logs web`으로 확인합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

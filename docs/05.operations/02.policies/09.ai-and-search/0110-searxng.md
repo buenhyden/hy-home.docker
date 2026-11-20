@@ -1,10 +1,13 @@
 ---
 title: "SearXNG Operations Policy"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0110"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-17"
 
 # SearXNG Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 SearXNG는 HOME의 공유 메타검색 서비스다. n8n, 호스트 Hermes 같은 여러 소비자가
 같은 JSON 검색 API를 쓰도록 하되, 들어오는 경로를 internal `search_net`과 호스트
 loopback 두 가지로 제한한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [AI architecture](../../../02.architecture/01.descriptions/0008-ai-architecture.md)
 - [Compose network segmentation](../../../02.architecture/01.descriptions/0026-standardize-infra-net.md)
 
 - [SearXNG Compose source](../../../../infra/08-ai/searxng/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 profile 선택, 네트워크 배치, host 게시, 소비자 합류, 설정 변경, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -82,40 +107,62 @@ n8n의 다른 서비스는 2026-11-18 검토에서 합류하지 않기로 했다
 | `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `n8n-sandbox-certs` | 합류하지 않음 | Assistant 코드 sandbox이며 runner는 privileged이고 자체 출구가 있다 |
 | `blog-ingestion` | 합류하지 않음 | 검색을 쓰지 않는다 |
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 없음. 새 host 게시, 인증 없는 route나 외부 노출은 승인된 변경 없이는 추가하지 않는다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 이미지 업그레이드, 소비자 추가·제거, 네트워크나 게시 변경 때 검토한다.
 예외·통제 변경에는 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 `tests.validation.test_p02_service_contracts.SharedSearchContractTests`가 profile,
 네트워크, loopback 게시, 소비자 목록, 설정의 instance 이름과 JSON 형식을 정적으로
 확인한다. `validate-docker-compose.sh`가 렌더링을 확인한다. 런타임 확인은
 [runbook](../../03.runbooks/09.ai-and-search/0110-searxng.md)의 health와 JSON API 확인을 따른다.
 
-### Limits
+##### Limits
 
 - 호스트 소비자 기록(R6), `search_net`의 다른 endpoint 금지(R7), secret key 미기록(R9)은 수동 검토에 의존한다.
 - `/metrics`의 실제 401·200 응답(R11)은 런타임 확인으로만 증명된다.
 - 검색 결과를 데이터로 다루는 규칙(R10)은 소비자 쪽 통제이며 이 정책이 검사하지 않는다.
 - 정적 검사는 런타임 포트 바인딩이나 외부 검색 엔진 응답을 증명하지 않는다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Guide](../../01.guides/09.ai-and-search/0110-searxng.md) (`GDE-0110`)
 - [Runbook](../../03.runbooks/09.ai-and-search/0110-searxng.md) (`RUN-0110`)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

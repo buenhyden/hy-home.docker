@@ -1,10 +1,13 @@
 ---
 title: "Environment Onboarding"
-version: "0.1.0"
+version: "1.0.0"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-11-19"
 observed_at: "2026-11-19"
 review_cycle: "on-tool-change"
@@ -12,7 +15,27 @@ review_cycle: "on-tool-change"
 
 # Environment Onboarding
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the knowledge payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
 
 What a contributor prepares once to work in this workspace, and the first
 checks that show the environment is ready. The setup steps themselves stay with
@@ -21,16 +44,16 @@ their owners: the [repository README](../../../README.md) for the Docker host,
 validation toolchain, and the [tests README](../../../tests/README.md) for test
 runs. This guide connects them and names the boundaries between environments.
 
-## Scope
+#### Scope
 
 Included: a local development checkout on Linux with Git, Docker Engine and
 Docker Compose v2, Python 3 and Bash. Excluded: the operating host's services,
 real secret values, provider accounts and hosted CI, whose results a local run
 never stands in for.
 
-## Rules
+#### Rules
 
-### Supported environment
+##### Supported environment
 
 | Need | Source of truth |
 | --- | --- |
@@ -38,7 +61,7 @@ never stands in for.
 | Python validation dependencies | `scripts/requirements.txt`, installed from the hash lock `scripts/requirements-controller.lock` |
 | Opt-in integration tests | `tests/requirements-integration.txt` and a Docker daemon |
 
-### Python environment
+##### Python environment
 
 Install the hash lock into its own venv and put that venv's `bin` first on
 `PATH` before running scripts or tests. Distribution Python packages can be
@@ -56,7 +79,7 @@ export PATH="$PWD/.venv/bin:$PATH"
 `.venv/` is ignored by Git. Never install into the system interpreter to make a
 check pass.
 
-### First checks
+##### First checks
 
 Run these from the repository root after the setup above. None of them changes
 a running service.
@@ -72,7 +95,7 @@ directories and external networks without creating them. The gate explain
 lists what a change would run without running it. A local result is local
 evidence only; the pull request's hosted checks own candidate acceptance.
 
-### Environment boundaries
+##### Environment boundaries
 
 - A worktree, the HOME operating checkout and a LAB topology are different
   environments; a result in one is not evidence for another.
@@ -81,23 +104,43 @@ evidence only; the pull request's hosted checks own candidate acceptance.
 - Secret values are never copied into a checkout, a log or evidence; only
   paths and IDs are recorded.
 
-## Evidence
+#### Evidence
 
-### Provenance
+##### Provenance
 
 Written on 2026-11-19 by SPEC-0212 TSK-0097 from the repository, scripts and
 tests READMEs at `main` `eadd81adc`. On that day nine test modules failed under
 the system `python3` for lack of `referencing` and passed with the hash-locked
 venv first on `PATH`.
 
-### Refresh Triggers
+##### Refresh Triggers
 
 - A prerequisite, lock file or first-check command changes in its owner README.
 - A new environment class is added.
 
-## Related Documents
+#### Related Documents
 
 - [Harness maintenance](../06.maintenance/harness-maintenance.md)
 - [Repository README](../../../README.md)
 - [Scripts README](../../../scripts/README.md)
 - [Tests README](../../../tests/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

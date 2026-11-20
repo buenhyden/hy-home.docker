@@ -1,10 +1,13 @@
 ---
 title: "Kafka Runbook"
-version: "1.5.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Kafka Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 이 런북은 HOME 단일 Kafka broker의 정적 진단과 계획된 백업·복제 캡처·격리 복원을 다룬다. 독립 LAB의 Schema Registry와 Connect는 LAB 런북을 따른다.
 
@@ -25,7 +48,7 @@ next_review_at: "2027-05-13"
 - `KafkaBrokerDown`, `KafkaConsumersGroupLag`, `KafkaTopicUnderReplicatedPartition` 경보가 발생했을 때
 - 승인된 백업·격리 복원을 계획할 때
 
-### Targets
+##### Targets
 
 - HOME 선언은 [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml)에 있다.
 - LAB 진단과 HOME의 이전 Connect·Schema Registry 퇴역은 [RUN-0108](../15.labs/0108-kafka-cluster.md)을 따른다.
@@ -37,19 +60,19 @@ next_review_at: "2027-05-13"
 - [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
 - [Policy](../../02.policies/06.messaging-and-cdc/0036-kafka.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
-### Environment
+##### Environment
 
 백업·복제 캡처 전에 producer, consumer, schema, connector, retention, 수용 가능한 recovery point를 식별하고 변경을 일시 중지하거나 fence한다(`Planned backup or replication capture` 1단계). 운영 checkout의 repository root와 승인된 Docker context 확인은 Stop Conditions의 `Execution and stop boundary`에 있다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -78,7 +101,8 @@ docker compose --env-file .env.example --profile messaging config --services
 확인한다. `kafka-init`의 토픽 복제 계수는 1이다. 정적 render는 실제 준비 상태를
 증명하지 않는다. LAB의 일곱 서비스와 독립 project는 RUN-0108의 Static check를 따른다.
 
-#### CDC source boundary
+###### CDC source boundary
+<!-- core-payload-level:4 -->
 
 [ADR-0062의 Kafka CDC 개정](../../../02.architecture/02.decisions/0062-home-lab-membership.md#amendment-of-2026-11-10-kafka-cdc-kafka-connect-and-schema-registry)으로
 HOME에서 `cdc` profile, `debezium-db-provision`, connector sample, 기능 SQL과 secret renderer를 제거했다.
@@ -91,7 +115,8 @@ LAB에는 Registry와 Connect가 있지만 connector, source DB, credential이 �
 schema version 변경, 재시작 후 offset 재개와 heartbeat를 약 260초에 검증했다(SPEC-0204-TSK-0005 W15).
 해당 테스트와 입력은 현재 HOME에서 제거되었다. 이 기록은 현재 HOME 또는 LAB connector 준비 증거가 아니다.
 
-#### Planned backup or replication capture
+###### Planned backup or replication capture
+<!-- core-payload-level:4 -->
 
 1. producer, consumer, schema, connector, retention, 수용 가능한 recovery
    point를 식별한다. topic, schema, connector에 대한 변경을 일시 중지하거나
@@ -110,7 +135,8 @@ schema version 변경, 재시작 후 offset 재개와 heartbeat를 약 260초에
 6. manifest와 export된 데이터를 별도의 암호화된 destination에서 보호한다.
    active broker log 디렉터리나 KRaft metadata를 부분적으로 복사하지 않는다.
 
-#### Planned isolated restore
+###### Planned isolated restore
+<!-- core-payload-level:4 -->
 
 1. 호환 버전에서 새 cluster identity를 가진 network-isolated Kafka target을
    준비한다. 외부 producer, consumer, connector는 차단된 상태로 유지한다.
@@ -136,11 +162,12 @@ key, value, header에 대한 SHA-256 digest가 일치했다. connector config
 4~6단계는 실행하지 않았다. live database를 대상으로 한 Connect worker가 production
 replication slot을 소비하게 되기 때문이다. rehearsal stack은 제거했다.
 
-### Stop Conditions
+##### Stop Conditions
 
 중단 조건과 실행 경계는 아래 항목을 따른다.
 
-#### Execution and stop boundary
+###### Execution and stop boundary
+<!-- core-payload-level:4 -->
 
 HOME의 replication factor 1 토픽에는 broker 장애 내성이 없다. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
@@ -148,15 +175,17 @@ HOME의 replication factor 1 토픽에는 broker 장애 내성이 없다. 운영
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 복제 검증은 partition별 source와 target end offset이 일치하고 지원되는 format의 개수/checksum이 맞아야 하며, `Planned isolated restore`의 key/value/checksum·retention 검증을 통과해야 한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
@@ -164,7 +193,7 @@ secret, raw payload, private resolved path는 제외한다.
 
 운영 checkout 증거에는 결과·시간·target·source revision·종료 코드만 요약하고 raw log, rendered Compose, payload, credential URI는 붙이지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook은 아래 항목을 아직 관측하지 않았다.
 
@@ -173,17 +202,37 @@ secret, raw payload, private resolved path는 제외한다.
 - 정적 render(`config --quiet`)는 실제 준비 상태를 증명하지 않는다. 실제 서비스 health 관측 결과가 이 문서에는 기록되어 있지 않다.
 - 별도 승인 범위의 실제 CDC(등록, snapshot, stream, WAL 유지와 정리): 이 문서에는 실행 결과가 기록되어 있지 않다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
 부작용, 호환되지 않는 storage/protocol format이 나타나거나 raw broker 디렉터리를
 수리하라는 압박이 있으면 중단한다. 위 2026-09-22 rehearsal 외의 백업이나 restore는 실행된 증거가 없다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 cutover가 실패하면 offset/write-boundary 검증 이후 producer와 consumer를
 보존된 source cluster로 되돌리며, replay source와 target은 계속 보존된다.
 cutover는 owner 승인, 최종 consistency capture, 애플리케이션 검증, 보존된
 rollback window 이후에만 실행한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

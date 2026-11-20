@@ -1,26 +1,50 @@
 ---
 title: "GitHub Control Surface"
-version: "1.2.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-02-14"
 ---
 
 # GitHub Control Surface
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 - 워크플로, 룰셋, 소유권 규칙을 변경하는 유지관리자.
 - GitHub 쪽 동작을 편집하기 전에 그 근거를 찾아야 하는 에이전트.
 - CI 변경 사항이 선언된 계약과 일치하는지 확인하는 리뷰어.
 
-### Outcome
+##### Outcome
 
-#### Project Role
+###### Project Role
+<!-- core-payload-level:4 -->
 
 `.github`에는 GitHub이 직접 읽는 추적 대상 정의가 모여 있다. 워크플로, 워크플로가 실행하는
 타입 지정 게이트 레지스트리, 코드 소유권, 기여 템플릿, 브랜치 보호 제안이 여기에
@@ -32,7 +56,8 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 `.github/README.md`가 있으면 루트 [README](../README.md)와 저장소 랜딩 페이지
 자리를 두고 경쟁하게 된다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 이 서피스는 추적 대상 GitHub 정의와 그 근거로 가는 경로를 소유한다. 정책 자체는
 소유하지 않는다.
@@ -43,13 +68,13 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
   게이트 구성은 [workflow-contract.yml](./workflow-contract.yml)에 있다.
   서버 측 브랜치 보호는 GitHub 프로젝트 설정에 있으며, 여기서는 제안만 한다.
 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+##### Prerequisites
 
 검사 명령은 저장소 루트에서 `python3`로 실행한다.
 
-### First Use
+##### First Use
 
 변경한 입력의 검사 선택을 먼저 확인한다. 후보 aggregate QA는 원격 PR에서 한 번 실행한다.
 
@@ -65,7 +90,8 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 - [타입 지정 로컬 QA 게이트](../scripts/validation/run-ci-gate.py)에
   `--explain`을 붙이면 선택된 스위트-검증기 매핑을 보여 준다.
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 1. 정본 소유자부터 바꾼다. 동작 자체가 바뀔 때는
    [github-governance.md](../docs/00.workspace/03.process/github-governance.md)를
@@ -83,11 +109,12 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 유지관리자가 GitHub 프로젝트 설정에서 적용한다. 이 저장소 자체는 이를 적용할 수
 없다.
 
-## Repository Map
+#### Repository Map
 
-### Current Paths
+##### Current Paths
 
-#### Directories
+###### Directories
+<!-- core-payload-level:4 -->
 
 | Path | Purpose |
 | :--- | :--- |
@@ -100,7 +127,8 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 | `labeler.yml` | 풀 리퀘스트 라벨 라우팅 |
 | `SECURITY.md` | 취약점 보고 경로 |
 
-#### Canonical Entry Points
+###### Canonical Entry Points
+<!-- core-payload-level:4 -->
 
 - [CI 품질 워크플로](./workflows/ci-quality.yml): PR 변경 영향 검사와 별도 main 보안 관측
 - [타입 지정 워크플로 및 게이트 레지스트리](./workflow-contract.yml): 단일 공개 entrypoint의 변경 영향 검사와 명시적인 전체 감사 구성. 일반 문서 변경은 본문 검증을 유지하고 문서 검사기 회귀 테스트만 생략한다. 검사기·게이트·레지스트리 변경과 미등록 경로는 필요한 회귀 테스트를 포함한다.
@@ -112,17 +140,17 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 - [풀 리퀘스트 템플릿](./PULL_REQUEST_TEMPLATE.md)
 - [라벨 라우팅](./labeler.yml)
 
-### Owners
+##### Owners
 
 유지 책임은 Help에 적힌 대로 frontmatter `owner`인 `@buenhyden`에게 있다.
 
-## Support
+#### Support
 
-### Help
+##### Help
 
 오류 보고는 [bug_report.yml](ISSUE_TEMPLATE/bug_report.yml), 기능 요청은 [feature_request.yml](ISSUE_TEMPLATE/feature_request.yml) 이슈 양식으로, 취약점 보고는 [SECURITY.md](SECURITY.md)의 경로로 한다. 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있다.
 
-### Related Documentation
+##### Related Documentation
 
 - [정본 GitHub 거버넌스](../docs/00.workspace/03.process/github-governance.md)
 - [로컬 main-protection 제안](./rulesets/main-protection.md)
@@ -131,3 +159,23 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 - Canonical home의 과거 결정: ADR-0032 (현재 권한은 위 에이전트 거버넌스가 소유)
 - [저장소 README](../README.md)
 - [문서 인덱스](../docs/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

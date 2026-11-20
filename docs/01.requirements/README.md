@@ -1,48 +1,74 @@
 ---
 title: "Requirement Packages"
-version: "1.2.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 ---
 
 # Requirement Packages
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 `docs/01.requirements`는 제품의 문제, 이해관계자 가치, 범위, 요구사항과
 수용 기준을 하나의 Requirement Package로 관리한다. 구현 구조는 Stage 02와
 Stage 03, 실행 증거는 Stage 03 Spec Package의 현재 Task, 운영 절차는 Stage 05가 소유한다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - Product Owners
 - System Architects
 - Developers
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 이 디렉터리는 현재 Requirement Package를 관리한다. 각 패키지는
 functional, quality(non-functional) 요구사항을 같은 경계에서 관리하고,
 solution-independent interface 요구는 functional 요구사항으로 쓴다. 별도 역할 문서를 병렬로 만들지 않는다. 아래 색인은 현재 패키지를
 안내하며, 패키지가 추가·변경·삭제되면 같은 변경에서 갱신한다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, 제약,
 위험과 추적성을 소유한다. 아키텍처 구조, 선택의 근거, 구현 계약과 운영
 절차는 소유하지 않는다. 실행 가능한 OpenAPI, GraphQL, Proto payload는
 관련 Stage 03 Spec package가 소유한다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
 | Path | Purpose |
 | --- | --- |
@@ -65,7 +91,8 @@ Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, �
 | [0026-document-retention-and-retirement.md](0026-document-retention-and-retirement.md) | Document Retention and Retirement Requirements |
 | [0027-home-development-host.md](0027-home-development-host.md) | Home and Development Host Requirements |
 
-#### Package Index
+###### Package Index
+<!-- core-payload-level:4 -->
 
 | ID | 패키지 | 상태 |
 | --- | --- | --- |
@@ -107,7 +134,8 @@ docs/01.requirements/
 반드시 `REQ-####-FR-####` 또는 `REQ-####-NFR-####` 전체 형태를 사용한다. 발급된 번호는 재사용하거나
 high-water를 낮추지 않는다.
 
-#### PRD, SRS, and Interface Perspectives
+###### PRD, SRS, and Interface Perspectives
+<!-- core-payload-level:4 -->
 
 Requirement Package 하나가 PRD의 문제·사용자 가치·범위, SRS의 functional·
 non-functional 요구사항과 수용 기준, solution-independent interface 요구를
@@ -117,15 +145,16 @@ non-functional 요구사항과 수용 기준, solution-independent interface 요
 profile이나 병렬 문서로 만들지 않는다. 실행 가능한 interface payload는
 Stage 03 Spec의 contract가 소유한다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`이다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않는다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [Architecture](../02.architecture/README.md)
 - [Architecture Descriptions](../02.architecture/01.descriptions/README.md)
@@ -133,15 +162,17 @@ Stage 03 Spec의 contract가 소유한다.
 - [Specifications](../03.specs/README.md)
 - [Operations](../05.operations/README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [문서 작성 계약](../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../99.templates/02.templates/93.common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Authoring Flow
+###### Authoring Flow
+<!-- core-payload-level:4 -->
 
 1. [`requirement-package.template.md`](../99.templates/02.templates/01.requirements/requirement-package.template.md)를 사용한다.
 2. 동일한 문제와 범위를 소유하는 Requirement Package가 있는지 먼저 확인한다.
@@ -150,7 +181,8 @@ Stage 03 Spec의 contract가 소유한다.
 4. 구현 계약은 Stage 03 Spec, 운영 절차는 Stage 05에 둔다.
 5. 변경 후 metadata와 repository-local link 검증을 실행한다.
 
-#### Documentation Standards
+###### Documentation Standards
+<!-- core-payload-level:4 -->
 
 - `type: sdlc/requirement`와 안정 ID를 사용한다. Registry profile `id`는
   template binding과 validator routing에만 사용하며 문서 frontmatter에 복제하지 않는다.
@@ -163,6 +195,27 @@ Stage 03 Spec의 contract가 소유한다.
 - solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
   Stage 03에 둔다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 Requirement Package는 draft → in-review → approved로 전이하며 approved에서 in-review로 돌아갈 수 있다. 삭제된 package의 번호는 Registry `reserved_history`가 보관하며, Stage 01 번호 공백은 그 번호가 예약된 경우에만 정당하다. 패키지를 추가·변경·삭제하면 같은 변경에서 이 README를 갱신한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

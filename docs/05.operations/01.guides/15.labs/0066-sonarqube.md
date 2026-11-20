@@ -1,10 +1,13 @@
 ---
 title: "SonarQube Usage Guide"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # SonarQube Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 코드 분석을 실행하는 개발자와 SonarQube 서비스를 운영하는 담당자가 인증 경계와 데이터 위치를 이해하고 분석 토큰으로 스캐너를 안전하게 실행할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(project `hy-home-lab-sonarqube`)의
 `sonarqube` service로 운영하는 코드 품질·SAST 도구다. LAB profile `sast`에서만
@@ -34,14 +57,16 @@ SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(proj
 데이터 위치를 이해하고, 분석 토큰으로 스캐너를 안전하게 실행하는 것이다. DB 복구와 업그레이드는
 [SonarQube Runbook](../../03.runbooks/15.labs/0066-sonarqube.md)이 맡는다.
 
-#### Traceability
+###### Traceability
+<!-- core-payload-level:4 -->
 
 - [Policy](../../02.policies/15.labs/0066-sonarqube.md) (`POL-0066`)
 - [Runbook](../../03.runbooks/15.labs/0066-sonarqube.md) (`RUN-0066`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 - SPEC-0262 Analytics labs migration(LAB 이전)
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [SonarQube backup and restore](https://docs.sonarsource.com/sonarqube-server/9.9/instance-administration/backup-and-restore)
 - [SonarQube upgrade guide](https://docs.sonarsource.com/sonarqube-server/9.8/setup-and-upgrade/upgrade-the-server/upgrade-guide)
@@ -49,24 +74,25 @@ SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(proj
 - [Community Build Web API authentication](https://docs.sonarsource.com/sonarqube-community-build/extension-guide/web-api)
 - [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
-#### 분류와 범위
+###### 분류와 범위
+<!-- core-payload-level:4 -->
 
 SonarQube Community Build는 LAB profile `sast` 하위의 온디맨드 **LAB**
 코드 품질/SAST 서비스이며 HOME에서 제외된다. HOME network에 합류하지 않는다. 이 저장소는 이 서비스 가이드에서
 범용 병합 품질 게이트를 정의하지 않는다. 분석 결과로 배포를 어떻게 게이팅할지는
 프로젝트/CI 소유자가 정한다.
 
-### Authority
+##### Authority
 
 DB 비밀번호는 LAB 전용 secret `lab_sonarqube_*`이며 HOME mng-pg `sonarqube` role 비밀번호의 LAB 사본 준비는 별도 승인 대상이다. 분석 토큰은 SonarQube에서 최소 권한의 만료 가능한 토큰으로 발급한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -75,7 +101,8 @@ DB 비밀번호는 LAB 전용 secret `lab_sonarqube_*`이며 HOME mng-pg `sonarq
 | 3 | 최소 권한의 만료 가능한 프로젝트/글로벌 분석 토큰을 사용한다 | 토큰이 shell history와 로그에 남지 않는다 | 문서에 기록 없음 |
 | 4 | 대상 프로젝트에 스캐너를 실행하고 프로젝트 키, 커밋, 품질 결과, task ID를 기록한다 | 토큰과 소스 콘텐츠 없이 결과가 기록된다 | 문서에 기록 없음 |
 
-#### 현재 구현과 흐름
+###### 현재 구현과 흐름
+<!-- core-payload-level:4 -->
 
 - [SonarQube Compose](../../../../labs/sonarqube/docker-compose.yml)가
   런타임 이미지, profile, DB secret, JVM heap, host port, 볼륨, health를 정의한다.
@@ -101,7 +128,8 @@ DB 비밀번호는 LAB 전용 secret `lab_sonarqube_*`이며 HOME mng-pg `sonarq
 - `/api/system/health`는 프로세스 health만 증명한다. DB 백업, 인덱스 일관성,
   스캐너 인가, 게이트웨이 로그인을 증명하지 않는다.
 
-#### 일반적인 사용
+###### 일반적인 사용
+<!-- core-payload-level:4 -->
 
 1. 루트에서 `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`로
    렌더링만 검증한다(부수 효과 없음). 승인된 mng-pg endpoint와 role/DB 준비를 별도로 확인한다.
@@ -112,36 +140,60 @@ DB 비밀번호는 LAB 전용 secret `lab_sonarqube_*`이며 HOME mng-pg `sonarq
 4. 대상 프로젝트에 스캐너를 실행하고 토큰이나 소스 콘텐츠 없이 프로젝트 키,
    커밋, 품질 결과, task ID를 기록한다.
 
-#### 백업, 복원, 업그레이드
+###### 백업, 복원, 업그레이드
+<!-- core-payload-level:4 -->
 
 실행 순서와 실패·복구 판단은 [런북](../../03.runbooks/15.labs/0066-sonarqube.md)의 `보존 대상과 사전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-#### 버전 적용 한계
+###### 버전 적용 한계
+<!-- core-payload-level:4 -->
 
 과거 Server 9.8/9.9 참고 링크는 현재 Community Build의 실행 절차를 보증하지 않는다. 업그레이드와 재인덱싱 복구 전 확인 사항은 [런북](../../03.runbooks/15.labs/0066-sonarqube.md)의 `버전 적용 한계`를 따른다.
 
-#### 준비 상태와 접근 제한
+###### 준비 상태와 접근 제한
+<!-- core-payload-level:4 -->
 
 LAB Compose는 다른 project의 PostgreSQL을 기다리는 의존성을 선언할 수 없다. DB 소유자와
 실제 database/role 준비를 별도로 확인한다. 공통 초기화 SQL의 고정 이름과 LAB 입력 변수를
 바꾸는 작업은 같지 않다. 게시된 port 앞에 gateway SSO가 없으므로 SonarQube 로그인과 토큰이
 유일한 인증 경계다. `LAB_HOST_BIND_IP`를 loopback 밖으로 바꾸는 것은 별도 보안 검토 대상이다.
 
-### Expected Results
+##### Expected Results
 
 - `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`
 - `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --services`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 DB 장애, 인덱싱 복구, 분석 큐, 업그레이드에는 [runbook](../../03.runbooks/15.labs/0066-sonarqube.md)을
 사용한다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [RUN-0066](../../03.runbooks/15.labs/0066-sonarqube.md)를 따른다. DB 장애, 인덱싱 복구, 분석 큐, 업그레이드도 이 runbook을 사용한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,35 +1,60 @@
 ---
 title: "Task Checklists"
-version: "1.6.0"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Task Checklists
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Check scope, implementation evidence, and completion before changing repository state.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of the task checklists for editing, work, and completion under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Approved repository edits, ongoing implementation, and completion evidence.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -48,7 +73,8 @@ None: this document states no exclusion.
 | TASK-CHECKLISTS-R13 | During work | Forbidden: recording evidence in a second progress or handoff document | none | none |
 | TASK-CHECKLISTS-R14 | Missing authority, destructive ambiguity or unexpected scope | Required: stop | none | none |
 
-#### Before Editing
+###### Before Editing
+<!-- core-payload-level:4 -->
 
 - [ ] Confirm the approved objective, editable paths, protected surfaces, and exclusions.
 - [ ] Load applicable Requirement, Architecture, Spec, Plan, Task, policy, and skill sources.
@@ -56,7 +82,8 @@ None: this document states no exclusion.
       provider changes to explicit approval, validation, and recovery.
 - [ ] Define acceptance checks and inspect the shared worktree.
 
-#### During Work
+###### During Work
+<!-- core-payload-level:4 -->
 
 - [ ] Keep changes traceable to the approved Plan Task.
 - [ ] Keep canonical sources separate from generated provider projections.
@@ -65,21 +92,24 @@ None: this document states no exclusion.
 - [ ] Record actual evidence in the Task, not a second progress or handoff document.
 - [ ] Stop on missing authority, destructive ambiguity, or unexpected scope.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
-#### Before Completion
+###### Before Completion
+<!-- core-payload-level:4 -->
 
 - [ ] Follow the [execution boundary](quality-standards.md#4-execution-boundary)
       for staged lint/format immediately before local commit, server PR final
@@ -101,7 +131,7 @@ None: no exception exists to approve.
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.
 
-### Limits
+##### Limits
 
 No check, script or review is tied to any rule in Requirements.
 
@@ -109,13 +139,13 @@ No check, script or review is tied to any rule in Requirements.
 - During Work (R6-R14): no check is named.
 - Rules stated under Enforcement (Mechanisms) are outside this table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -123,3 +153,23 @@ Changes land in place with Task evidence; related documents:
 - [Approval boundaries](approval-boundaries.md)
 - [Git workflow](../03.process/git-workflow.md)
 - [Postflight checklist](../../../.agents/governance/postflight-checklist.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

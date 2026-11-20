@@ -1,10 +1,13 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -23,13 +26,33 @@ next_review_at: "2027-05-13"
 
 # Management Database Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 management database를 사용하는 서비스 소유자와 운영자. 서비스 구성, 공유 의존성의 영향 범위, 지표 수집 구조, 백업·복구·업그레이드 경계를 파악할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 management database는 인증, 워크플로, 도구를 위한 6개 서비스(PG 엔진·init·monitor provision·exporter, Valkey 엔진·exporter)로 구성된 HOME
 의존성이다. `mng-pg`는 `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`,
@@ -43,7 +66,8 @@ management database를 사용하는 서비스 소유자와 운영자를 위한 �
 구성, 공유 의존성의 영향 범위, 지표 수집 구조, 백업·복구·업그레이드 경계를 이해하고
 정적 검사로 구성을 확인하는 것이다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Artifact: `GDE-0028`; 거버넌스 정책: `POL-0028`.
 - Runtime authority: `infra/04-data/mng-db/docker-compose.yml`.
@@ -52,13 +76,14 @@ management database를 사용하는 서비스 소유자와 운영자를 위한 �
 - [Health and recovery runbook](../../03.runbooks/05.databases-and-storage/0028-management-database.md)
 - [Backup policy](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 이 가이드가 전제하는 구현과 환경 사실은 아래 항목에 정리한다.
 
-#### Current implementation
+###### Current implementation
+<!-- core-payload-level:4 -->
 
 [`infra/04-data/mng-db/docker-compose.yml`](../../../../infra/04-data/mng-db/docker-compose.yml)은
 `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`,
@@ -96,19 +121,21 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 `192.168.0.13`)에 게시해 k3d Argo CD 캐시가 도달한다. healthcheck와 리소스
 제한은 공유 템플릿에서 온다.
 
-### Authority
+##### Authority
 
 필요한 secret은 `mng_postgres_password`, `mng_valkey_password`, `mng_valkey_monitor_password`, `mng_valkey_inspector_password`다. 승인된 runtime task 없이 init을 재실행하거나, credential을 회전하거나, HOME 데이터베이스를 조회하거나, broker queue를 변경하지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용 절차는 아래 항목에 정리한다.
 
-#### Identity-specific behavior
+###### Identity-specific behavior
+<!-- core-payload-level:4 -->
 
 `mng-pg`는 pgBackRest 기반 physical/WAL 백업을, `mng-valkey`는 AOF state와 백업 orchestrator의 RDB export를 사용한다. `mng-pg-init`은 base role/database DDL이며 선택 기능의 runner/SQL은 해당 subject가 소유한다(MLflow, Superset, Pact 등). PG는 loopback, Valkey는 `HOST_LAN_BIND_IP`에 host port를 게시한다. 두 exporter는 각각 PG/Valkey 한 대상만 보며 health는 업무 정합성을 확인하지 않는다. feature profile에는 `bi`, `contract-testing`도 포함한다. 앱 quiescence와 조정된 logical dump 요구는 여전히 필수이며, 현재 daily physical/RDB automation은 앱별 동시 복구를 보장하지 않는다.
 
@@ -123,7 +150,8 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-#### Images, configuration and resource controls
+###### Images, configuration and resource controls
+<!-- core-payload-level:4 -->
 
 Compose 파일은 PostgreSQL custom image `hy-home/mng-pg`(`pg/backup/Dockerfile`, pgBackRest 포함), init/monitor job의 upstream PostgreSQL, Valkey, 두 exporter 이미지의
 권위 있는 정의다. 저장소 Renovate가 업데이트를 제안하면 버전 projection은
@@ -137,14 +165,16 @@ healthcheck가 선언되어 있다. 현재 consumer는 `mng_data_net`으로 연�
 init은 PostgreSQL health 이후 role/database를 생성하고 exporter는 엔진을
 관찰한다.
 
-#### Static preflight
+###### Static preflight
+<!-- core-payload-level:4 -->
 
 정적 점검 명령은 [RUN-0028 절차](../../03.runbooks/05.databases-and-storage/0028-management-database.md#steps)가
 소유한다. 저장소 루트에서 실행하며, leaf 파일만 단독으로 렌더링하거나 기동하지 않는다.
 승인된 runtime task 없이 init을 재실행하거나, credential을 회전하거나, HOME
 데이터베이스를 조회하거나, broker queue를 변경하지 않는다.
 
-#### Backup, recovery and upgrades
+###### Backup, recovery and upgrades
+<!-- core-payload-level:4 -->
 
 PostgreSQL은 global role과 모든 데이터베이스의 logical dump가 필요하다.
 현재 자동 백업은 pgBackRest physical/WAL과 globals export, Valkey RDB이며 이 logical/AOF 요구를 전부 구현하지 않는다. 완전한 앱 정합 복원은 별도 승인·검증이 필요하다. Valkey는 완전한 AOF set/manifest 하나와 RDB checkpoint 하나가 필요하며,
@@ -157,7 +187,8 @@ upstream 방법을 사용한다. minor 이미지 변경과 Valkey 변경도 rele
 backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDATA`에
 연결하거나 실행 중인 데이터베이스 파일을 복사하지 않는다.
 
-#### Official references
+###### Official references
+<!-- core-payload-level:4 -->
 
 - [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
 - [pg_restore](https://www.postgresql.org/docs/current/app-pgrestore.html)
@@ -165,24 +196,45 @@ backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDA
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-### Expected Results
+##### Expected Results
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 - consumer DB 연결 실패: `mng-pg` healthcheck(`pg_isready`)와 `mng-pg-init` 종료 코드를 먼저 확인한다. init은 base 서비스 role/database만 만들고 feature DB는 각 feature job이 만든다.
 - Airflow/n8n queue 쓰기 오류: `maxmemory 128mb`·`noeviction` 한도에 도달했을 수 있다. key 삭제나 replay는 [RUN-0028](../../03.runbooks/05.databases-and-storage/0028-management-database.md)의 승인 경계를 따른다.
 - exporter `pg_up`/`redis_up`이 0: monitor provision job과 monitor 계정 secret을 확인한다.
 
-### Next Action
+##### Next Action
 
 증상이 계속되면 [RUN-0028](../../03.runbooks/05.databases-and-storage/0028-management-database.md)의 승인 경계와 복구 순서를 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

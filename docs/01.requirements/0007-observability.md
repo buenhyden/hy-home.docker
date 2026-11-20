@@ -1,10 +1,13 @@
 ---
 title: "Observability Tier Requirements"
-version: "1.3.1"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0007"
 created: "2026-03-26"
@@ -12,9 +15,29 @@ created: "2026-03-26"
 
 # Observability Tier Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 When metrics, logs and traces are fragmented, finding the root cause of a
 failure takes longer and availability suffers. The observability tier
@@ -23,7 +46,7 @@ service by integrating Prometheus, Loki, Tempo and Grafana with Grafana Alloy,
 Alertmanager, Pushgateway, cAdvisor, node and GPU exporters, Pyroscope, Gatus
 and Dozzle.
 
-### Stakeholders
+##### Stakeholders
 
 - **DevOps/SRE**: watches availability and resource use of every container on
   one dashboard and is alerted when a threshold is exceeded.
@@ -32,14 +55,14 @@ and Dozzle.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - Metrics, logs, traces and profiles collection, dashboards and
   their provisioning, alert routing, and service status checks.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - **Out of Scope**: Ongoing analysis of business logs, and external cloud
   monitoring services.
@@ -58,7 +81,7 @@ collector or the metrics server can read.
   tier failure interrupts persistence.
 - Dashboard login depends on the identity provider in `02-auth`.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -69,7 +92,7 @@ collector or the metrics server can read.
 | REQ-0007-FR-0005 | Control dashboard access through the platform's OIDC identity provider. | This package records no rationale for this requirement. | Dashboard login goes only through the identity provider; the local login form and local sign-up are disabled. | must |
 | REQ-0007-FR-0006 | Route alerts to a team notification channel. | DevOps and SRE are alerted when a threshold is exceeded. | Chat notification receivers and their secrets render; email delivery is not configured yet, and delivery within 60 seconds is claimed only with separate runtime rehearsal evidence. | must |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0007-FR-0001**: Collect and store time-series metrics from every monitored service.
 - **REQ-0007-FR-0002**: Aggregate logs from distributed services centrally and persist them to object storage.
@@ -78,20 +101,21 @@ collector or the metrics server can read.
 - **REQ-0007-FR-0005**: Control dashboard access through the platform's OIDC identity provider.
 - **REQ-0007-FR-0006**: Route alerts to a team notification channel.
 
-### Quality Requirements
+##### Quality Requirements
 
 This package declares no quality requirement and records no reason why none applies.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 This package records the owner's requirements for the observability tier; no upstream
 document governs it.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0007-FR-0001**: Every target declared in the current scrape
   configuration renders without omission; runtime verification confirms the
@@ -108,13 +132,35 @@ document governs it.
   render; email delivery is not configured yet. Delivery within 60 seconds is claimed only with separate
   runtime rehearsal evidence.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Each condition is judged by reviewing the rendered configuration for the scrape, storage, collector, login and alert settings, while target availability and the 60-second alert delivery are judged by a runtime observation. No current Spec Package cites REQ-0007; a Spec that implements it records the evidence in its Task. The evidence is the review result and the observed timings, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - **Architecture Description**: [Observability architecture](../02.architecture/01.descriptions/0006-observability-architecture.md)
 - **ADR**: [ADR-0053 Observability Object Storage on SeaweedFS](../02.architecture/02.decisions/0053-observability-storage-on-seaweedfs.md)
 - **Retired domain Spec SPEC-0007** (observability): replaced by the observability guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
 - **Retired requirement REQ-0018** (observability optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the observability operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

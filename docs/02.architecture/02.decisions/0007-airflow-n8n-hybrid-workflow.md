@@ -1,21 +1,45 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0007"
 parent_ids:
 - "AD-0007"
 created: "2026-03-26"
 ---
+
 # ADR-0007: Airflow & n8n Hybrid Workflow Strategy
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 This document is the architecture decision record for the background and hybrid operating strategy behind adopting both Apache Airflow and n8n as workflow engines.
 
@@ -26,35 +50,38 @@ The project faces two different workflow needs.
 
 Solving both with a single solution does not work well: Airflow is too heavy for simple integrations, and n8n has limits managing complex data pipelines.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 - **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
 - **Architecture Description**: [0007-workflow-architecture.md](../01.descriptions/0007-workflow-architecture.md)
 
-### Decision Scope
+##### Decision Scope
 
 Explicit non-goals:
 
 - Does not standardize direct mutual calls between the two engines (done only through an API when needed).
 - Does not use n8n for large-volume data processing.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
-#### Alternative 1: Airflow Only
+###### Alternative 1: Airflow Only
+<!-- core-payload-level:4 -->
 
 - Good: simple with single-engine operation, strong control.
 - Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
 
-#### Alternative 2: n8n Only
+###### Alternative 2: n8n Only
+<!-- core-payload-level:4 -->
 
 - Good: very fast development speed, intuitive visualization.
 - Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -64,9 +91,9 @@ Explicit non-goals:
 
 Airflow only was not chosen because simple API integrations need a lot of code and fast UI-based edits are not possible. n8n only was not chosen because complex dependency management and custom Python logic are difficult and visibility into large-scale batch jobs is low.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 - Adopt **Apache Airflow** as the "Core Orchestrator", handling complex data pipelines and system batch jobs.
 - Adopt **n8n** as the "Integration Automator", handling external service federation and lightweight event-driven automation.
@@ -84,13 +111,13 @@ Airflow only was not chosen because simple API integrations need a lot of code a
   changed, so the sentence above is preserved as a record of its time.
   Recorded by SPEC-0176.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - **Positive**:
   - Improves development and operational productivity by using the optimal tool for each purpose.
@@ -100,7 +127,7 @@ Decided by the owner, @buenhyden; status `accepted`. No separate approval record
   - Operational overhead from managing two kinds of engines.
   - Increased resource (memory, CPU) consumption.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -108,3 +135,23 @@ options table under Trade-offs was derived from the options it records. The
 decision text is unchanged.
 
 No follow-up work is recorded in this decision.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

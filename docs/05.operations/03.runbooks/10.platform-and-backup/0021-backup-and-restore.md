@@ -1,10 +1,13 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.23.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # Backup and Restore Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 pgBackRest, Restic, SQLite export, R2 오프사이트 사본의 설정·실행·검증·복구 절차를 다룬다. 공유 에이전트 memory 저장소는 백업 대상이 아니며 그 운영은 [harness maintenance](../../../00.workspace/06.maintenance/harness-maintenance.md)가 소유한다. 정책은 [POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md), 설명은 [GDE-0021](../../01.guides/10.platform-and-backup/0021-backup-and-restore.md)이 소유한다.
 
@@ -26,7 +49,7 @@ backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 �
 복원하거나, Restic에서 파일을 복원하거나, 오래된 snapshot을 삭제하거나,
 R2 오프사이트 사본을 설정하거나 그 사본에서 복원할 때 사용한다.
 
-### Targets
+##### Targets
 
 - Guide: [GDE-0021](../../01.guides/10.platform-and-backup/0021-backup-and-restore.md); Policy: [POL-0021](../../02.policies/10.platform-and-backup/0021-backup-and-restore.md)
 - Alerts: [host backup rules](../../../../infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml)
@@ -38,21 +61,21 @@ R2 오프사이트 사본을 설정하거나 그 사본에서 복원할 때 사�
 - [Restic: preparing a repository](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
 - [Restic: removing snapshots](https://restic.readthedocs.io/en/stable/060_forget.html)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
 모든 단계는 target을 명시한 별도의 approval이 필요하다.
 
-### Environment
+##### Environment
 
 실행 중인 checkout의 repository root에서 command를 실행한다. secret 파일이나
 rendered Compose model을 절대 출력하지 않는다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -74,7 +97,8 @@ rendered Compose model을 절대 출력하지 않는다.
 
 절차는 아래 항목에 따른다.
 
-#### 1. Prepare `.env`, directories and keys (once, before the change is checked out on the host)
+###### 1. Prepare `.env`, directories and keys (once, before the change is checked out on the host)
+<!-- core-payload-level:4 -->
 
 먼저 `.env`를 sync한다. `BACKUP_STATE_REPO_DIR`를 설정하기 전에는
 `mng-pg`를 재생성하면 repository 경로가 없어 실패한다.
@@ -95,7 +119,8 @@ Expected: `.env`에 `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
 존재한다. 첫 backup 전에 두 key 값을 offline custody로 복사한다. 경로에
 이미 자신이 만들지 않은 데이터가 있으면 중단한다.
 
-#### 2. Switch `mng-pg` to the pgBackRest image (approval: interrupts shared management-DB access)
+###### 2. Switch `mng-pg` to the pgBackRest image (approval: interrupts shared management-DB access)
+<!-- core-payload-level:4 -->
 
 전제 조건: owner가 공유 DB interruption, image 호환성, cipher custody와 복구 지점을 승인한다. consumer 자동 재시작을 기대하지 않는다. 최소 20 GiB preflight만으로 dump/scratch 용량을 충족한다고 가정하지 않는다. Logical dump는 기존 파일을 덮어쓰지 않는 새 소유 파일에 만든다. 아래는 승인된 운영 예시이며 W4에서 실행하지 않았다.
 
@@ -135,7 +160,8 @@ WAL drop/queue 초과가 확인되면 해당 chain의 복구 가능성 판정을
 검증하기 전까지 새 PITR 기준점으로 인정하지 않는다.
 Rollback은 원래 PG major/extension와 data format 호환성을 확인한 image/config에 한해 별도 승인한다. Git revert가 data downgrade를 수행하지 않는다. repository를 사용할 수 없고 WAL 공간 위험이 있으면 RUN-0035로 전달하며 `archive_mode=off` 변경은 archive 중단과 RPO 손실을 승인받은 경우에만 한다.
 
-#### 3. Initialize Restic and install the timer (once)
+###### 3. Initialize Restic and install the timer (once)
+<!-- core-payload-level:4 -->
 
 ```bash
 docker compose --profile backup run --rm --no-deps restic init
@@ -147,7 +173,8 @@ sudo systemctl enable --now hyhome-backup.timer
 
 `init`은 이미 있는 repository는 건너뛰고 절대 re-key하지 않는다.
 
-#### 4. Run or verify a backup
+###### 4. Run or verify a backup
+<!-- core-payload-level:4 -->
 
 ```bash
 sudo systemctl start hyhome-backup.service
@@ -235,7 +262,8 @@ timestamp was not written"을 남기고 exit 1로 끝난다.
 | `HyhomeBackupStale` | 마지막 성공 후 26시간 경과, 또는 metric이 26시간 동안 없음 | `systemctl list-timers hyhome-backup.timer`와 서비스 결과를 보고, journal의 상태 줄로 멈춘 단계를 찾는다. 원인을 고친 뒤 이 step으로 한 번 실행한다. |
 | `HostSystemDiskLow` | `/` 여유 공간 25 GiB 미만이 15분 지속 | 20 GiB 아래에서는 다음 run이 exit 64로 멈춘다. `docker system df`로 빌드 캐시와 어떤 container도 쓰지 않는 image를 확인하고, 승인을 받아 정리한다. |
 
-#### 5. Point-in-time restore of `mng-pg` into isolation
+###### 5. Point-in-time restore of `mng-pg` into isolation
+<!-- core-payload-level:4 -->
 
 이 절차의 action readiness는 **BLOCKED**다. 2026-10-30 독립 stateful recovery 검토는 REQUEST_CHANGES 후 수정 범위 재검토에서 APPROVE_WITH_NOTES였다. 실행은 **NOT_RUN**이며 @buenhyden의 별도 실행 승인 전에는 실행하지 않는다. 실행 전에 정확한 source backup label, recovery timestamp(명시적 UTC offset 포함), 연속 WAL 범위, 원래 PostgreSQL major/extension/pgBackRest와의 image 호환성, 빈 target과 충분한 data-disk capacity를 owner가 확인한다. script는 실행 중인 `mng-pg`의 image ID를 쓰며 원래 backup image와 같다고 추정하지 않으므로 호환성은 owner가 검토한다.
 
@@ -285,7 +313,8 @@ MLflow tracking 표 4개를 더한 것은 SPEC-0182 기준 7의 MLflow 격리 �
 
 2026-10-30 읽기 전용 `pg_stat_archiver` 확인에서 `last_archived_wal`은 `0000000100000027000000B1`(2026-10-30 08:34:35 UTC)로 권장 target보다 한참 뒤이므로 archive는 target 너머까지 이어진다. 그 사이 WAL의 연속성은 실행 자체가 증명하며, 끊겨 있으면 recovery가 일찍 끝나 `clone_exited`로 FAIL한다. `db_list_match`는 선택한 set 당시가 아니라 원본의 **현재** DB 목록과 비교하므로 5a와 같은 한계가 있다.
 
-#### 5a. Selected-backup immediate consistency rehearsal
+###### 5a. Selected-backup immediate consistency rehearsal
+<!-- core-payload-level:4 -->
 
 이 즉시 일관성 rehearsal 분기(SPEC-0201-TSK-0002가 제안, 삭제됨)는 step 5의 time-target PITR(`--target-time`)와 별개다. 실행은 별도 소유자 승인 전 **BLOCKED**이고, 백업 종료 뒤의 WAL 시점·5분 RPO·관리 앱 복구를 증명하지 않는다. 승인된 현재 backup set에 대해 `pgbackrest verify --set=<label>`가 exit 0인 후에만 같은 set을 `--type=immediate --target-action=promote --archive-mode=off`로 새 격리 target에 복원한다. 원본 repository와 BKP-001 secret은 기존 bind를 read-only로 소비한다. backup scheduler의 host lock, 정확한 scratch identity, image/PG major/pgBackRest 호환성, Docker context, 자원·시간 상한, 실패 보존을 먼저 검토한다.
 
@@ -331,7 +360,8 @@ cleanup_status=removed
 
 `result=FAIL`이면 `reason`이 멈춘 단계(`verify`, `restore`, `identity_mismatch`, `required_object_missing`, `count_unstable`, `probe_privileges`, `probe_auth_not_enforced`, `probe_session`, `probe_cleanup` 등)를 말하고 이후 필드는 `NOT_RUN`이다. `cleanup_status`가 `removed`나 `none_created`가 아니면 이름과 ID가 맞지 않은 container를 건드리지 않았다는 뜻이므로 소유자가 직접 확인한다. 통과해도 scratch PGDATA(UID 70 소유, mode 0700)는 남고 증거 수집 시점부터 7일 안에 @buenhyden가 검토한다. 삭제는 별도 identity·owner 승인이다.
 
-#### 6. Restore files from Restic
+###### 6. Restore files from Restic
+<!-- core-payload-level:4 -->
 
 승인 전 정확한 Restic snapshot ID, host/tag/time/source revision, 암호 키 custody, include 경로와 대상 owner를 선택한다. `latest`를 자동 선택하지 않는다. state와 host는 같은 성공 실행에 속하는 snapshot pair인지 확인한다. 일반 restore container는 data-disk의 새 소유 scratch, local repository read-only, `--network none`을 사용한다. hardened backup job은 ownership 재적용 권한이 없으므로 restore 도구와 UID/mode 복원 계약을 별도로 검토한다.
 
@@ -339,7 +369,8 @@ Restic의 `restore <reviewed-snapshot-id> --target <owned-scratch>`로 승인된
 
 SeaweedFS는 같은 state snapshot의 `/src/state/volumes/data/seaweedfs`와 `/src/state/exports/seaweedfs-filer.meta`를 함께 복원한다. `loki-bucket`·`tempo-bucket` collection의 volume file은 snapshot에 없으므로(SPEC-0228) 손실된 object 이력은 이 복원에서 돌아오지 않는다. Loki와 Tempo가 새 telemetry를 수집하는지 별도로 확인한다. [RUN-0024](../05.databases-and-storage/0024-seaweedfs.md)의 빈 filer store, volume/master tree, `fs.meta.load` 계약을 따른다. restore 실패·identity 충돌·include 부재는 중단하며 자동 cleanup하지 않는다.
 
-#### 7. Delete old snapshots (approval: irreversible)
+###### 7. Delete old snapshots (approval: irreversible)
+<!-- core-payload-level:4 -->
 
 ```bash
 docker compose --profile backup run --rm --no-deps \
@@ -353,7 +384,8 @@ docker compose --profile backup run --rm --no-deps \
 `--dry-run`으로 restic이 실제로 지울 목록을 확인한다.
 pgBackRest는 자체 backup을 `repo1-retention-full=2`로 만료시킨다.
 
-#### 8. Offsite copy (R2)
+###### 8. Offsite copy (R2)
+<!-- core-payload-level:4 -->
 
 `restic-offsite`는 로컬 Restic repository 두 개의 snapshot을 Cloudflare R2의
 Restic repository 하나로 복사한다(ADR-0056). state set에 `pgbackrest/`가
@@ -362,7 +394,8 @@ pgBackRest의 S3 repository는 따로 두지 않는다. state set은 이제
 `forget-prune` 전까지 본 모든 pgBackRest 파일을 담고 이 크기는
 `BACKUP_STATE_MAX_GIB`에 포함되므로, 로그의 크기를 지켜본다.
 
-#### 8.1 Owner 1회 설정 (approval: 새 credential과 첫 업로드)
+###### 8.1 Owner 1회 설정 (approval: 새 credential과 첫 업로드)
+<!-- core-payload-level:4 -->
 
 Cloudflare dashboard에서:
 
@@ -409,7 +442,8 @@ docker compose --profile backup run --rm --no-deps restic-offsite check
 `init`은 이미 초기화된 repository를 건너뛴다. Rollback: `.env`의 두 키를
 비우면 매일의 run이 오프사이트 단계를 건너뛴다.
 
-#### 8.2 매일의 동작
+###### 8.2 매일의 동작
+<!-- core-payload-level:4 -->
 
 `.env` 키 중 하나라도 비어 있으면 orchestrator는 `offsite copy not
 configured (BACKUP_OFFSITE_R2_*); skipped`를 남기고 unit 결과는 바뀌지 않는다.
@@ -434,7 +468,8 @@ R2 repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). `copy`와 `
 `dump`, `list`, `version`)만 넘긴다. 이 상한은 이 repository의 파일만 센다. 같은 계정의
 다른 R2 사용은 8.6에서 따로 확인한다.
 
-#### 8.3 R2에서 복원
+###### 8.3 R2에서 복원
+<!-- core-payload-level:4 -->
 
 host를 잃은 뒤에는 Docker·보존 source revision과 image identity, 계정 A의 BKP-002~005와 account/bucket(BKP-001은 host 백업에서 복구) 외에 root Compose 렌더링에 필요한 non-secret inputs 및 명시적 directory/mount 준비가 필요하다. `.env` 두 키만으로 root Compose bootstrap이 된다고 가정하지 않는다. 복원한 private 설정은 출력하지 않는다.
 
@@ -457,7 +492,8 @@ host snapshot은 `$SCR/host`, state snapshot은 `$SCR/state`에 복원된다. �
 
 로컬 repository를 다시 만드는 경우에도 빈 target과 원격 snapshot scope를 검토한다. `restic init --copy-chunker-params --from-repo` 후 승인된 ID를 `copy`하며, 기존 repository를 덮어쓰거나 전체 tag를 무조건 복사하지 않는다. encrypted snapshot 존재만으로 key custody와 application restore가 검증되지는 않는다. 실패 artifact는 보존하고 cleanup/cutover는 별도 승인한다.
 
-#### 8.4 Verification
+###### 8.4 Verification
+<!-- core-payload-level:4 -->
 
 - `journalctl -u hyhome-backup.service`에 오늘 날짜의 state 줄과 host 줄이 있는
   `R2 latest snapshots:`가 보이고 unit이 exit 0으로 끝났다.
@@ -469,7 +505,8 @@ host snapshot은 `$SCR/host`, state snapshot은 `$SCR/state`에 복원된다. �
   리허설(8.3)을 소요 시간과 함께 기록한다.
 - 원격 snapshot 삭제는 8.5의 확인 절차로만 한다. 매일의 run은 지우지 않는다.
 
-#### 8.5 원격 forget-prune (owner-run, approval: 원격 삭제)
+###### 8.5 원격 forget-prune (owner-run, approval: 원격 삭제)
+<!-- core-payload-level:4 -->
 
 R2에는 로컬의 `forget-prune`이 닿지 않으므로, 이 단계 없이는 올린 것이 계속
 쌓인다. 로컬 state 디렉터리는 2026-09-23 429 MiB에서 2026-09-30 1679 MiB로
@@ -488,7 +525,8 @@ docker compose --profile backup run --rm --no-deps \
 지운다. lock 아래에서 repack이 저장량을 늘리지 못하게 하려는 것이다. 이는 snapshot timestamp 기준이며 object 생성 시각·R2 lock 만료와 같지 않다. remote prune/lock 조합은 현재 미검증이다. 삭제/repack이 잠금에 거부되면 중단하고 owner에게 전달하며 다음 달 자동 해소나 index 안전을 가정하지 않는다. 잠금을 약화하거나 object 일부를 직접 삭제하지 않는다. 성공 후에도 `restic-offsite check`로 `no errors were found`를 확인한다.
 Evidence에는 실행 시각, 지운 snapshot 수, 전후 `R2 repository size`를 적는다.
 
-#### 8.6 R2 비용과 무료 한도 검토
+###### 8.6 R2 비용과 무료 한도 검토
+<!-- core-payload-level:4 -->
 
 2026-09-30 확인한 [R2 pricing](https://developers.cloudflare.com/r2/pricing/)
 기준: 무료 한도는 계정 단위로 Standard storage 10 GB-month, Class A 100만,
@@ -516,7 +554,8 @@ Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 �
 4. 한 달에 한 번 bucket의 **Metrics** 탭에서 storage와 operation 수를 보고, 8.5의
    Evidence 옆에 적는다.
 
-#### 개발 PostgreSQL 편입 및 복구 전제
+###### 개발 PostgreSQL 편입 및 복구 전제
+<!-- core-payload-level:4 -->
 
 1. 승인된 Docker context/프로젝트·정확한 image ID·새 PGDATA·별도
    `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest` identity와 용량을 확인합니다.
@@ -572,7 +611,8 @@ full backup하고 현재 Restic state chain으로 snapshot/복원한 repository�
 reader 읽기 허용/쓰기·DDL 거절이 통과했으며 missing source exit3·unknown label
 exit75도 거절했습니다. 이 결과는 WAL/PITR·HOME·R2 복구나 RPO/RTO가 아닙니다.
 
-#### 설치된 unit 갱신
+###### 설치된 unit 갱신
+<!-- core-payload-level:4 -->
 
 소스 경로를 `09-platform-ops`로 이전해도 호스트에 복사해 설치한
 `hyhome-backup.service`는 예전 ExecStart 경로를 유지할 수 있습니다. 운영 배포 시
@@ -581,7 +621,8 @@ exit75도 거절했습니다. 이 결과는 WAL/PITR·HOME·R2 복구나 RPO/RTO
 그대로 유지하며, 활성화·catch-up 실행·수동 백업은 별도 승인 대상입니다.
 이 저장소 변경은 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않습니다.
 
-#### P01 OpenBao failure and trust increment
+###### P01 OpenBao failure and trust increment
+<!-- core-payload-level:4 -->
 
 OpenBao snapshot은 native TLS·검증된 CA를 쓰는 container CLI를 재사용한다. token은
 stdin으로만 전달하며 snapshot-only 정책과 주기 갱신을 유지한다. token 부재·실패
@@ -591,7 +632,8 @@ stdin으로만 전달하며 snapshot-only 정책과 주기 갱신을 유지한�
 identity/checksum·일관성·용량·rollback 경계가 확인된 후만 실행한다. P01 synthetic
 restore는 HOME/offsite custody를 대신하지 않는다.
 
-#### Workspace 도구 운영 이관 (2026-11-19)
+###### Workspace 도구 운영 이관 (2026-11-19)
+<!-- core-payload-level:4 -->
 
 공유 에이전트 memory 저장소, 세션 수집, 세션 예약 분석, 작업 예측, 병렬 작업 실행,
 관측 보고의 운영 절은 제품 백업 절차가 아니므로
@@ -605,7 +647,8 @@ restore는 HOME/offsite custody를 대신하지 않는다.
 harness maintenance를 따른다. 이 Runbook의 운영 내용은 관측 보고가 가리키는
 `hyhome-backup.service` 실패와 아래 공유 기억 백업 제외다.
 
-#### 공유 기억 백업 제외 (2026-11-18)
+###### 공유 기억 백업 제외 (2026-11-18)
+<!-- core-payload-level:4 -->
 
 소유자 결정으로 공유 기억(`.workspace-memory`)은 백업에서 제외한다. 일일
 `hyhome-backup.service`는 기억 저장소를 export하거나 staging·Restic snapshot에 넣지
@@ -617,11 +660,12 @@ R2의 30일 bucket lock 아래 object는 lock이 끝나기 전에는 지울 수 
 명령(`backup`, `restore`, `backup-run`)과 그 용량 승인 경로는 제거되었고, 원장은
 백업 snapshot을 계산하지 않는다.
 
-### Stop Conditions
+##### Stop Conditions
 
 중단 조건은 아래 항목에 기록한다.
 
-#### Execution and stop boundary
+###### Execution and stop boundary
+<!-- core-payload-level:4 -->
 
 대상: `restic`, `restic-offsite`, `backup-sqlite-export`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
@@ -629,21 +673,23 @@ R2의 30일 bucket lock 아래 object는 lock이 끝나기 전에는 지울 수 
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 각 단계의 `Expected:` 결과와 일치해야 한다. 예를 들어 backup 실행 단계는 exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개를 기대한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 command, exit status, pgBackRest backup label, Restic snapshot ID, 복원된 row
 count 또는 file hash, 소요 시간을 기록한다. key 값, dump 내용, rendered
 configuration은 절대 기록하지 않는다.
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 static source 점검만 승인된 경우 모든 runtime command가 `NOT_RUN`이라고 기록하며, 2단계 예시는 W4에서 실행하지 않았다고 밝힌다.
 
@@ -654,14 +700,14 @@ configuration은 절대 기록하지 않는다.
 - 8단계 R2 offsite copy와 8.3 R2 복원 리허설: 8.4 검증 항목과 소요 시간 기록이 필요하며, 이 문서는 오프사이트 복구 검증을 기록하지 않는다.
 - 설치된 unit 갱신: 문서는 이 저장소 변경이 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않는다고 밝히며, 호스트에서 갱신과 daemon-reload 적용 확인이 필요하다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나, key를
 잃어버렸을 때 @buenhyden에게 escalation한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 - `archive_command` 실패: `pgbackrest --stanza=mng check`가 원인을 보여준다.
   `pg_wal`이 disk를 채우기 전에 repository 경로나 ownership을 고치거나,
@@ -671,3 +717,23 @@ restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나,
   key를 복구한다. repository를 읽을 다른 방법은 없다.
 - 중단된 Restic run: 다시 실행한다. 다른 Restic 프로세스가 실행 중이 아닌지
   확인한 뒤에만 `restic unlock`한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

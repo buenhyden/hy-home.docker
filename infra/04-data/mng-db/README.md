@@ -1,28 +1,54 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.3.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-12-03"
 ---
 
 # Management database
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 이 패키지는 저장소의 HOME 관리 PostgreSQL과 Valkey를 정의합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 공유 관리 상태의 operator와 maintainer를 대상으로 합니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 [`docker-compose.yml`](docker-compose.yml)이 HOME `mng-pg`, `mng-pg-init`,
 `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`를 정의합니다. `mng`,
@@ -44,7 +70,8 @@ entrypoint가 시작되기 전에 `pgbackrest_cipher_pass` secret을
 환경 변수나 추적된 설정에 절대 들어가지 않습니다. 비어 있거나 공백만 있는
 secret은 컨테이너를 exit 64로 중지시킵니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 `mng-pg-data`는 `${DEFAULT_MANAGEMENT_DIR}/pg`에 매핑됩니다. init job은
 n8n, Keycloak, Airflow, Terrakube, SonarQube와 설정된 애플리케이션 database를
@@ -92,7 +119,7 @@ PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포
 argv가 아니라 psql 환경(`\getenv`)으로 전달합니다. 각 feature는 자신의 SQL과
 grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 남아 있습니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -101,23 +128,26 @@ grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 �
 | `mng-pg-exporter`·`mng-valkey-exporter` | `mng-pg-exporter`, `mng-valkey-exporter` | 이 README는 소비자를 기록하지 않는다. | 내부용이며 `mng_pg_monitor` role과 `mngmonitor` 사용자로만 접속하고 관리자 비밀을 받지 않는다. | HTTP 헬스체크를 쓴다. |
 | pgBackRest stanza `mng` repository(`${BACKUP_STATE_REPO_DIR}/pgbackrest`) | `mng-pg`의 `archive_command` | 호스트 백업 job | 연속 WAL 아카이빙과 물리 백업을 암호화된 repository에 저장하고 point-in-time restore에 쓴다. | 비어 있는 cipher secret은 exit 64로 중지하며 복원은 먼저 격리된 target에만 한다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 호스트 게시 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. 연결 네트워크는 `mng_data_net`, `obs_net`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `airflow_db_password`, `keycloak_db_password`, `mng_pg_monitor_password`, `mng_postgres_password`, `mng_valkey_inspector_password`, `mng_valkey_monitor_password`, `mng_valkey_n8n_password`, `mng_valkey_password`, `n8n_db_password`, `pgbackrest_cipher_pass`, `sonarqube_db_password`, `terrakube_db_password`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 런타임은 `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `bi`, `contract-testing`, `core`, `data-science`, `dev`, `local`, `mlops`, `mng`이다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 ```bash
 docker compose --env-file .env.example --profile mng config --quiet
@@ -126,21 +156,23 @@ docker compose --env-file .env.example --profile mng config --services
 
 저장소 루트에서 실행하십시오. leaf 전용 Compose 명령은 사용하지 마십시오.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0028: `docs/05.operations/03.runbooks/05.databases-and-storage/0028-management-database.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 [문서 진입점](../../../docs/README.md)을 사용해 Stage 05 subject
 `docs/05.operations/01.guides/05.databases-and-storage/0028-management-database.md`, 백업 subject `docs/05.operations/01.guides/10.platform-and-backup/0021-backup-and-restore.md`
@@ -150,10 +182,31 @@ docker compose --env-file .env.example --profile mng config --services
 [Valkey persistence](https://valkey.io/topics/persistence/),
 [pgBackRest user guide](https://pgbackrest.org/user-guide.html).
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 PostgreSQL 복구는 pgBackRest(물리 백업, WAL archive, point-in-time
 restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘 다 호스트
 백업 job에서 실행되며 먼저 격리된 target에만 복원합니다. queue 상태를
 재생하기 전에는 workflow owner 승인을 받으십시오. synthetic rehearsal은
 `HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests`입니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

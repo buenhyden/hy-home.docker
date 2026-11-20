@@ -1,10 +1,13 @@
 ---
 title: "HOME Membership and Planned LABs"
-version: "0.6.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0062"
 parent_ids:
@@ -20,9 +23,29 @@ created: "2026-11-09"
 
 # ADR-0062: HOME Membership and Planned LABs
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 HOME is the set of services the root `docker-compose.yml` includes; they are
 the always-on tier members. A LAB is a standalone package under `labs/<name>/`
@@ -76,7 +99,8 @@ Drivers:
 - LABs give optional stacks an explicit, isolated home; promotion back to HOME
   stays possible through POL-0107.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 Evidence is the owner decisions of 2026-11-09 and 2026-11-10, the root Compose includes, `labs/`, and
 `scripts/hardening/check-all-hardening.sh`. No runtime state is claimed.
@@ -94,16 +118,16 @@ Evidence is the owner decisions of 2026-11-09 and 2026-11-10, the root Compose i
 - [POL-0107 LAB promotion](../../05.operations/02.policies/15.labs/0107-lab-promotion.md)
 - [RUN-0057 Open WebUI LAB and HOME retirement](../../05.operations/03.runbooks/15.labs/0057-open-webui.md)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers which services belong to HOME (the root Compose includes)
 and which are LABs under `labs/<name>/`, by tier, and the planned moves listed
 above. Runtime retirement of a moved service is left to separately approved
 steps.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep heavy and alternative services as opt-in profiles inside HOME tiers:
   rejected; profiles share the root project, data root and networks, so an
@@ -121,7 +145,7 @@ steps.
   capability ownership, promotion by policy and the membership changes
   below: selected.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -140,9 +164,9 @@ steps.
 - Negative: hardening checks for LAB sources still run in tier functions,
   which must follow each move.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. HOME is exactly the root Compose includes. A tier owns its HOME members by
    capability; tier numbers are a namespace, not start order or an isolation
@@ -206,14 +230,15 @@ steps.
     `labs/kafka-cluster/` (amendment of 2026-11-10). `debezium-db-provision` and its
     Debezium assets are removed; the Kafka broker stays the only broker (ADR-0052).
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. The owner decided on
 2026-11-09 which services leave HOME and accepted this decision on 2026-11-09;
 the owner amended it on 2026-11-10 (open-webui, Kafka CDC, Airflow Flower). No
 separate approval record is linked. Effective from 2026-11-09.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This record replaces ADR-0058 and, through it, six earlier ADRs; ADR-0058 is
 deleted in the same change (ADR-0051). Each one's still-valid decisions carry
@@ -286,9 +311,9 @@ forward below.
   Locust and SonarQube in Quality, Stalwart in Communication and JupyterLab in
   Analytics, this record governs: those four are LABs now.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: HOME's surface is the root include list, readable in one file.
 - Positive: experiments cannot reach HOME data or profiles by accident.
@@ -296,7 +321,7 @@ forward below.
   update ledgers.
 - Reversibility: a LAB returns to HOME through POL-0107.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -313,7 +338,8 @@ stopping and removing the HOME container, handling its volume, and the
 Keycloak client and DNS cleanup are separate approved runtime steps owned by
 RUN-0057.
 
-#### Amendment of 2026-11-10: open-webui
+###### Amendment of 2026-11-10: open-webui
+<!-- core-payload-level:4 -->
 
 The owner amended this record on 2026-11-10 to move open-webui out of the HOME
 `08-ai` tier into the standalone LAB `labs/open-webui/`. The evidence, with no
@@ -339,7 +365,8 @@ the attack surface, hardening checks, secret catalog and update ledgers. The
 move landed in the same change as this amendment; the running HOME container
 and its volume are left for separately approved retirement steps.
 
-#### Amendment of 2026-11-10: Kafka CDC (kafka-connect and schema-registry)
+###### Amendment of 2026-11-10: Kafka CDC (kafka-connect and schema-registry)
+<!-- core-payload-level:4 -->
 
 The owner amended this record on 2026-11-10 to move the Debezium change-data-capture
 path, `kafka-connect` and `schema-registry`, out of the HOME `05-messaging` tier into
@@ -367,7 +394,8 @@ configures a schema registry or a Connect cluster, and the profiles `cdc`,
 containers, images, the `kafka-connect-data` volume and the Debezium secret file are left
 for separately approved retirement steps.
 
-#### Amendment of 2026-11-10: Airflow Flower becomes opt-in
+###### Amendment of 2026-11-10: Airflow Flower becomes opt-in
+<!-- core-payload-level:4 -->
 
 The owner also decided on 2026-11-10 that Airflow `flower` (Celery monitoring UI) no longer
 starts with HOME. It stays in `infra/07-workflow/airflow/` but moves from the `workflow` and
@@ -379,8 +407,29 @@ stays; the Prometheus job `flower` carries `expected_state: "off"` so
 `on`. The HOME `07-workflow` members (airflow, n8n) do not change. The running `flower`
 container is left for a separately approved retirement step.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 The root include list, `labs/<name>/promotion.yaml`, POL-0107 and
 `check-all-hardening.sh` enforce the boundary; `tests/validation/test_infra_tier_layout.py`
 fails on a renamed or retired tier.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

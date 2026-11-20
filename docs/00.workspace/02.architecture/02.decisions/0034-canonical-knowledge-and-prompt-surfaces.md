@@ -1,10 +1,13 @@
 ---
 title: "Canonical Knowledge and Prompt Surfaces"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0034"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-09-06"
 
 # Canonical Knowledge and Prompt Surfaces
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 `.agents/` owns three registered categories: `governance/` for policy,
 `roles/` for identity and permission, and `skills/` for callable procedure.
@@ -54,7 +77,8 @@ in tracked text.
 - A new category must not become a place to duplicate policy, design, or
   runbook bodies.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - **Requirement**: [REQ-0024 Agent Governance Standardization](../../../01.requirements/0024-agent-governance-standardization.md)
 - **Architecture**: [AD-0027 Agent Governance Canonical Adapter](../01.descriptions/0027-agent-governance-canonical-adapter.md)
@@ -62,13 +86,13 @@ in tracked text.
 - **Governance entry**: [canonical agent governance](../../../../.agents/README.md)
 - **Prior decision**: [ADR-0032 Canonical Agent Governance Home](0032-canonical-agent-governance-home.md)
 
-### Decision Scope
+##### Decision Scope
 
 The decision covers two new canonical categories under `.agents/`, `knowledge/` and `prompts/`. It leaves out execution state, which stays in the current Spec Package Task, and the consolidation of the Stage 90 curated repository map, which is decided separately. Affected consumers are the agent governance contract, the Stage 99 profiles and templates, and the readers of both providers.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 **Option A — Add `knowledge/` and `prompts/` as canonical categories.**
 Both become registered roots under `.agents/` with their own Stage 99
@@ -95,7 +119,7 @@ Rejected: the routing knowledge and prompt contracts continue to be
 reconstructed per session, and the agency-agents capability-intake decision
 boundary stays without a current owner.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -106,9 +130,9 @@ boundary stays without a current owner.
 
 Option A costs four new Stage 99 profiles, two templates, and a contract change. Option B was not chosen because it makes routing summaries and prompt envelopes read as normative policy. Option C was not chosen because a living routing map does not fit the Stage 90 freshness model and a prompt contract does not fit a skill's `Preconditions`/`Procedure`/`Gates` sections. Option D was not chosen because the routing knowledge and prompt contracts would keep being reconstructed per session.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 Adopt Option A.
 
@@ -135,13 +159,13 @@ template, a `living` lifecycle mapping, a `canonical_sources` entry per file,
 and an entry in the canonical root inventory the agent governance contract
 pins.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked; the transition from `proposed` to `accepted` is recorded under Follow-up. Effective from 2026-09-06.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 **Enabling.** An agent resolves surface ownership and repository vocabulary by
 reading one registered file instead of inferring it. Handoff, review, commit
@@ -166,14 +190,15 @@ translations, hook bindings, public suite names, and the two public validation
 profiles are unchanged. No provider gains a permission, tool, or model it did
 not have. Discovery of a new canonical file grants no approval.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
 options table under Trade-offs was derived from the options it records. The
 decision text is unchanged.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `scripts/validation/check-agent-governance-contract.py` proves the canonical
 root inventory and the registered profile set agree. The document metadata and
@@ -202,3 +227,23 @@ or remote branch protection.
 - Restore a current owner for the external capability-intake decision boundary
   that [RES-0002-m0003](../../../90.references/01.research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md)
   describes but the current Provider Registry no longer carries.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

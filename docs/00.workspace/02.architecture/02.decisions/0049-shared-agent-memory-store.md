@@ -1,10 +1,13 @@
 ---
 title: "Shared Agent Memory Store"
-version: "1.2.0"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0049"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-10-13"
 
 # ADR-0049: Shared Agent Memory Store
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 Claude Code and Codex each keep native memory in their own home directory.
 What one provider learns about this repository never reaches the other, and
@@ -30,20 +53,21 @@ One store for every worktree and provider. No silent lost update. No claim of
 a limit or a concurrency guarantee the host cannot keep. Memory never becomes
 a second owner of Task state or governance rules.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [AD-0027](../01.descriptions/0027-agent-governance-canonical-adapter.md)
 - [ADR-0032](0032-canonical-agent-governance-home.md)
 - [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md)
 - SPEC-0236
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the memory store shared by Claude Code and Codex for this repository and all of its worktrees. Memory is context only and never becomes a second owner of Task state or governance rules.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep separate native memories: rejected; knowledge stays split by provider.
 - A store per worktree: rejected; a removed worktree loses its memory.
@@ -51,7 +75,7 @@ This decision covers the memory store shared by Claude Code and Codex for this r
   two providers writing is the purpose.
 - A remote database: rejected; it adds a service for a local, small store.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -63,9 +87,9 @@ This decision covers the memory store shared by Claude Code and Codex for this r
 
 Each rejected option is rejected for the reason stated in its entry above: separate native memories keep knowledge split by provider, a per-worktree store loses memory with a removed worktree, WAL with a single-writer rule has no enforced writer, and a remote database adds a service for a local, small store.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. Claude and Codex share one SQLite store,
    `.workspace-memory/memory.sqlite3` in the main checkout. Git ignores it,
@@ -82,26 +106,27 @@ Each rejected option is rejected for the reason stated in its entry above: separ
 6. A memory record is context only. What a record may not hold is stated
    once, in `environment-constraints.md` section 5.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden, who decided on 2026-10-13 to accept it; status `accepted`, set in change #450 (`40f194e99`) as the Follow-up records. Effective from 2026-10-13.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This narrows ADR-0032's rule against creating memory or `.codex/config.toml`
 for these two items only. The rest of that rule, on plugins, servers and
 extra common directories, stays in force.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 Both providers read and write the same records through one CLI, and a removed
 worktree keeps them. The store is not in Git and is excluded from backups.
 Native memory written before this decision stops
 loading unless it is copied into the store.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-18 the owner, @buenhyden, directed that the store be excluded from
 backups and its backup code removed; the Impacts sentence on backups is
@@ -118,8 +143,29 @@ ADR-0048 and ADR-0049). A new ADR must enter the repository as `proposed`, so
 the status changed to `accepted` in the first change after SPEC-0236 merged
 (#450, `40f194e99`).
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 The `environment-constraints.md` section 5 policy owns the rules. The memory
 CLI tests and the edit hook tests check the store contract; live two-provider
 acceptance is separate evidence.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

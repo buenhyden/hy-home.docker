@@ -1,36 +1,61 @@
 ---
 title: "Approval Boundaries"
-version: "1.6.0"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Approval Boundaries
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Approval is bound to a named surface, operation, evidence route, and recovery.
 It never expands through delegation or provider handoff.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of approval of protected operations and surfaces under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Actors, owned surfaces, protected operations, and their current trusted authorization sources.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -90,7 +115,8 @@ None: this document states no exclusion.
 | APPROVAL-BOUNDARIES-R54 | Role whose canonical `permission_profile` is `read-only` | Required: remain read-only even when routing or reviewing writable work | none | none |
 | APPROVAL-BOUNDARIES-R55 | Policy change | Required: `rules-engineer` review | manual | none |
 
-#### Authorization Source and Records
+###### Authorization Source and Records
+<!-- core-payload-level:4 -->
 
 The current trusted user, operator, or native provider channel supplies an
 authorization only for its stated actor, operation, subject, revision or scope,
@@ -188,19 +214,21 @@ redaction boundary are defined by
   even when it routes or reviews writable work.
 - Policy changes require `rules-engineer` review.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 Policy changes require rules-engineer review (Documentation Write Permission); a shared contract needs the owner approval in Core Rules.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 **Protected Surfaces**
 
@@ -214,7 +242,7 @@ Policy changes require rules-engineer review (Documentation Write Permission); a
 | `.agents/**` | canonical contract, links, and Task evidence | restore approved authored sources; never treat them as generated cleanup |
 | `docs/99.templates/**` | registry/schema validation and Task evidence | revert logical commit |
 
-### Limits
+##### Limits
 
 No rule here names an automated check; the rules that require an approval or a review rest on that approval or review.
 
@@ -231,13 +259,13 @@ No rule here names an automated check; the rules that require an approval or a r
 - Enforcement gap: repository tools do not automatically verify the account identity behind a user message or native permission origin, and the repository does not claim to authenticate an operator's direct act or to relax the native sandbox.
 - Rules stated under Enforcement (Mechanisms) are outside this table.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -245,3 +273,23 @@ Changes land in place with Task evidence; related documents:
 - [Environment constraints](../../../.agents/governance/environment-constraints.md)
 - [Agentic policy](../../../.agents/governance/agentic.md)
 - [Provider registry](../../../.agents/governance/providers/registry.yaml)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

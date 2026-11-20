@@ -1,21 +1,45 @@
 ---
 title: "Audit Packages"
-version: "2.1.1"
+version: "3.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-18"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "references"
 created: "2026-07-02"
 ---
 
 # Audit Packages
 
-## Responsibility
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Purpose and Readers
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Responsibility
+
+##### Purpose
+
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 특정 시점의 gap, 구현, conformance 평가입니다. Audit package는 증거이며
 승인 gate가 아닙니다.
@@ -23,7 +47,8 @@ created: "2026-07-02"
 Stage 90 authority boundary와 package lifecycle 규칙은
 [References index](../README.md)와 Stage 99 Registry가 정의합니다.
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 이 README는 현재 audit package 경로와 은퇴한 package의 번호 기록을 안내합니다. 평가의
 finding과 후속 조치는 해당 package 또는 이를 소유하는 Stage 03 Task에 남습니다.
@@ -43,15 +68,16 @@ Stage 99 identity는 여전히 한 번만 소비됩니다. 은퇴한 package의 
 Stage 간 audit은 자신을 관장하는 Spec 아래의 Task에 둡니다. 이때 `task`는
 `package-member` profile이므로 전역 identity를 발급하지 않습니다.
 
-### Excluded Responsibilities
+##### Excluded Responsibilities
 
 평가의 finding과 후속 조치는 이 README가 아니라 해당 package 또는 이를 소유하는 Stage 03 Task에 남습니다. Audit package는 증거이며 승인 gate가 아닙니다.
 
-## Current Contents
+#### Current Contents
 
-### Paths
+##### Paths
 
-#### Current Items
+###### Current Items
+<!-- core-payload-level:4 -->
 
 이 범주는 package를 보유하지 않습니다. SPEC-0158이 선언한 은퇴를
 완료한 상태입니다.
@@ -65,7 +91,8 @@ AUD-0032까지의 본문은 Git 이력에 있으며 그 번호는 Registry `rese
 보관합니다. Registry는 AUD-0001부터 AUD-0097까지 발급된 모든 번호를
 `reserved_history`로 보관합니다.
 
-#### Dated Historical Snapshots
+###### Dated Historical Snapshots
+<!-- core-payload-level:4 -->
 
 은퇴한 audit snapshot은 metadata에 자신의 관찰 날짜를 유지하며 현재
 package 경로는 날짜를 포함하지 않습니다.
@@ -76,32 +103,56 @@ owner로 링크하고 있었습니다. 남은 한 결함은 이를 소유하는 
 guide로 옮겨졌습니다. 본문은 Git 이력에 있으며 그 번호는 Registry
 `reserved_history`가 보관합니다.
 
-### Owners
+##### Owners
 
 이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-## Usage
+#### Usage
 
-### Entry Points
+##### Entry Points
 
-#### Upstream and Downstream
+###### Upstream and Downstream
+<!-- core-payload-level:4 -->
 
 - [References index](../README.md)
 
-#### Policy and Templates
+###### Policy and Templates
+<!-- core-payload-level:4 -->
 
 - [Stage 99 Registry](../../99.templates/registry.json)
 - [문서 작성 계약](../../00.workspace/03.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/02.templates/93.common/readme-category.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
-### Checks
+##### Checks
 
-#### Create and Review
+###### Create and Review
+<!-- core-payload-level:4 -->
 
 package는 `audits/####-<slug>/` 아래에만 만들고 대응하는 Stage 99
 템플릿을 사용합니다. 관찰 날짜, 인용, provenance, 활성 owner
 Traceability를 보존합니다.
 
-#### Transition and Exit
+###### Transition and Exit
+<!-- core-payload-level:4 -->
 
 같은 변경에서 inbound consumer와 목록을 갱신하고 은퇴 번호를 예약합니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

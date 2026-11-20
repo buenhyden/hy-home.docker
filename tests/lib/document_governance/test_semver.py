@@ -86,6 +86,12 @@ class VersionChangeTests(unittest.TestCase):
                 self.assertIsNone(self.code(old, new))
                 semver.check_version_change(old, new)
 
+    def test_general_semver_does_not_impose_the_document_reset_policy(self) -> None:
+        for old, new in (("1.2.3", "2.2.3"), ("1.2.3", "1.3.3")):
+            with self.subTest(old=old, new=new):
+                self.assertIsNone(self.code(old, new))
+                semver.check_version_change(old, new)
+
     def test_unchanged_downgrade_and_missing_are_distinct_codes(self) -> None:
         for old, new, code in (
             ("1.2.3", "1.2.3", "version-unchanged"),

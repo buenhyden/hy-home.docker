@@ -1,17 +1,40 @@
 ---
 title: "원천·artifact·provenance와 권한 철회"
-version: "0.2.0"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # 원천·artifact·provenance와 권한 철회
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 Git은 코드·문서 원천이고 blog-data는 사람이 검토한 Literature/Permanent/Maps·초안·출판물의 원본입니다. 준비 패키지는 두 번째 지식 원본을 만들지 않습니다. artifact는 revision·path·hash·retrieved/effective 시각·권리 근거·ACL·parser/chunker/embedding version·generation·idempotency와 provenance를 연결합니다. 합성 bytes의 hash 일치만 검사하며 원천 진위나 라이선스 검증으로 표현하지 않습니다.
 
@@ -21,55 +44,82 @@ caller policy는 source repository/ref/revision/path allowlist와 typed `version
 
 helper 결과의 scoped idempotency와 원본 source hash의 관계는 [준비 계약의 Idempotency Result Contract](../contracts/README.md#idempotency-result-contract)가 소유합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 인프라 담당자, 미래 consumer 작성자와 독립 검토자입니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 준비 문서·기계 schema·합성 검증에 한정합니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 [schema](../schemas/source-artifact.schema.json)
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | caller policy와 source artifact 문서(`source-artifact.schema.json`) | caller | helper | repository/ref/revision/path allowlist와 최대 128개 `versions` mapping을 받고 artifact와 합성 bytes의 범위·hash를 검사한다. | 중복 mapping과 `*` 포함 값은 허용하지 않으며 artifact authenticity와 runtime은 NOT_RUN이다. |
 | 삭제·권한 철회 ordered outbox event | 이 README는 생산자를 기록하지 않는다. | search·point query·citation·download·cache·이전 generation 접근 | 삭제·철회를 ordered event로 기록하고 모든 접근을 즉시 거부한 뒤 물리 정리한다. | 합성 문서 대조로 삭제 우선순위와 이전 generation의 미적용 event를 거절한다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 이 계약은 비밀값과 실제 환경 변수를 입력으로 받지 않으며 오프라인 JSON 문서와 schema만 다룬다. 네트워크 접근, 포트, 컨테이너 자원이 없다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
 
-### Selected Start
+##### Selected Start
 
 총괄의 공통 계약 통합 후 해당 증거를 Task에 연결합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 문서 체계는 저장소 docs README 진입점을 통해 확인합니다.
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 실행되는 서비스가 아니라 준비 문서와 schema 계약이므로 관측 대상 런타임과 복구 절차가 없다. 변경은 Git 이력으로 되돌린다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

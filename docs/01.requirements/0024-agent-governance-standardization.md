@@ -1,10 +1,13 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.9.2"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
@@ -12,9 +15,29 @@ created: "2026-06-01"
 
 # Agent Governance Standardization Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 The AI agents in this repository must follow one governance model and one
 SDLC even when their execution format differs by provider. The goal is to
@@ -22,7 +45,7 @@ separate the owners of policy, provider translation, document format, and
 execution evidence, and to keep `.claude/` and `.codex/` from degrading into
 independent policy sources.
 
-### Stakeholders
+##### Stakeholders
 
 - The maintainer must be able to immediately tell which document is
   canonical in case of a conflict.
@@ -36,13 +59,13 @@ independent policy sources.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 This package covers the governance model, canonical ownership, provider adapters and SDLC flow of the AI agents in this repository, as stated in the Overview.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - Shared agent governance policy changes are made only within the approved
   repository scope.
@@ -53,7 +76,7 @@ This package covers the governance model, canonical ownership, provider adapters
 - Runtime, deployment, secret, and remote GitHub state changes require
   separate explicit approval.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -81,7 +104,7 @@ This package covers the governance model, canonical ownership, provider adapters
 | REQ-0024-NFR-0012 | Diagnosability | Each failing check names one owner. | The package records no unit for this measure. | The package records no measurement environment. | Each failing check names one owner, and no predicate is owned by more than one aggregate gate. |
 | REQ-0024-NFR-0013 | Currency | Registered governance suites pass on the current tree. | The package records no unit for this measure. | The current tree. | Registered governance suites pass. |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0024-FR-0001**: `.agents/` must be the sole normative owner of AI agent
   policy, workflow, canonical role, canonical skill, and provider boundary.
@@ -144,7 +167,7 @@ This package covers the governance model, canonical ownership, provider adapters
   them. What a record may hold is owned by the environment constraints policy,
   section 5.
 
-### Quality Requirements
+##### Quality Requirements
 
 - **REQ-0024-NFR-0009 — Determinism**: Rule interpretation and provider
   projection verification must be deterministic and fail closed, with no
@@ -171,15 +194,16 @@ This package covers the governance model, canonical ownership, provider adapters
   removed from the current surface; measure: registered governance suites
   pass on the current tree.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 - **Governance entry**: [canonical agent governance](../../.agents/README.md)
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0024-FR-0001**: Each agent policy, workflow, canonical role, canonical
   skill and provider-boundary rule has one owner under `.agents/`, and no file
@@ -224,11 +248,13 @@ This package covers the governance model, canonical ownership, provider adapters
   is owned by more than one aggregate gate.
 - **REQ-0024-NFR-0013**: Registered governance suites pass on the current tree.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Each condition is judged by running the registered governance and document suites on the current tree, as the determinism and currency measures state, and by reviewing the provider surfaces they classify. The condition that both providers revise the same memory record from different worktrees also needs a runtime observation across both providers, not only a suite run. The Spec Packages that list REQ-0024 as a parent, such as SPEC-0212 and SPEC-0244, record the suite results and the observation in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../00.workspace/02.architecture/01.descriptions/0027-agent-governance-canonical-adapter.md)
 - **Historical implementation evidence**: SPEC-0158; SPEC-0264 (retired; version history) delivered folder guides; SPEC-0253 (retired; version history) removed the frozen archive payload boundary and the deleted-Task CI evidence owner from QA and CI; SPEC-0270 (retired; version history) delivered the 1 GiB shared memory capacity ledger, bounded read-only search and memory backup source
@@ -237,3 +263,23 @@ Each condition is judged by running the registered governance and document suite
 - **Decision**: [ADR-0032 Canonical Agent Governance Home](../00.workspace/02.architecture/02.decisions/0032-canonical-agent-governance-home.md)
 - **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../00.workspace/02.architecture/02.decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
 - **Decision**: [ADR-0049 Shared Agent Memory Store](../00.workspace/02.architecture/02.decisions/0049-shared-agent-memory-store.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

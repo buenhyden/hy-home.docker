@@ -1,10 +1,13 @@
 ---
 title: "Ollama Operations Policy"
-version: "2.1.0"
+version: "3.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0056"
 parent_ids:
@@ -15,19 +18,40 @@ next_review_at: "2027-05-13"
 
 # Ollama Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 Ollama 운영 정책을 정의한다. 제한된 GPU 자원에서 안정적으로 추론 서비스를 제공하기 위해 모델 도입 기준, 리소스 사용 한계, 장애 대응 기준을 규정한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/01.descriptions/0008-ai-architecture.md) (`AD-0008`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-### Applies To
+##### Applies To
 
 Ollama 추론 엔진 운영 전반:
 
@@ -38,13 +62,14 @@ Ollama 추론 엔진 운영 전반:
 - **Systems**: `ollama`, `ollama-exporter`. Open WebUI LAB은 승인된 endpoint로만 접근한다.
 - **Environments**: 로컬·개발·홈랩과 운영 환경에 준하는 rehearsal
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -87,7 +112,8 @@ Ollama 추론 엔진 운영 전반:
   - 출처 불명/무검증 모델 운영 반영.
   - 운영 시간대 무단 리소스 상향.
 
-#### Lifecycle and data controls
+###### Lifecycle and data controls
+<!-- core-payload-level:4 -->
 
 - Ollama와 exporter를 HOME으로 유지한다. 모델 추가·교체에는 source/digest/model-card·license, 자원 적합성과 대표 품질·안전 근거가 필요하다.
 - 정확한 artifact를 재현할 수 있을 때만 blob을 재구축 가능 자산으로 본다. 그렇지 않으면 model volume을 보존한다. Prompt·생성 결과는 사용하는 애플리케이션이 소유한다.
@@ -95,27 +121,30 @@ Ollama 추론 엔진 운영 전반:
 - 한도·예약은 여유 증거가 아니다. 동시성 확대에는 공유 GPU에서 CPU/RAM/VRAM·latency·실패를 측정한 근거가 필요하다.
 - 제거에는 모델 보존 결정, 출처 export, client 중지, route 제거와 model volume 삭제 승인이 필요하다.
 
-#### Model and exporter capacity boundary
+###### Model and exporter capacity boundary
+<!-- core-payload-level:4 -->
 
 용량과 exporter 경계의 설명은 [가이드](../../01.guides/09.ai-and-search/0056-ollama.md#model-and-exporter-capacity-boundary)가 소유한다. 이 정책은 병렬·loaded-model·queue 설정을 context 크기와 공유 GPU 메모리와 함께 평가하고, 한도를 실측 여유로 해석하지 않을 것을 요구한다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../../03.runbooks/09.ai-and-search/0055-gpu-recovery.md) 경계를 따른다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 장애 복구 목적의 단기 예외(예: 임시 모델 fallback)는 온콜 승인 하에 허용.
 - 예외 종료 후 기본 정책으로 즉시 복귀하고 기록을 남겨야 한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - **Quarterly**: 모델 포트폴리오/자원 정책 검토
 - **Per Model Change**: 모델 도입/교체 건별 검토
 
 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - 배포 전:
   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -130,7 +159,7 @@ Ollama 추론 엔진 운영 전반:
 
 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Limits
+##### Limits
 
 이 정책은 배포 전 검사 명령을 명시하지만 어느 규칙을 검증하는지 지정하지 않아 아래 항목은 기계적으로 강제되지 않는다.
 
@@ -146,13 +175,13 @@ Ollama 추론 엔진 운영 전반:
 - 동시성 확대와 한도 적정성은 측정 근거를 요구하나 이를 검사하는 자동 점검은 지정되어 있지 않다.
 - 분기·모델 변경별 검토는 정기 수동 검토이며 자동 점검이 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/09.ai-and-search/0056-ollama.md) (`GDE-0056`), [Runbook](../../03.runbooks/09.ai-and-search/0056-ollama.md) (`RUN-0056`)
 
@@ -160,3 +189,23 @@ Ollama 추론 엔진 운영 전반:
 - [Operations index](../../README.md)
 - [Usage guide](../../01.guides/09.ai-and-search/0056-ollama.md)
 - [Recovery runbook](../../03.runbooks/09.ai-and-search/0056-ollama.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

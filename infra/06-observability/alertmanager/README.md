@@ -1,24 +1,49 @@
 ---
 title: "Alertmanager Notification Routing"
-version: "1.1.2"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-01-12"
 ---
 
 # Alertmanager Notification Routing
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 Alertmanager는 Prometheus가 보낸 알림을 처리하여 중복을 제거하고, 그룹화하고, 억제하고, 무음 처리한 뒤 설정된 수신자(receiver) 통합으로 라우팅합니다. 이 스택에서는 `alertmanager`로 실행되며 [선언된 런타임 이미지](../../tech-stack.versions.json)를 사용합니다. 런타임 상태는 `alertmanager-data`에 저장하고 시작 시 Docker Secret 값을 임시 파일인 `/tmp/config.yml`로 렌더링합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
@@ -26,22 +51,26 @@ Alertmanager는 Prometheus가 보낸 알림을 처리하여 중복을 제거하�
 - On-call Engineers (무음 처리 및 트러블슈팅)
 - DevOps Engineers (설정 관리)
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
-##### In Scope
+###### In Scope
+<!-- core-payload-level:5 -->
 
 - Alertmanager 소스 설정(`config/config.yml`)과 시작 시 `/tmp/config.yml`로의 렌더링.
 - 알림 라우팅 규칙과 수신자 통합.
 - 무음(silencing) 및 억제(inhibition) 규칙.
 - 로컬 배포, 보호된 라우트, 준비 상태, 연결 설정.
 
-##### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:5 -->
 
 - 알림 규칙 정의 (Prometheus/Loki에서 관리).
 - 전역 텔레메트리 수집 (Grafana Alloy에서 관리).
 - 메트릭의 영속 저장소 (Prometheus TSDB에서 관리).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 alertmanager/
@@ -49,7 +78,7 @@ alertmanager/
 └── README.md  # This file
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -57,9 +86,11 @@ alertmanager/
 | Slack webhook·SMTP receiver 통합 | `alertmanager` 서비스 | 설정된 Slack 채널과 SMTP 릴레이 | `slack_webhook`, `smtp_username`, `smtp_password` Docker Secret을 `/tmp/config.yml`로 렌더링해 사용한다. | 전달 실패 시 세 Docker Secret의 마운트를 확인하며 렌더링 값은 기록하지 않는다. |
 | Alertmanager UI/API 무음 관리 | `alertmanager` 서비스 | on-call engineer | 점검 기간에 임시 무음을 설정하며 항상 만료 시간을 지정한다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Configuration
+###### Configuration
+<!-- core-payload-level:4 -->
 
-##### Docker Secrets
+###### Docker Secrets
+<!-- core-payload-level:5 -->
 
 | Secret | Required | Description |
 | :----- | :------- | :---------- |
@@ -67,24 +98,27 @@ alertmanager/
 | `smtp_username` | Yes | `__SMTP_USERNAME__`로 렌더링되는 SMTP 인증 사용자명 |
 | `smtp_password` | Yes | `__SMTP_PASSWORD__`로 렌더링되는 SMTP 인증 비밀번호 |
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_username`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `alertmanager` 서비스)
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
-#### Tech Stack
+###### Tech Stack
+<!-- core-payload-level:4 -->
 
 | Category     | Technology   | Version | Notes                          |
 | :----------- | :----------- | :------ | :----------------------------- |
 | Alerting     | Alertmanager | declared version | Docker Secret로 렌더링되는 설정을 사용하는 단일 compose 서비스 |
 | Integrations | Slack / SMTP | -       | Webhook 및 SMTP 릴레이         |
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/03.process/documentation-protocol.md)을 따른다.
 
@@ -99,7 +133,8 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 8. **Secret Rotation**: `slack_webhook`, `smtp_username`, `smtp_password`의 값 교체와 Compose 참조 변경을 구분합니다. 기존 mount가 가리키는 값의 재렌더링과 승인된 재생성은 RUN-0039를 따르며, restart만으로 새 Compose·secret 참조가 적용된다고 가정하지 않습니다.
 9. **Evidence Hygiene**: 시크릿 ID와 명령 결과만 기록하고 렌더링된 webhook, SMTP 사용자명, SMTP 비밀번호 값은 절대 붙여넣지 않습니다.
 
-#### Available Scripts
+###### Available Scripts
+<!-- core-payload-level:4 -->
 
 | Command                  | Description                 |
 | :----------------------- | :-------------------------- |
@@ -107,11 +142,12 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 | `docker compose --profile obs restart alertmanager` | 저장소 루트에서 설정 변경 사항 적용 |
 | `docker compose --profile obs logs -f alertmanager` | 저장소 루트에서 Alertmanager 로그 확인 |
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
-#### Validation
+###### Validation
+<!-- core-payload-level:4 -->
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
@@ -120,9 +156,10 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 - `rg -n 'alertmanagers:|targets: \["alertmanager:9093"\]' infra/06-observability/prometheus/config/prometheus.yml`로 Prometheus 전달 여부를 확인합니다.
 - 테스트 알림을 발생시켜 예상한 Slack 채널에 도달하는지 보고 수신자 연결을 검증합니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - **Guides**: `docs/05.operations/01.guides/07.observability/0039-alertmanager.md`
 - **Policy**: `docs/05.operations/02.policies/07.observability/0039-alertmanager.md`
@@ -131,7 +168,8 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증에 쓰입니다.
 
-#### Troubleshooting
+###### Troubleshooting
+<!-- core-payload-level:4 -->
 
 - 네트워크, 볼륨, 시크릿, 레이블 참조가 올바르게 렌더링되는지 `docker compose --profile obs config --quiet`로 먼저 확인합니다.
 - 설정이나 시크릿 참조를 변경하기 전에 컨테이너 로그와 연결된 런북을 확인합니다.
@@ -140,10 +178,31 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 - 억제 규칙 문제: `config.yml`의 `inhibit_rules`에서 소스와 대상의 매치 레이블이 올바른지 검토합니다.
 - `/tmp/config.yml`이나 시크릿 값은 트러블슈팅 근거로 캡처하지 않습니다.
 
-##### Convergence contract
+###### Convergence contract
+<!-- core-payload-level:5 -->
 
 - Classification: **HOME**. Exact profiles: `obs`, `alerting`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d alertmanager`.
 - 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/01.guides/07.observability/0039-alertmanager.md`; ID: `GDE-0039`, `POL-0039`, `RUN-0039`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

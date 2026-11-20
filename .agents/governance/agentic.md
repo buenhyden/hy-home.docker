@@ -1,37 +1,62 @@
 ---
 title: "Agentic Engineering Policy"
-version: "3.1.2"
+version: "4.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Agentic Engineering Policy
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Agentic Engineering Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Agent governance defines auditable, provider-neutral AI-agent execution. Canonical
 roles live in `.agents/roles/`, reusable procedures live in `.agents/skills/`, and provider
 selection and permission mappings live in `.agents/governance/providers/registry.yaml`.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 This policy is the canonical owner of provider-neutral agent execution, delegation, capability intake, and Task evidence under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
-### Applies To
+##### Applies To
 
 Provider-neutral agent execution, delegation, capability intake, and Task evidence.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 None: this document states no exclusion.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -132,7 +157,8 @@ None: this document states no exclusion.
 | AGENTIC-R95 | Always | Required: take retry bounds from `workflows.md` and provider controls from the provider registry | none | none |
 | AGENTIC-R96 | Always | Forbidden: replacing the `workflows.md` retry bounds or provider registry controls with prompt-local policy | none | none |
 
-#### Execution Rules
+###### Execution Rules
+<!-- core-payload-level:4 -->
 
 - Discover repository evidence and the approved Spec, Plan, and Task before mutation.
 - Keep one primary owner for each logical unit and, for high-risk work, independent review separate.
@@ -187,7 +213,8 @@ None: this document states no exclusion.
   rewriting them. Adding any of these needs an approved Spec that names its
   command, permission, inputs, and output.
 
-#### Request Brief
+###### Request Brief
+<!-- core-payload-level:4 -->
 
 After read-only discovery, state the goal, scope, acceptance checks and
 material assumptions of the current request. Ask about a material ambiguity
@@ -225,7 +252,8 @@ execution authority. A new user turn or resumed or compacted context requires
 reconciling an enrolled brief before the next covered action. Reuse current
 authorization without a redundant user question when scope is still clear.
 
-#### Delegation Contract
+###### Delegation Contract
+<!-- core-payload-level:4 -->
 
 For a registered brief, include the session, prepared request revision, brief
 revision and exact owned paths in the worker envelope. Before dispatch and
@@ -272,7 +300,8 @@ evidence. This contract does not infer account RPM, TPM, price, or a provider
 enforcement mechanism; only a supported native observation can show hard
 enforcement.
 
-#### External Capability Intake
+###### External Capability Intake
+<!-- core-payload-level:4 -->
 
 An external agent catalog, prompt collection, or role library is a discovery
 input, never an install source or a local authority. Taking in an external
@@ -295,7 +324,8 @@ Record the decision and its evidence in the current Task. Stage 90 research may
 describe an external catalog and recommend intake, but it never records the
 decision itself.
 
-#### Lifecycle
+###### Lifecycle
+<!-- core-payload-level:4 -->
 
 The sequence is discovery, applicability, approved execution, focused
 verification, independent review, and completion evidence. Failed verification
@@ -304,21 +334,24 @@ stops at approval. Retry bounds come from [workflows.md](workflows.md); provider
 controls come from the provider registry. Neither may be replaced by
 prompt-local policy.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md).
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 None: no exception exists to approve.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
-#### Evaluation Evidence
+###### Evaluation Evidence
+<!-- core-payload-level:4 -->
 
 A paired Skill evaluation is a separately scoped experiment, not recurring
 repository QA. Before execution, the owning Task selects the same task/input and
@@ -345,7 +378,7 @@ Evaluation scores do not authorize publication, provider calls or remote writes.
 Execution and acceptance stay in the Task; aggregate scores are not a second
 progress ledger.
 
-### Limits
+##### Limits
 
 Only the BriefRecord validator and the delegation consistency check are tied to a rule; the other rules name no check.
 
@@ -357,13 +390,13 @@ Only the BriefRecord validator and the delegation consistency check are tied to 
 - The delegation check verifies consistency only; the shared pre-tool hook covers recognized exact file edits in enrolled sessions, and unenrolled sessions, unrecognized writes, native dispatch and provider-internal task transitions have no such interception.
 - Statements under Enforcement / Mechanisms are outside this table and are not restated here.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records)).
 
-### Review Triggers
+##### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
@@ -374,3 +407,23 @@ Changes land in place with Task evidence; related documents:
 - [Workflows](workflows.md)
 - [Task checklists](../../docs/00.workspace/04.quality/task-checklists.md)
 - [Provider registry](providers/registry.yaml)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Observability Object Storage on SeaweedFS"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0053"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-11-06"
 
 # ADR-0053: Observability Object Storage on SeaweedFS
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 The observability tier runs the Grafana LGTM stack (Loki, Grafana, Tempo,
 Prometheus) with Grafana Alloy as the collector. Loki and Tempo store their
@@ -32,7 +55,8 @@ Compose.
 - Object storage should be the shared S3 service the platform already runs,
   not a second one.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 Evidence is the current repository configuration; no runtime state is
 claimed.
@@ -41,16 +65,16 @@ claimed.
 - [AD-0006 Observability architecture](../01.descriptions/0006-observability-architecture.md)
 - [ADR-0021 Observability hardening](0021-observability-hardening-and-ha-expansion-strategy.md)
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the observability tier (06-observability): the LGTM
 stack, the Alloy collector and the object storage backend of Loki and Tempo.
 ELK is not excluded for a specialized search need, which is evaluated on its
 own; commercial SaaS migration is out of scope.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - ELK stack: rejected; high memory and storage footprint and weak tracing
   integration.
@@ -60,7 +84,7 @@ own; commercial SaaS migration is out of scope.
   SeaweedFS S3 service.
 - LGTM with Alloy on the shared SeaweedFS S3: selected.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -73,9 +97,9 @@ own; commercial SaaS migration is out of scope.
   outage stops log and trace ingestion.
 - Trade-off: Alloy's configuration language must be learned.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. Adopt the Grafana LGTM stack for metrics, logs and traces, navigated from
    one Grafana.
@@ -86,12 +110,13 @@ own; commercial SaaS migration is out of scope.
 4. The Loki and Tempo SeaweedFS collections are excluded from the backup state
    set (SPEC-0228); telemetry is rebuildable, not backed up.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval
 record is linked. Effective from 2026-11-06.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 This record replaces ADR-0006, deleted in the same change (ADR-0051); ADR-0006
 is historical and non-authoritative. ADR-0006
@@ -101,15 +126,15 @@ Collector (weaker Grafana ecosystem integration), and chose an S3 (MinIO)
 backend for Loki and Tempo. The LGTM and Alloy decisions carry forward
 unchanged; the backend is now SeaweedFS.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: one Grafana UI for every signal; one collector to manage.
 - Positive: object storage reuses the shared SeaweedFS service and its
   operations documents.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -118,7 +143,28 @@ decision text is unchanged.
 
 None.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `scripts/hardening/check-all-hardening.sh 06-observability` and the CI
 `infrastructure-hardening` job guard the tier.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

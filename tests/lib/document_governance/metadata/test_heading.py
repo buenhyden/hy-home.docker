@@ -17,6 +17,11 @@ from unittest.mock import patch
 
 from jsonschema import Draft202012Validator
 
+from scripts.lib.document_governance.common_document import (
+    compact_payload,
+    template_payload,
+    wrap_document,
+)
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 from scripts.lib.document_governance.metadata import heading as heading_module
 from scripts.lib.document_governance.registry import classify_path
@@ -25,6 +30,7 @@ from tests.lib.document_governance.metadata._support import (
     REQUIREMENT_TARGET_BODY,
     ROOT,
     body_with_headings,
+    common_fixture_metadata,
     copy_registry_contract_fixture,
     current_profiles,
     git,
@@ -88,8 +94,7 @@ class CurrentBodyContractTests(unittest.TestCase):
                 self.assertTrue(profile.get("nonempty_sections"))
                 if profile.get("template_id") is None:
                     continue
-                role = registry.template_roles[profile["template_id"]]
-                source = (ROOT / role["source"]).read_text(encoding="utf-8")
+                source = template_payload(registry, profile["template_id"])
                 self.assertEqual(
                     [f"## {name}" for name in headings],
                     heading_module.extract_markdown_headings(source)[1],
@@ -155,8 +160,10 @@ class CurrentBodyContractTests(unittest.TestCase):
         return metadata.Record(
             pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
             {
+                **common_fixture_metadata(
+                    self.profiles["_registry"], "requirements-package"
+                ),
                 "profile_id": "requirements-package",
-                "status": "active",
                 "artifact_id": "REQ-0001",
                 "artifact_type": "requirements-package",
                 "parent_ids": [],
@@ -175,9 +182,11 @@ class CurrentBodyContractTests(unittest.TestCase):
         record = self.requirement_record()
         return metadata._introduced_body_findings(
             record,
-            current_body,
+            wrap_document(current_body, kind="requirement"),
             record if base_body is not None else None,
-            base_body,
+            wrap_document(base_body, kind="requirement")
+            if base_body is not None
+            else None,
             self.profiles,
         )
 
@@ -245,6 +254,7 @@ class CurrentBodyContractTests(unittest.TestCase):
                 "0001-common-optimizations-template-exceptions.md"
             ),
             {
+                **common_fixture_metadata(self.profiles["_registry"], "policy"),
                 "title": "Common Optimizations Template Exceptions",
                 "type": "operation/policy",
                 "layer": "operations",
@@ -263,9 +273,9 @@ class CurrentBodyContractTests(unittest.TestCase):
             [],
             metadata._introduced_body_findings(
                 record,
-                body + "\nEditorial text.\n",
+                wrap_document(body + "\nEditorial text.\n", kind="policy"),
                 record,
-                body,
+                wrap_document(body, kind="policy"),
                 self.profiles,
             ),
         )
@@ -273,6 +283,7 @@ class CurrentBodyContractTests(unittest.TestCase):
     def test_policy_optional_and_additional_fields_follow_the_registry(self) -> None:
         today = datetime.datetime.now(datetime.UTC).date()
         base = {
+            **common_fixture_metadata(self.profiles["_registry"], "policy"),
             "title": "Common Optimizations Template Exceptions",
             "version": "1.0.0",
             "type": "operation/policy",
@@ -316,12 +327,23 @@ class CurrentBodyContractTests(unittest.TestCase):
         )
         for example in cases:
             with self.subTest(example=example.splitlines()[0]):
+                # An unclosed fence still hides its examples from the role
+                # residue scanner, but it also hides the common footer and
+                # therefore cannot be a conforming current outer document.
+                unclosed = example == "```markdown\n> Rules:\n{{FENCED_TOKEN}}\n"
+                self.assertNotIn(
+                    "{{FENCED_TOKEN}}",
+                    heading_module._authored_residue_scan_text(example),
+                )
                 self.assertEqual(
-                    [],
-                    self.introduced(
-                        REQUIREMENT_TARGET_BODY + "\n" + example,
-                        REQUIREMENT_TARGET_BODY,
-                    ),
+                    ["common-document-contract"] if unclosed else [],
+                    [
+                        finding.code
+                        for finding in self.introduced(
+                            REQUIREMENT_TARGET_BODY + "\n" + example,
+                            REQUIREMENT_TARGET_BODY,
+                        )
+                    ],
                 )
 
     def test_residue_outside_commonmark_code_is_blocked(self) -> None:
@@ -399,17 +421,25 @@ class RegisteredSectionContractTests(unittest.TestCase):
             found[profile_id] = pathlib.Path(path)
         return found
 
-    def _findings(self, profile_id: str, body: str) -> list[str]:
+    def _findings(
+        self, profile_id: str, body: str, *, enveloped: bool = True
+    ) -> list[str]:
+        binding = self.registry.common["document_core"]["profile_bindings"][profile_id]
         record = metadata.Record(
             self.representatives[profile_id],
-            {"artifact_type": profile_id, "status": "active"},
+            common_fixture_metadata(
+                self.registry, profile_id, path=self.representatives[profile_id]
+            ),
             profile_id,
             frontmatter_present=True,
         )
         return [
             item.code
             for item in heading_module.validate_body_contract(
-                record, body, self.profiles, False
+                record,
+                wrap_document(body, kind=binding["kind"]) if enveloped else body,
+                self.profiles,
+                False,
             )
         ]
 
@@ -425,7 +455,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 continue
             spec = template_definition(self.registry, role_id)
             places = {}
-            for h2 in spec["headings"]:
+            for h2 in spec["payload"]["headings"]:
                 places[h2["section_id"]] = f"## {h2['title']}\n\n"
                 for h3 in h2["children"]:
                     places[h3["section_id"]] = f"### {h3['title']}\n\n"
@@ -448,8 +478,8 @@ class RegisteredSectionContractTests(unittest.TestCase):
             self.registry.profiles[profile_id].get("required_sections", ())
         )
         if profile_id == "governance-vocabulary":
-            return (ROOT / self.representatives[profile_id]).read_text(
-                encoding="utf-8"
+            return compact_payload(
+                (ROOT / self.representatives[profile_id]).read_text(encoding="utf-8")
             ), required
         subsections = (
             self.registry.profiles[profile_id].get("required_subsections") or {}
@@ -923,14 +953,24 @@ class RegisteredSectionContractTests(unittest.TestCase):
     def _findings_at(self, profile_id: str, path: str, body: str) -> list[str]:
         record = metadata.Record(
             pathlib.Path(path),
-            {"artifact_type": profile_id, "status": "active"},
+            common_fixture_metadata(self.registry, profile_id, path=path),
             profile_id,
             frontmatter_present=True,
         )
         return [
             item.code
             for item in heading_module.validate_body_contract(
-                record, body, self.profiles, True
+                record,
+                wrap_document(
+                    body,
+                    kind=self.registry.common["document_core"]["profile_bindings"][
+                        profile_id
+                    ]["kind"],
+                )
+                if profile_id != "task" or path.startswith("docs/03.specs/0271-")
+                else body,
+                self.profiles,
+                True,
             )
         ]
 
@@ -948,7 +988,8 @@ class RegisteredSectionContractTests(unittest.TestCase):
             with self.subTest(profile=profile_id):
                 body, _ = self._conforming_body(profile_id)
                 self.assertIn(
-                    "body-h1-count", self._findings(profile_id, body + "\n# Second\n")
+                    "body-h1-count",
+                    self._findings(profile_id, body + "\n# Second\n", enveloped=False),
                 )
 
     def test_every_sectioned_profile_declares_order_and_content(self) -> None:
@@ -1138,10 +1179,10 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         cls.spec_record = metadata.Record(
             cls.spec_path,
             {
+                **common_fixture_metadata(cls.profiles["_registry"], "spec"),
                 "title": "Residue Fixture",
                 "version": "1.0.0",
                 "type": "sdlc/spec",
-                "status": "active",
                 "owner": "@fixture",
                 "updated": "2026-08-01",
                 "layer": "specs",
@@ -1262,7 +1303,9 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
                 with self.subTest(changed=changed, code=code):
                     findings = heading_module.validate_body_contract(
                         self.spec_record,
-                        self.spec_text + "\n" + residue + "\n",
+                        wrap_document(
+                            self.spec_text + "\n" + residue + "\n", kind="spec"
+                        ),
                         self.profiles,
                         changed,
                     )
@@ -1282,7 +1325,9 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
                 with self.subTest(changed=changed, example=example):
                     findings = heading_module.validate_body_contract(
                         self.spec_record,
-                        self.spec_text + "\n" + example + "\n",
+                        wrap_document(
+                            self.spec_text + "\n" + example + "\n", kind="spec"
+                        ),
                         self.profiles,
                         changed,
                     )
@@ -1311,7 +1356,10 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
             for marker in markers:
                 with self.subTest(status=status, marker=marker):
                     findings = heading_module.validate_body_contract(
-                        record, self.spec_text + f"\n\n{marker}\n", self.profiles, False
+                        record,
+                        wrap_document(self.spec_text + f"\n\n{marker}\n", kind="spec"),
+                        self.profiles,
+                        False,
                     )
                     codes = {item.code for item in findings}
                     self.assertEqual(
@@ -1330,7 +1378,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
             "The chosen deployment target is the read-only test host.\n"
         )
         findings = heading_module.validate_body_contract(
-            self.spec_record, text, self.profiles, False
+            self.spec_record, wrap_document(text, kind="spec"), self.profiles, False
         )
         self.assertNotIn("effective-body-placeholder", {item.code for item in findings})
 
@@ -1344,7 +1392,12 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
             frontmatter_present=True,
         )
         findings = heading_module.validate_body_contract(
-            record, text + "\n\nSource owner: TBD.\n", self.profiles, False
+            record,
+            wrap_document(
+                compact_payload(text) + "\n\nSource owner: TBD.\n", kind="policy"
+            ),
+            self.profiles,
+            False,
         )
         self.assertIn("effective-body-placeholder", {item.code for item in findings})
 
@@ -1359,7 +1412,11 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         )
         findings = heading_module.validate_body_contract(
             record,
-            text + "\n<!-- Author prompt: Fill this. -->\n{{UNFILLED}}\n",
+            wrap_document(
+                compact_payload(text)
+                + "\n<!-- Author prompt: Fill this. -->\n{{UNFILLED}}\n",
+                kind="policy",
+            ),
             self.profiles,
             False,
         )
@@ -1432,14 +1489,18 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
             [],
             heading_module._introduced_body_findings(
                 self.spec_record,
-                original + "\nEditorial change.\n",
+                wrap_document(original + "\nEditorial change.\n", kind="spec"),
                 self.spec_record,
-                original,
+                wrap_document(original, kind="spec"),
                 self.profiles,
             ),
         )
         findings = heading_module._introduced_body_findings(
-            self.spec_record, replacement, self.spec_record, original, self.profiles
+            self.spec_record,
+            wrap_document(replacement, kind="spec"),
+            self.spec_record,
+            wrap_document(original, kind="spec"),
+            self.profiles,
         )
         self.assertEqual(
             ["template-instruction-in-target"], [item.code for item in findings]
@@ -1783,6 +1844,28 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                     {f.code for f in self.findings(body)},
                 )
 
+    def test_common_contract_identity_is_not_a_runtime_pin(self) -> None:
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        record = metadata.Record(
+            pathlib.Path("infra/04-data/exampledb/README.md"), {}, "common/readme"
+        )
+        with patch.object(
+            heading_module, "_runtime_version_entries", return_value=self.ENTRIES
+        ):
+            for body, expected in (
+                (self.POINTER + "ExampleDB service.\n", False),
+                (self.POINTER + "vendor/exampledb:4.2.3\n", True),
+            ):
+                wrapped = wrap_document("# ExampleDB\n\n" + body, kind="readme")
+                codes = {
+                    finding.code
+                    for finding in heading_module._runtime_version_findings(
+                        record, wrapped
+                    )
+                }
+                self.assertEqual(expected, "runtime-version-literal" in codes)
+
     def test_current_and_stale_patch_literals_are_both_rejected(self) -> None:
         for literal in (
             "vendor/exampledb:4.2.3",
@@ -1906,7 +1989,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             frontmatter = (
                 '---\ntitle: "ExampleDB"\nversion: "1.0.0"\n'
                 'type: "operation/policy"\nstatus: "active"\n'
-                f'owner: "@fixture"\nupdated: "{today}"\n'
+                f'owner: "@fixture"\ndocument_scope:\n  subject: ExampleDB\n  layer: workspace\nupdated: "{today}"\n'
                 'layer: "operations"\nartifact_id: "POL-9999"\n'
                 f'created: "2026-09-19"\nnext_review_at: "{review}"\n'
                 "---\n\n# ExampleDB\n\n"
@@ -1919,18 +2002,28 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                 "\n## Exceptions\n\nNone.\n\n## Related Documents\n\n- Fixture.\n"
             )
             document.write_text(
-                frontmatter + body_prefix + pointer + "ExampleDB 3.9.8\n" + body_suffix
+                wrap_document(
+                    frontmatter
+                    + body_prefix
+                    + pointer
+                    + "ExampleDB 3.9.8\n"
+                    + body_suffix,
+                    kind="policy",
+                )
             )
             self.assertEqual(0, git(root, "add", ".").returncode)
             result = run_checker(root, "check-active", profiles=profiles)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("runtime-version-literal", result.stdout)
             document.write_text(
-                frontmatter
-                + body_prefix
-                + pointer
-                + "Connection setup.\n"
-                + body_suffix
+                wrap_document(
+                    frontmatter
+                    + body_prefix
+                    + pointer
+                    + "Connection setup.\n"
+                    + body_suffix,
+                    kind="policy",
+                )
             )
             result = run_checker(root, "check-active", profiles=profiles)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -1943,7 +2036,11 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             readme_metadata = readme_metadata.replace(
                 'layer: "operations"\nartifact_id: "POL-9999"\n', ""
             ).replace(f'next_review_at: "{review}"\n', "")
-            runtime_readme.write_text(readme_metadata + pointer + "ExampleDB 3.9.8\n")
+            runtime_readme.write_text(
+                wrap_document(
+                    readme_metadata + pointer + "ExampleDB 3.9.8\n", kind="readme"
+                )
+            )
             unrelated = runtime_readme.parent / "private-config.md"
             unrelated.write_text("---\ninvalid: [\n")
             self.assertEqual(0, git(root, "add", ".").returncode)
@@ -1956,7 +2053,11 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                 "infra/04-data/exampledb/README.md: runtime-version-literal",
                 result.stdout,
             )
-            runtime_readme.write_text(readme_metadata + pointer + "Connection setup.\n")
+            runtime_readme.write_text(
+                wrap_document(
+                    readme_metadata + pointer + "Connection setup.\n", kind="readme"
+                )
+            )
             result = run_checker(root, "check-active", profiles=profiles)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
@@ -2623,8 +2724,10 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
         record = metadata.Record(
             pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
             {
+                **common_fixture_metadata(
+                    self.profiles["_registry"], "requirements-package"
+                ),
                 "profile_id": "requirements-package",
-                "status": "active",
                 "artifact_id": "REQ-0001",
                 "artifact_type": "requirements-package",
                 "parent_ids": [],
@@ -2638,9 +2741,11 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
             item.code
             for item in metadata._introduced_body_findings(
                 record,
-                REQUIREMENT_TARGET_BODY + current,
+                wrap_document(REQUIREMENT_TARGET_BODY + current, kind="requirement"),
                 record if base is not None else None,
-                None if base is None else REQUIREMENT_TARGET_BODY + base,
+                None
+                if base is None
+                else wrap_document(REQUIREMENT_TARGET_BODY + base, kind="requirement"),
                 self.profiles,
             )
         }
@@ -2665,8 +2770,10 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
         record = metadata.Record(
             pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
             {
+                **common_fixture_metadata(
+                    self.profiles["_registry"], "requirements-package"
+                ),
                 "profile_id": "requirements-package",
-                "status": "active",
                 "artifact_id": "REQ-0001",
                 "artifact_type": "requirements-package",
                 "parent_ids": [],
@@ -2676,7 +2783,7 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
             "requirements-package",
             frontmatter_present=True,
         )
-        text = REQUIREMENT_TARGET_BODY + self.KOREAN
+        text = wrap_document(REQUIREMENT_TARGET_BODY + self.KOREAN, kind="requirement")
         codes = {
             item.code
             for item in metadata.validate_body_contract(
@@ -2832,19 +2939,29 @@ class RegisteredTableContractTests(unittest.TestCase):
 
     def _body(self, profile_id: str) -> str:
         text = (ROOT / self.TARGETS[profile_id]).read_text(encoding="utf-8")
-        return text.split("\n---\n", 1)[1]
+        return compact_payload(text).split("\n---\n", 1)[1]
 
     def _table_codes(self, profile_id: str, body: str) -> list[str]:
         record = metadata.Record(
             pathlib.Path(self.TARGETS[profile_id]),
-            {"artifact_type": profile_id, "status": "active"},
+            common_fixture_metadata(
+                self.profiles["_registry"], profile_id, path=self.TARGETS[profile_id]
+            ),
             profile_id,
             frontmatter_present=True,
         )
         return [
             item.code
             for item in heading_module.validate_body_contract(
-                record, body, self.profiles, False
+                record,
+                wrap_document(
+                    body,
+                    kind=self.profiles["_registry"].common["document_core"][
+                        "profile_bindings"
+                    ][profile_id]["kind"],
+                ),
+                self.profiles,
+                False,
             )
             if item.code.startswith("table-")
         ]

@@ -1,10 +1,13 @@
 ---
 title: "DAG Deployment Operations Policy"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0052"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-13"
 
 # DAG Deployment Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 문서는 Airflow DAG의 배포 및 승격 정책을 정의합니다. 소스 코드 관리, 정적 분석 필수 항목 및 운영 환경 반영 절차를 규정합니다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/01.descriptions/0007-workflow-architecture.md) (`AD-0007`)
 
 - Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
-### Applies To
+##### Applies To
 
 `hy-home.docker` ecosystem 내 모든 Apache Airflow DAG의 lifecycle을 관장한다.
 
 - **Systems**: Apache Airflow (07-workflow)
 - **Environments**: 단일 HOME Airflow stack. Staging/production은 승격 단계이며 별도 stack이 아니다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -61,23 +86,25 @@ next_review_at: "2027-05-13"
   - Hardcoded credential(대신 Airflow Connection을 사용한다).
   - task 밖의 top-level database connection.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 - 정책 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - Quarterly
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 Compliance는 [Airflow Procedure](../../03.runbooks/08.workflows-and-automation/0050-airflow.md)에 문서화된 Airflow static/runtime check와 Airflow metadata DB의 monthly audit으로 확인한다.
 
-### Limits
+##### Limits
 
 이 정책은 준수를 Airflow Procedure runbook의 static/runtime check와 Airflow metadata DB의 월간 감사로 확인한다고만 하며 어느 검사가 어느 규칙을 다루는지 지정하지 않는다.
 
@@ -87,15 +114,35 @@ Compliance는 [Airflow Procedure](../../03.runbooks/08.workflows-and-automation/
 - TaskFlow API와 Fernet key 주입 방식은 허용 사항으로만 적혀 있고 검증 수단이 없다.
 - 월간 감사의 실행 기록은 이 문서에 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/08.workflows-and-automation/0051-airflow-dag-lifecycle.md) (`GDE-0051`)
 
 - [Operations index](../../README.md)
 - [Airflow DAG basics guide](../../01.guides/08.workflows-and-automation/0051-airflow-dag-lifecycle.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,20 +1,43 @@
 ---
 title: "Open WebUI"
-version: "1.3.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2025-11-12"
 ---
 
 # Open WebUI
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > Keycloak native OIDC를 사용하는 on-demand 로컬 LLM 채팅·RAG 웹 애플리케이션 LAB입니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
 Open WebUI는 독립 Compose project인 [Open WebUI LAB](docker-compose.yml)(`lab-open-webui` profile)입니다.
 2026-11-10 owner 결정(ADR-0062 개정)으로 HOME `08-ai`에서 옮겼습니다. root Compose에 포함되지 않고
@@ -25,25 +48,29 @@ HOME에서는 로컬 LLM 채팅을 Hermes와 n8n Assistant/Agents가, 웹 검색
 RAG를 Qdrant와 n8n이 맡습니다. Ollama endpoint(`LAB_OPEN_WEBUI_OLLAMA_BASE_URL`)는 HOME이 LAB network에
 게시하지 않으므로 owner 승인 전까지 이 LAB은 render 검증만 합니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
 - AI Engineers (LAB 실험)
 - Operators (LAB lease와 HOME 퇴역)
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 웹 서버 하나와 그 LAB data root(SQLite·upload·내장 로컬 vector store·session key).
 - Keycloak native OIDC 로그인(client `home-openwebui`, PKCE S256)과 CA bundle을 만드는 entrypoint.
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 모델 가중치와 Ollama 운영: HOME [ollama](../../infra/08-ai/ollama/README.md).
 - HOME Qdrant(LAB에서 도달할 수 없으므로 `VECTOR_DB`를 설정하지 않음).
 - HOME에 남은 컨테이너·volume의 정지·이전·삭제(별도 승인 단계).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 labs/open-webui/
@@ -53,14 +80,15 @@ labs/open-webui/
 └── README.md            # 이 파일
 ```
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 8080 UI | Open WebUI 웹 서버 | 이 README는 소비자를 기록하지 않는다. | Keycloak native OIDC(client `home-openwebui`, PKCE S256) 로그인이며 password login과 signup은 꺼져 있다. | 필수 입력이 비면 render가 거부되고 장애 대응은 RUN-0057을 따른다. |
 | Ollama endpoint `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` | HOME Ollama | Open WebUI | 필수 입력이지만 HOME이 LAB network에 게시하지 않아 owner 승인 전까지 render 검증만 한다. | 필수 입력이 비면 render가 거부된다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 | 항목 | 값 |
 | --- | --- |
@@ -77,31 +105,33 @@ password login, signup, email merge, OAuth role/group 관리와 trusted-header �
 OpenAI 설정을 바꿀 때 저장된 행도 함께 바꿉니다. 등록된 redirect URI는 이전 gateway host 기준이므로 LAB
 origin 로그인에는 owner가 승인한 redirect 등록과 HTTPS origin이 필요합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 8080에만 게시하며 gateway route가 없고 HOME network에 연결되지 않는다. OIDC client secret은 `lab_open_webui_oidc_client_secret` 참조로만 전달한다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 이미지는 [Compose](docker-compose.yml)가 digest로 고정한 Open WebUI 이미지이며 `lab-open-webui` profile의 독립 Compose project로 실행한다.
 
-### Selected Start
+##### Selected Start
 
 1. Usage guide(`docs/05.operations/01.guides/15.labs/0057-open-webui.md`)와 LAB 승격 정책을 읽습니다.
 2. `python3 scripts/operations/lab.py check open-webui`로 render와 충돌을 검사합니다.
 3. 실제 기동은 승인된 Ollama endpoint, LAB secret 사본과 lease가 있을 때만 `lab.py up`으로 합니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 `python3 scripts/operations/lab.py check open-webui`로 render와 충돌을 검사하고 `bash scripts/hardening/check-all-hardening.sh 08-ai`로 native OIDC·no-route·bind 계약을 확인한다. 통과는 실제 기동의 증거가 아니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [LAB 목록](../README.md)
 - Usage guide(`docs/05.operations/01.guides/15.labs/0057-open-webui.md`) (`GDE-0057`)
@@ -111,8 +141,29 @@ UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 808
 - [문서 인덱스](../../docs/README.md)
 - [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0107 lab-promotion
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`가 이 LAB의 native OIDC·no-route·bind 계약을 검사합니다.
 - 필수 입력이 비면 render가 거부됩니다.
 - 장애 대응과 HOME 퇴역 순서는 runbook(`docs/05.operations/03.runbooks/15.labs/0057-open-webui.md`)을 따릅니다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

@@ -1,10 +1,13 @@
 ---
 title: "Superset"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-23"
 ---
 
@@ -12,11 +15,31 @@ created: "2026-09-23"
 
 # Superset
 
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
+
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
 > Keycloak native OIDC를 사용하는 on-demand BI 웹 애플리케이션 LAB입니다.
 
-## Service
+#### Service
 
-### Purpose
+##### Purpose
 
 Superset은 독립 Compose project인 [Superset LAB](docker-compose.yml)(`lab-superset`
 profile)입니다. root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traefik
@@ -32,26 +55,30 @@ render 검증만 하며 LAB 로그인 성공을 주장하지 않습니다. `supe
 lakehouse database(`trino://superset@trino:8080/lakehouse`)는 `trino` host에 도달할 수
 있는 곳에서만 해석되므로, 현재 선언으로는 Superset LAB에서 Trino 질의가 되지 않습니다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 이 README의 주요 독자:
 
 - Data analysts
 - Operators
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - 웹 서버, metadata database 프로비저닝, init job.
 - Keycloak OIDC 로그인과 `lakehouse` Trino database 등록.
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - Celery worker, alert/report, 썸네일, 공유 캐시.
 - Group 기반 role 매핑. Superset은 native OIDC로 로그인하므로 OAuth2 Proxy
   `/admins` allowlist는 적용되지 않으며 owner는 Admin이 role을 부여하는
   Gamma 가입 방식을 유지했습니다(2026-09-24).
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ```text
 labs/superset/
@@ -68,7 +95,7 @@ labs/superset/
 서비스 정의(`superset-db-provision`, `superset-init`, `superset`)는
 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -77,11 +104,13 @@ labs/superset/
 | Metadata DB `LAB_SUPERSET_DB_HOST` | mng-pg | `superset`, `superset-db-provision` | feature 소유 database와 role `superset`이며 기본 포트 5432이다 | `LAB_SUPERSET_DB_HOST`가 비어 있으면 render가 거부된다 |
 | Trino database `trino://superset@trino:8080/lakehouse` | 별도 lakehouse LAB의 Trino | `superset-init`이 등록한 `superset` | Trino SQLAlchemy dialect로 `lakehouse` catalog를 질의한다 | `trino` host에 도달할 수 없어 현재 선언으로는 Superset LAB에서 Trino 질의가 되지 않는다 |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}` -> 8088에 게시하고 Keycloak OIDC로 로그인하며 `lakehouse` Trino database를 등록한다. 환경 변수는 아래 표와 같다.
 
-#### Environment Variables
+###### Environment Variables
+<!-- core-payload-level:4 -->
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
@@ -100,13 +129,14 @@ Secrets는 `${LAB_SECRET_DIR}/superset/`의 LAB 전용 파일이며 원래 이�
 provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_password`.
 `superset_config.py`가 읽습니다. HOME 값을 복사하려면 별도 승인이 필요합니다.
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 `lab_superset_net`만 사용하며 HOME network와 Traefik route가 없다. secret은 `lab_superset_secret_key`, `lab_superset_db_password`, `lab_superset_oidc_client_secret`, 프로비저닝 전용 `lab_superset_mng_postgres_password`이며 값은 문서에 쓰지 않는다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -115,7 +145,7 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 | **Login** | Flask-AppBuilder를 통한 Keycloak OIDC | PKCE S256; 등록 role `Gamma` |
 | **Data** | Trino SQLAlchemy dialect | `lakehouse` catalog(별도 lakehouse LAB) |
 
-### Selected Start
+##### Selected Start
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset`입니다.
@@ -129,7 +159,8 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 | `LAB up -d superset` | Provisioning, migration 후 시작. |
 | `LAB run --rm superset-init` | 업그레이드 후 migration 재실행. |
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 1. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. Superset 버전이 오르면 `image:` tag와 버전 투영도 바뀌며 `superset-init`이 필요합니다.
 2. 모든 credential은 `superset_config.py`가 읽는 secret 파일에 유지하십시오.
@@ -138,17 +169,18 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 런타임 이미지 권한은 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../infra/tech-stack.versions.json)은 drift 증거입니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 - `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - **Guide**: Superset Usage Guide (`docs/05.operations/01.guides/15.labs/0097-superset.md`)
 - **Policy**: Superset Operations Policy (`docs/05.operations/02.policies/15.labs/0097-superset.md`)
@@ -157,13 +189,15 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 - [문서 인덱스](../../docs/README.md)
 - [15-labs runbooks](../../docs/05.operations/03.runbooks/15.labs/README.md): RUN-0107 lab-promotion
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 - `superset: secret … must be one non-empty line`: named secret 파일이 비어 있거나 여러 줄입니다.
 - Keycloak 이후 로그인 오류: redirect URI 또는 client secret 불일치; RUN-0097을 따르십시오.
 - 로그인 후 데이터가 없음: Admin이 role을 부여하기 전까지 사용자는 `Gamma`입니다.
 
-#### Service Readiness
+###### Service Readiness
+<!-- core-payload-level:4 -->
 
 | Field | Evidence |
 | --- | --- |
@@ -180,3 +214,23 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 | Operations | Guide (`docs/05.operations/01.guides/15.labs/0097-superset.md`), Policy (`docs/05.operations/02.policies/15.labs/0097-superset.md`), Runbook (`docs/05.operations/03.runbooks/15.labs/0097-superset.md`) |
 | Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
 | Troubleshooting | 활성 lease 안에서 `/health`와 init job 로그를 확인한 뒤 runbook을 따름 |
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

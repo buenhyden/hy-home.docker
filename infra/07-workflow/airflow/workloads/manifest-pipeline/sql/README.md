@@ -1,29 +1,55 @@
 ---
 title: "Manifest Publication SQL"
-version: "0.5.1"
+version: "1.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 ---
 
 # Manifest Publication SQL
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
 
-#### Overview
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
+
+###### Overview
+<!-- core-payload-level:4 -->
 
 기존 P04 게시 계약과 현재 P05 관리 복구의 versioned publication/outbox migration입니다.
 SQL 파일 존재는 실제 migration·권한·복구 수용을 뜻하지 않습니다.
 
-#### Scope
+###### Scope
+<!-- core-payload-level:4 -->
 
 Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 승인된 view만
 소비합니다. Owner·migration capability는 runtime에 전달하지 않습니다.
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 - [001_opsflow.sql](001_opsflow.sql): DB·role·기존 shape/ACL 검사와 원자적 게시 계약.
 - [002_checks.sql](002_checks.sql): 합성 직접 호출·역할·lease 검사.
@@ -37,7 +63,7 @@ Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 
 - [007_notification_recovery.sql](007_notification_recovery.sql): version 5 개별 no-send 재처리와 복원 sending 격리.
 - [008_checks.sql](008_checks.sql): version 5 receipt·shape·관리 함수 ACL의 읽기 전용 검사.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -47,7 +73,8 @@ Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 
 | `reconcile_notification`·`requeue_dead_notification`·`quarantine_restored_notification` | 이 폴더의 publication SQL | `SET ROLE opsflow_owner`한 `opsflow_migrator` session | id와 attempt, request UUID, 승인·장벽 증거 SHA256을 받아 boolean을 돌려준다. | 다른 인수·경합·동일 attempt 중복 승인은 거부되며 실패하면 polling을 멈추고 근거를 보존한다. |
 | `migration_sha256` psql 변수 | 호출자 | migration과 검사 SQL | 적용할 migration 파일의 SHA256을 각 실행에 제공한다. | receipt나 fingerprint가 다르면 전체 transaction을 중단하고 재적용은 항상 거부한다. |
 
-#### P05 source interface
+###### P05 source interface
+<!-- core-payload-level:4 -->
 
 현재 source version은 5입니다. 여섯 인자 `publish_manifest`와 여섯 claim 필드를
 유지하며 불확실 통지의 retry 의미는 아래 격리 계약으로 바꿉니다. SQL·보안 검토 뒤 파일 hash를
@@ -81,7 +108,8 @@ Ack는 SMTP acceptance만 기록하며 실제 배달을 보장하지 않습니�
 run-derived Message-ID, at-least-once 중복 불확실성과 accepted event 복원 정합은
 P05와 별도 native 검증에서 확인합니다. 현재 v5의 실제 소비자/복원 인수는 별도이며 과거 v3 C19/C22 수용은 보존합니다.
 
-#### Version 3 notification quarantine
+###### Version 3 notification quarantine
+<!-- core-payload-level:4 -->
 
 `004_notification_quarantine.sql`은 고정된 version 2 receipt와 실제 schema fingerprint를
 먼저 검증하며 과거 migration 파일은 수정하지 않습니다. 검토한 001→002 검사→003→002
@@ -110,7 +138,8 @@ unknown을 유지합니다. 실제 no-send가 확인되어도 다섯 번 상한�
 도달한 건은 dead로 남습니다. Runtime notifier에는 대조 권한이 없습니다.
 독립 복원 뒤 unknown·accepted 상태와 claim 결과를 확인한 후 polling을 허용합니다.
 
-#### Version 4 data version and checks
+###### Version 4 data version and checks
+<!-- core-payload-level:4 -->
 
 기존 `001`–`004` 파일은 변경하지 않습니다. 새 독립 대상의 검토한 순서는
 `001` → `002` 검사 → `003` → `002` 검사 → `004` → `005` → `006` 검사입니다.
@@ -129,7 +158,8 @@ P05의 역사 version 3 영수증을 version 4 수용으로 고쳐 쓰지 않으
 현재 호환과 수용은 P04 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0043-opsflow-data-path.md`)에서
 별도 인계합니다. 소스 revert는 실행한 schema rollback이 아닙니다.
 
-#### Version 5 operator recovery and checks
+###### Version 5 operator recovery and checks
+<!-- core-payload-level:4 -->
 
 기존001–006은 그대로 보존합니다. 검토한 빈 격리 대상에서는 version 4의 위 순서 뒤
 `007`과 자신의 SHA256을 적용하고 `008`에 `007`의 SHA256을 제공합니다. `007`은
@@ -165,7 +195,8 @@ attempt·reconciliation·audit·accepted/unknown 상태를 함께 보존하고 �
 실패하면 polling을 멈춘 채 근거를 보존합니다. source revert는 실행된 schema rollback이
 아니며 기존 장부/행을 삭제해 되돌리지 않습니다.
 
-#### Migration boundary
+###### Migration boundary
+<!-- core-payload-level:4 -->
 
 기존 provisioner가 `opsflow_owner` NOLOGIN, 별도 `opsflow_migrator` LOGIN과
 세 runtime LOGIN을 함수 전용으로 준비해야 합니다. Migrator만 owner에
@@ -192,7 +223,8 @@ capability를 먼저 검토해야 합니다. 시험을 통과시키기 위해
 runtime membership을 추가하지 않습니다. 다른 DB의 CONNECT 거부·경합·객체 복원은
 별도 native 시험입니다. 이 스크립트만으로 해당 경계를 확인했다고 기록하지 않습니다.
 
-#### Version 2 business-date invariant
+###### Version 2 business-date invariant
+<!-- core-payload-level:4 -->
 
 Version 2는 `runs_source_business_date_uidx`로 같은 source와
 `(captured_at AT TIME ZONE 'UTC')::date` 조합을 하나만 허용합니다. Version 1
@@ -209,15 +241,16 @@ outbox를 보존한 채, 검토된 backup을 별도의 빈 workload 복구 대�
 재검증합니다. 운영 데이터가 있는 대상에서 version 2 index나 장부 행을 임의로
 제거하지 않으며 MNG DB reset, 공유 volume 삭제, 전체 stack restart를 하지 않습니다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 없음: 이 폴더는 Compose나 Dockerfile 없이 `001_opsflow.sql`부터 `008_checks.sql`까지 8개 SQL 파일만 포함하며, 총괄이 검토한 빈 격리 대상에서 정해진 순서로 적용한다.
 
-### Selected Start
+##### Selected Start
 
-#### Usage
+###### Usage
+<!-- core-payload-level:4 -->
 
 총괄이 함수 전용 provision·고정 이미지·빈 시험 대상·백업·복구 경계를 검토한
 뒤 실행합니다. 새 빈 대상은 `001`과 그 hash로 `002`를 검증한 뒤 `003`을
@@ -243,25 +276,48 @@ JSON 배열로 기록합니다. 명시적인 빈 ACL은 기본 ACL로 바꾸지 
 구조 필드는 기존 signature에 그대로 남습니다. 이 수정 전 draft의 실패도 수용된
 receipt가 아니며 기존 receipt를 자동 보정하지 않습니다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 읽기 전용 검사 SQL(`002_checks.sql`, `006_checks.sql`, `008_checks.sql`)이 receipt, shape와 ACL을 검증한다. 적용 순서는 Selected Start의 version별 절차를 따른다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 이 서비스의 런북은 다음과 같다.
 
 - RUN-0050: `docs/05.operations/03.runbooks/08.workflows-and-automation/0050-airflow.md`
 
-#### Related Documents
+###### Related Documents
+<!-- core-payload-level:4 -->
 
 - [배치](../README.md)
 - [Library](../workflow_lib/README.md)
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 없음: 이 폴더는 헬스체크를 선언하지 않는다. 적용 결과는 migration 뒤 읽기 전용 검사 SQL로 확인한다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

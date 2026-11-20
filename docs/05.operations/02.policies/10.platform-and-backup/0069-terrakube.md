@@ -1,10 +1,13 @@
 ---
 title: "Terrakube Operations Policy"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0069"
 parent_ids:
@@ -15,32 +18,54 @@ next_review_at: "2027-05-13"
 
 # Terrakube Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Terrakube는 명시적인 `iac` 컨트롤 플레인이다. Apache-2.0 프로젝트 라이선스가
 이 단일 호스트 배포의 지원, SLA, 엔터프라이즈 기능, HA를 보장하지는
 않는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 
 - [Terrakube Compose 소스](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 API/UI/executor 활성화, 네이티브/gateway 인증, Docker 소켓 및 provider 권한,
 PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -87,32 +112,35 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 - **Removal:** 승인된 후속 시스템이 소유하기 전까지 workspace, run, 상태, 출력,
   VCS 매핑, 복구 보관을 유지한다. 컨테이너 삭제만으로는 충분하지 않다.
 
-#### 현재 실행 경로의 제한
+###### 현재 실행 경로의 제한
+<!-- core-payload-level:4 -->
 
 현재 gateway 통제를 유지하고 로그인·health 성공을 실행 가능 증거로 기록하지 않는다. 인증 경로 제한의 세부 내용은 [Guide](../../01.guides/10.platform-and-backup/0069-terrakube.md#현재-실행-경로의-제한)를 따른다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 예외는 provider/apply 승인, Docker 소켓 검토, 시크릿 취급, 협조된 백업을
 우회할 수 없다. 만료 시점과 복구 담당자를 기록한다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 각 릴리스, 인증 변경, 저장소/백엔드 변경, Docker 소켓 권한 변경 전에
 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 정적 Compose와 컴포넌트 헬스는 부분적인 신호다. 엔드투엔드 증거에는
 로그인/권한 부여, DB/객체 접근 가능성, executor 등록, 그리고 검토된
 비적용(non-applying) plan이 필요하다. 복구는 리허설하기 전까지 검증되지
 않은 상태로 남는다.
 
-### Limits
+##### Limits
 
 정책은 정적 Compose와 헬스를 부분 신호로만 인정하며 아래 규칙은 지정된 검사가 없거나 수동에 의존한다.
 
@@ -131,13 +159,13 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 - 단일 호스트 단일 replica DEV 배포이며 HA/재해 복구는 제공되지 않는다.
 - POL-0069-R3: 수동 검증에 맡겨진다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [가이드](../../01.guides/10.platform-and-backup/0069-terrakube.md) (`GDE-0069`)
 - [런북](../../03.runbooks/10.platform-and-backup/0069-terrakube.md) (`RUN-0069`)
@@ -145,3 +173,23 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 - [Terrakube 문서](https://docs.terrakube.io/)
 - [Terrakube 라이선스](https://github.com/terrakube-io/terrakube/blob/main/LICENSE)
 - [운영 인덱스](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

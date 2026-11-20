@@ -1,10 +1,13 @@
 ---
 title: "Docker Registry Operations Policy"
-version: "1.3.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
@@ -15,31 +18,53 @@ next_review_at: "2027-05-13"
 
 # Docker Registry Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Registry는 `HOME` 아티팩트 저장소다. 현재 추적 중인 엔드포인트는 네이티브
 TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트워크에서만 서비스할 수 있다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 
 - [Registry Compose 소스](../../../../infra/09-platform-ops/registry/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 활성화, 노출, 이미지 출처/digest, 파일시스템 보존, 백업, 가비지 컬렉션, 업그레이드,
 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -84,25 +109,27 @@ TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트�
 - **Removal:** 필요한 모든 아티팩트를 재현 가능 또는 백업 완료로 분류하고,
   저장소를 삭제하기 전에 후속 시스템을 검증한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 신뢰할 수 없는 평문 자격 증명 전송, 작성자(writer)가 있는 상태의 GC, 아티팩트의
 유일한 사본 삭제를 허용하는 예외는 없다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 노출, 인증, 저장소, 삭제, 이미지, 아티팩트 보존이 변경될 때 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 `/v2/` 헬스만으로는 충분하지 않다. 런타임 수용 기준에는 네트워크 경계, 필요 시
 TLS/인증, push, pull, digest 일치가 포함된다.
 
-### Limits
+##### Limits
 
 정책은 런타임 수용 기준을 요구하지만 전용 검사를 지정하지 않으며 아래 항목은 수동에 의존한다.
 
@@ -117,16 +144,36 @@ TLS/인증, push, pull, digest 일치가 포함된다.
 - 용량 임계값은 정책이 정하지 않는다.
 - POL-0065-R2, POL-0065-R4, POL-0065-R16: 수동 검증에 맡겨진다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [가이드](../../01.guides/10.platform-and-backup/0065-registry.md) (`GDE-0065`)
 - [런북](../../03.runbooks/10.platform-and-backup/0065-registry.md) (`RUN-0065`)
 
 - [CNCF Distribution 배포](https://distribution.github.io/distribution/about/deploying/)
 - [가비지 컬렉션](https://distribution.github.io/distribution/about/garbage-collection/)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

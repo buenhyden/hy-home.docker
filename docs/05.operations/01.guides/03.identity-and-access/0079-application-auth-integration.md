@@ -1,10 +1,13 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.12.0"
+version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -15,13 +18,33 @@ next_review_at: "2027-05-13"
 
 # Application Authentication Integration Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 인프라/DevOps 엔지니어, 운영자, 플랫폼 개발자, AI Agent가 Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연결하고 서비스별 authorization model을 유지할 때 읽는다.
 
-### Outcome
+##### Outcome
 
 Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연결하고
 서비스별 authorization model을 유지하는 방법을 설명한다.
@@ -32,7 +55,8 @@ Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연�
 - Keycloak application client 설정을 일관되게 유지한다.
 - Kafbat/Airflow RBAC와 OpenBao policy를 gateway auth와 충돌시키지 않는다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Parent: [POL-0079](../../02.policies/03.identity-and-access/0079-application-auth-integration.md)
 - Decision: [ADR-0038](../../../02.architecture/02.decisions/0038-selective-native-oidc-for-native-auth-apps.md)
@@ -47,13 +71,14 @@ Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연�
 - [OpenBao Guide](../04.security-and-secrets/0085-openbao.md)
 - 공식 참고 문서 확인일: 2026-09-19. runtime version 고정값은 구현 source가 소유한다.
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 이 가이드는 시스템 가이드이자 how-to·통합 참조다. 아래 절에서 인증 패턴, Keycloak client, 서비스별 연동과 검증 방법을 다룬다.
 
-#### 용어와 책임
+###### 용어와 책임
+<!-- core-payload-level:4 -->
 
 | 용어 | 의미 | 이 저장소에서의 역할 |
 | --- | --- | --- |
@@ -70,13 +95,13 @@ OpenBao는 이 서버를 이용하는 서로 다른 클라이언트다. 로그�
 [OIDC Core](https://openid.net/specs/openid-connect-core-1_0.html),
 Keycloak의 endpoint 역할은 [공식 OIDC 안내](https://www.keycloak.org/securing-apps/oidc-layers)를 따른다.
 
-### Authority
+##### Authority
 
 SSO route는 Keycloak `/admins` 구성원만 통과한다. OAuth2 Proxy client ID는 `OAUTH2_PROXY_CLIENT_ID`, Airflow JWT는 `AIRFLOW__API_AUTH__JWT_SECRET` secret을 쓴다. client secret은 Docker Secret 또는 승인된 secret store로만 전달한다. owner 행 검증에는 로그인된 브라우저나 Keycloak 관리자 접근이 필요하다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -86,15 +111,18 @@ SSO route는 Keycloak `/admins` 구성원만 통과한다. OAuth2 Proxy client I
 | 4 | `Authorization Code와 검증 경계`: 클라이언트는 서명·issuer·대상 audience·만료와 요청한 nonce를 검증한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 5 | `Authorization Code와 검증 경계`: 그룹·역할 claim을 앱 정책으로 변환한 뒤 앱 세션을 발급한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 정상 사용 절차는 아래 항목에 정리한다.
 
-#### Authentication Pattern
+###### Authentication Pattern
+<!-- core-payload-level:4 -->
 
 인증 방식은 gateway ForwardAuth와 application-native OIDC 두 가지로 나뉘며 아래에 각각 정리한다.
 
-##### Gateway ForwardAuth
+###### Gateway ForwardAuth
+<!-- core-payload-level:5 -->
 
 ```mermaid
 sequenceDiagram
@@ -134,7 +162,8 @@ machine API 성공이 아니므로 machine client에는 로그인 화면을 주�
 [Traefik middleware](../../../../infra/01-gateway/traefik/dynamic/middleware.yml)이며,
 2xx일 때 원래 요청을 진행하는 동작은 [공식 ForwardAuth 문서](https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/forwardauth/)에서 확인했다.
 
-##### Application-native OIDC
+###### Application-native OIDC
+<!-- core-payload-level:5 -->
 
 ```mermaid
 sequenceDiagram
@@ -159,7 +188,8 @@ Keycloak에 이미 로그인했다면 비밀번호 입력이 생략될 수 있�
 callback 처리와 세션·권한 생성은 여전히 필요하다. OpenBao의 OIDC 로그인은
 게이트웨이 쿠키나 AppRole 토큰으로 대체되지 않는다.
 
-#### Keycloak Client Matrix
+###### Keycloak Client Matrix
+<!-- core-payload-level:4 -->
 
 Realm은 `hy-home.realm`, issuer는
 `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`이다.
@@ -180,7 +210,8 @@ OpenBao CLI callback은 `http://localhost:8250/oidc/callback`이다. 이는 브�
 자동 생성하지 않는다. OpenBao의 실제 로그인은 확인됐고, 다른 앱은 이 조사에서
 선언을 검토했으며 전체 재로그인·권한 검증을 다시 수행하지 않았다.
 
-#### Authorization Code와 검증 경계
+###### Authorization Code와 검증 경계
+<!-- core-payload-level:4 -->
 
 1. 클라이언트가 discovery의 issuer·authorization endpoint·token endpoint·JWKS를 확인한다.
 2. 브라우저는 등록된 client와 callback으로 인증을 시작한다.
@@ -194,7 +225,8 @@ PKCE의 S256은 code와 최초 요청을 연결하며 client secret이나 TLS �
 PKCE를 기준으로 설계하고, password grant나 implicit flow를 편의상 추가하지 않는다.
 보안 근거는 [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html)이다.
 
-#### 토큰·쿠키·권한의 구분
+###### 토큰·쿠키·권한의 구분
+<!-- core-payload-level:4 -->
 
 | 항목 | 소비자 | 주의할 점 |
 | --- | --- | --- |
@@ -210,7 +242,8 @@ PKCE를 기준으로 설계하고, password grant나 implicit flow를 편의상 
 아니다. mapper, scope, claim이 실리는 token 종류와 앱의 매핑을 함께 확인한다.
 `openid`나 `groups` scope를 요청했다는 사실만으로 관리 권한이 생기지 않는다.
 
-#### 로그아웃과 권한 회수
+###### 로그아웃과 권한 회수
+<!-- core-payload-level:4 -->
 
 앱 로그아웃, Proxy 쿠키 삭제, Keycloak SSO 종료, 이미 발급된 API 토큰 폐기는
 각각 확인해야 한다. 하나의 쿠키 삭제가 모든 앱의 로그아웃을 증명하지 않는다.
@@ -219,7 +252,8 @@ Keycloak 세션 종료 후에도 앱 로컬 세션이나 이미 발급된 토큰
 복귀 URI는 [공식 Logout 규격](https://openid.net/specs/openid-connect-rpinitiated-1_0.html)을 따른다.
 Proxy의 구체적 절차는 [Proxy runbook](../../03.runbooks/03.identity-and-access/0015-oauth2-proxy.md)이 소유한다.
 
-#### 신규 앱 연동 순서와 완료 기준
+###### 신규 앱 연동 순서와 완료 기준
+<!-- core-payload-level:4 -->
 
 - 먼저 native OIDC/RBAC 지원 여부로 인증 경로를 선택한다.
 - client, 정확한 callback, Web Origin, 최소 scope, claim mapper를 등록한다.
@@ -233,7 +267,8 @@ Task에 기록되어야 해당 검증의 완료로 취급한다. 별도 실제 �
 확인했다. 두 번째 실제 Keycloak 사용자 로그인 거부는 수행하지 않았으며, 이
 검증 한계는 전환 완료와 구분해 Task에 남긴다.
 
-#### ForwardAuth Service Review
+###### ForwardAuth Service Review
+<!-- core-payload-level:4 -->
 
 Native OIDC 전환은 제품의 browser login/session 기능이 Keycloak을 직접 신뢰할 수
 있고, 현재 설치판에서 라이선스나 외부 plugin 없이 지원될 때만 선택한다.
@@ -281,7 +316,8 @@ n8n SSO docs (<https://docs.n8n.io/user-management/saml/>), Mailpit docs
 (<https://mailpit.axllent.org/docs/>), Stalwart OIDC backend docs
 (<https://stalw.art/docs/auth/backend/oidc/>).
 
-#### Kafbat UI
+###### Kafbat UI
+<!-- core-payload-level:4 -->
 
 현재 구현:
 
@@ -306,7 +342,8 @@ RBAC:
 
 `rbac.roles[*].clusters`는 `KAFKA_CLUSTERS_0_NAME`과 일치해야 한다.
 
-##### Local CA Trust
+###### Local CA Trust
+<!-- core-payload-level:5 -->
 
 ```text
 JDK default cacerts
@@ -317,7 +354,8 @@ JDK default cacerts
 
 local root CA만 담긴 새 truststore로 JDK public CA roots를 대체하지 않는다.
 
-#### Airflow
+###### Airflow
+<!-- core-payload-level:4 -->
 
 현재 구현:
 
@@ -330,7 +368,8 @@ local root CA만 담긴 새 truststore로 JDK public CA roots를 대체하지 �
 - `--proxy-headers`
 - gateway-only Airflow router
 
-##### Token model
+###### Token model
+<!-- core-payload-level:5 -->
 
 Keycloak tokens:
 
@@ -344,7 +383,8 @@ Airflow internal JWT:
 
 두 token은 서로 대체하지 않는다.
 
-##### Keycloak prerequisites
+###### Keycloak prerequisites
+<!-- core-payload-level:5 -->
 
 Realm roles:
 
@@ -364,14 +404,16 @@ Client:
 - Redirect: `https://airflow.${DEFAULT_URL}/*`
 - Web Origin: `https://airflow.${DEFAULT_URL}`
 
-##### Authorization bootstrap
+###### Authorization bootstrap
+<!-- core-payload-level:5 -->
 
 Keycloak에는 method/menu/list scope, Dag/Asset/Pool/View resource, role policy와
 permission이 필요하다. bootstrap과 provider 경계의 기존 permission 재생성 명령은
 [Keycloak Runbook](../../03.runbooks/03.identity-and-access/0014-keycloak.md#application-authorization-provisioning)이
 소유한다. provider update만으로 기존 Keycloak permissions는 자동 갱신되지 않는다.
 
-#### Route Authentication Matrix
+###### Route Authentication Matrix
+<!-- core-payload-level:4 -->
 
 Compose label과 file provider(`infra/01-gateway/traefik/dynamic/`)에 선언된 모든 Traefik HTTP router는
 (CouchDB·MongoDB·PostgreSQL HA 등은 SPEC-0262 이후 gateway router가 없는 LAB이다)
@@ -407,7 +449,8 @@ SSO chain을 적용했고, `mongo-express`에는 기존 credential이 의도했�
 활성화했다. Qdrant gRPC TCP route는 제거했다. container는 계속 각자의 network에서
 service 이름을 사용한다.
 
-#### SSO Behavioural Matrix
+###### SSO Behavioural Matrix
+<!-- core-payload-level:4 -->
 
 위 route matrix는 정적 정보다. 이 matrix는 SPEC-0182 criterion9 test 사례와 날짜가 명시된
 증거 경로를 보존하며 현재 gateway를 새로 관찰한 결과가 아니다. 각 행은 pass, fail 또는
@@ -429,11 +472,13 @@ TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloa
 당시 대기 중이던 owner 행을 포함한 각 행의 결과는 삭제된
 SPEC-0182 Task 0003에 기록되었고 Git history에 남아 있다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 특수 사례와 한계는 아래 항목에 정리한다.
 
-#### Scope and current limitations
+###### Scope and current limitations
+<!-- core-payload-level:4 -->
 
 이 문서는 cross-cutting integration 설명이며 별도 Compose service를 소유하지 않는다.
 기동·resource·persistence·backup은 각 서비스 subject와 [시스템 Guide](../01.common/0099-system-operations.md)가
@@ -449,7 +494,8 @@ limit·재검토일(2026-12-02)과 종료 조건은 [POL-0079](../../02.policies
 소유한다. 이 정적 소스 계약은 실제 Grafana 접근·로그인·권한·backend 호출의 새 운영
 검증을 의미하지 않는다.
 
-#### OAuth2 Proxy의 현재 경계
+###### OAuth2 Proxy의 현재 경계
+<!-- core-payload-level:4 -->
 
 현재 [설정](../../../../infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg)은
 `keycloak-oidc`, S256, Redis 프로토콜의 Valkey 세션을 사용한다.
@@ -482,11 +528,12 @@ token을 재사용 가능하게 노출했고 SonarQube·Terrakube 같은 자체 
 port로 직접 접근 가능하면 신뢰 헤더 방식의 보호가 성립한다고 볼 수 없다.
 Traefik dynamic directory는 file watch 대상이다. 실제 실행 컨테이너의 mount source 변경이 적용 경계이며 Git merge만으로 배포를 단정하지 않는다. Proxy 단일 설정 파일은 POL-0006의 재생성·hash 확인을 따른다.
 
-### Expected Results
+##### Expected Results
 
 각 application이 문서화된 ForwardAuth 또는 native OIDC 경로를 사용하는지, client ID가 provision된 Keycloak metadata와 일치하는지, 인가되지 않은 접근이 거부되는지 확인한다. client secret이나 token을 출력하지 않는다. container health만으로 role 인가를 입증할 수 없다.
 
-#### 서비스별 정적 검증
+###### 서비스별 정적 검증
+<!-- core-payload-level:4 -->
 
 ```bash
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
@@ -512,60 +559,90 @@ docker compose exec -T airflow-apiserver airflow db check
 docker compose exec -T airflow-apiserver airflow dags list
 ```
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 로그인 루프·callback 거부·권한 403 패턴은 아래 Airflow 장애 패턴과 서비스별 Runbook을 따른다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 - [Keycloak Runbook](../../03.runbooks/03.identity-and-access/0014-keycloak.md)
 - [OAuth2 Proxy Runbook](../../03.runbooks/03.identity-and-access/0015-oauth2-proxy.md)
 - [Kafka/Kafbat Runbook](../../03.runbooks/06.messaging-and-cdc/0036-kafka.md)
 - [Airflow Runbook](../../03.runbooks/08.workflows-and-automation/0050-airflow.md)
 
-#### Airflow 장애 패턴
+###### Airflow 장애 패턴
+<!-- core-payload-level:4 -->
 
 Airflow 연동 장애는 증상별로 아래에 정리한다.
 
-##### Config PermissionError
+###### Config PermissionError
+<!-- core-payload-level:5 -->
 
 `airflow-init` root-created file과 runtime UID mismatch를 확인한다.
 
-##### DB migration
+###### DB migration
+<!-- core-payload-level:5 -->
 
 [POL-0050](../../02.policies/08.workflows-and-automation/0050-airflow.md)에 따라 schema upgrade 전 schedule과 producer를
 pause하고 running/queued task를 정리해야 한다. 절차는 [Airflow runbook](../../03.runbooks/08.workflows-and-automation/0050-airflow.md#steps)을 따른다.
 
-##### JWT algorithm/format error
+###### JWT algorithm/format error
+<!-- core-payload-level:5 -->
 
 OAuth2 Proxy Bearer token이 Airflow application JWT 경계로 유입된 경우를 의심한다.
 Airflow router는 gateway-only + Native Keycloak Auth Manager를 사용한다.
 
-##### `invalid_scope`
+###### `invalid_scope`
+<!-- core-payload-level:5 -->
 
 Keycloak Authorization Services bootstrap 미완료.
 
-##### role 404
+###### role 404
+<!-- core-payload-level:5 -->
 
 `Viewer`, `User`, `Op`, `Admin`, `SuperAdmin` realm role을 먼저 생성한다.
 
-##### provider 0.8.2 Admin 403 <!-- runtime-version-exception: compatibility — 이 provider release에는 later admin permission repair가 없어 403이 재현됨 -->
+###### provider 0.8.2 Admin 403 <!-- runtime-version-exception: compatibility — 이 provider release에는 later admin permission repair가 없어 403이 재현됨 -->
+<!-- core-payload-level:5 -->
 
 `Admin` permission에 alternative role policies가 `UNANIMOUS`로 묶일 수 있다.
 0.9.0으로 upgrade하고 `create-permissions`를 다시 실행한다. <!-- runtime-version-exception: compatibility — 새 provider schema에 맞는 permission row 재생성이 필요함 -->
 
-##### `/auth/login_callback` 403
+###### `/auth/login_callback` 403
+<!-- core-payload-level:5 -->
 
 query `state`와 `_oauth_state` cookie mismatch.
 old callback URL을 재사용하지 않고 `/auth/login`에서 새 flow를 시작한다.
 
-##### 일부 resource만 403
+###### 일부 resource만 403
+<!-- core-payload-level:5 -->
 
 `/ui/auth/me` 등은 200인데 Pool/DAG/Asset만 403이면 authentication이 아니라
 Keycloak resource authorization 문제다.
 
-### Next Action
+##### Next Action
 
 로그인 루프·callback 거부·권한 403은 서비스별 Runbook으로 넘긴다: [Keycloak](../../03.runbooks/03.identity-and-access/0014-keycloak.md), [OAuth2 Proxy](../../03.runbooks/03.identity-and-access/0015-oauth2-proxy.md), [Kafka/Kafbat](../../03.runbooks/06.messaging-and-cdc/0036-kafka.md), [Airflow](../../03.runbooks/08.workflows-and-automation/0050-airflow.md).
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

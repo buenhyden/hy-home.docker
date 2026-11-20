@@ -1,10 +1,13 @@
 ---
 title: "Renovate Policy"
-version: "0.5.0"
+version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0083"
 parent_ids:
@@ -15,33 +18,55 @@ next_review_at: "2027-05-13"
 
 # Renovate Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Renovate는 HOME 호스트에서 self-hosted로 실행하는 Compose job(`dependency-update` profile)이며 설치된 주간 systemd timer(월요일, 일정 창 00–05시 KST)가 기본 실행이고 Compose `run --rm`은 rebase·재시도용 온디맨드 실행이며
 원격 저장소 쓰기 권한을 가진다. HOME이나 일반 도구 기동에는 절대 포함되지 않는다.
 상시 서비스가 아니며 메모리 상한은 2 GiB다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - 설계 근거: [AD-0009](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 
 - [Renovate Compose source](../../../../infra/09-platform-ops/renovate/docker-compose.yml)
 - [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
 
-### Applies To
+##### Applies To
 
 이 정책은 `renovate`와 그 Docker Secret, 설정, 캐시, 원격 변경사항, 업그레이드, 증거를
 다룬다. 업데이트 규칙(그룹, 보류, digest pin, ledger 재결합, PR 처리)의 권위는 `POL-0086`에 있다. 추적하는 manager와 파일 목록(`infra/` 아래 Compose와 `requirements.txt`, `labs/**` 제외)은 `renovate.json5`가 소유한다.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -78,7 +103,8 @@ Renovate는 HOME 호스트에서 self-hosted로 실행하는 Compose job(`depend
 - job 실행 시각, 설정 커밋, 대상 저장소, 이미지 선언, sanitize된 결과, secret 값 없이
   생성된 PR을 기록한다.
 
-#### 예약 실행 책임
+###### 예약 실행 책임
+<!-- core-payload-level:4 -->
 
 설치된 주간 systemd timer가 기본 실행이고 Compose `run --rm`은 온디맨드 실행이다.
 timer가 시작한 실행과 수동 실행에는 같은 승인·근거 규칙이 적용된다.
@@ -86,26 +112,28 @@ timer가 시작한 실행과 수동 실행에는 같은 승인·근거 규칙이
 `@buenhyden`이며 host unit 설치·교체는 검토된 사본으로만 수행한다. 이미지 태그는
 resolved digest와 같지 않으므로 불변성 통제의 충족 여부를 따로 확인한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 토큰 권한, 저장소 범위, 허용 명령어, 스크립트 실행, 원격 변경의 확대는 기록된 owner,
 만료일, 롤백, 보안 검토가 필요하다. 구문 검증을 통과해도 실제 실행 승인은 면제되지 않는다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 매월, 그리고 이미지, 토큰 범위, 저장소 목록, manager, 허용 명령어, `POL-0086`이 변경될
 때마다 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 [Runbook step 1](../../03.runbooks/10.platform-and-backup/0083-renovate.md#steps)에 따라 실제 실행 전에 저장소와
 self-host 설정 검증을 반드시 통과해야 한다.
 
-### Limits
+##### Limits
 
 정책 본문이 기계적 강제를 명시하지 않는 항목은 다음과 같다.
 
@@ -120,15 +148,35 @@ self-host 설정 검증을 반드시 통과해야 한다.
 - validator PASS는 구문 증거일 뿐이며 실제 실행 승인을 대신하지 않는다.
 - 이미지 태그는 resolved digest와 같지 않아 불변성 통제 충족 여부를 따로 확인해야 한다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - 동일 주제 문서: [Guide](../../01.guides/10.platform-and-backup/0083-renovate.md), [Runbook](../../03.runbooks/10.platform-and-backup/0083-renovate.md)
 
 - [Renovate security and permissions](https://docs.renovatebot.com/security-and-permissions/)
 - [Operations index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

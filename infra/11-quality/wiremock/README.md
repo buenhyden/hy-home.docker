@@ -1,10 +1,13 @@
 ---
 title: "WireMock HTTP 모의 서비스"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 created: "2026-09-23"
 ---
 
@@ -12,35 +15,59 @@ created: "2026-09-23"
 
 # WireMock HTTP 모의 서비스
 
-## Service
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Purpose
+## 문서 개요
+
+### 목적과 독자
+
+독자는 아래 역할 본문에서 이 문서가 제공하는 정보와 판단을 확인합니다.
+
+### 책임과 적용 범위
+
+적용 대상과 유지 책임은 frontmatter와 역할 본문의 범위 선언이 소유합니다.
+
+## 내용 계약
+
+### 입력과 전제
+
+실제 입력과 전제는 아래 역할 본문의 해당 항목을 따릅니다.
+
+### 본문과 규칙
+
+#### Service
+
+##### Purpose
 
 WireMock은 개발·계약 검사에서 외부 HTTP 의존성을 합성 응답으로 대체한다.
 기능 모드는 제한된 요청 저널을 사용하고, 부하 모드는 요청 저널을 비활성화한다.
 load override가 같은 **wiremock** 서비스의 port·command·healthcheck를 교체하므로
 한 Compose model에는 한 모드만 존재한다.
 
-#### Audience
+###### Audience
+<!-- core-payload-level:4 -->
 
 - 합성 HTTP fixture를 작성하는 개발자
 - 기능·부하 검사를 설계하는 품질 담당자
 - 노출 경계와 실행 상태를 확인하는 운영자
 
-#### In Scope
+###### In Scope
+<!-- core-payload-level:4 -->
 
 - **wiremock** 기능 모드의 최대 1,000개 요청 저널과 실행 전 저널 초기화
 - load override를 적용한 **wiremock**의 **--no-request-journal** 및 HTTP admin 거부 실행
 - 추적된 **mappings/**, **__files/**의 읽기 전용 제공
 - 기능 모드의 loopback 전용 호스트 포트
 
-#### Out of Scope
+###### Out of Scope
+<!-- core-payload-level:4 -->
 
 - 실제 upstream record-and-playback
 - WireMock admin API 인증과 공용 gateway route
 - Pact Broker가 소유하는 consumer 계약 판정
 
-#### Structure
+###### Structure
+<!-- core-payload-level:4 -->
 
 ~~~text
 wiremock/
@@ -51,7 +78,7 @@ wiremock/
 └── README.md
 ~~~
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -60,7 +87,8 @@ wiremock/
 | `DELETE /__admin/requests` | `wiremock` admin API | 기능 검사 시작 전 초기화 단계 | 요청 저널을 초기화한다. | load 모드의 admin 403 응답을 빈 요청 저널로 해석하지 않는다. |
 | `mappings/`, `__files/` fixture | 추적된 저장소 파일 | `wiremock` | 합성 데이터만 읽기 전용으로 제공하며 변경은 파일 검토 후 컨테이너 재생성으로 반영한다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-#### Inputs and Outputs
+###### Inputs and Outputs
+<!-- core-payload-level:4 -->
 
 기능 모드는 **127.0.0.1:${WIREMOCK_HOST_PORT:-18088}**에만 게시한다. 부하
 모드는 host port를 reset하고 project-default network의 peer만
@@ -84,13 +112,14 @@ stub은 재시작 시 사라지며 권위 있는 fixture가 아니다.
 | --- | ---: | --- |
 | **WIREMOCK_HOST_PORT** | No | 기능 모드 loopback 포트; 기본값 18088 |
 
-#### Security Boundary
+###### Security Boundary
+<!-- core-payload-level:4 -->
 
 기능 모드는 `127.0.0.1:${WIREMOCK_HOST_PORT:-18088}`에만 게시하며 admin API에는 인증이 없다. 부하 모드는 host port를 제거하고 project-default network의 peer만 접근하게 하며, Compose에는 secret 참조가 없고 fixture는 합성 데이터만 쓴다.
 
-## Usage
+#### Usage
 
-### Prerequisites
+##### Prerequisites
 
 | Category | Technology | Notes |
 | --- | --- | --- |
@@ -99,7 +128,7 @@ stub은 재시작 시 사라지며 권위 있는 fixture가 아니다.
 | Load mode | **wiremock**, **api-mock** + load override | override가 request journal과 host port를 제거 |
 | Storage | 읽기 전용 bind mount | 영속 writable state 없음 |
 
-### Selected Start
+##### Selected Start
 
 1. 합성 데이터만 **mappings/**와 **__files/**에 추가한다.
 2. 기능 판정은 root Compose, mock 자체 부하 측정은 root와 load override를 함께 사용한다.
@@ -107,9 +136,9 @@ stub은 재시작 시 사라지며 권위 있는 fixture가 아니다.
 4. load 모드에서 journal API 오류를 empty journal로 변환하거나 성공으로 판정하지 않는다.
 5. 변경 후 두 모드를 각각 render하고 focused 테스트를 실행한다.
 
-## Checks
+#### Checks
 
-### Readiness
+##### Readiness
 
 ~~~bash
 docker compose --env-file .env.example --profile api-mock config --quiet
@@ -126,9 +155,10 @@ DELETE reset 뒤 count 0을 확인했다. load 모드는 같은 stub GET 200과
 추가한 별도 격리 검사에서는 stub GET 200과 **GET /__admin/health** HTTP 403을
 확인했다. 두 결과는 격리 실행 증거이며 HOME 배포나 실제 target 결과가 아니다.
 
-### Failure Handling
+##### Failure Handling
 
-#### Runbook Links
+###### Runbook Links
+<!-- core-payload-level:4 -->
 
 - [문서 진입점](../../../docs/README.md) (`GDE-0092`, `POL-0092`, `RUN-0092`)
 - [품질 tier](../README.md)
@@ -136,6 +166,27 @@ DELETE reset 뒤 count 0을 확인했다. load 모드는 같은 stub GET 200과
 - [WireMock request journal configuration](https://wiremock.org/docs/configuration/#request-journal)
 - [12-testing-and-quality runbooks](../../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md): RUN-0092 wiremock
 
-#### Observability and Recovery
+###### Observability and Recovery
+<!-- core-payload-level:4 -->
 
 Compose에 헬스체크가 선언되어 있으며 복구와 장애 대응은 [12-testing-and-quality runbooks](../../../docs/05.operations/03.runbooks/12.testing-and-quality/README.md)의 RUN-0092 WireMock Runbook을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+아래 역할 본문의 절차나 탐색 순서에 따라 사용합니다.
+
+### 확인 기준
+
+해당 문서에 선언된 확인 기준과 한계만 적용하며 실행·검증·인수를 구분합니다.
+
+## 관계와 출처
+
+### 관련 문서
+
+현재 소유자와 의존 문서의 연결은 아래 역할 본문의 링크가 소유합니다.
+
+### 외부 근거
+
+외부 출처와 적용 한계는 아래 역할 본문에 선언된 범위이며 권한을 부여하지 않습니다.

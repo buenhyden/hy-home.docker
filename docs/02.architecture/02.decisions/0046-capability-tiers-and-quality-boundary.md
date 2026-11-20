@@ -1,10 +1,13 @@
 ---
 title: "Capability Tiers and Quality Boundary"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0046"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-10-01"
 
 # ADR-0046: Capability Tiers and Quality Boundary
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 Tooling mixed platform operations with software verification, Communication mixed
 real mail with test capture, and Laboratory grouped unrelated administration and
@@ -28,26 +51,27 @@ Use capability ownership, retain cohesive packages and helper jobs, preserve
 runtime configuration and persistent data, and keep existing Operations IDs.
 Directory placement must not imply activation order or security isolation.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 - [AD-0009](../01.descriptions/0009-tooling-architecture.md)
 - [AD-0011](../01.descriptions/0011-laboratory-architecture.md)
 - SPEC-0197
 - SPEC-0198
 
-### Decision Scope
+##### Decision Scope
 
 This decision covers the physical ownership of Tooling, Communication and Laboratory packages across capability tiers. It affects requirements and architecture descriptions, Guides, Policies and Runbooks; a package move grants no new runtime, profile, authentication exception or deployment permission.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - A: retain the current directories and clarify navigation only.
 - B: move six packages/eight labels into existing capability tiers.
 - C: establish a Quality capability and relocate twelve packages/sixteen labels.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -57,9 +81,9 @@ This decision covers the physical ownership of Tooling, Communication and Labora
 
 Option A leaves the mixed capability ownership in place and only clarifies navigation. Option B moves six packages/eight labels into existing capability tiers. Option C adds a Quality capability for software verification and relocates twelve packages/sixteen labels, retaining cohesive packages while keeping existing Operations IDs. The record gives no comparative reason for choosing option C.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 Adopt C. `11-quality` owns k6, Locust, WireMock, Pact Broker, SonarQube, Conftest
 and Mailpit. `09-platform-ops` retains OpenTofu, Terrakube, Registry, Renovate and
@@ -80,13 +104,13 @@ The retained five platform lifecycle packages use `09-platform-ops` and nine
 The tracked Restic unit source path follows the move; installed-unit refresh
 is a separately controlled operational handoff.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden; status `accepted`. The Context records that the user approved SPEC-0197 option C and its additional implementation Plan on 2026-10-01. The acceptance date is not recorded; the SPEC-0197 option C approval is dated 2026-10-01.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 Requirements and architecture descriptions retain their issued logical obligations
 across the new physical owners. Existing Guide, Policy and Runbook identities
@@ -94,7 +118,7 @@ stay stable; active links, hardening dispatch and derived inventories follow the
 move. Dozzle keeps a leaf Compose file. A package move grants no new runtime,
 profile, authentication exception or deployment permission.
 
-### Follow-up
+##### Follow-up
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
@@ -105,8 +129,29 @@ Future container recreation must account for relocated source mounts. Runtime,
 image builds, deployment and data recovery need separately scoped authorization;
 static source acceptance does not prove their success.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 Require exact before/after public-model comparison, source-content preservation,
 retained hardening controls and negative regressions, current document contracts,
 and independent read-only review. Record actual outcomes in the existing Tasks.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

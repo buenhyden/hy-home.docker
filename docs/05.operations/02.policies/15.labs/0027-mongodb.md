@@ -1,10 +1,13 @@
 ---
 title: "MongoDB Operations Policy"
-version: "2.2.0"
+version: "3.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0027"
 parent_ids:
@@ -15,18 +18,39 @@ next_review_at: "2027-05-13"
 
 # MongoDB Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 이 정책은 `hy-home.docker`의 `LAB` MongoDB replica set 운영 기준을 정의한다. runtime image/version은 Compose declaration이 소유하며, 정책 기준은 exact `mongodb` profile, `MyReplicaSet`, `mongo-key` named volume, Docker Secret 기반 root/UI credential이다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/01.descriptions/0004-data-architecture.md) (`AD-0004`)
 - [Compose implementation: labs/mongodb/docker-compose.yml](../../../../labs/mongodb/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 - `labs/mongodb/docker-compose.yml`
 - `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`
@@ -35,13 +59,14 @@ next_review_at: "2027-05-13"
 - HOME Traefik label 없음; Mongo Express loopback port `${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`
 - Linked guide and runbook under `docs/05.operations`
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -104,25 +129,28 @@ next_review_at: "2027-05-13"
 - **Disallowed**: `mongodb-arbiter`를 backup/data node로 취급하거나 compose에
   선언되지 않은 host port로 MongoDB를 직접 노출하는 것.
 
-#### Accountable lifecycle boundary
+###### Accountable lifecycle boundary
+<!-- core-payload-level:4 -->
 
 적용 identity: `mongo-express`, `mongo-init`, `mongo-key-generator`, `mongodb-arbiter`, `mongodb-rep1`, `mongodb-rep2`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03.identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10.platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 N/A - 현재 승인된 예외 없음.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 - MongoDB compose image/profile/secret/keyfile/replica-member 변경 시
   검토한다.
 - Stage 05 운영 문서 audit 주기 동안 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - Compose 변경 후 이 정책을 [MongoDB guide](../../01.guides/15.labs/0027-mongodb.md),
   [MongoDB runbook](../../03.runbooks/15.labs/0027-mongodb.md),
@@ -131,7 +159,7 @@ N/A - 현재 승인된 예외 없음.
   승인하기 전에 `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile mongodb config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
-### Limits
+##### Limits
 
 아래 규칙은 이름 붙은 검사가 규칙에 연결되어 있지 않거나 승인/검토에 의존하며, 정책은 Compose 렌더, 문서 링크 검사, 연결 문서 비교를 개별 규칙과 연결하지 않는다.
 
@@ -145,13 +173,13 @@ N/A - 현재 승인된 예외 없음.
 - backup/restore/upgrade 절차와 파괴적 단계의 승인은 이름 붙은 자동 검사가 없고 수동 검토에 의존한다(정책 Limits 기준).
 - 정책에 승인된 예외는 없다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - Subject peers: [Guide](../../01.guides/15.labs/0027-mongodb.md) (`GDE-0027`), [Runbook](../../03.runbooks/15.labs/0027-mongodb.md) (`RUN-0027`)
 - [MongoDB backup and restore tools](https://www.mongodb.com/docs/v8.0/tutorial/backup-and-restore-tools/)
@@ -161,3 +189,23 @@ N/A - 현재 승인된 예외 없음.
 - [Usage guide](../../01.guides/15.labs/0027-mongodb.md)
 - [Recovery runbook](../../03.runbooks/15.labs/0027-mongodb.md)
 - [LAB 설명](../../../../labs/mongodb/README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

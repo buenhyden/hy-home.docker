@@ -1,10 +1,13 @@
 ---
 title: "MongoDB Replica Set Triage Runbook"
-version: "2.1.0"
+version: "3.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "RUN-0027"
 parent_ids:
@@ -15,9 +18,29 @@ next_review_at: "2027-05-13"
 
 # MongoDB Replica Set Triage Runbook
 
-## Trigger and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Trigger
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the runbook payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Trigger and Scope
+
+##### Trigger
 
 범위: LAB 전용 MongoDB replica set의 상태, init job 결과, Mongo Express 접속을 파괴적 데이터 작업 없이 점검한다.
 
@@ -30,7 +53,7 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 - `mongo-express` 접속을 확인해야 할 때
 - NoSQL operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
-### Targets
+##### Targets
 
 대상: `mongo-express`, `mongo-init`, `mongo-key-generator`, `mongodb-arbiter`, `mongodb-rep1`, `mongodb-rep2`.
 
@@ -49,15 +72,15 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 - [Operations policy](../../02.policies/15.labs/0027-mongodb.md)
 - [Infra README](../../../../labs/mongodb/README.md)
 
-## Preflight
+#### Preflight
 
-### Authority
+##### Authority
 
 기동/정지는 [GDE-0099](../../01.guides/01.common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../02.policies/01.common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-### Environment
+##### Environment
 
 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
@@ -68,9 +91,9 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - [ ] destructive resync, data directory deletion, forced election, keyfile rotation, credential rotation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] replica set name은 compose-declared `MyReplicaSet`으로만 기록한다.
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -129,7 +152,8 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 현재 key/init 경로는 비밀값을 argv에 싣지 않는다. 실제 key 생성·replica 결성 결과는 SPEC-0215 TSK-0002(삭제됨, Git history)의 LAB 실행 기록에 남아 있다. member name/state만 기록한다.
 
-#### Planned Isolated Restore Rehearsal
+###### Planned Isolated Restore Rehearsal
+<!-- core-payload-level:4 -->
 
 1. 사전 승인 후 `rs.status()`와 `rs.conf()`, server/database-tools versions, database/collection/index 목록, users/roles scope, expected document-count invariants와 free space를 기록한다. password와 keyfile 값은 기록하지 않는다.
 2. healthy data-bearing member에 `admin` authentication database로 접속해 `mongodump --oplog`를 수행한다. password는 prompt 또는 보호된 secret file로 제공하고 command line/URI에 넣지 않는다. arbiter volume은 backup하지 않는다.
@@ -138,34 +162,37 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 5. authenticated `mongorestore --oplogReplay`로 dump를 적재한다. target이 비어 있지 않거나 tool/server compatibility가 맞지 않으면 중단한다.
 6. replica health, database/collection/index 목록, users/roles scope, representative reads, document-count invariants와 application smoke query를 검증한다. 불일치가 있으면 승격하지 않고 target을 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다.
 
-### Stop Conditions
+##### Stop Conditions
 
 destructive resync, data directory deletion, forced election, keyfile rotation, credential rotation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다. restore target이 비어 있지 않거나 tool/server compatibility가 맞지 않으면 중단한다. data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다.
 
-## Verification
+#### Verification
 
-### Expected Results
+##### Expected Results
 
-#### Service Checks
+###### Service Checks
+<!-- core-payload-level:4 -->
 
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml ps ...`에서 `mongodb-rep1`과 `mongodb-rep2`가 healthy 또는 running 상태인지 확인한다.
 - `rs.status()` member summary가 `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`를 포함하는지 확인한다.
 - `mongo-init`가 completed 상태인지 확인한다.
 
-#### Evidence
+###### Evidence
+<!-- core-payload-level:4 -->
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log와 replica member 상태 요약을 기록한다.
 - secret 값, MongoDB document 전체 또는 password를 담은 credential 기반 URI 문자열은 기록하지 않는다.
 - `mongodb`를 선택했음을 기록한다. root는 `labs/mongodb/docker-compose.yml`을 include하지 않는다.
 
-#### Observability and Evidence Sources
+###### Observability and Evidence Sources
+<!-- core-payload-level:4 -->
 
 - **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter`
 - **Replica evidence**: sanitized `rs.status()` member summary
 - **Route**: HOME gateway 경로 없음; Mongo Express loopback port만 게시 (SPEC-0215)
 - **Metrics**: 이 LAB에는 exporter가 없다. 고정했던 exporter image가 존재하지 않았고, 현재 image에는 secret을 읽을 shell이 없으며, LAB은 HOME Prometheus에 수집되지 않아 소비자가 없었다(SPEC-0215).
 
-### Unverified Conditions
+##### Unverified Conditions
 
 이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 컨테이너 실행과 복구가 `NOT_RUN`이라고 적고 있다.
 
@@ -174,15 +201,35 @@ destructive resync, data directory deletion, forced election, keyfile rotation, 
 - 컨테이너 재기동: 승인된 daemon target 1개가 필요하며 실행 기록이 없다.
 - 실제 key 생성과 replica 결성 결과는 문서가 SPEC-0215 TSK-0002(삭제됨, Git history)의 LAB 실행 기록에 남아 있다고 밝히고 있으나, 이 문서 자체에는 그 결과가 포함되어 있지 않다.
 
-## Escalation
+#### Escalation
 
-### Next Owner
+##### Next Owner
 
 primary를 확인할 수 없거나, `mongo-init`이 반복 실패하거나, replica member 상태가 `mongodb-rep1`/`mongodb-rep2`/`mongodb-arbiter`와 다르거나, secret 노출 위험이 있거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, member 요약, 렌더링된 compose evidence, service 상태와 시도한 단계를 포함한다.
 
-### Recovery or Forward Repair
+##### Recovery or Forward Repair
 
 데이터 복구는 위 planned isolated rehearsal로만 검증한다. production cutover, election/member 변경, keyfile/credential rotation은 별도 승인 사항이며 이 변경에서는 실행하지 않았다.
 
 1. 이 triage는 data daemon의 무조건 재기동이나 init 재실행을 승인하지 않는다. 위 source 한계와 named-target lifecycle 승인을 먼저 확인한다.
 2. 실패한 격리 target과 전용 volume을 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. source replica set과 tracked volumes는 변경하지 않는다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

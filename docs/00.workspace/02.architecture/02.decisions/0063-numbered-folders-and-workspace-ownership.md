@@ -1,9 +1,12 @@
 ---
 title: "Numbered Classification Folders and Workspace Ownership"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
 updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "ADR-0063"
@@ -14,9 +17,29 @@ created: "2026-11-19"
 
 # ADR-0063: Numbered Classification Folders and Workspace Ownership
 
-## Context
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Drivers
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-decision payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context
+
+##### Problem and Drivers
 
 Classification folders under `docs/` had bare names (`descriptions/`,
 `guides/`, `tasks/`, `01-common/`) beside numbered Stage folders, and
@@ -28,7 +51,8 @@ Stage 02. People and agents shared one vocabulary that lived under `.agents/`.
 - Shared terms have one owner that people and agents both read.
 - Issued identities, versions and history never change because of a move.
 
-#### Sources
+###### Sources
+<!-- core-payload-level:4 -->
 
 No runtime state is claimed.
 
@@ -36,15 +60,15 @@ No runtime state is claimed.
 - [ADR-0057 Operations documents in role and domain folders](0057-operations-role-and-domain-folders.md)
 - SPEC-0212 TSK-0088 (move plan and rehearsal) and TSK-0096 (cutover)
 
-### Decision Scope
+##### Decision Scope
 
 Classification folders under `docs/`, the placement of workspace-scope
 architecture documents and the shared vocabulary. Native provider paths,
 `infra/`, document identities and allocators are outside it.
 
-## Options
+#### Options
 
-### Considered Options
+##### Considered Options
 
 - Keep bare classification names: rejected; folder order and level stay implicit.
 - Number every classification folder `NN.name`, keep identities: selected.
@@ -54,7 +78,7 @@ architecture documents and the shared vocabulary. Native provider paths,
   Registry binds one template source to one role and one profile, so a second
   profile needs a copied form.
 
-### Trade-offs
+##### Trade-offs
 
 | Option | Benefit | Cost and Risk | Reason |
 | --- | --- | --- | --- |
@@ -68,9 +92,9 @@ architecture documents and the shared vocabulary. Native provider paths,
 - Negative: a workspace AD or ADR carries `layer: architecture`, the layer of
   its document role, while its folder states its workspace scope.
 
-## Decision
+#### Decision
 
-### Chosen Option
+##### Chosen Option
 
 1. Classification folders are numbered `NN.name`: Stage 02 `01.descriptions`
    and `02.decisions`; a Spec Package's `01.tasks` and `02.contracts`; Stage
@@ -94,13 +118,14 @@ architecture documents and the shared vocabulary. Native provider paths,
    through `scripts/lib/document_governance/numbered_folders.py`; a current
    document uses only the numbered route.
 
-### Authority and Effect
+##### Authority and Effect
 
 Decided by the owner, @buenhyden, who accepted it in this chat on 2026-11-19
 after PR #1124 merged; status `accepted`, effective from 2026-11-19. Executed
 by SPEC-0212 TSK-0096 and TSK-0097.
 
-#### Supersession
+###### Supersession
+<!-- core-payload-level:4 -->
 
 The direct P03-OWNERSHIP 1.1.0 requirement of 2026-11-20 explicitly
 replaces only Chosen Option 4: common Repository Vocabulary, including
@@ -117,15 +142,15 @@ this amendment records the decision, not implementation or acceptance.
 ADR-0057's role-and-domain layout carries forward; only its folder names
 `<role>/<NN-domain>/` become `<NN.role>/<NN.domain>/`.
 
-## Consequences
+#### Consequences
 
-### Impacts
+##### Impacts
 
 - Positive: every folder level sorts and reads the same way.
 - Positive: workspace structure, shared vocabulary and approval boundaries
   each have one canonical owner; the current vocabulary placement follows the scoped amendment above.
 
-### Follow-up
+##### Follow-up
 
 TSK-0097 moved the workspace sections of RUN-0021 to
 `docs/00.workspace/06.maintenance/harness-maintenance.md` and added
@@ -133,8 +158,29 @@ TSK-0097 moved the workspace sections of RUN-0021 to
 authority of those scripts until the maintenance guide is active. The harness
 subject 0004 stays in Stage 05.
 
-#### Compliance
+###### Compliance
+<!-- core-payload-level:4 -->
 
 `check-document-links.py --mode all`, `check-document-corpus-lifecycle.py`,
 `check-document-metadata.py`, `check-operations-catalog.py` and
 `tests/lib/document_governance/test_numbered_folders.py`.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

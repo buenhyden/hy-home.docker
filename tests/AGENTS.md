@@ -1,19 +1,43 @@
 ---
 title: "Tests Agent Guide"
-version: "0.4.2"
+version: "1.0.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: Tests Agent Guide
+  layer: agent
+updated: "2026-11-20"
 ---
 
 # Tests Agent Guide
 
-## Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Allowed Scope
+## 문서 개요
 
-#### Allowed Surface
+### 목적과 독자
+
+Readers use the agent-guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Scope
+
+##### Allowed Scope
+
+###### Allowed Surface
+<!-- core-payload-level:4 -->
 
 `tests/` holds repository-wide tests. `tests/lib/<domain>/` mirrors the
 library units in `scripts/lib/<domain>/`, and `tests/validation/` covers
@@ -23,11 +47,12 @@ changes a test. The human guide is [README.md](README.md).
 `tests/lib/`, `tests/validation/`, `tests/fixtures/` and
 `tests/requirements-integration.txt`.
 
-#### Non-goals
+###### Non-goals
+<!-- core-payload-level:4 -->
 
 Package-local tests under `projects/` belong to their package.
 
-### Instruction Precedence
+##### Instruction Precedence
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
@@ -36,9 +61,9 @@ and this guide is corrected
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
 
-## Workflow
+#### Workflow
 
-### Intake
+##### Intake
 
 - [Bootstrap](../.agents/governance/bootstrap.md),
   [quality standards](../docs/00.workspace/04.quality/quality-standards.md),
@@ -50,16 +75,18 @@ canonical governance or a Stage contract.
 - Provider loading: [Claude adapter](../.claude/provider.md),
   [Codex adapter](../.codex/provider.md).
 
-### Execution
+##### Execution
 
-#### Inspect and Change
+###### Inspect and Change
+<!-- core-payload-level:4 -->
 
 - Check `scripts/` and package scripts for an existing check before adding a
   test.
 - Build fixtures with `_fixtures.py`-style builders in a temporary directory;
   add `tests/fixtures/` only for input a builder cannot reproduce.
 
-#### Local Obligations
+###### Local Obligations
+<!-- core-payload-level:4 -->
 
 - Place a library test in the mirroring `tests/lib/<domain>/` module and an
   entrypoint test in `tests/validation/`.
@@ -71,47 +98,71 @@ canonical governance or a Stage contract.
 - Opt-in integration tests skip unless `HYHOME_INTEGRATION=1`; report a skip
   as `NOT_RUN`, never as a live pass.
 
-## Boundaries
+#### Boundaries
 
-### Authority
+##### Authority
 
-#### Stop and Escalate
+###### Stop and Escalate
+<!-- core-payload-level:4 -->
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
 [approval boundaries](../docs/00.workspace/04.quality/approval-boundaries.md)
 has not granted, or when a required check fails.
 
-#### Protected Actions
+###### Protected Actions
+<!-- core-payload-level:4 -->
 
 - Delete a test only when the behavior it checks is removed, and replace a
   removed fail-closed check.
 
-### Secrets and External Effects
+##### Secrets and External Effects
 
 This guide adds no secret or external-effect rule;
 [approval boundaries](../docs/00.workspace/04.quality/approval-boundaries.md) owns both.
 
-## Verification
+#### Verification
 
-### Checks
+##### Checks
 
 - `python3 -m unittest tests.lib.test_surface_ownership`
 - `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
 - `python3 scripts/validation/check-script-manifest.py`
 
-### Reporting
+##### Reporting
 
-#### Evidence and Limits
+###### Evidence and Limits
+<!-- core-payload-level:4 -->
 
 Record each check's command, revision and exit in the current Task. These
 checks are static or local; they do not prove runtime state, native provider
 delivery, remote enforcement or owner acceptance.
 
-#### Handoff
+###### Handoff
+<!-- core-payload-level:4 -->
 
 Record progress, decisions and evidence in the current Task, and leave the
 next owner named there. Human-facing and related documents:
 
 - [Tests README](README.md)
 - [Scripts agent guide](../scripts/AGENTS.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

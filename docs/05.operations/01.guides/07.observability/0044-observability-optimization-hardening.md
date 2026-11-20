@@ -1,10 +1,13 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -18,13 +21,33 @@ next_review_at: "2027-05-13"
 
 # 06-Observability Optimization Hardening Usage Guide
 
-## Purpose
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Audience
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the guide payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose
+
+##### Audience
 
 `06-observability` 계층의 최적화/하드닝 변경을 적용하는 SRE, 플랫폼 운영자, DevOps 엔지니어, 관측성 유지보수자.
 
-### Outcome
+##### Outcome
 
 이 문서는 `06-observability` 계층의 최적화/하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 체인+SSO 정렬, health 기반 의존성, 커스텀 이미지 하드닝, CI 검증 절차를 제공한다.
 
@@ -34,7 +57,8 @@ next_review_at: "2027-05-13"
 - 초기 기동 안정성과 회귀 차단 능력을 강화한다.
 - 카탈로그 기반 확장(샘플링/retention/pipeline module) 준비 상태를 확보한다.
 
-#### Boundaries
+###### Boundaries
+<!-- core-payload-level:4 -->
 
 - Declared parent: [Observability Optimization Hardening Policy](../../02.policies/07.observability/0044-observability-optimization-hardening.md) (`POL-0044`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/01.descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -44,22 +68,22 @@ next_review_at: "2027-05-13"
 - [Official cAdvisor deployment and host access](https://github.com/google/cadvisor)
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-## Prerequisites
+#### Prerequisites
 
-### Environment
+##### Environment
 
 사용 전에 다음을 확인한다.
 
 - Docker / Docker Compose 실행 환경
 - Traefik `gateway-standard-chain`과 프록시 `sso-*` middleware, Grafana·Gatus의 Keycloak 네이티브 client 준비
 
-### Authority
+##### Authority
 
 - `infra/06-observability` 및 `scripts/` 수정 권한
 
-## Procedure
+#### Procedure
 
-### Steps
+##### Steps
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
@@ -70,7 +94,8 @@ next_review_at: "2027-05-13"
 | 5 | 자동 검증 및 CI 반영: `bash scripts/hardening/check-all-hardening.sh 06-observability` 실행, `.github/workflow-contract.yml`의 `leaf.infrastructure-hardening` gate 등록 확인 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0044`로 넘긴다 |
 | 6 | 문서 추적성 동기화: PRD~Procedure optimization-hardening 문서 링크 점검 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0044`로 넘긴다 |
 
-#### Actions
+###### Actions
+<!-- core-payload-level:4 -->
 
 일반 순서는 다음과 같다.
 
@@ -92,7 +117,8 @@ next_review_at: "2027-05-13"
 6. 문서 추적성 동기화
    - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
 
-#### Source-backed operating contract
+###### Source-backed operating contract
+<!-- core-payload-level:4 -->
 
 - **목적·분류·구현 소유권**: `cadvisor`는 `HOME` container metric exporter이며 `obs`/`obs-host`/`dev`로 선택한다. node-exporter의 소유 문서는 [GDE-0045](0045-prometheus.md#host-and-gpu-exporter-boundary)이며 [Compose](../../../../infra/06-observability/docker-compose.yml)가 구현을 소유한다.
 - **흐름·보안**: Prometheus는 선언된 network를 통해 두 exporter를 scrape한다. node-exporter는 host PID, host network namespace와 읽기 전용 root/proc/sys mount를 사용하며 `obs_net` gateway 주소에만 listen한다. cAdvisor는 privileged로 실행되며 `/dev/kmsg`를 포함한 host filesystem/device를 mount한다. 이 권한이 보안 경계이며 이를 non-root 격리로 일반화해서는 안 된다. cAdvisor route는 계속 보호된다. node-exporter는 Traefik route나 LAN 공개 포트가 없지만, internal이 아닌 bridge network의 container는 `obs_net` gateway 주소로 접근할 수 있다.
@@ -101,15 +127,18 @@ next_review_at: "2027-05-13"
 - **백업·복구**: 추적 중인 Compose로 다시 구성하며 service state 복구는 필요하지 않다. dashboard/rule은 해당 exporter 밖에서 보존하고 변경 전 target/series 기준값을 기록한다.
 - **공식 문서·license**: [node_exporter](https://github.com/prometheus/node_exporter)와 [cAdvisor](https://github.com/google/cadvisor)의 upstream release/security 지침을 따른다. 두 도구 모두 Apache-2.0 license가 적용된다.
 
-#### Exceptions
+###### Exceptions
+<!-- core-payload-level:4 -->
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
-#### cAdvisor and static-check limits
+###### cAdvisor and static-check limits
+<!-- core-payload-level:4 -->
 
 이 항목은 [POL-0044](../../02.policies/07.observability/0044-observability-optimization-hardening.md#cadvisor-and-static-check-limits)가 소유한다. 요약: cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 쓰는 privileged 관측기이며, health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 관측 hardening 검사는 일부 문자열·파일만 보므로 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
 
-#### 운영 시 주의점
+###### 운영 시 주의점
+<!-- core-payload-level:4 -->
 
 - Native 및 proxy-protected routers에 동일한 auth middleware를 일괄 적용해
   native OIDC를 중복하거나 proxy protection을 누락하는 실수
@@ -117,19 +146,20 @@ next_review_at: "2027-05-13"
 - custom 이미지에 root 실행 경로를 재도입하는 실수
 - 하드닝 스크립트/README 인덱스를 함께 갱신하지 않는 실수
 
-### Expected Results
+##### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
 - Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
-## Troubleshooting
+#### Troubleshooting
 
-### Symptoms
+##### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0044](../../03.runbooks/07.observability/0044-observability-optimization-hardening.md)으로 넘긴다.
 
-#### Runbook Handoff
+###### Runbook Handoff
+<!-- core-payload-level:4 -->
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../03.runbooks/07.observability/0044-observability-optimization-hardening.md)을 따른다.
 
@@ -137,6 +167,26 @@ next_review_at: "2027-05-13"
 - [Operations policy](../../02.policies/07.observability/0044-observability-optimization-hardening.md)
 - [Recovery runbook](../../03.runbooks/07.observability/0044-observability-optimization-hardening.md)
 
-### Next Action
+##### Next Action
 
 증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0044](../../03.runbooks/07.observability/0044-observability-optimization-hardening.md)의 진단, 재시작, rollback, escalation 기준을 따른다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

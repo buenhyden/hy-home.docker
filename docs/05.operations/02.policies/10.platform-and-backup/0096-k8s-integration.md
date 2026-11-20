@@ -1,10 +1,13 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.7.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0096"
 parent_ids:
@@ -15,15 +18,36 @@ next_review_at: "2027-05-13"
 
 # hy-home.k8s Integration Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 hy-home.k8s 클러스터는 host 주소상의 고정된 엔드포인트 집합과 두 개의
 OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식, 두 저장소 사이를
 오가는 자격 증명의 처리 방식을 고정한다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [OpenBao 정책](../04.security-and-secrets/0085-openbao.md)
 
@@ -31,18 +55,19 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 - [OpenBao operator policy](../../../../infra/03-security/openbao/config/policies/operator.hcl)
 - [Prometheus policy](../07.observability/0045-prometheus.md)
 
-### Applies To
+##### Applies To
 
 클러스터가 호출할 수 있는 엔드포인트, OpenBao Kubernetes 인증과 bootstrap
 토큰, Prometheus HTTP API 자격 증명, 저장소 경계를 넘는 값 전달.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -123,21 +148,23 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 절차는 `BLOCKED`로 중단한다. 명령 실패만으로 인증 거절·폐기 성공을 판정하지
 않으며 transport/서버 상태/구문 오류는 `INDETERMINATE`로 처리한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 없음. 새 엔드포인트, 다른 인증 방식, 더 긴 토큰 수명은 이 정책과 가이드의
 contract 표에 대한 검토된 변경이 필요하다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 책임 소유자는 @buenhyden이다. consumer를 추가하는 모든 hy-home.k8s 변경 시, OpenBao나 Traefik 업그레이드
 시, 자격 증명이 회전할 때마다 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 - Hardening이 Prometheus API 라우트, 그 middleware, `usersFile`을 고정하고
   두 k8s OpenBao 정책을 읽기 전용이며 wildcard 없는 상태로 유지한다.
@@ -148,7 +175,7 @@ contract 표에 대한 검토된 변경이 필요하다.
 - 클러스터 재구축 뒤 CA 갱신 이후의 새 ESO 인증과 소비자별 기능 결과를 확인한다.
   Tempo 3200 조회/API와 Alloy 4317/4318 trace 수집을 구분한다.
 
-### Limits
+##### Limits
 
 정책이 보여 주는 기계적 강제의 한계는 다음과 같다.
 
@@ -162,15 +189,35 @@ contract 표에 대한 검토된 변경이 필요하다.
 - Loki/Tempo/Alloy의 gateway 인증 없는 LAN 노출은 owner가 수용한 위험이며 LAB 변경이나 정책 변경 때 다시 검토한다.
 - 클러스터 재구축 뒤 새 ESO 인증과 소비자별 기능 결과는 별도로 확인해야 하며 root/bootstrap 로컬 파일 삭제는 서버 token 폐기가 아니다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [가이드](../../01.guides/10.platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
 - [런북](../../03.runbooks/10.platform-and-backup/0096-k8s-integration.md) (`RUN-0096`)
 
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

@@ -1,10 +1,13 @@
 ---
 title: "Communication Tier (10-communication) Requirements"
-version: "1.4.1"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-19"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "requirements"
 artifact_id: "REQ-0011"
 created: "2026-03-26"
@@ -12,9 +15,29 @@ created: "2026-03-26"
 
 # Communication Tier (10-communication) Requirements
 
-## Overview
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Problem and Outcome
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the requirement payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Overview
+
+##### Problem and Outcome
 
 Mail sending is fragmented, and a development environment can send real mail
 by mistake. This package states the mail needs of the platform: a development
@@ -25,7 +48,7 @@ only its admin interface on the LAB host address (loopback by default). Producti
 protocol exposure and DNS/TLS deliverability are promotion requirements, not
 current runtime claims.
 
-### Stakeholders
+##### Stakeholders
 
 - **Developer**: checks mail sent during development in the sandbox UI instead
   of a real inbox.
@@ -36,14 +59,14 @@ current runtime claims.
 
 The owner, @buenhyden, writes, reviews and accepts this package.
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - SMTP capture, the experimental mail server, mail protocol
   security, admin access control, and capture history.
 
-### Constraints and Exclusions
+##### Constraints and Exclusions
 
 - **Out of scope**: groupware and messenger clients (a webmail UI may be a
   separate tier); marketing automation.
@@ -63,7 +86,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 - The sandbox accepts any SMTP credential, so it must stay unreachable from
   outside the host and its peers.
 
-## Requirements
+#### Requirements
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
@@ -73,7 +96,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 | REQ-0011-FR-0004 | Mail retrieval and every browser access that leaves the host must use an encrypted channel. The experimental admin interface stays on the LAB host address (loopback by default), and public submission over TLS is a promotion requirement. | A security officer requires encrypted mail channels. | IMAP is offered only with implicit TLS and the sandbox UI route is served over gateway TLS; external delivery success, TLS version and DNS deliverability are verified as separate evidence at promotion. | must |
 | REQ-0011-FR-0005 | The sandbox UI requires the shared SSO (Keycloak). The experimental mail server's admin interface is reachable only from the local host and uses its own administrator credential until a promotion adds SSO. | A security officer requires authenticated administration, and the sandbox accepts any SMTP credential, so it must stay unreachable from outside the host and its peers. | An unauthenticated request to the sandbox UI route is redirected to SSO, and the mail server admin port is bound only to the LAB host address. | must |
 
-### Functional Requirements
+##### Functional Requirements
 
 - **REQ-0011-FR-0001**: Provide a development SMTP capture service (Mailpit)
   that keeps every received message inside the platform.
@@ -88,19 +111,20 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   experimental mail server's admin interface is reachable only from the local
   host and uses its own administrator credential until a promotion adds SSO.
 
-### Quality Requirements
+##### Quality Requirements
 
 This package declares no quality requirement and records no reason why none applies.
 
-## Traceability
+#### Traceability
 
-### Sources
+##### Sources
 
 This package records the owner's requirements for the communication tier; no upstream document governs it.
 
-### Verification Links
+##### Verification Links
 
-#### Acceptance Conditions
+###### Acceptance Conditions
+<!-- core-payload-level:4 -->
 
 - **REQ-0011-FR-0001**: No message leaves the development environment; the
   sandbox publishes its ports only on the local host.
@@ -116,7 +140,8 @@ This package records the owner's requirements for the communication tier; no ups
   redirected to SSO, and the mail server admin port is bound only to the LAB
   host address.
 
-#### Verification Method
+###### Verification Method
+<!-- core-payload-level:4 -->
 
 Review the rendered configurations for service selection, isolation, listener
 settings and published ports. Record containment and relay refusal with
@@ -129,7 +154,8 @@ separate runtime evidence. SPEC-0262 lists this requirement as a parent.
 Record each result in its applicable Task. @buenhyden judges the conditions
 and accepts the requirement once they are met.
 
-#### Downstream Links
+###### Downstream Links
+<!-- core-payload-level:4 -->
 
 - **Architecture Description**: [0010-communication-architecture.md](../02.architecture/01.descriptions/0010-communication-architecture.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
@@ -138,3 +164,23 @@ and accepts the requirement once they are met.
 - **Retired domain Spec SPEC-0011** (communication): replaced by the
   communication guides, policies and runbooks in the operations catalog under
   `docs/05.operations/`.
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

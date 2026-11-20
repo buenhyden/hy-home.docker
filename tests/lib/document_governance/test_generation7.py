@@ -57,6 +57,89 @@ class Generation7EvidenceTests(unittest.TestCase):
                 ):
                     self.contract(current_task(result))
 
+    def test_common_envelope_keeps_numeric_evidence_and_actual_acceptance_separate(
+        self,
+    ):
+        from scripts.lib.document_governance.common_document import wrap_document
+
+        spec = dataclasses.replace(
+            SPEC,
+            body=wrap_document(
+                "# Spec\n\n## Acceptance Criteria\n\n"
+                "- **AC-0001**: First.\n- **AC-0002**: Second.\n",
+                kind="spec",
+            ),
+        )
+        plan = dataclasses.replace(
+            PLAN, body=wrap_document("# Plan\n\n" + PLAN.body, kind="plan")
+        )
+        for result in ("ERROR", "PASS"):
+            source = current_task(result)
+            wrapped = dataclasses.replace(
+                source,
+                body=wrap_document("# Task\n\n" + source.body, kind="task"),
+            )
+            with self.subTest(result=result):
+                if result == "ERROR":
+                    with self.assertRaisesRegex(
+                        module.SpecPackageError, "unresolved required"
+                    ):
+                        module._v6_evidence_contract(
+                            spec, plan, (wrapped,), load_registry()
+                        )
+                else:
+                    evidence = module._v6_evidence_contract(
+                        spec, plan, (wrapped,), load_registry()
+                    )
+                    self.assertFalse(evidence.unresolved_failures)
+
+    def test_ac_displays_in_plan_evidence_and_decisions_keep_one_semantic_identity(
+        self,
+    ):
+        registry = load_registry()
+        spec = dataclasses.replace(
+            SPEC,
+            body="## Acceptance Criteria\n- **AC-0001**: First.\n- **AC-0002**: Second.\n",
+        )
+        plan = dataclasses.replace(
+            PLAN,
+            body=PLAN.body.replace("| W1 | 1 |", "| W1 | AC-0001 |").replace(
+                "| W2 | 2 |", "| W2 | AC-0002 |"
+            ),
+        )
+        source = current_task("PASS")
+        canonical = dataclasses.replace(
+            source,
+            body=source.body.replace("| 1 | W1 |", "| AC-0001 | W1 |")
+            .replace("| 2 | W2 |", "| AC-0002 | W2 |")
+            .replace("| 1 | accepted |", "| AC-0001 | accepted |")
+            .replace("| 2 | accepted |", "| AC-0002 | accepted |"),
+        )
+        evidence = module._v6_evidence_contract(spec, plan, (canonical,), registry)
+        self.assertEqual({"1", "2"}, evidence.criteria)
+        self.assertEqual({"1": "accepted", "2": "accepted"}, evidence.acceptance)
+        before = module.SpecPackage(
+            pathlib.Path(SPEC.path.parent), "0001", "example", SPEC, PLAN, (source,), ()
+        )
+        after = dataclasses.replace(before, spec=spec, plan=plan, tasks=(canonical,))
+        self.assertEqual(
+            module._acceptance_basis(before, source.path, "1", registry),
+            module._acceptance_basis(after, canonical.path, "1", registry),
+        )
+        for invalid in ("AC-0000", "AC-0003", "1, AC-0001"):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaises(module.SpecPackageError),
+            ):
+                module._v6_evidence_contract(
+                    spec,
+                    dataclasses.replace(
+                        plan, body=plan.body.replace("AC-0001", invalid)
+                    ),
+                    (canonical,),
+                    registry,
+                )
+
     def test_optional_observation_does_not_erase_a_valid_acceptance(self):
         self.contract(current_task("ERROR", required="optional"))
 

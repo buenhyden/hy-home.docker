@@ -1,10 +1,13 @@
 ---
 title: "Locust Operations Policy"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0062"
 parent_ids:
@@ -15,33 +18,55 @@ next_review_at: "2027-05-13"
 
 # Locust Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는
 절대 포함되지 않는다. 이 정책은 test target을 보호하고 검토되지
 않은 load, credential capture, 오해를 부르는 performance evidence를
 막는다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 `labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker` service,
 bind-backed scenario/result 디렉터리, target authorization, result handling,
 scaling, image upgrade.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -102,32 +127,35 @@ scaling, image upgrade.
   해결된 후에만 service를 제거한다. host 디렉터리 삭제는 별도의
   destructive action이다.
 
-#### 현재 구현 제한
+###### 현재 구현 제한
+<!-- core-payload-level:4 -->
 
 현재 master와 worker는 독립 LAB entrypoint에 있으며 정상 root service가 아니다. 승인 없는
 부하 재생 금지 기준은 유지한다. 운영자는 종료 상태와 result path를 확인해야 한다. 책임자는 `@buenhyden`이다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 모든 편차는 target, blast radius, expiry, stop condition, recovery
 owner를 명시해야 한다. exception은 target authorization이나 secret
 handling을 면제할 수 없다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 프로필·Dockerfile 의존성·시나리오 저장소·대상 네트워크·확장 동작이 바뀔 때 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 Static Compose와 hardening check는 configuration만 증명한다. Runtime
 evidence는 worker registration, target SLI, sanitized result, 최종
 stopped state를 포함해야 한다.
 
-### Limits
+##### Limits
 
 정책은 요구사항별 이름 붙은 검사를 지정하지 않으며(정적 Compose와 hardening check는 configuration만 증명), 아래 규칙은 승인/검토에 의존하거나 강제 수단이 없다.
 
@@ -142,16 +170,36 @@ stopped state를 포함해야 한다.
 - runtime evidence(worker registration, target SLI, sanitized result, 최종 stopped state)는 실행 시 기록에 의존한다.
 - master 종료 코드 0은 상한/취소로 멈춘 run에도 나오므로 완료 증거가 아니다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [Guide](../../01.guides/15.labs/0062-locust.md) (`GDE-0062`)
 - [Runbook](../../03.runbooks/15.labs/0062-locust.md) (`RUN-0062`)
 - [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
 - [Locust documentation](https://docs.locust.io/en/stable/)
 - [Operations index](../../README.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

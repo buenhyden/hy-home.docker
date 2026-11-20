@@ -1,10 +1,13 @@
 ---
 title: "Dozzle Operations Policy"
-version: "1.2.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "operations"
 artifact_id: "POL-0072"
 parent_ids:
@@ -15,30 +18,52 @@ next_review_at: "2027-05-13"
 
 # Dozzle Operations Policy
 
-## Purpose and Scope
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### Objective
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the policy payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Purpose and Scope
+
+##### Objective
 
 Dozzle은 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한은 직접적인 Docker API 접근을 보완하는 필수 통제다.
 
-#### Authority
+###### Authority
+<!-- core-payload-level:4 -->
 
 - [Laboratory 아키텍처](../../../02.architecture/01.descriptions/0011-laboratory-architecture.md)
 
 - [Dozzle Compose 소스](../../../../infra/06-observability/dozzle/docker-compose.yml)
 
-### Applies To
+##### Applies To
 
 활성화, OIDC/CIDR, Docker 소켓 권한, 로그 프라이버시, 설정 데이터, 업그레이드,
 백업, 제거.
 
-#### Exclusions
+###### Exclusions
+<!-- core-payload-level:4 -->
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
-## Rules
+#### Rules
 
-### Requirements
+##### Requirements
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
@@ -69,9 +94,10 @@ Dozzle은 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한�
 - 업그레이드 전에 upstream 권고와 OIDC 동작을 검토한다. 폐기 시 설정을
   삭제하기 전에 소켓을 제거하고 OIDC 클라이언트/시크릿을 폐기한다.
 
-### Exceptions
+##### Exceptions
 
-#### Exception Conditions
+###### Exception Conditions
+<!-- core-payload-level:4 -->
 
 책임자는 `@buenhyden`이다. Dozzle의 네이티브 OIDC는 승인된 인증 방식이며
 ForwardAuth를 중복 추가하는 일반 절차를 적용하지 않는다. 이 예외가 CIDR·issuer
@@ -81,18 +107,19 @@ ForwardAuth를 중복 추가하는 일반 절차를 적용하지 않는다. 이 
 인증/CIDR 통제 없이 Dozzle을 노출하거나 읽기 전용 소켓 마운트를 Docker API
 권한 부여로 취급하는 예외는 없다.
 
-#### Approval and Review
+###### Approval and Review
+<!-- core-payload-level:4 -->
 
 이미지/보안 권고 OIDC/CIDR, 소켓, 설정 변경 시 검토한다.
 
-## Enforcement
+#### Enforcement
 
-### Mechanisms
+##### Mechanisms
 
 헬스, OIDC claim/역할, CIDR 거부, 예상 컨테이너 가시성, 승인되지 않은
 shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다.
 
-### Limits
+##### Limits
 
 정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
@@ -103,15 +130,35 @@ shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다
 - 수명주기: `POL-0072-R10`는 이름 붙은 검사가 지정되지 않았다.
 - 정책은 이름 붙은 검사 명령이나 스크립트를 지정하지 않으며 구체 check와 런타임 증거는 이 문서에 기록되어 있지 않다.
 
-## Ownership
+#### Ownership
 
-### Owner
+##### Owner
 
 이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
-### Review Triggers
+##### Review Triggers
 
 - [가이드](../../01.guides/07.observability/0072-dozzle.md) (`GDE-0072`)
 - [런북](../../03.runbooks/07.observability/0072-dozzle.md) (`RUN-0072`)
 
 - [Dozzle 보안 고려사항](https://dozzle.dev/guide/authentication#security-considerations)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.

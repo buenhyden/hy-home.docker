@@ -1,10 +1,13 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.4.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+document_scope:
+  subject: hy-home.docker
+  layer: workspace
+updated: "2026-11-20"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -14,9 +17,29 @@ created: "2026-03-28"
 
 # 05-Messaging Optimization Hardening Architecture Description
 
-## Context and Boundaries
+<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->
 
-### System Boundary
+## 문서 개요
+
+### 목적과 독자
+
+Readers use the architecture-description payload below for this document's information and judgments.
+
+### 책임과 적용 범위
+
+The frontmatter and role payload own the maintained subject, owner and applicability.
+
+## 내용 계약
+
+### 입력과 전제
+
+Actual inputs and preconditions are those declared by the role payload below.
+
+### 본문과 규칙
+
+#### Context and Boundaries
+
+##### System Boundary
 
 The HOME messaging data plane uses the internal `kafka_net`. Kafbat uses
 Traefik TLS and the gateway standard chain with native Keycloak OIDC.
@@ -39,7 +62,8 @@ interfaces on `lab_kafka_net`.
   - Immediate multi-region/multi-cluster migration
   - App-level reprocessing code implementation
 
-#### Purpose and Readers
+###### Purpose and Readers
+<!-- core-payload-level:4 -->
 
 This document defines the optimization/hardening reference architecture of
 the `05-messaging` layer. It describes the structure that aligns the
@@ -47,13 +71,14 @@ currently implemented Kafka management traffic path with the gateway
 standard chain and the authentication boundary, and blocks operational
 regression through CI baseline verification.
 
-#### Context
+###### Context
+<!-- core-payload-level:4 -->
 
 HOME uses the `01-gateway` middleware chain, `02-auth` Keycloak OIDC and
 `06-observability` metrics and alerts. Any downstream persistent store or
 analytics pipeline belongs to its consumer.
 
-### Constraints
+##### Constraints
 
 Security requires TLS and native OIDC on the HOME management route and
 pinned images. This architecture does not introduce a multi-region HOME
@@ -61,9 +86,9 @@ topology. The linked policy and runbook own operational checks and recovery.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Structure
+#### Structure
 
-### Building Blocks
+##### Building Blocks
 
 - HOME `messaging` selects `kafka-1`, `kafbat-ui`, `kafka-exporter` and
   `kafka-init`. Kafbat is the gateway management route.
@@ -71,7 +96,7 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
   init, Schema Registry and Connect. Its CDC endpoints stay on the LAB
   network and carry no configured source connector.
 
-### Interfaces
+##### Interfaces
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
@@ -88,11 +113,12 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
   publishes its PLAINTEXT EXTERNAL listener and JMX exporter on loopback.
   LAB Schema Registry and Connect have no HOME gateway route.
 
-## Runtime Behavior
+#### Runtime Behavior
 
-### Normal Flow
+##### Normal Flow
 
-#### Runtime View
+###### Runtime View
+<!-- core-payload-level:4 -->
 
 - **Key Entities / Flows**:
   - Kafka topics (event/log streams)
@@ -103,7 +129,8 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
   - Broker topic state stays in its project. Consumers own downstream
     retention and processing.
 
-#### Deployment View
+###### Deployment View
+<!-- core-payload-level:4 -->
 
 - **Runtime / Platform**:
   - Docker Compose + `infra/common-optimizations.yml`
@@ -114,16 +141,17 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Verification**: the registered `infrastructure-hardening` gate in
   `.github/workflow-contract.yml` checks the tracked messaging configuration.
 
-### Failure and Recovery
+##### Failure and Recovery
 
 Healthchecks order dependent starts. The single HOME broker provides no broker
 redundancy. The linked runbook owns recovery and its separate evidence.
 
-## Quality Scenarios
+#### Quality Scenarios
 
-### Scenarios
+##### Scenarios
 
-#### Quality Attributes
+###### Quality Attributes
+<!-- core-payload-level:4 -->
 
 - **Performance**: burst traffic control and transient-failure absorption
   through the gateway standard chain
@@ -136,7 +164,7 @@ redundancy. The linked runbook owns recovery and its separate evidence.
 - **Operability**: a single operational contract kept through standard
   scripts + runbook + policy documents
 
-### Trade-offs
+##### Trade-offs
 
 - HOME runs a single broker and accepts that it provides no broker redundancy;
   the linked runbook owns recovery and its separate evidence (Failure and
@@ -151,20 +179,22 @@ redundancy. The linked runbook owns recovery and its separate evidence.
   gateway route, and their CDC endpoints carry no configured source connector
   (Building Blocks, Interfaces).
 
-## Decisions and Adoption
+#### Decisions and Adoption
 
-### Decisions
+##### Decisions
 
 - **ADR**: [ADR-0052 Kafka as the only messaging broker](../02.decisions/0052-kafka-only-messaging-broker.md)
 - **ADR**: [ADR-0062 HOME and LAB placement](../02.decisions/0062-home-lab-membership.md)
 
-### Adoption Boundaries
+##### Adoption Boundaries
 
-#### Requirement Mapping
+###### Requirement Mapping
+<!-- core-payload-level:4 -->
 
 - **Requirement**: [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 
-#### Currentness and Lineage
+###### Currentness and Lineage
+<!-- core-payload-level:4 -->
 
 The description reflects the current tree at its `updated` date and history lives in Git.
 
@@ -172,3 +202,23 @@ The description reflects the current tree at its `updated` date and history live
 - **Guide**: [Messaging optimization hardening guide](../../05.operations/01.guides/06.messaging-and-cdc/0037-messaging-optimization-hardening.md)
 - **Policy**: [Messaging optimization hardening policy](../../05.operations/02.policies/06.messaging-and-cdc/0037-messaging-optimization-hardening.md)
 - **Runbook**: [Messaging optimization hardening runbook](../../05.operations/03.runbooks/06.messaging-and-cdc/0037-messaging-optimization-hardening.md)
+
+## 적용과 확인
+
+### 적용 방법
+
+Use the procedures or reading order stated in the role payload.
+
+### 확인 기준
+
+Apply only this document's stated checks and limits; execution, verification and acceptance remain separate.
+
+## 관계와 출처
+
+### 관련 문서
+
+The role payload retains the current owner and dependency references.
+
+### 외부 근거
+
+External basis and its limits remain those stated in the role payload; a citation grants no authority.
