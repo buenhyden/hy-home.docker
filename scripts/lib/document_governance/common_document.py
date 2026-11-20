@@ -152,9 +152,48 @@ def _markdown_unfenced_lines(text: str) -> list[str]:
     return lines
 
 
-def _headings(text: str) -> list[tuple[int, int, str]]:
-    from scripts.lib.document_governance.metadata.heading import _markdown_form_lines
+@functools.lru_cache(maxsize=8)
+def _markdown_form_lines(
+    text: str,
+) -> tuple[tuple[int, str, tuple[int, str] | None], ...]:
+    """Map source lines to real headings and exclude blocks used as examples."""
 
+    from markdown_it import MarkdownIt
+
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    lines = normalized.split("\n")
+    tokens = MarkdownIt("commonmark").parse(normalized)
+    headings: dict[int, tuple[int, str]] = {}
+    hidden: set[int] = set()
+    for index, token in enumerate(tokens):
+        if token.map is None:
+            continue
+        start, end = token.map
+        if (
+            token.type == "heading_open"
+            and token.level == 0
+            and token.markup.startswith("#")
+        ):
+            title = tokens[index + 1].content
+            if title:
+                headings[start] = (len(token.markup), title)
+        elif token.type in {"fence", "code_block", "blockquote_open"}:
+            hidden.update(range(start, end))
+        elif token.type in {"bullet_list_open", "ordered_list_open"}:
+            hidden.update(
+                line
+                for line in range(start, end)
+                if lines[line].lstrip().startswith("|")
+            )
+        elif token.type == "html_block" and end > start + 1:
+            hidden.update(range(start, end))
+    return tuple(
+        (index, "" if index in hidden else line, headings.get(index))
+        for index, line in enumerate(lines)
+    )
+
+
+def _headings(text: str) -> list[tuple[int, int, str]]:
     return [
         (index, heading[0], heading[1])
         for index, _, heading in _markdown_form_lines(text)

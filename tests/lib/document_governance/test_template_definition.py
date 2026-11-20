@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -28,6 +29,29 @@ LOCAL_GLOSSARY = ROOT / "docs/00.workspace/01.project/glossary.md"
 
 
 class CommonDocumentContractTests(unittest.TestCase):
+    def test_payload_and_language_readers_ignore_metadata_root_environment(
+        self,
+    ) -> None:
+        program = """import sys
+from scripts.lib.document_governance.common_document import compact_payload, payload_text, wrap_document
+from scripts.lib.document_governance.language import language_mismatch
+source = '# Example\\n\\n## Rules\\n\\nThis policy explains the actual rule and its full scope in English.\\n'
+wrapped = wrap_document(source, kind='policy')
+assert compact_payload(wrapped) == source
+assert '## Rules' in payload_text(wrapped)
+assert language_mismatch(wrapped, 'en') is None
+assert 'scripts.lib.document_governance.metadata.profile' not in sys.modules
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", program],
+            cwd=ROOT,
+            env={**os.environ, "HYHOME_CI_GATE_ROOT": "/proc/self/fd/2147483647"},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
     def test_common_contract_load_is_stdlib_only_before_dependency_installation(
         self,
     ) -> None:
@@ -64,6 +88,9 @@ assert not {'yaml', 'markdown_it', 'jsonschema'} & sys.modules.keys()
 
         self.assertIs(
             common_document._markdown_unfenced_lines, heading._markdown_unfenced_lines
+        )
+        self.assertIs(
+            common_document._markdown_form_lines, heading._markdown_form_lines
         )
 
     def test_deep_encoding_keeps_annotations_out_of_actual_heading_titles(self) -> None:

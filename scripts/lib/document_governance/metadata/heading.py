@@ -15,6 +15,9 @@ from collections.abc import Mapping, Sequence
 from markdown_it import MarkdownIt
 
 from scripts.lib.document_governance.common_document import (
+    _markdown_form_lines as _markdown_form_lines,
+)
+from scripts.lib.document_governance.common_document import (
     _markdown_unfenced_lines as _markdown_unfenced_lines,
 )
 from scripts.lib.document_governance.frontmatter import (
@@ -344,45 +347,6 @@ def extract_markdown_headings(text: str) -> tuple[list[str], list[str]]:
             level, title = heading
             (h1 if level == 1 else h2).append(f"{'#' * level} {title}")
     return h1, h2
-
-
-@functools.lru_cache(maxsize=8)
-def _markdown_form_lines(
-    text: str,
-) -> tuple[tuple[int, str, tuple[int, str] | None], ...]:
-    """Map source lines to real headings and exclude blocks used as examples."""
-
-    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
-    lines = normalized.split("\n")
-    tokens = MarkdownIt("commonmark").parse(normalized)
-    headings: dict[int, tuple[int, str]] = {}
-    hidden: set[int] = set()
-    for index, token in enumerate(tokens):
-        if token.map is None:
-            continue
-        start, end = token.map
-        if (
-            token.type == "heading_open"
-            and token.level == 0
-            and token.markup.startswith("#")
-        ):
-            title = tokens[index + 1].content
-            if title:
-                headings[start] = (len(token.markup), title)
-        elif token.type in {"fence", "code_block", "blockquote_open"}:
-            hidden.update(range(start, end))
-        elif token.type in {"bullet_list_open", "ordered_list_open"}:
-            hidden.update(
-                line
-                for line in range(start, end)
-                if lines[line].lstrip().startswith("|")
-            )
-        elif token.type == "html_block" and end > start + 1:
-            hidden.update(range(start, end))
-    return tuple(
-        (index, "" if index in hidden else line, headings.get(index))
-        for index, line in enumerate(lines)
-    )
 
 
 def _body_target_scan_text(text: str) -> str:
