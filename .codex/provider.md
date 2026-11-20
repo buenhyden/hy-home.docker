@@ -1,6 +1,6 @@
 ---
 title: "Codex Provider Adapter"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -94,6 +94,41 @@ hook does not run.
 - Native memory is off through `memories.generate_memories = false` and
   `memories.use_memories = false` in `.codex/config.toml`. Whether Codex
   honours `[memories]` in a trusted project has not been observed.
+
+##### Selected read-only review parent
+
+On installed codex-cli0.169.0, use a separate read-only parent for review;
+a writable implementation parent does not become read-only by selecting the
+generated reviewer role. The controller supplies an owned source snapshot as
+`P06_REVIEW_SOURCE`, an owned result path as `P06_REVIEW_RESULT`, and the
+bounded review request on stdin:
+
+```bash
+codex exec --ephemeral --sandbox read-only -c 'approval_policy="never"' \
+  --disable apps --disable in_app_browser --disable skill_mcp_dependency_install \
+  -c 'mcp_servers.chrome-devtools.enabled=false' \
+  -c 'mcp_servers.hyhome_storybook.enabled=false' \
+  -C "$P06_REVIEW_SOURCE" -o "$P06_REVIEW_RESULT" -
+```
+
+The two MCP names are the currently installed configuration, not a permanent
+allowlist. The invocation overrides were accepted by `mcp list --json` with
+both servers disabled, and `features list` showed the three features disabled.
+Recheck any newly configured server before review; read-only shell mode alone
+does not constrain a remote MCP or app action. These options do not change
+user-global configuration or disable model authentication transport.
+
+Ask the parent to use one fresh reviewer context with the canonical role,
+actual requirements, diff and known limitations. Carry the same-version OS
+source-write refusal and parent-to-reviewer permission inheritance only. The
+secret-pattern hook refusal is a historical witness from its then-current
+matcher; that matcher changed later. Focused current matcher regressions are
+local evidence, not a new native observation of current command forms. These
+results prove neither whole-home nor arbitrary-tool isolation. The writable-parent and
+managed Desktop failures remain distinct. An actual native observation and
+its scope belong to the current Task; flags and role text are not new PASS
+results. Use the [workspace environment guide](../docs/00.workspace/05.environment/onboarding.md#independent-review-environment)
+for the controlled inputs, finite budget and cleanup.
 
 #### Limitations
 

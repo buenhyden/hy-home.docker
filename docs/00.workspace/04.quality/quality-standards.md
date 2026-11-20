@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "2.0.0"
+version: "3.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -293,7 +293,7 @@ None: this document states no exclusion.
 | QUALITY-STANDARDS-R241 | Validators | Forbidden: depending on where a line breaks | none | none |
 | QUALITY-STANDARDS-R242 | An exemption from a line-break-sensitive check | Required: put it on the line as a stated marker | none | none |
 | QUALITY-STANDARDS-R243 | Adopting or changing a formatter | Required: reformat the corpus once, in its own commit, after every check the reformatting would break is fixed | none | none |
-| QUALITY-STANDARDS-R244 | A change touches a protected surface, changes a policy, role, skill, shared contract or Registry rule, changes validator, gate or hook behavior, or performs a security, secret, remote, runtime or data action | Required: classify it high-risk and give it one independent read-only review by a reviewer who did not implement it, plus any boundary specialist review it needs | none | none |
+| QUALITY-STANDARDS-R244 | A change alters approval or write authority, a secret/public or isolation boundary, destructive or migration behavior, concurrency, CI result integrity, or normative policy or shared-contract meaning | Required: classify it high-risk by its actual consequence and authority, and give it one independent read-only review by a reviewer who did not implement it, plus any boundary specialist review it needs; protected-path membership alone does not set the class or waive required evidence | none | none |
 | QUALITY-STANDARDS-R245 | A change that is not high-risk changes executable code or tests | Required: classify it medium-risk and give it one primary read-only review in a fresh context by a reviewer who did not write it, against the governing criteria and recorded check results | none | none |
 | QUALITY-STANDARDS-R246 | Any other change | Allowed: close it as low-risk with its focused checks and an author check that names what was compared and what was not checked; the author check is not called independent review | none | none |
 | QUALITY-STANDARDS-R247 | The class is unclear | Required: take the higher class | none | none |
@@ -751,15 +751,27 @@ and no separate formatting tool is added.
 ###### 11. Review Risk
 <!-- core-payload-level:4 -->
 
-Every change gets the review its risk class requires (R244-R247). A change is
-high-risk when it touches a
-[protected surface](approval-boundaries.md#enforcement), changes a policy,
-role, skill, shared contract or Registry rule, changes validator, gate or hook
-behavior, or performs a security, secret, remote, runtime or data action. A
-change that meets none of those but changes executable code or tests, such as
-a new operations command or its tests, is medium-risk. Every other change is
-low-risk: an ordinary document or README edit, a Task evidence or acceptance
-record, or a Stage 01 to 05 prose correction that changes no rule.
+Every change gets the review its risk class requires (R244-R247). Classify
+actual consequence and authority, not the filename, line count or membership
+of a protected path. A change is high-risk when it alters approval or write
+authority, a secret/public or isolation boundary, destructive or migration
+behavior, concurrency, CI result integrity, or normative policy or
+shared-contract meaning. A validator, gate, hook, role or Registry change with
+one of those effects is high-risk; a correction that changes none is not
+high-risk merely because of its location.
+
+A remaining executable-code or test change, such as a non-destructive
+operations command, narrow parser or document-relation logic, is medium-risk.
+Other nonnormative changes are low-risk: an ordinary document or README
+correction, or a fact-checked Task evidence or acceptance record that changes
+no rule, criterion, scope or approval meaning.
+
+The [protected-surface evidence](approval-boundaries.md#enforcement), explicit
+specialist-review duties and operator authorizations still apply at their
+own boundaries. Classification does not waive them or authorize an operation.
+An already authorized commit, push, PR or merge does not by itself change the
+source risk or require another review of unchanged source. Actual operational
+execution remains separate from source review and owner acceptance.
 
 A high-risk change gets one independent review, with any boundary specialist
 review it needs. A medium-risk change gets one primary review against the

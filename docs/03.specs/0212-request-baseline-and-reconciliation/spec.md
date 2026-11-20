@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.1.0"
+version: "2.2.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -312,6 +312,15 @@ the draft workspace-guide ownership gap and conflicting universal reciprocity
 wording, and preserves unfinished product, observation and acceptance duties.
 Existing accepted work and P00–P04 implementation are reused. This approval
 does not execute P06 or final P17 numbering, deletion or history work.
+
+The direct P06-INDEPENDENT-REVIEW1.1.0 request adds criterion160/W176 in
+TSK-0104. Maintain completed review tiers, carry and valid same-condition
+native evidence. Correct category-only risk mandates and report actual
+execution boundaries. Select enforced supported native review routes; role
+names and writable-parent child settings never establish read-only access.
+Confirmed Q03 authorizes finite existing-account observations, not new
+subscriptions, permission bypass, live secret probes or unlimited retries.
+P07 environment work and later prompts do not execute in this unit.
 
 #### Scope
 
@@ -1385,6 +1394,36 @@ target, backup, recovery boundary, and action-specific authorization.
      Prove relevant admission/refusal boundaries and current corpus consistency,
      review the protected logical change independently and deliver it normally.
      P06 and P17 do not execute in this unit.
+
+160. TSK-0104 applies P06-INDEPENDENT-REVIEW1.1.0 in this Docker workspace.
+     Classify review risk by actual consequence and authority, preserving
+     protected-surface evidence and required specialist review without making
+     every protected-path typo, evidence update or routine delivery high-risk.
+     Keep one fresh nonimplementer review for the logical change and review
+     only later semantic deltas; do not add dual-provider review to every task.
+     Connect canonical roles, prompts, native routes and their real consumers
+     to actual surface, enforcement and source-write observations. Use current
+     result/severity meanings rather than inventing another schema or ledger.
+     A writable-parent child or a role's read-only label cannot count as an
+     enforced reviewer. Reuse valid Codex0.169.0 read-only-parent spawned
+     reviewer evidence at its recorded scope; retain writable-parent failures
+     and do not use historical not-required135 as a current exemption. Verify
+     the missing current supported Claude route with a fresh actual reviewer,
+     normal synthetic read and enforced denial on an owned dummy target;
+     distinguish unavailable tools, tool-policy refusal and OS syscall denial.
+     Restrict unneeded command, external-tool and hook exposure using installed
+     supported controls while preserving existing account/model transport.
+     No production credentials, sockets or operating service is a probe target.
+     Use D07's finite first attempt and one corrected retry, current account
+     and existing limits; unknown billing stays unknown. If environment is
+     genuinely missing, implement the supported route and enforcement here,
+     then bind only the remaining actual observation to P07 immediately after
+     setup; known failed enforcement is not an observation deferral. Preserve
+     old duties135/153 and source/native/owner acceptance as distinct records.
+     Deliver necessary scoped tests, native evidence and independent boundary
+     review normally; no whole-corpus count, per-task SHA approval or new
+     parallel review runner is an automatic completion requirement. Do not
+     execute P07, later native features or final P17 cutover.
 
 ##### Evidence Requirements
 

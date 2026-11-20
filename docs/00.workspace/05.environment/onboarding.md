@@ -1,6 +1,6 @@
 ---
 title: "Environment Onboarding"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -109,6 +109,51 @@ evidence only; the pull request's hosted checks own candidate acceptance.
   observe) is maintained through [harness maintenance](../06.maintenance/harness-maintenance.md).
 - Secret values are never copied into a checkout, a log or evidence; only
   paths and IDs are recorded.
+
+##### Independent review environment
+
+Use the [review risk standard](../04.quality/quality-standards.md#11-review-risk)
+and [review procedure](../../../.agents/governance/workflows.md#review-risk)
+for selection and result reuse. The native syntax is in the authored
+[Codex adapter](../../../.codex/provider.md) and
+[Claude adapter](../../../.claude/provider.md); a generated role name is not
+an effective execution boundary.
+
+Prepare only the selected tracked source, actual diff, governing requirements
+and relevant checks in an owned disposable source snapshot. Keep dummy
+permission targets and writable result scratch separate. Exclude real secret
+files, credentials, personal transcripts, Docker sockets and production
+endpoints. Snapshot/worktree separation alone supplies no filesystem or
+network enforcement. Existing account authentication and model transport are
+separate from permissions for review tools to contact arbitrary services.
+
+Check the installed version, effective parent controls, offered tools, MCP
+connections and hook sources before the missing observation. Use synthetic
+normal-read, refused source-write and outside-read targets; never probe a real
+sensitive file. An absent Write tool, an attempted call refused by native
+permission rules, and an OS read-only error are different witnesses. Record
+which was observed, the unchanged target and the actual fresh-context review.
+A fallback route does not repair an earlier failed Desktop route. A fresh
+direct CLI context can itself perform independent review; the routine route
+need not offer a spawning tool. Keep an instrumented writer-catalog denial
+control separate from a routine catalog that offers neither Write nor Agent,
+and do not transfer an attempted-call witness between those configurations.
+
+Use the current accounts, selected models and existing limits. A bounded
+representative case has at most600s and two actual workers, with providers
+observed sequentially. Apply a supported stricter turn/cost limit when it is
+verified; a time limit is not a billing guarantee, and unavailable billing or
+usage is recorded as null with its reason. Reuse valid same-condition proof;
+a failed attempt is followed only by a correction-specific check within the
+recorded budget. Do not launch model probes on every CI or Git event.
+
+If an effective environment is missing, record the implemented route, the
+missing prerequisite and the exact remaining observation for environment
+setup. A known allowed source write remains a failure, not merely an
+unobserved result. Retain the bounded verdict and permission events in the
+current Task, then remove owned snapshots, dummy targets and temporary
+outputs. Preserve persistent tests and other active work; do not retain raw
+review-session streams or create another approval ledger.
 
 #### Verification
 
