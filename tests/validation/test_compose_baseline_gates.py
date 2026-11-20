@@ -5838,7 +5838,7 @@ class ImageTagPolicyTests(unittest.TestCase):
     # ponytail: a 1-2 digit tag counts as a channel; a 3+ digit release number
     # (trino 483) counts as a version. Tighten if a 3-digit channel appears.
     VERSIONED = re.compile(r"v?\d+\.\d+(\.\d+)*([-._+].*)?|\d{3,}|[0-9a-f]{40}")
-    # Keep the outer repeat backtrackable so a final --token remains the image.
+    # Keep whole-option backtracking so the final option-shaped argument can be the image.
     FROM = re.compile(r"\s*FROM\s+(?:--\S++\s++)*(\S+)(?:\s+AS\s+(\S+))?", re.I)
     FIELDS = ("owner", "reason", "risk", "review_cadence", "exit_condition")
 
@@ -5941,7 +5941,7 @@ class ImageTagPolicyTests(unittest.TestCase):
 
     def test_from_rule_preserves_flags_alias_case_and_unicode_whitespace(self):
         cases = {
-            "FROM --platform=linux/amd64 --security=insecure example/app:latest AS build": (
+            "FROM --platform=linux/amd64 --example=value example/app:latest AS build": (
                 "example/app:latest",
                 "build",
             ),
