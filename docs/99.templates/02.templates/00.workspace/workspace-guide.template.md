@@ -43,7 +43,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 <!-- 작성 규칙: Keep the workspace setup or maintenance responsibility in its registered role payload. -->
 
-<!-- Author prompt: Use only the registered workspace-environment or workspace-maintenance path. Write English prose and replace every placeholder; remove author comments from actual guides. Keep optional observation/review metadata only when it describes a real observation/review. -->
+<!-- Author prompt: Use only the registered workspace-environment or workspace-maintenance path. Write body prose in English and replace every placeholder; remove author comments from actual guides. Keep optional observation/review metadata only when it describes a real observation/review. -->
 
 #### Purpose
 

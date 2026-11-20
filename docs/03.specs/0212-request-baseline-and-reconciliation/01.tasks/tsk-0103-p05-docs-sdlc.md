@@ -1,6 +1,6 @@
 ---
 title: "P05 Documents and SDLC Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -70,6 +70,8 @@ draft status, a sourced digest or a successful check does not grant permission.
 
 Brief revision2 assigns the exact profile/document and validator/test units.
 Revision4 rebinds the unchanged request digest after context continuation.
+Revision6 binds source59c7039 and narrows edits to the new Guide template
+and this Task for the actual CI author-hint failure.
 Revision5 adds only metadata/profile.py and its existing test_profile module
 after the independent review reproduces missing second-member routing.
 Revision3 adds only the actual shared-template schema and Registry compatibility
@@ -178,6 +180,10 @@ does not prove current regex safety; P04's actual corrections stay distinct.
 | E19 | 159 | W175 | automated: bash scripts/operations/sync-tech-stack-versions.sh --check | Existing candidate-preflight second constituent; tracked Compose versions | PASS | Exit0. Registry in sync, repositories80, external59, local_custom21, required_inputs0. No service operation | required | - |
 | E20 | 159 | W175 | review: independent P05 policy and security boundary | Fresh read-only CLI0.169.0 correction review; final26 staged paths over3ea422ae1 | PASS | Exit0. Governance and metadata authority security APPROVED, no findings; member-specific routing fixes omission, crossed routes denied. Prior22 unchanged source hashes confirmed and review reused. Source-template first-member rendering remains protected by equal contract guard. Reviewer reports four focused tests under write-denying Python audit guard and unchanged HEAD/index/worktree. No managed Desktop or user acceptance proof | required | E15 |
 | E21 | 159 | W175 | review: independent P05 specification and quality | Same final correction review: FR0011 acceptance plus metadata adapter/test delta; Task result additions separate | PASS | Exit0. Specification and code quality APPROVED; both original blockers resolved. Overall approve with delivery follow-up, no findings. Final metadata E18 is observed separately; corrected-candidate corpus and hosted delivery remain real candidate checks, not inferred passes | required | E16 |
+| E22 | 159 | W175 | hosted: CI candidate core | PR1136 source59c7039a9247f291b78973f6f5dac155dc4c52aa; CI44692254512 core136140649985 | PASS | Completed success. Actual logs show metadata selected860 violations0, corpus/occupancy violations0, public manifest PASS, governance/renderer PASS and pinned Ruff format/check Passed. This supplies corrected-candidate consistency without implying all retirement-ready or whole-CI success | required | - |
+| E23 | 159 | W175 | hosted: CI candidate documents and quality | Same source59c7039; documents136140649873 and final quality136151347053, CI44692254512 | FAIL | Completed failure. Exactly one distinct failed subcase: test_language.TemplateLanguageProjectionTests.test_every_language_template_tells_its_author_the_language for workspace-guide. Existing author hint says Write English prose, while the established common projection test requires Write body prose in English. English profile and intended language already agree; do not label this a runtime defect or weaken the test. Core, CodeQL and GitGuardian success are separate | required | - |
+| E24 | 159 | W175 | automated: python3 -m unittest tests.lib.document_governance.test_language | Same uncorrected author prompt, existing full owning module | FAIL | Exit1.10tests2.206s, one failed language projection subcase reproduces actual hosted failure | required | - |
+| E25 | 159 | W175 | automated: python3 -m unittest tests.lib.document_governance.test_language | Only author hint phrase aligned to existing canonical wording | PASS | Exit0.10tests2.676s, OK. Profile language, guide commands, runtime admission, shared-template contracts and test requirements unchanged | required | E24 |
 
 ##### Resolution Links
 
@@ -188,6 +194,10 @@ Use its registered nine-column Evidence and five-column acceptance tables,
 retaining method, tool, command and exit details in Check/Input/Location.
 The first-package271 boundary and both existing generation readers remain
 unchanged; no validator relaxation or migration of old Tasks is needed.
+
+E25 resolves the local reproduction E24; E23 remains a real required hosted
+failure until a corrected candidate passes the same document/quality checks.
+No optional conversion or status dismissal is performed.
 
 E20 resolves E15 and E21 resolves E16 after concrete source repairs and a
 focused independent review. No failed observation is deleted. The first
@@ -213,8 +223,13 @@ launchers are excluded, not converted into successful checks.
 ##### Remaining Conditions
 
 Both independent review defects are repaired and approved in the scoped
-correction review. Current metadata passes; final hosted candidate checks
-include corpus consistency and delivery. Actual owner acceptance remains
+correction review. Current metadata passes; first hosted core also proves current corpus consistency. The document
+job and aggregate fail on the sole canonical author-hint mismatch E23.
+The minimal phrase correction passes its same owning language tests E25;
+a new actual candidate must pass required hosted delivery. Author review
+classifies this as a language-hint compatibility correction, with no changed
+policy or authority behavior; prior scoped source reviews are reused.
+Actual owner acceptance remains
 pending. Configuration, local fixtures and CLI review do not prove native
 provider success. Original valid incomplete obligations remain visible.
 
