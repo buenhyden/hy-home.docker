@@ -1,6 +1,6 @@
 ---
 title: "P04 Templates Task"
-version: "0.1.12"
+version: "0.1.13"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -88,6 +88,8 @@ false positive; the approved regex and its actual caller remain unchanged.
 Revision23 bindsed35869 for a pre-merge correction to E36's advisory
 classification. TSK-0102 is not yet on main. No merged observation is changed;
 the false-positive FAIL and its original input remain explicit.
+Revision24 binds merged979599a91 for this result-only receipt. The same
+trusted resume request still authorizes P04 delivery; no later prompt runs.
 
 #### Execution Log
 
@@ -177,12 +179,21 @@ active, PASS or Task completed into owner acceptance.
 | E36 | 158 | W174 | GitGuardian secret check | Source97ca6e367; check136093263810; incident40663332 reports the changed test hunk | FAIL | Generic CLI Secret classification is read without exposing/storing a matched value. Independent static review of the exact committed test hash confirms only regex, comment and synthetic fixtures, with no credential or credential consumer. Likely trigger is credential-shaped CLI wording in the comment/example; exact substring identification is not claimed. Sourceed35869 check136095523760 still reports only the historical97ca6e367 occurrence. This advisory observation was mistakenly marked required in the draft; before its first merge, correct it to optional under the actual and desired candidate-quality contract. The failure is not resolved or presented as PASS. No incident dismissal, detector suppression, credential action or protection change is performed | optional | - |
 | E37 | 158 | W174 | False-positive source wording cleanup | Frozen test module SHA256 15f4c238dfb5259f913b95c2eacc89ed266c49d451816ee872899e08409ab894 versus97ca6e367 | PASS | Reword only the option-shaped argument comment and use a plain synthetic example option; retain the same multi-option/alias assertion. AST comparison confirms the FROM expression is identical to the CodeQL-approved commit. python3 -m unittest tests.validation.test_compose_baseline_gates.ImageTagPolicyTests:5 pass1.914s; Ruff check/format exit0. Independent static security/spec/quality review APPROVE on this hash; no separate tests, probes or scanner claim. Exact detector trigger remains inferred pending hosted retry. No new behavior RED is claimed and this local check does not resolve the external E36 failure | required | - |
 | E38 | 158 | W174 | Pre-merge advisory classification review | Draft Task0102 absent on main; actual strict protection read-back and canonical required-check policy | PASS | Independent governance review confirms GitGuardian is advisory and requires correcting the draft before first merge; post-merge Required mutation would violate preserved-observation guards. Actual/desired sole required branch context is candidate-quality from App15368; no unresolved actual credential or blocker exists in this hunk. Correct E36 before promotion, preserve FAIL and exact history, keep actual current candidate mandatory, and do not claim all checks green. Current sourceed35869 CodeQL136095671955 succeeds with no new alerts; normal delivery awaits the new candidate input | required | - |
+| E39 | 158 | W174 | Hosted candidate CI | Sourced1fd9efe028b6397d4338e02abc743128b7967d4; base562878ae97bb29bb4d4d2d9409c5a4eab615c349; trusted merge222889b22401c54f466471a41f21535847b38fc8; run44679547211 | PASS | Actual registered changed candidate: routing136099533963, core136099623440, documents136099623463 and required candidate-quality136108142594 all success. Completed core log confirms checkout plus trusted head/merge identities. Check App15368 is on this exact source. Main-only security is skipped on PR by design, not a main-security PASS. Superseded intermediate runs are not substituted for this result | required | - |
+| E40 | 158 | W174 | CodeQL security review | Sourced1fd9efe; current check136099604022 | PASS | Final CodeQL evaluation succeeds with no new alerts in changed code; actual python136099376857, javascript-typescript136099376762 and actions136099376508 analysis jobs all success. Earlier reached regex failures remain recorded and resolved by E35; current input confirms both corrections without dismissal or detector disablement | required | - |
+| E41 | 158 | W174 | GitGuardian secret check | Sourced1fd9efe; current check136099372979; same incident40663332 | FAIL | Current external advisory still identifies only prior97ca6e367 and the same synthetic CLI hunk. Preserve the independently classified no-credential false positive and external failure; E36 is unchanged after first merge. No dashboard dismissal, suppression, credential action or all-checks-green claim. Actual and desired required candidate-quality passes independently | optional | - |
+| E42 | 158 | W174 | Authorized source delivery | PR1134; expected sourced1fd9efe; authenticated merge979599a91dea2cc85e803a7714112e0dcce19760 | PASS | User-authorized normal commits, push and merge completed; PR read-back confirms merged at2026-11-20T05:39:10Z. Strict candidate-quality/App15368, enforced admins, required conversation resolution, zero required human approvals and disabled code-owner approval are read back; threads resolved, rulesets empty. Merge API checks expected head, with no bypass or protection change. Fetch plus ff-only advances the same local branch; no checkout/reset and no owner acceptance inferred | required | - |
+| E43 | 158 | W174 | Completed temporary artifact cleanup | Owned P04 migration/diagnostic files; matching input package and persistent regressions | PASS | Remove the three completed migration JSONs and122 closed diagnostics, then12 completed delivery/check logs after conclusions are durable. Retain only the still-active local brief copy until receipt delivery finishes; private execution state, persistent regressions, Graphify and other work are preserved. Matching1.1.0 input package remains present through P17. No owned completed output remains under _workspace | required | - |
+| E44 | 158 | W174 | Post-merge main-security observation | Merged979599a91; push run44682448276 | PASS | Actual main-security job136108802354 succeeds. Candidate routing/core/documents/quality are skipped on this push, not repeated or reported as new candidate passes. This distinct observation does not imply provider runtime or owner acceptance | required | - |
 
 ##### Resolution Links
 
 Actual RED/GREEN, selected consumers and independent review are recorded
-here. Final delivery/candidate evidence remains pending. No previous successful check resolves a changed contract
-unless its dependency scope and guarantee still match.
+here. E39/E40 verify the final source and E42 records its actual delivery.
+E30 resolves the earlier candidate failures; E35 resolves the two reached
+CodeQL failures. Optional E36/E41 remain FAIL and are not resolved by local
+tests or by the required candidate. No previous successful check resolves a
+changed contract unless its dependency scope and guarantee still match.
 
 #### Acceptance Decision
 
@@ -190,33 +201,45 @@ unless its dependency scope and guarantee still match.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 158 | pending | E01 | Local implementation and consumer checks complete; source delivery/CI and actual owner acceptance remain separate | @buenhyden |
+| 158 | pending | E09, E11, E39, E40, E42 | Implementation, scoped verification and source delivery complete; actual owner acceptance remains a separate pending decision | @buenhyden |
 
 ##### Remaining Conditions
 
-Implement the complete common contract/consumer change, generate and consume
-representative outputs, run focused negatives and related corpus checks,
-review independently and complete actual normal delivery. Owner acceptance
-remains a distinct decision. No native runtime success is inferred from
-configuration, fixture parsing or renderer parity.
+Criterion158/W174 implementation, representative production/consumption,
+focused negatives, related corpus checks, independent review, current hosted
+verification and source delivery are complete. Actual owner acceptance
+remains pending for the P16 acceptance owner; a merge does not supply it.
+
+This Task observes generated outputs and their actual source consumers, not
+live provider picker discovery, skill invocation or trusted-hook delivery.
+Existing environment, native-brief and parallel-runtime obligations remain
+with their P07/P08/P12 owners and P16 acceptance; no existing failure is
+closed or reclassified as an observation here. Optional E36/E41 retain the
+historical external false-positive failure, with no actual credential found.
 
 #### Handoff
 
 ##### Promotion Receipt
 
-Durable common semantics belong to docs99's formal common contract and its
-explicit Registry/metadata/payload bindings. Existing policy owners continue
-to own authority and procedure; this Task alone owns current progress and
-criterion158/W174 evidence. Preserve the matching package through P17.
-Owned one-off migration/diagnostic artifacts are removed after conclusions
-move here; persistent regressions, private state and other work stay distinct.
+Durable common semantics belong to the
+[formal common contract](../../../99.templates/01.contracts/common-document-contract.json)
+and its explicit [Registry](../../../99.templates/registry.json), metadata,
+payload and real producer bindings. Source PR1134 delivers those owners and
+their consumers in merge979599a91; E39/E40 show current consumption and checks.
+Existing policy owners keep authority and procedure. This Task alone owns
+criterion158/W174 progress and its still-pending Criterion Decisions row.
+
+E43 records completed one-off cleanup. Preserve the matching package through
+P17; persistent regressions, private execution state, Graphify and other
+active work stay distinct from temporary migration/diagnostic files.
 
 ##### Next Owner
 
-After this P04 result, the next input is the matching package's
-prompts/P05-DOCS-SDLC.md, subject to verifying that actual file exists.
-It consumes verified P00–P04 results and confirmed decisions, handles remaining
-legacy duties without inventing acceptance, and does not run automatically.
+The next input is the verified existing matching-package file
+prompts/P05-DOCS-SDLC.md. It consumes verified P00–P04 results and the confirmed
+decisions, reuses completed implementations, and handles remaining legacy
+duties without inventing acceptance. Owner acceptance and existing later-stage
+obligations stay explicit. P05 does not run automatically.
 
 ## 적용과 확인
 
