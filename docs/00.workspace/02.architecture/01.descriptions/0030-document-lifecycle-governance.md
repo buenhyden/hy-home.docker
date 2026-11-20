@@ -1,6 +1,6 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "4.0.0"
+version: "4.1.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
@@ -91,6 +91,12 @@ Runtime systems, secret access and remote integration remain separately authoriz
   membership and enforces each protected package's preservation declaration.
 - `scripts/lib/document_governance/links.py` checks current links, anchors,
   navigation, and fenced commands.
+- The Registry separates workspace-environment and workspace-maintenance
+  profiles from generic knowledge and product Operations documents. Both use
+  the common guide kind and workspace scope with one English guide template.
+  `scripts/validation/check-script-manifest.py` admits the registered active
+  maintenance profile as a harness documentation owner, preserving canonical
+  product Runbook admission and actual script-use checks.
 - Registered metadata, document-link, and corpus-lifecycle entrypoints expose
   these judgments through gate profiles. `metadata/heading.py` enforces the
   Registry's section contracts so authored declarations and checks agree.
@@ -103,6 +109,7 @@ Runtime systems, secret access and remote integration remain separately authoriz
 | Metadata, document-link and corpus-lifecycle gate entrypoints | Registered validators in `scripts/manifest.yaml` | `scripts/validation/run-ci-gate.py` and maintainers and agents | `scripts/manifest.yaml` | Unsafe traversal yields findings; exceeding a resource limit is a diagnostic. |
 | Git comparison base | Git (`HEAD` locally, trusted base supplied by CI) | `spec_packages.py` and `identity_history.py` | The description links no contract for this interface. | A missing source object or insufficient history prevents recovering a removed body, and the checker reports that limit. |
 | Task approval references | Current Task approval headings | The cancellation reader | [Approval Boundaries](../../04.quality/approval-boundaries.md#authorization-source-and-records) | Unresolved required approval references and unsupported source labels yield findings. |
+| Workspace operation documentation owner | Active registered workspace-maintenance guide | Script Manifest authority validation | [Documentation protocol](../../03.process/documentation-protocol.md) and [Registry](../../../99.templates/registry.json) | Draft, wrong profile/type/scope, unreadable paths and missing actual script use yield findings; onboarding and generic knowledge are not operation owners. |
 
 - The Registry is the machine authority for profile shape, lifecycles, identity spaces and each space's `reserved_history`.
 - Metadata, document-link and corpus-lifecycle entrypoints expose the judgments through gate profiles registered in `scripts/manifest.yaml` and selected by `scripts/validation/run-ci-gate.py`.
@@ -120,6 +127,18 @@ current snapshot and read the comparison base through bounded Git operations.
 A member missing from a retained package differs from an entire package leaving
 Stage 03. An entire package leaves only when its Spec number is reserved; a copy
 elsewhere, including under Stage 98, grants nothing.
+
+Draft authoring and review remain available. Runtime documentation ownership
+requires the admitted active maintenance profile, its guide type, workspace
+scope with a nonempty subject and actual script-use proof. An active guide
+does not authorize a command, a service operation or criterion acceptance;
+the applicable trusted request still owns that permission. Product backup and
+restore stay in RUN-0021, including the shared-memory backup exclusion.
+
+Traceability uses declared directional relations and derived inbound impact.
+It does not require every artifact family or a reciprocal document link.
+Current stage readiness keeps unfinished duties and actual acceptance with
+their owners, without a stored completion census or a second progress ledger.
 
 Completion and disposition are separate. Write permanent outcomes into current
 owners and final evidence into the Task. A package with an approved Spec and

@@ -1,6 +1,6 @@
 ---
 title: "AI Agent Standards"
-version: "2.0.0"
+version: "3.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -69,7 +69,7 @@ None: this document states no exclusion.
 | STANDARDS-R9 | GitHub repository, PR and CI matters | Required: follow `docs/00.workspace/03.process/github-governance.md` for branch protection, PR completion gate, GitHub Actions security baseline and the local instruction authority boundary | none | none |
 | STANDARDS-R10 | Always | Required: treat `docs/01` to `docs/99` as project SSoT | none | none |
 | STANDARDS-R11 | Implementation work | Forbidden: bypassing `docs/01.requirements` and `docs/03.specs` | none | none |
-| STANDARDS-R12 | Always | Required: keep reciprocal traceability across Requirement Package, Architecture Description, ADR, Spec, Plan, Task, Guide, Policy and Runbook artifacts | none | none |
+| STANDARDS-R12 | Always | Required: keep purpose-bearing directional traceability and required structural relations under the documentation protocol; no universal reciprocal-link or artifact-set obligation is added | none | none |
 
 ###### 1. Token Optimization and Lazy Loading
 <!-- core-payload-level:4 -->
@@ -110,8 +110,9 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 
 - Treat `docs/01` to `docs/99` as project SSoT.
 - Do not bypass `docs/01.requirements` and `docs/03.specs` for implementation work.
-- Keep reciprocal traceability across Requirement Package, Architecture
-  Description, ADR, Spec, Plan, Task, Guide, Policy, and Runbook artifacts.
+- Keep purpose-bearing directional traceability and required structural
+  relations under the [documentation protocol](../../docs/00.workspace/03.process/documentation-protocol.md).
+  No universal reciprocal-link or artifact-set obligation is added.
 
 ##### Exceptions
 

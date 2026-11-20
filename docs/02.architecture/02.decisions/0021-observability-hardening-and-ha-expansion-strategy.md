@@ -1,6 +1,6 @@
 ---
 title: "Observability Hardening and HA Expansion Strategy"
-version: "2.0.0"
+version: "2.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -128,6 +128,18 @@ Decided by the owner, @buenhyden; status `accepted`. No separate approval record
 - Guardrail strategy: Require a security chain on public routers, require non-root/secret guard
 
 ##### Follow-up
+
+###### Current documentation applicability
+<!-- core-payload-level:4 -->
+
+On 2026-11-20 the owner's P05 document/SDLC reconciliation directs an in-place
+clarification of the original documentation step. Its 2026-03-28 document set
+records this observability rollout; it does not require a full artifact set
+or reciprocal links for every later change. Current responsibility and
+directional relations follow the
+[documentation protocol](../../00.workspace/03.process/documentation-protocol.md).
+The accepted hardening and phased expansion choice, its product duties,
+original date and actual evidence remain unchanged.
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the

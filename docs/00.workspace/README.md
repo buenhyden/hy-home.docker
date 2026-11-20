@@ -1,6 +1,6 @@
 ---
 title: "00.workspace"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -43,6 +43,7 @@ layer: "workspace"
 
 Stage 00은 사람과 agent가 함께 따르는 작업공간 공통 업무 정책(W 계층)을 담습니다.
 프로젝트 책임 지도, SDLC·문서·Git·승인 절차, 품질과 완료 기준이 여기에 있습니다.
+환경 준비와 harness 유지보수 절차는 등록된 workspace Guide가 소유합니다.
 agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)은
 [agent governance](../../.agents/README.md)에 남습니다.
 
@@ -77,8 +78,8 @@ agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)�
 | `04.quality/approval-boundaries.md` | 사람·agent 공통 승인 범위와 보호 표면 |
 | `04.quality/quality-standards.md` | 품질 게이트, 위험별 리뷰, 검증 매트릭스 |
 | `04.quality/task-checklists.md` | 시작·완료 점검 |
-| `05.environment/onboarding.md` | 개발 환경 준비와 첫 점검, 환경 경계 |
-| `06.maintenance/harness-maintenance.md` | agent 도구(memory, 수집, 분석, 예측, 병렬 실행, 관측) 유지보수 |
+| `05.environment/onboarding.md` | active workspace-environment Guide: 개발 환경 준비와 첫 점검, 환경 경계 |
+| `06.maintenance/harness-maintenance.md` | active workspace-maintenance Guide: agent 도구 유지보수와 등록된 harness script의 문서 소유자 |
 
 제품 AD·ADR은
 [Stage 02](../02.architecture/README.md)에 있고, workspace AD·ADR과 같은 번호 공간을
@@ -96,6 +97,8 @@ agent만의 실행 규칙(진입, 역할 선택, 위임, 컨텍스트, 중단)�
 [bootstrap](../../.agents/governance/bootstrap.md)이 읽기 순서를 정하고, 각 Stage
 문서와 [agent governance](../../.agents/README.md)가 이 정책을 소비합니다. 같은
 의미를 다른 계층에 복제하지 않습니다.
+두 Guide의 공통 source와 정확한 경로 분류는 [Stage 99 Registry](../99.templates/registry.json)가
+소유합니다. 문서 채택은 도구 실행 권한이나 runtime·사용자 인수를 대신하지 않습니다.
 
 ##### Checks
 

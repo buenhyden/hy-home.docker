@@ -475,6 +475,30 @@ class TemplateDefinitionTests(unittest.TestCase):
             with self.subTest(role=role):
                 self.assertEqual([], _errors(definition))
 
+    def test_workspace_guide_definition_consumes_both_narrow_profiles(self) -> None:
+        role = "governance/workspace-guide"
+        self.assertTrue(
+            role in self.registry.template_roles, "Workspace guide role missing"
+        )
+        entry = self.registry.template_roles[role]
+        self.assertEqual(
+            ("workspace-environment", "workspace-maintenance"), entry["profiles"]
+        )
+        definition = template_definition(self.registry, role)
+        self.assertEqual([], _errors(definition))
+        for profile_id in entry["profiles"]:
+            with self.subTest(profile=profile_id):
+                profile = self.registry.profiles[profile_id]
+                self.assertEqual("en", profile["language"])
+                self.assertEqual(
+                    list(profile["required_sections"]),
+                    [heading["title"] for heading in definition["payload"]["headings"]],
+                )
+        payload = (ROOT / entry["source"]).read_text(encoding="utf-8")
+        self.assertIn("type: governance/workspace-guide", payload)
+        self.assertIn("layer: workspace", payload)
+        self.assertNotIn("artifact_id:", payload)
+
     def test_section_ids_are_unique(self) -> None:
         for role, definition in self.definitions.items():
             headings = [*definition["headings"], *definition["payload"]["headings"]]

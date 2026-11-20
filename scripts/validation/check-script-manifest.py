@@ -81,9 +81,10 @@ REQUIRED_LOCAL_PATHS = frozenset(
     }
 )
 APPROVED_TEST_PREFIXES = ("tests/lib/", "tests/validation/")
-RUNBOOK_AUTHORITY = re.compile(
-    r"docs/05\.operations/03\.runbooks/[0-9]{2}\.[a-z0-9][a-z0-9-]*/"
-    r"[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
+RUNTIME_AUTHORITY = re.compile(
+    r"(?:docs/05\.operations/03\.runbooks/[0-9]{2}\.[a-z0-9][a-z0-9-]*/"
+    r"[0-9]{4}-[a-z0-9][a-z0-9-]*\.md|"
+    r"docs/00\.workspace/06\.maintenance/[a-z0-9][a-z0-9-]*\.md)"
 )
 MACHINE_AUTHORITIES = frozenset(
     {
@@ -292,13 +293,13 @@ def validate_manifest_document(
         if row.get("mutation") == "runtime" and disposition == "retain":
             if (
                 not isinstance(authority, str)
-                or RUNBOOK_AUTHORITY.fullmatch(authority) is None
+                or RUNTIME_AUTHORITY.fullmatch(authority) is None
             ):
                 findings.append(
                     _finding(
                         "runtime-authority-invalid",
                         path,
-                        "retained runtime script requires an Operations Runbook authority",
+                        "retained runtime script requires a registered Runbook or workspace maintenance owner",
                     )
                 )
 
@@ -1094,12 +1095,13 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
         authority = row.get("authority")
         if not isinstance(authority, str):
             continue
-        if not _registered_runbook_authority(repo_root, authority):
+        authority_type = _runtime_authority_type(repo_root, authority)
+        if authority_type is None:
             findings.append(
                 _finding(
                     "runtime-authority-invalid",
                     row["path"],
-                    f"{authority} is not a registered Operations Runbook path",
+                    f"{authority} is not a registered runtime operation owner",
                 )
             )
             continue
@@ -1120,16 +1122,25 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
                 metadata = yaml.safe_load(text.split("---\n", 2)[1]) or {}
             except yaml.YAMLError:
                 metadata = {}
+        scope = metadata.get("document_scope") if isinstance(metadata, dict) else None
+        valid_scope = authority_type != "governance/workspace-guide" or (
+            isinstance(scope, dict)
+            and set(scope) == {"subject", "layer"}
+            and isinstance(scope["subject"], str)
+            and bool(scope["subject"].strip())
+            and scope["layer"] == "workspace"
+        )
         if (
             not isinstance(metadata, dict)
             or metadata.get("status") != "active"
-            or metadata.get("type") != "operation/runbook"
+            or metadata.get("type") != authority_type
+            or not valid_scope
         ):
             findings.append(
                 _finding(
                     "runtime-authority-inactive",
                     row["path"],
-                    f"{authority} is not a current typed Runbook",
+                    f"{authority} is not an active typed owner with the required scope",
                 )
             )
         if not _reference_proves_use(authority, text, row["path"], is_test=False):
@@ -1143,16 +1154,19 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
     return findings
 
 
-def _registered_runbook_authority(repo_root: Path, authority: str) -> bool:
-    """Require both the canonical leaf shape and a Registry-owned domain."""
+def _runtime_authority_type(repo_root: Path, authority: str) -> str | None:
+    """Resolve an eligible runtime owner through the caller's Registry."""
 
-    if RUNBOOK_AUTHORITY.fullmatch(authority) is None:
-        return False
+    if RUNTIME_AUTHORITY.fullmatch(authority) is None:
+        return None
     try:
         registry = load_registry(repo_root / "docs/99.templates/registry.json")
     except (OSError, ValueError, TypeError, KeyError):
-        return False
-    return classify_path(PurePosixPath(authority), registry) == "runbook"
+        return None
+    return {
+        "runbook": "operation/runbook",
+        "workspace-maintenance": "governance/workspace-guide",
+    }.get(classify_path(PurePosixPath(authority), registry))
 
 
 def check_manifest(repo_root: Path, manifest_path: Path) -> list[Finding]:

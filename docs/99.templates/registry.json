@@ -573,7 +573,15 @@
           "superseded",
           "retired"
         ],
-        "incident-year-readme": []
+        "incident-year-readme": [],
+        "workspace-environment": [
+          "superseded",
+          "retired"
+        ],
+        "workspace-maintenance": [
+          "superseded",
+          "retired"
+        ]
       }
     },
     "incident_closure": {
@@ -2273,6 +2281,36 @@
             "draft": "draft",
             "in-review": "draft",
             "published": "active",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "workspace-environment": {
+          "kind": "guide",
+          "scope_layers": [
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
+            "superseded": "deprecated",
+            "retired": "deprecated"
+          }
+        },
+        "workspace-maintenance": {
+          "kind": "guide",
+          "scope_layers": [
+            "workspace"
+          ],
+          "lifecycle_field": "status",
+          "lifecycle_values": {
+            "draft": "draft",
+            "in-review": "draft",
+            "active": "active",
+            "deprecated": "deprecated",
             "superseded": "deprecated",
             "retired": "deprecated"
           }
@@ -4769,9 +4807,7 @@
       "path_pattern": ".agents/knowledge/repository-map.md",
       "additional_paths": [
         ".agents/knowledge/verification-surface-map.md",
-        "docs/00.workspace/01.project/glossary.md",
-        "docs/00.workspace/05.environment/onboarding.md",
-        "docs/00.workspace/06.maintenance/harness-maintenance.md"
+        "docs/00.workspace/01.project/glossary.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
@@ -4807,6 +4843,100 @@
         "Provenance",
         "Refresh Triggers"
       ],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": [],
+      "required_frontmatter_by_status": {
+        "superseded": [
+          "superseded_by"
+        ]
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
+    },
+    {
+      "id": "workspace-environment",
+      "type": "governance/workspace-guide",
+      "language": "en",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/00.workspace/05.environment/onboarding.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "governance/workspace-guide",
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated",
+        "document_scope"
+      ],
+      "optional_frontmatter": [
+        "layer",
+        "created",
+        "supersedes",
+        "superseded_by",
+        "observed_at",
+        "reviewed_at",
+        "review_cycle"
+      ],
+      "free_form_sections": false,
+      "required_sections": [
+        "Purpose",
+        "Prerequisites",
+        "Procedure",
+        "Verification",
+        "Related Documents"
+      ],
+      "optional_sections": [],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": [],
+      "required_frontmatter_by_status": {
+        "superseded": [
+          "superseded_by"
+        ]
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
+    },
+    {
+      "id": "workspace-maintenance",
+      "type": "governance/workspace-guide",
+      "language": "en",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/00.workspace/06.maintenance/harness-maintenance.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "governance/workspace-guide",
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated",
+        "document_scope"
+      ],
+      "optional_frontmatter": [
+        "layer",
+        "created",
+        "supersedes",
+        "superseded_by",
+        "observed_at",
+        "reviewed_at",
+        "review_cycle"
+      ],
+      "free_form_sections": false,
+      "required_sections": [
+        "Purpose",
+        "Prerequisites",
+        "Procedure",
+        "Verification",
+        "Related Documents"
+      ],
+      "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
       "exceptions": [],
@@ -5864,7 +5994,7 @@
         "TERM-GOVERNANCE",
         "TERM-CANONICAL"
       ],
-      "applicability": "Applies to the registered repository and verification maps, local Docker vocabulary, and draft environment and maintenance knowledge members; registration alone does not activate a draft.",
+      "applicability": "Applies to registered repository/verification maps and local Docker vocabulary; it routes knowledge without owning executable workspace procedures.",
       "relationships": [
         "Routes to canonical owners; the owner stays the authority for what it says."
       ],
@@ -8040,6 +8170,75 @@
         "rollback": "Revert the commit that changed this entry or docs/99.templates/02.templates/03.specs/task.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
       "core_role": "task"
+    },
+    "governance/workspace-guide": {
+      "source": "docs/99.templates/02.templates/00.workspace/workspace-guide.template.md",
+      "profiles": [
+        "workspace-environment",
+        "workspace-maintenance"
+      ],
+      "purpose": "English workspace environment and harness maintenance guidance.",
+      "responsibility": "Explain the local reader task, prerequisites, supported procedures, checks and next action within the registered workspace subject.",
+      "non_goals": [
+        "Granting execution permission or owner acceptance.",
+        "Owning product operations, backup or restore.",
+        "Replacing canonical agent execution policy."
+      ],
+      "policy_refs": [
+        "docs/00.workspace/03.process/documentation-protocol.md#role-specific-authoring",
+        "docs/00.workspace/03.process/sdlc.md#sequence",
+        "docs/00.workspace/04.quality/approval-boundaries.md#authorization-source-and-records"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-GOVERNANCE",
+        "TERM-CANONICAL"
+      ],
+      "applicability": "Applies only to the registered onboarding and harness-maintenance paths. Only an active maintenance profile with the correct type, workspace scope and actual script use may own harness operation documentation; onboarding is not a mutating-script authority.",
+      "relationships": [
+        "Workspace environment guidance routes tooling upkeep to the maintenance guide; product backup and restore remain with RUN-0021.",
+        "Document lifecycle and static checks do not grant execution permission or actual owner acceptance."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "scripts/lib/document_governance/common_document.py",
+        "scripts/validation/check-script-manifest.py",
+        "scripts/operations/observe.py",
+        "tests/lib/document_governance/test_registry.py",
+        "tests/lib/document_governance/test_template_definition.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_workspace_guides_have_narrow_shared_typed_profiles",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_workspace_guide_definition_consumes_both_narrow_profiles"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_workspace_guide_shared_type_rejects_divergent_contracts",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_shared_template_rejects_incompatible_rendering_contracts",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_shared_navigation_type_keeps_distinct_path_profiles"
+        ]
+      },
+      "migration": {
+        "meaning_map": "P05 moves the two former knowledge members to narrow workspace-guide profiles. The common CORE envelope remains; Purpose/Prerequisites/Procedure/Verification retain their prior goal, scope, commands, limits and provenance. This guide role is distinct from the product Operations Guide.",
+        "retained_history": "Git history preserves earlier guide and Registry revisions. No Stage98 copy or new completion ledger is introduced.",
+        "rollback": "Revert the P05 profile, guide, consumer and template changes together; validate the reverted Registry and actual consumers before using the prior authority map."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "Workspace guidance owns local setup and harness procedures, rather than the product Operations Guide identity and Runbook handoff contract."
+      }
     }
   },
   "lifecycles": {
@@ -10628,7 +10827,9 @@
     "runtime-governance-readme": "navigation",
     "spec": "spec",
     "task": "task",
-    "template-source": "template"
+    "template-source": "template",
+    "workspace-environment": "living",
+    "workspace-maintenance": "living"
   },
   "indexes": {
     "docs/03.specs/README.md": "spec",

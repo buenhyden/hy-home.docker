@@ -1626,8 +1626,7 @@
         },
         "profiles": {
           "$ref": "#/$defs/stringList",
-          "minItems": 1,
-          "maxItems": 1
+          "minItems": 1
         },
         "purpose": {
           "type": "string",

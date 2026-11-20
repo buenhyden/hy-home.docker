@@ -1503,6 +1503,48 @@ def validate_registry(
                                 str(profile_id),
                             )
                         )
+                members = [
+                    profile
+                    for _, profile in profile_entries
+                    if profile.get("id") in role_profile_ids
+                ]
+                if len(members) > 1:
+                    # TemplateDefinition renders the first profile. Only routing
+                    # selectors and presentation may differ between its members.
+                    selectors = {
+                        "id",
+                        "path_pattern",
+                        "additional_paths",
+                        "additional_path_patterns",
+                        "description",
+                    }
+                    contracts = [
+                        {
+                            key: value
+                            for key, value in profile.items()
+                            if key not in selectors
+                        }
+                        for profile in members
+                    ]
+                    bindings = (
+                        raw.get("common", {})
+                        .get("document_core", {})
+                        .get("profile_bindings", {})
+                    )
+                    first_binding = bindings.get(members[0].get("id"))
+                    if any(
+                        contract != contracts[0] for contract in contracts[1:]
+                    ) or any(
+                        bindings.get(profile.get("id")) != first_binding
+                        for profile in members[1:]
+                    ):
+                        findings.append(
+                            RegistryFinding(
+                                "template-profile-contract-mismatch",
+                                f"template_roles.{role}",
+                                "shared template profiles must have equal rendering contracts and CORE bindings",
+                            )
+                        )
             source = definition.get("source")
             if isinstance(source, str):
                 role_sources.append(source)

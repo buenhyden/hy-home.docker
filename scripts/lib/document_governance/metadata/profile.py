@@ -857,9 +857,17 @@ def matching_template_roles(
     for name, role in template_roles.items():
         if not isinstance(name, str) or not isinstance(role, dict):
             continue
-        if role.get("artifact_profile") != artifact_type:
-            continue
-        patterns = role.get("target_globs", [])
+        if "target_globs_by_profile" in role:
+            member_patterns = role["target_globs_by_profile"]
+            if not isinstance(member_patterns, dict):
+                continue
+            patterns = member_patterns.get(artifact_type, [])
+        else:
+            # Preserve the singular fixture envelope; Registry projections carry
+            # member-specific routes and never borrow another member's paths.
+            if role.get("artifact_profile") != artifact_type:
+                continue
+            patterns = role.get("target_globs", [])
         if not isinstance(patterns, list):
             continue
         matched_scores = [
@@ -1170,22 +1178,38 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
         )
         if not isinstance(profile, Mapping) or not isinstance(path_pattern, str):
             continue
-        additional_paths = profile.get("additional_paths", ())
-        target_patterns = [path_pattern, *profile.get("additional_path_patterns", ())]
-        if isinstance(additional_paths, Sequence) and not isinstance(
-            additional_paths, (str, bytes, bytearray)
-        ):
-            target_patterns.extend(
-                path for path in additional_paths if isinstance(path, str)
+        member_globs: dict[str, list[str]] = {}
+        for member_id in profile_ids:
+            member = registry.profiles.get(str(member_id))
+            member_path = (
+                member.get("path_pattern") if isinstance(member, Mapping) else None
             )
+            if not isinstance(member, Mapping) or not isinstance(member_path, str):
+                continue
+            target_patterns = [member_path, *member.get("additional_path_patterns", ())]
+            additional_paths = member.get("additional_paths", ())
+            if isinstance(additional_paths, Sequence) and not isinstance(
+                additional_paths, (str, bytes, bytearray)
+            ):
+                target_patterns.extend(
+                    path for path in additional_paths if isinstance(path, str)
+                )
+            member_globs[str(member_id)] = [
+                _registry_path_glob(pattern)
+                for pattern in dict.fromkeys(target_patterns)
+            ]
         projected_roles[role_id] = {
             "source": role.get("source"),
             "native_source": role.get("native_source"),
             "artifact_profile": profile_id,
-            "target_globs": [
-                _registry_path_glob(pattern)
-                for pattern in dict.fromkeys(target_patterns)
-            ],
+            "target_globs": list(
+                dict.fromkeys(
+                    pattern
+                    for patterns in member_globs.values()
+                    for pattern in patterns
+                )
+            ),
+            "target_globs_by_profile": member_globs,
             "required_headings": [
                 f"## {section}" for section in profile.get("required_sections", ())
             ],

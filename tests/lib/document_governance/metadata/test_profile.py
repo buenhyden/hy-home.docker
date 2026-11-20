@@ -117,14 +117,98 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             )
 
         for role_name, role in self.registry.template_roles.items():
-            profile_id = str(role["profiles"][0])
-            path_text = witness(str(self.registry.profiles[profile_id]["path_pattern"]))
-            with self.subTest(role=role_name, path=path_text):
+            for profile_id in role["profiles"]:
+                path_text = witness(
+                    str(self.registry.profiles[profile_id]["path_pattern"])
+                )
+                with self.subTest(role=role_name, profile=profile_id, path=path_text):
+                    self.assertEqual(
+                        role_name,
+                        profile_module.classify_template_role(
+                            pathlib.Path(path_text), profile_id, self.profiles
+                        ),
+                    )
+
+    def test_shared_workspace_guide_routes_every_exact_profile(self) -> None:
+        routes = {
+            "workspace-environment": "docs/00.workspace/05.environment/onboarding.md",
+            "workspace-maintenance": "docs/00.workspace/06.maintenance/harness-maintenance.md",
+        }
+        # Check the projection itself as well as Registry-backed matching, so
+        # the Registry's outer classifier cannot conceal crossed member routes.
+        projected_only = {
+            key: value for key, value in self.profiles.items() if key != "_registry"
+        }
+        for adapted in (self.profiles, projected_only):
+            for profile_id, path in routes.items():
+                with self.subTest(registry="_registry" in adapted, profile=profile_id):
+                    self.assertEqual(
+                        "governance/workspace-guide",
+                        profile_module.classify_template_role(
+                            pathlib.Path(path), profile_id, adapted
+                        ),
+                    )
+                    for wrong_profile in {*routes, "workspace-unregistered"} - {
+                        profile_id
+                    }:
+                        with self.subTest(wrong_profile=wrong_profile):
+                            self.assertEqual(
+                                [],
+                                profile_module.matching_template_roles(
+                                    pathlib.Path(path), wrong_profile, adapted
+                                ),
+                            )
+                    with self.assertRaises(profile_module.ProfileError):
+                        profile_module.classify_template_role(
+                            pathlib.Path(path).with_name("unregistered.md"),
+                            profile_id,
+                            adapted,
+                        )
+
+    def test_legacy_single_profile_fixture_still_routes(self) -> None:
+        profiles = {
+            "template_roles": {
+                "fixture/guide": {
+                    "artifact_profile": "fixture",
+                    "target_globs": ["docs/fixture/*.md"],
+                }
+            }
+        }
+        self.assertEqual(
+            "fixture/guide",
+            profile_module.classify_template_role(
+                pathlib.Path("docs/fixture/guide.md"), "fixture", profiles
+            ),
+        )
+        with self.assertRaises(profile_module.ProfileError):
+            profile_module.classify_template_role(
+                pathlib.Path("docs/fixture/guide.md"), "other", profiles
+            )
+
+    def test_changed_shared_guides_consume_the_registered_body_contract(self) -> None:
+        for profile_id in ("workspace-environment", "workspace-maintenance"):
+            path = pathlib.Path(self.registry.profiles[profile_id]["path_pattern"])
+            text = (ROOT / path).read_text(encoding="utf-8")
+            record = metadata._record_from_text(path, text, profiles=self.profiles)
+            with self.subTest(profile=profile_id):
+                self.assertEqual(profile_id, record.artifact_type)
                 self.assertEqual(
-                    role_name,
-                    profile_module.classify_template_role(
-                        pathlib.Path(path_text), profile_id, self.profiles
+                    [],
+                    metadata.validate_body_contract(
+                        record, text, self.profiles, changed_boundary=True
                     ),
+                )
+                self.assertIn(
+                    "body-heading-missing",
+                    {
+                        item.code
+                        for item in metadata.validate_body_contract(
+                            record,
+                            text.replace("#### Procedure", "#### Unsupported", 1),
+                            self.profiles,
+                            changed_boundary=True,
+                        )
+                    },
                 )
 
     def test_common_readme_role_covers_every_additional_registered_path(self) -> None:
