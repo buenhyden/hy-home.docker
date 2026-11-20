@@ -22,6 +22,7 @@ from scripts.lib.document_governance.registry import (
     validate_registry,
 )
 from scripts.lib.document_governance.template_definition import template_definition
+from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
 SCHEMA_PATH = ROOT / "docs/99.templates/01.contracts/template-definition.schema.json"
 GLOSSARY = ROOT / ".agents/knowledge/glossary.md"
@@ -33,6 +34,8 @@ class CommonDocumentContractTests(unittest.TestCase):
         self,
     ) -> None:
         program = """import sys
+assert sys.flags.safe_path
+sys.path.insert(0, sys.argv[1])
 from scripts.lib.document_governance.common_document import compact_payload, payload_text, wrap_document
 from scripts.lib.document_governance.language import language_mismatch
 source = '# Example\\n\\n## Rules\\n\\nThis policy explains the actual rule and its full scope in English.\\n'
@@ -43,9 +46,14 @@ assert language_mismatch(wrapped, 'en') is None
 assert 'scripts.lib.document_governance.metadata.profile' not in sys.modules
 """
         result = subprocess.run(
-            [sys.executable, "-c", program],
+            [sys.executable, "-c", program, str(ROOT)],
             cwd=ROOT,
-            env={**os.environ, "HYHOME_CI_GATE_ROOT": "/proc/self/fd/2147483647"},
+            env={
+                **os.environ,
+                "PYTHONSAFEPATH": "1",
+                "HYHOME_CI_GATE_ROOT": "/proc/self/fd/2147483647",
+            },
+            pass_fds=gate_root_pass_fds(ROOT),
             capture_output=True,
             text=True,
             check=False,
