@@ -1,6 +1,6 @@
 ---
 title: "P04 Templates Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -76,6 +76,12 @@ shared bindings/migration and assigns bounded disjoint reader/native scopes;
 no worker may infer extra authority. Q-01–Q-04 add no unresolved P04 choice.
 The direct new envelope supersedes earlier outer formatting only; existing
 payload meaning, evidence and actual acceptance decisions are retained.
+
+Continuation request9c6c5d869a72f8ebc5f93ab97d7ea386 retains the same resume
+digest and P04 authorization. Brief revision21 binds sourcefdf21af for the
+remaining CodeQL49 finding in the already changed Compose regression reader;
+the assigned QA writer owns only that test module. The HTML reader correction
+is frozen and its independent static review remains scoped to that correction.
 
 #### Execution Log
 
@@ -159,6 +165,8 @@ active, PASS or Task completed into owner acceptance.
 | E30 | 158 | W174 | Hosted candidate CI | PR1134 source521c824f46cbfa0a1921fa07215868258affeb0d; base562878ae9; mergef5362ab1186404cc0b6c9af8d47d8b92e9b00a6d; run44672168831 | PASS | Routing136075413986, core136075493877, documents136075493837 and candidate-quality136084154725 all success; required check is on this head from App15368. Main-only security is skipped on PR by design. This resolves previous candidate failures only; independent CodeQL finding E31 blocks merge, and owner acceptance is not inferred | required | E14, E17, E19, E23, E25, E28 |
 | E31 | 158 | W174 | CodeQL security review | Authenticated alert58 py/redos high; current PR head521c824 and unresolved thread PRRT_kwDOQUCrvc65zXVV; gate regex2013 | FAIL | CodeQL reports exponential backtracking for malformed HTML tag prefix followed by repeated ambiguous attributes. Confirmed current alert ref and location by authenticated read-back; do not resolve or merge until bounded reproduction, repair, independent security review and current hosted checks succeed. Existing owner/comment/fence/multiline/bootstrap guards must remain intact | required | - |
 | E32 | 158 | W174 | Bounded regex correction and independent static review | Actual installed MarkdownIt grammar and preinstall owner consumer | PASS | Initial transcribed tab-family probe did not reproduce; do not claim it did. Implementer confirms the Unicode-whitespace ambiguity in bounded child: old HEAD exceeds5s, current GateCrosswalk/public -ES24 tests pass1.308s. Attribute-boundary lookahead plus possessive repetition preserves boolean/quoted/multiline/self-closing and Unicode value/separator acceptance; no dependency or guard change. Independent security/spec/quality APPROVE is static only, with no separate reproduction/runtime/scanner claim. One exploratory auditor turn was auto-filtered; safer static review completed. Exact unchanged regression passes actual sanitized held-root adapter0.143s; GateCrosswalk23 pass0.670s and public -ES1 pass0.733s with adapter exit0. Explicit canonical trusted source means no extra descriptor forwarding is needed; review hashes remain unchanged. Hosted CodeQL/candidate retry still required; E31 is not resolved by local evidence | required | - |
+| E33 | 158 | W174 | CodeQL security review | Sourcefdf21af; check136089734789; alert49 at tests/validation/test_compose_baseline_gates.py:5841 | FAIL | Current analysis marks prior alert58 fixed and its review thread automatically resolved by github-advanced-security. The check still fails on a different pre-existing FROM regex in the test module already changed by P04. Repair only this reached reader while preserving image policy, option/image/alias semantics and existing held-root tests. Other unrelated branch alerts are outside this correction. Candidate run44676518376 remains in progress; neither aggregate success nor merge is claimed | required | - |
+| E34 | 158 | W174 | Dockerfile reader correction and independent static review | Frozen test module SHA256 58e80e531b5e24b815aa92608da427ee4fe8f08c946eb9cae96c9edfbf87f20b versus fdf21af | PASS | Make only inner disjoint nonwhitespace/whitespace spans possessive; retain whole-option backtracking so the last flag-looking token can remain the image. Actual caller still owns stage alias, scratch, pins and mutable-image exceptions. python3 -m unittest tests.validation.test_compose_baseline_gates.ImageTagPolicyTests: baseline4 pass1.862s, final5 pass1.963s; new bounded semantic table covers flags, alias, case, Unicode separators and invalid lines. Ruff format/check and scoped diff-check exit0. CodeQL49 is the static RED; no behavior RED or adverse-input timing claimed. Independent security/spec/quality APPROVE is static only on the frozen hash, with no test/scanner/runtime/acceptance claim. Hosted CodeQL/candidate retry remains required; local proof does not resolve E33 | required | - |
 
 ##### Resolution Links
 
