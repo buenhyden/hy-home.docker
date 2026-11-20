@@ -1,6 +1,6 @@
 ---
 title: "P05 Documents and SDLC Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -70,6 +70,9 @@ draft status, a sourced digest or a successful check does not grant permission.
 
 Brief revision2 assigns the exact profile/document and validator/test units.
 Revision4 rebinds the unchanged request digest after context continuation.
+Revision7 binds merged sourcecbb562c1f and limits result-only edits to this
+Task. Current request digest is unchanged; native request e8825718eaab7c79e25e56b4d712af55
+and its revision are observed again before this result update.
 Revision6 binds source59c7039 and narrows edits to the new Guide template
 and this Task for the actual CI author-hint failure.
 Revision5 adds only metadata/profile.py and its existing test_profile module
@@ -184,6 +187,14 @@ does not prove current regex safety; P04's actual corrections stay distinct.
 | E23 | 159 | W175 | hosted: CI candidate documents and quality | Same source59c7039; documents136140649873 and final quality136151347053, CI44692254512 | FAIL | Completed failure. Exactly one distinct failed subcase: test_language.TemplateLanguageProjectionTests.test_every_language_template_tells_its_author_the_language for workspace-guide. Existing author hint says Write English prose, while the established common projection test requires Write body prose in English. English profile and intended language already agree; do not label this a runtime defect or weaken the test. Core, CodeQL and GitGuardian success are separate | required | - |
 | E24 | 159 | W175 | automated: python3 -m unittest tests.lib.document_governance.test_language | Same uncorrected author prompt, existing full owning module | FAIL | Exit1.10tests2.206s, one failed language projection subcase reproduces actual hosted failure | required | - |
 | E25 | 159 | W175 | automated: python3 -m unittest tests.lib.document_governance.test_language | Only author hint phrase aligned to existing canonical wording | PASS | Exit0.10tests2.676s, OK. Profile language, guide commands, runtime admission, shared-template contracts and test requirements unchanged | required | E24 |
+| E26 | 159 | W175 | automated: rtk python3 -; scoped stdlib sys.settrace and unittest selection | Git3ea422ae1 to59c7039; same three production files in finala381c5b;21 modified meaningful methods | PASS | Exit0.21tests181.599s. Added executable-line hits: registry27/27, metadata/profile28/30, manifest24/25, total79/82=96.34%; every file exceeds80%. Tracer starts before imports; recursive dis.findlinestarts intersects Git added lines. Parent-process line coverage only, not branch/subprocess/runtime/whole-repository coverage. Two malformed metadata defensive branches and one existing authority-error diagnostic are not hit by this selection. No dependency installed; inline diagnostic and temporary data leave no script or result file | required | - |
+| E27 | 159 | W175 | hosted: CI candidate core | Finala381c5b4407076253ed1f33d8894e1bd6e642cc4; CI44696369789 core136154067095 | PASS | Completed success. Actual metadata selected860 violations0; corpus and active occupancy violations0; public manifest, governance, two-provider parity and pinned Ruff format/check PASS. These are current candidate source checks, not all-package readiness or runtime acceptance | required | - |
+| E28 | 159 | W175 | hosted: CI candidate documents and quality | Same finala381c5b; CI44696369789 documents136154067156 and quality136162255795 | PASS | Completed success. No failed test header in actual document log; the original language projection method is explicitly ok. Required candidate-quality succeeds under app15368. Same hosted document/quality checks resolve original failure after minimal author-hint correction; no guard weakening or optional conversion | required | E23 |
+| E29 | 159 | W175 | hosted: CodeQL and GitGuardian checks | Finala381c5b, CodeQL136154096659 and GitGuardian136153947206 | PASS | Both completed success. Observed optional checks, separate from sole branch-required candidate-quality. No prior security finding or owner acceptance is dismissed or resolved by this row | optional | - |
+| E30 | 159 | W175 | hosted: source PR merge | PR1136 expected final head a381c5b; normal protected merge | PASS | Merged true; mergecbb562c1fb8bc306185614dc5af3d367ed6c093d. Immediately before merge, main protection is strict, admins enforced, required candidate-quality app15368; review threads/reviews empty, required reviewer count0. Local clean branch fast-forwards without checkout/reset. Integration fact, not criterion or product acceptance | required | - |
+| E31 | 159 | W175 | hosted: post-merge main security | Source mergecbb562c1f; CI44699099059 main-security136162880292 | PASS | Completed success. Candidate jobs intentionally skipped for main push; this does not replace PR candidate checks or prove operational state | optional | - |
+| E32 | 159 | W175 | automated: python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main --changed-path docs/03.specs/0212-request-baseline-and-reconciliation/01.tasks/tsk-0103-p05-docs-sdlc.md | Result-only Task over merged sourcecbb562c1f, before its own check rows | PASS | Exit0. Selected1, violations0, transition overrides0. Existing implementation and source review inputs are unchanged | required | - |
+| E33 | 159 | W175 | automated: python3 scripts/validation/check-document-links.py --mode all --changed | Same result-only receipt and its actual local durable-owner links | PASS | Exit0. Selected documents4, total927, links9094, failures0 and warnings0. No external HTTP or runtime claim | required | - |
 
 ##### Resolution Links
 
@@ -195,8 +206,8 @@ retaining method, tool, command and exit details in Check/Input/Location.
 The first-package271 boundary and both existing generation readers remain
 unchanged; no validator relaxation or migration of old Tasks is needed.
 
-E25 resolves the local reproduction E24; E23 remains a real required hosted
-failure until a corrected candidate passes the same document/quality checks.
+E28 resolves E23 only after the corrected actual candidate passes the same
+hosted document/quality checks. E25 resolves the local reproduction E24.
 No optional conversion or status dismissal is performed.
 
 E20 resolves E15 and E21 resolves E16 after concrete source repairs and a
@@ -218,33 +229,62 @@ launchers are excluded, not converted into successful checks.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 159 | pending | E02, E03, E06, E07, E12, E13, E14, E17, E18, E20, E21 | Scoped implementation, current metadata and independent correction review complete; hosted delivery and actual owner acceptance remain separate. Intent undecided, accepted by nobody, no reassignment | @buenhyden |
+| 159 | pending | E02, E03, E06, E07, E17, E20, E21, E25, E26, E27, E28, E30 | P05 implementation, verification, scoped independent correction review and source integration complete. Actual owner acceptance remains pending; intent undecided, accepted by nobody, no reassignment | @buenhyden |
 
 ##### Remaining Conditions
 
-Both independent review defects are repaired and approved in the scoped
-correction review. Current metadata passes; first hosted core also proves current corpus consistency. The document
-job and aggregate fail on the sole canonical author-hint mismatch E23.
-The minimal phrase correction passes its same owning language tests E25;
-a new actual candidate must pass required hosted delivery. Author review
-classifies this as a language-hint compatibility correction, with no changed
-policy or authority behavior; prior scoped source reviews are reused.
-Actual owner acceptance remains
-pending. Configuration, local fixtures and CLI review do not prove native
-provider success. Original valid incomplete obligations remain visible.
+P05 implementation, scoped verification, independent source review and normal
+source integration are complete. The first hosted hint failure remains E23,
+with actual same-check resolution E28. Required current candidate checks and
+post-merge main security passed; no unverified green result is substituted.
+
+Actual owner acceptance of criterion159 remains pending. The four axes stay
+separate: maintained/adopted documentation, implemented source, observed
+verification, and human acceptance. No live maintenance/service operation is
+performed here. The managed Desktop reviewer write-scope failure still belongs
+to P06; the known analysis cursor/provenance defects remain P10 work. Existing
+external-object/backup observations138/148, product obligations and required
+security/admin acceptance153 retain their actual owners and conditions. They
+are neither repaired nor relabelled as successful observations in this Task.
+
+No additional Q-01–Q-04 decision is needed. Numbering, final historical removal
+and package deletion remain P17 work.
 
 #### Handoff
 
 ##### Promotion Receipt
 
-The existing formal document contract and Registry own shape; canonical
-workspace policy/architecture and current guides own durable meaning. This
-Task alone owns current criterion159/W175 execution evidence. Both guides are typed active and actual manifest authority/use consumers have
-been rebound and checked; no new parallel ledger is created.
+Criterion159/W175 is implemented by source59c7039 and the author-hint repair
+a381c5b, integrated in [PR1136](https://github.com/buenhyden/hy-home.docker/pull/1136)
+as cbb562c1f. [Final CI](https://github.com/buenhyden/hy-home.docker/actions/runs/44696369789)
+provides the actual checked-candidate result.
+
+The durable owners are [REQ0026](../../../01.requirements/0026-document-retention-and-retirement.md),
+[AD0030](../../../00.workspace/02.architecture/01.descriptions/0030-document-lifecycle-governance.md),
+[documentation protocol](../../../00.workspace/03.process/documentation-protocol.md),
+the [maintenance Guide](../../../00.workspace/06.maintenance/harness-maintenance.md)
+and the [Registry](../../../99.templates/registry.json) with its typed template.
+Seven authority and five actual consumer rebindings are proved by E06/E07 and
+the current candidate E27/E28; both guides are typed active. Policy and product
+Runbook duties retain their proper owners. This Task alone records current
+execution evidence; no parallel completion ledger is created. Actual owner
+acceptance and valid residual duties remain explicit above.
+
+Completed owned diagnostic logs, reviewer captures/reports and controller
+scratch are deleted after their conclusions are durable. The stdlib coverage
+diagnostic leaves no script or result file. No disposable workspace output is
+created. Four pre-existing temporary directories not attributable to this run
+are preserved; their candidate source hashes do not match this task's known
+source, so Git status is not used as ownership proof. Private execution state,
+knowledge graph and persistent regression tests are retained. The exact1.1.0
+input package remains available through P17.
 
 ##### Next Owner
 
-Continue only P05 through defect repair, required review and checked delivery.
+P05 source delivery is complete; this update records actual results only.
+Result-only metadata and local-link checks passed in E32/E33. Normal result
+PR delivery finishes this Task handoff;
+they do not trigger another source implementation or universal re-review.
 The next verified matching input is prompts/P06-INDEPENDENT-REVIEW.md. Its
 Docker prerequisite chain is P00 through P05; reuse their maintained results,
 then inspect only actual missing selected-provider reviewer boundaries. A CLI
