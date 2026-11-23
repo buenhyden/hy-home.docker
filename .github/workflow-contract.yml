@@ -856,7 +856,6 @@
         "tests.validation.test_dev_data_boundary",
         "tests.validation.test_dev_pg_provision",
         "tests.validation.test_dev_valkey_acl",
-        "tests.validation.test_lab_credential_argv",
         "tests.validation.test_infra_tier_layout",
         "tests.validation.test_openwebui_oidc_entrypoint",
         "tests.validation.test_gatus_oidc",
@@ -876,10 +875,6 @@
         "tests.validation.test_quality_observability",
         "tests.validation.test_quality_object_store",
         "tests.validation.test_quality_raw_points",
-        "tests.validation.test_locust_telemetry",
-        "tests.validation.test_lab_isolation",
-        "tests.validation.test_lab_controller",
-        "tests.validation.test_lab_layout",
         "tests.validation.test_storybook_image",
         "tests.validation.test_crawl4ai_egress",
         "tests.validation.test_crawl4ai_adapter",
@@ -1052,9 +1047,6 @@
         "tests.lib.ops.test_secret_catalog",
         "tests.validation.test_secret_catalog_contract",
         "tests.lib.ops.test_secret_structure",
-        "tests.lib.ops.test_environment_admission",
-        "tests.lib.ops.test_compose_start",
-        "tests.lib.ops.test_compose_observation",
         "tests.validation.test_p07_quality_metrics",
         "tests.validation.test_p07_ci_routing",
         "tests.validation.test_p08_ci_routing",
@@ -1099,6 +1091,30 @@
       "timeout_minutes": 20,
       "opaque": true,
       "suite_key": "repository-integrity-regressions",
+      "guarantee": "none",
+      "rule_owner": "docs/00.workspace/04.quality/quality-standards.md#gate-and-fixture-ownership"
+    },
+    {
+      "gate_id": "leaf.execution-environment-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.lib.ops.test_environment_admission",
+        "tests.lib.ops.test_compose_start",
+        "tests.lib.ops.test_compose_observation",
+        "tests.validation.test_lab_credential_argv",
+        "tests.validation.test_locust_telemetry",
+        "tests.validation.test_lab_isolation",
+        "tests.validation.test_lab_controller",
+        "tests.validation.test_lab_layout",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "execution-environment-regressions",
       "guarantee": "none",
       "rule_owner": "docs/00.workspace/04.quality/quality-standards.md#gate-and-fixture-ownership"
     },
@@ -1361,7 +1377,8 @@
         "leaf.template-security-baseline",
         "leaf.conftest-policy",
         "leaf.conftest-policy-tests",
-        "leaf.compose-baseline-regressions"
+        "leaf.compose-baseline-regressions",
+        "leaf.execution-environment-regressions"
       ]
     },
     {
@@ -1552,6 +1569,7 @@
         "leaf.release-regressions",
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.repository-integrity-regressions",
+        "leaf.execution-environment-regressions",
         "leaf.p03-hermes",
         "leaf.p11-hermes",
         "ci.opsflow-smtp-node-package"
@@ -2408,8 +2426,7 @@
           "tests/lib/ops/test_dispatch_process.py"
         ],
         "root_gate_ids": [
-          "leaf.compose-baseline-regressions",
-          "leaf.repository-integrity-regressions"
+          "leaf.execution-environment-regressions"
         ]
       },
       {
@@ -2418,8 +2435,7 @@
           "tests/lib/ops/test_environment_admission.py"
         ],
         "root_gate_ids": [
-          "leaf.compose-baseline-regressions",
-          "leaf.repository-integrity-regressions"
+          "leaf.execution-environment-regressions"
         ]
       },
       {
@@ -2856,7 +2872,28 @@
           "scripts/lib/ops/compose_start.py",
           "scripts/lib/ops/compose_observation.py",
           "tests/lib/ops/test_compose_start.py",
-          "tests/lib/ops/test_compose_observation.py",
+          "tests/lib/ops/test_compose_observation.py"
+        ],
+        "root_gate_ids": [
+          "leaf.execution-environment-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/operations/lab.py",
+          "labs/",
+          "tests/validation/test_lab_controller.py",
+          "tests/validation/test_lab_isolation.py",
+          "tests/validation/test_lab_layout.py",
+          "tests/validation/test_lab_credential_argv.py",
+          "tests/validation/test_locust_telemetry.py"
+        ],
+        "root_gate_ids": [
+          "leaf.execution-environment-regressions"
+        ]
+      },
+      {
+        "prefixes": [
           "tests/validation/test_p07_quality_metrics.py",
           "tests/validation/test_p07_ci_routing.py",
           "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md",
