@@ -1,13 +1,13 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.3.0"
+version: "2.4.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -328,6 +328,11 @@ admission and owned execution recovery through current runners; keep actual
 service inventory, host/daemon resource budgets and source isolation distinct.
 Only P07 and its normal delivery execute here; P08/P12 feature probes and P17
 cutover remain their owners' work.
+
+The direct P08-NATIVE-BRIEF1.2.0 request adds criterion162/W178 in TSK-0106.
+It keeps BriefRecord 3.0.1 and the accepted criterion134 native evidence, and
+adds only the first-change order: a session whose request was observed shows
+and binds its brief before the first recognized workspace edit.
 
 #### Scope
 
@@ -1455,6 +1460,17 @@ target, backup, recovery boundary, and action-specific authorization.
      keep human acceptance separate. Maintain formal environment owner and
      actual consumers; deliver normal checks and independent boundary review.
      Keep the matching package through P17 and do not execute later prompts.
+
+162. TSK-0106 applies P08-NATIVE-BRIEF1.2.0 to the current Docker workspace.
+     Reuse the P07-selected Claude and Codex CLI routes and the accepted brief
+     evidence. Read-only discovery stays ungated. Once a request is observed,
+     refuse the first recognized workspace edit until a brief bound to the
+     current request, workspace and revision exists; refuse changed requests,
+     stale receipts and other workspaces. Show the user a notice for the first
+     allowed edit of each bound revision without storing brief prose. Keep a
+     bindable route for permission-restricted sessions. Observe one bounded
+     native refusal-then-edit per supported provider; a pre-execution account
+     refusal is recorded as blocked, never as a pass.
 
 ##### Evidence Requirements
 

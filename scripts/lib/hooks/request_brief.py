@@ -12,6 +12,7 @@ import secrets
 import stat
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 from scripts.lib.hooks.tool_payload import PayloadError, _relative_target
@@ -23,6 +24,14 @@ SESSION = re.compile(r"[A-Za-z0-9._-]{1,256}")
 REQUEST_REVISION = re.compile(r"[0-9a-f]{32}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 MISSING_BRIEF = "Request brief unavailable. Refresh and bind the current scope."
+# Ignored drafting folder: a BriefRecord written here is not a covered edit,
+# so a session can draft and bind it before its first workspace change.
+BRIEF_DRAFTS = ".request-brief/"
+NEEDS_BRIEF = (
+    "Show the request brief to the user and bind it before the first edit: "
+    "python3 -m scripts.lib.hooks.request_brief status SESSION, write the "
+    f"BriefRecord under {BRIEF_DRAFTS}, then bind SESSION < that file."
+)
 USAGE = "Use status SESSION, bind SESSION, or check SESSION dispatch REQUEST_REVISION BRIEF_REVISION PATH..."
 BINDING_FIELDS = {
     "request_ref",
@@ -338,10 +347,13 @@ def observe_request(root: Path, data: dict) -> str:
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError):
         return ""
     return (
-        "Request brief consistency is available for this session. After read-only "
-        "discovery, use `python3 -m scripts.lib.hooks.request_brief status "
-        f"{session}` from the repository root and bind the brief before covered "
-        "edits or a mutating worker handoff. Native authorization remains required."
+        "Request brief binding is available for this session. After read-only "
+        "discovery, show the user the goal, scope, changes, questions and checks, "
+        "then use `python3 -m scripts.lib.hooks.request_brief status "
+        f"{session}` from the repository root, write the BriefRecord under "
+        f"`{BRIEF_DRAFTS}` and bind it with `bind {session} < FILE`. The first "
+        "recognized edit or mutating worker handoff is refused until it is bound. "
+        "Native authorization remains required."
     )
 
 
@@ -619,9 +631,15 @@ def _check_scope(
 
 def guard_edits(root: Path, data: dict, edits: tuple[str, ...]) -> str | None:
     """Deny known edit targets for an enrolled session if consistency fails."""
+    root = root.resolve()
+    drafts = root / BRIEF_DRAFTS
+    edits = tuple(
+        path
+        for path in edits
+        if not Path(os.path.realpath(root / path)).is_relative_to(drafts)
+    )
     if not edits:
         return None
-    root = root.resolve()
     enrolled = False
     try:
         with (
@@ -629,7 +647,15 @@ def guard_edits(root: Path, data: dict, edits: tuple[str, ...]) -> str | None:
             _locked(directory, name) as (_, enrolled),
         ):
             if not enrolled:
-                return None
+                # P08: an observed request makes binding available, so the
+                # first recognized edit in this workspace waits for the brief.
+                inside = any(
+                    Path(os.path.realpath(root / path)).is_relative_to(root)
+                    for path in edits
+                )
+                return (
+                    NEEDS_BRIEF if inside and _event_in_workspace(root, data) else None
+                )
             if not _event_in_workspace(root, data):
                 return MISSING_BRIEF
             paths = {_path(root, path) for path in edits}
@@ -645,6 +671,50 @@ def guard_edits(root: Path, data: dict, edits: tuple[str, ...]) -> str | None:
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError):
         return MISSING_BRIEF
     return None
+
+
+def first_edit_notice(root: Path, data: dict) -> str | None:
+    """A user-visible notice for the first allowed edit of each brief revision.
+
+    It names only the revision and the action scope; brief prose stays out of
+    both the notice and the private state, which records the shown revision.
+    """
+    root = root.resolve()
+    try:
+        with (
+            _session_location(root, data.get("session_id")) as (directory, name),
+            _locked(directory, name, write=True) as (_, enrolled),
+        ):
+            if not enrolled:
+                return None
+            state = _load(directory, f"{name}.json")
+            brief = state.get("brief")
+            if (
+                not isinstance(brief, dict)
+                or type(brief.get("revision")) is not int
+                or not _strings(brief.get("allowed"))
+                or state.get("shown_revision") == brief["revision"]
+            ):
+                return None
+            _save(
+                directory,
+                f"{name}.json",
+                {
+                    **state,
+                    "shown_revision": brief["revision"],
+                    "shown_at": datetime.now(UTC).isoformat(timespec="seconds"),
+                },
+            )
+    except (FileNotFoundError, BriefError, OSError, ValueError):
+        return None
+    allowed, held = brief["allowed"], brief.get("held") or []
+    listed = ", ".join(allowed[:6]) + (" ..." if len(allowed) > 6 else "")
+    return (
+        f"Request brief revision {brief['revision']} is bound for this request: "
+        f"{len(allowed)} allowed action(s) ({listed})"
+        + (f"; {len(held)} held by an open question" if held else "")
+        + ". It records consistency only; native permission still applies."
+    )
 
 
 def main(argv: list[str] | None = None) -> int:

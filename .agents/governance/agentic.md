@@ -1,13 +1,13 @@
 ---
 title: "Agentic Engineering Policy"
-version: "4.0.0"
+version: "4.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: Agentic Engineering Policy
   layer: agent
-updated: "2026-11-20"
+updated: "2026-11-24"
 ---
 
 # Agentic Engineering Policy
@@ -96,7 +96,7 @@ None: this document states no exclusion.
 | AGENTIC-R34 | After read-only discovery | Required: state the goal, scope, acceptance checks and material assumptions of the current request | none | none |
 | AGENTIC-R35 | A material ambiguity | Required: ask about it only when its answer is needed for the affected action | none | none |
 | AGENTIC-R36 | Clear local work | Allowed: proceed within its existing authorization without a separate reply | none | none |
-| AGENTIC-R37 | Planned scoped edits or a mutating handoff, native binding available | Required: register the brief | none | none |
+| AGENTIC-R37 | Planned scoped edits or a mutating handoff, native binding available | Required: show the brief to the user, then register it before the first edit | Shared pre-tool hook refuses the first recognized workspace edit of a session whose request was observed until a brief is bound, and shows a one-time user notice per bound revision | none |
 | AGENTIC-R38 | Registering a brief | Required: obtain the observed binding with `python3 -m scripts.lib.hooks.request_brief status SESSION` from the workspace root | none | none |
 | AGENTIC-R39 | Registering a brief | Required: author a redacted BriefRecord 3.0.1 with the binding, brief ID and revision, goal, scope and non-goals, constraints, acceptance criteria, sourced facts, assumptions, questions, risk and expected checks | `scripts/lib/hooks/request_brief.py` validator (input shape) | none |
 | AGENTIC-R40 | Registering a brief | Required: record bounded tracked files that materially informed the decision in `material_inputs` with their observed SHA-256 digests | none | none |
@@ -122,7 +122,7 @@ None: this document states no exclusion.
 | AGENTIC-R60 | Before dispatch and before a delegated writer acts or resumes | Required: pass the same values and every owned path to `python3 -m scripts.lib.hooks.request_brief check SESSION dispatch REQUEST_REVISION BRIEF_REVISION PATH` | Shared pre-tool hook on recognized exact file edits in enrolled sessions (consistency only) | none |
 | AGENTIC-R61 | The delegation check fails | Required: stop the affected handoff or write until the supervisor reconciles the envelope with current authority | none | none |
 | AGENTIC-R62 | Always | Forbidden: refreshing the prepared revisions with a fresh status lookup alone | none | none |
-| AGENTIC-R63 | Unenrolled sessions, unrecognized writes, native dispatch or provider-internal task transitions | Required: report the coverage gap and use the actual controller and provider authorization boundary | none | none |
+| AGENTIC-R63 | Sessions with no observed request, unrecognized writes, native dispatch or provider-internal task transitions | Required: report the coverage gap and use the actual controller and provider authorization boundary | none | none |
 | AGENTIC-R64 | Delegating | Required: delegate only to a role declared in `.agents/roles/` and mapped by the provider registry | none | none |
 | AGENTIC-R65 | Every envelope | Required: name the role and primary responsibility, exact owned files or read-only scope, governing Spec/Plan/Task, acceptance checks, mutation and external-action boundaries, shared-worktree non-reversion rule and required return evidence | none | none |
 | AGENTIC-R66 | Workers | Required: report `working`, `blocked` or `done` | none | none |
@@ -222,7 +222,12 @@ only when its answer is needed for the affected action. Clear local work may
 proceed within its existing authorization without a separate reply.
 
 Register the brief when the native binding is available for planned
-scoped edits or a mutating handoff. Use
+scoped edits or a mutating handoff, after showing it to the user. Once the
+prompt hook has observed the request, the shared pre-tool hook refuses the
+first recognized workspace edit until the brief is bound. The first allowed
+edit of each bound revision shows the user a notice naming only that revision
+and its action scope; the brief prose stays out of the notice and the private
+state. Use
 `python3 -m scripts.lib.hooks.request_brief status SESSION` from the workspace
 root to obtain the binding that the prompt hook observed. Author a redacted
 BriefRecord 3.0.1 with that binding, a brief ID and revision, goal, scope and
@@ -241,7 +246,9 @@ or the preceding correlated reference within its previous action scope and
 unchanged inputs. If status includes `prior_authority_ref`, first confirm that
 the underlying approval still applies. Other references can be recorded for
 planning. They leave the adapter's mutation check unsatisfied. Send the
-record on stdin to `python3 -m scripts.lib.hooks.request_brief bind SESSION`.
+record on stdin to `python3 -m scripts.lib.hooks.request_brief bind SESSION`;
+a permission-restricted session writes it under the ignored `.request-brief/`
+folder, which the first-edit check skips, and redirects that file.
 The native event supplies the session identifier. Keep progress in the Task
 and treat the private hook binding as transient consistency state.
 
@@ -267,9 +274,10 @@ Supply every owned path after the two revisions. A failed check stops the
 affected handoff or write until the supervisor reconciles the envelope with
 current authority. A fresh status lookup alone cannot refresh the prepared
 revisions. The command checks consistency only. The shared pre-tool hook
-checks recognized exact file edits in enrolled sessions, including file-backed
-Task state changes. Unenrolled sessions, unrecognized writes, native dispatch
-and provider-internal task transitions have no such interception. Report that
+checks recognized exact file edits in sessions whose request was observed,
+including file-backed Task state changes. Sessions with no observed request,
+unrecognized writes, native dispatch and provider-internal task transitions
+have no such interception. Report that
 coverage gap and use the actual controller and provider authorization boundary.
 
 Delegate only to a role declared in `.agents/roles/` and mapped by the provider
@@ -387,7 +395,7 @@ Only the BriefRecord validator and the delegation consistency check are tied to 
 - Delegation contract rules (R59, R61-R80) name no check.
 - External capability intake rules (R81-R90) name no check.
 - Lifecycle rules (R91-R96) name no check.
-- The delegation check verifies consistency only; the shared pre-tool hook covers recognized exact file edits in enrolled sessions, and unenrolled sessions, unrecognized writes, native dispatch and provider-internal task transitions have no such interception.
+- The delegation check verifies consistency only; the shared pre-tool hook covers recognized exact file edits in sessions whose request was observed, and sessions with no observed request, unrecognized writes, native dispatch and provider-internal task transitions have no such interception.
 - Statements under Enforcement / Mechanisms are outside this table and are not restated here.
 
 #### Ownership

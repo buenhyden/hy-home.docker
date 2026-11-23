@@ -164,3 +164,6 @@ graphify-out/
 # capture (scripts/lib/hooks/session_capture.py)
 .workspace-memory/
 .workspace-capture/
+
+# Request brief drafts (scripts/lib/hooks/request_brief.py); never tracked.
+/.request-brief/
