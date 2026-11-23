@@ -1,6 +1,6 @@
 ---
 title: "P10 Session Capture and Analysis Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -148,6 +148,8 @@ needs the masked marker to end the value.
 | E11 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture | Adoption regression on e9b64846 | FAIL | Witnessed RED: a row written without a sequence kept ingest_seq NULL | required | - |
 | E12 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture | Adoption fix | PASS | Exit0; 20 tests with the adoption case; the analysis and observe suites also pass | required | E11 |
 | E13 | 164 | W180 | method=automated; tool=Python3.12.3; command=redact("token=[REDACTED]hunter2") on commit 15e68a5e, then python3 -m unittest tests.lib.hooks.test_session_capture | Masked-prefix value before and after the lookahead fix | PASS | Before: the value stayed unmasked with count 0; after: masked with count 1, an exact `[REDACTED]` still counts 0; 21 tests pass | required | - |
+| E14 | 164 | W180 | method=observation; tool=Python3.12.3 CLI; command=session_capture reconcile; read-only SQL counts; session_analysis.py run and candidates --all | Real stores after merge 29f0bfc2 | PASS | 1,021 events, none without a sequence, 1,021 distinct sequences and counter 1,021; the run read cursor 1015 to 1021 with the 4 adopted rows, backlog 0 | required | E09 |
+| E15 | 164 | W180 | method=observation; tool=Claude Code 2.1.331 Stop hook; command=read-only SQL on the real capture store | This session's Stop events after the merge | PASS | 2 claude Stop events stored the visible final response, 75 and 123 bytes, content_state stored; no Codex Stop observed | required | - |
 
 ##### Resolution Links
 
@@ -159,14 +161,12 @@ E03 resolves the witnessed failures in E02.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12,E13 | Implementation, focused regressions, a synthetic CLI run, the real migration and the timer move are recorded; the adoption of the 4 real rows after this fix merges, a scheduled run and owner acceptance remain | @buenhyden |
+| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12,E13,E14,E15 | Implementation, focused regressions, a synthetic CLI run, the real migration and row adoption, native Claude response capture and the timer move are recorded; a scheduled run of the new unit, a Codex response capture and owner acceptance remain | @buenhyden |
 
 ##### Remaining Conditions
 
-The real store's 4 rows without a sequence are adopted on the first
-connection after the adoption fix merges, and the next run reads them; that
-observation resolves E09. A scheduled run of the new unit is observed at its
-next 03:00 run. A native Codex capture of the final response waits for the Codex
+E14 records the adoption of the real store's 4 rows and resolves E09. A
+scheduled run of the new unit is observed at its next 03:00 run. A native Codex capture of the final response waits for the Codex
 usage limit to lift on 2026-11-27 12:53.
 
 #### Handoff
