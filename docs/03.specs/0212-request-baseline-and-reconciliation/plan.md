@@ -1,13 +1,13 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.3.0"
+version: "2.4.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -445,6 +445,16 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W175 | 159 | Reconcile current SDLC duties and typed workspace-guide authority; align normative relation rules and migrate actual owners/consumers while preserving incomplete obligations | W174 | TSK-0103 | Draft/active/type/scope/script-use RED/GREEN; affected Registry/manifest/document regressions and corpus checks; independent policy/security review; normal hooks and current hosted candidate |
 | W176 | 160 | Align impact-based review policy, real native parent/tool boundaries and reporting; reuse valid Codex spawned proof and observe only the missing current Claude route | W175 | TSK-0104 | Focused existing policy/producer checks, bounded real read/refusal/review evidence, protected boundary review and normal current-candidate delivery |
 | W177 | 161 | Complete P07 shared resource admission and owned execution lifecycle in existing Compose/LAB/dispatch consumers; reuse verified selected native routes | W176 | TSK-0105 | Focused RED/GREEN race, union, numeric budget, spawn-gap, PID identity, token cleanup tests; bounded real selected environment; manifest/routing/docs and independent boundary review plus normal hosted delivery |
+| W178 | 162 | Gate the first recognized edit on a bound brief once a request is observed, show a one-time user notice per bound revision and keep a bindable draft route | W177 | TSK-0106 | Focused RED/GREEN gate, notice, draft and dispatcher tests; one bounded native refusal-then-edit per supported provider; governance and document checks plus normal hosted delivery |
+
+###### Current P08 native brief boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0106](01.tasks/tsk-0106-p08-native-brief.md) owns criterion162/W178.
+The brief schema, store and prompt hook stay as accepted in criterion134; this
+unit changes only when an observed session may make its first edit and how the
+user sees that a brief is bound. Native runs use the existing accounts and
+installed CLIs within a small bounded budget.
 
 ###### Current P07 environment and admission boundary
 <!-- core-payload-level:4 -->
