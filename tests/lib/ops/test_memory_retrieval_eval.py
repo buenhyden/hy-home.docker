@@ -77,7 +77,8 @@ CASES = (
     ("ME05", "mixed-id", "restic 컨테이너", ["restic-container"], []),
     ("ME05b", "mixed-id", "hy-home-infra-restic", ["restic-container"], []),
     ("ME06", "updated", "Grafana port", ["grafana-port-new"], ["grafana-port-old"]),
-    ("ME07", "conflict", "Valkey persistence", ["valkey-persistence"], []),
+    # D09: an unresolved conflict holds the record out of default recall.
+    ("ME07", "conflict", "Valkey persistence", [], ["valkey-persistence"]),
     ("ME08", "abstain", "Kafka retention hours", [], []),
     ("ME10", "foreign", "foreign workspace secret", [], ["foreign-record"]),
     ("ME11", "old-baseline", "Airflow scheduler", [], ["old-baseline-note"]),
@@ -88,6 +89,7 @@ CASES = (
     ("MEW2", "expired", "Loki retention", [], ["expired-note"]),
 )
 STALE = {
+    "valkey-persistence",
     "grafana-port-old",
     "old-baseline-note",
     "erased-note",
@@ -239,14 +241,14 @@ class RetrievalEvaluationTests(unittest.TestCase):
         self.assertEqual(1.0, report["recall_at_k"])
         self.assertEqual(0, report["stale_hits"])
         self.assertEqual(0, report["unauthorized_disclosures"])
-        self.assertEqual("6/6", report["abstention_correct"])
+        self.assertEqual("7/7", report["abstention_correct"])
 
     def test_hits_explain_their_selection_and_stay_data(self):
         hits, _ = self.corpus.search("svc-gateway-port")
         self.assertEqual("exact-id", hits[0]["selection_reason"])
         self.assertEqual("data-only", hits[0]["authority"])
-        (conflicted,), _ = self.corpus.search("Valkey persistence")
-        self.assertEqual(1, conflicted["unresolved_conflicts"])
+        conflicted, _ = self.corpus.search("Valkey persistence")
+        self.assertEqual([], conflicted)
         (poison,), _ = self.corpus.search("approve push")
         self.assertEqual("data-only", poison["authority"])
 

@@ -25,6 +25,7 @@ from scripts.lib.ops.memory_sources import (  # noqa: E402
     REVIEW_STATES,
     reuse_state,
     run_git,
+    sources_state,
 )
 
 SCHEMA_VERSION = 3
@@ -365,11 +366,20 @@ def _context(connection: sqlite3.Connection, as_of: str | None) -> dict[str, obj
             ):
                 for target in meta.get("supersedes", []):
                     superseded_by.setdefault(target, []).append(memory_id)
+    # A stored conflict against a record's current revision holds that
+    # revision out of default reads until a later revision reconciles it.
+    conflicted: dict[str, set[int]] = {}
+    if "conflicts" in _sidecars(connection):
+        for memory_id, revision in connection.execute(
+            "SELECT DISTINCT memory_id, current_revision FROM conflicts"
+        ):
+            conflicted.setdefault(memory_id, set()).add(revision)
     return {
         "baseline": baseline,
         "as_of": _timestamp(as_of, "as_of")
         or dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
         "superseded_by": superseded_by,
+        "conflicted": conflicted,
     }
 
 
@@ -424,8 +434,16 @@ def _view(
     )
     # A reviewed record is reusable only in the current baseline, inside its
     # validity window and while no current record supersedes it.
+    as_of = context["as_of"]
+    source = None
+    if provenance["review_state"] == "current":
+        # Pins already passed when the record is current; otherwise name why.
+        source = (
+            "current"
+            if state == "current"
+            else sources_state(record["source_refs"], cwd or Path.cwd(), as_of)
+        )
     if state == "current":
-        as_of = context["as_of"]
         if record["baseline_id"] != context["baseline"]:
             state = "other-baseline"
         elif record["invalidated_by"]:
@@ -434,7 +452,9 @@ def _view(
             record["valid_until"] and as_of >= record["valid_until"]
         ):
             state = "outside-validity"
-    record["provenance"] = {**provenance, "reuse_state": state}
+        elif row["revision"] in context["conflicted"].get(row["memory_id"], ()):
+            state = "conflicted"
+    record["provenance"] = {**provenance, "reuse_state": state, "source_state": source}
     return record
 
 
@@ -678,6 +698,7 @@ def _put(
     supersedes = sorted(set(supersedes))
     if (
         not 1 <= len(memory_id) <= 128
+        or type(expected_revision) is not int
         or expected_revision < 0
         or tier not in TIERS
         or sensitivity not in SENSITIVITY
@@ -729,6 +750,7 @@ def _put(
             sort_keys=True,
             ensure_ascii=False,
             separators=(",", ":"),
+            allow_nan=False,
         )
 
     try:
@@ -841,7 +863,13 @@ def put(connection: sqlite3.Connection, **arguments) -> int:
     manager = MemoryCapacity(path)
     identity = arguments.get("request_key")
     inputs = {key: value for key, value in arguments.items() if key != "cwd"}
-    fingerprint = operation_fingerprint(inputs)
+    try:
+        # Typed canonical JSON: a non-finite number has no canonical form.
+        fingerprint = operation_fingerprint(inputs)
+    except (TypeError, ValueError) as error:
+        raise MemoryStoreError(
+            EXIT_UNAVAILABLE, "MEMORY_INVALID: request is not canonical JSON"
+        ) from error
     key = "put:" + (
         hashlib.sha256((identity + fingerprint).encode()).hexdigest()
         if identity

@@ -5,8 +5,11 @@ Each run reads the capture store read-only over the window since the last
 completed run, groups repeated prompts, capture gaps and capture failures,
 and records candidates with their source events. A lease with a fencing
 token stops a duplicate run, an analysis key makes a repeated window a no-op,
-and a missed day is caught up by the next run. Candidates are proposals:
-accepting one records a decision and changes no policy, memory or check.
+and a missed day is caught up by the next run. Candidates are proposals: an
+accepted decision and its promotion intent are recorded together, and the
+outbox writes one unreviewed `candidate` memory record per decision through the
+memory CLI with a stable request key. Raw captured text is never copied, and
+no policy, skill or check changes.
 """
 
 from __future__ import annotations
@@ -53,7 +56,29 @@ SCHEMA = (
     " proposed_change TEXT, expected_benefit TEXT, risk TEXT, test_plan TEXT,"
     " frequency INTEGER, conditions TEXT, source_event_ids TEXT,"
     " decision TEXT NOT NULL DEFAULT 'pending', decided_by TEXT, decided_at TEXT)",
+    # The promotion outbox: one intent per accepted, reviewed candidate.
+    "CREATE TABLE IF NOT EXISTS promotions (candidate_id TEXT PRIMARY KEY,"
+    " review_digest TEXT NOT NULL, request TEXT NOT NULL,"
+    " state TEXT NOT NULL DEFAULT 'pending', memory_revision INTEGER,"
+    " attempts INTEGER NOT NULL DEFAULT 0, last_error TEXT,"
+    " created_at TEXT NOT NULL, settled_at TEXT)",
 )
+# The reviewed fields a promotion is bound to; `pattern` holds captured text.
+REVIEWED = (
+    "rule",
+    "hypothesis",
+    "proposed_change",
+    "expected_benefit",
+    "risk",
+    "test_plan",
+    "frequency",
+    "conditions",
+    "source_event_ids",
+    "decision",
+    "decided_by",
+    "decided_at",
+)
+MEMORY_CLI = ROOT / "scripts/operations/agent_memory.py"
 
 
 class Busy(Exception):
@@ -385,20 +410,194 @@ def candidates(directory: Path, everything: bool) -> list[dict]:
         connection.close()
 
 
+def review_digest(row) -> str:
+    return digest(*(row[field] for field in REVIEWED))
+
+
+def _content_expiry(directory: Path, event_ids: list[str], decided_at: str) -> str:
+    """When the newest source event's captured content leaves retention."""
+    path = directory / capture.STORE_NAME
+    newest = None
+    if event_ids and path.is_file():
+        source = sqlite3.connect(path.absolute().as_uri() + "?mode=ro", uri=True)
+        try:
+            marks = ",".join("?" * len(event_ids))
+            newest = source.execute(
+                f"SELECT max(captured_at) FROM events WHERE event_id IN ({marks})",
+                event_ids,
+            ).fetchone()[0]
+        finally:
+            source.close()
+    if newest is None:  # already pruned: the content has expired
+        return decided_at
+    expiry = dt.datetime.fromisoformat(newest) + dt.timedelta(
+        days=capture.RETENTION_DAYS
+    )
+    return stamp(expiry.astimezone(dt.UTC))
+
+
+def _intent(directory: Path, row) -> dict:
+    """The whole memory request, fixed at decision time so a retry is identical."""
+    reviewed = review_digest(row)
+    events = json.loads(row["source_event_ids"])
+    references = [
+        {
+            "kind": "session-analysis-candidate",
+            "candidate_id": row["candidate_id"],
+            "review_digest": reviewed,
+        }
+    ]
+    if events:
+        references.append(
+            {
+                "kind": "session-events",
+                "event_ids": events,
+                "content_expires_at": _content_expiry(
+                    directory, events, row["decided_at"]
+                ),
+            }
+        )
+    body = (
+        f"Session analysis candidate ({row['rule']}) accepted by"
+        f" {row['decided_by']} at {row['decided_at']}.\n"
+        f"Hypothesis: {row['hypothesis']}\n"
+        f"Proposed change: {row['proposed_change']}\n"
+        f"Expected benefit: {row['expected_benefit']}\n"
+        f"Risk: {row['risk']}\n"
+        f"Test plan: {row['test_plan']}\n"
+        f"Frequency: {row['frequency']} ({row['conditions']})\n"
+    )
+    return {
+        "memory_id": "session-analysis-" + row["candidate_id"][:40],
+        "request_key": f"promotion:{row['candidate_id'][:40]}:{reviewed[:16]}",
+        "owner": "session-analysis",
+        "body": body,
+        "source_refs": references,
+    }
+
+
 def decide(directory: Path, candidate_id: str, decision: str, owner: str) -> dict:
-    """Record a review decision; it adopts nothing by itself."""
+    """Record a review decision; an acceptance also records its promotion intent."""
     connection = connect(directory)
     try:
-        changed = connection.execute(
-            "UPDATE candidates SET decision=?, decided_by=?, decided_at=?"
-            " WHERE candidate_id=? AND decision='pending'",
-            (decision, owner, stamp(now()), candidate_id),
-        ).rowcount
+        connection.execute("BEGIN IMMEDIATE")
+        try:
+            changed = connection.execute(
+                "UPDATE candidates SET decision=?, decided_by=?, decided_at=?"
+                " WHERE candidate_id=? AND decision='pending'",
+                (decision, owner, stamp(now()), candidate_id),
+            ).rowcount
+            if changed and decision == "accepted":
+                row = connection.execute(
+                    "SELECT * FROM candidates WHERE candidate_id=?", (candidate_id,)
+                ).fetchone()
+                connection.execute(
+                    "INSERT INTO promotions (candidate_id, review_digest, request,"
+                    " created_at) VALUES (?,?,?,?)",
+                    (
+                        candidate_id,
+                        review_digest(row),
+                        json.dumps(_intent(directory, row), sort_keys=True),
+                        stamp(now()),
+                    ),
+                )
+            connection.execute("COMMIT")
+        except BaseException:
+            connection.execute("ROLLBACK")
+            raise
     finally:
         connection.close()
     if not changed:
         raise LookupError("no pending candidate with that ID")
     return {"candidate_id": candidate_id, "decision": decision}
+
+
+class PromotionError(Exception):
+    """The memory CLI refused or failed a promotion write."""
+
+
+def _cli_writer(request: dict) -> int:
+    """Write through the sanctioned memory CLI; nothing waits under a lock here."""
+    arguments = [
+        sys.executable,
+        str(MEMORY_CLI),
+        "put",
+        request["memory_id"],
+        "--expected-revision",
+        "0",
+        "--tier",
+        "long-term",
+        "--kind",
+        "experience",
+        "--review-state",
+        "candidate",
+        "--owner",
+        request["owner"],
+        "--request-key",
+        request["request_key"],
+    ]
+    for reference in request["source_refs"]:
+        arguments += ["--source-ref", json.dumps(reference, sort_keys=True)]
+    result = subprocess.run(
+        arguments,
+        input=request["body"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    if result.returncode:
+        reason = (result.stderr.strip().splitlines() or ["no message"])[0]
+        raise PromotionError(f"exit {result.returncode}: {reason[:200]}")
+    return int(json.loads(result.stdout)["revision"])
+
+
+def _receipt(connection, candidate_id: str, revision: int) -> None:
+    connection.execute(
+        "UPDATE promotions SET state='promoted', memory_revision=?, settled_at=?"
+        " WHERE candidate_id=? AND state='pending'",
+        (revision, stamp(now()), candidate_id),
+    )
+
+
+def promote(directory: Path, writer=None) -> dict:
+    """Drain pending promotion intents; a retry reuses the same request key."""
+    writer = writer or _cli_writer
+    result = {"promoted": [], "stale": [], "pending": []}
+    connection = connect(directory)
+    try:
+        intents = connection.execute(
+            "SELECT p.candidate_id, p.review_digest, p.request, c.* FROM promotions p"
+            " JOIN candidates c USING (candidate_id) WHERE p.state='pending'"
+            " ORDER BY p.created_at"
+        ).fetchall()
+        for intent in intents:
+            candidate_id = intent["candidate_id"]
+            if review_digest(intent) != intent["review_digest"]:
+                # The reviewed revision changed; the old promotion never runs.
+                connection.execute(
+                    "UPDATE promotions SET state='stale', settled_at=?"
+                    " WHERE candidate_id=? AND state='pending'",
+                    (stamp(now()), candidate_id),
+                )
+                result["stale"].append(candidate_id)
+                continue
+            try:
+                revision = writer(json.loads(intent["request"]))
+            except (PromotionError, subprocess.TimeoutExpired, OSError) as error:
+                connection.execute(
+                    "UPDATE promotions SET attempts=attempts+1, last_error=?"
+                    " WHERE candidate_id=?",
+                    (str(error)[:200], candidate_id),
+                )
+                result["pending"].append(candidate_id)
+                continue
+            _receipt(connection, candidate_id, revision)
+            result["promoted"].append(candidate_id)
+    finally:
+        connection.close()
+    return result
 
 
 def install_timer(unit_dir: Path, on_calendar: str = ON_CALENDAR) -> dict:
@@ -434,6 +633,7 @@ def main(argv: list[str] | None = None) -> int:
     deciding.add_argument("candidate_id")
     deciding.add_argument("decision", choices=("accepted", "rejected"))
     deciding.add_argument("--owner", required=True)
+    commands.add_parser("promote")
     commands.add_parser("install-timer")
     args = parser.parse_args(argv)
     directory = capture.capture_dir()
@@ -451,6 +651,10 @@ def main(argv: list[str] | None = None) -> int:
             result = candidates(directory, args.all)
         elif args.command == "decide":
             result = decide(directory, args.candidate_id, args.decision, args.owner)
+            if args.decision == "accepted":
+                result["promotion"] = promote(directory)
+        elif args.command == "promote":
+            result = {"promotion": promote(directory)}
         else:
             result = install_timer(Path.home() / ".config" / "systemd" / "user")
     except (Fenced, KeyboardInterrupt) as error:
@@ -462,6 +666,9 @@ def main(argv: list[str] | None = None) -> int:
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if isinstance(result, dict) and result.get("state") == "skipped":
         return EXIT_BUSY
+    if isinstance(result, dict) and result.get("promotion", {}).get("pending"):
+        print("SESSION_ANALYSIS_PROMOTION_PENDING: retry with promote", file=sys.stderr)
+        return 1
     return 0
 
 
