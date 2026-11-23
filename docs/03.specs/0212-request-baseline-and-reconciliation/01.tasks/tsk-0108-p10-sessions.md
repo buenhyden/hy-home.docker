@@ -1,6 +1,6 @@
 ---
 title: "P10 Session Capture and Analysis Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -212,7 +212,7 @@ evidence only.
 
 ##### Next Owner
 
-The owner decides criterion164. The next input for this workspace is
+The owner decides criterion164 in P16 (decision of 2026-11-24). The next input for this workspace is
 P11-FORECAST; it is not executed automatically. Keep the package through P17.
 
 ## 적용과 확인
