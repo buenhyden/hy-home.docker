@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.4.0"
+version: "2.5.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -333,6 +333,11 @@ The direct P08-NATIVE-BRIEF1.2.0 request adds criterion162/W178 in TSK-0106.
 It keeps BriefRecord 3.0.1 and the accepted criterion134 native evidence, and
 adds only the first-change order: a session whose request was observed shows
 and binds its brief before the first recognized workspace edit.
+
+The direct P09-MEMORY1.2.0 request adds criterion163/W179 in TSK-0107. It
+keeps schema 3, CAS, search and the observed TSK-0082 round trip and
+stale-write refusal, and adds only the D09 delta: source states, conflicted
+exclusion, typed request values and the revision-bound promotion outbox.
 
 #### Scope
 
@@ -1471,6 +1476,16 @@ target, backup, recovery boundary, and action-specific authorization.
      bindable route for permission-restricted sessions. Observe one bounded
      native refusal-then-edit per supported provider; a pre-execution account
      refusal is recorded as blocked, never as a pass.
+
+163. TSK-0107 applies P09-MEMORY1.2.0 to the current Docker workspace. Keep
+     schema 3, CAS, search and the observed cross-provider round trip. Report
+     each reviewed record's source state as current, changed, unavailable or
+     content_expired; hold a record with a stored conflict against its
+     current revision out of default reads; refuse a boolean revision and a
+     non-finite number. Record an accepted analysis decision with its whole
+     promotion request in one transaction, write it once as an unreviewed
+     memory candidate through the memory CLI with a stable key, never copy
+     captured text, skip a changed review and never revive an erased record.
 
 ##### Evidence Requirements
 

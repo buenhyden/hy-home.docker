@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.4.0"
+version: "2.5.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -446,6 +446,15 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W176 | 160 | Align impact-based review policy, real native parent/tool boundaries and reporting; reuse valid Codex spawned proof and observe only the missing current Claude route | W175 | TSK-0104 | Focused existing policy/producer checks, bounded real read/refusal/review evidence, protected boundary review and normal current-candidate delivery |
 | W177 | 161 | Complete P07 shared resource admission and owned execution lifecycle in existing Compose/LAB/dispatch consumers; reuse verified selected native routes | W176 | TSK-0105 | Focused RED/GREEN race, union, numeric budget, spawn-gap, PID identity, token cleanup tests; bounded real selected environment; manifest/routing/docs and independent boundary review plus normal hosted delivery |
 | W178 | 162 | Gate the first recognized edit on a bound brief once a request is observed, show a one-time user notice per bound revision and keep a bindable draft route | W177 | TSK-0106 | Focused RED/GREEN gate, notice, draft and dispatcher tests; one bounded native refusal-then-edit per supported provider; governance and document checks plus normal hosted delivery |
+| W179 | 163 | Add D09 source states, conflicted exclusion, typed request values and the revision-bound promotion outbox to the existing memory and analysis stores | W178 | TSK-0107 | Focused RED/GREEN memory, retrieval and promotion tests; a disposable-clone CLI promotion; read-only real store reads; governance and document checks plus normal hosted delivery |
+
+###### Current P09 shared memory boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0107](01.tasks/tsk-0107-p09-memory.md) owns criterion163/W179. Schema 3,
+CAS, search, capacity and the TSK-0082 round trip stay as observed; no store
+migration is added. The real stores are only read; deciding a real candidate
+and the R2 copy removal of criterion138 stay with their owners.
 
 ###### Current P08 native brief boundary
 <!-- core-payload-level:4 -->
