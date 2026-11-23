@@ -1,13 +1,13 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "3.1.0"
+version: "3.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "templates"
 ---
 
@@ -77,6 +77,8 @@ Stage 99가 소유하는 것:
 | [`contracts/document-profile.schema.json`](01.contracts/document-profile.schema.json) | machine | registry shape |
 | [`contracts/document-frontmatter.schema.json`](01.contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
 | [`contracts/template-definition.schema.json`](01.contracts/template-definition.schema.json) | machine | TemplateDefinition 출력 계약 3.0.0. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
+| [`contracts/common-document-contract.json`](01.contracts/common-document-contract.json) | machine | 네 workspace가 공유하는 공통 문서 계약 `WORKSPACE-DOCUMENT-CORE`. 공통 원본과 같은 바이트이며 판본과 SHA-256은 Registry `common.document_core`가 고정합니다 |
+| [`contracts/document-payload-encoding.json`](01.contracts/document-payload-encoding.json) | machine | 이 workspace의 로컬 어댑터. 공통 외피를 Markdown에 싣는 marker, heading 이동, 깊은 heading 표시를 소유하며 지원하는 공통 판본을 명시합니다. marker 문자열은 기존 문서와의 호환을 위해 바꾸지 않습니다 |
 | [`contracts/document-role-design.json`](01.contracts/document-role-design.json) | machine | 공통 문서 역할 설계 core `workspace-document-role-design`. 거버넌스 패키지 원본과 같은 바이트이며 판본과 SHA-256은 Registry `common.role_design_contract`가 고정합니다 |
 | [`contracts/document-role-design.schema.json`](01.contracts/document-role-design.schema.json) | machine | 위 core의 구조 schema. Registry가 이 파일도 SHA-256으로 고정합니다 |
 | [`02.templates/`](02.templates/) | copy source | profile-referenced authoring forms |

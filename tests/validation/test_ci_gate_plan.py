@@ -1821,13 +1821,16 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self.assertIn("ci-gate-routing-context", err.getvalue())
 
     def test_routing_uses_stdlib_and_authenticated_merge_without_evidence(self) -> None:
-        from scripts.lib.document_governance.common_document import CORE_PATH
+        from scripts.lib.document_governance.common_document import (
+            ADAPTER_PATH,
+            CORE_PATH,
+        )
 
         contract_path = ".github/workflow-contract.yml"
         registry = contract.parse_gate_registry(
             contract.load_contract_document(ROOT), contract_path
         )
-        input_paths = {contract_path, "scripts/manifest.yaml", CORE_PATH}
+        input_paths = {contract_path, "scripts/manifest.yaml", CORE_PATH, ADAPTER_PATH}
         for node in registry.nodes:
             if node.entrypoint is not None:
                 input_paths.add(node.entrypoint.as_posix())

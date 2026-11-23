@@ -16,7 +16,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.lib.document_governance.common_document import CORE_PATH
+from scripts.lib.document_governance.common_document import ADAPTER_PATH, CORE_PATH
 from scripts.lib.gate import ci_gate_adapters
 from scripts.lib.gate import ci_gate_contract as gate_contract
 
@@ -2073,6 +2073,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             shutil.copytree(ROOT / "docs/00.workspace", root / "docs/00.workspace")
             (root / CORE_PATH).parent.mkdir(parents=True)
             shutil.copy2(ROOT / CORE_PATH, root / CORE_PATH)
+            shutil.copy2(ROOT / ADAPTER_PATH, root / ADAPTER_PATH)
             # Registry validation checks all admitted cwd values, including
             # the P05 Node leaves; this fixture does not execute npm there.
             (

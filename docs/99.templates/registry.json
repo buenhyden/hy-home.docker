@@ -1701,9 +1701,15 @@
     },
     "document_core": {
       "contract_id": "WORKSPACE-DOCUMENT-CORE",
-      "contract_version": "1.0.0",
+      "contract_version": "1.1.0",
       "source_path": "docs/99.templates/01.contracts/common-document-contract.json",
-      "source_sha256": "f9368ee8e4ed1484fba7ae31ef39e74c1f5adcaff52ec41508735e85fea2993f",
+      "source_sha256": "b4bf5e0d58dd4b3921cd32a5b5d25550fa901d507d7e846a74e2949ff195838f",
+      "payload_adapter": {
+        "adapter_id": "HY-HOME-DOCKER-PAYLOAD-ENCODING",
+        "adapter_version": "1.0.0",
+        "source_path": "docs/99.templates/01.contracts/document-payload-encoding.json",
+        "source_sha256": "8bc556be9d71f5e533e66e8876e2173beaf05f6022a2131252608572a0692bc2"
+      },
       "adoption": "verified",
       "profile_bindings": {
         "requirements-package": {

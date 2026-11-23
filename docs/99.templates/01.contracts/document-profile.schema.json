@@ -1171,6 +1171,7 @@
             "contract_version",
             "source_path",
             "source_sha256",
+            "payload_adapter",
             "adoption",
             "profile_bindings",
             "path_bindings"
@@ -1188,6 +1189,31 @@
             "source_sha256": {
               "type": "string",
               "pattern": "^[0-9a-f]{64}$(?!\\n)"
+            },
+            "payload_adapter": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "adapter_id",
+                "adapter_version",
+                "source_path",
+                "source_sha256"
+              ],
+              "properties": {
+                "adapter_id": {
+                  "const": "HY-HOME-DOCKER-PAYLOAD-ENCODING"
+                },
+                "adapter_version": {
+                  "$ref": "#/properties/common/properties/contract_version"
+                },
+                "source_path": {
+                  "const": "docs/99.templates/01.contracts/document-payload-encoding.json"
+                },
+                "source_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$(?!\\n)"
+                }
+              }
             },
             "adoption": {
               "enum": [

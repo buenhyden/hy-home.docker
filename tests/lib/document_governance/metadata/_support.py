@@ -123,6 +123,9 @@ def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
             if role.get("native_source")
         ),
         pathlib.Path(values["common"]["document_core"]["source_path"]),
+        pathlib.Path(
+            values["common"]["document_core"]["payload_adapter"]["source_path"]
+        ),
         *(
             pathlib.Path(values["common"]["role_design_contract"][key])
             for key in ("source_path", "schema_path")

@@ -1,6 +1,6 @@
 ---
 title: "P04 Templates Task"
-version: "0.1.13"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0102"
 parent_ids:
@@ -127,6 +127,28 @@ owners intentionally add P04 scope/contract requirements. These are observed
 counts, not acceptance gates. Workspace scope now names hy-home.docker; Stage00
 shared rules stay workspace-scoped rather than acquiring agent-only authority.
 
+R02 1.2.0: the direct R02-CONTRACT 1.2.0 request reuses criterion158/W174 from clean
+`main` e5aa5b8e on branch `codex/r02-contract-1-2-0` (D19, D21 R02). The four
+workspaces' shared `WORKSPACE-DOCUMENT-CORE` 1.1.0 is adopted byte for byte:
+normalized digest `d9f359861a84544f8d042cb531372292af22345e61aca7c64737a9213f5373d0`.
+It differs from the earlier local 1.0.0 file only in its shared Korean
+`section_rules`, its `state` and the absence of `payload_encoding`.
+
+Docker's Markdown encoding moves to the new local adapter
+`docs/99.templates/01.contracts/document-payload-encoding.json`
+(`HY-HOME-DOCKER-PAYLOAD-ENCODING` 1.0.0). The adapter declares that it
+encodes core 1.1.0 only. Its marker literal stays
+`<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->`, so none of the 668
+marked documents is rewritten. The Registry binding pins the core version and
+SHA-256 plus the adapter identity, version and SHA-256, and the profile schema
+requires that pairing. Readers combine core and adapter only for a declared
+pairing. The 44 template definitions' `작성 규칙` comments now carry the shared
+rule for each common H3, and the metadata validator rejects drift. Only
+`workspace-guide.template.md` had paraphrased local guidance. Envelope bodies,
+payloads, native outputs and relation links are unchanged. The version catalog
+in the documentation protocol gains the missing `document-core-contract` and
+`payload-encoding-adapter` rows.
+
 ##### Blockers and Decisions
 
 No additional user choice is unresolved. Use explicit typed adapters and
@@ -185,6 +207,15 @@ active, PASS or Task completed into owner acceptance.
 | E42 | 158 | W174 | Authorized source delivery | PR1134; expected sourced1fd9efe; authenticated merge979599a91dea2cc85e803a7714112e0dcce19760 | PASS | User-authorized normal commits, push and merge completed; PR read-back confirms merged at2026-11-20T05:39:10Z. Strict candidate-quality/App15368, enforced admins, required conversation resolution, zero required human approvals and disabled code-owner approval are read back; threads resolved, rulesets empty. Merge API checks expected head, with no bypass or protection change. Fetch plus ff-only advances the same local branch; no checkout/reset and no owner acceptance inferred | required | - |
 | E43 | 158 | W174 | Completed temporary artifact cleanup | Owned P04 migration/diagnostic files; matching input package and persistent regressions | PASS | Remove the three completed migration JSONs and122 closed diagnostics, then12 completed delivery/check logs after conclusions are durable. Retain only the still-active local brief copy until receipt delivery finishes; private execution state, persistent regressions, Graphify and other work are preserved. Matching1.1.0 input package remains present through P17. No owned completed output remains under _workspace | required | - |
 | E44 | 158 | W174 | Post-merge main-security observation | Merged979599a91; push run44682448276 | PASS | Actual main-security job136108802354 succeeds. Candidate routing/core/documents/quality are skipped on this push, not repeated or reported as new candidate passes. This distinct observation does not imply provider runtime or owner acceptance | required | - |
+| E45 | 158 | W174 | R02 1.2.0 package, D19 and current contract comparison | Clean main e5aa5b8e; package common contract 1.1.0 | PASS | Field digests show that only `section_rules`, state, version and the Docker-only `payload_encoding` differ. The readers are `common_document`, metadata reference, `template_definition` and `ci_gate_contract`. 44 template definitions carry rule comments, and 668 documents carry the marker | required | - |
+| E46 | 158 | W174 | python3 -m unittest tests.lib.document_governance.test_template_definition.CommonDocumentContractTests tests.lib.document_governance.metadata.test_reference | Adoption, adapter-pairing and guidance regressions before the change | FAIL | Witnessed RED: no `ADAPTER_PATH`, `_combine` or Registry `payload_adapter`; every common-core fixture failed | required | - |
+| E47 | 158 | W174 | python3 -m unittest tests.lib.document_governance.metadata.test_reference.RepositoryContractIntegrationTests.test_template_guidance_must_match_the_common_section_rules | Current source with only the guidance check removed | FAIL | Witnessed RED on the behavior itself: drifted guidance produced no finding | required | - |
+| E48 | 158 | W174 | python3 -m unittest tests.lib.document_governance.metadata.test_reference.RepositoryContractIntegrationTests.test_template_guidance_must_match_the_common_section_rules | Guidance check restored | PASS | Exit0; drift yields `document-core-definition-guidance` | required | E47 |
+| E49 | 158 | W174 | python3 -m unittest tests.lib.document_governance.test_template_definition.CommonDocumentContractTests tests.lib.document_governance.metadata.test_reference | Adopted core, local adapter, Registry and schema binding, 44 templates and fixture updates | PASS | Exit0; covers the pinned normalized digest, refusal of an undeclared core version, and adapter tamper, identity, marker and pairing failures | required | E46 |
+| E50 | 158 | W174 | python3 -m unittest of `template_definition`, metadata reference/heading, registry, `metadata_validator`, language, gate contract, workflow contract, `ci_gate_plan` and `validator_entrypoints` | R02 candidate | PASS | Exit0; 643 tests. Fixtures that stage the core now also stage the adapter | required | - |
+| E51 | 158 | W174 | python3 scripts/validation/check-document-metadata.py --mode check-contracts; live `_common_core_findings` | R02 candidate repository | PASS | Repository contracts violations0; the live core check returns no findings; the combined view reports core 1.1.0 with the unchanged marker | required | - |
+| E52 | 158 | W174 | python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main | First R02 candidate with the README version text | FAIL | Two runtime-version findings in docs/99.templates/README.md, which spelled the core version in prose | required | - |
+| E53 | 158 | W174 | python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main | README routes the version to the Registry | PASS | Exit0; selected862, violations0. Links mode all PASS; agent governance contract PASS | required | E52 |
 
 ##### Resolution Links
 
@@ -201,7 +232,7 @@ changed contract unless its dependency scope and guarantee still match.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 158 | pending | E09, E11, E39, E40, E42 | Implementation, scoped verification and source delivery complete; actual owner acceptance remains a separate pending decision | @buenhyden |
+| 158 | pending | E09, E11, E39, E40, E42, E49, E50, E51, E53  | Implementation, scoped verification and source delivery complete; actual owner acceptance remains a separate pending decision | @buenhyden |
 
 ##### Remaining Conditions
 
@@ -209,6 +240,9 @@ Criterion158/W174 implementation, representative production/consumption,
 focused negatives, related corpus checks, independent review, current hosted
 verification and source delivery are complete. Actual owner acceptance
 remains pending for the P16 acceptance owner; a merge does not supply it.
+The R02 1.2.0 adoption of common core 1.1.0 and its local adapter is
+implemented and locally verified (E49-E53); its hosted PR result is recorded
+with the delivery.
 
 This Task observes generated outputs and their actual source consumers, not
 live provider picker discovery, skill invocation or trusted-hook delivery.

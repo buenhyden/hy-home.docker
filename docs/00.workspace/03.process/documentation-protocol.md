@@ -1,13 +1,13 @@
 ---
 title: "Documentation Protocol"
-version: "8.1.0"
+version: "8.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 ---
 
 # Documentation Protocol
@@ -694,7 +694,8 @@ selection follows changed paths and affected inbound links, without reciprocal
 links or external HTTP checks at commit.
 
 - Every Markdown template definition and new governed Markdown output uses
-  `WORKSPACE-DOCUMENT-CORE` 1.0.0's four shared H2/eight H3 sections.
+  `WORKSPACE-DOCUMENT-CORE` 1.1.0's four shared H2/eight H3 sections, each
+  carrying its shared section rule as the template's authoring comment.
   Stage99's formal common document contract owns their names, order and meaning.
   Role-specific headings, tables, conditions and prohibitions remain inside
   `내용 계약` / `본문과 규칙`; Registry section names identify this logical
@@ -852,6 +853,8 @@ the copies against the Python grammar, including rejection of a final newline.
 | `new-document-start` | Registry `common.template_initial_version` | `0.1.0` | Numeric value | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, template checks | The first version a new document carries | The Registry |
 | `common-form-contract` | Registry `common.common_form_contract.contract_version` | `1.0.0` | Numeric version; `contract_id` holds `COMMON-DOC-FORM-1` separately | `docs/99.templates/registry.json` | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
 | `role-design-contract` | Registry `common.role_design_contract.contract_version` | `4.0.0` | Numeric version; `contract_id` holds `workspace-document-role-design`, and `source_sha256` and `schema_sha256` pin the tracked core and its schema | `docs/99.templates/01.contracts/document-role-design.json` | Stage 99 owner, adopting the shared core on the owner's decision of 2026-11-17 | `template_definition.py`, `check-document-metadata.py --mode check-contracts` | The H2, H3, requiredness and table columns of each template role that declares `core_role` | The shared core, adopted per workspace |
+| `document-core-contract` | Registry `common.document_core.contract_version` | `1.1.0` | Numeric version; the shared core is adopted byte for byte and `source_sha256` pins it | `docs/99.templates/01.contracts/common-document-contract.json` | The four workspaces' shared contract, adopted by the Stage 99 owner | `common_document.py`, `metadata/reference.py`, `template_definition.py` | Common H2/H3 names, order, section rules and payload kinds | The Registry |
+| `payload-encoding-adapter` | Registry `common.document_core.payload_adapter.adapter_version` | `1.0.0` | Numeric version; the adapter lists the core versions it encodes, and its marker literal stays fixed | `docs/99.templates/01.contracts/document-payload-encoding.json` | Stage 99 owner | `common_document.py`, `metadata/reference.py`, `ci_gate_contract.py` | This workspace's Markdown marker, heading shift and deep-heading annotation | The Registry |
 | `legacy-form-contract` | Registry `common.contract_version` | `1.0.0` | Numeric version; `common.contract_id` holds the existing legacy identity | `docs/99.templates/registry.json` | Stage 99 owner | `template_definition.py` | The legacy form for roles without common subsections | The Registry |
 | `template-definition-projection` | Stage 99 projection schema | `2.0.0` | Major change for the split output fields | `docs/99.templates/01.contracts/template-definition.schema.json` | Stage 99 owner | `template_definition.py`, body validator | The projected role definition, including the identity and version fields | Stage 99 template definitions |
 | `vocabulary-contract` | Registry `common.vocabulary_contract.version` | `3.0.1` | Numeric value; the first adoption, from package label `v14.5`, is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064; the owner approved adopting the shared 3.0.1 on 2026-11-15 (SPEC-0212 TSK-0068), and `source_label` names the adopted source | `docs/99.templates/registry.json` | Glossary owner | Glossary `Contract Version` column, `vocabulary_contract_findings` | The common Term IDs, names, order and meanings | The shared contract, adopted per workspace |

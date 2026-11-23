@@ -48,14 +48,22 @@ SHELL_ENTRYPOINTS = (
 
 class ValidatorEntrypointTests(unittest.TestCase):
     def test_ci_routing_explain_needs_no_site_packages(self) -> None:
-        from scripts.lib.document_governance.common_document import CORE_PATH
+        from scripts.lib.document_governance.common_document import (
+            ADAPTER_PATH,
+            CORE_PATH,
+        )
         from scripts.lib.gate import ci_gate_contract as contract
         from tests.validation.test_ci_gate_plan import CiGateRunnerContractTests
 
         registry = contract.parse_gate_registry(
             contract.load_contract_document(ROOT), ".github/workflow-contract.yml"
         )
-        inputs = {".github/workflow-contract.yml", "scripts/manifest.yaml", CORE_PATH}
+        inputs = {
+            ".github/workflow-contract.yml",
+            "scripts/manifest.yaml",
+            CORE_PATH,
+            ADAPTER_PATH,
+        }
         inputs.update(
             node.entrypoint.as_posix() for node in registry.nodes if node.entrypoint
         )
