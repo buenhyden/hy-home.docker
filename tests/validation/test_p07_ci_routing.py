@@ -26,6 +26,12 @@ LAUNCHER_PATHS = (
     "tests/validation/test_p07_ci_routing.py",
     "docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md",
 )
+# R01: Compose-start and observation consumers moved to the execution leaf;
+# each module stays in exactly one of these hosted leaves.
+CONSUMER_LEAVES = (
+    "leaf.repository-integrity-regressions",
+    "leaf.execution-environment-regressions",
+)
 OBSERVATION_MODULES = (
     "tests.lib.ops.test_compose_observation",
     "tests.validation.test_p07_quality_metrics",
@@ -106,7 +112,7 @@ class P07RoutingTests(unittest.TestCase):
     def test_launcher_checks_and_changed_surfaces_are_required(self):
         contract = json.loads((ROOT / ".github/workflow-contract.yml").read_text())
         nodes = {node["gate_id"]: node for node in contract["gate_nodes"]}
-        argv = nodes["leaf.repository-integrity-regressions"]["argv"]
+        argv = [arg for leaf in CONSUMER_LEAVES for arg in nodes[leaf]["argv"]]
         self.assertEqual(1, argv.count(LAUNCHER_MODULE))
         public = contract["public_gate"]
         for path in LAUNCHER_PATHS:
@@ -121,8 +127,7 @@ class P07RoutingTests(unittest.TestCase):
                 self.assertTrue(
                     any(
                         path in rule["prefixes"]
-                        and "leaf.repository-integrity-regressions"
-                        in rule["root_gate_ids"]
+                        and set(CONSUMER_LEAVES) & set(rule["root_gate_ids"])
                         for rule in public["changed_root_rules"]
                     )
                 )
@@ -130,7 +135,7 @@ class P07RoutingTests(unittest.TestCase):
     def test_observation_checks_are_required_for_changed_surfaces(self):
         contract = json.loads((ROOT / ".github/workflow-contract.yml").read_text())
         nodes = {node["gate_id"]: node for node in contract["gate_nodes"]}
-        argv = nodes["leaf.repository-integrity-regressions"]["argv"]
+        argv = [arg for leaf in CONSUMER_LEAVES for arg in nodes[leaf]["argv"]]
         for module in OBSERVATION_MODULES:
             with self.subTest(module=module):
                 self.assertEqual(1, argv.count(module))
@@ -147,8 +152,7 @@ class P07RoutingTests(unittest.TestCase):
                 self.assertTrue(
                     any(
                         path in rule["prefixes"]
-                        and "leaf.repository-integrity-regressions"
-                        in rule["root_gate_ids"]
+                        and set(CONSUMER_LEAVES) & set(rule["root_gate_ids"])
                         for rule in public["changed_root_rules"]
                     )
                 )

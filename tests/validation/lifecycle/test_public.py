@@ -103,6 +103,27 @@ class ReadinessReportTests(unittest.TestCase):
                 line, r"^readiness: SPEC-[0-9]{4} (ready|not-ready: .+|unknown)$"
             )
 
+    def test_readiness_reuses_the_packages_the_lifecycle_check_loaded(self):
+        from unittest import mock
+
+        from scripts.lib.document_governance import spec_packages
+
+        with (
+            mock.patch.object(
+                public_module, "load_spec_packages", return_value=()
+            ) as checked,
+            mock.patch.object(
+                public_module,
+                "validate_repository_spec_package_lifecycle",
+                return_value=(),
+            ),
+            mock.patch.object(spec_packages, "load_spec_packages") as reloaded,
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(0, lifecycle.main(["--readiness"]))
+        self.assertEqual(1, checked.call_count)
+        reloaded.assert_not_called()
+
     def test_readiness_is_off_by_default(self) -> None:
         output = io.StringIO()
         with contextlib.redirect_stdout(output):

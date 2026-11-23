@@ -101,6 +101,7 @@ _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "leaf.local-tech-stack-version-drift",
     "leaf.repo-contracts-control-plane-regressions",
     "leaf.repository-integrity-regressions",
+    "leaf.execution-environment-regressions",
     "leaf.storybook-contract",
     "local.workflow-harness",
 )
@@ -117,6 +118,7 @@ HOSTED_UNIT_GATE_IDS = frozenset(
         "leaf.release-regressions",
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.repository-integrity-regressions",
+        "leaf.execution-environment-regressions",
         "leaf.supply-chain-fixture-policy",
         "leaf.workflow-contract-regressions",
     }
@@ -146,6 +148,9 @@ _LOCAL_AGGREGATE_CHILDREN = {
         # Added 2026-08-29. Carries the failing-case suite for both Compose
         # baseline gates into the local profiles.
         "leaf.compose-baseline-regressions",
+        # R01 2026-11-23: the LAB and execution-admission consumers split out
+        # of the Compose-baseline bundle stay reachable from the same route.
+        "leaf.execution-environment-regressions",
     ),
 }
 _REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {

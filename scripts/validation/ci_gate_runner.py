@@ -768,7 +768,14 @@ def selected_prerequisites(
         or pathlib.PurePosixPath(path).name.startswith("Dockerfile.")
         for path in changed_paths
     )
-    compose = "leaf.repository-integrity-regressions" in gate_ids
+    # Compose-start tests render the source model through `docker compose`.
+    compose = bool(
+        {
+            "leaf.repository-integrity-regressions",
+            "leaf.execution-environment-regressions",
+        }
+        & gate_ids
+    )
     return SelectedPrerequisites(node=node, docker=docker, compose=compose)
 
 

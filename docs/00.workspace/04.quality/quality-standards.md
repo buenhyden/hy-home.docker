@@ -1,13 +1,13 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "3.0.0"
+version: "3.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-23"
 ---
 
 # Agent Quality and Security Standards
@@ -124,7 +124,7 @@ None: this document states no exclusion.
 | QUALITY-STANDARDS-R72 | Authoring | Required: observe actual installed Git hooks separately from tracked configuration | none | none |
 | QUALITY-STANDARDS-R73 | Always | Forbidden: SKIP, fake CI variables or `--no-verify` | none | none |
 | QUALITY-STANDARDS-R74 | Local implementation verification | Required: the workflow contract's typed `public_gate.local_only_gate_ids` owns document-library, hook, mocked native and other isolated implementation regressions plus local links | none | none |
-| QUALITY-STANDARDS-R75 | Closed hosted-unit set | Required: CI gate-contract, Compose-baseline and repository-integrity regressions run in both selected local verification and hosted candidate validation | none | none |
+| QUALITY-STANDARDS-R75 | Closed hosted-unit set | Required: CI gate-contract, Compose-baseline, execution-environment and repository-integrity regressions run in both selected local verification and hosted candidate validation | none | none |
 | QUALITY-STANDARDS-R76 | Inspecting the complementary local-only plan | Required: use `scripts/validation/run-ci-gate.py --profile changed --local-only --explain` | none | none |
 | QUALITY-STANDARDS-R77 | A changed owner selects a promoted regression | Required: run `scripts/validation/run-ci-gate.py --profile changed --explain`, then the same command without `--explain` once on the final implementation input | none | none |
 | QUALITY-STANDARDS-R78 | Execution route | Required: the shared runner and registered path owners remain the execution route | none | none |
@@ -437,9 +437,9 @@ main-push security remains a post-merge observation.
 - **Local implementation verification**: the workflow contract's typed
   `public_gate.local_only_gate_ids` owns document-library, hook, mocked native
   and other isolated implementation regressions plus local links. The closed
-  hosted-unit set is the exception: CI gate-contract, Compose-baseline and
-  repository-integrity regressions run in both selected local verification and
-  hosted candidate validation. Use
+  hosted-unit set is the exception: CI gate-contract, Compose-baseline,
+  execution-environment and repository-integrity regressions run in both
+  selected local verification and hosted candidate validation. Use
   `scripts/validation/run-ci-gate.py --profile changed --local-only --explain`
   to inspect the complementary local-only plan. Use
   `scripts/validation/run-ci-gate.py --profile changed --explain` and then the

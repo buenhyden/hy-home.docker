@@ -345,3 +345,24 @@ class TestHermesCandidate(unittest.TestCase):
 for _name, _function in list(globals().items()):
     if _name.startswith("test_") and callable(_function):
         setattr(TestHermesCandidate, _name, lambda self, fn=_function: fn(self.path))
+# A leftover loop variable would alias the TestCase for unittest discovery.
+del _name, _function
+
+
+class TestHermesDiscovery(unittest.TestCase):
+    def test_each_case_is_discovered_once(self):
+        # The registration loop must not leave a module alias of the TestCase,
+        # which unittest discovery would collect a second time.
+        module = sys.modules[__name__]
+        names = [
+            n for n, f in vars(module).items() if n.startswith("test_") and callable(f)
+        ]
+        loaded = unittest.defaultTestLoader.loadTestsFromModule(module)
+        ids = [
+            case.id()
+            for suite in loaded
+            for case in suite
+            if isinstance(case, TestHermesCandidate)
+        ]
+        self.assertEqual(len(names), len(ids))
+        self.assertEqual(len(ids), len(set(ids)))

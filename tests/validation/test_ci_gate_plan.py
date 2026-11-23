@@ -1320,6 +1320,34 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     f"{path} does not select one of {sorted(expected_gate_ids)}",
                 )
 
+    def test_execution_environment_changes_select_their_consumer_leaf(self) -> None:
+        # R01: a LAB, admission, dispatch or Compose-start change runs its own
+        # consumers in local and hosted plans, not both broad bundles.
+        # A LAB or Compose-start path still reaches compose-baseline through
+        # the template-security aggregate; that deploy guarantee is kept.
+        leaf = "leaf.execution-environment-regressions"
+        baseline = "leaf.compose-baseline-regressions"
+        integrity = "leaf.repository-integrity-regressions"
+        for path, excluded in (
+            ("scripts/operations/lab.py", {integrity}),
+            ("labs/couchdb/docker-compose.yml", {integrity}),
+            ("tests/validation/test_lab_controller.py", {integrity}),
+            ("scripts/lib/ops/environment_admission.py", {baseline, integrity}),
+            ("scripts/lib/ops/dispatch_process.py", {baseline, integrity}),
+            ("scripts/lib/ops/compose_start.py", {integrity}),
+        ):
+            for context in (
+                runner.ExecutionContext.LOCAL,
+                runner.ExecutionContext.PULL_REQUEST,
+            ):
+                with self.subTest(path=path, context=context):
+                    ids = {
+                        item.gate_id
+                        for item in build_public_plan("changed", context, (path,))
+                    }
+                    self.assertIn(leaf, ids)
+                    self.assertFalse(excluded & ids)
+
     def test_newly_routed_producers_retain_their_existing_guarantees(self) -> None:
         baseline = "leaf.compose-baseline-regressions"
         control = "leaf.repo-contracts-control-plane-regressions"
