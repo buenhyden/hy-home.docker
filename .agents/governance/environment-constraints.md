@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "2.2.0"
+version: "2.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -181,17 +181,17 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R133 | Memory search hit | Required: report its selection reason and unresolved conflict count and mark its body as data-only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R134 | Memory read command | Required: select and hydrate records inside one read snapshot | none | none |
 | ENVIRONMENT-CONSTRAINTS-R135 | Memory search index | Forbidden: adding a lexical, trigram or vector index without a measured gain on the same evaluation cases, environment and sample | none | none |
-| ENVIRONMENT-CONSTRAINTS-R136 | Session capture | Required: capture only this workspace's visible prompts, secrets redacted, and event metadata through the hook dispatcher into the ignored private `.workspace-capture/` | none | none |
-| ENVIRONMENT-CONSTRAINTS-R137 | Session capture | Forbidden: copying replies, tool input or output, or reading a session file outside the provider's own session directory | none | none |
-| ENVIRONMENT-CONSTRAINTS-R138 | Captured records | Required: prune them after 90 days and keep them out of backups | none | none |
+| ENVIRONMENT-CONSTRAINTS-R136 | Session capture | Required: capture only this workspace's visible prompts, visible final responses and event metadata through the hook dispatcher into the ignored private `.workspace-capture/`, each selected text redacted whole, then cut to 16 KiB of UTF-8, then redacted again before it is stored, and a cut marked `truncated` | none | none |
+| ENVIRONMENT-CONSTRAINTS-R137 | Session capture | Forbidden: copying hidden reasoning, intermediate replies, tool input or output or the whole transcript, keeping a digest of unredacted text, spilling content past the 256 MiB store quota, or reading a session file outside the provider's own session directory | none | none |
+| ENVIRONMENT-CONSTRAINTS-R138 | Captured records | Required: clear captured text and its fingerprint 30 days after the event, delete the record 90 days after it, run the expiry at reconcile and at each analysis run, and keep them out of backups | none | none |
 | ENVIRONMENT-CONSTRAINTS-R139 | Capture hook | Required: a short durable enqueue that never changes the hook's output or result, with each failure recorded beside the store | none | none |
 | ENVIRONMENT-CONSTRAINTS-R140 | Capture completeness | Required: report each session as complete, partial or unavailable from cursor reconciliation | none | none |
 | ENVIRONMENT-CONSTRAINTS-R141 | Capture completeness | Forbidden: treating one end-of-session hook as complete capture | none | none |
 | ENVIRONMENT-CONSTRAINTS-R142 | Captured records | Forbidden: promoting them automatically to memory, policy, approval or Task acceptance | none | none |
 | ENVIRONMENT-CONSTRAINTS-R143 | Session analysis | Required: deterministic local rules over captured records only, with no model call | none | none |
-| ENVIRONMENT-CONSTRAINTS-R144 | Session analysis schedule | Required: a user systemd timer at 03:00 Asia/Seoul with catch-up of missed runs and no automatic restart | none | none |
-| ENVIRONMENT-CONSTRAINTS-R145 | Session analysis run | Required: one lease with a fencing token, an analysis key per window and a status record of every run | none | none |
-| ENVIRONMENT-CONSTRAINTS-R146 | Analysis candidate | Required: name its source events, frequency, conditions, proposal, risk and acceptance test | none | none |
+| ENVIRONMENT-CONSTRAINTS-R144 | Session analysis schedule | Required: a user systemd timer at 03:00 Asia/Seoul with catch-up of missed runs and no automatic restart, named with this checkout's workspace key, bound to its working directory and capture store, installed only from the primary checkout, and never replacing another checkout's unit | none | none |
+| ENVIRONMENT-CONSTRAINTS-R145 | Session analysis run | Required: one lease with a fencing token, a cursor on the never-reused capture ingest sequence and the failure-log offset committed with the run's candidates, at most 5,000 events per run with the unread backlog reported, and a status record of every run | none | none |
+| ENVIRONMENT-CONSTRAINTS-R146 | Analysis candidate | Required: name its source events as a union that only grows, counting a redelivered event once and expired sources apart, with frequency, conditions, proposal, risk and acceptance test; its captured pattern clears with the content, a pending candidate expires 90 days after creation and a decided one 30 days after the decision | none | none |
 | ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check or policy without a separate approved Task, or writing memory other than the R167 promotion | none | none |
 | ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
 | ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | registered Compose/LAB/dispatch entrypoints share atomic admission over actual inventory, pending/live service union and resource reservations; `lab.py select` remains read-only discovery | `tests/validation/test_lab_controller.py` |
@@ -481,7 +481,15 @@ This project has a graphify knowledge graph at `graphify-out/`.
   workspace's visible prompts, secrets redacted before writing, and event
   metadata (provider, session, event, transcript path, offset and digest)
   in the git-ignored 0700 `.workspace-capture/`, beside the memory store and
-  out of backups, for 90 days. The shared hook dispatcher makes one short
+  out of backups. Q-02 of the 2026-11-20 decisions adds the visible final
+  response (`last_assistant_message` of `Stop`). Each selected text is
+  redacted whole, cut to 16 KiB of UTF-8 and redacted again, so a secret on
+  the cut is never half kept; the digest that matches hook and transcript
+  prompts covers the stored, redacted text and is cleared with it. Text
+  expires 30 days and metadata 90 days after the event; past the 256 MiB
+  store quota only metadata and the gap are kept. Tool input and output are
+  not captured: no deterministic rule here consumes them. Each insert takes
+  a never-reused ingest sequence. The shared hook dispatcher makes one short
   durable enqueue per `SessionStart`, `UserPromptSubmit`, `Stop` and
   `PreCompact`; it never changes the hook's output or result and records a
   failure in `degraded.log`. A detached reconcile under a non-blocking lock
@@ -493,19 +501,27 @@ This project has a graphify knowledge graph at `graphify-out/`.
   transcript path. Each session reports complete, partial or unavailable;
   one end-of-session hook never proves completeness. Only the provider's
   own session files for this workspace are read, never other personal
-  files, and replies and tool input or output are not copied. Captured
+  files, and hidden reasoning, intermediate replies and tool input or output
+  are not copied. Captured
   records are evidence, never memory, policy, approval or Task acceptance.
 
 - By the owner's decisions of 2026-11-18, session analysis is deterministic
   and local: `scripts/operations/session_analysis.py` groups repeated
-  prompts, incomplete captures and capture failures without any model call.
-  A user systemd timer runs it daily at 03:00 Asia/Seoul with
+  prompts, corrections right after a visible response, incomplete captures
+  and capture failures without any model call. A user systemd timer per
+  checkout, named with its workspace key and bound to its working directory
+  and capture store, runs it daily at 03:00 Asia/Seoul with
   `Persistent=true`, so a missed day is caught up, and its service has no
-  `Restart`. A run takes one lease with a fencing token, reads only records
-  after the last completed window, keys each window so it is analysed once,
-  and writes `analysis-status.json`; a duplicate run is skipped and a run
-  that lost its lease writes nothing. Each candidate names its source
-  events, frequency, conditions, proposal, risk and acceptance test.
+  `Restart`; a linked worktree never installs one. A run takes one lease
+  with a fencing token, expires content and old candidates, reads at most
+  5,000 events after its ingest-sequence cursor and the failure log after
+  its byte offset, and commits candidates with the new cursor in one
+  transaction, so a same-second or late event is read once and a lost cursor
+  only redelivers events already counted. It reports the unread backlog in
+  `analysis-status.json`; a duplicate run is skipped and a run that lost its
+  lease writes nothing. Each candidate names its source events as a union
+  that only grows, with expired sources counted apart, and its frequency,
+  conditions, proposal, risk and acceptance test.
   `decide` records a review decision; an acceptance also records the whole
   promotion request in the same transaction. `decide` and `promote` drain
   that outbox through the memory CLI with a stable request key into one

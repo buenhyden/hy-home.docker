@@ -149,16 +149,113 @@ class CaptureTests(unittest.TestCase):
             self.assertEqual("unavailable", result["completeness"], result)
         self.assertEqual(1, len(self.events("s9")))
 
-    def test_records_past_retention_are_pruned(self):
-        self.prompt("old")
-        old = dt.datetime.now(dt.UTC) - dt.timedelta(days=capture.RETENTION_DAYS + 1)
+    def age(self, days):
+        old = dt.datetime.now(dt.UTC) - dt.timedelta(days=days)
         connection = capture.connect(self.directory)
         connection.execute(
-            "UPDATE events SET captured_at=?", (old.isoformat(timespec="seconds"),)
+            "UPDATE events SET occurred_at=?", (old.isoformat(timespec="seconds"),)
         )
         connection.close()
+
+    def test_content_expires_at_30_days_and_metadata_at_90(self):
+        self.prompt("old")
+        self.age(capture.CONTENT_DAYS + 1)
+        capture.reconcile(self.directory)
+        (event,) = self.events()
+        self.assertEqual(
+            (None, None, "expired"),
+            (event["prompt"], event["prompt_digest"], event["content_state"]),
+        )
+        self.age(capture.METADATA_DAYS + 1)
         self.assertEqual([], capture.reconcile(self.directory))
         self.assertEqual([], self.events())
+
+    def test_redaction_runs_on_the_whole_text_before_the_byte_cap(self):
+        cap = capture.MAX_CONTENT_BYTES
+        secret = "ghp_" + "b" * 36
+        text = "a" * (cap - 25) + " " + secret + " " + "t" * 100  # cut-first leaks
+        self.prompt(text)
+        (event,) = self.events()
+        self.assertNotIn("bbbbbbbb", event["prompt"])
+        self.assertLessEqual(len(event["prompt"].encode()), cap)
+        self.assertEqual(
+            ("truncated", 1), (event["content_state"], event["redactions"])
+        )
+
+    def test_the_content_fingerprint_is_not_a_digest_of_the_raw_text(self):
+        text = "use token=hunter2 now"
+        self.prompt(text)
+        (event,) = self.events()
+        self.assertNotEqual(capture.digest(text), event["prompt_digest"])
+        self.assertEqual(capture.digest(event["prompt"]), event["prompt_digest"])
+
+    def test_every_insert_takes_a_new_ingest_sequence(self):
+        self.prompt("one")
+        self.prompt("two", session="s2")
+        capture.enqueue(
+            "Stop", {"session_id": "s1", "turn_id": "t"}, "claude", self.directory, "w"
+        )
+        connection = capture.connect(self.directory)
+        sequences = [
+            row[0]
+            for row in connection.execute("SELECT ingest_seq FROM events ORDER BY 1")
+        ]
+        connection.close()
+        self.assertEqual([1, 2, 3], sequences)
+
+    def test_the_visible_final_response_is_redacted_and_bounded(self):
+        payload = {
+            "session_id": "s1",
+            "turn_id": "t1",
+            "last_assistant_message": "done; key sk-" + "c" * 30 + " " + "x" * 40000,
+        }
+        capture.enqueue("Stop", payload, "claude", self.directory, "workspace")
+        (event,) = self.events()
+        self.assertNotIn("ccccccccc", event["response"])
+        self.assertLessEqual(len(event["response"].encode()), capture.MAX_CONTENT_BYTES)
+        self.assertEqual("truncated", event["content_state"])
+
+    def test_a_store_from_before_the_contract_is_migrated_once(self):
+        import sqlite3
+
+        self.directory.mkdir()
+        old = sqlite3.connect(self.directory / capture.STORE_NAME)
+        old.execute(
+            "CREATE TABLE events (event_id TEXT PRIMARY KEY, workspace_id TEXT NOT"
+            " NULL, provider TEXT NOT NULL, provider_version TEXT, session_id TEXT"
+            " NOT NULL, sequence INTEGER NOT NULL, event_kind TEXT NOT NULL, origin"
+            " TEXT NOT NULL, source_ref TEXT, occurred_at TEXT NOT NULL, captured_at"
+            " TEXT NOT NULL, transcript_path TEXT, transcript_offset INTEGER, prompt"
+            " TEXT, prompt_digest TEXT, redactions INTEGER NOT NULL DEFAULT 0)"
+        )
+        long = "x" * (capture.MAX_CONTENT_BYTES + 10)
+        for number, (prompt, when) in enumerate(
+            ((long, "2026-11-20T00:00:01.500Z"), (None, "2026-11-20T00:00:00+00:00"))
+        ):
+            old.execute(
+                "INSERT INTO events VALUES (?, 'w', 'claude', NULL, 's1', ?,"
+                " 'UserPromptSubmit', 'hook', NULL, ?, ?, NULL, NULL, ?, ?, 0)",
+                (f"e{number}", number, when, when.replace(".500Z", "+00:00"),
+                 prompt, capture.digest(prompt or "")),
+            )  # fmt: skip
+        old.commit()
+        old.close()
+        events = {e["event_id"]: e for e in self.events()}
+        self.assertEqual(
+            (2, 1), (events["e0"]["ingest_seq"], events["e1"]["ingest_seq"])
+        )
+        self.assertEqual("truncated", events["e0"]["content_state"])
+        self.assertEqual(capture.MAX_CONTENT_BYTES, len(events["e0"]["prompt"]))
+        self.assertEqual("2026-11-20T00:00:01+00:00", events["e0"]["occurred_at"])
+        self.assertIsNone(events["e1"]["prompt_digest"])
+        self.prompt("after")
+        self.assertEqual(3, max(e["ingest_seq"] for e in self.events()))
+
+    def test_a_full_store_keeps_metadata_and_names_the_gap(self):
+        with mock.patch.object(capture, "STORE_QUOTA_BYTES", 0):
+            self.prompt("no room")
+        (event,) = self.events()
+        self.assertEqual((None, "quota"), (event["prompt"], event["content_state"]))
 
     def test_hook_failure_is_recorded_and_never_raises(self):
         self.directory.mkdir()

@@ -1,7 +1,11 @@
 """Session capture: visible prompts and event metadata for this workspace only.
 
 Hooks call `enqueue`, which writes one redacted event and returns; it never
-blocks the hook or changes its output. `reconcile` runs detached afterwards:
+blocks the hook or changes its output. Selected content (the visible prompt and
+the visible final response) is redacted whole, then cut to a UTF-8 byte cap and
+checked again before it is stored; it expires 30 days after the event and the
+metadata 90 days after it. Each insert takes a never-reused ingest sequence,
+the cursor the analysis reads. `reconcile` runs detached afterwards:
 it reads a Claude transcript from its cursor to recover prompts the hooks
 missed and records how complete each session's capture is. Captured records
 are evidence, never instructions, approvals or memory.
@@ -24,8 +28,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 CAPTURE_DIRECTORY = ".workspace-capture"
 STORE_NAME = "capture.sqlite3"
-RETENTION_DAYS = 90
-MAX_PROMPT_BYTES = 64 * 1024
+CONTENT_DAYS = 30
+METADATA_DAYS = 90
+MAX_CONTENT_BYTES = 16 * 1024
+STORE_QUOTA_BYTES = 256 * 1024 * 1024
+SCHEMA_VERSION = 2
 HEAD_BYTES = 4096
 EVENTS = ("UserPromptSubmit", "Stop", "PreCompact", "SessionStart")
 SCHEMA = (
@@ -34,7 +41,13 @@ SCHEMA = (
     " session_id TEXT NOT NULL, sequence INTEGER NOT NULL, event_kind TEXT NOT NULL,"
     " origin TEXT NOT NULL, source_ref TEXT, occurred_at TEXT NOT NULL,"
     " captured_at TEXT NOT NULL, transcript_path TEXT, transcript_offset INTEGER,"
-    " prompt TEXT, prompt_digest TEXT, redactions INTEGER NOT NULL DEFAULT 0)",
+    " prompt TEXT, prompt_digest TEXT, redactions INTEGER NOT NULL DEFAULT 0,"
+    " ingest_seq INTEGER, response TEXT, content_state TEXT)",
+    # The ingest sequence lives apart from the rows, so a deleted row never
+    # frees its number for a later insert.
+    "CREATE TABLE IF NOT EXISTS ingest (singleton INTEGER PRIMARY KEY"
+    " CHECK (singleton = 1), seq INTEGER NOT NULL)",
+    "INSERT OR IGNORE INTO ingest VALUES (1, 0)",
     "CREATE TABLE IF NOT EXISTS sessions (provider TEXT NOT NULL,"
     " session_id TEXT NOT NULL, transcript_path TEXT, inode INTEGER,"
     " offset INTEGER NOT NULL DEFAULT 0, head_digest TEXT,"
@@ -84,8 +97,44 @@ def redact(text: str) -> tuple[str, int]:
     return text, count + found
 
 
-def _bounded(text: str) -> tuple[str, int]:
-    return redact(text.encode()[:MAX_PROMPT_BYTES].decode(errors="ignore"))
+def _cut(text: str) -> str:
+    return text.encode()[:MAX_CONTENT_BYTES].decode(errors="ignore")
+
+
+def bounded(text: str) -> tuple[str, int, bool]:
+    """Redact the whole text, cut it to the byte cap, then redact again."""
+    text, count = redact(text)
+    truncated = len(text.encode()) > MAX_CONTENT_BYTES
+    if truncated:
+        text, again = redact(_cut(text))
+        text, count = _cut(text), count + again
+    return text, count, truncated
+
+
+def event_time(value: object) -> str:
+    """A normalized UTC stamp; an unreadable time is fixed at first observation."""
+    try:
+        parsed = dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return now()
+    if parsed.tzinfo is None:
+        return now()
+    return parsed.astimezone(dt.UTC).isoformat(timespec="seconds")
+
+
+def _content(directory: Path, text: str | None) -> tuple:
+    """(stored text, its fingerprint, redaction count, content state)."""
+    if text is None:
+        return None, None, 0, None
+    try:
+        size = (directory / STORE_NAME).stat().st_size
+    except OSError:
+        size = 0  # not created yet
+    if size >= STORE_QUOTA_BYTES:
+        return None, None, 0, "quota"  # metadata only; never a raw spill
+    stored, redactions, truncated = bounded(text)
+    # The fingerprint covers the stored, redacted text and expires with it.
+    return stored, digest(stored), redactions, "truncated" if truncated else "stored"
 
 
 def capture_dir(cwd: Path | None = None) -> Path:
@@ -119,9 +168,98 @@ def connect(directory: Path) -> sqlite3.Connection:
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA busy_timeout = 1000")
     connection.execute("PRAGMA journal_mode = DELETE")
+    if connection.execute("PRAGMA user_version").fetchone()[0] < SCHEMA_VERSION:
+        _migrate(connection)
     for statement in SCHEMA:
         connection.execute(statement)
     return connection
+
+
+def _migrate(connection: sqlite3.Connection) -> None:
+    """Bring a version 0 store to the current contract once, in one transaction."""
+    connection.execute("BEGIN IMMEDIATE")
+    try:
+        if connection.execute("PRAGMA user_version").fetchone()[0] >= SCHEMA_VERSION:
+            connection.execute("COMMIT")
+            return
+        for statement in SCHEMA:
+            connection.execute(statement)
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(events)")}
+        for column in ("ingest_seq INTEGER", "response TEXT", "content_state TEXT"):
+            if column.split()[0] not in columns:
+                connection.execute(f"ALTER TABLE events ADD COLUMN {column}")
+        rows = connection.execute(
+            "SELECT rowid, prompt, occurred_at FROM events ORDER BY captured_at, rowid"
+        ).fetchall()
+        for sequence, (rowid, prompt, occurred) in enumerate(rows, 1):
+            # Earlier prompts were cut before redaction and kept a digest of the
+            # raw text: redact and cut them again and replace that digest.
+            stored, redactions, truncated = bounded(prompt) if prompt else (None, 0, 0)
+            connection.execute(
+                "UPDATE events SET ingest_seq=?, occurred_at=?, prompt=?,"
+                " prompt_digest=?, redactions=redactions+?, content_state=?"
+                " WHERE rowid=?",
+                (
+                    sequence,
+                    event_time(occurred),
+                    stored,
+                    digest(stored) if stored else None,
+                    redactions,
+                    ("truncated" if truncated else "stored") if stored else None,
+                    rowid,
+                ),
+            )
+        connection.execute("UPDATE ingest SET seq=?", (len(rows),))
+        connection.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS events_ingest ON events (ingest_seq)"
+        )
+        connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
+        connection.execute("COMMIT")
+    except BaseException:
+        connection.execute("ROLLBACK")
+        raise
+
+
+def directory_of(connection: sqlite3.Connection) -> Path:
+    return Path(connection.execute("PRAGMA database_list").fetchone()[2]).parent
+
+
+def _next_ingest(connection) -> int:
+    return connection.execute(
+        "UPDATE ingest SET seq = seq + 1 RETURNING seq"
+    ).fetchone()[0]
+
+
+def _prune(connection) -> None:
+    now_ = dt.datetime.now(dt.UTC)
+    content = (now_ - dt.timedelta(days=CONTENT_DAYS)).isoformat(timespec="seconds")
+    metadata = (now_ - dt.timedelta(days=METADATA_DAYS)).isoformat(timespec="seconds")
+    connection.execute("DELETE FROM events WHERE occurred_at < ?", (metadata,))
+    connection.execute(
+        "UPDATE events SET prompt=NULL, response=NULL, prompt_digest=NULL,"
+        " content_state='expired' WHERE occurred_at < ? AND (prompt IS NOT NULL"
+        " OR response IS NOT NULL OR prompt_digest IS NOT NULL)",
+        (content,),
+    )
+    connection.execute(
+        "DELETE FROM sessions WHERE NOT EXISTS (SELECT 1 FROM events e"
+        " WHERE e.provider=sessions.provider AND e.session_id=sessions.session_id)"
+    )
+
+
+def prune(directory: Path) -> None:
+    """Expire content at 30 days and records at 90; the daily analysis calls it."""
+    connection = connect(directory)
+    try:
+        connection.execute("BEGIN IMMEDIATE")
+        try:
+            _prune(connection)
+            connection.execute("COMMIT")
+        except BaseException:
+            connection.execute("ROLLBACK")
+            raise
+    finally:
+        connection.close()
 
 
 def _degraded(directory: Path, reason: str) -> None:
@@ -163,12 +301,15 @@ def enqueue(
             offset = os.stat(transcript).st_size
         except OSError:
             offset = None
-    prompt = prompt_digest = None
-    redactions = 0
+    text = None
     if event == "UserPromptSubmit":
-        raw = str(payload.get("prompt") or "")
-        prompt_digest = digest(raw)
-        prompt, redactions = _bounded(raw)
+        text = str(payload.get("prompt") or "")
+    elif event == "Stop":
+        message = payload.get("last_assistant_message")
+        text = message if isinstance(message, str) and message else None
+    stored, prompt_digest, redactions, content_state = _content(directory, text)
+    prompt = stored if event == "UserPromptSubmit" else None
+    response = stored if event == "Stop" else None
     # A retried hook repeats the same turn, source or transcript size.
     marker = payload.get("turn_id") or payload.get("source") or offset
     event_id = digest(
@@ -181,7 +322,8 @@ def enqueue(
             "INSERT OR IGNORE INTO events (event_id, workspace_id, provider,"
             " provider_version, session_id, sequence, event_kind, origin, source_ref,"
             " occurred_at, captured_at, transcript_path, transcript_offset, prompt,"
-            " prompt_digest, redactions) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            " prompt_digest, redactions, response, content_state, ingest_seq)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 event_id,
                 workspace_id,
@@ -199,6 +341,9 @@ def enqueue(
                 prompt,
                 prompt_digest,
                 redactions,
+                response,
+                content_state,
+                _next_ingest(connection),
             ),
         )
         connection.execute(
@@ -259,7 +404,7 @@ def _allowed_transcript(path: Path, provider: str) -> bool:
 
 def _recover(connection, provider, session, transcript, line, text, source_ref):
     """Link a transcript prompt to its hook event, or record it as recovered."""
-    prompt_digest = digest(text)
+    prompt, prompt_digest, redactions, state = _content(directory_of(connection), text)
     if connection.execute(
         "SELECT 1 FROM events WHERE provider=? AND session_id=? AND source_ref=?",
         (provider, session, source_ref),
@@ -276,25 +421,27 @@ def _recover(connection, provider, session, transcript, line, text, source_ref):
             "UPDATE events SET source_ref=? WHERE event_id=?", (source_ref, matched[0])
         )
         return 0
-    prompt, redactions = _bounded(text)
     return connection.execute(
         "INSERT OR IGNORE INTO events (event_id, workspace_id, provider, session_id,"
         " sequence, event_kind, origin, source_ref, occurred_at, captured_at,"
-        " transcript_path, prompt, prompt_digest, redactions)"
+        " transcript_path, prompt, prompt_digest, redactions, content_state,"
+        " ingest_seq)"
         " SELECT ?, workspace_id, ?, ?, ?, 'UserPromptSubmit', 'transcript', ?, ?,"
-        " ?, ?, ?, ?, ? FROM events WHERE provider=? AND session_id=? LIMIT 1",
+        " ?, ?, ?, ?, ?, ?, ? FROM events WHERE provider=? AND session_id=? LIMIT 1",
         (
             digest(f"{provider}\0{session}\0transcript\0{source_ref}"),
             provider,
             session,
             _next_sequence(connection, provider, session),
             source_ref,
-            str(line.get("timestamp") or now()),
+            event_time(line.get("timestamp")),
             now(),
             transcript,
             prompt,
             prompt_digest,
             redactions,
+            state,
+            _next_ingest(connection),
             provider,
             session,
         ),
@@ -397,16 +544,7 @@ def reconcile(
         connection = connect(directory)
         try:
             connection.execute("BEGIN IMMEDIATE")
-            cutoff = dt.datetime.now(dt.UTC) - dt.timedelta(days=RETENTION_DAYS)
-            connection.execute(
-                "DELETE FROM events WHERE captured_at < ?",
-                (cutoff.isoformat(timespec="seconds"),),
-            )
-            connection.execute(
-                "DELETE FROM sessions WHERE NOT EXISTS (SELECT 1 FROM events e"
-                " WHERE e.provider=sessions.provider"
-                " AND e.session_id=sessions.session_id)"
-            )
+            _prune(connection)
             where = " WHERE provider=? AND session_id=?" if session else ""
             selected = connection.execute(
                 "SELECT provider, session_id FROM sessions" + where,
@@ -432,7 +570,8 @@ def status(directory: Path) -> dict:
         "events": 0,
         "capture_failures": len(failures),
         "last_failure": failures[-1] if failures else None,
-        "retention_days": RETENTION_DAYS,
+        "content_days": CONTENT_DAYS,
+        "metadata_days": METADATA_DAYS,
     }
     if not path.exists():
         return result

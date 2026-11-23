@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Daily deterministic analysis of captured sessions into reviewable candidates.
 
-Each run reads the capture store read-only over the window since the last
-completed run, groups repeated prompts, capture gaps and capture failures,
-and records candidates with their source events. A lease with a fencing
-token stops a duplicate run, an analysis key makes a repeated window a no-op,
-and a missed day is caught up by the next run. Candidates are proposals: an
+Each run expires captured content and old candidates, then reads at most
+MAX_EVENTS captured events after the last committed ingest sequence and the
+failure log after its byte offset. It groups repeated prompts, corrections
+after a response, capture gaps and capture failures into candidates whose
+source events accumulate, and commits them with the new cursor in one
+transaction. A lease with a fencing token stops a duplicate run, a lost cursor
+only redelivers events already counted, and the unread backlog is reported. Candidates are proposals: an
 accepted decision and its promotion intent are recorded together, and the
 outbox writes one unreviewed `candidate` memory record per decision through the
 memory CLI with a stable request key. Raw captured text is never copied, and
@@ -40,8 +42,14 @@ LEASE_SECONDS = 900
 ATTEMPTS = 2
 RETRY_SECONDS = 5
 REPEAT_MIN = 3
-MAX_SOURCES = 50
-UNIT = "hy-home-session-analysis"
+MAX_EVENTS = 5000
+CANDIDATE_DAYS = 90
+CLOSED_CANDIDATE_DAYS = 30
+LEGACY_UNIT = "hy-home-session-analysis"
+CORRECTION_CUES = (
+    "no,", "no.", "wrong", "that's not", "that is not", "not what i",
+    "아니", "틀렸", "잘못",
+)  # fmt: skip
 ON_CALENDAR = "*-*-* 03:00:00 Asia/Seoul"
 EXIT_BUSY = 75
 SCHEMA = (
@@ -50,12 +58,14 @@ SCHEMA = (
     "CREATE TABLE IF NOT EXISTS runs (analysis_key TEXT PRIMARY KEY, token INTEGER,"
     " trigger TEXT, window_start TEXT, window_end TEXT, started_at TEXT,"
     " finished_at TEXT, state TEXT NOT NULL, reason TEXT, events INTEGER,"
-    " candidates INTEGER)",
+    " candidates INTEGER, cursor_start INTEGER, cursor_end INTEGER,"
+    " log_offset INTEGER, log_head TEXT, backlog INTEGER)",
     "CREATE TABLE IF NOT EXISTS candidates (candidate_id TEXT PRIMARY KEY,"
     " analysis_key TEXT, rule TEXT, pattern TEXT, hypothesis TEXT,"
     " proposed_change TEXT, expected_benefit TEXT, risk TEXT, test_plan TEXT,"
     " frequency INTEGER, conditions TEXT, source_event_ids TEXT,"
-    " decision TEXT NOT NULL DEFAULT 'pending', decided_by TEXT, decided_at TEXT)",
+    " decision TEXT NOT NULL DEFAULT 'pending', decided_by TEXT, decided_at TEXT,"
+    " created_at TEXT, pattern_expires_at TEXT)",
     # The promotion outbox: one intent per accepted, reviewed candidate.
     "CREATE TABLE IF NOT EXISTS promotions (candidate_id TEXT PRIMARY KEY,"
     " review_digest TEXT NOT NULL, request TEXT NOT NULL,"
@@ -113,7 +123,39 @@ def connect(directory: Path) -> sqlite3.Connection:
     connection.execute("PRAGMA journal_mode = DELETE")
     for statement in SCHEMA:
         connection.execute(statement)
+    _migrate(connection)
     return connection
+
+
+ADDED = {
+    "runs": ("cursor_start INTEGER", "cursor_end INTEGER", "log_offset INTEGER",
+             "log_head TEXT", "backlog INTEGER"),
+    "candidates": ("created_at TEXT", "pattern_expires_at TEXT"),
+}  # fmt: skip
+
+
+def _migrate(connection: sqlite3.Connection) -> None:
+    """Add the cursor and expiry columns to a store written before them."""
+    for table, columns in ADDED.items():
+        present = {row[1] for row in connection.execute(f"PRAGMA table_info({table})")}
+        for column in columns:
+            if column.split()[0] not in present:
+                connection.execute(f"ALTER TABLE {table} ADD COLUMN {column}")
+    # Earlier candidates start their lives at their run; their captured pattern
+    # expires 30 days after that run's window.
+    connection.execute(
+        "UPDATE candidates SET created_at=coalesce((SELECT started_at FROM runs r"
+        " WHERE r.analysis_key=candidates.analysis_key), ?) WHERE created_at IS NULL",
+        (stamp(now()),),
+    )
+    connection.execute(
+        "UPDATE candidates SET pattern_expires_at=strftime('%Y-%m-%dT%H:%M:%S+00:00',"
+        " coalesce((SELECT window_end FROM runs r WHERE"
+        " r.analysis_key=candidates.analysis_key), created_at), ?)"
+        " WHERE pattern_expires_at IS NULL AND rule='repeated-prompt'"
+        " AND pattern IS NOT NULL",
+        (f"+{capture.CONTENT_DAYS} days",),
+    )
 
 
 def acquire(connection: sqlite3.Connection, owner: str) -> int:
@@ -143,34 +185,105 @@ def release(connection: sqlite3.Connection, token: int) -> None:
     )
 
 
-def read_capture(directory: Path, start: str | None) -> tuple[list[dict], list[dict]]:
-    """Events after the window start and the sessions they belong to."""
+def _cursor(connection, directory: Path) -> tuple[int, int, str | None]:
+    """The last committed event sequence and failure-log offset."""
+    row = connection.execute(
+        "SELECT cursor_end, log_offset, log_head, window_end FROM runs"
+        " WHERE state='complete' ORDER BY cursor_end IS NULL, cursor_end DESC,"
+        " window_end DESC LIMIT 1"
+    ).fetchone()
+    if row is None:
+        return 0, 0, None
+    if row["cursor_end"] is not None:
+        return row["cursor_end"], row["log_offset"] or 0, row["log_head"]
+    # A run before the sequence cursor: events up to its window end were read.
+    source = _capture(directory)
+    try:
+        legacy = source.execute(
+            "SELECT coalesce(max(ingest_seq), 0) FROM events WHERE captured_at <= ?",
+            (row["window_end"],),
+        ).fetchone()[0]
+    finally:
+        source.close()
+    return legacy, 0, None
+
+
+def _capture(directory: Path) -> sqlite3.Connection:
     path = directory / capture.STORE_NAME
-    if not path.is_file():
-        return [], []
     source = sqlite3.connect(path.absolute().as_uri() + "?mode=ro", uri=True)
     source.row_factory = sqlite3.Row
+    return source
+
+
+def read_capture(directory: Path, cursor: int, limit: int) -> dict:
+    """New events after the cursor, bounded, plus the context the rules need."""
+    empty = {"events": [], "sessions": [], "history": [], "stops": [], "backlog": 0}
+    if not (directory / capture.STORE_NAME).is_file():
+        return empty
+    source = _capture(directory)
     try:
+        source.execute("BEGIN")  # one snapshot for every read below
         events = [
             dict(row)
             for row in source.execute(
-                "SELECT event_id, provider, session_id, event_kind, captured_at,"
-                " prompt FROM events WHERE captured_at > ? ORDER BY captured_at",
-                (start or "",),
+                "SELECT event_id, provider, session_id, sequence, event_kind,"
+                " occurred_at, prompt, ingest_seq FROM events WHERE ingest_seq > ?"
+                " ORDER BY ingest_seq LIMIT ?",
+                (cursor, limit),
+            )
+        ]
+        end = events[-1]["ingest_seq"] if events else cursor
+        backlog = source.execute(
+            "SELECT count(*) FROM events WHERE ingest_seq > ?", (end,)
+        ).fetchone()[0]
+        # Prompts with content up to the new cursor, so a repetition split
+        # across runs or days is still seen.
+        history = [
+            dict(row)
+            for row in source.execute(
+                "SELECT event_id, provider, session_id, sequence, occurred_at, prompt"
+                " FROM events WHERE event_kind='UserPromptSubmit'"
+                " AND prompt IS NOT NULL AND ingest_seq <= ? ORDER BY ingest_seq",
+                (end,),
+            )
+        ]
+        stops = [
+            dict(row)
+            for row in source.execute(
+                "SELECT event_id, provider, session_id, sequence FROM events"
+                " WHERE event_kind='Stop' AND response IS NOT NULL AND ingest_seq <= ?",
+                (end,),
             )
         ]
         sessions = [dict(row) for row in source.execute("SELECT * FROM sessions")]
     finally:
         source.close()
-    return events, sessions
+    return {
+        "events": events,
+        "sessions": sessions,
+        "history": history,
+        "stops": stops,
+        "backlog": backlog,
+        "end": end,
+    }
 
 
-def failures(directory: Path, start: str | None, end: str) -> list[str]:
+def failures(directory: Path, offset: int, head: str | None) -> tuple:
+    """Complete failure-log lines after the offset; a rotated log restarts."""
     log = directory / "degraded.log"
-    if not log.exists():
-        return []
-    lines = log.read_text(encoding="utf-8").splitlines()
-    return [line for line in lines if (start or "") < line[:25] <= end]
+    try:
+        data = log.read_bytes()
+    except OSError:
+        return [], 0, None
+    first = data[: data.find(b"\n") + 1]
+    current = digest(first) if first else None
+    if len(data) < offset or (head is not None and current != head):
+        offset = 0
+    end = data.rfind(b"\n") + 1
+    if end <= offset:
+        return [], offset, current
+    lines = data[offset:end].decode("utf-8", "replace").splitlines()
+    return [line for line in lines if line.strip()], end, current
 
 
 def _candidate(rule, key, members, conditions, **text) -> dict:
@@ -180,21 +293,31 @@ def _candidate(rule, key, members, conditions, **text) -> dict:
         "pattern": key[:160],
         "events": members,
         "conditions": conditions,
+        "frequency": None,  # the accumulated source events count
+        "additive": False,
+        "content": False,
         **text,
     }
 
 
-def aggregate(
-    events: list[dict], sessions: list[dict], failed: list[str]
-) -> list[dict]:
+def _normal(text: str) -> str:
+    return re.sub(r"\s+", " ", text.casefold()).strip()
+
+
+def aggregate(batch: dict, failed: list[str]) -> list[dict]:
     """Deterministic rules; every candidate names the events behind it."""
+    events, sessions = batch["events"], batch["sessions"]
     found = []
+    fresh = {
+        _normal(e["prompt"])[:500]
+        for e in events
+        if e["event_kind"] == "UserPromptSubmit" and e["prompt"]
+    }
     groups: dict[str, list[dict]] = {}
-    for event in events:
-        if event["event_kind"] == "UserPromptSubmit" and event["prompt"]:
-            text = re.sub(r"\s+", " ", event["prompt"].casefold()).strip()
-            if len(text) >= 8:
-                groups.setdefault(text[:500], []).append(event)
+    for event in batch["history"]:
+        text = _normal(event["prompt"])[:500]
+        if len(text) >= 8 and text in fresh:
+            groups.setdefault(text, []).append(event)
     for text, members in sorted(groups.items()):
         if len(members) >= REPEAT_MIN:
             found.append(
@@ -212,8 +335,42 @@ def aggregate(
                     " per-request differences.",
                     test_plan="Compare the repetition count over the next two windows"
                     " after any adopted change.",
+                    content=True,
                 )
             )
+    corrections = [
+        e for e in batch["history"] if _normal(e["prompt"]).startswith(CORRECTION_CUES)
+    ]
+    if any(e["event_id"] in {n["event_id"] for n in events} for e in corrections):
+        replies = []
+        for prompt in corrections:
+            before = [
+                s
+                for s in batch["stops"]
+                if (s["provider"], s["session_id"])
+                == (prompt["provider"], prompt["session_id"])
+                and s["sequence"] < prompt["sequence"]
+            ]
+            if before:
+                replies.append(max(before, key=lambda s: s["sequence"]))
+        if len(corrections) >= REPEAT_MIN:
+            item = _candidate(
+                "correction",
+                "corrections after a visible response",
+                corrections + replies,
+                f"{len(corrections)} corrections,"
+                f" {len({c['session_id'] for c in corrections})} sessions",
+                hypothesis="Responses were corrected right after they were shown;"
+                " this is a hypothesis, not a confirmed cause.",
+                proposed_change="Read the corrected responses and decide whether a"
+                " skill, a check or a reviewed memory record would prevent them.",
+                expected_benefit="Fewer corrections per session.",
+                risk="A cue word can open a prompt that is no correction.",
+                test_plan="Compare the correction count over the next two windows"
+                " after any adopted change.",
+            )
+            item["frequency"] = len(corrections)
+            found.append(item)
     latest = {(e["provider"], e["session_id"]): e for e in events}
     gaps: dict[str, list[dict]] = {}
     for session in sessions:
@@ -255,26 +412,38 @@ def aggregate(
                 expected_benefit="No silent capture loss.",
                 risk="A fix must not slow or change the hook result.",
                 test_plan="Reproduce the failure in a capture test.",
+                frequency=count,
+                additive=True,
             )
         )
     return found
 
 
+def _expiry(members: list[dict]) -> str | None:
+    times = [m["occurred_at"] for m in members if m.get("occurred_at")]
+    if not times:
+        return None
+    newest = dt.datetime.fromisoformat(max(times))
+    return stamp(newest + dt.timedelta(days=capture.CONTENT_DAYS))
+
+
 def record(connection, analysis_key: str, found: list[dict]) -> None:
+    """Insert or accumulate candidates; source events form a union, never a swap."""
     for item in found:
         candidate_id = digest(item["rule"], item["key"])
-        sources = [event["event_id"] for event in item["events"]][:MAX_SOURCES]
-        frequency = len(item["events"]) or int(item["conditions"].split()[0])
+        new = [event["event_id"] for event in item["events"]]
+        expires = _expiry(item["events"]) if item["content"] else None
         existing = connection.execute(
-            "SELECT decision, frequency FROM candidates WHERE candidate_id=?",
-            (candidate_id,),
+            "SELECT * FROM candidates WHERE candidate_id=?", (candidate_id,)
         ).fetchone()
         if existing is None:
+            sources = list(dict.fromkeys(new))
+            frequency = item["frequency"] or len(sources)
             connection.execute(
                 "INSERT INTO candidates (candidate_id, analysis_key, rule, pattern,"
                 " hypothesis, proposed_change, expected_benefit, risk, test_plan,"
-                " frequency, conditions, source_event_ids)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                " frequency, conditions, source_event_ids, created_at,"
+                " pattern_expires_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     candidate_id,
                     analysis_key,
@@ -288,21 +457,61 @@ def record(connection, analysis_key: str, found: list[dict]) -> None:
                     frequency,
                     item["conditions"],
                     json.dumps(sources),
+                    stamp(now()),
+                    expires,
                 ),
             )
         elif existing["decision"] == "pending":
-            # A decided candidate keeps its decision; a pending one accumulates.
+            # A decided candidate keeps its reviewed revision; a pending one
+            # accumulates, and a redelivered event is counted once.
+            sources = list(
+                dict.fromkeys(json.loads(existing["source_event_ids"]) + new)
+            )
+            if item["additive"]:
+                frequency = existing["frequency"] + item["frequency"]
+            elif item["frequency"] is not None:
+                frequency = max(existing["frequency"], item["frequency"])
+            else:
+                frequency = len(sources)
+            later = max(
+                filter(None, (existing["pattern_expires_at"], expires)), default=None
+            )
             connection.execute(
                 "UPDATE candidates SET analysis_key=?, frequency=?, conditions=?,"
-                " source_event_ids=? WHERE candidate_id=?",
+                " source_event_ids=?, pattern=?, pattern_expires_at=?"
+                " WHERE candidate_id=?",
                 (
                     analysis_key,
-                    existing["frequency"] + frequency,
+                    frequency,
                     item["conditions"],
                     json.dumps(sources),
+                    item["pattern"],
+                    later,
                     candidate_id,
                 ),
             )
+
+
+def expire(connection) -> None:
+    """Captured text leaves with its content; candidates leave at 90/30 days."""
+    current = now()
+    connection.execute(
+        "UPDATE candidates SET pattern=NULL WHERE pattern_expires_at < ?",
+        (stamp(current),),
+    )
+    connection.execute(
+        "DELETE FROM candidates WHERE (decision='pending' AND created_at < ?)"
+        " OR (decision!='pending' AND decided_at < ? AND candidate_id NOT IN"
+        " (SELECT candidate_id FROM promotions WHERE state='pending'))",
+        (
+            stamp(current - dt.timedelta(days=CANDIDATE_DAYS)),
+            stamp(current - dt.timedelta(days=CLOSED_CANDIDATE_DAYS)),
+        ),
+    )
+    connection.execute(
+        "DELETE FROM promotions WHERE candidate_id NOT IN"
+        " (SELECT candidate_id FROM candidates)"
+    )
 
 
 def write_status(directory: Path, status: dict) -> None:
@@ -331,49 +540,56 @@ def run(directory: Path, trigger: str) -> dict:
     previous = signal.signal(signal.SIGTERM, _cancel)
     analysis_key = None
     try:
-        last = connection.execute(
-            "SELECT max(window_end) FROM runs WHERE state='complete'"
-        ).fetchone()[0]
+        capture.prune(directory)  # the daily content and record expiry
+        cursor, offset, head = _cursor(connection, directory)
         for attempt in range(1, ATTEMPTS + 1):
             try:
-                events, sessions = read_capture(directory, last)
+                batch = read_capture(directory, cursor, MAX_EVENTS)
                 break
             except sqlite3.OperationalError:
                 if attempt == ATTEMPTS:
                     raise
                 time.sleep(RETRY_SECONDS)
-        end = max((e["captured_at"] for e in events), default=last or stamp(started))
-        analysis_key = digest(directory.parent, last, end, POLICY_EDITION)
-        status.update(window_start=last, window_end=end)
-        if not events:
-            release(connection, token)
-            status.update(state="complete", reason="no new captured events")
-            return status
-        found = aggregate(events, sessions, failures(directory, last, end))
+        end = batch.get("end", cursor)
+        failed, log_offset, log_head = failures(directory, offset, head)
+        analysis_key = digest(directory.parent, cursor, end, log_offset, POLICY_EDITION)
+        events = batch["events"]
+        status.update(cursor_start=cursor, cursor_end=end, backlog=batch["backlog"])
+        found = aggregate(batch, failed) if events or failed else []
         connection.execute("BEGIN IMMEDIATE")
         current = connection.execute("SELECT token FROM lease").fetchone()[0]
         if current != token:
             raise Fenced(f"lease token {current} replaced {token}")
-        record(connection, analysis_key, found)
-        connection.execute(
-            "INSERT OR REPLACE INTO runs VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-            (
-                analysis_key,
-                token,
-                trigger,
-                last,
-                end,
-                stamp(started),
-                stamp(now()),
-                "complete",
-                None,
-                len(events),
-                len(found),
-            ),
-        )
+        expire(connection)
+        if events or failed:
+            record(connection, analysis_key, found)
+            connection.execute(
+                "INSERT OR REPLACE INTO runs (analysis_key, token, trigger,"
+                " started_at, finished_at, state, events, candidates, cursor_start,"
+                " cursor_end, log_offset, log_head, backlog)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    analysis_key,
+                    token,
+                    trigger,
+                    stamp(started),
+                    stamp(now()),
+                    "complete",
+                    len(events),
+                    len(found),
+                    cursor,
+                    end,
+                    log_offset,
+                    log_head,
+                    batch["backlog"],
+                ),
+            )
+            status.update(events=len(events), candidates=len(found))
+        else:
+            status.update(reason="no new captured events")
         release(connection, token)
         connection.execute("COMMIT")
-        status.update(state="complete", events=len(events), candidates=len(found))
+        status.update(state="complete")
         return status
     except KeyboardInterrupt:
         status.update(state="cancelled", reason="cancelled by signal")
@@ -402,12 +618,25 @@ def candidates(directory: Path, everything: bool) -> list[dict]:
         rows = connection.execute(
             "SELECT * FROM candidates" + where + " ORDER BY frequency DESC, rule"
         )
-        return [
+        found = [
             {**dict(row), "source_event_ids": json.loads(row["source_event_ids"])}
             for row in rows
         ]
     finally:
         connection.close()
+    present = set()
+    if (directory / capture.STORE_NAME).is_file():
+        source = _capture(directory)
+        try:
+            present = {row[0] for row in source.execute("SELECT event_id FROM events")}
+        finally:
+            source.close()
+    for item in found:
+        # Provenance whose record has expired stays named but is counted apart.
+        item["source_expired"] = sum(
+            1 for event in item["source_event_ids"] if event not in present
+        )
+    return found
 
 
 def review_digest(row) -> str:
@@ -415,7 +644,7 @@ def review_digest(row) -> str:
 
 
 def _content_expiry(directory: Path, event_ids: list[str], decided_at: str) -> str:
-    """When the newest source event's captured content leaves retention."""
+    """When the newest source event's captured content leaves its 30 days."""
     path = directory / capture.STORE_NAME
     newest = None
     if event_ids and path.is_file():
@@ -423,16 +652,14 @@ def _content_expiry(directory: Path, event_ids: list[str], decided_at: str) -> s
         try:
             marks = ",".join("?" * len(event_ids))
             newest = source.execute(
-                f"SELECT max(captured_at) FROM events WHERE event_id IN ({marks})",
+                f"SELECT max(occurred_at) FROM events WHERE event_id IN ({marks})",
                 event_ids,
             ).fetchone()[0]
         finally:
             source.close()
     if newest is None:  # already pruned: the content has expired
         return decided_at
-    expiry = dt.datetime.fromisoformat(newest) + dt.timedelta(
-        days=capture.RETENTION_DAYS
-    )
+    expiry = dt.datetime.fromisoformat(newest) + dt.timedelta(days=capture.CONTENT_DAYS)
     return stamp(expiry.astimezone(dt.UTC))
 
 
@@ -600,12 +827,69 @@ def promote(directory: Path, writer=None) -> dict:
     return result
 
 
-def install_timer(unit_dir: Path, on_calendar: str = ON_CALENDAR) -> dict:
-    """Write the user service and timer and enable the timer."""
+class SchedulerError(Exception):
+    """The timer cannot be bound to this checkout."""
+
+
+def workspace_key(root: Path = ROOT) -> str:
+    return digest(root.resolve())[:12]
+
+
+def unit_name(root: Path = ROOT) -> str:
+    """One unit per clone, so two checkouts never share or overwrite a timer."""
+    return f"{LEGACY_UNIT}-{workspace_key(root)}"
+
+
+UNIT = unit_name()
+
+
+def primary_checkout(root: Path = ROOT) -> bool:
+    """A linked worktree disappears with its dispatcher; it never owns a timer."""
+
+    def git(*args):
+        return subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--path-format=absolute", *args],
+            capture_output=True, text=True, check=True, timeout=30,
+        ).stdout.strip()  # fmt: skip
+
+    return git("--git-dir") == git("--git-common-dir")
+
+
+def _retire_legacy(unit_dir: Path) -> list[str]:
+    """Move this checkout's fixed-name unit; another checkout's stays untouched."""
+    service = unit_dir / f"{LEGACY_UNIT}.service"
+    try:
+        text = service.read_text(encoding="utf-8")
+    except OSError:
+        return []
+    if f"WorkingDirectory={ROOT}\n" not in text:
+        return []
+    subprocess.run(
+        ["systemctl", "--user", "disable", "--now", f"{LEGACY_UNIT}.timer"],
+        check=False, timeout=30,
+    )  # fmt: skip
+    removed = []
+    for suffix in (".service", ".timer"):
+        path = unit_dir / f"{LEGACY_UNIT}{suffix}"
+        if path.exists():
+            path.unlink()
+            removed.append(path.name)
+    return removed
+
+
+def install_timer(
+    unit_dir: Path, directory: Path, on_calendar: str = ON_CALENDAR
+) -> dict:
+    """Write and enable this checkout's user service and timer, bound to its store."""
+    if not primary_checkout():
+        raise SchedulerError(f"{ROOT} is a linked worktree; install from the primary")
     unit_dir.mkdir(parents=True, exist_ok=True)
+    retired = _retire_legacy(unit_dir)
     service = (
-        "[Unit]\nDescription=hy-home session analysis\n\n[Service]\nType=oneshot\n"
+        f"[Unit]\nDescription=hy-home session analysis for {ROOT}\n\n"
+        "[Service]\nType=oneshot\n"
         f"WorkingDirectory={ROOT}\n"
+        f"Environment=HY_HOME_CAPTURE_DIR={directory}\n"
         f"ExecStart=/usr/bin/python3 {ROOT}/scripts/operations/session_analysis.py"
         " run --trigger scheduled\nTimeoutStartSec=600\nNice=10\n"
     )
@@ -618,7 +902,12 @@ def install_timer(unit_dir: Path, on_calendar: str = ON_CALENDAR) -> dict:
     (unit_dir / f"{UNIT}.timer").write_text(timer, encoding="utf-8")
     for command in (("daemon-reload",), ("enable", "--now", f"{UNIT}.timer")):
         subprocess.run(["systemctl", "--user", *command], check=True, timeout=30)
-    return {"timer": f"{UNIT}.timer", "on_calendar": on_calendar}
+    return {
+        "timer": f"{UNIT}.timer",
+        "on_calendar": on_calendar,
+        "store": str(directory),
+        "retired": retired,
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -656,12 +945,17 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "promote":
             result = {"promotion": promote(directory)}
         else:
-            result = install_timer(Path.home() / ".config" / "systemd" / "user")
+            result = install_timer(
+                Path.home() / ".config" / "systemd" / "user", directory
+            )
     except (Fenced, KeyboardInterrupt) as error:
         print(f"SESSION_ANALYSIS_STOPPED: {type(error).__name__}", file=sys.stderr)
         return 1
     except LookupError as error:
         print(f"SESSION_ANALYSIS_NOT_FOUND: {error}", file=sys.stderr)
+        return 1
+    except SchedulerError as error:
+        print(f"SESSION_ANALYSIS_SCHEDULER: {error}", file=sys.stderr)
         return 1
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if isinstance(result, dict) and result.get("state") == "skipped":

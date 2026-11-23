@@ -89,8 +89,8 @@ class ObserveTests(unittest.TestCase):
                     "hyhome-backup.service: Failed with result 'exit-code'.",
                     "Finished hyhome-backup.service - HOME backup.",
                 ],
-                "hy-home-session-analysis.service": [
-                    "Finished hy-home-session-analysis.service.",
+                f"{analysis.UNIT}.service": [
+                    f"Finished {analysis.UNIT}.service.",
                 ],
             }
         )
