@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.5.0"
+version: "2.6.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -338,6 +338,12 @@ The direct P09-MEMORY1.2.0 request adds criterion163/W179 in TSK-0107. It
 keeps schema 3, CAS, search and the observed TSK-0082 round trip and
 stale-write refusal, and adds only the D09 delta: source states, conflicted
 exclusion, typed request values and the revision-bound promotion outbox.
+
+The direct P10-SESSIONS1.2.0 request adds criterion164/W180 in TSK-0108. It
+keeps the capture hooks, transcript reconcile, lease fencing, deterministic
+rules and the P09 outbox, and adds only the D10 delta: an ingest-sequence
+cursor, accumulated provenance, redaction before the byte cap, the 30/90-day
+split, the visible final response and a checkout-bound scheduler.
 
 #### Scope
 
@@ -1486,6 +1492,15 @@ target, backup, recovery boundary, and action-specific authorization.
      promotion request in one transaction, write it once as an unreviewed
      memory candidate through the memory CLI with a stable key, never copy
      captured text, skip a changed review and never revive an erased record.
+
+164. TSK-0108 applies P10-SESSIONS1.2.0 to the current Docker workspace.
+     Redact each selected prompt and visible final response whole before a
+     16 KiB UTF-8 cut and again after it; keep no digest of unredacted text;
+     clear text 30 days and delete metadata 90 days after the event. Read
+     analysis input by a never-reused ingest sequence committed with the
+     candidates, so a same-second or late event counts once; accumulate
+     source events; report the unread backlog; expire candidates at 90/30
+     days; name and bind the timer to the primary checkout and its store.
 
 ##### Evidence Requirements
 

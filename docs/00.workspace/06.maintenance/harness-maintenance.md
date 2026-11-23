@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.2.0"
+version: "2.3.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -195,12 +195,19 @@ by Git, so Git cannot restore it, and backup excludes it.
 
 ##### Session capture
 
-`scripts/lib/hooks/session_capture.py` records this workspace's user prompts,
-with secret values masked, and event metadata from the shared hook dispatcher
-into `.workspace-capture/capture.sqlite3`. The directory is mode 0700, excluded
-from Git and backup, and records older than 90 days are removed at
-reconciliation. Responses and tool input or output are not copied, and no other
-personal session file is read.
+`scripts/lib/hooks/session_capture.py` records this workspace's user prompts
+and visible final responses, with secret values masked, and event metadata from
+the shared hook dispatcher into `.workspace-capture/capture.sqlite3`. Each text
+is masked whole, cut to 16 KiB and masked again; a cut text has
+`content_state` `truncated`. The directory is mode 0700 and excluded from Git
+and backup. Text and its fingerprint are cleared 30 days after the event
+(`content_state` `expired`) and the record is removed after 90 days, at
+reconciliation and at each analysis run. Past a 256 MiB store only metadata is
+kept (`content_state` `quota`). Hidden reasoning, intermediate replies and tool
+input or output are not copied, and no other personal session file is read.
+The first connection after an upgrade migrates an older store once: it adds the
+ingest sequence, masks and cuts stored prompts again and replaces digests of
+unmasked text.
 
 ```bash
 python3 -m scripts.lib.hooks.session_capture status
@@ -221,9 +228,14 @@ operating capture.
 
 `scripts/operations/session_analysis.py` analyses the capture with
 deterministic rules and no language model (owner decision, 2026-11-18). It
-turns repeated prompts (the same normalized text three or more times),
+turns repeated prompts (the same normalized text three or more times within the
+30-day content), three or more corrections right after a visible response,
 incomplete sessions and capture failures into candidates, each with its source
-event IDs, frequency, condition, proposal, risk and acceptance test. Results go
+event IDs, frequency, condition, proposal, risk and acceptance test. Source
+events only accumulate; `candidates` counts those whose record expired as
+`source_expired`. A candidate's captured `pattern` clears with its content, a
+pending candidate is removed 90 days after creation and a decided one 30 days
+after the decision. Results go
 to `.workspace-capture/analysis.sqlite3`; the last run's state goes to
 `analysis-status.json` and the systemd journal.
 
@@ -237,10 +249,17 @@ python3 scripts/operations/session_analysis.py promote
 ```
 
 `install-timer` installs the user systemd timer
-`hy-home-session-analysis.timer` for 03:00 Asia/Seoul daily, and
-`Persistent=true` catches up a missed run at the next start. The service has no
-`Restart`, so a failure does not repeat. A run reads only records after the last
-completed window and never reanalyses a window. While a lease holds, a duplicate
+`hy-home-session-analysis-<workspace key>.timer` for 03:00 Asia/Seoul daily, and
+`Persistent=true` catches up a missed run at the next start. The key is derived
+from the checkout path, the service names that working directory and its
+capture store, and the command refuses a linked worktree. It moves this
+checkout's earlier fixed-name `hy-home-session-analysis` unit and leaves one
+that names another checkout. The service has no `Restart`, so a failure does
+not repeat. A run reads at most 5,000 events after its ingest-sequence cursor
+and the failure log after its byte offset, and commits both with its
+candidates, so an event in the same second as the last run is still read once;
+`status` shows `cursor_start`, `cursor_end` and the unread `backlog`, which the
+next run continues. While a lease holds, a duplicate
 run exits 75; a run that lost its lease writes nothing (fenced), and SIGTERM is
 recorded as a cancellation. `decide ... accepted` records the decision and the
 whole promotion request together, then writes it through the memory CLI as one
@@ -253,7 +272,7 @@ reviewed fields changed is marked `stale` and not promoted. Making the record
 `current` still needs owner review and a source pin, and a policy, skill or
 checker changes only through a separate Task and approval. Missing capture or a failed analysis never blocks a commit, push
 or other work. Remove the timer with
-`systemctl --user disable --now hy-home-session-analysis.timer`.
+`systemctl --user disable --now hy-home-session-analysis-<workspace key>.timer`.
 
 ##### Task forecasts
 
@@ -365,7 +384,7 @@ then delete completed owned probes. Persistent state and tests remain.
 `scripts/operations/observe.py report` counts what happened in a time window
 (default the last 24 hours) across the capture store, session analysis runs,
 forecast outcomes, dispatch reports and the journals of `hyhome-backup.service`
-and `hy-home-session-analysis.service`. Each failure names its owner document
+and this checkout's `hy-home-session-analysis-<workspace key>.service`. Each failure names its owner document
 and next step: backup failures go to RUN-0021, the others to this guide.
 Journal lines are counted, never copied, and no log text, prompt or secret is
 moved. The report records its own run time as observation cost and lists what it

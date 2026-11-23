@@ -30,6 +30,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts.lib.hooks import session_capture as capture  # noqa: E402
+from scripts.operations import session_analysis as analysis  # noqa: E402
 from scripts.operations.agent_memory import MemoryStoreError  # noqa: E402
 
 RUNBOOK = "RUN-0021"
@@ -40,15 +41,14 @@ WATCHED = {
         f"{RUNBOOK} backup / @buenhyden",
         f"journalctl -u hyhome-backup.service; {RUNBOOK} step 4 and step 7",
     ),
-    "hy-home-session-analysis.service": (
+    f"{analysis.UNIT}.service": (
         "user",
         "HARNESS-MAINTENANCE scheduled session analysis / @buenhyden",
-        "journalctl --user -u hy-home-session-analysis.service;"
-        " session_analysis.py status",
+        f"journalctl --user -u {analysis.UNIT}.service; session_analysis.py status",
     ),
 }
 CAPTURE_OWNER = "HARNESS-MAINTENANCE session capture / @buenhyden"
-ANALYSIS_OWNER = WATCHED["hy-home-session-analysis.service"][1]
+ANALYSIS_OWNER = WATCHED[f"{analysis.UNIT}.service"][1]
 DISPATCH_OWNER = "HARNESS-MAINTENANCE parallel work dispatch / @buenhyden"
 TASK_REF = re.compile(r"SPEC-\d{4}-TSK-\d{4}")
 RUN_ID = re.compile(r"\d{8}T\d{6}-[0-9a-f]{6}")

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.5.0"
+version: "2.6.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -447,6 +447,16 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W177 | 161 | Complete P07 shared resource admission and owned execution lifecycle in existing Compose/LAB/dispatch consumers; reuse verified selected native routes | W176 | TSK-0105 | Focused RED/GREEN race, union, numeric budget, spawn-gap, PID identity, token cleanup tests; bounded real selected environment; manifest/routing/docs and independent boundary review plus normal hosted delivery |
 | W178 | 162 | Gate the first recognized edit on a bound brief once a request is observed, show a one-time user notice per bound revision and keep a bindable draft route | W177 | TSK-0106 | Focused RED/GREEN gate, notice, draft and dispatcher tests; one bounded native refusal-then-edit per supported provider; governance and document checks plus normal hosted delivery |
 | W179 | 163 | Add D09 source states, conflicted exclusion, typed request values and the revision-bound promotion outbox to the existing memory and analysis stores | W178 | TSK-0107 | Focused RED/GREEN memory, retrieval and promotion tests; a disposable-clone CLI promotion; read-only real store reads; governance and document checks plus normal hosted delivery |
+| W180 | 164 | Apply the D10 capture and analysis delta: redact-then-cap, 30/90-day expiry, final response, ingest-sequence cursor, accumulated provenance, backlog and a checkout-bound timer | W179 | TSK-0108 | Focused RED/GREEN capture, analysis and observe tests; a synthetic-store CLI run; the real store migration and timer move observed after merge; governance and document checks plus normal hosted delivery |
+
+###### Current P10 session capture and analysis boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0108](01.tasks/tsk-0108-p10-sessions.md) owns criterion164/W180. The
+capture hooks, transcript reconcile, lease fencing, deterministic rules and
+the P09 outbox stay. Work runs in a linked worktree so the live hooks keep
+the merged code; the real stores migrate on their first connection after
+the merge, and the timer moves only for this checkout.
 
 ###### Current P09 shared memory boundary
 <!-- core-payload-level:4 -->
