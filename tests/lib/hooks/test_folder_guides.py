@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import sqlite3
 import subprocess
 import tempfile
 import unittest
@@ -216,6 +217,7 @@ class DispatcherDeliveryTests(IsolatedState):
                 "SessionStart": "session-start.sh",
                 "PreCompact": "pre-compact.sh",
                 "PreToolUse": "docker-compose-pre.sh",
+                "PostToolUseFailure": "post-tool-failure.sh",
             }[event]
             command = ["bash", str(ROOT / ".claude/hooks" / adapter)]
         result = subprocess.run(
@@ -525,6 +527,27 @@ class DispatcherDeliveryTests(IsolatedState):
         self.run_hook("SessionStart", {"session_id": "s", "source": "startup"})
         store = Path(self.state_home) / "capture" / "capture.sqlite3"
         self.assertTrue(store.is_file())
+
+    def test_a_failed_tool_reaches_the_capture_through_each_provider(self) -> None:
+        self.run_hook(
+            "PostToolUseFailure",
+            {"session_id": "f1", "tool_use_id": "u1", "tool_name": "Bash",
+             "error": "Exit code 3\nno such file"},
+            provider="claude",
+        )  # fmt: skip
+        self.run_hook(
+            "PostToolUse",
+            {"session_id": "f2", "tool_use_id": "u2", "tool_name": "Bash",
+             "tool_response": "Exit code: 4\nOutput:\nbroken"},
+            provider="codex",
+        )  # fmt: skip
+        store = Path(self.state_home) / "capture" / "capture.sqlite3"
+        with sqlite3.connect(store) as connection:
+            rows = connection.execute(
+                "SELECT provider, tool_name FROM events"
+                " WHERE event_kind='PostToolUseFailure' ORDER BY provider"
+            ).fetchall()
+        self.assertEqual([("claude", "Bash"), ("codex", "Bash")], rows)
 
 
 if __name__ == "__main__":

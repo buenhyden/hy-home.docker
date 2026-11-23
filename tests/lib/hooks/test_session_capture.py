@@ -248,7 +248,12 @@ class CaptureTests(unittest.TestCase):
             )  # fmt: skip
         old.commit()
         old.close()
-        events = {e["event_id"]: e for e in self.events()}
+        current = self.events()  # the first connection migrates
+        moved = capture.rekeys(self.directory)  # hook prompt IDs leave the text
+        self.assertEqual({"e0", "e1"}, set(moved))
+        events = {
+            old: e for e in current for old in moved if moved[old] == e["event_id"]
+        }
         self.assertEqual(
             (2, 1), (events["e0"]["ingest_seq"], events["e1"]["ingest_seq"])
         )
@@ -272,12 +277,84 @@ class CaptureTests(unittest.TestCase):
             (raw, capture.digest(raw)),
         )
         connection.close()
-        late = {e["event_id"]: e for e in self.events()}["late"]
+        current = {e["event_id"]: e for e in self.events()}
+        late = current[capture.rekeys(self.directory)["late"]]  # its ID moved too
         self.assertEqual(2, late["ingest_seq"])
         self.assertNotIn("hunter2", late["prompt"])
         self.assertEqual("truncated", late["content_state"])
         self.assertEqual(capture.digest(late["prompt"]), late["prompt_digest"])
         self.assertEqual("2026-11-24T00:00:00+00:00", late["occurred_at"])
+
+    def failure(self, payload, provider="claude", event="PostToolUseFailure"):
+        base = {"session_id": "s1", "tool_use_id": "tu1", "tool_name": "Bash"}
+        return capture.enqueue(
+            event, {**base, **payload}, provider, self.directory, "workspace"
+        )
+
+    def test_a_failed_tool_result_is_redacted_bounded_and_named(self):
+        self.failure(
+            {
+                "tool_input": {"command": "deploy --flag private-input"},
+                "error": "Exit code 1\ntoken=abc123 " + "z" * 10000,
+            }
+        )
+        (event,) = self.events()
+        self.assertEqual(
+            ("PostToolUseFailure", "Bash"), (event["event_kind"], event["tool_name"])
+        )
+        self.assertNotIn("abc123", event["tool_result"])
+        self.assertLessEqual(
+            len(event["tool_result"].encode()), capture.TOOL_RESULT_BYTES
+        )
+        self.assertEqual("truncated", event["content_state"])
+        self.assertNotIn("private-input", json.dumps(event))
+        self.assertIsNone(self.failure({"error": "stopped", "is_interrupt": True}))
+
+    def test_only_a_codex_shell_failure_is_kept_from_post_tool_use(self):
+        def codex(response, use="c1"):
+            return self.failure(
+                {"tool_use_id": use, "tool_response": response}, "codex", "PostToolUse"
+            )
+
+        self.assertIsNone(codex("Exit code: 0\nOutput:\nfine"))
+        self.assertIsNone(codex({"exit_code": 0, "output": "fine"}, "c2"))
+        self.assertIsNotNone(codex("Process exited with code 2\nOutput:\nboom", "c3"))
+        self.assertIsNotNone(codex({"exit_code": 1, "output": "bad"}, "c4"))
+        self.assertIsNone(
+            capture.enqueue(
+                "PostToolUse",
+                {"session_id": "s1", "tool_name": "Write", "tool_response": {}},
+                "claude",
+                self.directory,
+                "workspace",
+            )
+        )
+        results = sorted(e["tool_result"] for e in self.events())
+        self.assertEqual(["Process exited with code 2\nOutput:\nboom", "bad"], results)
+
+    def test_an_event_id_never_depends_on_captured_text(self):
+        base = {"session_id": "s1", "turn_id": "t1"}
+        first = capture.enqueue(
+            "UserPromptSubmit", {**base, "prompt": "one"}, "claude", self.directory, "w"
+        )
+        second = capture.enqueue(
+            "UserPromptSubmit", {**base, "prompt": "two"}, "claude", self.directory, "w"
+        )
+        self.assertEqual(first, second)  # the same turn, retried
+
+    def test_ids_derived_from_text_are_rekeyed_once_with_a_map(self):
+        self.prompt("rekey me")
+        connection = capture.connect(self.directory)
+        connection.execute("UPDATE events SET event_id='text-derived'")
+        connection.execute("UPDATE capture_meta SET value=0")
+        connection.close()
+        (event,) = self.events()
+        self.assertNotEqual("text-derived", event["event_id"])
+        self.assertEqual(
+            {"text-derived": event["event_id"]}, capture.rekeys(self.directory)
+        )
+        capture.forget_rekeys(self.directory, ["text-derived"])
+        self.assertEqual({}, capture.rekeys(self.directory))
 
     def test_a_full_store_keeps_metadata_and_names_the_gap(self):
         with mock.patch.object(capture, "STORE_QUOTA_BYTES", 0):
@@ -294,6 +371,17 @@ class CaptureTests(unittest.TestCase):
         report = capture.status(self.directory)
         self.assertEqual(1, report["capture_failures"])
         self.assertIn("UserPromptSubmit", report["last_failure"])
+
+    def test_a_hook_without_a_stored_event_starts_no_reconcile(self):
+        with (
+            mock.patch.object(capture, "capture_dir", return_value=self.directory),
+            mock.patch.object(capture.subprocess, "Popen") as started,
+        ):
+            capture.hook("Stop", "{}", "claude")
+            capture.hook(
+                "Stop", json.dumps({"session_id": "s1", "turn_id": "t"}), "claude"
+            )
+        self.assertEqual(1, started.call_count)
 
     def test_only_prompts_the_user_typed_are_captured(self):
         notice = "<task-notification>task finished</task-notification>"

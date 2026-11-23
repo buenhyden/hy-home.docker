@@ -1,6 +1,6 @@
 ---
 title: "P10 Session Capture and Analysis Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -101,6 +101,20 @@ moved, while another checkout's is kept. `observe.py` follows the new unit
 name. ENVIRONMENT-CONSTRAINTS 2.3.0 changes R136-R138 and R144-R146, and
 the harness maintenance guide 2.3.0 documents the behaviour.
 
+On 2026-11-24 the owner decided to capture tool results, remove the
+text-derived event IDs and close the P09 leftovers. A failed tool call now
+keeps its tool name and failure text, redacted and cut to 4 KiB. Claude sends
+it through a new `PostToolUseFailure` binding in the Registry, the wrapper and
+the settings; Codex sends a shell failure through `PostToolUse`, kept only
+when the exit is not 0. A new `tool-failure` rule groups three or more
+failures with the same tool and first line. Event IDs now come from provider,
+session, event and a stored marker only. Each connection checks the prompt
+rows past a watermark and rekeys any whose ID came from its text, mapping the
+old ID until the next analysis run rewrites candidate and outbox references.
+`promote --include-earlier` records intents for candidates accepted before
+the outbox. ENVIRONMENT-CONSTRAINTS 2.4.0 changes R136, R137 and R139, and the
+harness maintenance guide is 2.4.0.
+
 ##### Blockers and Decisions
 
 No Q01-Q04 question is reopened. R137 forbade copying replies; Q-02 selects
@@ -124,6 +138,16 @@ ingest sequence, which the cursor would never read. Checkouts on different
 code can always share one store, so the fix is in the shared `connect`: any
 row without a sequence is adopted on the next connection. It gets the next
 sequence, redacted-then-cut text, a replaced digest and a normalized time.
+An audit-hook probe found why the real store moved before each merge. A hook
+test without a captured event still started a detached reconcile
+(`--session None`), and that reconcile, without `HY_HOME_CAPTURE_DIR`,
+resolved the shared real store and migrated it with the tested checkout's
+code; during this follow-up it took the real store to schema 3 with 209 IDs
+rekeyed. `hook()` now starts a reconcile only after it stored an event, and
+`tests/__init__.py` gives every test process a temporary capture directory;
+the probe then found no access to the real store. Rows written meanwhile by
+the merged schema 2 code are caught by the ID watermark.
+
 Redaction no longer counts a value that is exactly `[REDACTED]` again. A
 first lookahead also skipped a value that only began with `[REDACTED]`; an
 automated security review found it before merge (E13), and the lookahead now
@@ -150,6 +174,9 @@ needs the masked marker to end the value.
 | E13 | 164 | W180 | method=automated; tool=Python3.12.3; command=redact("token=[REDACTED]hunter2") on commit 15e68a5e, then python3 -m unittest tests.lib.hooks.test_session_capture | Masked-prefix value before and after the lookahead fix | PASS | Before: the value stayed unmasked with count 0; after: masked with count 1, an exact `[REDACTED]` still counts 0; 21 tests pass | required | - |
 | E14 | 164 | W180 | method=observation; tool=Python3.12.3 CLI; command=session_capture reconcile; read-only SQL counts; session_analysis.py run and candidates --all | Real stores after merge 29f0bfc2 | PASS | 1,021 events, none without a sequence, 1,021 distinct sequences and counter 1,021; the run read cursor 1015 to 1021 with the 4 adopted rows, backlog 0 | required | E09 |
 | E15 | 164 | W180 | method=observation; tool=Claude Code 2.1.331 Stop hook; command=read-only SQL on the real capture store | This session's Stop events after the merge | PASS | 2 claude Stop events stored the visible final response, 75 and 123 bytes, content_state stored; no Codex Stop observed | required | - |
+| E16 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture tests.validation.test_session_analysis | New tool-failure, ID, rekey and earlier-promotion regressions on 6e252f6e | FAIL | Witnessed RED: 3 failures and 4 errors over 7 new tests | required | - |
+| E17 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture tests.validation.test_session_analysis | Follow-up change | PASS | Exit0; with the dispatcher route and reconcile-start cases added | required | E16 |
+| E18 | 164 | W180 | method=automated; tool=Python3.12.3 audit hook; command=sitecustomize audit hook on sqlite3.connect and open of the real capture path while running the routing, dispatch, forecast, observe, memory, folder-guide, capture and analysis suites | Before and after the reconcile-start and test-directory fix | PASS | Before: 12 accesses by reconcile --session None from hook tests; after: 0; suites exit0 | required | - |
 
 ##### Resolution Links
 
@@ -161,7 +188,7 @@ E03 resolves the witnessed failures in E02.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12,E13,E14,E15 | Implementation, focused regressions, a synthetic CLI run, the real migration and row adoption, native Claude response capture and the timer move are recorded; a scheduled run of the new unit, a Codex response capture and owner acceptance remain | @buenhyden |
+| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12,E13,E14,E15,E17,E18 | Implementation, focused regressions, a synthetic CLI run, the real migration and row adoption, native Claude response capture and the timer move are recorded; a scheduled run of the new unit, a Codex response capture and owner acceptance remain | @buenhyden |
 
 ##### Remaining Conditions
 

@@ -23,6 +23,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -31,10 +32,20 @@ STORE_NAME = "capture.sqlite3"
 CONTENT_DAYS = 30
 METADATA_DAYS = 90
 MAX_CONTENT_BYTES = 16 * 1024
+TOOL_RESULT_BYTES = 4 * 1024
 STORE_QUOTA_BYTES = 256 * 1024 * 1024
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 4
 HEAD_BYTES = 4096
-EVENTS = ("UserPromptSubmit", "Stop", "PreCompact", "SessionStart")
+EVENTS = (
+    "UserPromptSubmit",
+    "Stop",
+    "PreCompact",
+    "SessionStart",
+    "PostToolUseFailure",
+    "PostToolUse",
+)
+TOOL_FAILURE = "PostToolUseFailure"
+EXIT_CODE = re.compile(r"(?:Exit code:?|exited with code)\s*(-?\d+)")
 SCHEMA = (
     "CREATE TABLE IF NOT EXISTS events (event_id TEXT PRIMARY KEY,"
     " workspace_id TEXT NOT NULL, provider TEXT NOT NULL, provider_version TEXT,"
@@ -42,7 +53,16 @@ SCHEMA = (
     " origin TEXT NOT NULL, source_ref TEXT, occurred_at TEXT NOT NULL,"
     " captured_at TEXT NOT NULL, transcript_path TEXT, transcript_offset INTEGER,"
     " prompt TEXT, prompt_digest TEXT, redactions INTEGER NOT NULL DEFAULT 0,"
-    " ingest_seq INTEGER, response TEXT, content_state TEXT)",
+    " ingest_seq INTEGER, response TEXT, content_state TEXT, tool_name TEXT,"
+    " tool_result TEXT, event_marker TEXT)",
+    # Rows up to this ingest sequence have a verified, text-free event ID.
+    "CREATE TABLE IF NOT EXISTS capture_meta (key TEXT PRIMARY KEY,"
+    " value INTEGER NOT NULL)",
+    "INSERT OR IGNORE INTO capture_meta VALUES ('verified_through', 0)",
+    # An event ID that was derived from captured text, mapped to its new ID
+    # until the analysis store has rewritten its references.
+    "CREATE TABLE IF NOT EXISTS rekeyed (old_id TEXT PRIMARY KEY,"
+    " new_id TEXT NOT NULL)",
     # The ingest sequence lives apart from the rows, so a deleted row never
     # frees its number for a later insert.
     "CREATE TABLE IF NOT EXISTS ingest (singleton INTEGER PRIMARY KEY"
@@ -97,17 +117,17 @@ def redact(text: str) -> tuple[str, int]:
     return text, count + found
 
 
-def _cut(text: str) -> str:
-    return text.encode()[:MAX_CONTENT_BYTES].decode(errors="ignore")
+def _cut(text: str, cap: int) -> str:
+    return text.encode()[:cap].decode(errors="ignore")
 
 
-def bounded(text: str) -> tuple[str, int, bool]:
+def bounded(text: str, cap: int = MAX_CONTENT_BYTES) -> tuple[str, int, bool]:
     """Redact the whole text, cut it to the byte cap, then redact again."""
     text, count = redact(text)
-    truncated = len(text.encode()) > MAX_CONTENT_BYTES
+    truncated = len(text.encode()) > cap
     if truncated:
-        text, again = redact(_cut(text))
-        text, count = _cut(text), count + again
+        text, again = redact(_cut(text, cap))
+        text, count = _cut(text, cap), count + again
     return text, count, truncated
 
 
@@ -122,7 +142,7 @@ def event_time(value: object) -> str:
     return parsed.astimezone(dt.UTC).isoformat(timespec="seconds")
 
 
-def _content(directory: Path, text: str | None) -> tuple:
+def _content(directory: Path, text: str | None, cap: int = MAX_CONTENT_BYTES) -> tuple:
     """(stored text, its fingerprint, redaction count, content state)."""
     if text is None:
         return None, None, 0, None
@@ -132,7 +152,7 @@ def _content(directory: Path, text: str | None) -> tuple:
         size = 0  # not created yet
     if size >= STORE_QUOTA_BYTES:
         return None, None, 0, "quota"  # metadata only; never a raw spill
-    stored, redactions, truncated = bounded(text)
+    stored, redactions, truncated = bounded(text, cap)
     # The fingerprint covers the stored, redacted text and expires with it.
     return stored, digest(stored), redactions, "truncated" if truncated else "stored"
 
@@ -173,13 +193,15 @@ def connect(directory: Path) -> sqlite3.Connection:
     for statement in SCHEMA:
         connection.execute(statement)
     if connection.execute(
-        "SELECT 1 FROM events WHERE ingest_seq IS NULL LIMIT 1"
+        "SELECT 1 FROM events WHERE ingest_seq IS NULL OR ingest_seq >"
+        " (SELECT value FROM capture_meta WHERE key='verified_through') LIMIT 1"
     ).fetchone():
-        # A checkout still on older code shares this store and wrote a row
-        # without the contract; adopt it so the cursor reads it once.
+        # A checkout still on older code can share this store: adopt its rows,
+        # so the cursor reads them once and no ID derives from captured text.
         connection.execute("BEGIN IMMEDIATE")
         try:
             _adopt(connection)
+            _verify_ids(connection)
             connection.execute("COMMIT")
         except BaseException:
             connection.execute("ROLLBACK")
@@ -197,7 +219,14 @@ def _migrate(connection: sqlite3.Connection) -> None:
         for statement in SCHEMA:
             connection.execute(statement)
         columns = {row[1] for row in connection.execute("PRAGMA table_info(events)")}
-        for column in ("ingest_seq INTEGER", "response TEXT", "content_state TEXT"):
+        for column in (
+            "ingest_seq INTEGER",
+            "response TEXT",
+            "content_state TEXT",
+            "tool_name TEXT",
+            "tool_result TEXT",
+            "event_marker TEXT",
+        ):
             if column.split()[0] not in columns:
                 connection.execute(f"ALTER TABLE events ADD COLUMN {column}")
         _adopt(connection)
@@ -240,6 +269,94 @@ def _adopt(connection: sqlite3.Connection) -> None:
         )
 
 
+def event_key(provider: str, session: str, event: str, marker: object) -> str:
+    return digest("\0".join(map(str, ("event", provider, session, event, marker))))
+
+
+def _rekey_id(provider: str, session: str, sequence: int) -> str:
+    return digest(f"event-v3\0{provider}\0{session}\0{sequence}")
+
+
+def _verify_ids(connection: sqlite3.Connection) -> None:
+    """Rekey hook prompt rows past the watermark whose ID came from their text.
+
+    Current code derives an ID from the stored marker only; earlier code also
+    hashed the prompt. Any row that matches neither the marker key nor the
+    rekey key gets the rekey key, and the old ID is mapped until the
+    analysis store has rewritten its references.
+    """
+    mark = connection.execute(
+        "SELECT value FROM capture_meta WHERE key='verified_through'"
+    ).fetchone()[0]
+    rows = connection.execute(
+        "SELECT event_id, provider, session_id, event_kind, ingest_seq, event_marker"
+        " FROM events WHERE ingest_seq > ? AND origin='hook'"
+        " AND event_kind='UserPromptSubmit'",
+        (mark,),
+    ).fetchall()
+    for old, provider, session, kind, sequence, marker in rows:
+        new = _rekey_id(provider, session, sequence)
+        if old == new or (
+            marker is not None and old == event_key(provider, session, kind, marker)
+        ):
+            continue
+        connection.execute("UPDATE events SET event_id=? WHERE event_id=?", (new, old))
+        connection.execute("INSERT OR REPLACE INTO rekeyed VALUES (?, ?)", (old, new))
+    connection.execute(
+        "UPDATE capture_meta SET value=(SELECT coalesce(max(ingest_seq), 0)"
+        " FROM events) WHERE key='verified_through'"
+    )
+
+
+def rekeys(directory: Path) -> dict[str, str]:
+    """Old to new event IDs the analysis store has not yet applied."""
+    path = directory / STORE_NAME
+    if not path.is_file():
+        return {}
+    source = sqlite3.connect(path.absolute().as_uri() + "?mode=ro", uri=True)
+    try:
+        return dict(source.execute("SELECT old_id, new_id FROM rekeyed"))
+    except sqlite3.OperationalError:
+        return {}  # a store before the map
+    finally:
+        source.close()
+
+
+def forget_rekeys(directory: Path, old_ids: list[str]) -> None:
+    """Drop applied entries, so no text-derived ID outlives its rewrite."""
+    if not old_ids:
+        return
+    connection = connect(directory)
+    try:
+        connection.executemany(
+            "DELETE FROM rekeyed WHERE old_id=?", [(old,) for old in old_ids]
+        )
+    finally:
+        connection.close()
+
+
+def _tool_failure(event: str, payload: dict, provider: str) -> str | None:
+    """The failure text of a tool call, or None when nothing failed."""
+    if event == TOOL_FAILURE:
+        if payload.get("is_interrupt"):
+            return None  # a cancellation, not a failure
+        error = payload.get("error")
+        return error if isinstance(error, str) and error else None
+    if provider != "codex" or payload.get("tool_name") != "Bash":
+        return None  # Claude reports failures through PostToolUseFailure
+    response = payload.get("tool_response")
+    if isinstance(response, dict):
+        code = response.get("exit_code", response.get("exitCode"))
+        text = response.get("output") or response.get("stderr") or ""
+        if type(code) is int and code != 0:
+            return str(text) or f"exit code {code}"
+        return None
+    if isinstance(response, str):
+        found = EXIT_CODE.search(response)
+        return response if found and int(found.group(1)) != 0 else None
+    return None
+
+
 def directory_of(connection: sqlite3.Connection) -> Path:
     return Path(connection.execute("PRAGMA database_list").fetchone()[2]).parent
 
@@ -256,9 +373,10 @@ def _prune(connection) -> None:
     metadata = (now_ - dt.timedelta(days=METADATA_DAYS)).isoformat(timespec="seconds")
     connection.execute("DELETE FROM events WHERE occurred_at < ?", (metadata,))
     connection.execute(
-        "UPDATE events SET prompt=NULL, response=NULL, prompt_digest=NULL,"
-        " content_state='expired' WHERE occurred_at < ? AND (prompt IS NOT NULL"
-        " OR response IS NOT NULL OR prompt_digest IS NOT NULL)",
+        "UPDATE events SET prompt=NULL, response=NULL, tool_result=NULL,"
+        " prompt_digest=NULL, content_state='expired' WHERE occurred_at < ? AND"
+        " (prompt IS NOT NULL OR response IS NOT NULL OR tool_result IS NOT NULL"
+        " OR prompt_digest IS NOT NULL)",
         (content,),
     )
     connection.execute(
@@ -321,20 +439,33 @@ def enqueue(
             offset = os.stat(transcript).st_size
         except OSError:
             offset = None
-    text = None
-    if event == "UserPromptSubmit":
+    text = tool = None
+    if event in (TOOL_FAILURE, "PostToolUse"):
+        text = _tool_failure(event, payload, provider)
+        if text is None:
+            return None
+        event, tool = TOOL_FAILURE, str(payload.get("tool_name") or "unknown")[:80]
+    elif event == "UserPromptSubmit":
         text = str(payload.get("prompt") or "")
     elif event == "Stop":
         message = payload.get("last_assistant_message")
         text = message if isinstance(message, str) and message else None
-    stored, prompt_digest, redactions, content_state = _content(directory, text)
+    cap = TOOL_RESULT_BYTES if tool else MAX_CONTENT_BYTES
+    stored, prompt_digest, redactions, content_state = _content(directory, text, cap)
     prompt = stored if event == "UserPromptSubmit" else None
     response = stored if event == "Stop" else None
-    # A retried hook repeats the same turn, source or transcript size.
-    marker = payload.get("turn_id") or payload.get("source") or offset
-    event_id = digest(
-        "\0".join(map(str, (provider, session, event, marker, prompt_digest)))
+    tool_result = stored if tool else None
+    # A retried hook repeats the same turn, tool call, source or transcript
+    # size; the ID never includes captured text.
+    marker = (
+        payload.get("turn_id")
+        or payload.get("tool_use_id")
+        or payload.get("source")
+        or offset
     )
+    if marker is None:
+        marker = uuid.uuid4().hex  # nothing stable to retry on
+    event_id = event_key(provider, session, event, marker)
     connection = connect(directory)
     try:
         connection.execute("BEGIN IMMEDIATE")
@@ -342,8 +473,9 @@ def enqueue(
             "INSERT OR IGNORE INTO events (event_id, workspace_id, provider,"
             " provider_version, session_id, sequence, event_kind, origin, source_ref,"
             " occurred_at, captured_at, transcript_path, transcript_offset, prompt,"
-            " prompt_digest, redactions, response, content_state, ingest_seq)"
-            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            " prompt_digest, redactions, response, content_state, ingest_seq,"
+            " tool_name, tool_result, event_marker)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 event_id,
                 workspace_id,
@@ -364,6 +496,9 @@ def enqueue(
                 response,
                 content_state,
                 _next_ingest(connection),
+                tool,
+                tool_result,
+                str(marker),
             ),
         )
         connection.execute(
@@ -630,10 +765,12 @@ def hook(event: str, raw: str, provider: str) -> None:
     try:
         payload = json.loads(raw) if raw.strip() else {}
         payload = payload if isinstance(payload, dict) else {}
-        enqueue(event, payload, provider, directory, str(directory.parent))
+        stored = enqueue(event, payload, provider, directory, str(directory.parent))
     except Exception as error:
         _degraded(directory, f"{provider} {event} {type(error).__name__}")
         return
+    if stored is None:
+        return  # nothing of this workspace's sessions was captured
     if event == "Stop" or (
         event == "SessionStart" and payload.get("source") in ("resume", "compact")
     ):

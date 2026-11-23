@@ -217,7 +217,14 @@ def _capture(directory: Path) -> sqlite3.Connection:
 
 def read_capture(directory: Path, cursor: int, limit: int) -> dict:
     """New events after the cursor, bounded, plus the context the rules need."""
-    empty = {"events": [], "sessions": [], "history": [], "stops": [], "backlog": 0}
+    empty = {
+        "events": [],
+        "sessions": [],
+        "history": [],
+        "stops": [],
+        "tools": [],
+        "backlog": 0,
+    }
     if not (directory / capture.STORE_NAME).is_file():
         return empty
     source = _capture(directory)
@@ -255,6 +262,14 @@ def read_capture(directory: Path, cursor: int, limit: int) -> dict:
                 (end,),
             )
         ]
+        tools = [
+            dict(row)
+            for row in source.execute(
+                "SELECT event_id, tool_name, tool_result, occurred_at FROM events"
+                " WHERE event_kind=? AND tool_result IS NOT NULL AND ingest_seq <= ?",
+                (capture.TOOL_FAILURE, end),
+            )
+        ]
         sessions = [dict(row) for row in source.execute("SELECT * FROM sessions")]
     finally:
         source.close()
@@ -263,6 +278,7 @@ def read_capture(directory: Path, cursor: int, limit: int) -> dict:
         "sessions": sessions,
         "history": history,
         "stops": stops,
+        "tools": tools,
         "backlog": backlog,
         "end": end,
     }
@@ -396,6 +412,32 @@ def aggregate(batch: dict, failed: list[str]) -> list[dict]:
                 test_plan="Reconcile again and compare the completeness counts.",
             )
         )
+    fresh_ids = {e["event_id"] for e in events}
+    failing: dict[str, list[dict]] = {}
+    for event in batch["tools"]:
+        lines = [x for x in event["tool_result"].splitlines() if x.strip()]
+        head = re.sub(r"\d+", "#", _normal(lines[0] if lines else ""))[:120]
+        failing.setdefault(f"{event['tool_name']}: {head}", []).append(event)
+    for key, members in sorted(failing.items()):
+        touched = any(m["event_id"] in fresh_ids for m in members)
+        if touched and len(members) >= REPEAT_MIN:
+            found.append(
+                _candidate(
+                    "tool-failure",
+                    key,
+                    members,
+                    f"{len(members)} failures",
+                    hypothesis="The same tool call fails the same way repeatedly;"
+                    " this is a hypothesis, not a confirmed cause.",
+                    proposed_change="Read the failure text and decide whether a skill,"
+                    " a check or a reviewed memory record would prevent it.",
+                    expected_benefit="Fewer repeated tool failures.",
+                    risk="The first line may group different causes.",
+                    test_plan="Compare the failure count over the next two windows"
+                    " after any adopted change.",
+                    content=True,
+                )
+            )
     counts: dict[str, int] = {}
     for line in failed:
         reason = line[26:].strip() or "unknown"
@@ -492,6 +534,43 @@ def record(connection, analysis_key: str, found: list[dict]) -> None:
             )
 
 
+def _rekey(connection, mapping: dict[str, str]) -> None:
+    """Rewrite references to event IDs the capture store replaced."""
+    if not mapping:
+        return
+    for row in connection.execute("SELECT * FROM candidates").fetchall():
+        events = json.loads(row["source_event_ids"])
+        moved = [mapping.get(event, event) for event in events]
+        if moved == events:
+            continue
+        before = review_digest(row)
+        connection.execute(
+            "UPDATE candidates SET source_event_ids=? WHERE candidate_id=?",
+            (json.dumps(moved), row["candidate_id"]),
+        )
+        after = review_digest(
+            connection.execute(
+                "SELECT * FROM candidates WHERE candidate_id=?", (row["candidate_id"],)
+            ).fetchone()
+        )
+        for promotion in connection.execute(
+            "SELECT candidate_id, request FROM promotions WHERE candidate_id=?"
+            " AND review_digest=?",
+            (row["candidate_id"], before),
+        ).fetchall():
+            # Only the ID changed, so the reviewed revision stays the same.
+            request = json.loads(promotion["request"])
+            for reference in request["source_refs"]:
+                if reference.get("kind") == "session-events":
+                    reference["event_ids"] = [
+                        mapping.get(event, event) for event in reference["event_ids"]
+                    ]
+            connection.execute(
+                "UPDATE promotions SET request=?, review_digest=? WHERE candidate_id=?",
+                (json.dumps(request, sort_keys=True), after, promotion["candidate_id"]),
+            )
+
+
 def expire(connection) -> None:
     """Captured text leaves with its content; candidates leave at 90/30 days."""
     current = now()
@@ -541,6 +620,7 @@ def run(directory: Path, trigger: str) -> dict:
     analysis_key = None
     try:
         capture.prune(directory)  # the daily content and record expiry
+        moved = capture.rekeys(directory)
         cursor, offset, head = _cursor(connection, directory)
         for attempt in range(1, ATTEMPTS + 1):
             try:
@@ -561,6 +641,7 @@ def run(directory: Path, trigger: str) -> dict:
         if current != token:
             raise Fenced(f"lease token {current} replaced {token}")
         expire(connection)
+        _rekey(connection, moved)
         if events or failed:
             record(connection, analysis_key, found)
             connection.execute(
@@ -589,6 +670,7 @@ def run(directory: Path, trigger: str) -> dict:
             status.update(reason="no new captured events")
         release(connection, token)
         connection.execute("COMMIT")
+        capture.forget_rekeys(directory, list(moved))
         status.update(state="complete")
         return status
     except KeyboardInterrupt:
@@ -788,12 +870,37 @@ def _receipt(connection, candidate_id: str, revision: int) -> None:
     )
 
 
-def promote(directory: Path, writer=None) -> dict:
-    """Drain pending promotion intents; a retry reuses the same request key."""
+def promote(directory: Path, writer=None, include_earlier: bool = False) -> dict:
+    """Drain pending promotion intents; a retry reuses the same request key.
+
+    `include_earlier` first records an intent for each candidate accepted
+    before the outbox existed, on the owner's request.
+    """
     writer = writer or _cli_writer
     result = {"promoted": [], "stale": [], "pending": []}
     connection = connect(directory)
     try:
+        if include_earlier:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                for row in connection.execute(
+                    "SELECT * FROM candidates WHERE decision='accepted' AND"
+                    " candidate_id NOT IN (SELECT candidate_id FROM promotions)"
+                ).fetchall():
+                    connection.execute(
+                        "INSERT INTO promotions (candidate_id, review_digest, request,"
+                        " created_at) VALUES (?,?,?,?)",
+                        (
+                            row["candidate_id"],
+                            review_digest(row),
+                            json.dumps(_intent(directory, row), sort_keys=True),
+                            stamp(now()),
+                        ),
+                    )
+                connection.execute("COMMIT")
+            except BaseException:
+                connection.execute("ROLLBACK")
+                raise
         intents = connection.execute(
             "SELECT p.candidate_id, p.review_digest, p.request, c.* FROM promotions p"
             " JOIN candidates c USING (candidate_id) WHERE p.state='pending'"
@@ -922,7 +1029,12 @@ def main(argv: list[str] | None = None) -> int:
     deciding.add_argument("candidate_id")
     deciding.add_argument("decision", choices=("accepted", "rejected"))
     deciding.add_argument("--owner", required=True)
-    commands.add_parser("promote")
+    promoting = commands.add_parser("promote")
+    promoting.add_argument(
+        "--include-earlier",
+        action="store_true",
+        help="also promote candidates accepted before the outbox existed",
+    )
     commands.add_parser("install-timer")
     args = parser.parse_args(argv)
     directory = capture.capture_dir()
@@ -943,7 +1055,9 @@ def main(argv: list[str] | None = None) -> int:
             if args.decision == "accepted":
                 result["promotion"] = promote(directory)
         elif args.command == "promote":
-            result = {"promotion": promote(directory)}
+            result = {
+                "promotion": promote(directory, include_earlier=args.include_earlier)
+            }
         else:
             result = install_timer(
                 Path.home() / ".config" / "systemd" / "user", directory

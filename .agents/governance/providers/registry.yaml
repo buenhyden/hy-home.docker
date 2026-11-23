@@ -219,7 +219,7 @@ tool_profiles:
   observation: [Read, Grep, Glob, Bash]
   execution: [Read, Grep, Glob, Edit, Write, Bash]
 semantic_events:
-  claude: [SessionStart, PreToolUse, PostToolUse, Stop, PreCompact, UserPromptSubmit]
+  claude: [SessionStart, PreToolUse, PostToolUse, Stop, PreCompact, UserPromptSubmit, PostToolUseFailure]
   codex: [SessionStart, PreToolUse, PostToolUse, Stop, PreCompact, UserPromptSubmit]
 hook_contracts:
   claude:
@@ -229,6 +229,7 @@ hook_contracts:
     Stop: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"', timeout: 600, matcher: '*', executable: .claude/hooks/stop.sh}
     PreCompact: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/pre-compact.sh}
     UserPromptSubmit: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/user-prompt-submit.sh}
+    PostToolUseFailure: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-failure.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/post-tool-failure.sh}
   codex:
     SessionStart: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" SessionStart', timeout: 15, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
     PreToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreToolUse', timeout: 30, matcher: 'Bash|apply_patch|exec', executable: scripts/hooks/agent-event-hook.sh}

@@ -762,8 +762,10 @@ PY
 # Session capture: a short durable enqueue that never changes this hook's output
 # or result. Its bounds live in the module (1 s busy wait, non-blocking lock,
 # detached reconcile); a failure is recorded beside the store, not raised here.
-case "$EVENT" in
-SessionStart | UserPromptSubmit | Stop | PreCompact)
+case "$EVENT:${HY_HOME_HOOK_PROVIDER:-claude}" in
+SessionStart:* | UserPromptSubmit:* | Stop:* | PreCompact:* | PostToolUseFailure:* | PostToolUse:codex)
+  # Claude reports a failed tool through PostToolUseFailure; Codex sends a
+  # shell failure through PostToolUse, which the module keeps only on failure.
   python3 -m scripts.lib.hooks.session_capture hook "$EVENT" \
     <<<"$INPUT" >/dev/null 2>&1 || true
   ;;
