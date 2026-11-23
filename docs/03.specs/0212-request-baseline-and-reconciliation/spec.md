@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.2.0"
+version: "2.3.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -321,6 +321,13 @@ names and writable-parent child settings never establish read-only access.
 Confirmed Q03 authorizes finite existing-account observations, not new
 subscriptions, permission bypass, live secret probes or unlimited retries.
 P07 environment work and later prompts do not execute in this unit.
+
+The direct P07-ENVIRONMENT1.1.0 request adds criterion161/W177 in TSK-0105.
+Reuse the selected environments and scoped P06 native proof. Complete shared
+admission and owned execution recovery through current runners; keep actual
+service inventory, host/daemon resource budgets and source isolation distinct.
+Only P07 and its normal delivery execute here; P08/P12 feature probes and P17
+cutover remain their owners' work.
 
 #### Scope
 
@@ -1424,6 +1431,30 @@ target, backup, recovery boundary, and action-specific authorization.
      review normally; no whole-corpus count, per-task SHA approval or new
      parallel review runner is an automatic completion requirement. Do not
      execute P07, later native features or final P17 cutover.
+
+161. TSK-0105 applies P07-ENVIRONMENT1.1.0 to the current Docker workspace.
+     Preserve completed11 and P00–P06 where their actual conditions match.
+     Identify actual tools, accounts, settings and the workspace/common-dir
+     binding; reuse selected supported native routes without repeating valid
+     provider observations. Integrate direct Compose/LAB and dispatcher starts
+     with one atomic host/daemon admission boundary, actual product inventory,
+     pending/live service union and conservative CPU, memory, disk and runtime
+     reservations. Existing profile/dependency/companion selection and product
+     limits remain their owners. Reject split requests that collectively start
+     every product service. Record intent and identity before real work; close
+     the spawn-before-record gap and distinguish PID reuse, unknown resources
+     and live resources from stale leases. Cancellation, timeout and cleanup
+     target only owned token-matching processes/containers/resources; expiration
+     alone never releases live or uncertain reservations. Use existing runners,
+     bounded isolated test data and explicit ownership, not a parallel runner,
+     real secrets or production data. Prove changed failures with RED/GREEN
+     concurrency, overlap, limit, interrupted-start and cleanup tests plus the
+     required small actual selected-environment observation. A worktree or LAB
+     on the operating daemon is not an OS sandbox. Record supported isolation
+     mechanisms and remaining limits precisely, preserve failed surfaces and
+     keep human acceptance separate. Maintain formal environment owner and
+     actual consumers; deliver normal checks and independent boundary review.
+     Keep the matching package through P17 and do not execute later prompts.
 
 ##### Evidence Requirements
 

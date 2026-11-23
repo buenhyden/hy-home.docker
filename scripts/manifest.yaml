@@ -784,6 +784,30 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_compose_start.py
+- path: scripts/lib/ops/dispatch_process.py
+  kind: library
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/operations/lab.py
+  - scripts/operations/work_dispatch.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_dispatch_process.py
+- path: scripts/lib/ops/environment_admission.py
+  kind: library
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/operations/lab.py
+  - scripts/operations/work_dispatch.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_environment_admission.py
 - path: scripts/lib/ops/memory_capacity.py
   kind: library
   authority: docs/00.workspace/06.maintenance/harness-maintenance.md

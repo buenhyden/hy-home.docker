@@ -35,6 +35,26 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts.lib.hooks import session_capture as capture  # noqa: E402
+from scripts.lib.ops.dispatch_process import (  # noqa: E402
+    ProcessError as PlanError,
+)
+from scripts.lib.ops.dispatch_process import (  # noqa: E402
+    _bootstrap,
+    _budget,
+    _disk_problem,
+    _finish_environment,
+    _git_view,
+    _group_absent,
+    _kill,
+    _scope_absent,
+    _spawn,
+    _write_record,
+)
+from scripts.lib.ops.environment_admission import (  # noqa: E402
+    AdmissionError,
+    process_identity,
+    process_status,
+)
 
 STORE_NAME = "dispatch.sqlite3"
 CANCEL_NAME = "cancel"
@@ -43,10 +63,6 @@ DEFAULT_INTEGRATION_TIMEOUT = 600
 # A unit id becomes a path component, so it must be a plain token.
 UNIT_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 TICK = 0.05
-
-
-class PlanError(ValueError):
-    """A plan the dispatcher refuses to run."""
 
 
 def _under(path: str, owner: str) -> bool:
@@ -230,6 +246,12 @@ def _validate(plan: dict) -> dict[str, dict]:
             if norm == ".":
                 raise PlanError(f"{u['id']} must name paths, not the whole repository")
         graph[u["id"]] = set(u.get("depends_on", []))
+    for unit in units:
+        _budget(unit.get("resource_budget"), unit.get("timeout", 600))
+    _budget(
+        plan.get("integration_resource_budget"),
+        plan.get("integration_timeout", DEFAULT_INTEGRATION_TIMEOUT),
+    )
     if not all(_argv(check) for check in plan.get("integration_checks", [])):
         raise PlanError("integration checks must be command lists of strings")
     try:
@@ -249,15 +271,10 @@ def _ancestors(units: dict, uid: str) -> set[str]:
     return seen
 
 
-def _kill(process: subprocess.Popen) -> None:
-    """Stop the worker's whole process group, then reap the worker."""
-    for sig in (signal.SIGTERM, signal.SIGKILL):
-        try:
-            os.killpg(process.pid, sig)
-        except ProcessLookupError:
-            break
-        time.sleep(0.5)
-    process.wait()
+def _execution_admission(repo, *, recovery=False):
+    from scripts.operations.lab import execution_admission
+
+    return execution_admission(repo, recovery=recovery)
 
 
 def cancel(state: Path) -> None:
@@ -269,14 +286,15 @@ def cancel(state: Path) -> None:
 def run(repo: Path, state: Path, plan: dict) -> dict:
     units = _validate(plan)
     leases = Leases(state)
+    admission = _execution_admission(repo)
     started_wall = time.time()
     run_id = time.strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:6]
     root = state / "runs" / run_id
     (root / "wt").mkdir(parents=True)
     (root / "dispatcher.pid").write_text(str(os.getpid()))
+    _write_record(root / "dispatcher.json", process_identity())
     base = _git(repo, "rev-parse", plan.get("base", "HEAD")).decode().strip()
     lease_seconds = float(plan.get("lease_seconds", 0))
-    # ponytail: a flat worker ceiling capped by CPUs; memory-aware quota when workers get heavy
     workers = max(
         1, min(int(plan.get("max_workers", DEFAULT_WORKERS)), os.cpu_count() or 1)
     )
@@ -299,7 +317,11 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
     def finish(uid: str, status: str, reason: str = "") -> None:
         result[uid].update(status=status, reason=reason, finished=clock())
         job = running.pop(uid)
+        if not _finish_environment(job, admission):
+            result[uid].update(status="failed", reason="environment cleanup unverified")
+            return
         leases.release(job["tokens"], job["holder"])
+        shutil.rmtree(job["git_view"], ignore_errors=True)
         _remove_worktree(repo, job["worktree"])
         (root / f"{uid}.pgid").unlink(missing_ok=True)
 
@@ -350,7 +372,12 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         if tokens is None:
             return
         tree = root / "wt" / u["id"]
+        reservation = None
+        spawn_attempted = False
+        view = root / "git" / u["id"]
         try:
+            budget = _budget(u.get("resource_budget"), timeout)
+            reservation = admission.admit(services=(), budget=budget, kind="worker")
             _git(repo, "worktree", "add", "--detach", "-q", str(tree), base)
             gitdir = _git(tree, "rev-parse", "--absolute-git-dir").decode().strip()
             ancestors = _ancestors(units, u["id"])
@@ -358,6 +385,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
                 if prior in ancestors and patches[prior]:
                     _wt(gitdir, tree, "apply", "--index", "-", data=patches[prior])
             start_tree = _wt(gitdir, tree, "write-tree").decode().strip()
+            _git_view(gitdir, tree, base, view, budget["disk_bytes"])
             env = dict(
                 os.environ,
                 HY_TASK=str(plan.get("task", "")),
@@ -366,28 +394,48 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
                 HY_FENCE=json.dumps(tokens),
             )
             with open(root / f"{u['id']}.log", "wb") as log:
-                process = subprocess.Popen(
+                spawn_attempted = True
+                execution = _spawn(
                     u["command"],
+                    root=root,
+                    name=u["id"],
                     cwd=tree,
                     env=env,
                     stdout=log,
-                    stderr=subprocess.STDOUT,
-                    stdin=subprocess.DEVNULL,
-                    start_new_session=True,
+                    admission=admission,
+                    budget=budget,
+                    kind="worker",
+                    reservation=reservation,
+                    git_view=view,
+                    disk_paths=(tree, view, root / f"{u['id']}.log"),
                 )
-        except (subprocess.CalledProcessError, OSError) as error:
-            leases.release(tokens, holder)
-            _remove_worktree(repo, tree)
+        except (
+            subprocess.CalledProcessError,
+            OSError,
+            AdmissionError,
+            PlanError,
+        ) as error:
+            safe_cleanup = not spawn_attempted
+            if not safe_cleanup and reservation is not None:
+                safe_cleanup = not any(
+                    row["token"] == reservation["token"] for row in admission.records()
+                )
+            if safe_cleanup:
+                shutil.rmtree(view, ignore_errors=True)
+                _remove_worktree(repo, tree)
+                if reservation is not None and not spawn_attempted:
+                    admission.release(reservation["token"], verify=lambda _: True)
+                leases.release(tokens, holder)
             reason = (
                 f"setup failed: {error.cmd[3:6]}"
                 if isinstance(error, subprocess.CalledProcessError)
-                else f"could not start: {error.strerror}"
+                else f"could not start: {error}"
             )
             result[u["id"]].update(status="failed", reason=reason)
             return
-        (root / f"{u['id']}.pgid").write_text(str(process.pid))
         running[u["id"]] = dict(
-            process=process,
+            **execution,
+            git_view=view,
             tokens=tokens,
             holder=holder,
             worktree=tree,
@@ -406,7 +454,11 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
                     _kill(job["process"])
                     finish(uid, "cancelled", "cancel requested")
             for uid, job in list(running.items()):
-                if _exited(job["process"]):
+                problem = _disk_problem(job["disk_paths"], job["disk_budget"])
+                if problem:
+                    _kill(job["process"])
+                    finish(uid, "failed", problem)
+                elif _exited(job["process"]):
                     collect(uid, job)
                 elif time.monotonic() > job["deadline"]:
                     _kill(job["process"])
@@ -451,6 +503,8 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
             owned,
             float(plan.get("integration_timeout", DEFAULT_INTEGRATION_TIMEOUT)),
             cancel_requested,
+            admission,
+            plan.get("integration_resource_budget"),
         )
         cancelled = integration["status"] == "cancelled"
     status = (
@@ -480,7 +534,17 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
 
 
 def _integrate(
-    repo, root, base, order, checks, patches, owned, timeout, cancel_requested
+    repo,
+    root,
+    base,
+    order,
+    checks,
+    patches,
+    owned,
+    timeout,
+    cancel_requested,
+    admission,
+    resource_budget,
 ) -> dict:
     """Apply every unit patch on the base and rerun the integration checks."""
     tree = root / "wt" / "integration"
@@ -510,39 +574,77 @@ def _integrate(
         with open(patch, "xb") as handle:
             handle.write(combined)
         found = {"patch": str(patch), "sha256": hashlib.sha256(combined).hexdigest()}
-        for check in checks:
+        gitdir = _git(tree, "rev-parse", "--absolute-git-dir").decode().strip()
+        for number, check in enumerate(checks):
+            reservation = None
+            spawn_attempted = False
+            view = root / "git" / ("integration-" + str(number))
             try:
-                process = subprocess.Popen(
+                budget = _budget(resource_budget, timeout)
+                reservation = admission.admit(services=(), budget=budget, kind="worker")
+                _git_view(gitdir, tree, base, view, budget["disk_bytes"])
+                spawn_attempted = True
+                execution = _spawn(
                     check,
+                    root=root,
+                    name="integration",
                     cwd=tree,
-                    stdin=subprocess.DEVNULL,
+                    env=os.environ.copy(),
                     stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    start_new_session=True,
+                    admission=admission,
+                    budget=budget,
+                    kind="worker",
+                    reservation=reservation,
+                    git_view=view,
+                    disk_paths=(tree, view, patch),
                 )
-            except OSError as error:
+                process = execution["process"]
+            except (
+                OSError,
+                AdmissionError,
+                PlanError,
+                subprocess.CalledProcessError,
+            ) as error:
+                if not spawn_attempted:
+                    shutil.rmtree(view, ignore_errors=True)
+                    if reservation is not None:
+                        admission.release(reservation["token"], verify=lambda _: True)
                 return {
                     "status": "failed",
-                    "reason": f"check {check} could not start: {error.strerror}",
+                    "reason": f"check {check} could not start: {error}",
                     **found,
                 }
             deadline = time.monotonic() + timeout
             while not _exited(process):
-                if cancel_requested() or time.monotonic() > deadline:
+                problem = _disk_problem(
+                    execution["disk_paths"], execution["disk_budget"]
+                )
+                if problem or cancel_requested() or time.monotonic() > deadline:
                     _kill(process)
+                    if _finish_environment(execution, admission):
+                        shutil.rmtree(view, ignore_errors=True)
                     if cancel_requested():
                         return {"status": "cancelled", **found}
                     return {
                         "status": "failed",
-                        "reason": f"check {check} timeout",
+                        "reason": problem or f"check {check} timeout",
                         **found,
                     }
                 time.sleep(TICK)
+            problem = _disk_problem(execution["disk_paths"], execution["disk_budget"])
             _killpg(process.pid)
-            if process.wait() != 0:
+            code = process.wait()
+            if not _finish_environment(execution, admission):
                 return {
                     "status": "failed",
-                    "reason": f"check {check} exit {process.returncode}",
+                    "reason": "environment cleanup unverified",
+                    **found,
+                }
+            shutil.rmtree(view, ignore_errors=True)
+            if code != 0 or problem:
+                return {
+                    "status": "failed",
+                    "reason": problem or f"check {check} exit {process.returncode}",
                     **found,
                 }
         return {"status": "passed", "checks": len(checks), **found}
@@ -551,21 +653,73 @@ def _integrate(
 
 
 def cleanup(repo: Path, state: Path) -> list[str]:
-    """Stop workers and remove worktrees left by a dispatcher that died."""
+    """Recover recorded owned environments; retain unknown/reused identities."""
     removed = []
+    admission = _execution_admission(repo, recovery=True)
     for root in sorted((state / "runs").glob("*")):
         try:
-            os.kill(int((root / "dispatcher.pid").read_text()), 0)
+            owner = json.loads((root / "dispatcher.json").read_text())
+            if process_status(owner) != "absent":
+                continue
+        except (OSError, ValueError):
             continue
-        except PermissionError:
-            continue  # the PID belongs to someone else's live process
-        except (ProcessLookupError, FileNotFoundError, ValueError):
-            pass
-        for pgid in root.glob("*.pgid"):
+        records = {r["token"]: r for r in admission.records()}
+        recovered = True
+        for path in root.glob("*.process.json"):
             try:
-                os.killpg(int(pgid.read_text()), signal.SIGKILL)
-            except (ProcessLookupError, ValueError):
-                pass
+                saved = json.loads(path.read_text())
+                record = records.get(saved["token"])
+                identity = saved["identity"]
+                if record is None:
+                    if (
+                        process_status(identity) == "absent"
+                        and _group_absent(identity)
+                        and _scope_absent(saved["scope"], saved["token"])
+                    ):
+                        path.unlink()
+                        continue
+                    recovered = False
+                    continue
+                metadata = record.get("metadata", {})
+                if (
+                    record is None
+                    or record["workspace_id"] != admission.workspace_id
+                    or record["daemon_id"] != admission.daemon_id
+                    or record["kind"] != "worker"
+                    or metadata.get("process_file") != str(path)
+                    or metadata.get("scope") != saved["scope"]
+                ):
+                    recovered = False
+                    continue
+                if (
+                    record.get("identity") is not None
+                    and record["identity"] != identity
+                ):
+                    recovered = False
+                    continue
+                absent = _scope_absent(saved["scope"], saved["token"], stop=True)
+                deadline = time.monotonic() + 2
+                while (
+                    process_status(identity) == "alive" and time.monotonic() < deadline
+                ):
+                    time.sleep(TICK)
+                if not admission.release(
+                    saved["token"],
+                    verify=lambda _, absent=absent, identity=identity: (
+                        absent
+                        and process_status(identity) == "absent"
+                        and _group_absent(identity)
+                    ),
+                ):
+                    recovered = False
+                    continue
+                path.unlink()
+            except (OSError, ValueError, KeyError, AdmissionError):
+                recovered = False
+        if not recovered or list(root.glob("*.process.json")):
+            continue
+        shutil.rmtree(root / "git", ignore_errors=True)
+        for pgid in root.glob("*.pgid"):
             pgid.unlink()
         for tree in sorted((root / "wt").glob("*")):
             if _remove_worktree(repo, tree):
@@ -576,6 +730,9 @@ def cleanup(repo: Path, state: Path) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    values = sys.argv[1:] if argv is None else argv
+    if len(values) == 4 and values[0] == "--bootstrap":
+        return _bootstrap(values[1], int(values[2]), int(values[3]))
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--state-dir", type=Path)
     parser.add_argument("--repo", type=Path, default=ROOT)
@@ -595,7 +752,7 @@ def main(argv: list[str] | None = None) -> int:
         signal.signal(sig, lambda *_: cancel(state))
     try:
         report = run(args.repo, state, json.loads(args.plan.read_text()))
-    except PlanError as error:
+    except (PlanError, AdmissionError) as error:
         print(f"PLAN_REFUSED: {error}", file=sys.stderr)
         return 2
     print(json.dumps(report, indent=2))

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.2.0"
+version: "2.3.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -444,6 +444,38 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W174 | 158 | Adopt common envelope, metadata and payload bindings; migrate actual template/native/semantic consumers and current normative sources while preserving historical evidence | W173 | TSK-0102 | Envelope/metadata/IF/AC/native/relation/version RED/GREEN, representative output consumption, affected regressions, one justified corpus validation, independent protected-surface review and actual current candidate |
 | W175 | 159 | Reconcile current SDLC duties and typed workspace-guide authority; align normative relation rules and migrate actual owners/consumers while preserving incomplete obligations | W174 | TSK-0103 | Draft/active/type/scope/script-use RED/GREEN; affected Registry/manifest/document regressions and corpus checks; independent policy/security review; normal hooks and current hosted candidate |
 | W176 | 160 | Align impact-based review policy, real native parent/tool boundaries and reporting; reuse valid Codex spawned proof and observe only the missing current Claude route | W175 | TSK-0104 | Focused existing policy/producer checks, bounded real read/refusal/review evidence, protected boundary review and normal current-candidate delivery |
+| W177 | 161 | Complete P07 shared resource admission and owned execution lifecycle in existing Compose/LAB/dispatch consumers; reuse verified selected native routes | W176 | TSK-0105 | Focused RED/GREEN race, union, numeric budget, spawn-gap, PID identity, token cleanup tests; bounded real selected environment; manifest/routing/docs and independent boundary review plus normal hosted delivery |
+
+###### Current P07 environment and admission boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0105](01.tasks/tsk-0105-p07-environment.md) owns criterion161/W177.
+Initial HEADc98e4e4f is the integrated P06 source/receipt. Reuse current LAB
+and Compose selection and P06 enforced supported CLI evidence. The host has
+Linux/cgroupv2, Docker29.9.2/Compose5.6.1,12CPU and33575419904bytes memory;
+measurements are not approved allocation. Existing configured LAB host limits
+and product0107 reserve/external allowances govern execution.
+
+Order shared admission before consumer integration. One implementer owns the
+shared host/daemon store and process identity helpers, one owns Compose/LAB
+consumers, and one owns dispatch startup/recovery; disjoint mirrored tests
+follow those scopes. Root owns the environment owner, binding/Task, manifest
+and CI registration and integration evidence. Expand the registered exact file
+scope before each mutating handoff. Use one common admission namespace across
+linked worktrees and independent clones on the same selected host/daemon;
+a per-clone SQLite store alone does not establish that boundary.
+
+Keep pending reservations charged before spawn. A child records a stable
+identity and waits for controller release before real execution; uncertain
+or live resources cannot disappear merely because a lease clock expired.
+Use actual current product inventory and existing closure/footprint producers,
+not a narrowed test selection as the whole-product denominator. Keep root
+Compose an operating path; a small owned LAB/component case uses dummy data,
+explicit limits and project/token cleanup. No production deployment is a
+verification shortcut. Finish focused regressions and static consumer checks,
+then independent high-risk source review and normal commit/push/PR/merge.
+Carry result-only additions and valid native proof; P08/P12 and final P17 do
+not run. Actual owner acceptance remains independent of those results.
 
 ###### Current P06 independent-review boundary
 <!-- core-payload-level:4 -->

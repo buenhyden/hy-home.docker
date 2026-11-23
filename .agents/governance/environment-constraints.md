@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -194,7 +194,7 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R146 | Analysis candidate | Required: name its source events, frequency, conditions, proposal, risk and acceptance test | none | none |
 | ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check, memory or policy without a separate approved Task | none | none |
 | ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
-| ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | `lab.py select` prints the closure and the union with running HOME services and refuses an empty start or one that leaves every HOME service running | `tests/validation/test_lab_controller.py` |
+| ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | registered Compose/LAB/dispatch entrypoints share atomic admission over actual inventory, pending/live service union and resource reservations; `lab.py select` remains read-only discovery | `tests/validation/test_lab_controller.py` |
 | ENVIRONMENT-CONSTRAINTS-R150 | Starting Compose services on this server | Forbidden: selecting every profile with `--profile '*'` or `COMPOSE_PROFILES` holding `*` for `up`, `start` or `create` | hookify `block-whole-stack-compose-start` refuses the visible forms | `tests/lib/hooks/test_compose_start_rule.py` |
 | ENVIRONMENT-CONSTRAINTS-R151 | Forecasting a task | Required: record P30, P50 and P80 completion minutes with `scripts/operations/task_forecast.py` before the task starts, with the time basis, assumptions and reference class | none | none |
 | ENVIRONMENT-CONSTRAINTS-R152 | Changing a forecast | Required: append a new revision; editing, deleting or replacing a recorded forecast or outcome is refused; the triggers stop edits through SQL, not a dropped trigger or a replaced store file | SQLite triggers in the forecast store | `tests/validation/test_task_forecast.py` |
@@ -266,7 +266,12 @@ None: this document states no exclusion.
   Every root service sits behind a profile, so a start names the profiles or
   services it needs and Compose adds their dependencies. Selecting every
   profile for `up`, `start` or `create` would start the whole stack and is
-  forbidden; rendering it with `config` stays allowed.
+  forbidden; rendering it with `config` stays allowed. Use the registered
+  Compose/LAB start and dispatcher entrypoints with the
+  [managed execution environment](../../docs/00.workspace/05.environment/onboarding.md#managed-execution-and-shared-resource-admission).
+  Their shared admission covers pending and live managed requests; the hook
+  alone cannot enforce an arbitrary Docker API caller. Operating starts and
+  owned disposable tests keep their distinct authorization and data scopes.
 
 ###### 2.1 Approved Runtime Mutation Protocol
 <!-- core-payload-level:4 -->
@@ -551,13 +556,13 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Memory recall (R132-R135): no check is named.
 - Session capture (R136-R142): no check is named.
 - Session analysis (R143-R148): no check is named.
-- Compose start selection (R149): `lab.py select` reads the render and the running containers when an operator runs it; nothing makes a start run it first, and two starts at once can each pass it.
+- Compose start selection (R149): the registered start/dispatch consumers reserve through shared host admission before effects; selection-only reporting grants no reservation. Guarantees require complete live/external observations and the actual inventory. Unmanaged callers and another user are outside this entrypoint boundary; tool-text hooks alone are not a Docker access ACL.
 - Sandbox claims (R163): no check is named.
 - Secret content reads (R164): the hookify rule sees only the command text; a quoted path, a variable, an interpreter or script that reads the file, `find -exec`, `xargs`, `git show`, a recursive read of a parent directory, `docker compose config` without `--services` or a hook bypass is outside it. An approved secret operation runs through a registered script that never prints the value, or the user runs the command.
 - Whole-stack start (R150): the hookify rule sees only the command text; a profile list read from an environment file or a command built at run time is outside it.
 - Task forecasts (R151, R154, R155): no check is named; R152 and R153 are enforced by the store and the CLI.
 - Observation (R161, R162): no check is named; the report reads stores and the journal and changes nothing.
-- Parallel work (R156, R160): no check is named; R157 to R159 are enforced by the dispatcher, which checks ownership after the worker ends and does not confine the worker's processes, ports or volumes.
+- Parallel work (R156, R160): no check is named; R157 to R159 use fenced path leases and result ownership. The supported managed shell environment additionally gates startup and confines its process group/filesystem/network through the mechanisms in the environment guide; role names, old unrestricted shell observations and worktrees alone prove none of those controls.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.

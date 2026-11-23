@@ -1377,13 +1377,14 @@ class LifecycleTests(unittest.TestCase):
             target={"folder": "infra/04-data/nosql/cassandra/", "profile": "data"},
             replaces=[],
             resources={
+                "disk_gib": {"data": 0.01, "images": 0.01},
                 "services": {
                     "c": {
                         "cpus": 1,
                         "memory_mib": 1024,
                         "reservations": {"cpus": 1, "memory_mib": 1024},
                     }
-                }
+                },
             },
         )
         repo = lab_repo(pathlib.Path(self.tmp.name) / "repo", "cassandra", cassandra)
@@ -1408,8 +1409,31 @@ class LifecycleTests(unittest.TestCase):
         self.ready = [
             {"Id": "node", "Name": "/lab-node",
              "State": {"Status": "running", "Health": {"Status": "healthy"}}},
-            {"Id": "init", "Name": "/lab-init", "State": {"Status": "exited", "ExitCode": 0}},
+            {"Id": "init", "Name": "/lab-init", "State": {"Status": "exited", "ExitCode": 0},
+             "HostConfig": {"RestartPolicy": {"Name": "no"}}},
         ]  # fmt: skip
+        from scripts.lib.ops.environment_admission import Admission
+
+        self.admission = Admission(
+            pathlib.Path(self.tmp.name) / "admission",
+            namespace="fixture",
+            workspace_id=str(repo),
+            inventory=("home-a", "home-b"),
+            limits={
+                "cpus": 8,
+                "memory_bytes": 8 * 2**30,
+                "disk_bytes": 2**40,
+                "runtime_seconds": 25 * 3600,
+            },
+            kind_limits={"lab": 1},
+        )
+        patcher = mock.patch.object(
+            lab, "execution_admission", return_value=self.admission
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.active_project = False
+        self.foreign_token = None
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
@@ -1419,6 +1443,9 @@ class LifecycleTests(unittest.TestCase):
         if command[-2:] == ["up", "-d"]:
             # The ledger must exist before anything starts.
             self.assertEqual("starting", self.ledger()["state"])
+            self.active_project = True
+        if "down" in command and self.compose_rc == 0:
+            self.active_project = False
         if "config" in command:
             payload = (
                 self.rendered
@@ -1433,10 +1460,22 @@ class LifecycleTests(unittest.TestCase):
             return subprocess.CompletedProcess(command, 0, "", "")
         if command[1:3] == ["ps", "--all"]:
             # Readiness poll of the started project.
-            ids = "\n".join(record["Id"] for record in self.ready)
+            ids = (
+                "\n".join(record["Id"] for record in self.ready)
+                if self.active_project
+                else ""
+            )
             return subprocess.CompletedProcess(command, 0, ids, "")
         if command[1] == "inspect":
-            return subprocess.CompletedProcess(command, 0, json.dumps(self.ready), "")
+            entry = self.ledger()
+            labels = {
+                lab.TOKEN_LABEL: self.foreign_token or entry["admission_token"],
+                "com.docker.compose.project": entry["project"],
+            }
+            ready = [{**r, "Config": {"Labels": labels}} for r in self.ready]
+            return subprocess.CompletedProcess(command, 0, json.dumps(ready), "")
+        if command[1] == "network":
+            return subprocess.CompletedProcess(command, 0, "", "")
         if command[1] == "ps":
             return subprocess.CompletedProcess(command, 0, "", "")
         return subprocess.CompletedProcess(command, self.compose_rc, "", "boom")
@@ -1463,6 +1502,93 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(2, self.up(name="../etc"))
         self.assertFalse(self.started())
 
+    def test_p07_admission_precedes_start_and_binds_cleanup_token(self):
+        admission = self.admission
+        with (
+            mock.patch.object(admission, "admit", wraps=admission.admit) as admit,
+            mock.patch.object(admission, "attach", wraps=admission.attach) as attach,
+        ):
+            self.assertEqual(0, self.up())
+        admit.assert_called_once()
+        self.assertEqual("lab", admit.call_args.kwargs["kind"])
+        attach.assert_called_once()
+        self.assertEqual(self.ledger()["admission_token"], attach.call_args.args[0])
+
+    def test_p07_refused_admission_never_starts_or_writes_ledger(self):
+        admission = mock.Mock()
+        admission.admit.side_effect = ValueError("budget_or_union_exceeded")
+        with mock.patch.object(lab, "execution_admission", return_value=admission):
+            self.assertEqual(2, self.up())
+        self.assertFalse(self.started())
+        self.assertFalse((self.data / ".ledger/cassandra.json").exists())
+
+    def test_p07_foreign_resource_and_changed_token_refuse_cleanup(self):
+        self.assertEqual(0, self.up())
+        self.foreign_token = "another-execution"
+        self.calls.clear()
+        self.assertEqual(2, self.main("down", "cassandra"))
+        self.assertFalse(any("down" in c for c in self.calls))
+        self.assertEqual(1, len(self.admission.records()))
+        self.foreign_token = None
+        entry = self.ledger()
+        lab.write_entry(
+            self.data / ".ledger/cassandra.json", {**entry, "admission_token": "forged"}
+        )
+        self.calls.clear()
+        self.assertEqual(2, self.main("down", "cassandra"))
+        self.assertFalse(any("down" in c for c in self.calls))
+
+    def test_p07_missing_ledger_recovers_from_prestart_intent(self):
+        with mock.patch.object(lab, "write_entry", side_effect=OSError("interrupted")):
+            with self.assertRaises(OSError):
+                self.up()
+        records = self.admission.records()
+        self.assertEqual(1, len(records))
+        self.assertEqual("cassandra", records[0]["metadata"]["entry"]["lab"])
+        with mock.patch(
+            "scripts.lib.ops.environment_admission.process_status",
+            return_value="absent",
+        ):
+            self.assertEqual(0, self.main("down", "cassandra"))
+        self.assertEqual([], self.admission.records())
+
+    def test_p07_reap_recovers_a_dead_owner_before_metadata_binding(self):
+        with mock.patch.object(
+            self.admission, "update", side_effect=OSError("before effects")
+        ):
+            with self.assertRaises(OSError):
+                self.up()
+        self.assertEqual({}, self.admission.records()[0]["metadata"])
+        with mock.patch(
+            "scripts.lib.ops.environment_admission.process_status",
+            return_value="absent",
+        ):
+            self.assertEqual(0, self.main("reap"))
+        self.assertEqual([], self.admission.records())
+        self.assertFalse(self.started())
+
+    def test_p07_successful_cleanup_is_idempotent_without_core_tombstone(self):
+        self.assertEqual(0, self.up())
+        self.assertEqual(0, self.main("down", "cassandra"))
+        self.assertEqual([], self.admission.records())
+        self.calls.clear()
+        self.assertEqual(0, self.main("down", "cassandra"))
+        self.assertFalse(any("down" in c for c in self.calls))
+
+    def test_p07_disk_estimate_is_required_before_start(self):
+        with mock.patch.object(lab, "load_manifest", return_value={"resources": {}}):
+            with mock.patch.object(
+                lab,
+                "check",
+                return_value=(
+                    {"problems": []},
+                    {"cassandra": lab.footprint(self.rendered)},
+                ),
+            ):
+                self.assertEqual(2, self.up())
+        self.assertFalse(self.started())
+        self.assertEqual([], self.admission.records())
+
     def test_up_records_ledger_then_down_stops_only_its_project(self) -> None:
         self.assertEqual(0, self.up(lease="2h", purpose="failover drill"))
         entry = self.ledger()
@@ -1482,7 +1608,7 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(["up", "-d"], up[-2:])
 
         self.assertEqual(0, self.main("down", "cassandra"))
-        down = self.calls[-1]
+        down = [c for c in self.calls if "down" in c][-1]
         self.assertEqual(["-p", "hy-home-lab-cassandra", "down"], down[2:5])
         self.assertEqual(["down", "--timeout", "30"], down[-3:])
         self.assertNotIn("-f", down)
@@ -1513,8 +1639,17 @@ class LifecycleTests(unittest.TestCase):
 
     def test_up_waits_for_health_and_accepts_a_finished_init_job(self) -> None:
         # compose `up --wait` fails when an init job exits 0; lab.py does not.
+        self.ready = [
+            {
+                "Id": "init",
+                "Name": "/lab-init",
+                "State": {"Status": "exited", "ExitCode": 0},
+                "HostConfig": {"RestartPolicy": {"Name": "no"}},
+            }
+        ]
         self.assertEqual(0, self.up())
         self.assertEqual("running", self.ledger()["state"])
+        self.assertEqual(0, self.main("down", "cassandra"))
         # A one-shot job that is still running is not ready yet.
         self.ready = [
             {"Id": "init", "Name": "/lab-init", "State": {"Status": "running"},
@@ -1525,6 +1660,7 @@ class LifecycleTests(unittest.TestCase):
             mock.patch.dict(lab.os.environ, {"LAB_READY_TIMEOUT_SECONDS": "0"}),
         ):
             self.assertEqual(1, self.up())
+        self.assertEqual(0, self.main("down", "cassandra"))
         for bad in (
             {"Id": "init", "Name": "/lab-init", "State": {"Status": "exited", "ExitCode": 2}},
             {"Id": "node", "Name": "/lab-node",
@@ -1534,6 +1670,26 @@ class LifecycleTests(unittest.TestCase):
                 self.ready = [bad]
                 self.assertEqual(1, self.up())
                 self.assertEqual("failed", self.ledger()["state"])
+                self.assertEqual(0, self.main("down", "cassandra"))
+
+    def test_wait_ready_rejects_successful_exit_for_restartable_service(self):
+        records = [
+            {
+                "Id": "node",
+                "Name": "/lab-node",
+                "State": {"Status": "exited", "ExitCode": 0},
+                "HostConfig": {"RestartPolicy": {"Name": "unless-stopped"}},
+            }
+        ]
+        responses = [
+            subprocess.CompletedProcess([], 0, stdout="node\n"),
+            subprocess.CompletedProcess([], 0, stdout=json.dumps(records)),
+        ]
+        with mock.patch.object(lab, "run", side_effect=responses):
+            self.assertEqual(
+                "lab-node exited 0 with restart policy unless-stopped",
+                lab.wait_ready("docker", "project", 1),
+            )
 
     def test_failed_start_and_stop_exit_non_zero(self) -> None:
         self.compose_rc = 1
@@ -1618,12 +1774,17 @@ class LifecycleTests(unittest.TestCase):
         original = self.fake_run
 
         def fake_run(command, **kwargs):
-            if command[1:3] == ["ps", "--all"]:
+            if (
+                command[1:3] == ["ps", "--all"]
+                and "label=hy-home.lab.job=true" in command
+            ):
                 self.calls.append(command)
                 return subprocess.CompletedProcess(command, 0, jobs, "")
             if command[1] == "wait":
                 self.calls.append(command)
-                self.assertEqual(300 if deadline == "5m" else 60, kwargs["timeout"])
+                maximum = 300 if deadline == "5m" else 60
+                self.assertLessEqual(kwargs["timeout"], maximum)
+                self.assertGreater(kwargs["timeout"], maximum - 1)
                 if isinstance(wait_result, BaseException):
                     raise wait_result
                 return subprocess.CompletedProcess(command, 0, f"{wait_result}\n", "")
@@ -1641,7 +1802,9 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(3, self.run_job(3))
         self.assertTrue(any(call[-2:] == ["up", "-d"] for call in self.calls))
         self.assertFalse(any("--wait" in call for call in self.calls))
-        self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+        self.assertEqual(
+            ["down", "--timeout", "30"], [c for c in self.calls if "down" in c][-1][-3:]
+        )
         entry = self.ledger()
         self.assertEqual(
             ("failed", 3, "stopped"),
@@ -1657,11 +1820,18 @@ class LifecycleTests(unittest.TestCase):
             with self.subTest(outcome=outcome):
                 self.calls.clear()
                 self.assertEqual(code, self.run_job(raised, deadline="1m"))
-                stops = [call for call in self.calls if call[1] == "stop"]
+                stops = [call for call in self.calls if "stop" in call]
                 # SIGTERM with grace lets Locust flush its CSV before `down`.
-                self.assertEqual([["docker", "stop", "--time", "7", "job-1"]], stops)
-                self.assertLess(self.calls.index(stops[0]), len(self.calls) - 1)
-                self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+                self.assertEqual(1, len(stops))
+                self.assertEqual(["stop", "--timeout", "7"], stops[0][-3:])
+                self.assertLess(
+                    self.calls.index(stops[0]),
+                    self.calls.index([c for c in self.calls if "down" in c][-1]),
+                )
+                self.assertEqual(
+                    ["down", "--timeout", "30"],
+                    [c for c in self.calls if "down" in c][-1][-3:],
+                )
                 self.assertEqual(outcome, self.ledger()["outcome"])
 
     def test_run_stops_a_project_whose_start_failed_or_was_cancelled(self) -> None:
@@ -1669,8 +1839,11 @@ class LifecycleTests(unittest.TestCase):
         self.compose_rc = 1
         self.assertEqual(1, self.run_job(0))
         self.compose_rc = 0
-        self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+        self.assertEqual(
+            ["down", "--timeout", "30"], [c for c in self.calls if "down" in c][-1][-3:]
+        )
         self.assertEqual("start_failed", self.ledger()["outcome"])
+        self.assertEqual(0, self.main("down", "cassandra"))
         original = self.fake_run
 
         def cancelled_up(command, **kwargs):
@@ -1682,14 +1855,18 @@ class LifecycleTests(unittest.TestCase):
         self.calls.clear()
         with mock.patch.object(self, "fake_run", side_effect=cancelled_up):
             self.assertEqual(130, self.run_job(0))
-        self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+        self.assertEqual(
+            ["down", "--timeout", "30"], [c for c in self.calls if "down" in c][-1][-3:]
+        )
         self.assertEqual("cancelled", self.ledger()["outcome"])
 
     def test_run_refuses_a_deadline_beyond_the_lease_or_no_single_job(self) -> None:
         self.assertEqual(2, self.run_job(0, deadline="2h"))
         self.assertFalse(self.started())
         self.assertEqual(1, self.run_job(0, jobs="job-1\njob-2\n"))
-        self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+        self.assertEqual(
+            ["down", "--timeout", "30"], [c for c in self.calls if "down" in c][-1][-3:]
+        )
 
     def test_reap_stops_only_expired_leases(self) -> None:
         self.assertEqual(0, self.up())
@@ -2550,6 +2727,145 @@ class HomeSelectionTests(unittest.TestCase):
             self.assertEqual(0, lab.main(["select", "vault"]))
             self.assertEqual(["vault"], json.loads(out.getvalue())["closure"])
             self.assertEqual(3, lab.main(["select", "app"]))
+
+
+class ExecutionAdmissionFactoryTests(unittest.TestCase):
+    def test_disk_headroom_uses_each_filesystem_own_reserve(self):
+        from types import SimpleNamespace
+
+        with mock.patch.object(
+            lab.shutil,
+            "disk_usage",
+            side_effect=[
+                SimpleNamespace(total=100, used=20, free=80),
+                SimpleNamespace(total=1000, used=500, free=500),
+            ],
+        ):
+            ceiling, charged = lab._disk_observation([ROOT, ROOT.parent])
+        self.assertEqual(90, ceiling)
+        self.assertEqual(70, ceiling - charged)
+        with mock.patch.object(
+            lab.shutil,
+            "disk_usage",
+            return_value=SimpleNamespace(total=100, used=95, free=5),
+        ):
+            ceiling, charged = lab._disk_observation([ROOT])
+        self.assertGreater(charged, ceiling)
+
+    def test_factory_uses_actual_inventory_and_complete_transaction_observation(self):
+        env = {
+            "LAB_HOST_BUDGET_CPUS": "8",
+            "LAB_HOST_BUDGET_MEMORY_MIB": "8192",
+            "LAB_DATA_DIR": "/fixture/lab",
+        }
+        rendered = model(
+            "hy-home-infra", {"a": service(), "b": service()}, data_root="/fixture/home"
+        )
+        current = [
+            container_record(
+                "hy-home-infra", name="a-container", service="a", cpus=1, memory=2**30
+            )
+        ]
+        with (
+            mock.patch.object(
+                lab,
+                "run",
+                side_effect=lambda command: subprocess.CompletedProcess(
+                    command,
+                    0,
+                    str(ROOT / ".git") if command[0] == "git" else "daemon-fixture",
+                    "",
+                ),
+            ),
+            mock.patch.object(lab, "docker_root", return_value="/fixture/docker"),
+            mock.patch.object(lab, "render", return_value=rendered),
+            mock.patch.object(lab, "lab_models", return_value={}),
+            mock.patch.object(lab, "running_containers", return_value=current),
+            mock.patch.object(
+                lab, "_disk_observation", return_value=(900, 200)
+            ) as disk,
+            mock.patch(
+                "scripts.lib.ops.environment_admission.host_state_directory",
+                return_value=pathlib.Path("/fixture/private-state"),
+            ),
+            mock.patch(
+                "scripts.lib.ops.environment_admission.host_admission"
+            ) as factory,
+        ):
+            lab.execution_admission(env=env)
+            kwargs = factory.call_args.kwargs
+            self.assertEqual(("a", "b"), kwargs["inventory"])
+            self.assertEqual("daemon-fixture", kwargs["daemon_id"])
+            observed = kwargs["observe"]()
+            self.assertEqual(["a"], observed["services"])
+            self.assertEqual(3, observed["budget"]["cpus"])
+            self.assertEqual(7 * 2**30, observed["budget"]["memory_bytes"])
+            self.assertEqual(200, observed["budget"]["disk_bytes"])
+            self.assertEqual(900, kwargs["limits"]["disk_bytes"])
+            self.assertEqual({"lab": 1, "worker": 2}, kwargs["kind_limits"])
+            paths = disk.call_args.args[0]
+            self.assertTrue(
+                {
+                    str(ROOT),
+                    str(ROOT / ".git"),
+                    "/fixture/private-state",
+                    "/fixture/docker",
+                    "/fixture/home",
+                    "/fixture/lab",
+                }
+                <= set(paths)
+            )
+            with mock.patch.object(
+                lab,
+                "running_containers",
+                return_value=[container_record("unknown-compose", name="other")],
+            ):
+                with self.assertRaises(lab.LabError):
+                    kwargs["observe"]()
+
+    def test_recovery_needs_daemon_identity_but_no_budget_or_render(self):
+        with (
+            mock.patch.object(
+                lab,
+                "run",
+                return_value=subprocess.CompletedProcess([], 0, "daemon-fixture", ""),
+            ),
+            mock.patch.object(
+                lab, "read_env", side_effect=AssertionError("must not read")
+            ),
+            mock.patch.object(
+                lab, "render", side_effect=AssertionError("must not render")
+            ),
+            mock.patch(
+                "scripts.lib.ops.environment_admission.recovery_admission"
+            ) as factory,
+        ):
+            self.assertIs(factory.return_value, lab.execution_admission(recovery=True))
+        factory.assert_called_once_with(ROOT, daemon_id="daemon-fixture")
+
+    def test_docker_connection_is_fixed_and_reads_are_bounded(self):
+        with (
+            mock.patch.dict(
+                os.environ,
+                {"DOCKER_HOST": "tcp://elsewhere.invalid", "DOCKER_CONTEXT": "other"},
+            ),
+            mock.patch.object(lab.subprocess, "run") as called,
+        ):
+            lab.run(["/usr/bin/docker", "info", "--format", "{{.ID}}"])
+        self.assertEqual(
+            [
+                "/usr/bin/docker",
+                "--host",
+                "unix:///var/run/docker.sock",
+                "info",
+                "--format",
+                "{{.ID}}",
+            ],
+            called.call_args.args[0],
+        )
+        self.assertNotIn("DOCKER_HOST", called.call_args.kwargs["env"])
+        self.assertNotIn("DOCKER_CONTEXT", called.call_args.kwargs["env"])
+        self.assertEqual(30, called.call_args.kwargs["timeout"])
 
 
 if __name__ == "__main__":

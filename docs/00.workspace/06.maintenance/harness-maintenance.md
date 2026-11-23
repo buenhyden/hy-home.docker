@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -58,8 +58,8 @@ backup, as RUN-0021 records), and any approval, gate or Task acceptance. No
 store here is evidence of approval or acceptance.
 
 This active workspace-maintenance guide is the registered documentation owner
-for the seven memory, analysis, forecast, dispatch and observe manifest entries
-that name it. Session capture retains its agent-policy owner. This registration
+for the memory, analysis, forecast, dispatch, observe and managed-execution
+manifest entries that name it. Session capture retains its agent-policy owner. This registration
 does not grant execution permission or accept those tools;
 [approval boundaries](../04.quality/approval-boundaries.md) remain applicable.
 
@@ -278,15 +278,18 @@ A unit starts only when every dependency succeeded and it holds leases on all it
 owned paths and shared resources; each lease carries a rising fencing
 generation, and a result from an expired or taken-over lease is refused, as is
 a result that changes anything outside its owned paths, renames included. When
-a worker ends, its process group is stopped before its result is read. A failed
+a managed worker ends, its owned control group and processes are stopped
+before its result is read. A failed
 unit blocks only its descendants; a cancel stops running workers and the
 integration check and starts nothing new. When every unit succeeds, the patches
 apply in turn to the base commit and the integration check runs again within
 `integration_timeout` (default 600 seconds); a worker's success never stands in
 for the integrated result. Result patches stay in the run folder and a person or
 integrator applies them to a real branch after checking that the patch's
-SHA-256 equals the `sha256` the dispatcher printed (a worker can write the run
-folder's report). A worktree separates files only; it is not a sandbox.
+SHA-256 equals the `sha256` the dispatcher printed. Treat result files as
+untrusted data, not permission or acceptance. A worktree separates files only;
+the selected managed shell profile adds the resource and namespace controls
+described by the environment guide.
 
 ```bash
 python3 scripts/operations/work_dispatch.py run PLAN.json
@@ -296,8 +299,51 @@ python3 scripts/operations/work_dispatch.py cleanup
 
 Leases and run records live in `.workspace-capture/dispatch/`. `cleanup` stops
 the workers of a run whose dispatcher died, removes its worktrees and releases
-its leases. Measure a parallel gain against the same plan with one worker,
+its path leases only after verified owned-resource absence. Environment
+reservations remain charged while a child/control group is live or unknown.
+Measure a parallel gain against the same plan with one worker,
 setup and integration included, and state the sample size.
+
+##### Managed execution recovery
+
+The runtime libraries
+[`environment_admission.py`](../../../scripts/lib/ops/environment_admission.py)
+and [`dispatch_process.py`](../../../scripts/lib/ops/dispatch_process.py)
+are maintained through this guide and consumed only by the registered
+Compose/LAB/dispatch entrypoints. The [environment guide](../05.environment/onboarding.md#managed-execution-and-shared-resource-admission)
+owns setup and boundary semantics; product limits and service lifecycle remain
+with product policies and LAB procedures. This registration is documentation
+ownership, not execution authorization or acceptance.
+
+The admission store contains private pending/live ownership and numeric
+reservations in the host namespace, separate from a dispatch plan's path
+leases and a LAB's provenance ledger. Use existing runner status and cleanup
+entrypoints for their own runs; never erase the store or expire a token merely
+to make capacity available. Before retry, reconcile source/daemon identity,
+current ownership and live resources. Keep unknown or inaccessible resources
+charged, and report the specific missing observation or permission.
+
+A managed worker starts gated, with durable token and stable process identity.
+Cancellation/timeout stops the token-matching control group and namespace before
+releasing the reservation. A reused PID, stale process group or mismatched LAB
+token is not ownership. After a controller interruption, inspect the recorded
+identity and owned resources through the existing recovery path; release only
+on verified absence. LAB cleanup keeps unrelated projects and persistent data;
+no global prune or automatic operating-root teardown is part of recovery.
+
+The root operating-start command reports a recovery token when its result is
+uncertain. Run `python3 scripts/operations/compose-start.py recover --token
+<token>` from this checkout. Recovery stops only the matching controller scope
+and releases its reservation when the selected services are absent or fully
+present in the current live inventory. Partial or unknown services keep the
+reservation charged; recovery never tears down the operating Compose project.
+
+Changes to these libraries select their mirrored behavior regressions and
+actual LAB/Compose/dispatch consumers. A temporary dummy environment can prove
+admission, read/write boundaries, readiness and owned cleanup; it does not
+prove product authentication, persistence, backup or every service's health.
+Record actual commands, scopes and failure dispositions in the current Task,
+then delete completed owned probes. Persistent state and tests remain.
 
 ##### Observe report
 
