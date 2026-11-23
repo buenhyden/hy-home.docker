@@ -76,7 +76,7 @@ SYSTEM_PREFIXES = (
     "[Request interrupted by user",
 )
 ASSIGNMENT = re.compile(
-    r"(?i)\b(password|passwd|secret|token|api[_-]?key)(\s*[:=]\s*)(\S+)"
+    r"(?i)\b(password|passwd|secret|token|api[_-]?key)(\s*[:=]\s*)(?!\[REDACTED\])(\S+)"
 )
 
 
@@ -172,6 +172,18 @@ def connect(directory: Path) -> sqlite3.Connection:
         _migrate(connection)
     for statement in SCHEMA:
         connection.execute(statement)
+    if connection.execute(
+        "SELECT 1 FROM events WHERE ingest_seq IS NULL LIMIT 1"
+    ).fetchone():
+        # A checkout still on older code shares this store and wrote a row
+        # without the contract; adopt it so the cursor reads it once.
+        connection.execute("BEGIN IMMEDIATE")
+        try:
+            _adopt(connection)
+            connection.execute("COMMIT")
+        except BaseException:
+            connection.execute("ROLLBACK")
+            raise
     return connection
 
 
@@ -188,28 +200,7 @@ def _migrate(connection: sqlite3.Connection) -> None:
         for column in ("ingest_seq INTEGER", "response TEXT", "content_state TEXT"):
             if column.split()[0] not in columns:
                 connection.execute(f"ALTER TABLE events ADD COLUMN {column}")
-        rows = connection.execute(
-            "SELECT rowid, prompt, occurred_at FROM events ORDER BY captured_at, rowid"
-        ).fetchall()
-        for sequence, (rowid, prompt, occurred) in enumerate(rows, 1):
-            # Earlier prompts were cut before redaction and kept a digest of the
-            # raw text: redact and cut them again and replace that digest.
-            stored, redactions, truncated = bounded(prompt) if prompt else (None, 0, 0)
-            connection.execute(
-                "UPDATE events SET ingest_seq=?, occurred_at=?, prompt=?,"
-                " prompt_digest=?, redactions=redactions+?, content_state=?"
-                " WHERE rowid=?",
-                (
-                    sequence,
-                    event_time(occurred),
-                    stored,
-                    digest(stored) if stored else None,
-                    redactions,
-                    ("truncated" if truncated else "stored") if stored else None,
-                    rowid,
-                ),
-            )
-        connection.execute("UPDATE ingest SET seq=?", (len(rows),))
+        _adopt(connection)
         connection.execute(
             "CREATE UNIQUE INDEX IF NOT EXISTS events_ingest ON events (ingest_seq)"
         )
@@ -218,6 +209,35 @@ def _migrate(connection: sqlite3.Connection) -> None:
     except BaseException:
         connection.execute("ROLLBACK")
         raise
+
+
+def _adopt(connection: sqlite3.Connection) -> None:
+    """Give rows written without the contract a sequence, bounded text and time.
+
+    Older code cut a prompt before redacting it, kept a digest of the raw text
+    and stored the transcript's own time format; redact and cut the text again,
+    replace that digest and normalize the time.
+    """
+    rows = connection.execute(
+        "SELECT rowid, prompt, occurred_at FROM events WHERE ingest_seq IS NULL"
+        " ORDER BY captured_at, rowid"
+    ).fetchall()
+    for rowid, prompt, occurred in rows:
+        stored, redactions, truncated = bounded(prompt) if prompt else (None, 0, 0)
+        connection.execute(
+            "UPDATE events SET ingest_seq=?, occurred_at=?, prompt=?,"
+            " prompt_digest=?, redactions=redactions+?, content_state=?"
+            " WHERE rowid=?",
+            (
+                _next_ingest(connection),
+                event_time(occurred),
+                stored,
+                digest(stored) if stored else None,
+                redactions,
+                ("truncated" if truncated else "stored") if stored else None,
+                rowid,
+            ),
+        )
 
 
 def directory_of(connection: sqlite3.Connection) -> Path:

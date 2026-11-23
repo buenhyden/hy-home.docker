@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.3.0"
+version: "2.3.1"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -207,7 +207,10 @@ kept (`content_state` `quota`). Hidden reasoning, intermediate replies and tool
 input or output are not copied, and no other personal session file is read.
 The first connection after an upgrade migrates an older store once: it adds the
 ingest sequence, masks and cuts stored prompts again and replaces digests of
-unmasked text.
+unmasked text. A linked worktree shares the primary checkout's store, so a
+checkout on older code may still write a row without a sequence; the next
+connection from current code adopts it the same way, and the analysis reads
+it once.
 
 ```bash
 python3 -m scripts.lib.hooks.session_capture status

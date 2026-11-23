@@ -1,6 +1,6 @@
 ---
 title: "P10 Session Capture and Analysis Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -115,6 +115,17 @@ ID was derived from an unredacted digest and expires with its 90-day record.
 The analysis budget stays local and deterministic at 0 USD; no text leaves
 the host.
 
+The worktree did not isolate the real store. `capture_dir()` maps every
+linked worktree to the primary checkout's shared store, and a hook runs the
+`scripts` package of its working directory. A hook run while this session
+worked in the worktree migrated the real store before the merge. Later hooks
+from the primary checkout, still on the old code, wrote 4 `Stop` rows with no
+ingest sequence, which the cursor would never read. Checkouts on different
+code can always share one store, so the fix is in the shared `connect`: any
+row without a sequence is adopted on the next connection. It gets the next
+sequence, redacted-then-cut text, a replaced digest and a normalized time.
+Redaction no longer counts an already masked `token=[REDACTED]` again.
+
 #### Verification Evidence
 
 ##### Results
@@ -128,6 +139,11 @@ the host.
 | E05 | 164 | W180 | method=automated; tool=ruff; command=ruff check and ruff format --check on the changed Python files | Change | PASS | Exit0 | required | - |
 | E06 | 164 | W180 | method=observation; tool=Python3.12.3 CLI; command=session_capture hook Stop and UserPromptSubmit; session_analysis.py run twice and candidates; session_capture status | A scratch capture directory through HY_HOME_CAPTURE_DIR with three synthetic sessions | PASS | Cursor 0 to 6, backlog 0, 3 candidates; second run read nothing; correction candidate with 6 sources; no stored text holds the masked value; 3 responses stored; status reports 30 and 90 days; the scratch store was deleted | required | - |
 | E07 | 164 | W180 | method=automated; tool=Python3.12.3; command=check-agent-governance-contract.py --mode repository --section all; check-document-metadata.py --mode check-active and check-changed; check-document-links.py --mode all --changed; check-document-corpus-lifecycle.py; check-candidate-preflight.sh; provider_surface_renderer.py --check; check-script-manifest.py | Changed-profile selection on the candidate; run-ci-gate.py itself refuses locally because Python 3.12.3 differs from the hosted 3.14.8 | PASS | Governance failures0; metadata violations0; links failures0; lifecycle violations0; preflight exit0; renderer drift0; manifest valid | required | - |
+| E08 | 164 | W180 | method=automated; tool=GitHub Actions CI Quality Gates; command=candidate-core changed candidate validation | PR1149 head 82349929, run45281460776 | PASS | candidate-core, candidate-quality and candidate-routing passed; CodeQL and GitGuardian passed | required | - |
+| E09 | 164 | W180 | method=observation; tool=Python3.12.3 CLI; command=session_capture reconcile; read-only SQL counts; session_analysis.py run and candidates --all | Real stores after merge e9b64846 | FAIL | Schema 2; 1,019 events, 9 prompts cut to 16,384 bytes, times normalized; run read cursor 1009 to 1015, backlog 0; 14 candidates kept; but 4 Stop rows written by the pre-merge code had no ingest sequence and would never be read | required | - |
+| E10 | 164 | W180 | method=observation; tool=systemd user manager; command=session_analysis.py install-timer from the primary checkout; systemctl --user list-timers and cat | This host after merge e9b64846 | PASS | Fixed-name unit disabled and removed; hy-home-session-analysis-40ae7a89c683.timer enabled for 03:00 with WorkingDirectory and HY_HOME_CAPTURE_DIR of this checkout; the k8s and template timers untouched; no scheduled run of the new unit yet | required | - |
+| E11 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture | Adoption regression on e9b64846 | FAIL | Witnessed RED: a row written without a sequence kept ingest_seq NULL | required | - |
+| E12 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture | Adoption fix | PASS | Exit0; 20 tests with the adoption case; the analysis and observe suites also pass | required | E11 |
 
 ##### Resolution Links
 
@@ -139,15 +155,14 @@ E03 resolves the witnessed failures in E02.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 164 | pending | E01,E03,E04,E05,E06,E07 | Implementation, focused regressions and a synthetic CLI run are recorded; the real store migration, the timer move and owner acceptance remain | @buenhyden |
+| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12 | Implementation, focused regressions, a synthetic CLI run, the real migration and the timer move are recorded; the adoption of the 4 real rows after this fix merges, a scheduled run and owner acceptance remain | @buenhyden |
 
 ##### Remaining Conditions
 
-The real capture and analysis stores migrate on their first connection after
-the merge, and this checkout's timer moves to its named unit with
-`install-timer` from the primary checkout. Both are observed after the merge
-and recorded here. A scheduled run of the new unit is observed at its next
-03:00 run. A native Codex capture of the final response waits for the Codex
+The real store's 4 rows without a sequence are adopted on the first
+connection after the adoption fix merges, and the next run reads them; that
+observation resolves E09. A scheduled run of the new unit is observed at its
+next 03:00 run. A native Codex capture of the final response waits for the Codex
 usage limit to lift on 2026-11-27 12:53.
 
 #### Handoff

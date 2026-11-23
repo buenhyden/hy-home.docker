@@ -251,6 +251,26 @@ class CaptureTests(unittest.TestCase):
         self.prompt("after")
         self.assertEqual(3, max(e["ingest_seq"] for e in self.events()))
 
+    def test_a_row_written_by_older_code_after_migration_is_adopted(self):
+        self.prompt("new code")
+        connection = capture.connect(self.directory)
+        raw = "old code token=hunter2 " + "y" * (capture.MAX_CONTENT_BYTES + 5)
+        connection.execute(  # another checkout still runs the code before P10
+            "INSERT INTO events (event_id, workspace_id, provider, session_id,"
+            " sequence, event_kind, origin, occurred_at, captured_at, prompt,"
+            " prompt_digest) VALUES ('late', 'w', 'claude', 's1', 2,"
+            " 'UserPromptSubmit', 'hook', '2026-11-24T00:00:00.250Z',"
+            " '2026-11-24T00:00:00+00:00', ?, ?)",
+            (raw, capture.digest(raw)),
+        )
+        connection.close()
+        late = {e["event_id"]: e for e in self.events()}["late"]
+        self.assertEqual(2, late["ingest_seq"])
+        self.assertNotIn("hunter2", late["prompt"])
+        self.assertEqual("truncated", late["content_state"])
+        self.assertEqual(capture.digest(late["prompt"]), late["prompt_digest"])
+        self.assertEqual("2026-11-24T00:00:00+00:00", late["occurred_at"])
+
     def test_a_full_store_keeps_metadata_and_names_the_gap(self):
         with mock.patch.object(capture, "STORE_QUOTA_BYTES", 0):
             self.prompt("no room")
