@@ -1,10 +1,10 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-20"
+updated: "2026-11-23"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0099"
 parent_ids:
@@ -122,6 +122,39 @@ passed routing/core/required aggregate in run44589566583. Brief revision 2
 rebinds the same Task after that commit for this observed receipt only.
 Final receipt-head checks and merge are read back from the PR; this paragraph
 does not claim that an unexecuted candidate or owner acceptance passed.
+
+#### R01 1.2.0 feedback repair boundary
+
+The direct R01-FEEDBACK 1.2.0 request on 2026-11-23 reuses criterion 155/W171
+from clean `main` 0a500aa1 on branch `codex/r01-feedback-1-2-0`. D18, D21 and
+the Docker findings D23-04/05/06 select three narrow repairs; D23-07 (staged
+`write-tree` candidate and light pre-push) is retained unchanged. P01/P02 are
+not re-run.
+
+- **Discovery (D23-06):** the Hermes registration loop left `_function` as a
+  module alias of `TestHermesCandidate`, so unittest discovery ran 16 cases
+  twice. A repository scan found no other aliased TestCase. The loop
+  variables are deleted and unique discovery is pinned.
+- **Document checks (D23-04):** one-document profiling showed the repeated
+  work. Lifecycle `--readiness` loaded the Spec Packages twice. The
+  content-keyed Markdown parse cache held 8 entries for about 1000 documents.
+  Each historical registry read re-ran `rev-parse`, `ls-tree`, `cat-file`,
+  JSON parse and the depth walk. The repairs reuse the packages already
+  loaded, size the cache for the corpus, and cache only immutable commit and
+  blob names while returning fresh JSON. Nothing is cached across processes,
+  and no candidate-produced cache is trusted.
+- **Regression leaves (D23-05):** `leaf.execution-environment-regressions`
+  takes the admission, Compose-start/observation and LAB controller, layout,
+  isolation, credential and Locust modules out of the two broad bundles; the
+  full profile still reaches each module once. Admission and dispatch changes
+  now select only this leaf, not both bundles (about 150 modules). LAB and
+  Compose-start paths keep reaching Compose-baseline through
+  `local.template-security-baseline`, whose children now include the new leaf,
+  so no LAB consumer is lost. QUALITY-STANDARDS-R75 names the leaf in the
+  closed hosted set; dispatch tests stay local-only under the same rule.
+- **Correction:** an initial root-only simulation suggested that PR1143's
+  LAB change selected no LAB tests. The expanded plan shows they ran through
+  the template-security aggregate, so this is recorded as no gap.
 
 #### Discovery and exclusions
 
@@ -324,6 +357,18 @@ statements retain that evidence; E23/E26/E30/E31 verify the corrections.
 | E37 | 155 | W171 | Separate requirement-to-consumer inspection and low-risk author diff check | P01 1.1.0; unchanged tracked source and this Task delta | PASS | Inspection worker found no blocking implementation gap and confirmed six mappings against source/tests, corroborating the stale advisory graph. No writes or test replay; this is not a new enforced read-only runtime observation. Author checked exact one-file diff, historical/current authority, generation-7 shape, pending acceptance and absence of private payloads | required | - |
 | E38 | 155 | W171 | .venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 60f905d4; .venv/bin/python scripts/validation/check-document-links.py --mode all --changed --base-ref 60f905d4; .venv/bin/python scripts/validation/check-document-corpus-lifecycle.py | Current 1.1.0 Task maintenance delta | PASS | All exit 0: one selected metadata record, zero violations; three selected link documents, zero failures/warnings; corpus/occupancy violations zero. Existing generation-7 form preserved. Changed-plan explanation and git diff --check passed; counts describe observations only. No permanent diagnostic or progress artifact created; matching input package retained | required | - |
 | E39 | 155 | W171 | Hosted maintenance candidate and authorized remote delivery read-back | PR1129 head 7af95e1c against base 60f905d4 | PASS | [Run44589566583](https://github.com/buenhyden/hy-home.docker/actions/runs/44589566583): routing/core/required candidate-quality success; document shard explicitly unselected and main-security N/A for PR. Commit and dedicated branch push completed normally. Strict current-head required check/admin/conversation protection remains enforced, with zero approving reviews required. Final receipt-head result and merge remain separate PR observations | required | - |
+| E40 | 155 | W171 | R01 1.2.0 package, D18/D21 and Docker finding review | Clean main 0a500aa1; D23-04/05/06/07 | PASS | Three repairs selected; D23-07 retained; P01/P02 not re-run | required | - |
+| E41 | 155 | W171 | python3 -m unittest tests.validation.test_hermes_candidate_validator | New unique-discovery regression before the fix | FAIL | Witnessed RED: 32 discovered cases for 16 unique Hermes functions | required | - |
+| E42 | 155 | W171 | python3 -m unittest tests.validation.test_hermes_candidate_validator | Loop variables deleted | PASS | Exit0; 17 tests (16 Hermes cases once plus the discovery check) | required | E41 |
+| E43 | 155 | W171 | cProfile of check-document-metadata.py --mode check-changed and check-document-corpus-lifecycle.py --readiness | One-line edit to this Task over 0a500aa1 | PASS | Hot paths: lifecycle load_spec_packages 2 calls/265.7s; markdown parse 3215 times through an 8-entry cache; 3627 historical registry reads and 17.3M depth-walk calls. Profiling observation only | required | - |
+| E44 | 155 | W171 | python3 -m unittest tests.validation.lifecycle.test_public tests.lib.document_governance.test_registry | Readiness-reuse and immutable revision-cache regressions before the fix | FAIL | Witnessed RED: readiness reloaded the Spec Packages once more; old registry source had no immutable-object cache | required | - |
+| E45 | 155 | W171 | python3 -m unittest tests.validation.lifecycle.test_public tests.lib.document_governance.test_registry | Shared parse and revision caches with single package load | PASS | Exit0; 184 tests | required | E44 |
+| E46 | 155 | W171 | /usr/bin/time of the same two document checks, before and after, same host | Before: worktree of main 0a500aa1; after: this branch. Both with the identical one-line Task edit and base equal to their own commit | PASS | Metadata 157.09s/135MB to 105.03s/214MB, both selected1 with the same one finding. Lifecycle 197.80s/99MB to 72.85s/170MB with identical output. One sample each on a host with load about 6-7; not a p95 or guarantee. An after-run against origin/main selected 862 documents because validator code changed, so it is not comparable | required | - |
+| E47 | 155 | W171 | python3 -m unittest tests.validation.test_ci_gate_plan.CiGateRunnerContractTests.test_execution_environment_changes_select_their_consumer_leaf | New consumer-routing regression before the contract change | FAIL | Witnessed RED: leaf.execution-environment-regressions not found for LAB, admission, dispatch or Compose-start paths | required | - |
+| E48 | 155 | W171 | python3 -m unittest tests.validation.test_ci_gate_plan tests.validation.test_p07_ci_routing tests.validation.test_p09_ci_routing tests.lib.gate.test_ci_gate_contract tests.lib.test_surface_ownership tests.lib.gate.test_github_workflow_contract | First contract split | FAIL | 35 failures from the aggregate-children and hosted-set pins, then 5 from the P07 routing and optional-skip pins. Each pin was updated to the deliberate partition | required | - |
+| E49 | 155 | W171 | python3 -m unittest tests.validation.test_ci_gate_plan.CiGateRunnerContractTests.test_execution_environment_changes_select_their_consumer_leaf | Corrected contract | PASS | Exit0 in local and pull_request contexts; admission and dispatch select neither broad bundle | required | E47 |
+| E50 | 155 | W171 | python3 -m unittest tests.validation.test_ci_gate_plan tests.validation.test_p07_ci_routing tests.validation.test_p09_ci_routing tests.lib.gate.test_ci_gate_contract tests.lib.test_surface_ownership tests.lib.gate.test_github_workflow_contract | Corrected contract, gate code and pins | PASS | Exit0; 212 tests including surface ownership; each module is reached once | required | E48 |
+| E51 | 155 | W171 | python3 -m unittest over the eight execution-environment leaf modules | New leaf contents | PASS | Exit0; 243 tests in 40.58s. The adapter refuses direct invocation outside the runner, so the modules ran under unittest | required | - |
 
 ### Resolution Links
 
@@ -342,6 +387,8 @@ tests without dropping routing, context or fail-closed obligations.
 E33 resolves the earlier hosted aggregate failures in E32 for the corrected
 candidate. The local correction checks and the actual hosted aggregate are
 different observations; neither substitutes for owner acceptance.
+For R01 1.2.0, E42, E45, E49 and E50 resolve the witnessed failures E41, E44,
+E47 and E48. E46 compares the same candidate on the same host.
 
 ## Acceptance Decision
 
@@ -349,7 +396,7 @@ different observations; neither substitutes for owner acceptance.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 155 | pending | E16, E17, E19, E21, E23, E26, E28, E30, E31, E33, E34, E36, E37, E38 | Implementation, verification and merge complete; 1.1.0 maintenance confirmed; owner acceptance remains separate | @buenhyden |
+| 155 | pending | E16, E17, E19, E21, E23, E26, E28, E30, E31, E33, E34, E36, E37, E38, E42, E45, E46, E49, E50, E51 | Implementation, verification and merge complete; 1.1.0 maintenance confirmed; owner acceptance remains separate | @buenhyden |
 
 ### Remaining Conditions
 
@@ -359,6 +406,8 @@ required checks and requested implementation delivery are complete; owner
 acceptance remains pending. No known P01 implementation defect is deferred
 as runtime observation. No full repository suite or live service was run.
 Existing P00 operational conditions are not closed by this CI task.
+R01 1.2.0 repairs are implemented and locally verified; their hosted PR
+result is recorded with the delivery. Owner acceptance remains pending.
 
 ## Handoff
 
