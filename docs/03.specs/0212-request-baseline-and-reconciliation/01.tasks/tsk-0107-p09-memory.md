@@ -1,6 +1,6 @@
 ---
 title: "P09 Shared Memory Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -151,9 +151,10 @@ new native provider run was made here, and the Codex account stays limited
 until 2026-11-27 12:53. On the owner's decision of 2026-11-24 the 3 earlier
 accepted candidates were promoted as unreviewed candidate records with
 `promote --include-earlier` (TSK-0108 E21). Criterion138 keeps its R2 removal
-with TSK-0082. The disposable clone in the session scratchpad could not be
-deleted: the permission layer refused the removal again on 2026-11-24, and
-it holds only synthetic data.
+with TSK-0082, which runs it in one pass after 2026-12-10 on the owner's
+decision of 2026-11-24. The permission layer refused the agent's removal of
+the disposable scratchpad clone twice; the owner deleted it on 2026-11-24.
+The owner decides criterion163 in P16.
 
 #### Handoff
 

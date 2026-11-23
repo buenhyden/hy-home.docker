@@ -1,6 +1,6 @@
 ---
 title: "W08 Shared Memory Task"
-version: "0.8.0"
+version: "0.8.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -258,7 +258,11 @@ around then on 2026-11-19, and the other 28 unlock one a day until about
 `d0f50bdd` already exists.
 
 W149 still removes the 30 R2 copies of the memory export after their
-30-day lock ends; the local snapshots and the ledger are clean. The first daily run after W149, on 2026-11-19, ran without the memory step
+30-day lock ends. On 2026-11-24 the owner chose one pass after 2026-12-10,
+when the last copy unlocks: rewrite without the export, forget the old
+snapshots, prune, then check, with the exact targets listed before it runs.
+A read-only `restic-offsite snapshots` on 2026-11-24 listed 107 snapshots;
+it does not show upload times, so no partial removal was attempted; the local snapshots and the ledger are clean. The first daily run after W149, on 2026-11-19, ran without the memory step
 (First run without memory), but Restic was skipped over the state budget,
 so a snapshot without memory is observed only by the next successful run.
 W150 and W151 are observed.
