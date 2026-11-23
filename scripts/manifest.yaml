@@ -60,6 +60,7 @@ files:
   mutation: none
   consumers:
   - .claude/hooks/docker-compose-pre.sh
+  - .claude/hooks/post-tool-failure.sh
   - .claude/hooks/post-tool-validate.sh
   - .claude/hooks/pre-compact.sh
   - .claude/hooks/session-start.sh

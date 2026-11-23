@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "2.3.0"
+version: "2.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -181,10 +181,10 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R133 | Memory search hit | Required: report its selection reason and unresolved conflict count and mark its body as data-only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R134 | Memory read command | Required: select and hydrate records inside one read snapshot | none | none |
 | ENVIRONMENT-CONSTRAINTS-R135 | Memory search index | Forbidden: adding a lexical, trigram or vector index without a measured gain on the same evaluation cases, environment and sample | none | none |
-| ENVIRONMENT-CONSTRAINTS-R136 | Session capture | Required: capture only this workspace's visible prompts, visible final responses and event metadata through the hook dispatcher into the ignored private `.workspace-capture/`, each selected text redacted whole, then cut to 16 KiB of UTF-8, then redacted again before it is stored, and a cut marked `truncated` | none | none |
-| ENVIRONMENT-CONSTRAINTS-R137 | Session capture | Forbidden: copying hidden reasoning, intermediate replies, tool input or output or the whole transcript, keeping a digest of unredacted text, spilling content past the 256 MiB store quota, or reading a session file outside the provider's own session directory | none | none |
+| ENVIRONMENT-CONSTRAINTS-R136 | Session capture | Required: capture only this workspace's visible prompts, visible final responses, the failure text of a failed tool call with its tool name, and event metadata through the hook dispatcher into the ignored private `.workspace-capture/`, each selected text redacted whole, then cut to 16 KiB of UTF-8 (4 KiB for a tool failure), then redacted again before it is stored, and a cut marked `truncated`; an event ID derives from provider, session, event and a stable marker, never from captured text, and a row an older checkout wrote with a text-derived ID is rekeyed on the next connection | none | none |
+| ENVIRONMENT-CONSTRAINTS-R137 | Session capture | Forbidden: copying hidden reasoning, intermediate replies, tool input, the output of a successful tool call or the whole transcript, keeping a digest of unredacted text, spilling content past the 256 MiB store quota, or reading a session file outside the provider's own session directory | none | none |
 | ENVIRONMENT-CONSTRAINTS-R138 | Captured records | Required: clear captured text and its fingerprint 30 days after the event, delete the record 90 days after it, run the expiry at reconcile and at each analysis run, and keep them out of backups | none | none |
-| ENVIRONMENT-CONSTRAINTS-R139 | Capture hook | Required: a short durable enqueue that never changes the hook's output or result, with each failure recorded beside the store | none | none |
+| ENVIRONMENT-CONSTRAINTS-R139 | Capture hook | Required: a short durable enqueue that never changes the hook's output or result, with each failure recorded beside the store, and a detached reconcile started only after an event was stored | none | none |
 | ENVIRONMENT-CONSTRAINTS-R140 | Capture completeness | Required: report each session as complete, partial or unavailable from cursor reconciliation | none | none |
 | ENVIRONMENT-CONSTRAINTS-R141 | Capture completeness | Forbidden: treating one end-of-session hook as complete capture | none | none |
 | ENVIRONMENT-CONSTRAINTS-R142 | Captured records | Forbidden: promoting them automatically to memory, policy, approval or Task acceptance | none | none |
@@ -487,9 +487,13 @@ This project has a graphify knowledge graph at `graphify-out/`.
   the cut is never half kept; the digest that matches hook and transcript
   prompts covers the stored, redacted text and is cleared with it. Text
   expires 30 days and metadata 90 days after the event; past the 256 MiB
-  store quota only metadata and the gap are kept. Tool input and output are
-  not captured: no deterministic rule here consumes them. Each insert takes
-  a never-reused ingest sequence. The shared hook dispatcher makes one short
+  store quota only metadata and the gap are kept. On the owner's decision of
+  2026-11-24 the failure text of a failed tool call is kept too, redacted and
+  cut to 4 KiB, with its tool name: Claude reports it through
+  `PostToolUseFailure` and Codex through `PostToolUse` with a non-zero exit;
+  tool input and successful output are not captured. Each insert takes
+  a never-reused ingest sequence, and its ID never derives from captured
+  text. The shared hook dispatcher makes one short
   durable enqueue per `SessionStart`, `UserPromptSubmit`, `Stop` and
   `PreCompact`; it never changes the hook's output or result and records a
   failure in `degraded.log`. A detached reconcile under a non-blocking lock

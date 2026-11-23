@@ -382,6 +382,71 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual((3, 4, 1), (result["cursor_start"], result["cursor_end"],
                                      result["events"]))  # fmt: skip
 
+    def test_repeated_tool_failures_become_a_candidate(self):
+        for number in range(3):
+            capture.enqueue(
+                "PostToolUseFailure",
+                {"session_id": f"f{number}", "tool_use_id": f"u{number}",
+                 "tool_name": "Bash", "error": f"Exit code {number + 1}\nmissing module"},
+                "claude", self.directory, "workspace",
+            )  # fmt: skip
+        self.run_once()
+        (found,) = [
+            c for c in analysis.candidates(self.directory, False)
+            if c["rule"] == "tool-failure"
+        ]  # fmt: skip
+        self.assertEqual(3, found["frequency"])
+        self.assertEqual("Bash: exit code #", found["pattern"])
+
+    def test_an_earlier_acceptance_is_promoted_on_request(self):
+        _, _, writer = self.memory_store()
+        intent = self.accepted()
+        store = analysis.connect(self.directory)
+        store.execute("DELETE FROM promotions")  # accepted before the outbox
+        store.close()
+        self.assertEqual([], analysis.promote(self.directory, writer)["promoted"])
+        result = analysis.promote(self.directory, writer, include_earlier=True)
+        self.assertEqual([intent["candidate_id"]], result["promoted"])
+
+    def test_a_rekeyed_event_id_is_rewritten_in_candidates_and_outbox(self):
+        intent = self.accepted()
+        old = intent["source_refs"][1]["event_ids"][0]
+        connection = capture.connect(self.directory)
+        connection.execute(
+            "UPDATE events SET event_id='text-derived' WHERE event_id=?", (old,)
+        )
+        connection.execute("UPDATE capture_meta SET value=0")
+        connection.close()
+        store = analysis.connect(self.directory)
+        store.execute(
+            "UPDATE candidates SET source_event_ids=replace(source_event_ids, ?, 'text-derived')",
+            (old,),
+        )
+        request = json.loads(
+            store.execute("SELECT request FROM promotions").fetchone()[0]
+        )
+        request["source_refs"][1]["event_ids"][0] = "text-derived"
+        store.execute(
+            "UPDATE promotions SET request=?, review_digest=?",
+            (
+                json.dumps(request, sort_keys=True),
+                analysis.review_digest(
+                    store.execute("SELECT * FROM candidates").fetchone()
+                ),
+            ),
+        )
+        store.close()
+        self.run_once()
+        new = capture.rekeys(self.directory) or None
+        self.assertIsNone(new)  # the map is cleared after it is applied
+        (row,) = self.outbox()
+        self.assertNotIn("text-derived", json.dumps(row))
+        (found,) = self.repeats(everything=True)
+        self.assertNotIn("text-derived", found["source_event_ids"])
+        self.assertEqual(0, found["source_expired"])
+        _, _, writer = self.memory_store()
+        self.assertEqual(1, len(analysis.promote(self.directory, writer)["promoted"]))
+
     def install(self, units, primary=True):
         with (
             mock.patch.object(analysis.subprocess, "run") as systemctl,

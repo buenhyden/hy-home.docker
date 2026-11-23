@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.3.1"
+version: "2.4.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -203,8 +203,15 @@ is masked whole, cut to 16 KiB and masked again; a cut text has
 and backup. Text and its fingerprint are cleared 30 days after the event
 (`content_state` `expired`) and the record is removed after 90 days, at
 reconciliation and at each analysis run. Past a 256 MiB store only metadata is
-kept (`content_state` `quota`). Hidden reasoning, intermediate replies and tool
-input or output are not copied, and no other personal session file is read.
+kept (`content_state` `quota`). A failed tool call keeps its tool name and its
+failure text, masked and cut to 4 KiB: Claude sends it through
+`PostToolUseFailure`, Codex through `PostToolUse` when the shell exit is not 0.
+Hidden reasoning, intermediate replies, tool input and successful tool output
+are not copied, and no other personal session file is read. An event ID comes
+from the provider, session, event and its turn, tool call or offset marker,
+never from captured text; a prompt row whose ID came from its text, from an
+older checkout, is rekeyed on the next connection, and the next analysis run
+rewrites its references.
 The first connection after an upgrade migrates an older store once: it adds the
 ingest sequence, masks and cuts stored prompts again and replaces digests of
 unmasked text. A linked worktree shares the primary checkout's store, so a
@@ -233,6 +240,7 @@ operating capture.
 deterministic rules and no language model (owner decision, 2026-11-18). It
 turns repeated prompts (the same normalized text three or more times within the
 30-day content), three or more corrections right after a visible response,
+three or more tool failures with the same tool and first failure line,
 incomplete sessions and capture failures into candidates, each with its source
 event IDs, frequency, condition, proposal, risk and acceptance test. Source
 events only accumulate; `candidates` counts those whose record expired as
@@ -249,6 +257,7 @@ python3 scripts/operations/session_analysis.py status
 python3 scripts/operations/session_analysis.py candidates
 python3 scripts/operations/session_analysis.py decide "<candidate ID>" rejected --owner "<reviewer>"
 python3 scripts/operations/session_analysis.py promote
+python3 scripts/operations/session_analysis.py promote --include-earlier
 ```
 
 `install-timer` installs the user systemd timer
@@ -271,7 +280,9 @@ captured prompt text, and names its source events with their content expiry.
 If that write is refused the intent stays `pending` with its reason and the
 command exits 1; rerun `promote`, which reuses the same request key, so a lost
 receipt neither writes twice nor revives an erased record. A candidate whose
-reviewed fields changed is marked `stale` and not promoted. Making the record
+reviewed fields changed is marked `stale` and not promoted.
+`--include-earlier` first records intents for candidates accepted before the
+outbox existed; run it only on the owner's decision. Making the record
 `current` still needs owner review and a source pin, and a policy, skill or
 checker changes only through a separate Task and approval. Missing capture or a failed analysis never blocks a commit, push
 or other work. Remove the timer with
