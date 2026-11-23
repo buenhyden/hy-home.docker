@@ -105,6 +105,7 @@ services:
     networks:
       lab_lakehouse_net: {}
     labels:
+      hy-home.lab.role: job
       <<: *tier-label
 
   # Batch and table-maintenance job over the Iceberg tables in the REST
@@ -154,6 +155,7 @@ services:
     networks:
       lab_lakehouse_net: {}
     labels:
+      hy-home.lab.role: job
       <<: *tier-label
 
   # Single-node SQL engine (coordinator also runs tasks) over the Iceberg
@@ -250,6 +252,7 @@ services:
     networks:
       lab_lakehouse_net: {}
     labels:
+      hy-home.lab.role: job
       <<: *tier-label
 
   # Session cluster for streaming and batch SQL into the Iceberg tables. Jobs

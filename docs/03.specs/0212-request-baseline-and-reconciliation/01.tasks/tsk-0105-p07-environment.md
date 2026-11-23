@@ -1,6 +1,6 @@
 ---
 title: "P07 Environment Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-20"
+updated: "2026-11-23"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0105"
 parent_ids:
@@ -72,6 +72,16 @@ failure could retain a worker reservation, and LAB readiness accepted an
 exited-zero restartable service. Both now have durable regressions and repairs.
 An evidence-table separator failure was also corrected; runtime LAB proof,
 GitHub delivery and owner acceptance remain separate work.
+
+The direct P07-ENVIRONMENT1.2.0 request resumes this same Task at clean
+`main` b6d84988 (PR1142 merged) on branch codex/p07-environment-1-2-0; D07,
+D21 and the Docker profile/findings D23-01/D23-02 are its inputs. Brief
+P07-ENVIRONMENT-docker-1.2.0 revision1 binds lab.py, its controller test,
+the LAB Compose files, labs README and this Task. Readiness no longer reads
+`restart: no` as a role: an explicit LAB-local `hy-home.lab.role` label
+declares `job`, and absence means `service`. The shared
+`template-job-*` templates are not labelled, because that would change every
+HOME job container and is outside LAB scope.
 
 #### Execution Log
 
@@ -170,6 +180,18 @@ mechanisms, remaining quota limits and unobserved billing without fake PASS.
 | E41 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-document-links.py --mode all --changed | Current P07 Task and changed-document links | PASS | Exit0;929 documents,9116 links,3 selected,0 failures,0 warnings | required | - |
 | E42 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-document-corpus-lifecycle.py --readiness | Current Stage03 corpus and active-stage occupancy | PASS | Exit0; lifecycle violations0 and occupancy violations0. SPEC-0212 remains not-ready because open Tasks/criteria include criterion161; this is not a lifecycle validation violation | required | - |
 | E43 | 161 | W177 | method=automated; tool=repository local staged hooks; command=bash scripts/validation/run-ci-precommit.sh --mode local-staged | Current staged P07 mutation-map repair and Task evidence update | PASS | Exit0; staged-file, conflict, line ending, Markdown, Ruff, secret, EOF and whitespace checks passed; non-matching file checks skipped | required | - |
+| E44 | 161 | W177 | method=automated; tool=GitHub Actions candidate-quality; command=gh pr checks 1142 | PR1142 head c28c3bd4 (merged as b6d84988), run45116720711; read with the 1.2.0 P07/D07/D21 package and Docker findings | PASS | candidate-core, candidate-quality and candidate-routing passed and candidate-documents skipped; CI Quality Gates run45116720711 concluded success on PR1142 head c28c3bd4, merged as b6d84988. This resolves the E37 hosted failure on the new head. Package review found the remaining P07 items: restart-policy role inference (D23-02) and the E33 runtime failure (D23-01) | required | E37 |
+| E45 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_lab_controller | New role/state, expected-set, diagnostics, unreadable-inspection, label-validation and LAB definition regressions before the source change | FAIL | RED confirmed: 125 tests, 17 errors (wait_ready had no roles/token, lab_roles and ROLE_LABEL absent, 16 template-job services undeclared) | required | - |
+| E46 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_lab_controller | Role-based wait_ready, lab_roles in check, ledger readiness record and 16 labelled LAB job services | PASS | Exit0; 125 tests. Covers service running/healthy/starting/created/exited0/exited1, job running/exited0 (restart no and unless-stopped)/exited2, unknown role, missing and undeclared containers, token/project attribution, bounded redacted health (3 entries, 256 chars, no Env) and an unreadable inspection | required | E45 |
+| E47 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_lab_controller tests.validation.test_lab_layout tests.validation.test_lab_isolation tests.validation.test_locust_telemetry tests.validation.test_lab_credential_argv tests.validation.test_quality_mock_lab tests.validation.test_infra_tier_layout tests.validation.test_compose_baseline_gates tests.validation.test_p09_compose_controls tests.validation.test_service_wiring_contracts tests.lib.ops.test_environment_admission tests.lib.ops.test_dispatch_process tests.lib.ops.test_compose_start tests.validation.test_work_dispatch | LAB file consumers and P07 admission/dispatch modules | FAIL | 477 tests, 1 failure: test_lab_isolation requires tier labels on any declared LAB labels, and the new superset-init labels lacked them | required | - |
+| E48 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_lab_controller tests.validation.test_lab_layout tests.validation.test_lab_isolation tests.validation.test_locust_telemetry tests.validation.test_lab_credential_argv tests.validation.test_quality_mock_lab tests.validation.test_infra_tier_layout tests.validation.test_compose_baseline_gates tests.validation.test_p09_compose_controls tests.validation.test_service_wiring_contracts tests.lib.ops.test_environment_admission tests.lib.ops.test_dispatch_process tests.lib.ops.test_compose_start tests.validation.test_work_dispatch | Current candidate with superset-init tier labels | PASS | Exit0; 477 tests, 30 opt-in integration tests skipped and NOT_RUN, not live passes | required | E47 |
+| E49 | 161 | W177 | method=observation; tool=Docker29.9.2/Compose5.6.1; command=python3 scripts/operations/lab.py --env-file owned-private-env check/up/status/down p07-ready-probe | Owned temporary LAB: one service with health check and one job, cached python:3.13.15-alpine, no ports or volumes, private env/data root, configured LAB budget10CPU/27924MiB, 10-minute lease | PASS | Preflight problems0 (0.2CPU/128MiB). Up exit0 at 2026-11-23T11:41Z: job exited0, service healthy, ledger running, no readiness record. docker exec use returned output. Enforced NanoCpus1e8, Memory64MiB, PidsLimit32 per container; extends kept hy-home.managed and added hy-home.lab.role job; token label present. Down exit0 | required | - |
+| E50 | 161 | W177 | method=observation; tool=Docker29.9.2/Compose5.6.1; command=same owned probe with a health check that exits3 | Same owned fixture, deliberate unhealthy service | PASS | Expected failure observed: up exit1 `lab-p07-probe-service is unhealthy`, ledger failed. Ledger readiness kept both owned containers: job exited0; service running/unhealthy, FailingStreak3, three Health.Log entries with exit3 and the token value redacted. The record remained after owned down (state stopped) | required | - |
+| E51 | 161 | W177 | method=observation; tool=Docker CLI and existing Admission API; command=read-only post-cleanup ownership verification | Probe project after both owned downs | PASS | Project reservations0, containers0, networks0, volumes0; the controller operation directory was removed. The fixture folder, private env and data root were then deleted; no images or other volumes were touched | required | - |
+| E52 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main | 1.2.0 candidate over merge base b6d84988 | FAIL | Task and labs README kept unchanged versions, and E44/E48 first named a different Check than the rows they resolve. Versions were raised and the Check columns aligned; no evidence content changed | required | - |
+| E53 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main | Corrected 1.2.0 candidate | PASS | Exit0; selected2, violations0, transition overrides0. Links mode all failures0; corpus lifecycle violations0 and occupancy violations0, readiness unchanged from main | required | E52 |
+| E54 | 161 | W177 | method=automated; tool=repository local staged hooks; command=bash scripts/validation/run-ci-precommit.sh --mode local-staged | Initial staged 1.2.0 candidate | FAIL | Exit1; only Ruff format requested formatting of lab.py and its controller test. Formatting was applied and test_lab_controller reran OK | required | - |
+| E55 | 161 | W177 | method=automated; tool=repository local staged hooks; command=bash scripts/validation/run-ci-precommit.sh --mode local-staged | Staged 1.2.0 candidate after Ruff formatting | PASS | Exit0; all applicable hooks passed, including yamllint, markdownlint, Ruff format/check and secret scan | required | E54 |
 
 ##### Resolution Links
 
@@ -183,10 +205,16 @@ lifecycle and advisory graph checks. E36 resolves the formatting failure E35.
 E38 locally confirms the mutation expectation repair and E39 confirms the
 registered manifest. Neither local check resolves the separate hosted
 candidate-quality failure in E37; the same hosted check must pass on the new
-head. The hosted candidate-quality rerun remains pending.
-The bounded LAB start remains failed although owned cleanup passed; delivery
-and human acceptance remain open. Prior failures stay recorded and are not
-hidden by a successful alternative.
+head. E44 records that hosted pass on head c28c3bd4 and resolves E37.
+E46 resolves E45 and E48 resolves E47. E49 is the required bounded runtime
+case with the corrected role contract and replaces the failed E33 attempt as
+the readiness proof; it is not linked as resolving E33 because it used a
+different fixture. The original E33
+health-check cause stays unobserved because its fixture and container are
+gone, and it is not attributed to the restart-policy defect. E50 shows that
+any later unhealthy start keeps a bounded redacted cause after cleanup, and
+E51 confirms owned cleanup. Prior failures stay recorded and are not hidden by
+a successful alternative.
 
 #### Acceptance Decision
 
@@ -194,19 +222,17 @@ hidden by a successful alternative.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 161 | pending | E01,E02,E03 | Discovery, implementation and focused tests recorded; independent review, native runtime, delivery and human acceptance remain due. Intent undecided, accepted by nobody | @buenhyden |
+| 161 | pending | E01,E02,E03,E44,E46,E49,E50,E51 | Implementation, focused regressions, independent source review, hosted CI and the bounded owned LAB runtime case recorded. Only owner acceptance remains, which P16 may collect; accepted by nobody | @buenhyden |
 
 ##### Remaining Conditions
 
-Focused synthetic regressions, durable owner updates and the corrected
-independent source review are recorded. The hosted candidate-quality check
-failed on two stale mutation expectations; their local repair and manifest
-check pass, and the hosted rerun is still due. The owned single-LAB attempt
-failed at readiness and its cleanup passed; its healthcheck cause is no longer
-observable after the controller removed the failed container. Resolve that
-cause and pass the bounded runtime case before accepting the criterion. Keep
-actual human acceptance pending; retain live/uncertain reservations and
-preexisting unrelated work.
+No required technical failure remains open: hosted CI passed (E44), the
+explicit service/job readiness contract has durable regressions (E46), and
+the owned LAB readiness, use, unhealthy diagnostics and cleanup passed on the
+host (E49-E51). The 1.2.0 delivery PR and its hosted check are recorded with
+that delivery. Owner acceptance remains pending and may move to P16. The
+original E33 health-check cause stays unobserved. Retain live/uncertain
+reservations and preexisting unrelated work.
 
 #### Handoff
 
@@ -219,8 +245,9 @@ permanent completion ledger or parallel runner is authorized.
 
 ##### Next Owner
 
-Continue only P07. Identify matching P08 and prerequisites after actual P07
-results; do not execute the next prompt. Keep the input package through P17.
+P07 technical work is closed. The next input for this workspace is
+R01-FEEDBACK (1.2.0 resume order), then R02-CONTRACT and P08; do not execute
+it automatically. Keep the input package through P17.
 Remove only owned disposable probes/results after durable recording; preserve
 persistent regressions, private execution state and unrelated active work.
 

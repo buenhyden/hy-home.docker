@@ -201,6 +201,7 @@ services:
           cpus: "0.50"
           memory: 256M
     labels:
+      hy-home.lab.role: job
       <<: *tier-label
     profiles:
       - couchdb

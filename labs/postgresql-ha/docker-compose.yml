@@ -326,6 +326,7 @@ services:
     networks:
       lab_pg_core_net: {}
     labels:
+      hy-home.lab.role: job
       <<: *tier-label
 
   pg-0:

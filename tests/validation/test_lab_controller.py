@@ -1406,11 +1406,10 @@ class LifecycleTests(unittest.TestCase):
             {"type": "volume", "source": "o"},
         ]
         self.compose_rc = 0
+        # The one rendered service `c`, running and healthy.
         self.ready = [
             {"Id": "node", "Name": "/lab-node",
              "State": {"Status": "running", "Health": {"Status": "healthy"}}},
-            {"Id": "init", "Name": "/lab-init", "State": {"Status": "exited", "ExitCode": 0},
-             "HostConfig": {"RestartPolicy": {"Name": "no"}}},
         ]  # fmt: skip
         from scripts.lib.ops.environment_admission import Admission
 
@@ -1471,6 +1470,7 @@ class LifecycleTests(unittest.TestCase):
             labels = {
                 lab.TOKEN_LABEL: self.foreign_token or entry["admission_token"],
                 "com.docker.compose.project": entry["project"],
+                "com.docker.compose.service": "c",
             }
             ready = [{**r, "Config": {"Labels": labels}} for r in self.ready]
             return subprocess.CompletedProcess(command, 0, json.dumps(ready), "")
@@ -1639,57 +1639,227 @@ class LifecycleTests(unittest.TestCase):
 
     def test_up_waits_for_health_and_accepts_a_finished_init_job(self) -> None:
         # compose `up --wait` fails when an init job exits 0; lab.py does not.
+        # The job role comes from the declared label, not the restart policy.
+        self.rendered["services"]["c"]["labels"] = {lab.ROLE_LABEL: "job"}
         self.ready = [
             {
                 "Id": "init",
                 "Name": "/lab-init",
                 "State": {"Status": "exited", "ExitCode": 0},
-                "HostConfig": {"RestartPolicy": {"Name": "no"}},
+                "HostConfig": {"RestartPolicy": {"Name": "unless-stopped"}},
             }
         ]
         self.assertEqual(0, self.up())
         self.assertEqual("running", self.ledger()["state"])
+        self.assertNotIn("readiness", self.ledger())
         self.assertEqual(0, self.main("down", "cassandra"))
         # A one-shot job that is still running is not ready yet.
         self.ready = [
-            {"Id": "init", "Name": "/lab-init", "State": {"Status": "running"},
-             "HostConfig": {"RestartPolicy": {"Name": "no"}}},
-        ]  # fmt: skip
+            {"Id": "init", "Name": "/lab-init", "State": {"Status": "running"}}
+        ]
         with (
             mock.patch.object(lab.time, "sleep"),
             mock.patch.dict(lab.os.environ, {"LAB_READY_TIMEOUT_SECONDS": "0"}),
         ):
             self.assertEqual(1, self.up())
         self.assertEqual(0, self.main("down", "cassandra"))
-        for bad in (
-            {"Id": "init", "Name": "/lab-init", "State": {"Status": "exited", "ExitCode": 2}},
-            {"Id": "node", "Name": "/lab-node",
-             "State": {"Status": "running", "Health": {"Status": "unhealthy"}}},
+        for role, bad in (
+            ("job", {"Id": "init", "Name": "/lab-init",
+                     "State": {"Status": "exited", "ExitCode": 2}}),
+            ("service", {"Id": "node", "Name": "/lab-node",
+                         "State": {"Status": "running", "Health": {"Status": "unhealthy"}}}),
+            # A service that exits 0 is not ready, even with restart `no`.
+            ("service", {"Id": "node", "Name": "/lab-node",
+                         "State": {"Status": "exited", "ExitCode": 0},
+                         "HostConfig": {"RestartPolicy": {"Name": "no"}}}),
         ):  # fmt: skip
-            with self.subTest(state=bad["State"]):
+            with self.subTest(role=role, state=bad["State"]):
+                self.rendered["services"]["c"]["labels"] = {lab.ROLE_LABEL: role}
                 self.ready = [bad]
                 self.assertEqual(1, self.up())
-                self.assertEqual("failed", self.ledger()["state"])
+                entry = self.ledger()
+                self.assertEqual("failed", entry["state"])
+                # The bounded observation outlives the container cleanup.
+                self.assertEqual("c", entry["readiness"]["observed"][0]["service"])
                 self.assertEqual(0, self.main("down", "cassandra"))
 
-    def test_wait_ready_rejects_successful_exit_for_restartable_service(self):
-        records = [
-            {
-                "Id": "node",
-                "Name": "/lab-node",
-                "State": {"Status": "exited", "ExitCode": 0},
-                "HostConfig": {"RestartPolicy": {"Name": "unless-stopped"}},
-            }
+    def readiness(self, roles, records, *, restart="no"):
+        """Run wait_ready once (timeout 0) over inspected `records`."""
+        calls = []
+
+        def fake(command, **kwargs):
+            calls.append(command)
+            if command[1] == "ps":
+                ids = "\n".join(r["Id"] for r in records)
+                return subprocess.CompletedProcess(command, 0, ids, "")
+            labelled = [
+                {
+                    "HostConfig": {"RestartPolicy": {"Name": restart}},
+                    **r,
+                    "Config": {
+                        "Labels": {"com.docker.compose.service": r["Id"]},
+                        "Env": ["PASSWORD=hunter2"],
+                    },
+                }
+                for r in records
+            ]
+            return subprocess.CompletedProcess(command, 0, json.dumps(labelled), "")
+
+        with (
+            mock.patch.object(lab, "run", side_effect=fake),
+            mock.patch.object(lab.time, "sleep"),
+        ):
+            result = lab.wait_ready("docker", "p", 0, roles=roles, token="t1")
+        # Attribution: only this project's containers carrying this token.
+        self.assertIn(f"label={lab.TOKEN_LABEL}=t1", calls[0])
+        self.assertIn("label=com.docker.compose.project=p", calls[0])
+        return result
+
+    def test_wait_ready_judges_declared_role_not_restart_policy(self):
+        running = {"Status": "running"}
+
+        def exited(code):
+            return {"Status": "exited", "ExitCode": code}
+
+        cases = [
+            # role, state, restart policy, expected reason (None = ready)
+            ("service", running, "no", None),
+            ("service", {**running, "Health": {"Status": "healthy"}}, "no", None),
+            ("service", exited(0), "no", "s service exited 0 before ready"),
+            ("service", exited(1), "no", "s service exited 1 before ready"),
+            ("service", {"Status": "created"}, "unless-stopped", "not ready: s"),
+            ("service", {**running, "Health": {"Status": "starting"}}, "no",
+             "not ready: s"),
+            ("job", running, "no", "not ready: s"),
+            ("job", exited(0), "no", None),
+            ("job", exited(0), "unless-stopped", None),
+            ("job", exited(2), "no", "s job exited 2"),
+            ("daemon", running, "no", "s has unknown LAB role 'daemon'"),
+        ]  # fmt: skip
+        for role, state, restart, expected in cases:
+            with self.subTest(role=role, state=state, restart=restart):
+                reason, _ = self.readiness(
+                    {"s": role},
+                    [{"Id": "s", "Name": "/s", "State": state}],
+                    restart=restart,
+                )
+                self.assertEqual(expected, reason)
+
+    def test_wait_ready_matches_expected_and_owned_container_sets(self):
+        running = {"Status": "running"}
+        reason, _ = self.readiness(
+            {"a": "service", "b": "job"}, [{"Id": "a", "Name": "/a", "State": running}]
+        )
+        self.assertEqual("not ready: b (missing)", reason)
+        reason, _ = self.readiness(
+            {"a": "service"},
+            [
+                {"Id": "a", "Name": "/a", "State": running},
+                {"Id": "x", "Name": "/x", "State": running},
+            ],
+        )
+        self.assertEqual("x is not a declared service of this LAB", reason)
+        reason, _ = self.readiness({"a": "service"}, [])
+        self.assertEqual("not ready: a (missing)", reason)
+
+    def test_wait_ready_records_bounded_redacted_health_before_cleanup(self):
+        log = [
+            {"ExitCode": 1, "Output": f"try {i} password=hunter2 " + "x" * 900}
+            for i in range(6)
         ]
-        responses = [
-            subprocess.CompletedProcess([], 0, stdout="node\n"),
-            subprocess.CompletedProcess([], 0, stdout=json.dumps(records)),
-        ]
-        with mock.patch.object(lab, "run", side_effect=responses):
-            self.assertEqual(
-                "lab-node exited 0 with restart policy unless-stopped",
-                lab.wait_ready("docker", "project", 1),
+        state = {
+            "Status": "running",
+            "ExitCode": 0,
+            "Health": {"Status": "unhealthy", "FailingStreak": 6, "Log": log},
+        }
+        reason, found = self.readiness(
+            {"s": "service"}, [{"Id": "s", "Name": "/s", "State": state}]
+        )
+        self.assertEqual("s is unhealthy", reason)
+        (item,) = found
+        self.assertEqual(
+            {"container", "service", "role", "status", "exit_code", "health",
+             "failing_streak", "health_log"},
+            set(item),
+        )  # fmt: skip
+        self.assertEqual(("unhealthy", 6), (item["health"], item["failing_streak"]))
+        self.assertEqual(3, len(item["health_log"]))
+        self.assertEqual(1, item["health_log"][-1]["exit_code"])
+        text = json.dumps(found)
+        self.assertNotIn("hunter2", text)
+        self.assertIn("try 5", text)
+        self.assertLessEqual(max(len(x["output"]) for x in item["health_log"]), 256)
+        # A ready LAB records nothing.
+        self.assertEqual(
+            (None, []),
+            self.readiness(
+                {"s": "service"},
+                [{"Id": "s", "Name": "/s", "State": {"Status": "running"}}],
+            ),
+        )
+
+    def test_wait_ready_records_an_unreadable_inspection(self):
+        def fake(command, **kwargs):
+            if command[1] == "ps":
+                return subprocess.CompletedProcess(command, 0, "s\n", "")
+            return subprocess.CompletedProcess(command, 1, "", "denied")
+
+        with (
+            mock.patch.object(lab, "run", side_effect=fake),
+            mock.patch.object(lab.time, "sleep"),
+        ):
+            reason, found = lab.wait_ready(
+                "docker", "p", 0, roles={"s": "service"}, token="t1"
             )
+        self.assertEqual("not ready: inspection failed (exit 1)", reason)
+        self.assertEqual([{"error": "inspection failed (exit 1)"}], found)
+
+    def test_lab_role_labels_are_explicit_and_valid(self):
+        self.assertEqual(
+            ({"a": "service", "b": "job", "c": "job"}, []),
+            lab.lab_roles(
+                {
+                    "services": {
+                        "a": {"restart": "no"},
+                        "b": {"labels": {lab.ROLE_LABEL: "job"}},
+                        "c": {
+                            "labels": {lab.ROLE_LABEL: "job", "hy-home.lab.job": "true"}
+                        },
+                    }
+                }
+            ),
+        )
+        _, problems = lab.lab_roles(
+            {
+                "services": {
+                    "d": {"labels": {lab.ROLE_LABEL: "daemon"}},
+                    "e": {"labels": {"hy-home.lab.job": "true"}},
+                }
+            }
+        )
+        self.assertEqual(
+            [
+                "d: hy-home.lab.role must be service or job, not 'daemon'",
+                "e: a hy-home.lab.job run target must declare hy-home.lab.role job",
+            ],
+            problems,
+        )
+
+    def test_every_shared_job_template_service_declares_the_job_role(self):
+        # Definition contract: a LAB service built on a `template-job-*`
+        # one-shot template states role job; restart policy is not read.
+        import yaml
+
+        for path in sorted((ROOT / "labs").glob("*/docker-compose.yml")):
+            data = yaml.safe_load(path.read_text(encoding="utf-8"))
+            for name, service in (data.get("services") or {}).items():
+                extends = (service.get("extends") or {}).get("service", "")
+                role = (service.get("labels") or {}).get(lab.ROLE_LABEL)
+                with self.subTest(lab=path.parent.name, service=name):
+                    if extends.startswith("template-job-"):
+                        self.assertEqual("job", role)
+                    else:
+                        self.assertIn(role, (None, "service"))
 
     def test_failed_start_and_stop_exit_non_zero(self) -> None:
         self.compose_rc = 1
