@@ -139,6 +139,55 @@ class RequestBriefTests(unittest.TestCase):
             *paths,
         )
 
+    def test_observed_request_refuses_the_first_edit_until_a_brief_is_bound(
+        self,
+    ) -> None:
+        # P08: once a request is observed, binding is available, so the first
+        # recognized workspace edit waits for the shown and bound brief.
+        request_brief.observe_request(self.root, self.event)
+        refused = self.guard("example.txt")
+        self.assertIsNotNone(refused)
+        self.assertIn("before the first edit", refused)
+        # Targets outside this workspace are not this workspace's brief.
+        self.assertIsNone(self.guard(str(self.root.parent / "outside.txt")))
+        self.enroll()
+        self.assertIsNone(self.guard("example.txt"))
+
+    def test_brief_drafts_stay_writable_before_and_after_binding(self) -> None:
+        # A permission-restricted native session writes its BriefRecord here
+        # and binds with `bind SESSION < .request-brief/FILE.json`.
+        draft = f"{request_brief.BRIEF_DRAFTS}p08.json"
+        request_brief.observe_request(self.root, self.event)
+        self.assertIsNone(self.guard(draft))
+        self.assertIsNotNone(self.guard(draft, "example.txt"))
+        self.enroll()
+        self.assertIsNone(self.guard(draft))
+
+    def test_an_unobserved_session_remains_a_reported_coverage_gap(self) -> None:
+        self.assertIsNone(self.guard("example.txt"))
+
+    def test_first_allowed_edit_shows_one_notice_per_brief_revision(self) -> None:
+        brief = self.enroll()
+        notice = request_brief.first_edit_notice(self.root, self.event)
+        self.assertIn("revision 1", notice)
+        self.assertIn("edit:example.txt", notice)
+        self.assertIsNone(request_brief.first_edit_notice(self.root, self.event))
+        result = self.cli("bind", payload={**self.record(), "revision": 2})
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn(
+            "revision 2", request_brief.first_edit_notice(self.root, self.event)
+        )
+        # The notice and its record stay free of brief prose.
+        self.assertNotIn(brief["goal"], notice)
+        for state in self.state_home.rglob("*.json"):
+            self.assertNotIn(brief["goal"], state.read_text(encoding="utf-8"))
+        # No notice without a bound brief or outside an observed session.
+        self.assertIsNone(
+            request_brief.first_edit_notice(
+                self.root, {**self.event, "session_id": "session-z"}
+            )
+        )
+
     def test_clear_brief_checks_exact_paths_and_dispatch_scope(self) -> None:
         self.assertIsNone(self.guard("unrelated.txt"))
         brief = self.enroll()
@@ -267,7 +316,8 @@ class RequestBriefTests(unittest.TestCase):
                 self.assertNotEqual(
                     0, self.cli("bind", payload=self.record(**changes)).returncode
                 )
-        self.assertIsNone(self.guard("unrelated.txt"))
+        # A rejected bind leaves no brief, so the observed session stays gated.
+        self.assertEqual(request_brief.NEEDS_BRIEF, self.guard("unrelated.txt"))
 
     def test_uncorroborated_authority_is_recordable_without_permitting_actions(
         self,

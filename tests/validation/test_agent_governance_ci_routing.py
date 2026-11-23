@@ -3120,6 +3120,88 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                     specific["additionalContext"],
                 )
 
+    def test_first_edit_waits_for_the_brief_then_shows_it_once(self) -> None:
+        # P08: an observed request refuses the first edit until a brief is
+        # bound; the first allowed edit shows the user a one-time notice.
+        target = str(ROOT / "docs/03.specs/zz-p08-probe.md")
+        edit = {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "Write",
+            "tool_input": {"file_path": target, "content": "x\n"},
+        }
+        for provider in ("claude", "codex"):
+            with (
+                self.subTest(provider=provider),
+                tempfile.TemporaryDirectory() as state,
+                mock.patch.dict(os.environ, {"XDG_STATE_HOME": state}),
+            ):
+                session = {"session_id": f"p08-{provider}", "cwd": str(ROOT)}
+                prompt = self._event(
+                    "UserPromptSubmit",
+                    {
+                        **session,
+                        "hook_event_name": "UserPromptSubmit",
+                        "prompt": "Change the probe",
+                    },
+                    provider=provider,
+                )
+                self.assertEqual(0, prompt.returncode, prompt.stderr)
+                refused = self._event(
+                    "PreToolUse", {**session, **edit}, provider=provider
+                )
+                decision = json.loads(refused.stdout)["hookSpecificOutput"]
+                self.assertEqual("deny", decision["permissionDecision"])
+                self.assertIn(
+                    "before the first edit", decision["permissionDecisionReason"]
+                )
+                status = json.loads(
+                    subprocess.run(
+                        [sys.executable, "-m", "scripts.lib.hooks.request_brief",
+                         "status", session["session_id"]],
+                        cwd=ROOT, capture_output=True, text=True, check=True,
+                    ).stdout
+                )  # fmt: skip
+                status.pop("prior_authority_ref", None)
+                brief = {
+                    **status,
+                    "contract_version": "3.0.1",
+                    "brief_id": "p08-probe",
+                    "revision": 1,
+                    "goal": "Probe the first-edit gate",
+                    "in_scope": ["docs/03.specs/zz-p08-probe.md"],
+                    "out_of_scope": [],
+                    "constraints": [],
+                    "acceptance_criteria": ["Notice shown once"],
+                    "known_facts": [],
+                    "assumptions": [],
+                    "unresolved_questions": [],
+                    "risk": "low",
+                    "authority_ref": status["request_ref"],
+                    "allowed_mutations": ["edit:docs/03.specs/zz-p08-probe.md"],
+                    "expected_checks": ["This test"],
+                    "material_inputs": {},
+                    "state": "ready",
+                }
+                bound = subprocess.run(
+                    [sys.executable, "-m", "scripts.lib.hooks.request_brief",
+                     "bind", session["session_id"]],
+                    cwd=ROOT, input=json.dumps(brief), capture_output=True,
+                    text=True, check=False,
+                )  # fmt: skip
+                self.assertEqual(0, bound.returncode, bound.stderr)
+                first = json.loads(
+                    self._event(
+                        "PreToolUse", {**session, **edit}, provider=provider
+                    ).stdout
+                )
+                self.assertNotIn("permissionDecision", first["hookSpecificOutput"])
+                self.assertIn("Request brief revision 1", first["systemMessage"])
+                self.assertNotIn("Probe the first-edit gate", first["systemMessage"])
+                again = self._event(
+                    "PreToolUse", {**session, **edit}, provider=provider
+                )
+                self.assertNotIn("systemMessage", json.loads(again.stdout or "{}"))
+
     def test_pre_tool_guidance_reaches_the_model(self) -> None:
         payload = {
             "tool_name": "Write",

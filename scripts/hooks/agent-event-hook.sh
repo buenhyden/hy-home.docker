@@ -177,6 +177,18 @@ if paths and data.get("session_id"):
 
 system_messages = []
 additional_context = []
+# P08: the first allowed edit of each bound brief revision is shown to the
+# user; both providers surface a top-level systemMessage in their UI.
+user_notices = []
+if paths and data.get("session_id"):
+    try:
+        from scripts.lib.hooks.request_brief import first_edit_notice
+
+        notice = first_edit_notice(project, data)
+        if notice:
+            user_notices.append(notice)
+    except Exception:
+        pass
 
 graph_tools = {"Bash", "Glob", "Grep", "Read", "LS"}
 if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or tool_name in graph_tools):
@@ -329,14 +341,18 @@ try:
 except Exception:
     pass
 
-if not system_messages and not additional_context:
+if not system_messages and not additional_context and not user_notices:
     sys.exit(0)
 
-# Guidance is for the model: `systemMessage` would reach only the user.
-print(json.dumps({"hookSpecificOutput": {
+# Guidance is for the model: `systemMessage` reaches only the user, so it
+# carries just the brief notice.
+output = {"hookSpecificOutput": {
     "hookEventName": "PreToolUse",
-    "additionalContext": "\n\n".join(system_messages + additional_context),
-}}))
+    "additionalContext": "\n\n".join(system_messages + additional_context + user_notices),
+}}
+if user_notices:
+    output["systemMessage"] = "\n".join(user_notices)
+print(json.dumps(output))
 PY
   then
     return 0
