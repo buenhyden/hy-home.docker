@@ -1,6 +1,6 @@
 ---
 title: "P08 Native Brief Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -111,14 +111,14 @@ here only by the dispatcher regression with the Codex output shape.
 | E12 | 162 | W178 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-agent-governance-contract.py; python3 scripts/operations/provider_surface_renderer.py --check | AGENTIC 4.1.0 and unchanged provider surfaces | PASS | Governance contract failures0; renderer drift0 | required | - |
 | E13 | 162 | W178 | method=automated; tool=GitHub Actions CI Quality Gates; command=candidate-core changed candidate validation | PR1147 head 37ffefd3, run45215197365 | FAIL | The new dispatcher test ran `request_brief status` against the hosted candidate checkout and it exited 1 for both providers; the child stderr was not captured. The refusal step had passed. candidate-quality failed only as the aggregate of this job | required | - |
 | E14 | 162 | W178 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_agent_governance_ci_routing.HookOutputAndMainPushTests.test_first_edit_waits_for_the_brief_then_shows_it_once | Test isolated in a private Git fixture carrying the hook rules, child stderr asserted | PASS | Exit0 locally and under a simulated gate-root descriptor; RED again against the pre-change hook and library | required | - |
+| E15 | 162 | W178 | method=automated; tool=GitHub Actions CI Quality Gates; command=candidate-core changed candidate validation | PR1147 head 78f2683b, run45216605394 | PASS | candidate-core, candidate-quality and candidate-routing passed with the isolated dispatcher test | required | E13 |
 
 ##### Resolution Links
 
 E03, E05 and E08 resolve the witnessed failures E02, E04 and E07. E09
 resolves E06 through the same native probe after the draft route and with only
 repository settings loaded. E13 is the hosted failure of the first dispatcher test, which depended on the candidate
-checkout; E14 isolates it, and the next hosted run on the same check resolves
-E13. E10 is NOT_RUN: a pre-execution account refusal
+checkout; E14 isolates it, and E15 resolves E13 on the same hosted check. E10 is NOT_RUN: a pre-execution account refusal
 is neither a pass nor an implementation failure.
 
 #### Acceptance Decision
@@ -127,7 +127,7 @@ is neither a pass nor an implementation failure.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 162 | pending | E01,E03,E05,E08,E09,E11,E12 | Implementation, focused regressions and the Claude native observation are recorded; the Codex native observation is blocked by the account usage limit and owner acceptance remains | @buenhyden |
+| 162 | pending | E01,E03,E05,E08,E09,E11,E12,E14,E15 | Implementation, focused regressions and the Claude native observation are recorded; the Codex native observation is blocked by the account usage limit and owner acceptance remains | @buenhyden |
 
 ##### Remaining Conditions
 
