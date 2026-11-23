@@ -1,6 +1,6 @@
 ---
 title: "P09 Shared Memory Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -148,10 +148,12 @@ with the D09 exclusion of conflicted records.
 The provider-side round trip of TSK-0082 is reused because both providers use
 the same CLI and its write path is unchanged apart from the typed refusal; no
 new native provider run was made here, and the Codex account stays limited
-until 2026-11-27 12:53. Whether the 3 earlier accepted candidates are promoted
-is the owner's decision. Criterion138 keeps its R2 removal with TSK-0082. The
-disposable clone in the session scratchpad could not be deleted because the
-permission layer refused the removal; it holds only synthetic data.
+until 2026-11-27 12:53. On the owner's decision of 2026-11-24 the 3 earlier
+accepted candidates were promoted as unreviewed candidate records with
+`promote --include-earlier` (TSK-0108 E21). Criterion138 keeps its R2 removal
+with TSK-0082. The disposable clone in the session scratchpad could not be
+deleted: the permission layer refused the removal again on 2026-11-24, and
+it holds only synthetic data.
 
 #### Handoff
 
