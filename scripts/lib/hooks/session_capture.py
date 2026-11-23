@@ -76,7 +76,7 @@ SYSTEM_PREFIXES = (
     "[Request interrupted by user",
 )
 ASSIGNMENT = re.compile(
-    r"(?i)\b(password|passwd|secret|token|api[_-]?key)(\s*[:=]\s*)(?!\[REDACTED\])(\S+)"
+    r"(?i)\b(password|passwd|secret|token|api[_-]?key)(\s*[:=]\s*)(?!\[REDACTED\](?:\s|$))(\S+)"
 )
 
 

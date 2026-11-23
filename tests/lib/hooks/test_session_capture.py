@@ -182,6 +182,14 @@ class CaptureTests(unittest.TestCase):
             ("truncated", 1), (event["content_state"], event["redactions"])
         )
 
+    def test_a_masked_value_is_not_counted_twice_but_a_prefixed_one_is_masked(self):
+        self.assertEqual(
+            ("token=[REDACTED] x", 0), capture.redact("token=[REDACTED] x")
+        )
+        text, count = capture.redact("token=[REDACTED]hunter2")
+        self.assertNotIn("hunter2", text)
+        self.assertEqual(1, count)
+
     def test_the_content_fingerprint_is_not_a_digest_of_the_raw_text(self):
         text = "use token=hunter2 now"
         self.prompt(text)

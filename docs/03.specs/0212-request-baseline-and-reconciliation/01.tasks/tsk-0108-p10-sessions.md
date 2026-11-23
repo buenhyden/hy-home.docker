@@ -124,7 +124,10 @@ ingest sequence, which the cursor would never read. Checkouts on different
 code can always share one store, so the fix is in the shared `connect`: any
 row without a sequence is adopted on the next connection. It gets the next
 sequence, redacted-then-cut text, a replaced digest and a normalized time.
-Redaction no longer counts an already masked `token=[REDACTED]` again.
+Redaction no longer counts a value that is exactly `[REDACTED]` again. A
+first lookahead also skipped a value that only began with `[REDACTED]`; an
+automated security review found it before merge (E13), and the lookahead now
+needs the masked marker to end the value.
 
 #### Verification Evidence
 
@@ -144,6 +147,7 @@ Redaction no longer counts an already masked `token=[REDACTED]` again.
 | E10 | 164 | W180 | method=observation; tool=systemd user manager; command=session_analysis.py install-timer from the primary checkout; systemctl --user list-timers and cat | This host after merge e9b64846 | PASS | Fixed-name unit disabled and removed; hy-home-session-analysis-40ae7a89c683.timer enabled for 03:00 with WorkingDirectory and HY_HOME_CAPTURE_DIR of this checkout; the k8s and template timers untouched; no scheduled run of the new unit yet | required | - |
 | E11 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture | Adoption regression on e9b64846 | FAIL | Witnessed RED: a row written without a sequence kept ingest_seq NULL | required | - |
 | E12 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture | Adoption fix | PASS | Exit0; 20 tests with the adoption case; the analysis and observe suites also pass | required | E11 |
+| E13 | 164 | W180 | method=automated; tool=Python3.12.3; command=redact("token=[REDACTED]hunter2") on commit 15e68a5e, then python3 -m unittest tests.lib.hooks.test_session_capture | Masked-prefix value before and after the lookahead fix | PASS | Before: the value stayed unmasked with count 0; after: masked with count 1, an exact `[REDACTED]` still counts 0; 21 tests pass | required | - |
 
 ##### Resolution Links
 
@@ -155,7 +159,7 @@ E03 resolves the witnessed failures in E02.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12 | Implementation, focused regressions, a synthetic CLI run, the real migration and the timer move are recorded; the adoption of the 4 real rows after this fix merges, a scheduled run and owner acceptance remain | @buenhyden |
+| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12,E13 | Implementation, focused regressions, a synthetic CLI run, the real migration and the timer move are recorded; the adoption of the 4 real rows after this fix merges, a scheduled run and owner acceptance remain | @buenhyden |
 
 ##### Remaining Conditions
 
