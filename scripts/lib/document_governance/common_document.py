@@ -11,6 +11,11 @@ from types import MappingProxyType
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 CORE_PATH = "docs/99.templates/01.contracts/common-document-contract.json"
+# Local adapter: how this workspace encodes the shared envelope in Markdown.
+ADAPTER_PATH = "docs/99.templates/01.contracts/document-payload-encoding.json"
+MARKER = re.compile(
+    r"<!-- document-core: WORKSPACE-DOCUMENT-CORE/[0-9]+\.[0-9]+\.[0-9]+ -->"
+)
 
 
 class CommonDocumentError(ValueError):
@@ -50,7 +55,6 @@ def _decode_contract(raw: bytes) -> Mapping:
         or not isinstance(document.get("headings"), dict)
         or not isinstance(document.get("payload_profiles"), dict)
         or not isinstance(document.get("section_rules"), dict)
-        or not isinstance(document.get("payload_encoding"), dict)
     ):
         raise CommonDocumentError("common document contract is incomplete")
     for parent, children in document["headings"].items():
@@ -79,23 +83,14 @@ def _decode_contract(raw: bytes) -> Mapping:
             "deprecated",
         ]
         valid_layers = metadata["scope"]["properties"]["layer"]["enum"]
-        encoding = document["payload_encoding"]
-        valid_encoding = (
-            encoding["marker"]
-            == f"<!-- document-core: {document['contract_id']}/{document['version']} -->"
-            and encoding["heading_shift"] == 2
-        )
         if (
             not valid_metadata
-            or not valid_encoding
             or not isinstance(valid_layers, list)
             or not all(isinstance(value, str) for value in valid_layers)
         ):
-            raise CommonDocumentError("common metadata or payload encoding is invalid")
+            raise CommonDocumentError("common metadata is invalid")
     except (KeyError, TypeError) as error:
-        raise CommonDocumentError(
-            "common metadata or payload encoding is incomplete"
-        ) from error
+        raise CommonDocumentError("common metadata is incomplete") from error
     relations = document.get("relation_kinds")
     if (
         not isinstance(relations, list)
@@ -107,14 +102,53 @@ def _decode_contract(raw: bytes) -> Mapping:
     return _immutable_json(document)
 
 
+def decode_adapter(raw: bytes, core: Mapping) -> Mapping:
+    """The local payload encoding, only for a core version it declares."""
+    from scripts.lib.document_governance.semver import is_numeric_version
+
+    try:
+        adapter = json.loads(raw, object_pairs_hook=_unique)
+        pinned = adapter["core"]
+        encoding = adapter["payload_encoding"]
+        valid = (
+            isinstance(adapter.get("adapter_id"), str)
+            and is_numeric_version(adapter.get("version"))
+            and pinned["contract_id"] == core["contract_id"]
+            and core["version"] in pinned["versions"]
+            and all(is_numeric_version(value) for value in pinned["versions"])
+            and isinstance(encoding["marker"], str)
+            and MARKER.fullmatch(encoding["marker"]) is not None
+            and encoding["heading_shift"] == 2
+            and isinstance(encoding["deep_heading_annotation"], str)
+        )
+    except (ValueError, UnicodeError, KeyError, TypeError) as error:
+        raise CommonDocumentError("payload encoding adapter is incomplete") from error
+    if not valid:
+        raise CommonDocumentError(
+            "payload encoding adapter does not declare this common core"
+        )
+    return _immutable_json(adapter)
+
+
+@functools.lru_cache(maxsize=4)
+def _combine(core_raw: bytes, adapter_raw: bytes) -> Mapping:
+    """The shared core plus this workspace's declared encoding of it."""
+    core = _decode_contract(core_raw)
+    adapter = decode_adapter(adapter_raw, core)
+    return MappingProxyType({**core, "payload_encoding": adapter["payload_encoding"]})
+
+
 def load_contract(*, root: pathlib.Path = ROOT) -> Mapping:
-    """Read a bounded regular source; cached parsing is keyed by actual bytes."""
+    """Read bounded regular sources; cached parsing is keyed by actual bytes."""
     from scripts.lib.document_governance.file_access import read_bounded_regular
 
     try:
-        return _decode_contract(
-            read_bounded_regular(
-                root, pathlib.PurePosixPath(CORE_PATH), max_bytes=256 * 1024
+        return _combine(
+            *(
+                read_bounded_regular(
+                    root, pathlib.PurePosixPath(path), max_bytes=256 * 1024
+                )
+                for path in (CORE_PATH, ADAPTER_PATH)
             )
         )
     except (OSError, ValueError) as error:

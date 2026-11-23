@@ -1607,11 +1607,14 @@ class DocumentGovernanceSelectionTests(unittest.TestCase):
 class GateCrosswalkTests(unittest.TestCase):
     @staticmethod
     def copy_core_contract(root: pathlib.Path) -> None:
-        from scripts.lib.document_governance.common_document import CORE_PATH
+        from scripts.lib.document_governance.common_document import (
+            ADAPTER_PATH,
+            CORE_PATH,
+        )
 
-        target = root / CORE_PATH
-        target.parent.mkdir(parents=True)
-        target.write_bytes((ROOT / CORE_PATH).read_bytes())
+        (root / CORE_PATH).parent.mkdir(parents=True)
+        for path in (CORE_PATH, ADAPTER_PATH):
+            (root / path).write_bytes((ROOT / path).read_bytes())
 
     """QA-C05: one producer per guarantee; a leaf with no aggregate parent is
     consumed by its suite root, so `consumers` may be empty but `suites` is not."""

@@ -263,6 +263,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         }
         for relative in {
             binding["source_path"],
+            binding["payload_adapter"]["source_path"],
             *(role["source"] for role in roles.values()),
             *(
                 role["native_source"]
@@ -308,7 +309,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             ("invalid-json", "document-core-source-invalid"),
             ("invalid-payload", "document-core-source-invalid"),
             ("invalid-headings", "document-core-source-invalid"),
-            ("missing-marker", "document-core-source-invalid"),
+            ("missing-marker", "document-core-adapter-invalid"),
+            ("adapter-tampered", "document-core-adapter-changed"),
+            ("adapter-other-core", "document-core-adapter-invalid"),
             ("wrong-id", "document-core-identity"),
             ("wrong-version", "document-core-identity"),
         ):
@@ -334,18 +337,47 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 elif change == "source-tampered":
                     source.write_bytes(source.read_bytes() + b" ")
                 elif change in {
+                    "missing-marker",
+                    "adapter-tampered",
+                    "adapter-other-core",
+                }:
+                    adapter_binding = binding["payload_adapter"]
+                    adapter = root / adapter_binding["source_path"]
+                    if change == "adapter-tampered":
+                        adapter.write_bytes(adapter.read_bytes() + b" ")
+                    else:
+                        document = json.loads(adapter.read_bytes())
+                        if change == "missing-marker":
+                            document["payload_encoding"] = {}
+                        else:
+                            document["core"]["versions"] = ["9.9.9"]
+                        raw = json.dumps(document).encode()
+                        adapter.write_bytes(raw)
+                        registry = dataclasses.replace(
+                            registry,
+                            common={
+                                **registry.common,
+                                "document_core": {
+                                    **binding,
+                                    "payload_adapter": {
+                                        **adapter_binding,
+                                        "source_sha256": hashlib.sha256(
+                                            raw
+                                        ).hexdigest(),
+                                    },
+                                },
+                            },
+                        )
+                elif change in {
                     "invalid-json",
                     "invalid-payload",
                     "invalid-headings",
-                    "missing-marker",
                 }:
                     document = json.loads(source.read_bytes())
                     if change == "invalid-payload":
                         document["payload_profiles"]["task"] = {}
                     elif change == "invalid-headings":
                         document["headings"] = {"invalid": 1}
-                    elif change == "missing-marker":
-                        document["payload_encoding"] = {}
                     raw = (
                         b"{"
                         if change == "invalid-json"
@@ -374,6 +406,26 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                         },
                     )
                 self.assertIn(expected, self.common_codes(root, registry))
+
+    def test_template_guidance_must_match_the_common_section_rules(self):
+        # R02: each common H3's authoring comment is the pinned section rule.
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            registry = self.common_fixture(root)
+            source = root / registry.template_roles["sdlc/task"]["source"]
+            text = source.read_text(encoding="utf-8")
+            changed = re.sub(
+                r"(### 확인 기준\n\n<!-- 작성 규칙: ).*?( -->)",
+                r"\1Drifted local guidance.\2",
+                text,
+                count=1,
+            )
+            self.assertNotEqual(text, changed)
+            source.write_text(changed, encoding="utf-8")
+            self.assertIn(
+                "document-core-definition-guidance",
+                self.common_codes(root, registry),
+            )
 
     def test_common_core_requires_exact_profile_coverage_and_known_payload_kinds(self):
         for change in ("missing", "extra", "unknown-kind", "wrong-role"):

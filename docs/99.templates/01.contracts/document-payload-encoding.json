@@ -1,0 +1,18 @@
+{
+  "adapter_id": "HY-HOME-DOCKER-PAYLOAD-ENCODING",
+  "version": "1.0.0",
+  "authority": "Local adapter of this workspace. It owns only how a Markdown definition or output carries the common envelope; the common contract owns names, order and meaning.",
+  "core": {
+    "contract_id": "WORKSPACE-DOCUMENT-CORE",
+    "versions": [
+      "1.1.0"
+    ]
+  },
+  "marker_note": "The marker literal was fixed when this workspace first adopted the core (1.0.0). It identifies this adapter's encoding, not the current core version, so existing documents keep it unchanged.",
+  "payload_encoding": {
+    "marker": "<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->",
+    "heading_shift": 2,
+    "deep_heading_annotation": "core-payload-level",
+    "rule": "Role H2/H3 become H4/H5. Role H4/H5/H6 become valid Markdown H6 followed immediately by a separate core-payload-level:4/5/6 comment line. Only that structurally associated annotation is blanked in the line-preserving semantic view and omitted from compact role output; it never enters a heading title or anchor. Fenced, quoted and commented examples remain literal. Pre-H1 comment preambles stay above the H1. Native output assets are read separately, never wrapped."
+  }
+}

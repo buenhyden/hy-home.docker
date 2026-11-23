@@ -30,6 +30,47 @@ LOCAL_GLOSSARY = ROOT / "docs/00.workspace/01.project/glossary.md"
 
 
 class CommonDocumentContractTests(unittest.TestCase):
+    def test_shared_core_is_adopted_verbatim_and_encoding_is_local(self) -> None:
+        # R02: the four workspaces share one WORKSPACE-DOCUMENT-CORE 1.1.0; its
+        # normalized digest is the shared value, and this workspace's payload
+        # encoding lives in a local adapter pinned to that core.
+        import hashlib
+
+        from scripts.lib.document_governance import common_document
+
+        core = json.loads((ROOT / common_document.CORE_PATH).read_bytes())
+        normalized = json.dumps(
+            core, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode()
+        self.assertEqual(
+            "d9f359861a84544f8d042cb531372292af22345e61aca7c64737a9213f5373d0",
+            hashlib.sha256(normalized).hexdigest(),
+        )
+        self.assertEqual("1.1.0", core["version"])
+        self.assertNotIn("payload_encoding", core)
+        adapter = json.loads((ROOT / common_document.ADAPTER_PATH).read_bytes())
+        self.assertEqual(
+            {"contract_id": "WORKSPACE-DOCUMENT-CORE", "versions": ["1.1.0"]},
+            adapter["core"],
+        )
+        merged = common_document.load_contract()
+        # The marker is the adapter's stable encoding token: existing
+        # documents keep it unchanged.
+        self.assertEqual(
+            "<!-- document-core: WORKSPACE-DOCUMENT-CORE/1.0.0 -->",
+            merged["payload_encoding"]["marker"],
+        )
+        self.assertEqual(core["section_rules"], dict(merged["section_rules"]))
+
+    def test_an_adapter_for_another_core_version_is_refused(self) -> None:
+        from scripts.lib.document_governance import common_document
+
+        core = (ROOT / common_document.CORE_PATH).read_bytes()
+        adapter = json.loads((ROOT / common_document.ADAPTER_PATH).read_bytes())
+        adapter["core"]["versions"] = ["9.9.9"]
+        with self.assertRaises(common_document.CommonDocumentError):
+            common_document._combine(core, json.dumps(adapter).encode())
+
     def test_payload_and_language_readers_ignore_metadata_root_environment(
         self,
     ) -> None:
@@ -162,14 +203,16 @@ assert not {'yaml', 'markdown_it', 'jsonschema'} & sys.modules.keys()
 
     def test_common_contract_rejects_duplicate_json_meanings(self) -> None:
         from scripts.lib.document_governance.common_document import (
+            ADAPTER_PATH,
             CORE_PATH,
             CommonDocumentError,
             load_contract,
         )
 
         original = (ROOT / CORE_PATH).read_text(encoding="utf-8")
+        version = json.loads(original)["version"]
         duplicated = original.replace(
-            '"version": "1.0.0"', '"version": "0.9.0", "version": "1.0.0"', 1
+            f'"version": "{version}"', f'"version": "0.9.0", "version": "{version}"', 1
         )
         self.assertNotEqual(original, duplicated)
         with tempfile.TemporaryDirectory() as directory:
@@ -177,6 +220,7 @@ assert not {'yaml', 'markdown_it', 'jsonschema'} & sys.modules.keys()
             source = root / CORE_PATH
             source.parent.mkdir(parents=True)
             source.write_text(duplicated, encoding="utf-8")
+            (root / ADAPTER_PATH).write_bytes((ROOT / ADAPTER_PATH).read_bytes())
             with self.assertRaises(CommonDocumentError):
                 load_contract(root=root)
 

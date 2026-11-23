@@ -422,6 +422,14 @@ def _common_definition_findings(
         findings.append(
             Finding(source, "document-core-definition-envelope", template_id)
         )
+    # Each common H3 carries its shared section rule as authoring guidance.
+    lines = text.splitlines()
+    for index, level, title in headings:
+        if level != 3 or title not in core["section_rules"]:
+            continue
+        following = next((line for line in lines[index + 1 :] if line.strip()), "")
+        if following != f"<!-- 작성 규칙: {core['section_rules'][title]} -->":
+            findings.append(Finding(source, "document-core-definition-guidance", title))
     return findings
 
 
@@ -465,9 +473,11 @@ def _common_core_findings(
 ) -> list[Finding]:
     """Validate the actual pinned common core and complete explicit bindings."""
     from scripts.lib.document_governance.common_document import (
+        ADAPTER_PATH,
         CORE_PATH,
         CommonDocumentError,
         _decode_contract,
+        decode_adapter,
     )
 
     binding = registry.common.get("document_core")
@@ -497,11 +507,47 @@ def _common_core_findings(
         binding.get("contract_version"),
     ):
         return [Finding(source, "document-core-identity", "id or version differs")]
+    # The local adapter encodes the shared envelope; only a pairing it
+    # declares for this exact core version is interpreted.
+    adapter_binding = binding.get("payload_adapter")
+    adapter_source = (
+        adapter_binding.get("source_path")
+        if isinstance(adapter_binding, Mapping)
+        else None
+    )
+    if adapter_source != ADAPTER_PATH:
+        return [Finding("common", "document-core-adapter-invalid", "adapter binding")]
+    try:
+        adapter_raw = read_bounded_regular(
+            root,
+            pathlib.PurePosixPath(adapter_source),
+            max_bytes=_COMMON_DOCUMENT_MAX_BYTES,
+        )
+    except (OSError, OperationsAuthorityError) as error:
+        return [Finding(adapter_source, "document-core-adapter-unreadable", str(error))]
+    if hashlib.sha256(adapter_raw).hexdigest() != adapter_binding.get("source_sha256"):
+        return [
+            Finding(
+                adapter_source,
+                "document-core-adapter-changed",
+                "sha256 differs from Registry",
+            )
+        ]
+    try:
+        adapter = decode_adapter(adapter_raw, core)
+    except CommonDocumentError as error:
+        return [Finding(adapter_source, "document-core-adapter-invalid", str(error))]
+    if (adapter["adapter_id"], adapter["version"]) != (
+        adapter_binding.get("adapter_id"),
+        adapter_binding.get("adapter_version"),
+    ):
+        return [
+            Finding(adapter_source, "document-core-adapter-invalid", "identity differs")
+        ]
+    core = {**core, "payload_encoding": adapter["payload_encoding"]}
     if (
         not core["headings"]
         or not core["payload_profiles"]
-        or core["payload_encoding"].get("marker")
-        != f"<!-- document-core: {core['contract_id']}/{core['version']} -->"
         or any(
             not isinstance(payload, Mapping)
             or not isinstance(payload.get("required_content"), (tuple, list))
