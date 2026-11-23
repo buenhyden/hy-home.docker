@@ -681,8 +681,11 @@
         "tests.lib.hooks.test_session_capture",
         "tests.validation.test_session_analysis",
         "tests.validation.test_task_forecast",
+        "tests.lib.ops.test_dispatch_process",
         "tests.validation.test_work_dispatch",
         "tests.validation.test_observe",
+        "--optional-runtime-skips",
+        "tests.lib.ops.test_dispatch_process.NativeShellBoundaryTests",
         "-v"
       ],
       "cwd": ".",
@@ -1049,6 +1052,7 @@
         "tests.lib.ops.test_secret_catalog",
         "tests.validation.test_secret_catalog_contract",
         "tests.lib.ops.test_secret_structure",
+        "tests.lib.ops.test_environment_admission",
         "tests.lib.ops.test_compose_start",
         "tests.lib.ops.test_compose_observation",
         "tests.validation.test_p07_quality_metrics",
@@ -1688,6 +1692,26 @@
       }
     ],
     "changed_path_rules": [
+      {
+        "prefixes": [
+          "scripts/lib/ops/dispatch_process.py",
+          "tests/lib/ops/test_dispatch_process.py"
+        ],
+        "suites": [
+          "agent-governance",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/environment_admission.py",
+          "tests/lib/ops/test_environment_admission.py"
+        ],
+        "suites": [
+          "agent-governance",
+          "repository-integrity"
+        ]
+      },
       {
         "prefixes": [
           ".agents/",
@@ -2378,6 +2402,26 @@
       }
     ],
     "changed_root_rules": [
+      {
+        "prefixes": [
+          "scripts/lib/ops/dispatch_process.py",
+          "tests/lib/ops/test_dispatch_process.py"
+        ],
+        "root_gate_ids": [
+          "leaf.compose-baseline-regressions",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/environment_admission.py",
+          "tests/lib/ops/test_environment_admission.py"
+        ],
+        "root_gate_ids": [
+          "leaf.compose-baseline-regressions",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
       {
         "prefixes": [
           "scripts/lib/agent_governance/",

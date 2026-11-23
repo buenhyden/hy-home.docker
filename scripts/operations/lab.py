@@ -37,6 +37,7 @@ import argparse
 import datetime as dt
 import functools
 import json
+import math
 import os
 import pathlib
 import re
@@ -44,9 +45,14 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import time
+import uuid
+from types import SimpleNamespace
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 LAB_PROJECT_PREFIX = "hy-home-lab-"
 LEASE = re.compile(r"^([1-9][0-9]*)([mh])$")
 SHARED_PUBLIC_INPUTS = frozenset(
@@ -87,12 +93,39 @@ def read_env(path: pathlib.Path) -> dict[str, str]:
     return values | {k: v for k, v in os.environ.items() if k.startswith("LAB_")}
 
 
-def run(command: list[str], **kwargs) -> subprocess.CompletedProcess:
+def run(
+    command: list[str], *, admission=None, token=None, **kwargs
+) -> subprocess.CompletedProcess:
     # No stdin: a Compose prompt (such as recreating a changed volume) must
     # fail the command instead of waiting forever.
     kwargs.setdefault("stdin", subprocess.DEVNULL)
+    kwargs.setdefault("timeout", 30)
+    environment = {
+        "PATH": "/usr/bin:/bin",
+        "HOME": str(pathlib.Path.home()),
+        "LANG": "C.UTF-8",
+        **{key: value for key, value in os.environ.items() if key.startswith("LAB_")},
+    }
+    kwargs.setdefault("env", environment)
+    binary = "/usr/bin/docker" if command[0] == "docker" else command[0]
+    argv = (
+        command
+        if binary in {"git", "/usr/bin/git"}
+        else [binary, "--host", "unix:///var/run/docker.sock", *command[1:]]
+    )
+    if admission is not None:
+        from scripts.lib.ops.dispatch_process import run_registered_docker
+
+        return run_registered_docker(
+            argv,
+            cwd=ROOT,
+            timeout=kwargs["timeout"],
+            admission=admission,
+            token=token,
+            env=kwargs["env"],
+        )
     return subprocess.run(
-        command, cwd=ROOT, text=True, capture_output=True, check=False, **kwargs
+        argv, cwd=ROOT, text=True, capture_output=True, check=False, **kwargs
     )
 
 
@@ -685,8 +718,11 @@ def running_containers(docker: str) -> list[dict]:
     inspected = run([docker, "inspect", *ids])
     if inspected.returncode != 0:
         raise LabError(f"docker inspect failed: {inspected.stderr.strip()}", 1)
+    records = json.loads(inspected.stdout)
+    if not isinstance(records, list) or len(records) != len(ids):
+        raise LabError("running container inventory is incomplete")
     containers = []
-    for item in json.loads(inspected.stdout):
+    for item in records:
         host = item.get("HostConfig") or {}
         labels = (item.get("Config") or {}).get("Labels") or {}
         ports = {
@@ -704,6 +740,8 @@ def running_containers(docker: str) -> list[dict]:
                 "cpus": (host.get("NanoCpus") or 0) / 1e9,
                 "memory": host.get("Memory") or 0,
                 "running": (item.get("State") or {}).get("Running") is True,
+                "status": (item.get("State") or {}).get("Status"),
+                "exit_code": (item.get("State") or {}).get("ExitCode"),
             }
         )
     return containers
@@ -1551,6 +1589,156 @@ def ledger_dir(env: dict[str, str]) -> pathlib.Path:
     return pathlib.Path(data) / ".ledger"
 
 
+def _disk_observation(paths):
+    usages = []
+    for source in paths:
+        path = pathlib.Path(source)
+        while not path.exists() and path != path.parent:
+            path = path.parent
+        usages.append(shutil.disk_usage(path))
+    reserve = PROMOTION_RESERVE["disk_percent"] / 100
+    ceiling = math.floor(min(u.total * (1 - reserve) for u in usages))
+    headroom = min(u.free - u.total * reserve for u in usages)
+    # Every reservation must fit the tightest filesystem's own headroom.
+    # Negative headroom remains an over-budget fact rather than free space.
+    return ceiling, max(0, math.ceil(ceiling - headroom))
+
+
+def execution_admission(root=None, *, args=None, env=None, recovery=False):
+    """One host admission namespace for direct starts and dispatch workers."""
+    from scripts.lib.ops.environment_admission import (
+        host_admission,
+        host_state_directory,
+        recovery_admission,
+    )
+
+    root = pathlib.Path(root or ROOT).resolve()
+    if root != ROOT.resolve():
+        raise LabError("execution admission must use this repository root")
+    args = args or SimpleNamespace(
+        docker="/usr/bin/docker",
+        env_file=root / "labs/.env",
+        root_env_file=root / ".env",
+    )
+    identity = run([args.docker, "info", "--format", "{{.ID}}"])
+    daemon_id = identity.stdout.strip()
+    if identity.returncode or not daemon_id:
+        raise LabError("Docker daemon identity unavailable")
+    if recovery:
+        return recovery_admission(root, daemon_id=daemon_id)
+    env = read_env(args.env_file) if env is None else env
+    try:
+        cpus = float(env["LAB_HOST_BUDGET_CPUS"])
+        memory = float(env["LAB_HOST_BUDGET_MEMORY_MIB"]) * MIB_BYTES
+        runtime = int(env.get("LAB_MAX_LEASE_MINUTES") or 1440) * 60
+        maximum = int(env.get("LAB_MAX_CONCURRENT") or 1)
+    except (KeyError, ValueError) as exc:
+        raise LabError("configured finite host budgets are required") from exc
+    if not all(math.isfinite(x) and x > 0 for x in (cpus, memory, runtime, maximum)):
+        raise LabError("configured finite host budgets are required")
+    data_root = docker_root(args.docker)
+    model = render(args.docker, args.root_env_file, None)
+    inventory = tuple(sorted(model.get("services") or {}))
+    if not inventory:
+        raise LabError("actual product inventory is empty")
+    common = run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"])
+    if common.returncode or not os.path.isabs(common.stdout.strip()):
+        raise LabError("capture/common directory unavailable")
+    paths = [
+        str(root),
+        str(host_state_directory()),
+        common.stdout.strip(),
+        data_root,
+        model.get("x-hyhome-data-root"),
+    ]
+    if env.get("LAB_DATA_DIR"):
+        paths.append(env["LAB_DATA_DIR"])
+    if any(not isinstance(p, str) or not os.path.isabs(p) for p in paths):
+        raise LabError("absolute data and Docker roots are required")
+    disk_limit, _ = _disk_observation(paths)
+
+    def observe():
+        current = render(args.docker, args.root_env_file, None)
+        if tuple(sorted(current.get("services") or {})) != inventory:
+            raise LabError("product inventory changed")
+        running = running_containers(args.docker)
+        known = {current["name"]: footprint(current)} | lab_models(
+            args.docker, args.env_file, running
+        )
+        summed = reservation_sum(running, known)
+        if summed["failed"] or summed["unmeasured"]:
+            raise LabError("running resource accounting is incomplete")
+        _, used = _disk_observation(paths)
+        active = [c for c in running if c.get("running", True)]
+        if any(c["project"] and (c["cpus"] <= 0 or c["memory"] <= 0) for c in active):
+            raise LabError("running Compose resource limits are missing")
+        resources = {
+            item
+            for c in running
+            for item in (
+                f"container:{c['name']}",
+                *(f"port:{p}" for p in c.get("ports", ()) if c.get("running", True)),
+            )
+        }
+        return {
+            "services": sorted(
+                {c["service"] for c in active if c["project"] == current["name"]}
+            ),
+            "budget": {
+                "cpus": summed["cpus"] + PROMOTION_EXTERNAL_ALLOWANCE["cpus"],
+                "memory_bytes": summed["memory"]
+                + PROMOTION_EXTERNAL_ALLOWANCE["memory_mib"] * MIB_BYTES,
+                "disk_bytes": used,
+            },
+            "resources": sorted(resources),
+            "kind_counts": {
+                "lab": len(
+                    {
+                        c["project"]
+                        for c in active
+                        if c["project"].startswith(LAB_PROJECT_PREFIX)
+                    }
+                )
+            },
+        }
+
+    return host_admission(
+        root,
+        daemon_id=daemon_id,
+        inventory=inventory,
+        limits={
+            "cpus": cpus,
+            "memory_bytes": memory,
+            "disk_bytes": disk_limit,
+            "runtime_seconds": runtime,
+        },
+        observe=observe,
+        kind_limits={"lab": maximum, "worker": 2},
+    )
+
+
+def _lab_reservation(lab, manifest, seconds):
+    from scripts.lib.ops.dispatch_process import (
+        CONTROLLER_CPUS,
+        CONTROLLER_DISK_BYTES,
+        CONTROLLER_MEMORY_BYTES,
+    )
+
+    try:
+        declared = manifest["resources"]["disk_gib"]
+        disk = [float(declared[key]) for key in ("data", "images")]
+    except (KeyError, TypeError, ValueError) as exc:
+        raise LabError("LAB data/images disk estimate is required") from exc
+    if any(not math.isfinite(n) or n < 0 for n in disk):
+        raise LabError("LAB disk estimate must be finite and nonnegative")
+    return {
+        "cpus": lab["reserved_cpus"] + CONTROLLER_CPUS,
+        "memory_bytes": lab["reserved_memory"] + CONTROLLER_MEMORY_BYTES,
+        "disk_bytes": math.ceil(sum(disk) * 2**30) + CONTROLLER_DISK_BYTES,
+        "runtime_seconds": seconds,
+    }
+
+
 def stale_volumes(docker: str, selected: dict[str, dict]) -> list[str]:
     """A kept volume record that points at another data root.
 
@@ -1672,6 +1860,11 @@ def wait_ready(docker: str, project: str, timeout: int) -> str | None:
             if state.get("Status") == "exited":
                 if state.get("ExitCode") != 0:
                     return f"{name} exited {state.get('ExitCode')}"
+                if restart != "no":
+                    return (
+                        f"{name} exited 0 with restart policy "
+                        f"{restart or 'unspecified'}"
+                    )
             elif health == "unhealthy":
                 return f"{name} is unhealthy"
             elif (
@@ -1688,10 +1881,88 @@ def wait_ready(docker: str, project: str, timeout: int) -> str | None:
 
 
 def write_entry(path: pathlib.Path, entry: dict) -> None:
-    path.write_text(json.dumps(entry, indent=2) + "\n", encoding="utf-8")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary = tempfile.mkstemp(prefix=".intent-", dir=path.parent)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(json.dumps(entry, indent=2) + "\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+        directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
 
 
-def cmd_up(args, env, *, wait: bool = True) -> int:
+TOKEN_LABEL = "hy-home.execution.token"
+
+
+def _owned_project(args, entry, *, absent=False):
+    """Inspect exact project resources before cleanup; an unknown read fails."""
+    token, project = entry.get("admission_token"), entry.get("project")
+    if (
+        not token
+        or not isinstance(project, str)
+        or not project.startswith(LAB_PROJECT_PREFIX)
+    ):
+        raise LabError("LAB cleanup needs its admission token and project")
+    found = []
+    for kind, command in (
+        ("container", [args.docker, "ps", "--all", "--quiet"]),
+        ("network", [args.docker, "network", "ls", "--quiet"]),
+    ):
+        listed = run(
+            [*command, "--filter", f"label=com.docker.compose.project={project}"]
+        )
+        if listed.returncode:
+            raise LabError("owned project inventory unavailable", 1)
+        ids = listed.stdout.split()
+        if not ids:
+            continue
+        inspected = (
+            run([args.docker, kind, "inspect", *ids])
+            if kind == "network"
+            else run([args.docker, "inspect", *ids])
+        )
+        if inspected.returncode:
+            raise LabError("owned resource identity unavailable", 1)
+        records = json.loads(inspected.stdout)
+        if not isinstance(records, list) or len(records) != len(ids):
+            raise LabError("incomplete owned resource inventory", 1)
+        for record in records:
+            labels = (
+                record.get("Labels")
+                if kind == "network"
+                else (record.get("Config") or {}).get("Labels")
+            )
+            if (
+                not isinstance(labels, dict)
+                or labels.get(TOKEN_LABEL) != token
+                or labels.get("com.docker.compose.project") != project
+            ):
+                raise LabError("project contains a foreign or unknown resource")
+        found += ids
+    return not found if absent else True
+
+
+def _owned_overlay(ledger, entry, model):
+    labels = {TOKEN_LABEL: entry["admission_token"]}
+    overlay = {
+        "services": {name: {"labels": labels} for name in model.get("services", {})},
+        "networks": {name: {"labels": labels} for name in model.get("networks", {})},
+        "volumes": {name: {"labels": labels} for name in model.get("volumes", {})},
+    }
+    path = ledger / f"{entry['lab']}.{entry['admission_token']}.override.json"
+    write_entry(path, overlay)
+    return path
+
+
+def cmd_up(args, env, *, wait: bool = True, operation_id=None) -> int:
     match = LEASE.fullmatch(args.lease)
     if not match or not args.purpose.strip():
         raise LabError("give --purpose and a --lease such as 30m or 4h")
@@ -1705,15 +1976,20 @@ def cmd_up(args, env, *, wait: bool = True) -> int:
         print(json.dumps(report, indent=2))
         return 3
     lab = selected[args.lab]
-    data_root = pathlib.Path(os.path.realpath(ledger.parent))
-    for path in lab["state"]:
-        if pathlib.Path(path).is_relative_to(data_root):
-            state_dir = pathlib.Path(path)
-            if not state_dir.exists():
-                state_dir.mkdir(parents=True)
-                # Group-writable whatever the umask: LAB processes run as their
-                # image user with the operator's group (SECRETS_GID).
-                state_dir.chmod(0o770)
+    admission = execution_admission(args=args, env=env)
+    claimed = admission.admit(
+        services=(),
+        budget=_lab_reservation(lab, load_manifest(args.lab), minutes * 60),
+        kind="lab",
+        project=lab["project"],
+        resources=[
+            f"project:{lab['project']}",
+            *(f"container:{x}" for x in lab["containers"]),
+            *(f"network:{x}" for x in lab["networks"]),
+            *(f"port:{x}" for x in lab["ports"]),
+            *(f"state:{x}" for x in lab["state"]),
+        ],
+    )
     now = dt.datetime.now(dt.UTC)
     entry = {
         "lab": args.lab,
@@ -1723,23 +1999,70 @@ def cmd_up(args, env, *, wait: bool = True) -> int:
         "started_at": now.isoformat(),
         "expires_at": (now + dt.timedelta(minutes=minutes)).isoformat(),
         "state": "starting",
+        "admission_token": claimed["token"],
+        "workspace_id": admission.workspace_id,
+        "binding_id": admission.binding_id,
+        "daemon_id": admission.daemon_id,
+        "operation_id": operation_id or uuid.uuid4().hex,
         "cleanup": {
             "containers": sorted(lab["containers"]),
             "networks": sorted(lab["networks"]),
             "paths": sorted(lab["state"]),
         },
     }
-    ledger.mkdir(parents=True, exist_ok=True)
     target = ledger / f"{args.lab}.json"
+    admission.update(
+        claimed["token"], entry=entry, entry_path=str(target), start_complete=False
+    )
+    from scripts.lib.ops.dispatch_process import prepare_registered_docker
+
+    operation_dir = prepare_registered_docker(admission, claimed["token"])
+    entry = {
+        **entry,
+        "operation_record": {
+            "token": claimed["token"],
+            "metadata": {"docker_operation_dir": str(operation_dir)},
+        },
+    }
+    admission.update(claimed["token"], entry=entry)
+    ledger.mkdir(parents=True, exist_ok=True)
     write_entry(target, entry)
-    command = [*compose_command(args, args.lab, lab["project"]), "up", "-d"]
-    result = run(command)
+    data_root = pathlib.Path(os.path.realpath(ledger.parent))
+    for path in lab["state"]:
+        if pathlib.Path(path).is_relative_to(data_root):
+            state_dir = pathlib.Path(path)
+            if not state_dir.exists():
+                state_dir.mkdir(parents=True)
+                state_dir.chmod(0o770)
+    overlay = _owned_overlay(
+        ledger, entry, render(args.docker, args.env_file, lab_file(args.lab))
+    )
+    admission.update(claimed["token"], entry_path=str(target), overlay=str(overlay))
+    command = [
+        *compose_command(args, args.lab, lab["project"]),
+        "-f",
+        str(overlay),
+        "up",
+        "-d",
+    ]
+    admission.attach(claimed["token"], identity=None, resource_type="compose")
+    try:
+        result = run(
+            command,
+            timeout=min(minutes * 60, 600),
+            admission=admission,
+            token=claimed["token"],
+        )
+    except (subprocess.TimeoutExpired, KeyboardInterrupt):
+        write_entry(target, {**entry, "state": "failed"})
+        raise
     reason = result.stderr.strip() if result.returncode != 0 else None
     # A job LAB may finish before it reports healthy, so `run` does not wait.
     if reason is None and wait:
         timeout = int(env.get("LAB_READY_TIMEOUT_SECONDS") or 600)
         reason = wait_ready(args.docker, lab["project"], timeout)
     entry["state"] = "running" if reason is None else "failed"
+    admission.update(claimed["token"], start_complete=True)
     write_entry(target, entry)
     print(json.dumps({k: entry[k] for k in ("lab", "state", "expires_at")}))
     if reason is not None:
@@ -1748,24 +2071,90 @@ def cmd_up(args, env, *, wait: bool = True) -> int:
     return 0
 
 
-def stop(args, env, name: str) -> int:
-    target = ledger_dir(env) / f"{name}.json"
-    if not target.is_file():
-        raise LabError(f"no ledger entry for {name}; it was not started by lab.py")
-    entry = json.loads(target.read_text(encoding="utf-8"))
+def stop(args, env, name: str, *, expected_token=None) -> int:
+    from scripts.lib.ops.dispatch_process import cleanup_registered_docker
+
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", name):
+        raise LabError("invalid LAB name")
+    admission = execution_admission(args=args, recovery=True)
+    candidates = [
+        r
+        for r in admission.records()
+        if r.get("workspace_id") == admission.workspace_id
+        and r.get("binding_id") == admission.binding_id
+        and r.get("daemon_id") == admission.daemon_id
+        and r.get("metadata", {}).get("entry", {}).get("lab") == name
+    ]
+    target = ledger_dir(env) / f"{name}.json" if env.get("LAB_DATA_DIR") else None
+    if target is None or not target.is_file():
+        if len(candidates) != 1:
+            raise LabError(f"no unique owned intent for {name}")
+        entry = candidates[0]["metadata"]["entry"]
+        target = pathlib.Path(candidates[0]["metadata"]["entry_path"])
+    else:
+        entry = json.loads(target.read_text(encoding="utf-8"))
     if not str(entry.get("project", "")).startswith(LAB_PROJECT_PREFIX):
         raise LabError(f"ledger for {name} names a non-LAB project")
+    if expected_token is not None and entry.get("admission_token") != expected_token:
+        raise LabError("LAB cleanup token changed")
+    records = [r for r in candidates if r["token"] == entry.get("admission_token")]
+    if (
+        not records
+        and entry.get("state") == "stopped"
+        and _owned_project(args, entry, absent=True)
+    ):
+        operation = entry.get("operation_record")
+        if (
+            operation
+            and pathlib.Path(operation["metadata"]["docker_operation_dir"]).exists()
+            and not cleanup_registered_docker(operation)
+        ):
+            raise LabError("closed controller files could not be cleaned", 1)
+        return 0
+    if len(records) != 1 or records[0].get("project") != entry["project"]:
+        raise LabError("LAB cleanup is not owned by this admission")
+    from scripts.lib.ops.dispatch_process import verify_registered_docker_absent
+    from scripts.lib.ops.environment_admission import process_status
+
+    if (
+        not records[0].get("metadata", {}).get("start_complete")
+        and expected_token is None
+        and process_status(records[0]["owner"]) != "absent"
+    ):
+        raise LabError(
+            "start controller is still live or unknown; reservation retained"
+        )
+    if not verify_registered_docker_absent(records[0], stop=True):
+        raise LabError(
+            "Compose controller is still live or unknown; reservation retained"
+        )
+    _owned_project(args, entry)
     # By project label only (no render, so lost inputs cannot block a stop),
     # and no -v: data and volumes stay for review.
     command = [args.docker, "compose", "-p", entry["project"], "down"]
     command += ["--timeout", "30"]
-    result = run(command)
-    entry["state"] = "stopped" if result.returncode == 0 else "stop-failed"
+    result = run(
+        command, timeout=60, admission=admission, token=entry["admission_token"]
+    )
+    gone = result.returncode == 0 and _owned_project(args, entry, absent=True)
+    released = gone and admission.release(
+        entry["admission_token"],
+        verify=lambda record: (
+            verify_registered_docker_absent(record)
+            and _owned_project(args, entry, absent=True)
+        ),
+    )
+    entry["state"] = "stopped" if released else "stop-failed"
     entry["stopped_at"] = dt.datetime.now(dt.UTC).isoformat()
     write_entry(target, entry)
-    if result.returncode != 0:
+    if not released:
         print(result.stderr.strip(), file=sys.stderr)
         return 1
+    if not cleanup_registered_docker(records[0]):
+        raise LabError("closed controller files could not be cleaned", 1)
+    overlay = target.parent / f"{name}.{entry['admission_token']}.override.json"
+    if overlay.is_file() and not overlay.is_symlink():
+        overlay.unlink()
     return 0
 
 
@@ -1773,7 +2162,17 @@ def _cancel(signum, frame) -> None:
     raise KeyboardInterrupt
 
 
-def supervise(docker: str, project: str, deadline: int, grace: int) -> tuple[str, int]:
+def supervise(
+    docker: str,
+    project: str,
+    deadline: int,
+    grace: int,
+    *,
+    admission,
+    token,
+    stop_command,
+    before_stop,
+) -> tuple[str, int]:
     """Wait for the project's one job container; stop it at the deadline.
 
     A deadline or SIGTERM/SIGINT stops the job with SIGTERM and `grace`
@@ -1782,27 +2181,60 @@ def supervise(docker: str, project: str, deadline: int, grace: int) -> tuple[str
     the job's own exit code, 124 for the deadline or 130 for a cancel.
     """
     listed = run(
-        [docker, "ps", "--all", "--quiet",
+        [docker, "ps", "--all", "--quiet", "--no-trunc",
          "--filter", f"label=com.docker.compose.project={project}",
-         "--filter", "label=hy-home.lab.job=true"]
+         "--filter", "label=hy-home.lab.job=true", "--filter", f"label={TOKEN_LABEL}={token}"]
     )  # fmt: skip
     jobs = listed.stdout.split()
     if listed.returncode != 0 or len(jobs) != 1:
         raise LabError(f"{project} has no single job container", 1)
     previous = signal.signal(signal.SIGTERM, _cancel)
+    before_stop()
+    expires = time.monotonic() + deadline
     try:
         try:
-            waited = run([docker, "wait", jobs[0]], timeout=deadline)
-            if waited.returncode != 0 or not waited.stdout.strip().isdigit():
-                raise LabError("docker wait failed", 1)
-            code = int(waited.stdout)
-            return ("completed" if code == 0 else "failed"), code
+            while True:
+                remaining = max(0, expires - time.monotonic())
+                if not remaining:
+                    outcome, code = "deadline_exceeded", 124
+                    break
+                waited = run(
+                    [docker, "wait", jobs[0]],
+                    timeout=min(remaining, 600),
+                    admission=admission,
+                    token=token,
+                )
+                if waited.returncode == 124:
+                    continue
+                if waited.returncode:
+                    raise LabError("docker wait failed", 1)
+                if waited.stdout.strip().isdigit():
+                    code = int(waited.stdout)
+                else:
+                    state = run(
+                        [docker, "inspect", "--format", "{{json .State}}", jobs[0]]
+                    )
+                    value = json.loads(state.stdout)
+                    if (
+                        state.returncode
+                        or value.get("Status") != "exited"
+                        or type(value.get("ExitCode")) is not int
+                    ):
+                        raise LabError("job exit status unavailable", 1)
+                    code = value["ExitCode"]
+                return ("completed" if code == 0 else "failed"), code
         except subprocess.TimeoutExpired:
             outcome, code = "deadline_exceeded", 124
         except KeyboardInterrupt:
             outcome, code = "cancelled", 130
         try:
-            run([docker, "stop", "--time", str(grace), jobs[0]], timeout=grace + 30)
+            before_stop()
+            run(
+                [*stop_command, "stop", "--timeout", str(grace)],
+                timeout=grace + 30,
+                admission=admission,
+                token=token,
+            )
         except subprocess.TimeoutExpired:
             pass  # the caller's `down` still removes the project
         return outcome, code
@@ -1817,20 +2249,40 @@ def cmd_run(args, env) -> int:
         raise LabError("give --lease and --deadline such as 30m")
     seconds = {"m": 60, "h": 3600}
     deadline_seconds = int(deadline[1]) * seconds[deadline[2]]
-    if deadline_seconds > int(lease[1]) * seconds[lease[2]] or args.grace < 1:
-        raise LabError("the deadline must fit inside the lease")
+    if (
+        deadline_seconds > int(lease[1]) * seconds[lease[2]]
+        or not 1 <= args.grace <= 570
+    ):
+        raise LabError(
+            "the deadline must fit inside the lease and grace must be 1..570s"
+        )
     target = ledger_dir(env) / f"{args.lab}.json"
-    before = target.stat().st_mtime_ns if target.exists() else None
+    operation_id = uuid.uuid4().hex
     outcome, code = "failed", 1
     # Installed before anything starts, so a SIGTERM during `up` still stops
     # the project below instead of leaving it unsupervised.
     previous = signal.signal(signal.SIGTERM, _cancel)
     try:
-        code = cmd_up(args, env, wait=False)
+        code = cmd_up(args, env, wait=False, operation_id=operation_id)
         if code == 0:
             entry = json.loads(target.read_text(encoding="utf-8"))
+            admission = execution_admission(args=args, recovery=True)
+            overlay = (
+                target.parent / f"{args.lab}.{entry['admission_token']}.override.json"
+            )
             outcome, code = supervise(
-                args.docker, entry["project"], deadline_seconds, args.grace
+                args.docker,
+                entry["project"],
+                deadline_seconds,
+                args.grace,
+                admission=admission,
+                token=entry["admission_token"],
+                stop_command=[
+                    *compose_command(args, args.lab, entry["project"]),
+                    "-f",
+                    str(overlay),
+                ],
+                before_stop=lambda: _owned_project(args, entry),
             )
         else:
             outcome = "start_failed"
@@ -1839,8 +2291,15 @@ def cmd_run(args, env) -> int:
     finally:
         signal.signal(signal.SIGTERM, previous)
         # Stop only a project this call recorded; a refused start writes none.
-        started = target.exists() and target.stat().st_mtime_ns != before
-        stopped = stop(args, env, args.lab) if started else 0
+        entry = (
+            json.loads(target.read_text(encoding="utf-8")) if target.is_file() else {}
+        )
+        started = entry.get("operation_id") == operation_id
+        stopped = (
+            stop(args, env, args.lab, expected_token=entry["admission_token"])
+            if started
+            else 0
+        )
         if started:
             entry = json.loads(target.read_text(encoding="utf-8"))
             entry.update(
@@ -1887,19 +2346,77 @@ def entries(env) -> list[dict]:
     return [
         json.loads(path.read_text(encoding="utf-8"))
         for path in sorted(directory.glob("*.json"))
+        if not path.name.endswith(".override.json")
     ]
 
 
 def cmd_reap(args, env) -> int:
+    from scripts.lib.ops.environment_admission import process_status
+
     now = dt.datetime.now(dt.UTC)
     code = 0
-    for entry in entries(env):
+    recorded = (
+        {
+            entry["admission_token"]: entry
+            for entry in entries(env)
+            if entry.get("admission_token")
+        }
+        if env.get("LAB_DATA_DIR")
+        else {}
+    )
+    admission = execution_admission(args=args, recovery=True)
+    owned = []
+    for record in admission.records():
+        if (
+            record.get("workspace_id") == admission.workspace_id
+            and record.get("binding_id") == admission.binding_id
+            and record.get("daemon_id") == admission.daemon_id
+            and record.get("kind") == "lab"
+        ):
+            owned.append(record)
+            entry = record.get("metadata", {}).get("entry")
+            if entry and record["token"] not in recorded:
+                recorded[record["token"]] = entry
+            elif not entry:
+                # Before this consumer binds entry/opdir there can be no
+                # Docker effect. Still verify project absence and dead owner.
+                if record["metadata"] or process_status(record["owner"]) != "absent":
+                    code = max(code, 1)
+                    continue
+                probe = {
+                    "admission_token": record["token"],
+                    "project": record["project"],
+                }
+                try:
+                    released = admission.release(
+                        record["token"],
+                        verify=lambda row, probe=probe: _owned_project(
+                            args, probe, absent=True
+                        ),
+                    )
+                    code = max(code, 0 if released else 1)
+                except LabError:
+                    code = max(code, 1)
+    tokens = {record["token"] for record in owned}
+    recorded = {
+        token: entry
+        for token, entry in recorded.items()
+        if token in tokens
+        or (
+            entry.get("state") == "stopped"
+            and entry.get("workspace_id") == admission.workspace_id
+            and entry.get("binding_id") == admission.binding_id
+            and entry.get("daemon_id") == admission.daemon_id
+        )
+    }
+    for entry in recorded.values():
         expired = dt.datetime.fromisoformat(entry["expires_at"]) <= now
         if expired and entry["state"] in {
             "starting",
             "running",
             "failed",
             "stop-failed",
+            "stopped",
         }:
             code = max(code, stop(args, env, entry["lab"]))
     return code

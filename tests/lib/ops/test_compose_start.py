@@ -59,6 +59,15 @@ class ComposeStartTests(unittest.TestCase):
         )
         self.inspect.start()
         self.addCleanup(self.inspect.stop)
+        admission = mock.Mock()
+        admission.release.return_value = True
+        self.admission = mock.patch.object(
+            compose_start,
+            "_operating_admission",
+            return_value=(admission, {"token": "fixture-start"}, mock.Mock()),
+        )
+        self.admission.start()
+        self.addCleanup(self.admission.stop)
 
     def plan(self, mode, values, expected=None):
         return compose_start.create_plan(
@@ -284,6 +293,286 @@ class ComposeStartTests(unittest.TestCase):
         self.assertNotIn("DOCKER_HOST", env)
         self.assertNotIn("SECRET_VALUE", env)
 
+    def test_p07_up_reserves_before_start_and_verifies_handoff(self):
+        plan = self.plan("target", ["db"])
+        admission, verifier = mock.Mock(), mock.Mock()
+        claimed = {"token": "owned-start"}
+
+        def start(*args, **kwargs):
+            admission.attach.assert_called_once_with(
+                "owned-start", identity=None, resource_type="operating-start"
+            )
+            return mock.Mock(returncode=0)
+
+        with mock.patch.object(
+            compose_start,
+            "_operating_admission",
+            return_value=(admission, claimed, verifier),
+            create=True,
+        ):
+            self.assertEqual(
+                "STARTED",
+                compose_start.execute_plan(self.root, plan, runner=start)["result"],
+            )
+        admission.release.assert_called_once_with("owned-start", verify=verifier)
+
+    def test_closed_controller_cleanup_failure_does_not_claim_start_failed(self):
+        from scripts.lib.ops import dispatch_process
+
+        plan = self.plan("target", ["db"])
+        admission = mock.Mock()
+        admission.release.return_value = True
+        with (
+            mock.patch.object(
+                compose_start,
+                "_operating_admission",
+                return_value=(admission, {"token": "owned-start"}, mock.Mock()),
+            ),
+            mock.patch.object(
+                dispatch_process,
+                "run_registered_docker",
+                return_value=mock.Mock(returncode=0),
+            ),
+            mock.patch.object(
+                dispatch_process, "cleanup_registered_docker", return_value=False
+            ),
+        ):
+            result = compose_start.execute_plan(self.root, plan)
+        self.assertEqual("STARTED", result["result"])
+        self.assertFalse(result["recovery_required"])
+        self.assertTrue(result["cleanup_pending"])
+
+    def test_p07_partial_or_unknown_start_keeps_reservation(self):
+        plan = self.plan("target", ["db"])
+        admission = mock.Mock()
+        with mock.patch.object(
+            compose_start,
+            "_operating_admission",
+            return_value=(admission, {"token": "owned-start"}, mock.Mock()),
+            create=True,
+        ):
+            result = compose_start.execute_plan(
+                self.root, plan, runner=mock.Mock(return_value=mock.Mock(returncode=1))
+            )
+        self.assertTrue(result["recovery_required"])
+        admission.release.assert_not_called()
+
+    def test_nonzero_controller_result_returns_only_a_bounded_failure_code(self):
+        plan = self.plan("target", ["db"])
+        admission = mock.Mock()
+        with mock.patch.object(
+            compose_start,
+            "_operating_admission",
+            return_value=(admission, {"token": "owned-start"}, mock.Mock()),
+        ):
+            result = compose_start.execute_plan(
+                self.root,
+                plan,
+                runner=mock.Mock(
+                    return_value=mock.Mock(
+                        returncode=7,
+                        stderr="private-secret-must-not-escape",
+                    )
+                ),
+            )
+        self.assertEqual("controller_exit_7", result["failure"])
+        self.assertNotIn("private-secret", str(result))
+
+    def test_registered_process_and_lab_errors_return_recovery_result(self):
+        from scripts.lib.ops.dispatch_process import ProcessError
+        from scripts.operations.lab import LabError
+
+        for error in (ProcessError("spawn failed"), LabError("observe failed")):
+            with self.subTest(error=type(error).__name__):
+                plan = self.plan("target", ["db"])
+                admission = mock.Mock()
+                with (
+                    mock.patch.object(
+                        compose_start,
+                        "_operating_admission",
+                        return_value=(admission, {"token": "owned-start"}, mock.Mock()),
+                    ),
+                    mock.patch(
+                        "scripts.lib.ops.dispatch_process.run_registered_docker",
+                        side_effect=error,
+                    ),
+                ):
+                    result = compose_start.execute_plan(self.root, plan)
+                self.assertEqual(
+                    {
+                        "result": "START_FAILED",
+                        "recovery_required": True,
+                        "recovery_token": "owned-start",
+                        "failure": "controller_error",
+                    },
+                    result,
+                )
+                admission.release.assert_not_called()
+
+    def test_recover_releases_only_absent_or_fully_accounted_owned_resources(self):
+        from scripts.lib.ops import dispatch_process
+
+        record = {
+            "token": "a" * 32,
+            "kind": "compose-start",
+            "workspace_id": "workspace",
+            "binding_id": "binding",
+            "daemon_id": "daemon",
+            "project": "hy-home-operating",
+            "services": ["db", "api"],
+            "owner": {"pid": 1, "start_ticks": 1, "boot_id": "boot", "pgid": 1},
+            "metadata": {
+                "docker_operation_dir": "/private/operations/" + "a" * 32,
+                "docker_operation_token": "b" * 32,
+                "one_shot_services": ["api"],
+            },
+        }
+        admission = mock.Mock(
+            workspace_id="workspace",
+            binding_id="binding",
+            daemon_id="daemon",
+        )
+        admission.records.return_value = [record]
+        admission.release.side_effect = lambda token, verify: verify(record)
+        with (
+            mock.patch(
+                "scripts.operations.lab.execution_admission", return_value=admission
+            ),
+            mock.patch("scripts.operations.lab.running_containers", return_value=[]),
+            mock.patch.object(
+                dispatch_process, "verify_registered_docker_absent", return_value=True
+            ) as verify,
+            mock.patch.object(
+                dispatch_process, "cleanup_registered_docker", return_value=True
+            ),
+        ):
+            result = compose_start.recover_start(self.root, record["token"])
+        self.assertEqual({"result": "RECOVERED", "cleanup_pending": False}, result)
+        verify.assert_any_call(record, stop=True)
+        admission.release.assert_called_once()
+
+        with (
+            mock.patch(
+                "scripts.operations.lab.execution_admission", return_value=admission
+            ),
+            mock.patch(
+                "scripts.operations.lab.running_containers",
+                return_value=[
+                    {
+                        "project": record["project"],
+                        "service": "db",
+                        "running": True,
+                    }
+                ],
+            ),
+            mock.patch.object(
+                dispatch_process, "verify_registered_docker_absent", return_value=True
+            ),
+        ):
+            admission.release.reset_mock()
+            admission.release.side_effect = lambda token, verify: verify(record)
+            result = compose_start.recover_start(self.root, record["token"])
+        self.assertEqual(
+            {
+                "result": "RECOVERY_BLOCKED",
+                "reason": "resources_partial_or_unknown",
+            },
+            result,
+        )
+
+        with (
+            mock.patch(
+                "scripts.operations.lab.execution_admission", return_value=admission
+            ),
+            mock.patch(
+                "scripts.operations.lab.running_containers",
+                return_value=[
+                    {"project": record["project"], "service": "db", "running": True},
+                    {
+                        "project": record["project"],
+                        "service": "api",
+                        "running": False,
+                        "status": "exited",
+                        "exit_code": 0,
+                    },
+                ],
+            ),
+            mock.patch.object(
+                dispatch_process, "verify_registered_docker_absent", return_value=True
+            ),
+            mock.patch.object(
+                dispatch_process, "cleanup_registered_docker", return_value=True
+            ),
+        ):
+            admission.observe.return_value = {
+                "services": ["db"],
+                "budget": {"cpus": 1, "memory_bytes": 1, "disk_bytes": 1},
+            }
+            admission.release.reset_mock()
+            admission.release.side_effect = lambda token, verify: verify(record)
+            result = compose_start.recover_start(self.root, record["token"])
+        self.assertEqual({"result": "RECOVERED", "cleanup_pending": False}, result)
+
+    def test_recover_cleans_a_pre_controller_setup_failure_before_release(self):
+        from scripts.lib.ops import dispatch_process
+
+        record = {
+            "token": "c" * 32,
+            "kind": "compose-start",
+            "workspace_id": "workspace",
+            "binding_id": "binding",
+            "daemon_id": "daemon",
+            "project": "hy-home-operating",
+            "services": ["db"],
+            "owner": {"pid": 1, "start_ticks": 1, "boot_id": "boot", "pgid": 1},
+            "metadata": {
+                "docker_operation_dir": "/private/operations/" + "c" * 32,
+                "one_shot_services": [],
+            },
+        }
+        admission = mock.Mock(
+            workspace_id="workspace",
+            binding_id="binding",
+            daemon_id="daemon",
+        )
+        admission.records.return_value = [record]
+        admission.release.side_effect = lambda token, verify: verify(record)
+        with (
+            mock.patch(
+                "scripts.operations.lab.execution_admission", return_value=admission
+            ),
+            mock.patch(
+                "scripts.lib.ops.environment_admission.process_status",
+                return_value="absent",
+            ),
+            mock.patch("scripts.operations.lab.running_containers", return_value=[]),
+            mock.patch.object(
+                dispatch_process,
+                "cleanup_unstarted_registered_docker",
+                return_value=True,
+            ) as cleanup,
+        ):
+            result = compose_start.recover_start(self.root, record["token"])
+        self.assertEqual({"result": "RECOVERED", "cleanup_pending": False}, result)
+        cleanup.assert_called_once_with(record)
+        admission.release.assert_called_once()
+
+        record["metadata"] = {"one_shot_services": []}
+        with (
+            mock.patch(
+                "scripts.operations.lab.execution_admission", return_value=admission
+            ),
+            mock.patch("scripts.operations.lab.running_containers", return_value=[]),
+            mock.patch(
+                "scripts.lib.ops.environment_admission.process_status",
+                return_value="absent",
+            ),
+        ):
+            admission.release.reset_mock()
+            admission.release.side_effect = lambda token, verify: verify(record)
+            result = compose_start.recover_start(self.root, record["token"])
+        self.assertEqual({"result": "RECOVERED", "cleanup_pending": False}, result)
+
     def write_env(self, value):
         (self.root / "infra/overlay.yml").write_text(
             "services:\n  db:\n    environment:\n      MODE: overlay\n",
@@ -371,7 +660,12 @@ class ComposeStartTests(unittest.TestCase):
         run = mock.Mock(side_effect=subprocess.TimeoutExpired("ignored", 300))
         self.assertEqual(
             compose_start.execute_plan(self.root, plan, runner=run),
-            {"result": "START_FAILED", "recovery_required": True},
+            {
+                "result": "START_FAILED",
+                "recovery_required": True,
+                "recovery_token": "fixture-start",
+                "failure": "controller_error",
+            },
         )
         run.assert_called_once()
 
@@ -524,14 +818,177 @@ class ComposeStartTests(unittest.TestCase):
             mock.patch.object(module, "create_plan", side_effect=ValueError("secret")),
         ):
             self.assertEqual(module.main(["plan", "--target", "db"]), 2)
+        failed_output = io.StringIO()
         with (
-            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stdout(failed_output),
             mock.patch.object(module, "load_plan", return_value={}),
             mock.patch.object(
-                module, "execute_plan", return_value={"result": "START_FAILED"}
+                module,
+                "execute_plan",
+                return_value={
+                    "result": "START_FAILED",
+                    "failure": "controller_exit_7",
+                },
             ),
         ):
             self.assertEqual(module.main(["up", "--plan", "ignored"]), 1)
+        self.assertIn("controller_exit_7", failed_output.getvalue())
+        with (
+            contextlib.redirect_stdout(io.StringIO()),
+            mock.patch.object(
+                module,
+                "recover_start",
+                return_value={"result": "RECOVERED", "cleanup_pending": False},
+            ) as recover,
+        ):
+            self.assertEqual(module.main(["recover", "--token", "a" * 32]), 0)
+        recover.assert_called_once_with(module.ROOT, "a" * 32)
+
+
+class OperatingAdmissionHandoffTests(unittest.TestCase):
+    def test_pre_controller_setup_failure_releases_the_exact_pending_claim(self):
+        from scripts.lib.ops.dispatch_process import ProcessError
+        from scripts.lib.ops.environment_admission import Admission
+        from scripts.operations import lab
+
+        with tempfile.TemporaryDirectory() as folder:
+            admission = Admission(
+                Path(folder) / "state",
+                namespace="handoff",
+                workspace_id=folder,
+                inventory=("app", "job", "other"),
+                limits={
+                    "cpus": 8,
+                    "memory_bytes": 8 * 2**30,
+                    "disk_bytes": 2**30,
+                    "runtime_seconds": 300,
+                },
+                observe=lambda: {
+                    "services": [],
+                    "budget": {
+                        "cpus": 0,
+                        "memory_bytes": 0,
+                        "disk_bytes": 0,
+                    },
+                },
+            )
+            service = {
+                "cpus": 0.5,
+                "mem_limit": str(256 * 2**20),
+                "deploy": {
+                    "resources": {
+                        "reservations": {
+                            "cpus": 0.1,
+                            "memory": str(128 * 2**20),
+                        }
+                    }
+                },
+            }
+            model = {
+                "name": "hy-home-infra",
+                "services": {
+                    "app": service,
+                    "job": {**service, "restart": "no"},
+                    "other": service,
+                },
+            }
+            with (
+                mock.patch.object(lab, "execution_admission", return_value=admission),
+                mock.patch.object(lab, "render", return_value=model),
+                mock.patch(
+                    "scripts.lib.ops.dispatch_process.prepare_registered_docker",
+                    side_effect=ProcessError("private setup failed"),
+                ),
+            ):
+                with self.assertRaises(compose_start._OperatingSetupError) as caught:
+                    compose_start._operating_admission(
+                        Path(folder),
+                        {"project": "hy-home-infra", "targets": ["app", "job"]},
+                    )
+            self.assertTrue(caught.exception.released)
+            self.assertFalse(caught.exception.cleanup_pending)
+            self.assertEqual([], admission.records())
+
+    def test_partial_and_unaccounted_runtime_cannot_release_start_intent(self):
+        from scripts.lib.ops.dispatch_process import cleanup_registered_docker
+        from scripts.lib.ops.environment_admission import Admission
+        from scripts.operations import lab
+
+        with tempfile.TemporaryDirectory() as folder:
+            observed = mock.Mock(
+                return_value={
+                    "services": [],
+                    "budget": {"cpus": 0, "memory_bytes": 0, "disk_bytes": 0},
+                }
+            )
+            admission = Admission(
+                Path(folder) / "state",
+                namespace="handoff",
+                workspace_id=folder,
+                inventory=("app", "job", "other"),
+                limits={
+                    "cpus": 8,
+                    "memory_bytes": 8 * 2**30,
+                    "disk_bytes": 2**30,
+                    "runtime_seconds": 300,
+                },
+                observe=observed,
+            )
+            service = {
+                "cpus": 0.5,
+                "mem_limit": str(256 * 2**20),
+                "deploy": {
+                    "resources": {
+                        "reservations": {"cpus": 0.1, "memory": str(128 * 2**20)}
+                    }
+                },
+            }
+            model = {
+                "name": "hy-home-infra",
+                "services": {
+                    "app": service,
+                    "job": {**service, "restart": "no"},
+                    "other": service,
+                },
+            }
+            plan = {"project": "hy-home-infra", "targets": ["app", "job"]}
+            with (
+                mock.patch.object(lab, "execution_admission", return_value=admission),
+                mock.patch.object(lab, "render", return_value=model),
+            ):
+                _, claimed, verify = compose_start._operating_admission(
+                    Path(folder), plan
+                )
+            self.assertAlmostEqual(0.45, claimed["budget"]["cpus"])
+            self.assertEqual(2**30, claimed["budget"]["disk_bytes"])
+            self.assertEqual(["job"], claimed["metadata"]["one_shot_services"])
+            self.assertEqual(1, observed.call_count)
+            app = {"project": "hy-home-infra", "service": "app", "running": True}
+            job = {
+                "project": "hy-home-infra",
+                "service": "job",
+                "running": False,
+                "status": "exited",
+                "exit_code": 0,
+            }
+            with mock.patch.object(
+                lab, "running_containers", return_value=[app]
+            ) as running:
+                self.assertFalse(admission.release(claimed["token"], verify=verify))
+                running.return_value = [app, job]
+                self.assertFalse(admission.release(claimed["token"], verify=verify))
+                self.assertEqual(1, len(admission.records()))
+                observed.return_value = {
+                    "services": ["app"],
+                    "budget": {
+                        "cpus": 0.1,
+                        "memory_bytes": 128 * 2**20,
+                        "disk_bytes": 0,
+                    },
+                }
+                self.assertTrue(admission.release(claimed["token"], verify=verify))
+            self.assertEqual([], admission.records())
+            self.assertTrue(cleanup_registered_docker(claimed))
 
 
 if __name__ == "__main__":

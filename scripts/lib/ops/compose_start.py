@@ -29,6 +29,13 @@ OBSERVABILITY_INPUTS = (
 NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\Z")
 
 
+class _OperatingSetupError(Exception):
+    def __init__(self, token, released, cleanup_pending):
+        self.token = token
+        self.released = released
+        self.cleanup_pending = cleanup_pending
+
+
 def _root(root):
     value = Path(root)
     if not value.is_absolute() or value.resolve(strict=True) != value:
@@ -451,6 +458,110 @@ def validate_plan(root, document):
     return expected
 
 
+def _operating_admission(root, plan):
+    from scripts.lib.ops.dispatch_process import (
+        CONTROLLER_CPUS,
+        CONTROLLER_DISK_BYTES,
+        CONTROLLER_MEMORY_BYTES,
+    )
+    from scripts.operations import lab
+
+    admission = lab.execution_admission(root)
+    model = lab.render("/usr/bin/docker", root / ".env", None)
+    selected = {name: model["services"][name] for name in plan["targets"]}
+    footprint = lab.footprint({**model, "services": selected})
+    failed, unmeasured = lab.candidate_problems(footprint)
+    if failed or unmeasured:
+        raise ValueError("selected_resource_accounting_incomplete")
+    # No per-service lifetime disk estimate exists for the operating stack.
+    # Serialize its short startup conservatively with all admissible disk;
+    # successful handoff below accounts its live containers instead.
+    claimed = admission.admit(
+        services=plan["targets"],
+        kind="compose-start",
+        project=plan["project"],
+        budget={
+            "cpus": footprint["reserved_cpus"] + CONTROLLER_CPUS,
+            "memory_bytes": footprint["reserved_memory"] + CONTROLLER_MEMORY_BYTES,
+            "disk_bytes": CONTROLLER_DISK_BYTES,
+            "runtime_seconds": 300,
+        },
+        resources=[f"start:{plan['project']}:{name}" for name in plan["targets"]],
+        fill_disk=True,
+    )
+    from scripts.lib.ops.dispatch_process import (
+        cleanup_unstarted_registered_docker,
+        prepare_registered_docker,
+        verify_registered_docker_absent,
+    )
+
+    try:
+        admission.update(
+            claimed["token"],
+            one_shot_services=sorted(
+                name
+                for name, service in selected.items()
+                if service.get("restart") == "no"
+            ),
+        )
+        prepare_registered_docker(admission, claimed["token"])
+    except (OSError, ValueError, lab.LabError) as error:
+        released = False
+        cleanup_pending = False
+        try:
+            current = next(
+                row for row in admission.records() if row["token"] == claimed["token"]
+            )
+            cleanup_pending = not cleanup_unstarted_registered_docker(
+                current, owner_may_be_live=True
+            )
+            if not cleanup_pending:
+                released = admission.release(
+                    claimed["token"],
+                    verify=lambda row: (
+                        row["owner"] == claimed["owner"]
+                        and row["identity"] is None
+                        and row["kind"] == "compose-start"
+                    ),
+                )
+        except (OSError, ValueError, lab.LabError, StopIteration):
+            pass
+        raise _OperatingSetupError(
+            claimed["token"], released, cleanup_pending
+        ) from error
+    claimed = next(r for r in admission.records() if r["token"] == claimed["token"])
+
+    def accounted(record):
+        if not verify_registered_docker_absent(record):
+            return False
+        current = lab.running_containers("/usr/bin/docker")
+        present = {
+            c["service"]
+            for c in current
+            if c["project"] == plan["project"]
+            and c["service"] in selected
+            and (
+                c["running"]
+                or (
+                    c.get("status") == "exited"
+                    and c.get("exit_code") == 0
+                    and selected[c["service"]].get("restart") == "no"
+                )
+            )
+        }
+        if not set(plan["targets"]) <= present:
+            return False
+        observed = admission.observe()
+        running = {
+            c["service"]
+            for c in current
+            if c["project"] == plan["project"] and c["running"]
+        }
+        return set(plan["targets"]) & running <= set(observed["services"])
+
+    return admission, claimed, accounted
+
+
 def execute_plan(root, document, *, runner=None):
     """Recompute the plan; failures can leave containers partially changed."""
     root = _root(root)
@@ -486,20 +597,173 @@ def execute_plan(root, document, *, runner=None):
     argv += ["up", "-d", "--no-build", "--pull", "never", *plan["targets"]]
     environment = {"PATH": "/usr/bin:/bin", "HOME": "/nonexistent"}
     try:
-        result = (runner or subprocess.run)(
-            argv,
-            cwd=root,
-            env=environment,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=False,
-            timeout=300,
+        admission, claimed, accounted = _operating_admission(root, plan)
+    except _OperatingSetupError as error:
+        result = {
+            "result": "START_FAILED",
+            "recovery_required": not error.released,
+            "cleanup_pending": error.cleanup_pending,
+        }
+        if not error.released:
+            result["recovery_token"] = error.token
+        return result
+    from scripts.operations.lab import LabError
+
+    try:
+        admission.attach(
+            claimed["token"], identity=None, resource_type="operating-start"
         )
-        if result.returncode == 0:
-            return {"result": "STARTED", "recovery_required": False}
-    except (OSError, subprocess.TimeoutExpired):
-        pass
-    return {"result": "START_FAILED", "recovery_required": True}
+        failure = None
+        if runner is None:
+            from scripts.lib.ops.dispatch_process import run_registered_docker
+
+            result = run_registered_docker(
+                argv,
+                cwd=root,
+                timeout=300,
+                admission=admission,
+                token=claimed["token"],
+                env=environment,
+            )
+        else:
+            result = runner(
+                argv,
+                cwd=root,
+                env=environment,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+                timeout=300,
+            )
+        if result.returncode != 0:
+            code = result.returncode
+            failure = (
+                f"controller_exit_{code}"
+                if isinstance(code, int) and 0 <= code <= 255
+                else "controller_failed"
+            )
+        if result.returncode == 0 and admission.release(
+            claimed["token"], verify=accounted
+        ):
+            if runner is None:
+                from scripts.lib.ops.dispatch_process import cleanup_registered_docker
+
+                cleanup_pending = not cleanup_registered_docker(claimed)
+            else:
+                cleanup_pending = False
+            return {
+                "result": "STARTED",
+                "recovery_required": False,
+                "cleanup_pending": cleanup_pending,
+            }
+    except (OSError, subprocess.TimeoutExpired, ValueError, LabError):
+        failure = "controller_error"
+    failed = {
+        "result": "START_FAILED",
+        "recovery_required": True,
+        "recovery_token": claimed["token"],
+    }
+    if failure:
+        failed["failure"] = failure[:64]
+    return failed
+
+
+def recover_start(root, token):
+    """Stop only the token-owned controller and reconcile its exact project."""
+    root = _root(root)
+    if not isinstance(token, str) or not re.fullmatch(r"[0-9a-f]{32}", token):
+        raise ValueError("invalid_recovery_token")
+    from scripts.lib.ops.dispatch_process import (
+        cleanup_registered_docker,
+        cleanup_unstarted_registered_docker,
+        verify_registered_docker_absent,
+    )
+    from scripts.lib.ops.environment_admission import process_status
+    from scripts.operations import lab
+
+    try:
+        admission = lab.execution_admission(root)
+        matches = [row for row in admission.records() if row["token"] == token]
+    except (OSError, subprocess.SubprocessError, ValueError, lab.LabError):
+        return {"result": "RECOVERY_BLOCKED", "reason": "environment_unavailable"}
+    if len(matches) != 1:
+        return {"result": "RECOVERY_BLOCKED", "reason": "unknown_token"}
+    record = matches[0]
+    if (
+        record["kind"] != "compose-start"
+        or record["workspace_id"] != admission.workspace_id
+        or record["binding_id"] != admission.binding_id
+        or record["daemon_id"] != admission.daemon_id
+        or not record["project"]
+        or not record["services"]
+    ):
+        return {"result": "RECOVERY_BLOCKED", "reason": "ownership_mismatch"}
+    one_shot_services = record["metadata"].get("one_shot_services")
+    if (
+        not isinstance(one_shot_services, list)
+        or any(not isinstance(name, str) for name in one_shot_services)
+        or not set(one_shot_services) <= set(record["services"])
+    ):
+        return {"result": "RECOVERY_BLOCKED", "reason": "service_policy_unavailable"}
+    operation_dir = record["metadata"].get("docker_operation_dir")
+    controller_started = bool(
+        operation_dir and record["metadata"].get("docker_operation_token")
+    )
+    if controller_started:
+        try:
+            controller_stopped = verify_registered_docker_absent(record, stop=True)
+        except (OSError, subprocess.SubprocessError, ValueError):
+            controller_stopped = False
+    else:
+        # A pre-spawn failure has no controller token and can only be removed
+        # after the exact owning process has exited.
+        controller_stopped = process_status(record["owner"]) == "absent"
+    if not controller_stopped:
+        return {"result": "RECOVERY_BLOCKED", "reason": "controller_live_or_unknown"}
+    if not controller_started and not cleanup_unstarted_registered_docker(record):
+        return {
+            "result": "RECOVERY_BLOCKED",
+            "reason": "pre_controller_cleanup_unverified",
+        }
+
+    def accounted(_record):
+        if controller_started and not verify_registered_docker_absent(record):
+            return False
+        if not controller_started and process_status(record["owner"]) != "absent":
+            return False
+        containers = lab.running_containers("/usr/bin/docker")
+        selected = [
+            item
+            for item in containers
+            if item["project"] == record["project"]
+            and item["service"] in record["services"]
+        ]
+        if not selected:
+            return True
+        if {item["service"] for item in selected} != set(record["services"]):
+            return False
+        for item in selected:
+            if item["running"]:
+                continue
+            if not (
+                item.get("status") == "exited"
+                and item.get("exit_code") == 0
+                and item["service"] in one_shot_services
+            ):
+                return False
+        observed = admission.observe()
+        running_services = {item["service"] for item in selected if item["running"]}
+        return running_services <= set(observed["services"])
+
+    try:
+        released = admission.release(token, verify=accounted)
+    except (OSError, subprocess.SubprocessError, ValueError, lab.LabError):
+        released = False
+    if not released:
+        return {"result": "RECOVERY_BLOCKED", "reason": "resources_partial_or_unknown"}
+    if controller_started and not cleanup_registered_docker(record):
+        return {"result": "RECOVERED", "cleanup_pending": True}
+    return {"result": "RECOVERED", "cleanup_pending": False}
 
 
 def load_plan(root, path):

@@ -13,6 +13,7 @@ from scripts.lib.ops.compose_start import (  # noqa: E402
     create_plan,
     execute_plan,
     load_plan,
+    recover_start,
 )
 
 
@@ -33,6 +34,8 @@ def main(argv=None):
     plan.add_argument("--dev-data-expected", choices=["on", "off"])
     up = commands.add_parser("up")
     up.add_argument("--plan", required=True)
+    recover = commands.add_parser("recover")
+    recover.add_argument("--token", required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "plan":
@@ -44,15 +47,19 @@ def main(argv=None):
                 values=values,
                 dev_data_expected=args.dev_data_expected,
             )
-        else:
+        elif args.command == "up":
             if args.root != ROOT:
                 raise ValueError("unsupported_execution_root")
             result = execute_plan(args.root, load_plan(args.root, args.plan))
+        else:
+            if args.root != ROOT:
+                raise ValueError("unsupported_execution_root")
+            result = recover_start(args.root, args.token)
     except (OSError, ValueError, TypeError, KeyError):
         print(json.dumps({"result": "BLOCKED"}))
         return 2
     print(json.dumps(result, sort_keys=True, ensure_ascii=True))
-    return 1 if result.get("result") == "START_FAILED" else 0
+    return 1 if result.get("result") in {"START_FAILED", "RECOVERY_BLOCKED"} else 0
 
 
 if __name__ == "__main__":
