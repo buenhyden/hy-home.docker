@@ -1,6 +1,6 @@
 ---
 title: "P10 Session Capture and Analysis Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -146,7 +146,9 @@ code; during this follow-up it took the real store to schema 3 with 209 IDs
 rekeyed. `hook()` now starts a reconcile only after it stored an event, and
 `tests/__init__.py` gives every test process a temporary capture directory;
 the probe then found no access to the real store. Rows written meanwhile by
-the merged schema 2 code are caught by the ID watermark.
+the merged schema 2 code are caught by the ID watermark. A Claude or Codex
+tool failure has not yet reached the real store; the next failing tool call
+observes the native route.
 
 Redaction no longer counts a value that is exactly `[REDACTED]` again. A
 first lookahead also skipped a value that only began with `[REDACTED]`; an
@@ -177,6 +179,9 @@ needs the masked marker to end the value.
 | E16 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture tests.validation.test_session_analysis | New tool-failure, ID, rekey and earlier-promotion regressions on 6e252f6e | FAIL | Witnessed RED: 3 failures and 4 errors over 7 new tests | required | - |
 | E17 | 164 | W180 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_session_capture tests.validation.test_session_analysis | Follow-up change | PASS | Exit0; with the dispatcher route and reconcile-start cases added | required | E16 |
 | E18 | 164 | W180 | method=automated; tool=Python3.12.3 audit hook; command=sitecustomize audit hook on sqlite3.connect and open of the real capture path while running the routing, dispatch, forecast, observe, memory, folder-guide, capture and analysis suites | Before and after the reconcile-start and test-directory fix | PASS | Before: 12 accesses by reconcile --session None from hook tests; after: 0; suites exit0 | required | - |
+| E19 | 164 | W180 | method=automated; tool=GitHub Actions CI Quality Gates; command=candidate-core changed candidate validation | PR1152 head 026d8e32, run45289346245 | PASS | candidate-core, candidate-quality and candidate-routing passed; CodeQL and GitGuardian passed | required | - |
+| E20 | 164 | W180 | method=observation; tool=Python3.12.3 CLI; command=session_capture reconcile; read-only SQL; session_analysis.py run and candidates --all; ID formula check | Real stores after merge 1fc58dcb | PASS | Schema 4, watermark 1,027, no row without a sequence; the run applied the 209-entry map and cleared it; 14 candidates with 0 expired sources; 209 hook prompt rows, 0 with a text-derived ID | required | - |
+| E21 | 164 | W180 | method=observation; tool=Python3.12.3 CLI; command=session_analysis.py promote --include-earlier, then promote; agent_memory.py list --all and list | Real stores after merge 1fc58dcb, owner decision 2026-11-24 | PASS | The 3 earlier accepted candidates became 3 unreviewed candidate records at revision 1; default reads 0; the second promote wrote nothing | required | - |
 
 ##### Resolution Links
 
@@ -188,7 +193,7 @@ E03 resolves the witnessed failures in E02.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12,E13,E14,E15,E17,E18 | Implementation, focused regressions, a synthetic CLI run, the real migration and row adoption, native Claude response capture and the timer move are recorded; a scheduled run of the new unit, a Codex response capture and owner acceptance remain | @buenhyden |
+| 164 | pending | E01,E03,E04,E05,E06,E07,E08,E10,E12,E13,E14,E15,E17,E18,E19,E20,E21 | Implementation, focused regressions, a synthetic CLI run, the real migration and row adoption, native Claude response capture and the timer move are recorded; a scheduled run of the new unit, a Codex response capture and owner acceptance remain | @buenhyden |
 
 ##### Remaining Conditions
 
