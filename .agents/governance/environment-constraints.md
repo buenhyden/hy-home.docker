@@ -1,13 +1,13 @@
 ---
 title: "Environment Constraints"
-version: "2.1.0"
+version: "2.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: Environment Constraints
   layer: agent
-updated: "2026-11-20"
+updated: "2026-11-24"
 ---
 
 # Environment Constraints
@@ -170,7 +170,7 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R117 | Search and `capacity status` | Required: open existing state read-only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R118 | Search and `capacity status` | Forbidden: initializing a database or schema, changing permissions, or adding a service or model API call | none | none |
 | ENVIRONMENT-CONSTRAINTS-R124 | Memory record | Required: carry a kind (`session-context`, `decision` or `experience`) separate from the tier, the store baseline, an observation time, an optional validity window and optional `supersedes` links | none | none |
-| ENVIRONMENT-CONSTRAINTS-R125 | Default memory retrieval | Required: return a record only when it is reviewed, source-current, in the current baseline, inside its validity window at the evaluation time and superseded by no eligible current record | none | none |
+| ENVIRONMENT-CONSTRAINTS-R125 | Default memory retrieval | Required: return a record only when it is reviewed, source-current, in the current baseline, inside its validity window at the evaluation time, superseded by no eligible current record and held by no stored conflict against its current revision | none | none |
 | ENVIRONMENT-CONSTRAINTS-R126 | Memory request digest | Required: bind the baseline and every record field | none | none |
 | ENVIRONMENT-CONSTRAINTS-R127 | Store without schema-3 metadata | Required: refuse writes until an explicit `migrate` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R128 | Memory migration | Forbidden: rewriting or deleting an existing revision | none | none |
@@ -192,7 +192,7 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R144 | Session analysis schedule | Required: a user systemd timer at 03:00 Asia/Seoul with catch-up of missed runs and no automatic restart | none | none |
 | ENVIRONMENT-CONSTRAINTS-R145 | Session analysis run | Required: one lease with a fencing token, an analysis key per window and a status record of every run | none | none |
 | ENVIRONMENT-CONSTRAINTS-R146 | Analysis candidate | Required: name its source events, frequency, conditions, proposal, risk and acceptance test | none | none |
-| ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check, memory or policy without a separate approved Task | none | none |
+| ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check or policy without a separate approved Task, or writing memory other than the R167 promotion | none | none |
 | ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
 | ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | registered Compose/LAB/dispatch entrypoints share atomic admission over actual inventory, pending/live service union and resource reservations; `lab.py select` remains read-only discovery | `tests/validation/test_lab_controller.py` |
 | ENVIRONMENT-CONSTRAINTS-R150 | Starting Compose services on this server | Forbidden: selecting every profile with `--profile '*'` or `COMPOSE_PROFILES` holding `*` for `up`, `start` or `create` | hookify `block-whole-stack-compose-start` refuses the visible forms | `tests/lib/hooks/test_compose_start_rule.py` |
@@ -210,6 +210,9 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R162 | Using an observe report | Forbidden: treating it as a gate, an approval or a fix; a failure it shows is resolved through its owner's record | none | none |
 | ENVIRONMENT-CONSTRAINTS-R163 | Reporting a LAB or service run on the operating Docker daemon | Forbidden: calling its result a sandbox result; it shares the operating socket, networks and volumes and is an operating-host result | none | none |
 | ENVIRONMENT-CONSTRAINTS-R164 | Agent shell command | Forbidden: reading the content of a file under a `secrets/` directory or of a `.env` file other than `.env.example`; listing, existence and size checks stay allowed | hookify `block-secret-content-read` refuses the visible forms | `tests/lib/hooks/test_secret_read_rule.py` |
+| ENVIRONMENT-CONSTRAINTS-R165 | Memory source state | Required: report each reviewed record's sources as `current`, `changed`, `unavailable` or `content_expired`; a `session-events` reference is `content_expired` from its `content_expires_at` and never makes a record current on its own | none | none |
+| ENVIRONMENT-CONSTRAINTS-R166 | Memory write request | Forbidden: accepting a boolean or other non-integer expected revision, or a request holding a non-finite number | none | none |
+| ENVIRONMENT-CONSTRAINTS-R167 | Accepted analysis candidate | Required: record the decision and its whole promotion request in one transaction; the outbox writes one `candidate` memory record through the memory CLI with a stable request key, never copies captured text, skips a candidate whose reviewed fields changed and never revives a record erased before its receipt | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -381,7 +384,13 @@ This project has a graphify knowledge graph at `graphify-out/`.
   `history`, `list --all`, and `export`. A historical read is never injected
   into a current judgement. Reactivation also starts at `candidate`, and a
   source that changed, was deleted, or cannot be read drops out of current
-  reads.
+  reads. A reviewed record reports its source state as `current`,
+  `changed` (the tracked file differs from the pin), `unavailable` (it
+  cannot be checked) or `content_expired` (the captured session content it
+  names passed retention). A stored conflict against a record's current
+  revision holds it out of default reads as `conflicted` until a later
+  revision reconciles it. A request with a boolean revision or a
+  non-finite number is refused, because it has no typed canonical digest.
 - A repository source pin states `kind=repository-file`, a relative `path`,
   `revision`, `hash_algorithm`, `digest`, and `context`. `sha256` covers the
   file bytes and `git-blob` the Git blob identity; they are never
@@ -497,8 +506,17 @@ This project has a graphify knowledge graph at `graphify-out/`.
   and writes `analysis-status.json`; a duplicate run is skipped and a run
   that lost its lease writes nothing. Each candidate names its source
   events, frequency, conditions, proposal, risk and acceptance test.
-  `decide` records a review decision only; a rule, skill, check, memory or
-  policy changes only through a separate approved Task. A failed or
+  `decide` records a review decision; an acceptance also records the whole
+  promotion request in the same transaction. `decide` and `promote` drain
+  that outbox through the memory CLI with a stable request key into one
+  unreviewed `candidate` record (tier `long-term`, kind `experience`) whose
+  body holds the reviewed proposal but never the captured prompt text, and
+  whose `session-events` reference carries the content expiry, so the
+  session retention is not bypassed. A candidate whose reviewed fields
+  changed is marked `stale` and not promoted, a refused write stays
+  `pending` with its reason, and a retry after a lost receipt replays the
+  recorded result instead of writing again or reviving an erased record. A
+  rule, skill, check or policy changes only through a separate approved Task. A failed or
   missing analysis never blocks commit, push or other work.
 
 ###### Provider Surface Regeneration
@@ -552,10 +570,10 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Memory limits and capacity (R65-R66, R88-R93, R96-R97, R100-R101, R103-R111, R115): no check is named.
 - Memory provenance and source pins (R67-R87): no check is named.
 - Memory search (R116-R118): no check is named.
-- Memory record semantics (R124-R131): no check is named.
+- Memory record semantics (R124-R131, R165, R166): no check is named.
 - Memory recall (R132-R135): no check is named.
 - Session capture (R136-R142): no check is named.
-- Session analysis (R143-R148): no check is named.
+- Session analysis (R143-R148, R167): no check is named.
 - Compose start selection (R149): the registered start/dispatch consumers reserve through shared host admission before effects; selection-only reporting grants no reservation. Guarantees require complete live/external observations and the actual inventory. Unmanaged callers and another user are outside this entrypoint boundary; tool-text hooks alone are not a Docker access ACL.
 - Sandbox claims (R163): no check is named.
 - Secret content reads (R164): the hookify rule sees only the command text; a quoted path, a variable, an interpreter or script that reads the file, `find -exec`, `xargs`, `git show`, a recursive read of a parent directory, `docker compose config` without `--services` or a hook bypass is outside it. An approved secret operation runs through a registered script that never prints the value, or the user runs the command.

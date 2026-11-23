@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import hashlib
 import os
 import re
@@ -46,39 +47,67 @@ def run_git(
     return subprocess.run(("git", *arguments), input=input_data, check=True, **common)
 
 
-def source_is_current(reference: object, cwd: Path) -> bool:
-    """Only explicit, tracked repository-file pins can establish currentness.
+SOURCE_STATES = ("current", "changed", "unavailable", "content_expired")
 
-    Old strings (including approved native imports) are retained as provenance;
-    this operation never opens native memory or fetches external URLs.
+
+def source_state(reference: object, cwd: Path, as_of: str | None = None) -> str:
+    """D09 state of one source reference at `as_of` (UTC ISO, default now).
+
+    A `session-events` reference is `content_expired` once its captured content
+    passed retention, and `current` before. A repository-file pin is `current`
+    when the worktree still holds the pinned content, `changed` when the
+    tracked file differs and `unavailable` when it cannot be checked. Any other
+    reference, such as an old string, is kept as provenance but `unavailable`.
+    This never opens native memory or fetches an external URL.
     """
+    if isinstance(reference, dict) and reference.get("kind") == "session-events":
+        expires = reference.get("content_expires_at")
+        if not isinstance(expires, str):
+            return "unavailable"
+        try:
+            expiry = dt.datetime.fromisoformat(expires)
+            now = dt.datetime.fromisoformat(as_of) if as_of else dt.datetime.now(dt.UTC)
+        except ValueError:
+            return "unavailable"
+        if expiry.tzinfo is None or now.tzinfo is None:
+            return "unavailable"
+        return "content_expired" if now >= expiry else "current"
+    return _pin_state(reference, cwd)
+
+
+def source_is_current(reference: object, cwd: Path) -> bool:
+    """Only explicit, tracked repository-file pins can establish currentness."""
+    return _pin_state(reference, cwd) == "current"
+
+
+def _pin_state(reference: object, cwd: Path) -> str:
     if not isinstance(reference, dict) or reference.get("kind") != "repository-file":
-        return False
+        return "unavailable"
     required = {"kind", "path", "revision", "hash_algorithm", "digest", "context"}
     if set(reference) != required or any(
         not isinstance(v, str) or not v for v in reference.values()
     ):
-        return False
+        return "unavailable"
     relative = Path(reference["path"])
     if relative.is_absolute() or any(p in {"", ".", ".."} for p in relative.parts):
-        return False
+        return "unavailable"
     if any(
         p.startswith(".") and p not in {".agents", ".claude", ".codex"}
         for p in relative.parts
     ):
-        return False
+        return "unavailable"
     if any(
         p.lower() in {"secrets", "auth", "credentials"} or p.startswith("agent-memory")
         for p in relative.parts
     ):
-        return False
+        return "unavailable"
     algorithm = reference["hash_algorithm"]
     if (
         algorithm not in {"sha256", "git-blob"}
         or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", reference["digest"])
         or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", reference["revision"])
     ):
-        return False
+        return "unavailable"
     try:
         root = Path(
             os.fsdecode(run_git(("rev-parse", "--show-toplevel"), cwd).stdout.strip())
@@ -97,7 +126,7 @@ def source_is_current(reference: object, cwd: Path) -> bool:
             ("rev-parse", "--verify", f"{reference['revision']}^{{commit}}"), root
         ).stdout.strip()
         if resolved_revision != reference["revision"].encode("ascii"):
-            return False
+            return "unavailable"
         tree_entry = run_git(
             (
                 "--literal-pathspecs",
@@ -111,18 +140,18 @@ def source_is_current(reference: object, cwd: Path) -> bool:
         ).stdout
         entry, separator, remainder = tree_entry.partition(b"\0")
         if not separator or remainder or b"\t" not in entry:
-            return False
+            return "unavailable"
         header, recorded_path = entry.split(b"\t", 1)
         fields = header.split(b" ")
         if len(fields) != 3:
-            return False
+            return "unavailable"
         mode, object_type, object_id = fields
         if (
             mode not in {b"100644", b"100755"}
             or object_type != b"blob"
             or recorded_path != os.fsencode(relative.as_posix())
         ):
-            return False
+            return "unavailable"
         # Open every component relative to the already opened parent: replacing a
         # path with a symlink cannot redirect a source read outside this worktree.
         descriptor = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
@@ -143,28 +172,28 @@ def source_is_current(reference: object, cwd: Path) -> bool:
             with os.fdopen(source, "rb") as stream:
                 info = os.fstat(stream.fileno())
                 if not stat.S_ISREG(info.st_mode) or info.st_size > MAX_SOURCE_BYTES:
-                    return False
+                    return "unavailable"
                 content = stream.read(MAX_SOURCE_BYTES + 1)
                 if len(content) > MAX_SOURCE_BYTES:
-                    return False
+                    return "unavailable"
         finally:
             os.close(descriptor)
         current_blob = run_git(("hash-object", "--stdin"), root, content).stdout.strip()
         if current_blob != object_id:
-            return False
+            return "changed"
         digest = (
             hashlib.sha256(content).hexdigest()
             if algorithm == "sha256"
             else current_blob.decode()
         )
-        return digest == reference["digest"]
+        return "current" if digest == reference["digest"] else "changed"
     except (
         OSError,
         subprocess.CalledProcessError,
         subprocess.TimeoutExpired,
         UnicodeError,
     ):
-        return False
+        return "unavailable"
 
 
 def reuse_state(review_state: str, source_refs: list[object], cwd: Path) -> str:
@@ -175,3 +204,9 @@ def reuse_state(review_state: str, source_refs: list[object], cwd: Path) -> str:
         if source_refs and all(source_is_current(r, cwd) for r in source_refs)
         else "needs-review"
     )
+
+
+def sources_state(source_refs: list[object], cwd: Path, as_of: str | None) -> str:
+    """The least usable state over every reference; no reference is unavailable."""
+    states = {source_state(r, cwd, as_of) for r in source_refs} or {"unavailable"}
+    return next(s for s in reversed(SOURCE_STATES) if s in states)

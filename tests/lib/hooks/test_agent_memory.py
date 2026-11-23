@@ -943,6 +943,95 @@ class RecordSemanticsTests(unittest.TestCase):
         self.assertEqual(3, report["schema_version"])
         self.assertFalse(report["migration_required"])
 
+    def test_an_unresolved_conflict_leaves_default_reads_until_a_new_revision(
+        self,
+    ):
+        self.put("shared")
+        with self.assertRaises(memory.MemoryStoreError):
+            self.put("shared", body="stale writer")
+        self.assertEqual("conflicted", self.state("shared"))
+        self.assertIsNone(memory.get(self.connection, "shared", current_only=True))
+        self.assertEqual([], memory.current_records(self.connection, None, False))
+        self.put("shared", expected=1, body="reconciled")
+        self.assertEqual("current", self.state("shared"))
+
+    def test_request_values_are_typed_and_finite(self):
+        self.put("typed")
+        # True equals 1 in Python; the typed request must still refuse it.
+        for bad in (
+            {"expected": True},
+            {"source_refs": [{"weight": float("nan")}]},
+        ):
+            with self.subTest(bad=bad), self.assertRaises(memory.MemoryStoreError):
+                memory.put(
+                    self.connection,
+                    memory_id="typed",
+                    expected_revision=bad.get("expected", 1),
+                    workspace_id="test",
+                    tier="long-term",
+                    owner="claude",
+                    body="typed again",
+                    source_refs=bad.get("source_refs", ["SPEC-0212"]),
+                )
+        self.assertEqual(1, len(memory.history(self.connection, "typed", 10)))
+
+
+class SourceStateTests(unittest.TestCase):
+    """D09 source states: current, changed, unavailable, content_expired."""
+
+    def test_each_source_reference_reports_its_state(self):
+        from scripts.lib.ops import memory_sources as sources
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            source = root / "source.md"
+            source.write_text("reviewed")
+            subprocess.run([*GIT, "init", "-q"], cwd=root, check=True)
+            subprocess.run([*GIT, "add", "."], cwd=root, check=True)
+            subprocess.run([*GIT, "commit", "-qm", "seed"], cwd=root, check=True)
+            revision = subprocess.run(
+                [*GIT, "rev-parse", "HEAD"],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            pin = dict(
+                kind="repository-file",
+                path="source.md",
+                revision=revision,
+                hash_algorithm="sha256",
+                digest=hashlib.sha256(b"reviewed").hexdigest(),
+                context="synthetic",
+            )
+            expired = {
+                "kind": "session-events",
+                "event_ids": ["e1"],
+                "content_expires_at": "2026-11-01T00:00:00+00:00",
+            }
+            as_of = "2026-11-24T00:00:00+00:00"
+            self.assertEqual("current", sources.source_state(pin, root, as_of))
+            self.assertEqual(
+                "content_expired", sources.source_state(expired, root, as_of)
+            )
+            self.assertEqual(
+                "current",
+                sources.source_state(
+                    {**expired, "content_expires_at": "2026-12-01T00:00:00+00:00"},
+                    root,
+                    as_of,
+                ),
+            )
+            self.assertEqual("unavailable", sources.source_state("SPEC", root, as_of))
+            source.write_text("edited")
+            self.assertEqual("changed", sources.source_state(pin, root, as_of))
+            source.unlink()
+            self.assertEqual("unavailable", sources.source_state(pin, root, as_of))
+            # Session events never make a record reusable on their own.
+            self.assertEqual(
+                "needs-review", sources.reuse_state("current", [expired], root)
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

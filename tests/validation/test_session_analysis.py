@@ -142,6 +142,124 @@ class AnalysisTests(unittest.TestCase):
         ]
         self.assertEqual(["claude: not yet reconciled"], [c["pattern"] for c in gaps])
 
+    def memory_store(self):
+        from scripts.lib.ops.memory_capacity import MemoryCapacity
+        from scripts.operations import agent_memory as memory
+
+        path = self.directory.parent / ".workspace-memory" / "memory.sqlite3"
+        MemoryCapacity(path).reconcile()
+        connection = memory.connect(path)
+        self.addCleanup(connection.close)
+
+        def writer(request):
+            return memory.put(
+                connection,
+                expected_revision=0,
+                workspace_id="test",
+                tier="long-term",
+                kind="experience",
+                review_state="candidate",
+                **request,
+            )
+
+        return memory, connection, writer
+
+    def accepted(self) -> dict:
+        self.repeated()
+        self.run_once()
+        (found,) = self.repeats()
+        analysis.decide(self.directory, found["candidate_id"], "accepted", "owner")
+        (intent,) = self.outbox()
+        return intent
+
+    def outbox(self) -> list[dict]:
+        connection = analysis.connect(self.directory)
+        try:
+            return [
+                {**dict(r), **json.loads(r["request"])}
+                for r in connection.execute("SELECT * FROM promotions")
+            ]
+        finally:
+            connection.close()
+
+    def interrupted(self, writer) -> None:
+        with mock.patch.object(analysis, "_receipt", side_effect=OSError):
+            with self.assertRaises(OSError):
+                analysis.promote(self.directory, writer)
+        self.assertEqual("pending", self.outbox()[0]["state"])
+
+    def test_an_accepted_candidate_promotes_once_without_session_text(self):
+        memory, connection, writer = self.memory_store()
+        intent = self.accepted()
+        self.assertEqual("pending", intent["state"])
+        result = analysis.promote(self.directory, writer)
+        self.assertEqual([intent["candidate_id"]], result["promoted"])
+        record = memory.get(connection, intent["memory_id"])
+        self.assertEqual("candidate", record["provenance"]["review_state"])
+        self.assertNotIn("please rerun", record["body"])
+        (events,) = [r for r in record["source_refs"] if r["kind"] == "session-events"]
+        self.assertEqual(3, len(events["event_ids"]))
+        self.assertIn("content_expires_at", events)
+        self.assertEqual([], memory.current_records(connection, None, False))
+        self.assertEqual([], analysis.promote(self.directory, writer)["promoted"])
+        self.assertEqual(1, len(memory.history(connection, intent["memory_id"], 10)))
+
+    def test_a_retry_after_an_interrupted_receipt_writes_once(self):
+        memory, connection, writer = self.memory_store()
+        intent = self.accepted()
+        self.interrupted(writer)
+        self.assertEqual(1, len(analysis.promote(self.directory, writer)["promoted"]))
+        self.assertEqual(1, len(memory.history(connection, intent["memory_id"], 10)))
+
+    def test_a_retry_does_not_revive_a_record_erased_before_its_receipt(self):
+        memory, connection, writer = self.memory_store()
+        intent = self.accepted()
+        self.interrupted(writer)
+        memory.erase(connection, [intent["memory_id"]])
+        analysis.promote(self.directory, writer)
+        self.assertIsNone(memory.get(connection, intent["memory_id"]))
+        self.assertEqual("promoted", self.outbox()[0]["state"])
+
+    def test_a_refused_memory_write_stays_pending_with_its_reason(self):
+        self.accepted()
+        refused = mock.Mock(
+            returncode=4, stdout="", stderr="MEMORY_CAPACITY_EXCEEDED: store limit\n"
+        )
+        with mock.patch.object(analysis.subprocess, "run", return_value=refused) as cli:
+            result = analysis.promote(self.directory)
+        arguments = cli.call_args.args[0]
+        self.assertEqual(
+            ["put", "session-analysis-"], [arguments[2], arguments[3][:17]]
+        )
+        self.assertIn("candidate", arguments)
+        self.assertNotIn("please rerun", cli.call_args.kwargs["input"])
+        (intent,) = self.outbox()
+        self.assertEqual(1, len(result["pending"]))
+        self.assertEqual(("pending", 1), (intent["state"], intent["attempts"]))
+        self.assertIn("MEMORY_CAPACITY_EXCEEDED", intent["last_error"])
+
+    def test_a_changed_review_or_a_rejection_is_not_promoted(self):
+        _, _, writer = self.memory_store()
+        intent = self.accepted()
+        store = analysis.connect(self.directory)
+        store.execute("UPDATE candidates SET proposed_change='edited'")
+        store.close()
+        result = analysis.promote(self.directory, writer)
+        self.assertEqual(
+            ([], [intent["candidate_id"]]), (result["promoted"], result["stale"])
+        )
+        self.assertEqual("stale", self.outbox()[0]["state"])
+        self.prompt("one gap prompt", "gap")
+        capture.reconcile(self.directory)
+        self.run_once()
+        gap = next(
+            c
+            for c in analysis.candidates(self.directory, False)
+            if c["rule"] == "capture-gap"
+        )
+        analysis.decide(self.directory, gap["candidate_id"], "rejected", "owner")
+        self.assertEqual(1, len(self.outbox()))
+
     def test_install_writes_a_persistent_daily_timer(self):
         units = self.directory.parent / "units"
         with mock.patch.object(analysis.subprocess, "run") as systemctl:

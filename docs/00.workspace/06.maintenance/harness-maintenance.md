@@ -1,13 +1,13 @@
 ---
 title: "Harness Maintenance"
-version: "2.1.0"
+version: "2.2.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 created: "2026-11-19"
 observed_at: "2026-11-19"
 reviewed_at: "2026-11-20"
@@ -158,7 +158,14 @@ A record has a `--kind` separate from its tier (`session-context`, `decision`,
 time zone only. Default `get`, `list` and `search` return reviewed records of
 the current baseline that are valid at `--as-of` (default now) and not
 superseded by an eligible current record; the reason for an exclusion shows in
-`reuse_state` as `other-baseline`, `outside-validity` or `superseded`. An older
+`reuse_state` as `other-baseline`, `outside-validity`, `superseded` or
+`conflicted`. A stored conflict against the current revision keeps a record
+`conflicted` until a new revision written with the current expected revision
+reconciles it. A reviewed record also shows `source_state`: `current`,
+`changed` (the tracked file differs from its pin), `unavailable` (it cannot be
+checked) or `content_expired` (the session content it names passed
+retention). A boolean revision or a non-finite number is refused with exit 2
+(`MEMORY_INVALID`). An older
 record without a kind derives one from its tier (short-term is
 `session-context`, the rest `experience`) and has the baseline `initial`.
 
@@ -226,6 +233,7 @@ python3 scripts/operations/session_analysis.py run
 python3 scripts/operations/session_analysis.py status
 python3 scripts/operations/session_analysis.py candidates
 python3 scripts/operations/session_analysis.py decide "<candidate ID>" rejected --owner "<reviewer>"
+python3 scripts/operations/session_analysis.py promote
 ```
 
 `install-timer` installs the user systemd timer
@@ -234,9 +242,16 @@ python3 scripts/operations/session_analysis.py decide "<candidate ID>" rejected 
 `Restart`, so a failure does not repeat. A run reads only records after the last
 completed window and never reanalyses a window. While a lease holds, a duplicate
 run exits 75; a run that lost its lease writes nothing (fenced), and SIGTERM is
-recorded as a cancellation. `decide` records only the decision and changes no
-memory, policy or checker; an adopted candidate is changed by a separate Task
-and approval. Missing capture or a failed analysis never blocks a commit, push
+recorded as a cancellation. `decide ... accepted` records the decision and the
+whole promotion request together, then writes it through the memory CLI as one
+unreviewed `candidate` record; the record holds the reviewed proposal, never the
+captured prompt text, and names its source events with their content expiry.
+If that write is refused the intent stays `pending` with its reason and the
+command exits 1; rerun `promote`, which reuses the same request key, so a lost
+receipt neither writes twice nor revives an erased record. A candidate whose
+reviewed fields changed is marked `stale` and not promoted. Making the record
+`current` still needs owner review and a source pin, and a policy, skill or
+checker changes only through a separate Task and approval. Missing capture or a failed analysis never blocks a commit, push
 or other work. Remove the timer with
 `systemctl --user disable --now hy-home-session-analysis.timer`.
 
