@@ -264,6 +264,7 @@ services:
       valkey-node-5:
         condition: service_healthy
     labels:
+      hy-home.lab.role: job
       <<: *tier-label
     networks:
       lab_valkey_core_net: {}

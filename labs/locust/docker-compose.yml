@@ -19,6 +19,7 @@ x-locust: &locust
   labels:
     <<: *tier-label
     traefik.enable: 'false'
+    hy-home.lab.role: job
 
 volumes:
   lab-locust-scenario:
@@ -48,6 +49,7 @@ services:
           memory: 512M
     <<: *locust
     labels:
+      hy-home.lab.role: job
       <<: *tier-label
       traefik.enable: 'false'
       # `lab.py run` waits for this job and stops it at the deadline.

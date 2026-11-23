@@ -125,4 +125,5 @@ services:
     networks:
       lab_stalwart_net: {}
     labels:
+      hy-home.lab.role: job
       <<: *tier-label

@@ -1,13 +1,13 @@
 ---
 title: "독립 LAB source"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-23"
 created: "2026-10-12"
 ---
 
@@ -148,6 +148,13 @@ Compose는 상대 경로와 `LAB_SECRET_DIR`를 `labs/<name>/` 기준으로 해�
 ##### Readiness
 
 각 LAB의 정적 render는 `docker compose --env-file labs/.env.example -f labs/<name>/docker-compose.yml --profile '*' config --quiet`로 검증하며 개별 명령은 각 LAB README에 있다. source render 통과는 native 실행 성공의 증거가 아니다.
+
+`lab.py up`의 준비 판정은 서비스별 `hy-home.lab.role` 라벨을 따른다. `job`은
+정상 종료(코드 0)해야 완료이고, 라벨이 없거나 `service`이면 실행 중이며 health
+check가 있으면 healthy여야 한다. `restart` 정책은 재시작 동작일 뿐 역할로 읽지
+않는다. `template-job-*`을 확장하는 서비스는 `job`을 명시하고, `hy-home.lab.job`
+실행 대상도 `job`이어야 한다. 실패하면 소유 컨테이너의 상태·종료 코드·health와
+가린 최근 health log 3건만 LAB ledger의 `readiness`에 남긴다.
 
 ##### Failure Handling
 

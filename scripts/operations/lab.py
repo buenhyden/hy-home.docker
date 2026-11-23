@@ -1772,10 +1772,15 @@ def docker_root(docker: str) -> str:
 
 
 def check(args, env) -> tuple[dict, dict[str, dict]]:
-    selected = {
-        name: footprint(render(args.docker, args.env_file, lab_file(name)))
-        for name in args.labs
+    models = {
+        name: render(args.docker, args.env_file, lab_file(name)) for name in args.labs
     }
+    role_problems = []
+    selected = {}
+    for name, model in models.items():
+        roles, problems = lab_roles(model)
+        selected[name] = {**footprint(model), "roles": roles}
+        role_problems += [f"{name}: {item}" for item in problems]
     root = root_footprint(
         render(args.docker, args.root_env_file, None),
         env_file=args.root_env_file,
@@ -1820,6 +1825,7 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         + collisions(selected, root, running)
         + budget(selected, running, env, known)
         + stale_volumes(args.docker, selected)
+        + role_problems
         + manifests,
     }
     return report, selected
@@ -1832,10 +1838,70 @@ def compose_command(args, name: str, project: str) -> list[str]:
     ]  # fmt: skip
 
 
-def wait_ready(docker: str, project: str, timeout: int) -> str | None:
-    """None once every container is healthy, running without a health check,
-    or a one-shot job (restart `no`) that exited 0; otherwise the first
-    reason it is not. A one-shot job that still runs is not ready yet.
+ROLE_LABEL = "hy-home.lab.role"
+LAB_ROLES = ("service", "job")
+HEALTH_LOG_ENTRIES = 3
+HEALTH_OUTPUT_CHARS = 256
+
+
+def lab_roles(model: dict) -> tuple[dict[str, str], list[str]]:
+    """Each rendered service's declared role and the label problems.
+
+    `hy-home.lab.role` is the LAB contract: `job` is a one-shot that must
+    exit 0, and an absent label means a long-running `service`. The restart
+    policy is only Docker's restart behavior and is never read as a role.
+    """
+    roles, problems = {}, []
+    for name, service in sorted((model.get("services") or {}).items()):
+        labels = service.get("labels") or {}
+        role = roles[name] = labels.get(ROLE_LABEL, "service")
+        if role not in LAB_ROLES:
+            problems.append(
+                f"{name}: {ROLE_LABEL} must be service or job, not {role!r}"
+            )
+        elif labels.get("hy-home.lab.job") == "true" and role != "job":
+            problems.append(
+                f"{name}: a hy-home.lab.job run target must declare {ROLE_LABEL} job"
+            )
+    return roles, problems
+
+
+def _observed(record: dict, service: str, role: str) -> dict:
+    """The bounded, redacted readiness state of one owned container.
+
+    Only state fields are kept: never Config.Env or the full inspect output.
+    """
+    from scripts.lib.hooks.session_capture import redact
+
+    state = record.get("State") or {}
+    health = state.get("Health") or {}
+    return {
+        "container": str(record.get("Name", "")).lstrip("/"),
+        "service": service,
+        "role": role,
+        "status": state.get("Status"),
+        "exit_code": state.get("ExitCode"),
+        "health": health.get("Status"),
+        "failing_streak": health.get("FailingStreak"),
+        "health_log": [
+            {
+                "exit_code": item.get("ExitCode"),
+                "output": redact(str(item.get("Output", "")))[0][:HEALTH_OUTPUT_CHARS],
+            }
+            for item in (health.get("Log") or [])[-HEALTH_LOG_ENTRIES:]
+        ],
+    }
+
+
+def wait_ready(
+    docker: str, project: str, timeout: int, *, roles: dict[str, str], token: str
+) -> tuple[str | None, list[dict]]:
+    """Judge the owned containers of a started LAB by their declared role.
+
+    Returns (None, []) once every declared service is running (and healthy
+    when it has a health check) and every declared job has exited 0.
+    Otherwise returns the first reason with a bounded, redacted observation
+    of the owned containers, taken before any cleanup removes them.
 
     `compose up --wait` treats an init job that exits 0 as a failure, so the
     LAB controller judges readiness itself.
@@ -1844,39 +1910,58 @@ def wait_ready(docker: str, project: str, timeout: int) -> str | None:
     while True:
         listed = run(
             [docker, "ps", "--all", "--quiet",
-             "--filter", f"label=com.docker.compose.project={project}"]
+             "--filter", f"label=com.docker.compose.project={project}",
+             "--filter", f"label={TOKEN_LABEL}={token}"]
         )  # fmt: skip
-        ids = listed.stdout.split()
+        ids = listed.stdout.split() if listed.returncode == 0 else []
         inspected = run([docker, "inspect", *ids]) if ids else None
+        if listed.returncode != 0 or (inspected and inspected.returncode != 0):
+            failed = inspected if listed.returncode == 0 else listed
+            error = f"inspection failed (exit {failed.returncode})"
+            if time.monotonic() >= deadline:
+                return f"not ready: {error}", [{"error": error}]
+            time.sleep(2)
+            continue
         records = json.loads(inspected.stdout) if inspected and inspected.stdout else []
-        pending = []
+        seen, pending, reason = set(), [], None
         for record in records:
-            state = record.get("State") or {}
             name = str(record.get("Name", "")).lstrip("/")
+            labels = (record.get("Config") or {}).get("Labels") or {}
+            service = labels.get("com.docker.compose.service", "")
+            state = record.get("State") or {}
+            status, code = state.get("Status"), state.get("ExitCode")
             health = (state.get("Health") or {}).get("Status")
-            restart = ((record.get("HostConfig") or {}).get("RestartPolicy") or {}).get(
-                "Name"
-            )
-            if state.get("Status") == "exited":
-                if state.get("ExitCode") != 0:
-                    return f"{name} exited {state.get('ExitCode')}"
-                if restart != "no":
-                    return (
-                        f"{name} exited 0 with restart policy "
-                        f"{restart or 'unspecified'}"
-                    )
+            role = roles.get(service)
+            seen.add(service)
+            if role is None:
+                reason = f"{name} is not a declared service of this LAB"
+            elif role not in LAB_ROLES:
+                reason = f"{name} has unknown LAB role {role!r}"
             elif health == "unhealthy":
-                return f"{name} is unhealthy"
-            elif (
-                state.get("Status") != "running"
-                or health == "starting"
-                or restart == "no"
-            ):
+                reason = f"{name} is unhealthy"
+            elif role == "job" and status == "exited":
+                if code != 0:
+                    reason = f"{name} job exited {code}"
+            elif role == "service" and status in ("exited", "dead"):
+                reason = f"{name} service exited {code} before ready"
+            elif role == "job" or status != "running" or health == "starting":
                 pending.append(name)
-        if records and not pending:
-            return None
-        if time.monotonic() >= deadline:
-            return "not ready: " + (", ".join(sorted(pending)[:5]) or "no containers")
+            if reason:
+                break
+        pending += [f"{s} (missing)" for s in sorted(set(roles) - seen)]
+        if reason is None and not pending:
+            return None, []
+        if reason is None and time.monotonic() >= deadline:
+            reason = "not ready: " + ", ".join(sorted(pending)[:5])
+        if reason is not None:
+            observed = []
+            for record in records:
+                labels = (record.get("Config") or {}).get("Labels") or {}
+                service = labels.get("com.docker.compose.service", "")
+                observed.append(
+                    _observed(record, service, roles.get(service, "undeclared"))
+                )
+            return reason, observed
         time.sleep(2)
 
 
@@ -2060,7 +2145,16 @@ def cmd_up(args, env, *, wait: bool = True, operation_id=None) -> int:
     # A job LAB may finish before it reports healthy, so `run` does not wait.
     if reason is None and wait:
         timeout = int(env.get("LAB_READY_TIMEOUT_SECONDS") or 600)
-        reason = wait_ready(args.docker, lab["project"], timeout)
+        reason, observed = wait_ready(
+            args.docker,
+            lab["project"],
+            timeout,
+            roles=lab["roles"],
+            token=claimed["token"],
+        )
+        if observed:
+            # Kept in the ledger: a later cleanup removes the containers.
+            entry["readiness"] = {"reason": reason, "observed": observed}
     entry["state"] = "running" if reason is None else "failed"
     admission.update(claimed["token"], start_complete=True)
     write_entry(target, entry)
