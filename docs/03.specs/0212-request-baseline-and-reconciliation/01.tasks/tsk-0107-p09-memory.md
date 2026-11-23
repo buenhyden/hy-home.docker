@@ -1,6 +1,6 @@
 ---
 title: "P09 Shared Memory Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -128,6 +128,7 @@ removal.
 | E08 | 163 | W179 | method=automated; tool=ruff; command=ruff check and ruff format --check on the changed Python files | Change at 445ed71e | PASS | Exit0 after one PLW1510 fix and formatting | required | - |
 | E09 | 163 | W179 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.hooks.test_agent_memory tests.validation.test_session_analysis tests.lib.ops.test_memory_search tests.lib.ops.test_memory_capacity tests.lib.ops.test_memory_retrieval_eval tests.validation.test_agent_memory_capacity tests.validation.test_observe tests.lib.hooks.test_session_capture tests.validation.test_task_forecast | Change at 445ed71e with ME07 expecting abstention | PASS | Exit0; 111 tests | required | - |
 | E10 | 163 | W179 | method=automated; tool=Python3.12.3; command=check-agent-governance-contract.py --mode repository --section all; check-document-metadata.py --mode check-active and check-changed; check-document-links.py --mode all --changed; check-document-corpus-lifecycle.py; check-candidate-preflight.sh; provider_surface_renderer.py --check; check-script-manifest.py | Changed-profile selection on the candidate; run-ci-gate.py itself refused locally because Python 3.12.3 differs from the hosted 3.14.8 | PASS | Governance failures0; metadata violations0; links failures0; lifecycle violations0; preflight clean; renderer drift0; manifest valid | required | - |
+| E11 | 163 | W179 | method=automated; tool=GitHub Actions CI Quality Gates; command=candidate-core changed candidate validation | PR1148 head 9bdfc0a5, run45226430733 | PASS | candidate-core, candidate-quality and candidate-routing passed; CodeQL and GitGuardian passed | required | - |
 
 ##### Resolution Links
 
@@ -140,7 +141,7 @@ with the D09 exclusion of conflicted records.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 163 | pending | E01,E03,E05,E06,E07,E08,E09,E10 | Implementation, focused regressions and a disposable-clone CLI promotion are recorded; owner acceptance remains | @buenhyden |
+| 163 | pending | E01,E03,E05,E06,E07,E08,E09,E10,E11 | Implementation, focused regressions and a disposable-clone CLI promotion are recorded; owner acceptance remains | @buenhyden |
 
 ##### Remaining Conditions
 
