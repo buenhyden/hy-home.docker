@@ -409,16 +409,39 @@ def _load_json_document_at_revision(
         or any(ord(character) < 32 for character in revision)
     ):
         raise RegistryError("trusted Registry revision is invalid")
+    resolved = (
+        _verified_commit(revision, root)
+        if _GIT_OID.fullmatch(revision)
+        else _resolve_commit(revision, root)
+    )
+    source = _checked_json_blob(_blob_at(resolved, relative_path, root), root)
+    # A fresh object per call: callers may keep or change what they receive.
+    raw = json.loads(source, object_pairs_hook=_unique_object)
+    if not isinstance(raw, Mapping):
+        raise RegistryError("historical JSON document must be a mapping")
+    return raw
+
+
+def _resolve_commit(revision: str, root: pathlib.Path) -> str:
     resolved = _git_read(
         ["rev-parse", "--verify", "--end-of-options", f"{revision}^{{commit}}"],
         root=root,
     ).strip()
     if _GIT_OID.fullmatch(resolved) is None:
         raise RegistryError("trusted Registry revision did not resolve to a commit")
-    listing = _git_read(
-        ["ls-tree", "-z", resolved, "--", relative_path],
-        root=root,
-    )
+    return resolved
+
+
+# The caches below are keyed only by immutable Git object names, so one run
+# reads each historical blob once; a moving ref name is resolved every call.
+@functools.lru_cache(maxsize=256)
+def _verified_commit(revision: str, root: pathlib.Path) -> str:
+    return _resolve_commit(revision, root)
+
+
+@functools.lru_cache(maxsize=1024)
+def _blob_at(commit: str, relative_path: str, root: pathlib.Path) -> str:
+    listing = _git_read(["ls-tree", "-z", commit, "--", relative_path], root=root)
     entries = [entry for entry in listing.split("\0") if entry]
     if len(entries) != 1:
         raise RegistryError("trusted revision must contain one JSON blob")
@@ -433,15 +456,19 @@ def _load_json_document_at_revision(
         or match.group("type") != "blob"
     ):
         raise RegistryError("trusted revision contains a non-regular JSON object")
-    source = _git_read(["cat-file", "blob", match.group("oid")], root=root)
+    return match.group("oid")
+
+
+@functools.lru_cache(maxsize=64)
+def _checked_json_blob(oid: str, root: pathlib.Path) -> str:
+    """The blob text, once it parsed as unique-key JSON within the depth bound."""
+    source = _git_read(["cat-file", "blob", oid], root=root)
     try:
         raw = json.loads(source, object_pairs_hook=_unique_object)
     except (json.JSONDecodeError, RecursionError, RegistryError) as error:
         raise RegistryError(f"invalid historical JSON: {error}") from error
     _require_bounded_depth(raw)
-    if not isinstance(raw, Mapping):
-        raise RegistryError("historical JSON document must be a mapping")
-    return raw
+    return source
 
 
 def validate_registry_at_revision(

@@ -93,18 +93,25 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _print_readiness(root: pathlib.Path, registry: object) -> None:
-    """sdlc.md: readiness is derived on read and is never removal approval."""
+def _print_readiness(
+    root: pathlib.Path, registry: object, packages: object = None
+) -> None:
+    """sdlc.md: readiness is derived on read and is never removal approval.
+
+    `packages` are the immutable Spec Packages the lifecycle check already
+    loaded in this run; they are read again only when that load failed.
+    """
 
     from scripts.lib.document_governance import spec_packages
 
-    try:
-        packages = spec_packages.load_spec_packages(
-            root / "docs/03.specs", registry=registry
-        )
-    except spec_packages.SpecPackageError:
-        print("readiness: unavailable: Stage 03 packages did not load")
-        return
+    if packages is None:
+        try:
+            packages = spec_packages.load_spec_packages(
+                root / "docs/03.specs", registry=registry
+            )
+        except spec_packages.SpecPackageError:
+            print("readiness: unavailable: Stage 03 packages did not load")
+            return
     for package in packages:
         if package.evidence is None:
             state = "unknown"
@@ -138,12 +145,15 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             raise ProfileError("Stage 99 registry is invalid") from error
         profiles = metadata.build_registry_profiles(registry)
 
-        findings = _spec_package_lifecycle_findings(root, profiles, args.base_ref)
+        loaded: list = []
+        findings = _spec_package_lifecycle_findings(
+            root, profiles, args.base_ref, loaded
+        )
         _print_findings(findings)
         print(f"document corpus lifecycle: violations={len(findings)}")
         occupancy_code = run_occupancy(root)
         if args.readiness:
-            _print_readiness(root, registry)
+            _print_readiness(root, registry, loaded[0] if loaded else None)
         if any(_is_safety_finding(item) for item in findings):
             return 3
         return 1 if findings or occupancy_code else 0

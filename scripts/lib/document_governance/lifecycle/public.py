@@ -21,7 +21,9 @@ def _spec_package_lifecycle_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
     base_ref: str | None = None,
+    loaded: list | None = None,
 ) -> list[Finding]:
+    """Lifecycle findings; `loaded` receives the Spec Packages read, once."""
     findings: list[Finding] = []
     stage03 = root / "docs/03.specs"
     # This check used to return clean unless a Stage 98 Migration file was
@@ -38,6 +40,8 @@ def _spec_package_lifecycle_findings(
             if stage03.exists() or stage03.is_symlink()
             else ()
         )
+        if loaded is not None:
+            loaded.append(packages)
         lifecycle_findings = validate_repository_spec_package_lifecycle(
             root,
             packages,

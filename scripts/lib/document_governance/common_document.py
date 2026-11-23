@@ -152,7 +152,9 @@ def _markdown_unfenced_lines(text: str) -> list[str]:
     return lines
 
 
-@functools.lru_cache(maxsize=8)
+# Keyed by the exact text: one corpus run (current and base revisions) parses
+# each document once instead of on every envelope or payload query.
+@functools.lru_cache(maxsize=4096)
 def _markdown_form_lines(
     text: str,
 ) -> tuple[tuple[int, str, tuple[int, str] | None], ...]:

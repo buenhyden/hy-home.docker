@@ -635,6 +635,54 @@ class DocumentRegistryTests(unittest.TestCase):
                     "missing-revision", root=root
                 )
 
+    def test_revision_reads_share_git_objects_but_return_fresh_documents(self):
+        from unittest import mock
+
+        for cached in (
+            registry_module._verified_commit,
+            registry_module._blob_at,
+            registry_module._checked_json_blob,
+        ):
+            cached.cache_clear()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            registry = root / "docs/99.templates/registry.json"
+            registry.parent.mkdir(parents=True)
+            registry.write_text('{"common":{"generation":3}}\n', encoding="utf-8")
+            for args in (
+                ("init", "-q"),
+                ("config", "user.name", "Registry Fixture"),
+                ("config", "user.email", "registry@example.invalid"),
+                ("add", "."),
+                ("commit", "-qm", "baseline"),
+            ):
+                self.assertEqual(0, _fixture_git(root, *args).returncode)
+            commit = _fixture_git(root, "rev-parse", "HEAD").stdout.strip()
+            real = registry_module._git_read
+            with mock.patch.object(
+                registry_module, "_git_read", side_effect=real
+            ) as git:
+                first = registry_module.load_registry_document_at_revision(
+                    commit, root=root
+                )
+                first["common"]["generation"] = 99
+                second = registry_module.load_registry_document_at_revision(
+                    commit, root=root
+                )
+            # One immutable commit/blob read; each caller still gets its own copy.
+            self.assertEqual(3, second["common"]["generation"])
+            self.assertEqual(3, git.call_count)
+            # A moving ref name is resolved again on every call.
+            registry.write_text('{"common":{"generation":4}}\n', encoding="utf-8")
+            for args in (("add", "."), ("commit", "-qm", "next")):
+                self.assertEqual(0, _fixture_git(root, *args).returncode)
+            self.assertEqual(
+                4,
+                registry_module.load_registry_document_at_revision("HEAD", root=root)[
+                    "common"
+                ]["generation"],
+            )
+
     def test_evaluation_navigation_registers_only_exact_sources(self) -> None:
         from scripts.lib.agent_governance import agent_governance_contract as contract
 
