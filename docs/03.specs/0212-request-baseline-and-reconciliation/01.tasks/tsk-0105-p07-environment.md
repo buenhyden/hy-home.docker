@@ -163,6 +163,13 @@ mechanisms, remaining quota limits and unobserved billing without fake PASS.
 | E34 | 161 | W177 | method=observation; tool=Docker CLI and existing Admission API; command=read-only post-cleanup ownership verification | The P07 probe token/project after owned down | PASS | Exit0; project reservations0, matching containers0, matching networks0. No volumes or images were deleted | required | - |
 | E35 | 161 | W177 | method=automated; tool=repository local staged hooks; command=bash scripts/validation/run-ci-precommit.sh --mode local-staged | Final P07 candidate after review repairs and runtime evidence | FAIL | Exit1. All applicable hooks passed except Ruff format, which requested formatting in scripts/lib/ops/dispatch_process.py. Formatting was applied; functional tests are unchanged | required | - |
 | E36 | 161 | W177 | method=automated; tool=repository local staged hooks; command=bash scripts/validation/run-ci-precommit.sh --mode local-staged | Final staged P07 candidate after Ruff formatting | PASS | Exit0. All applicable hooks passed: size, conflicts, line endings, yamllint, markdownlint, Ruff format/check, secret scan, EOF and whitespace; other file-type hooks skipped because no matching staged files | required | E35 |
+| E37 | 161 | W177 | method=automated; tool=GitHub Actions candidate-quality; command=gh pr checks 1142 | PR#1142 head28fd01d4469c018204e294e62d9286bb3435477f; run45113476560 and uploaded candidate-core result artifact | FAIL | `leaf.repository-integrity-regressions` failed two `test_mutation_classes_follow_observed_script_behavior` subtests: the expected mutation map omitted the two new P07 runtime libraries. Other selected gate rows passed. This was a test expectation gap, not a source or manifest validation failure | required | - |
+| E38 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_script_manifest.ScriptManifestTests.test_mutation_classes_follow_observed_script_behavior -v | Current P07 runtime manifest and updated mutation expectation map | PASS | Exit0; the existing behavior regression passes for the registered scripts, including both P07 libraries. It reproduces the failed CI assertion locally and verifies the correction; it does not resolve the separate hosted candidate-quality result | required | - |
+| E39 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-script-manifest.py | Current P07 script manifest and repository inventory | PASS | Exit0; script manifest valid | required | - |
+| E40 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main | Current P07 Task and changed documents; merge base c98e4e4f | PASS | Exit0; selected109 documents,0 violations,0 transition overrides | required | - |
+| E41 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-document-links.py --mode all --changed | Current P07 Task and changed-document links | PASS | Exit0;929 documents,9116 links,3 selected,0 failures,0 warnings | required | - |
+| E42 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-document-corpus-lifecycle.py --readiness | Current Stage03 corpus and active-stage occupancy | PASS | Exit0; lifecycle violations0 and occupancy violations0. SPEC-0212 remains not-ready because open Tasks/criteria include criterion161; this is not a lifecycle validation violation | required | - |
+| E43 | 161 | W177 | method=automated; tool=repository local staged hooks; command=bash scripts/validation/run-ci-precommit.sh --mode local-staged | Current staged P07 mutation-map repair and Task evidence update | PASS | Exit0; staged-file, conflict, line ending, Markdown, Ruff, secret, EOF and whitespace checks passed; non-matching file checks skipped | required | - |
 
 ##### Resolution Links
 
@@ -173,9 +180,13 @@ synthetic checks for the H1/M1/M2 repairs; E16 remains the original incomplete
 review. E25 resolves E24, E27 resolves E26, E30 resolves E29, and E32 resolves
 the unavailable review attempt E19 and findings E28. E20-E23 record document,
 lifecycle and advisory graph checks. E36 resolves the formatting failure E35.
-The bounded LAB start remains failed although owned cleanup passed; GitHub
-delivery and human acceptance remain open. Prior failures stay recorded and
-are not hidden by a successful alternative.
+E38 locally confirms the mutation expectation repair and E39 confirms the
+registered manifest. Neither local check resolves the separate hosted
+candidate-quality failure in E37; the same hosted check must pass on the new
+head. The hosted candidate-quality rerun remains pending.
+The bounded LAB start remains failed although owned cleanup passed; delivery
+and human acceptance remain open. Prior failures stay recorded and are not
+hidden by a successful alternative.
 
 #### Acceptance Decision
 
@@ -188,12 +199,14 @@ are not hidden by a successful alternative.
 ##### Remaining Conditions
 
 Focused synthetic regressions, durable owner updates and the corrected
-independent source review are recorded. The owned single-LAB attempt failed at
-readiness and its cleanup passed; its healthcheck cause is no longer observable
-after the controller removed the failed container. Resolve that cause and pass
-the bounded runtime case before accepting the criterion. GitHub authentication
-and protected delivery also remain open. Keep actual human acceptance pending;
-retain live/uncertain reservations and preexisting unrelated work.
+independent source review are recorded. The hosted candidate-quality check
+failed on two stale mutation expectations; their local repair and manifest
+check pass, and the hosted rerun is still due. The owned single-LAB attempt
+failed at readiness and its cleanup passed; its healthcheck cause is no longer
+observable after the controller removed the failed container. Resolve that
+cause and pass the bounded runtime case before accepting the criterion. Keep
+actual human acceptance pending; retain live/uncertain reservations and
+preexisting unrelated work.
 
 #### Handoff
 
