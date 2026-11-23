@@ -1908,21 +1908,31 @@ def wait_ready(
     """
     deadline = time.monotonic() + timeout
     while True:
-        listed = run(
-            [docker, "ps", "--all", "--quiet",
-             "--filter", f"label=com.docker.compose.project={project}",
-             "--filter", f"label={TOKEN_LABEL}={token}"]
-        )  # fmt: skip
-        ids = listed.stdout.split() if listed.returncode == 0 else []
-        inspected = run([docker, "inspect", *ids]) if ids else None
-        if listed.returncode != 0 or (inspected and inspected.returncode != 0):
-            failed = inspected if listed.returncode == 0 else listed
-            error = f"inspection failed (exit {failed.returncode})"
+        error, records = None, []
+        try:
+            listed = run(
+                [docker, "ps", "--all", "--quiet",
+                 "--filter", f"label=com.docker.compose.project={project}",
+                 "--filter", f"label={TOKEN_LABEL}={token}"]
+            )  # fmt: skip
+            ids = listed.stdout.split() if listed.returncode == 0 else []
+            inspected = run([docker, "inspect", *ids]) if ids else None
+            failed = listed if listed.returncode else inspected
+            if failed is not None and failed.returncode:
+                error = f"inspection failed (exit {failed.returncode})"
+            elif inspected is not None and inspected.stdout:
+                records = json.loads(inspected.stdout)
+                if not isinstance(records, list):
+                    raise ValueError("inspect output is not a list")
+        except subprocess.TimeoutExpired:
+            error = "inspection failed (timeout)"
+        except ValueError:
+            error = "inspection failed (invalid output)"
+        if error is not None:
             if time.monotonic() >= deadline:
                 return f"not ready: {error}", [{"error": error}]
             time.sleep(2)
             continue
-        records = json.loads(inspected.stdout) if inspected and inspected.stdout else []
         seen, pending, reason = set(), [], None
         for record in records:
             name = str(record.get("Name", "")).lstrip("/")
@@ -1937,11 +1947,14 @@ def wait_ready(
                 reason = f"{name} is not a declared service of this LAB"
             elif role not in LAB_ROLES:
                 reason = f"{name} has unknown LAB role {role!r}"
+            elif role == "job" and status in ("exited", "dead"):
+                # A finished job is judged by its exit, not a stale health.
+                if status == "dead":
+                    reason = f"{name} job dead (exit {code})"
+                elif code != 0:
+                    reason = f"{name} job exited {code}"
             elif health == "unhealthy":
                 reason = f"{name} is unhealthy"
-            elif role == "job" and status == "exited":
-                if code != 0:
-                    reason = f"{name} job exited {code}"
             elif role == "service" and status in ("exited", "dead"):
                 reason = f"{name} service exited {code} before ready"
             elif role == "job" or status != "running" or health == "starting":
@@ -2152,7 +2165,7 @@ def cmd_up(args, env, *, wait: bool = True, operation_id=None) -> int:
             roles=lab["roles"],
             token=claimed["token"],
         )
-        if observed:
+        if reason is not None:
             # Kept in the ledger: a later cleanup removes the containers.
             entry["readiness"] = {"reason": reason, "observed": observed}
     entry["state"] = "running" if reason is None else "failed"

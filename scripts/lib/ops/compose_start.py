@@ -505,7 +505,10 @@ def _operating_admission(root, plan):
             ),
         )
         prepare_registered_docker(admission, claimed["token"])
-    except (OSError, ValueError, lab.LabError) as error:
+        # Inside the setup guard: the fill-disk claim already exists, so a
+        # failed state read must still return its token for recovery.
+        claimed = next(r for r in admission.records() if r["token"] == claimed["token"])
+    except (OSError, ValueError, lab.LabError, StopIteration) as error:
         released = False
         cleanup_pending = False
         try:
@@ -529,7 +532,6 @@ def _operating_admission(root, plan):
         raise _OperatingSetupError(
             claimed["token"], released, cleanup_pending
         ) from error
-    claimed = next(r for r in admission.records() if r["token"] == claimed["token"])
 
     def accounted(record):
         if not verify_registered_docker_absent(record):
