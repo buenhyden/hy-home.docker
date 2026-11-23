@@ -833,6 +833,19 @@ class ComposeStartTests(unittest.TestCase):
         ):
             self.assertEqual(module.main(["up", "--plan", "ignored"]), 1)
         self.assertIn("controller_exit_7", failed_output.getvalue())
+        from scripts.operations.lab import LabError
+
+        blocked = io.StringIO()
+        with (
+            contextlib.redirect_stdout(blocked),
+            mock.patch.object(module, "load_plan", return_value={}),
+            mock.patch.object(
+                module, "execute_plan", side_effect=LabError("daemon unavailable")
+            ),
+        ):
+            # A failure before any claim exists is a structured BLOCKED.
+            self.assertEqual(module.main(["up", "--plan", "ignored"]), 2)
+        self.assertEqual('{"result": "BLOCKED"}', blocked.getvalue().strip())
         with (
             contextlib.redirect_stdout(io.StringIO()),
             mock.patch.object(
@@ -908,6 +921,67 @@ class OperatingAdmissionHandoffTests(unittest.TestCase):
             self.assertTrue(caught.exception.released)
             self.assertFalse(caught.exception.cleanup_pending)
             self.assertEqual([], admission.records())
+
+    def test_a_state_read_failure_after_setup_still_returns_the_claim(self):
+        # The fill-disk claim exists once admit returns; a busy admission store
+        # on the next read must surface as a setup failure, not escape.
+        from scripts.lib.ops.environment_admission import Admission, AdmissionError
+        from scripts.operations import lab
+
+        with tempfile.TemporaryDirectory() as folder:
+            admission = Admission(
+                Path(folder) / "state",
+                namespace="handoff",
+                workspace_id=folder,
+                inventory=("app", "other"),
+                limits={
+                    "cpus": 8,
+                    "memory_bytes": 8 * 2**30,
+                    "disk_bytes": 2**30,
+                    "runtime_seconds": 300,
+                },
+                observe=lambda: {
+                    "services": [],
+                    "budget": {"cpus": 0, "memory_bytes": 0, "disk_bytes": 0},
+                },
+            )
+            service = {
+                "cpus": 0.5,
+                "mem_limit": str(256 * 2**20),
+                "deploy": {
+                    "resources": {
+                        "reservations": {"cpus": 0.1, "memory": str(128 * 2**20)}
+                    }
+                },
+            }
+            real = admission.records
+            reads = []
+
+            def busy_once():
+                reads.append(1)
+                if len(reads) == 1:
+                    raise AdmissionError("admission_state_unavailable")
+                return real()
+
+            with (
+                mock.patch.object(lab, "execution_admission", return_value=admission),
+                mock.patch.object(
+                    lab,
+                    "render",
+                    return_value={"name": "p", "services": {"app": service}},
+                ),
+                mock.patch(
+                    "scripts.lib.ops.dispatch_process.prepare_registered_docker"
+                ),
+                mock.patch.object(admission, "records", side_effect=busy_once),
+            ):
+                with self.assertRaises(compose_start._OperatingSetupError) as caught:
+                    compose_start._operating_admission(
+                        Path(folder), {"project": "p", "targets": ["app"]}
+                    )
+            self.assertTrue(caught.exception.token)
+            if not caught.exception.released:
+                self.assertEqual([caught.exception.token], [r["token"] for r in real()])
 
     def test_partial_and_unaccounted_runtime_cannot_release_start_intent(self):
         from scripts.lib.ops.dispatch_process import cleanup_registered_docker

@@ -1,6 +1,6 @@
 ---
 title: "P07 Environment Task"
-version: "0.1.1"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -192,6 +192,13 @@ mechanisms, remaining quota limits and unobserved billing without fake PASS.
 | E53 | 161 | W177 | method=automated; tool=Python3.12.3; command=python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main | Corrected 1.2.0 candidate | PASS | Exit0; selected2, violations0, transition overrides0. Links mode all failures0; corpus lifecycle violations0 and occupancy violations0, readiness unchanged from main | required | E52 |
 | E54 | 161 | W177 | method=automated; tool=repository local staged hooks; command=bash scripts/validation/run-ci-precommit.sh --mode local-staged | Initial staged 1.2.0 candidate | FAIL | Exit1; only Ruff format requested formatting of lab.py and its controller test. Formatting was applied and test_lab_controller reran OK | required | - |
 | E55 | 161 | W177 | method=automated; tool=repository local staged hooks; command=bash scripts/validation/run-ci-precommit.sh --mode local-staged | Staged 1.2.0 candidate after Ruff formatting | PASS | Exit0; all applicable hooks passed, including yamllint, markdownlint, Ruff format/check and secret scan | required | E54 |
+| E56 | 161 | W177 | method=observation; tool=Docker29.9.2/Compose5.6.1; command=existing lab.py check/up/down/status path for p07-environment-probe | Identical E33 fixture rebuilt from the recorded definition: one HTTP service, image digest79e7a9b9, cpus0.10/128MiB/pids32, user65534, read-only, internal network, health check interval2s/timeout2s/retries5/start_period2s, ready timeout30s, 10-minute lease | FAIL | Reproduced at 2026-11-23T12:28Z: up exit1 `...-lab-p07-proof-1 is unhealthy`. The readiness record kept FailingStreak5 and Health.Log `Health check exceeded timeout (2s)` (exit -1). In the still-owned container cpu.max was 10000/100000; the same health command succeeded (`ok`) in 7.89-11.48s and a bare python start took 1.80s. Cause: the fixture health budget cannot run within its own 0.1 CPU quota; the server and readiness logic were correct. Owned down exit0; reservations, containers, networks and volumes0 | required | - |
+| E57 | 161 | W177 | method=observation; tool=Docker29.9.2/Compose5.6.1; command=existing lab.py check/up/down/status path for p07-environment-probe | Same fixture and 0.1 CPU limit; only the health budget changed to interval15s/timeout12s/retries3/start_period30s and ready timeout120s | PASS | Check problems0. Up exit0 at 2026-11-23T12:31Z, about31s; service running/healthy with NanoCpus1e8, Memory128MiB, PidsLimit32, user65534 and read-only root enforced. The health check is the use proof, an HTTP GET returning p07-ready. The internal network publishes no host port by design, so the host curl had no target. Status running; owned down exit0; reservations, containers, networks and volumes0; fixture and private env/data deleted | required | E33,E56 |
+| E58 | 161 | W177 | method=automated; tool=GitHub Actions; command=gh pr checks 1143; gh run list --commit 8b89a4ff | PR1143 head 7c683bd8 and merge 8b89a4ff | PASS | candidate-core, candidate-quality, candidate-routing, CodeQL and GitGuardian passed (CI Quality Gates run45172451513); PR1143 merged as 8b89a4ff; main push CI Quality Gates run45173947677 and Push on main run45173947456 succeeded | required | - |
+| E59 | 161 | W177 | method=review; tool=Claude CLI2.1.330; existing first-party Max OAuth; opus5.5/high; safe/restricted; Glob/Grep/Read only; command=- | Disposable copy of 11 P07 files at 8b89a4ff; E16 findings H1/M1/M2/M3 and the readiness change N1 | PASS | Actual catalog Glob/Grep/Read in the owned copy, 29 turns, 159.7s, SDK estimate USD1.24, 0 permission denials; no raw stream kept. Verdict: no blocking defect. M1 and M3 repaired; H1 repaired except a state read after the fill-disk claim outside the setup guard; M2 repaired after a claim, but a pre-claim LabError escaped the compose-start CLI. N1 correct, except an uncaught inspection timeout and low edge cases. Each finding was verified against the source before E60/E61. E16 used CLI2.1.329, which is no longer installed, so this row cannot share its Check and does not resolve it | required | - |
+| E60 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_lab_controller tests.lib.ops.test_compose_start | New regressions for the E59 findings before the fix | FAIL | 163 tests, 2 failures and 5 errors: inspection timeout and invalid output, an exited job with a stale health status, a dead job, the all-missing ledger record, the post-claim state read and the pre-claim LabError CLI path. The state-read fixture first failed on its own full-inventory guard; after a second inventory service it reproduced the escaping `admission_state_unavailable` on the old source | required | - |
+| E61 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_lab_controller tests.lib.ops.test_compose_start | wait_ready inspection guard and job-exit order, ledger record on every failure, the claimed-record read inside the setup guard, and LabError mapped to BLOCKED in the CLI | PASS | Exit0; 163 tests | required | E60 |
+| E62 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest of the fourteen E47 modules plus tests.validation.test_script_manifest | Follow-up candidate | PASS | Exit0; 541 tests, 30 opt-in integration tests skipped and NOT_RUN | required | - |
 
 ##### Resolution Links
 
@@ -209,9 +216,20 @@ head. E44 records that hosted pass on head c28c3bd4 and resolves E37.
 E46 resolves E45 and E48 resolves E47. E49 is the required bounded runtime
 case with the corrected role contract and replaces the failed E33 attempt as
 the readiness proof; it is not linked as resolving E33 because it used a
-different fixture. The original E33
-health-check cause stays unobserved because its fixture and container are
-gone, and it is not attributed to the restart-policy defect. E50 shows that
+different fixture. E56 rebuilt the identical E33 fixture and reproduced the
+failure: a 2s health timeout that a python health command cannot meet under
+the fixture's own 0.1 CPU quota. It was not the restart-policy defect. E57
+resolves E33 and E56 through the same check with only that budget corrected.
+E59 re-reviewed the E16 findings and found three verified follow-ups. E61
+resolves their regressions in E60. E16 itself stays unresolved: the 2.1.329
+CLI it names is gone, and recording E59 under that Check would misstate the
+tool. P16 decides whether E59 supersedes it. Not changed: the root
+compose_start still classifies exited-0 containers by `restart: no` before
+release. Every current root definition with that policy is a job, and a
+misclassified job only keeps its reservation, so the result is conservative.
+Labelling root jobs would recreate HOME containers. Low reviewer items also
+remain (replica count, restarting or paused services waiting for the
+timeout). E50 shows that
 any later unhealthy start keeps a bounded redacted cause after cleanup, and
 E51 confirms owned cleanup. Prior failures stay recorded and are not hidden by
 a successful alternative.
@@ -222,7 +240,7 @@ a successful alternative.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 161 | pending | E01,E02,E03,E44,E46,E49,E50,E51 | Implementation, focused regressions, independent source review, hosted CI and the bounded owned LAB runtime case recorded. Only owner acceptance remains, which P16 may collect; accepted by nobody | @buenhyden |
+| 161 | pending | E01,E02,E03,E44,E46,E49,E50,E51,E57,E58,E59,E61 | Implementation, focused regressions, independent source review, hosted CI and the bounded owned LAB runtime case recorded. Only owner acceptance remains, which P16 may collect; accepted by nobody | @buenhyden |
 
 ##### Remaining Conditions
 
@@ -230,8 +248,10 @@ No required technical failure remains open: hosted CI passed (E44), the
 explicit service/job readiness contract has durable regressions (E46), and
 the owned LAB readiness, use, unhealthy diagnostics and cleanup passed on the
 host (E49-E51). The 1.2.0 delivery PR and its hosted check are recorded with
-that delivery. Owner acceptance remains pending and may move to P16. The
-original E33 health-check cause stays unobserved. Retain live/uncertain
+that delivery. E56/E57 observed and resolved the E33 cause, and E58 records
+the PR1143 and post-merge hosted runs. E59-E62 close the verified re-review
+follow-ups. E16 remains an unresolved review row only because its CLI version
+is gone; P16 owns that decision with owner acceptance. Retain live/uncertain
 reservations and preexisting unrelated work.
 
 #### Handoff

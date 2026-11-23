@@ -1814,6 +1814,54 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual("not ready: inspection failed (exit 1)", reason)
         self.assertEqual([{"error": "inspection failed (exit 1)"}], found)
 
+    def test_wait_ready_turns_a_hung_or_garbled_inspection_into_a_record(self):
+        def hung(command, **kwargs):
+            raise subprocess.TimeoutExpired(command, 30)
+
+        def garbled(command, **kwargs):
+            out = "s\n" if command[1] == "ps" else "{not json"
+            return subprocess.CompletedProcess(command, 0, out, "")
+
+        for fake, error in (
+            (hung, "inspection failed (timeout)"),
+            (garbled, "inspection failed (invalid output)"),
+        ):
+            with (
+                self.subTest(error=error),
+                mock.patch.object(lab, "run", side_effect=fake),
+                mock.patch.object(lab.time, "sleep"),
+            ):
+                self.assertEqual(
+                    (f"not ready: {error}", [{"error": error}]),
+                    lab.wait_ready("docker", "p", 0, roles={"s": "job"}, token="t1"),
+                )
+
+    def test_wait_ready_reads_a_job_exit_before_its_health_status(self):
+        stale = {"Status": "unhealthy"}
+        cases = [
+            ({"Status": "exited", "ExitCode": 0, "Health": stale}, None),
+            ({"Status": "dead", "ExitCode": 137}, "s job dead (exit 137)"),
+        ]
+        for state, expected in cases:
+            with self.subTest(state=state):
+                reason, _ = self.readiness(
+                    {"s": "job"}, [{"Id": "s", "Name": "/s", "State": state}]
+                )
+                self.assertEqual(expected, reason)
+
+    def test_up_records_the_reason_when_no_container_exists(self):
+        self.ready = []
+        with (
+            mock.patch.object(lab.time, "sleep"),
+            mock.patch.dict(lab.os.environ, {"LAB_READY_TIMEOUT_SECONDS": "0"}),
+        ):
+            self.assertEqual(1, self.up())
+        self.assertEqual(
+            {"reason": "not ready: c (missing)", "observed": []},
+            self.ledger()["readiness"],
+        )
+        self.assertEqual(0, self.main("down", "cassandra"))
+
     def test_lab_role_labels_are_explicit_and_valid(self):
         self.assertEqual(
             ({"a": "service", "b": "job", "c": "job"}, []),

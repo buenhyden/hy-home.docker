@@ -15,6 +15,7 @@ from scripts.lib.ops.compose_start import (  # noqa: E402
     load_plan,
     recover_start,
 )
+from scripts.operations.lab import LabError  # noqa: E402
 
 
 class SafeParser(argparse.ArgumentParser):
@@ -55,7 +56,7 @@ def main(argv=None):
             if args.root != ROOT:
                 raise ValueError("unsupported_execution_root")
             result = recover_start(args.root, args.token)
-    except (OSError, ValueError, TypeError, KeyError):
+    except (OSError, ValueError, TypeError, KeyError, LabError):
         print(json.dumps({"result": "BLOCKED"}))
         return 2
     print(json.dumps(result, sort_keys=True, ensure_ascii=True))
