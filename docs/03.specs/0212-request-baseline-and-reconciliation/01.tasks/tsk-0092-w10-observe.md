@@ -1,6 +1,6 @@
 ---
 title: "W10 Observe Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -167,6 +167,8 @@ times, are not recorded by any store and stay unmeasured.
 | Follow-up GREEN | 148 | W164 | `test_observe` | Follow-up fix | PASS | 13 tests | required | Follow-up RED |
 | Backup under budget | 148 | W164 | Daily `hyhome-backup.service` | 2026-11-20 03:42 KST run | FAIL | Exit 1: local Restic and checks ran, the state repository ended at 8200 MiB (over 8 GiB), and the offsite copy was refused at the R2 cap (9.41 GB after upload against 9 GB); read from the journal on 2026-11-24 by TSK-0111 | required | - |
 | Daily backups after | 148 | W164 | `journalctl -u hyhome-backup.service`, lifecycle and size lines only | 2026-11-21 to 24 runs, read 2026-11-24 by TSK-0111 | FAIL | 4 of 4 failed: 11-21 and 11-24 skipped Restic at 8267 and 8269 MiB of state; 11-22 and 11-23 ran local Restic and checks (8075 and 8208 MiB) but the offsite copy was refused at the R2 cap (9.59 GB after upload against 9 GB, owner limit 10 GB; R2 held 7.75 GB) | required | - |
+| Second dry run | 148 | W164 | `restic forget --prune --dry-run` with the step 7 policy | State repository only, read-only, 2026-11-24, after the owner approved one state forget-prune | PASS | Remove 2 of 37 state snapshots (92aae3b4 of 2026-10-08, ed693e17 of 2026-10-10); prune 1.124 GiB; host would also drop 2, so the runbook command covering both sets was not used | required | - |
+| Second state prune | 148 | W164 | `restic forget --prune` with the step 7 policy, state set only | Owner approval of 2026-11-24 for one state forget-prune | PASS | Removed IDs equal the dry run; 1.124 GiB pruned; `restic check` on state: no errors, 35 snapshots; restic part 6402 MiB, about 7.1 GiB with pgBackRest against the 8 GiB budget; host and R2 untouched | required | - |
 
 ### Resolution Links
 
@@ -193,8 +195,11 @@ The daily backup must show the state repository under budget and the
 offsite copy within the R2 cap. Every run from 2026-11-20 to 24 failed
 (Backup under budget, Daily backups after): the state repository grew back
 over 8 GiB and the R2 copy hits its 9 GB cap while the locked memory copies
-of criterion138 remain. The budget, a further prune or the R2 cap is the
-owner's decision; elapsed time does not close this row.
+of criterion138 remain. On 2026-11-24 the owner approved one state
+forget-prune (Second state prune), which brought the state repository to
+about 7.1 GiB; the next daily backup must still succeed, and the R2 cap,
+which a local prune does not lower, is still the owner's decision. Elapsed
+time does not close these rows.
 
 ## Handoff
 
