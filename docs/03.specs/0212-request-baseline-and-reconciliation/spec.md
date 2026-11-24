@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.10.0"
+version: "2.11.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -369,6 +369,11 @@ keeps the HOME selector, the shared admission union against the product
 inventory and the whole-stack refusal, and adds only the D14 delta: the HOME
 job role comes from the `hy-home.role` label, never from the restart policy,
 in the selector, the operating start and the common-controls check.
+
+The direct P15-CLEANUP1.2.0 request adds criterion169/W185 in TSK-0113. It
+keeps the `_workspace` staging contract and every tool's own cleanup, and adds
+only the D15 delta: a lifecycle rule for one-off work artifacts, the current
+classification of the staging surface and removal of what this program owns.
 
 #### Scope
 
@@ -1562,6 +1567,13 @@ target, backup, recovery boundary, and action-specific authorization.
      `restart: "no"`; list the selected jobs in the selection report; keep
      every awaited `service_completed_successfully` dependency a job and
      every job `restart: "no"`; and start no service.
+
+169. TSK-0113 applies P15-CLEANUP1.2.0 to the current Docker workspace.
+     State the lifecycle of one-off work artifacts in ENVIRONMENT-CONSTRAINTS
+     and the harness maintenance guide; classify every item under
+     `_workspace/` by its current consumer; remove only what this program
+     owns and nothing reads; keep the 1.2.0 input package until P17; and
+     confirm no tracked file depends on the package.
 
 ##### Evidence Requirements
 

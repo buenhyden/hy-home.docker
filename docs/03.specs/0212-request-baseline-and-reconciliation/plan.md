@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.10.0"
+version: "2.11.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -452,6 +452,14 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W182 | 166 | Add Claude and Codex provider units to the existing dispatcher with a brief check, a provider sandbox profile and recorded results, and run two real independent workers | W181 | TSK-0110 | Focused RED/GREEN dispatcher and adapter tests; a real two-worker Claude run with overlap and integration; governance and document checks plus normal hosted delivery |
 | W183 | 167 | Link dispatch, provider cost, analysis candidates and their Task and effect in the observe report, expire dispatch run text and folders, and record the real backup results in their owner Task | W182 | TSK-0111 | Focused RED/GREEN observe, analysis and dispatch tests; a read-only observe report on the real stores; governance and document checks plus normal hosted delivery |
 | W184 | 168 | Read the HOME job role from the `hy-home.role` label in the selector, the operating start and the common-controls check, and label the job templates and k6 | W183 | TSK-0112 | Focused RED/GREEN selector, start, controls and real-root role tests; a read-only selection on the real model; governance and document checks plus normal hosted delivery |
+| W185 | 169 | State the one-off artifact lifecycle, classify the staging surface by consumer and remove only owned finished artifacts | W184 | TSK-0113 | Governance and document checks; the staging tracking test; an exact-path removal by the owner; normal hosted delivery |
+
+###### Current P15 cleanup boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0113](01.tasks/tsk-0113-p15-cleanup.md) owns criterion169/W185. The
+staging contract and tool cleanups stay; the lifecycle rule and the current
+classification are added, and the 1.2.0 package stays until P17.
 
 ###### Current P14 Docker boundary
 <!-- core-payload-level:4 -->

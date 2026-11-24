@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.7.0"
+version: "2.8.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -430,6 +430,22 @@ admission, read/write boundaries, readiness and owned cleanup; it does not
 prove product authentication, persistence, backup or every service's health.
 Record actual commands, scopes and failure dispositions in the current Task,
 then delete completed owned probes. Persistent state and tests remain.
+
+##### End-of-work cleanup
+
+When a Task or run ends, list what it made outside its durable owners: probes,
+one-off tests and scripts, dumps, traces, copied fixtures and
+`_workspace/repo-support/<task>/` output. For each, record the owner, the
+consumer that still reads it and the condition that ends it
+(ENVIRONMENT-CONSTRAINTS R169-R172). Move any lasting conclusion into its
+canonical owner first, then remove only what the Task owns and nothing reads.
+Keep the shared memory, capture, analysis, forecast and dispatch stores, the
+scheduled units, current regressions, LAB data and another Task's material; a
+dispatch run folder expires on its own schedule. Delete exact paths only:
+never follow a symlink or mount out, and never prune the host. Material kept
+to recover a failure, or an input package a later step still reads, names its
+owner, the point where work resumes and the condition that deletes it. Confirm
+`git ls-files _workspace/` still lists only the seven contract READMEs.
 
 ##### Observe report
 
