@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -318,12 +318,19 @@ artifact verification and the current gate results.
 | Renovate PR hosted CI (first PR1141 run) | 104 | W109 | `gh pr checks` on the merged head | PR1141 head 4e6dae3f | FAIL | candidate-core failed `test_image_matches_the_compose_pin`: scripts/operations/prometheus-isolated-restore.py still pinned prometheus v3.15.1; fixed in 1c162e85 | required | - |
 | Renovate PR hosted CI | 104 | W109 | `gh pr checks` on the merged head | PR1140 (merged e2839452), PR1048 (d8665e3f), PR1141 (9808e2d4), PR1047 (710645e6); each brought up to date by a Renovate run with the rebase label and merged one at a time, security first | PASS | candidate-core, candidate-quality, candidate-routing, CodeQL and GitGuardian passed on every merged head with none pending. Merge is not application: no HOME service was recreated | required | Renovate PR hosted CI (first PR1141 run) |
 | PostgreSQL 18.6 exposure | 104 | W109 | PostgreSQL security page, checked 2026-11-24 | Rows still declaring postgres 18.6: mng-pg (server) and the mlflow, mng-pg-init, mng-pg-monitor-provision and pact-broker provisioning jobs | FAIL | 18.7 fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150 (CVSS 8.8, authenticated code execution). The 2026-11-11 assessments predate them and now carry that note; the fix is the per-image data-tier update to 18.7 and an owner-approved recreate, not yet done | required | - |
+| HOME apply of the Renovate images | 104 | W109 | Runtime apply: `docker compose -p hy-home-infra up -d --no-deps --no-build --pull never --force-recreate <service>` (RUN-0086 step 11), one service at a time | Owner request 2026-11-24: apply the merged Renovate versions and PostgreSQL 18.7 to the running HOME services; alertmanager, alloy, cadvisor, dozzle, grafana, node-exporter, prometheus, pyroscope, registry, crawl4ai-egress, crawl4ai-loopback (pulled), loki and tempo (rebuilt) | PASS | Pre-check: every target healthy on its previous image. Post-check: each reached healthy on its declared digest before the next started. Rollback: recreate from the previous Compose revision; the old loki/tempo image IDs were no longer present to tag, so their rollback is a rebuild from that revision | required | - |
+| HOME apply of PostgreSQL 18.7 | 104 | W109 | Runtime apply of mng-pg and dev-pg with the 18.7 migration steps | Owner request 2026-11-24: apply the merged Renovate versions and PostgreSQL 18.7 to the running HOME services; PR1173 images built locally | PASS | Pre-check: both healthy on 18.6, `pgbackrest check` passed, pre-upgrade diff backups 20261121-184258F_20261124-084853D and 20261121-184346F_20261124-084902D. Both recreated healthy on PostgreSQL 18.7 with `pgbackrest check` passing. No btree index on bpchar and no gist_trgm_ops index exists in any of 14 databases, so no REINDEX was needed. timescaledb in dev-pg postgres and template1 updated 2.30.2 to 2.30.3. New full backups 20261124-085218F (mng) and 20261124-085311F (dev). Rollback: the 18.6 images remain locally with the diff backups. pgBackRest 2.58 stays below 2.59.3 | required | - |
+| Storybook ingress rehearsal (first run) | 104 | W109 | `HYHOME_STORYBOOK_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.StorybookIngressRehearsalTests` | PR1174 head with the next 16.4.5 images, before the harness fix | FAIL | Three of four tests raised KeyError in the shared SSO summary helper before any assertion, on main with the old image as well; a harness defect, not a Storybook result | required | - |
+| Storybook ingress rehearsal | 104 | W109 | `HYHOME_STORYBOOK_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.StorybookIngressRehearsalTests` | PR1174 head after the summary fix (f35f30ad) | PASS | 4/4: anonymous requests get no content and no login page, non-admins never reach the origin, admins read index, iframe, assets and manifests, and the remote MCP serves readers with a token for its URL only | required | Storybook ingress rehearsal (first run) |
+| HOME apply of Storybook next 16.4.5 | 104 | W109 | `storybook_image.py build --push` and `verify --registry`, then the RUN-0086 recreate of storybook and storybook-mcp | Owner request 2026-11-24: apply the merged Renovate versions and PostgreSQL 18.7 to the running HOME services; PR1174 merged cebbfcec | PASS | Pre-check: both healthy on 9cd150bf. Post-check: both healthy on 9a8ccbf3; an anonymous request to storybook.hy.home.arpa gets 302 to Keycloak. Rollback: the 9cd150bf images remain locally and in the local registry. A final comparison finds only openbao and openbao-agent off their declarations, from an earlier change outside this apply | required | - |
 
 ### Resolution Links
 
 Nothing was linked here before this Task moved to the common form. "Renovate PR hosted
 CI" resolves its first PR1141 run through the same hosted check after the
-restore pin fix. "PostgreSQL 18.6 exposure" stays open until the 18.7 update.
+restore pin fix. "PostgreSQL 18.6 exposure" stays open for the provisioning jobs still on 18.6;
+mng-pg and dev-pg run 18.7 since the HOME apply. The second Storybook
+ingress rehearsal resolves the first, which failed in the test harness.
 
 ## Acceptance Decision
 
