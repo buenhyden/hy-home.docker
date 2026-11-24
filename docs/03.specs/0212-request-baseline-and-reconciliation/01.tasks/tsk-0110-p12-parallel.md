@@ -146,10 +146,13 @@ wiring has one.
 | E21 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.lib.ops.test_dispatch_process.EgressBoundaryTests | Egress regressions on e8141be6 | FAIL | Witnessed RED: 1 failure and 3 errors: Codex refused, no resolver choice, no pasta wrapper, an injected resolver accepted | required | - |
 | E22 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.lib.ops.test_dispatch_process.EgressBoundaryTests | Codex `egress: public` with the first public upstream nameserver; the dispatcher wraps bubblewrap in pasta with no forwarding, no gateway mapping, 198.18.0.0/24 and the private ranges unreachable | PASS | Exit0; 10 tests; with the dispatcher and surface suites 84 tests, 1 opt-in skipped (NOT_RUN) | required | E21 |
 | E23 | 166 | W182 | method=observation; tool=passt pasta, bubblewrap; command=TCP connect probes from a pasta network namespace | The dispatcher's own `_bounded_command` for an egress provider, run through systemd-run, pasta and bubblewrap on this host | PASS | 10.250.5.1:9100, 10.250.1.128:9119, 10.250.4.1:8644 and :22, 10.42.0.1:22, 192.168.0.1:80, 192.168.0.13/.14:443, the gateway and 127.0.0.1:5000 all unreachable; 1.1.1.1:443 open; DNS through 8.8.8.8 resolved; the worker's `ip route del` refused (`Operation not permitted`) | required | E19,E20 |
+| E24 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_process.EgressBoundaryTests | Automated security review of PR 1168: only the RFC 1918, CGNAT and link-local ranges were cut, not the other non-global ranges or a host's own public address | FAIL | Witnessed RED: 2 failures, the special, documentation, benchmark, multicast and reserved ranges and a host public address missing, and an unreadable host address list accepted | required | - |
+| E25 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_process.EgressBoundaryTests | Every non-global IPv4 range plus the host's own global addresses from `ip -j -4 addr`, refused when that list cannot be read | PASS | Exit0; 4 tests; with the adapter tests 12 | required | E24 |
+| E26 | 166 | W182 | method=observation; tool=passt pasta, bubblewrap; command=TCP connect probes from a pasta network namespace | The same real run after E25, adding 192.0.2.1, 198.19.0.1, 224.0.0.1, 240.0.0.1 and 0.0.0.1 | PASS | Every private, special, multicast and reserved target unreachable; 1.1.1.1:443 open; DNS through 8.8.8.8 resolved; the worker's route change refused | required | - |
 
 ##### Resolution Links
 
-E03 resolves the witnessed failures in E02 and E09 those in E08. E14 resolves E07, E12 and E13. E18 resolves E17. E22 resolves E21, and E23 resolves E19 and E20. E07 was refused by admission from the
+E03 resolves the witnessed failures in E02 and E09 those in E08. E14 resolves E07, E12 and E13. E18 resolves E17. E22 resolves E21, E23 resolves E19 and E20, and E25 resolves E24. E07 was refused by admission from the
 linked worktree.
 
 #### Acceptance Decision
@@ -162,7 +165,7 @@ linked worktree.
 
 ##### Remaining Conditions
 
-The Codex worker runs in the egress-limited namespace (E23, ENVIRONMENT-
+The Codex worker runs in the egress-limited namespace (E23, E26, ENVIRONMENT-
 CONSTRAINTS R173); a real Codex run waits for its account limit to lift
 after 2026-11-27 12:53. Hosts on public addresses stay reachable by design,
 so its credential is still exposed to the shell it runs; a brokered

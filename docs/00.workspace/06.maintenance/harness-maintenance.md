@@ -357,9 +357,10 @@ CLI process uses the shared network, a monitored boundary rather than a block.
 A Codex unit's model gets a shell, so it never shares the host network
 (ENVIRONMENT-CONSTRAINTS R173): the sandbox runs inside a `pasta` network
 namespace that forwards no port either way, does not map its gateway to the
-host and uses 198.18.0.0/24; a setup step makes 10.0.0.0/8, 172.16.0.0/12,
-192.168.0.0/16, 100.64.0.0/10 and 169.254.0.0/16 unreachable before
-bubblewrap drops every capability, and the worker resolves names through the
+host and uses 198.18.0.0/24; a setup step makes every non-global IPv4 range
+(private, CGNAT, link-local, special, documentation, benchmark, multicast and
+reserved) and the host's own public addresses unreachable before bubblewrap
+drops every capability, and the worker resolves names through the
 first public upstream nameserver. Without one the unit is refused. The host
 needs the `passt` package and an AppArmor profile that lets `/usr/bin/pasta`
 create user namespaces (`/etc/apparmor.d/pasta-userns`, the same form as
