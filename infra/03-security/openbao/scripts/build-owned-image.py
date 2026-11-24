@@ -26,8 +26,6 @@ class Blocked(Exception):
 
 SELECTION = {
     "github.com/go-jose/go-jose/v4": ("v4.1.4", "v4.1.9"),
-    "github.com/klauspost/compress": ("v1.19.2", "v1.20.4"),
-    "golang.org/x/net": ("v0.61.0", "v0.62.0"),
 }
 
 
@@ -474,15 +472,15 @@ def build_inputs(build: Path) -> dict:
     inputs = decode_json(read_regular(build / "build-inputs.json", 65536, source=True))
     expected = {
         "schema_version": 1,
-        "builder_version": "go1.27.3",
-        "version": "2.7.2+hyhome.go1.27.3.net0.62.0.r1",
-        "upstream_commit": "9e0a0d3c3504a0a00b45e61355afac5e35c78379",
-        "source_archive_sha256": "f50ac5b150e780728b0f8c5c1533e6542576ff3834f9a89d6c9921e6759f0109",
-        "builder": "cgr.dev/chainguard/go@sha256:0c664830ca01dbc9fb797ec3b815ac73ba0a3c9faa42dfe5ad55ab7dc48e66a4",
+        "builder_version": "go1.27.4",
+        "version": "2.7.3+hyhome.go1.27.4.net0.62.0.r1",
+        "upstream_commit": "0439ef5812538733afb277b4445a54706edc1db7",
+        "source_archive_sha256": "b705396abfa1446ef19c11a3b9ddfbb87e535c6e6ee0849c48dca4d36a98471d",
+        "builder": "cgr.dev/chainguard/go@sha256:d9b17ae2c0daae7213dcf0c9b1c35573cff1f072a206c2d40a16eec9b63eb451",
         "runtime": "docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b",
-        "tag": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1",
-        "commit_date": "2026-10-26T19:32:27Z",
-        "source_date_epoch": 1793043147,
+        "tag": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1",
+        "commit_date": "2026-11-19T19:06:41Z",
+        "source_date_epoch": 1795115201,
     }
     if any(inputs.get(key) != value for key, value in expected.items()):
         raise Blocked("unreviewed-build-input")
@@ -503,8 +501,8 @@ def compile_command(inputs: dict) -> str:
     flags = " ".join(
         f"-X {namespace}{key}={value}"
         for key, value in (
-            ("fullVersion", "2.7.2"),
-            ("VersionMetadata", "hyhome.go1.27.3.net0.62.0.r1"),
+            ("fullVersion", "2.7.3"),
+            ("VersionMetadata", "hyhome.go1.27.4.net0.62.0.r1"),
             ("GitCommit", inputs["upstream_commit"]),
             ("CommitDate", inputs["commit_date"]),
         )
@@ -536,7 +534,7 @@ def verify_binary(path: Path, information: Path, inputs: dict) -> str:
     ):
         raise Blocked("binary-interpreter-or-header")
     info = read_regular(information, 1024**2, source=True).decode()
-    if not info.splitlines()[0].endswith("go1.27.3"):
+    if not info.splitlines()[0].endswith("go1.27.4"):
         raise Blocked("binary-compiler-version")
     selected = {
         parts[1]: parts[2]

@@ -12,11 +12,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "infra/03-security/openbao/scripts"
-IMAGE = "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5"
+IMAGE = "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa"
 TEMPLATE_STANZA = re.compile(
     r'source\s*= "([^"]+)"\n\s*destination = "([^"]+)"\n(?:.*\n)??\s*perms\s*= (\d+)'
 )
-MANIFEST = "sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5"
+MANIFEST = "sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa"
 
 
 class AgentContractTests(unittest.TestCase):

@@ -1249,9 +1249,12 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             self.assertTrue(row["compose_file"].startswith("infra/"))
             self.assertEqual("NOT_RUN", row["deployment"])
             if row["service"] in {"openbao", "openbao-agent"}:
-                # 2026-11-10: the r2 pin is bound but not yet reviewed; the r1
-                # evidence receipt stays in the history rows, not on this row.
-                self.assertIn("net0.62.0-r1@sha256:ef27a440", row["current_declared"])
+                # 2026-11-24: the r4 (2.7.3) pin is bound but not yet accepted;
+                # earlier receipts stay in the history rows, not on this row.
+                self.assertIn(
+                    "2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a88",
+                    row["current_declared"],
+                )
                 self.assertEqual("UNKNOWN", row["target_declared_digest"])
                 self.assertTrue(row["sbom_scan"].startswith("NOT_RUN"))
                 self.assertTrue(row["signature"].startswith("NOT_RUN"))

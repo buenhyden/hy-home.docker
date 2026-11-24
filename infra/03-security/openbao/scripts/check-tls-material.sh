@@ -6,7 +6,7 @@ umask 077
 fail() { printf 'TLS_MATERIAL FAIL check=%s\n' "$1"; exit 1; }
 [ "$#" -eq 2 ] || fail arguments
 material=$1
-[ "$2" = hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5 ] || fail image
+[ "$2" = hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa ] || fail image
 case "$material" in /*) ;; *) fail absolute-path ;; esac
 [ ! -L "$material" ] || fail directory-symlink
 for name in ca.pem server.pem server-key.pem; do

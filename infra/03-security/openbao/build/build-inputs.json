@@ -1,43 +1,41 @@
 {
   "schema_version": 1,
-  "version": "2.7.2+hyhome.go1.27.3.net0.62.0.r1",
-  "tag": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1",
-  "upstream_commit": "9e0a0d3c3504a0a00b45e61355afac5e35c78379",
-  "commit_date": "2026-10-26T19:32:27Z",
-  "source_date_epoch": 1793043147,
-  "source_archive_sha256": "f50ac5b150e780728b0f8c5c1533e6542576ff3834f9a89d6c9921e6759f0109",
-  "source_archive_url": "https://github.com/openbao/openbao/releases/download/v2.7.2/openbao-dist-v2.7.2.tar.xz",
-  "builder": "cgr.dev/chainguard/go@sha256:0c664830ca01dbc9fb797ec3b815ac73ba0a3c9faa42dfe5ad55ab7dc48e66a4",
-  "builder_index": "sha256:79d209c423918068c0cc6061b8452468fad709e1dfdaddbf7be4562aa09bb2c4",
-  "builder_version": "go1.27.3",
+  "version": "2.7.3+hyhome.go1.27.4.net0.62.0.r1",
+  "tag": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1",
+  "upstream_commit": "0439ef5812538733afb277b4445a54706edc1db7",
+  "commit_date": "2026-11-19T19:06:41Z",
+  "source_date_epoch": 1795115201,
+  "source_archive_sha256": "b705396abfa1446ef19c11a3b9ddfbb87e535c6e6ee0849c48dca4d36a98471d",
+  "source_archive_url": "https://github.com/openbao/openbao/releases/download/v2.7.3/openbao-dist-v2.7.3.tar.xz",
+  "builder": "cgr.dev/chainguard/go@sha256:d9b17ae2c0daae7213dcf0c9b1c35573cff1f072a206c2d40a16eec9b63eb451",
+  "builder_index": "sha256:97b081e091e2c7df54b30f468969ea2e62d7d1a64fff89346facb564da979300",
+  "builder_version": "go1.27.4",
   "runtime": "docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b",
   "alpine_key_url": "https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub",
   "alpine_key_sha256": "207e4696d3c05f7cb05966aee557307151f1f00217af4143c1bcaf33b8df733f",
   "apk_indexes": {
-    "community": "2f7e6294f27beb60fc4731c62f31ca4d49c334cb20ca7dba3f0987bb0e7e92a8",
-    "main": "1c393e745f0c3af8b94d6a6125373d00cc88b401ad468d28a5d0dc7f7ee7c829"
+    "community": "cdf39d09fb5d96e8b9ca4bbe20cdd80ca4904dcc2126cea192bff922d85f8ee2",
+    "main": "2eaa34268b31d418da3f95a0bb7572e0595da6e44d77184c3143f5a0a8362f3a"
   },
-  "go_patch_sha256": "b662b703a34800e5d5a0305408704483d3bfeb81c0e2100454bfa0a05b034fb0",
-  "recipe_sha256": "54515b745eed980c41eed3657adfc21632e6c39ee490444d60edcf37d5943bbf",
+  "go_patch_sha256": "2a747d85f63aff8ce8212cb5b4905f09978de76b18e95c59cf002bbc4c39c47a",
+  "recipe_sha256": "73cd0f350048b396215644d519a078df46ad9211651523a9f408f49d5118e087",
   "modules": {
-    "github.com/go-jose/go-jose/v4": "v4.1.9",
-    "github.com/klauspost/compress": "v1.20.4",
-    "golang.org/x/net": "v0.62.0"
+    "github.com/go-jose/go-jose/v4": "v4.1.9"
   },
   "apk_requested": {
     "ca-certificates": "20261020-r0",
-    "libcap": "2.78-r0",
-    "su-exec": "0.3-r0",
     "dumb-init": "1.2.5-r4",
-    "tzdata": "2026f-r0",
     "gcompat": "1.1.0-r4",
-    "libcrypto3": "3.5.9-r0",
-    "libssl3": "3.5.9-r0",
+    "libcap": "2.78-r0",
+    "libcrypto3": "3.5.9-r1",
+    "libssl3": "3.5.9-r1",
+    "su-exec": "0.3-r0",
+    "tzdata": "2026f-r0",
     "zlib": "1.4-r0"
   },
   "publisher_receipts": {
-    "builder": "234e0194bd6e287da67a5f1e74d1e5e5d1a2a4717911e8d9096b425e2e5ecc53",
-    "source_checksums": "a7d2d6c1a25d00f4882f68828490c6dae35b72a38d65cb76599ac248a70e2781"
+    "builder": "2a64edb74945221be3f54f93567c4f71a473c020c52be48174fa20799e8db5fd",
+    "source_checksums": "6c4218891c532df1041930932a5ba6b281f5b6e6b7c2eb6bd02dd3d1481f27bf"
   },
   "boundary": {
     "memory_bytes": 4294967296,
@@ -52,194 +50,194 @@
   },
   "apk_closure": [
     {
+      "architecture": "x86_64",
       "filename": "busybox-1.37.0-r31.apk",
+      "index_control_checksum": "Q1tUBevAL33YvpW2JlxUskPVRWq48=",
       "name": "busybox",
-      "version": "1.37.0-r31",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 504769,
       "sha256": "0e626fa97cf937fda7bba4ed4dde8e2f2dbb5083ac34e02180cec0c4eba9351b",
-      "index_control_checksum": "Q1tUBevAL33YvpW2JlxUskPVRWq48="
+      "size": 504769,
+      "version": "1.37.0-r31"
     },
     {
+      "architecture": "x86_64",
       "filename": "busybox-binsh-1.37.0-r31.apk",
+      "index_control_checksum": "Q1XL0UrMbxgExbrGx33CxJLwELD8c=",
       "name": "busybox-binsh",
-      "version": "1.37.0-r31",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 1571,
       "sha256": "93f803ae5db6b729c0f66f4afba6e907ccc17d7d5f8b8c3d25bdb4636de2c48a",
-      "index_control_checksum": "Q1XL0UrMbxgExbrGx33CxJLwELD8c="
+      "size": 1571,
+      "version": "1.37.0-r31"
     },
     {
+      "architecture": "x86_64",
       "filename": "ca-certificates-20261020-r0.apk",
+      "index_control_checksum": "Q1u5EAmbDnuKr2yRSXmG/co6uxPTU=",
       "name": "ca-certificates",
-      "version": "20261020-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 129361,
       "sha256": "ca8de7a7469e2a04b9008eb728d6de1a6da691e09e3379d83dfd77bbfce4e3f9",
-      "index_control_checksum": "Q1u5EAmbDnuKr2yRSXmG/co6uxPTU="
+      "size": 129361,
+      "version": "20261020-r0"
     },
     {
+      "architecture": "x86_64",
       "filename": "dumb-init-1.2.5-r4.apk",
+      "index_control_checksum": "Q1y0y5o/shBMRX8ZSN1QqpxhMK7fc=",
       "name": "dumb-init",
-      "version": "1.2.5-r4",
-      "architecture": "x86_64",
       "repository": "community",
-      "size": 36298,
       "sha256": "7f92d9a2dc6c1aaefa3bc80e88dc11136a0e7a7d6734e40a3d7f603d28ca5489",
-      "index_control_checksum": "Q1y0y5o/shBMRX8ZSN1QqpxhMK7fc="
+      "size": 36298,
+      "version": "1.2.5-r4"
     },
     {
+      "architecture": "x86_64",
       "filename": "gcompat-1.1.0-r4.apk",
+      "index_control_checksum": "Q1zmR63U4WBS2vITT+ryYz4AIcObQ=",
       "name": "gcompat",
-      "version": "1.1.0-r4",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 32878,
       "sha256": "6f4f58bc5df7c9a6460710e30fd810eabc309cd6b7f209f491a9dfaf44859dbc",
-      "index_control_checksum": "Q1zmR63U4WBS2vITT+ryYz4AIcObQ="
+      "size": 32878,
+      "version": "1.1.0-r4"
     },
     {
+      "architecture": "x86_64",
       "filename": "libcap-2.78-r0.apk",
+      "index_control_checksum": "Q1L9PvC0NQJRyorp7thV4z8AHSTYE=",
       "name": "libcap",
-      "version": "2.78-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 1314,
       "sha256": "658704c0b4fced376150da34d03ca3fa4bf194a94012d094c047ad4e20473528",
-      "index_control_checksum": "Q1L9PvC0NQJRyorp7thV4z8AHSTYE="
+      "size": 1314,
+      "version": "2.78-r0"
     },
     {
+      "architecture": "x86_64",
       "filename": "libcap-getcap-2.78-r0.apk",
+      "index_control_checksum": "Q19Bm1QyCWwsZHUtF1HRT9lDTuxvc=",
       "name": "libcap-getcap",
-      "version": "2.78-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 4323,
       "sha256": "649b1de7cc4932d538b9d3f8760f1520b8f18babffb8e996dd9680f3e55bff27",
-      "index_control_checksum": "Q19Bm1QyCWwsZHUtF1HRT9lDTuxvc="
+      "size": 4323,
+      "version": "2.78-r0"
     },
     {
+      "architecture": "x86_64",
       "filename": "libcap-setcap-2.78-r0.apk",
+      "index_control_checksum": "Q17xherOJMMoT7/ci1vpljvTH8rfk=",
       "name": "libcap-setcap",
-      "version": "2.78-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 5573,
       "sha256": "79db5bb2c75ae67f97cb8982c6f26d78fc16cc01a2cc560a1764db981c6cecc2",
-      "index_control_checksum": "Q17xherOJMMoT7/ci1vpljvTH8rfk="
+      "size": 5573,
+      "version": "2.78-r0"
     },
     {
+      "architecture": "x86_64",
       "filename": "libcap-utils-2.78-r0.apk",
+      "index_control_checksum": "Q11VTBSa9Dp9+1qlgEXDFrJSNVroM=",
       "name": "libcap-utils",
-      "version": "2.78-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 19256,
       "sha256": "fb2137ea57d70951e7f81733272a0926f2b906f97d395d3ad59ce4d5af3e0a1b",
-      "index_control_checksum": "Q11VTBSa9Dp9+1qlgEXDFrJSNVroM="
+      "size": 19256,
+      "version": "2.78-r0"
     },
     {
+      "architecture": "x86_64",
       "filename": "libcap2-2.78-r0.apk",
+      "index_control_checksum": "Q1Vi3y8KkXpS2XsFrXvtM0FK2izUs=",
       "name": "libcap2",
-      "version": "2.78-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 21582,
       "sha256": "42886a7b4bcde26347c712925c8dc7db202b6029ef9b8c7ee81577ab7bdd8fad",
-      "index_control_checksum": "Q1Vi3y8KkXpS2XsFrXvtM0FK2izUs="
+      "size": 21582,
+      "version": "2.78-r0"
     },
     {
-      "filename": "libcrypto3-3.5.9-r0.apk",
+      "architecture": "x86_64",
+      "filename": "libcrypto3-3.5.9-r1.apk",
+      "index_control_checksum": "Q1I05gx2S9sTHg77/A+WuZaCWiHJo=",
       "name": "libcrypto3",
-      "version": "3.5.9-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 1980198,
-      "sha256": "6632d758d8f5e9ea3b650fe966f23bbf9a202f8b8dceecac93da135dec5e3689",
-      "index_control_checksum": "Q1HA3ulzTPIvyXzdGBkTu9cQ5t+wg="
+      "sha256": "042026082cc9bc7872d1baa81755c50efa70b05f03b5369fdc5f0a1303009720",
+      "size": 1980117,
+      "version": "3.5.9-r1"
     },
     {
-      "filename": "libssl3-3.5.9-r0.apk",
+      "architecture": "x86_64",
+      "filename": "libssl3-3.5.9-r1.apk",
+      "index_control_checksum": "Q1liSMx7iQMBbzF6s3hvx1ksKDoFw=",
       "name": "libssl3",
-      "version": "3.5.9-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 381860,
-      "sha256": "05e3393fb95aa5751ca2f9d242f659f6cff82c1cc7767cc2df4a086f7ad01877",
-      "index_control_checksum": "Q1IMTJDqnSCp3ToE3q3yxsT2QjNkM="
+      "sha256": "18c5778cbe52e1991303f8531970b05d4e6e036ea08349322f7422f42a689dc7",
+      "size": 382098,
+      "version": "3.5.9-r1"
     },
     {
+      "architecture": "x86_64",
       "filename": "libucontext-1.5.1-r0.apk",
+      "index_control_checksum": "Q1gxGu5HiXsMrb/x9LgyCvqFjAORE=",
       "name": "libucontext",
-      "version": "1.5.1-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 4516,
       "sha256": "fda972c0297b95efa2801de28d0a2995457cab85401c6d885a9c66641d79500c",
-      "index_control_checksum": "Q1gxGu5HiXsMrb/x9LgyCvqFjAORE="
+      "size": 4516,
+      "version": "1.5.1-r0"
     },
     {
+      "architecture": "x86_64",
       "filename": "musl-1.2.6-r3.apk",
+      "index_control_checksum": "Q1dw6DBNlY3O2Y12mX356Podtcoy8=",
       "name": "musl",
-      "version": "1.2.6-r3",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 415466,
       "sha256": "e142255d0fa397f14318996bc10378093dcc069dc3dd1b6818c8f28a789c21da",
-      "index_control_checksum": "Q1dw6DBNlY3O2Y12mX356Podtcoy8="
+      "size": 415466,
+      "version": "1.2.6-r3"
     },
     {
+      "architecture": "x86_64",
       "filename": "musl-obstack-1.2.3-r2.apk",
+      "index_control_checksum": "Q1BE47EM7ZWOenQoL6+yCRvA/rwZk=",
       "name": "musl-obstack",
-      "version": "1.2.3-r2",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 4379,
       "sha256": "0bb29f7975b24f18170bf0ccbbf81e85e5ccf05f913544a6d7378f03da535852",
-      "index_control_checksum": "Q1BE47EM7ZWOenQoL6+yCRvA/rwZk="
+      "size": 4379,
+      "version": "1.2.3-r2"
     },
     {
+      "architecture": "x86_64",
       "filename": "ssl_client-1.37.0-r31.apk",
+      "index_control_checksum": "Q1wiD0pRJaMTr3M+mN75QTK7Hp1A0=",
       "name": "ssl_client",
-      "version": "1.37.0-r31",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 4686,
       "sha256": "e578a140670e4cf9816117b0c2063632bf3754ecbe8fa593a7fd2b4039372bf0",
-      "index_control_checksum": "Q1wiD0pRJaMTr3M+mN75QTK7Hp1A0="
+      "size": 4686,
+      "version": "1.37.0-r31"
     },
     {
+      "architecture": "x86_64",
       "filename": "su-exec-0.3-r0.apk",
+      "index_control_checksum": "Q1qSe5GhOmAg5kGDr0aUxb07P589Q=",
       "name": "su-exec",
-      "version": "0.3-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 3775,
       "sha256": "4003163f58cd4a75df79973171d25e4912df4284d8bac9850ac267b58b969be5",
-      "index_control_checksum": "Q1qSe5GhOmAg5kGDr0aUxb07P589Q="
+      "size": 3775,
+      "version": "0.3-r0"
     },
     {
+      "architecture": "x86_64",
       "filename": "tzdata-2026f-r0.apk",
+      "index_control_checksum": "Q1CLOCf1X5zFaR4n9o0D10G/lCKgs=",
       "name": "tzdata",
-      "version": "2026f-r0",
-      "architecture": "x86_64",
       "repository": "main",
-      "size": 190864,
       "sha256": "f41a4a5913372a3694f157825f5133fe32743e679ed8476f258c984e13113602",
-      "index_control_checksum": "Q1CLOCf1X5zFaR4n9o0D10G/lCKgs="
+      "size": 190864,
+      "version": "2026f-r0"
     },
     {
-      "filename": "zlib-1.4-r0.apk",
-      "name": "zlib",
-      "version": "1.4-r0",
       "architecture": "x86_64",
+      "filename": "zlib-1.4-r0.apk",
+      "index_control_checksum": "Q14j+c5OMsvdJ78cidhOg7phxCkLw=",
+      "name": "zlib",
       "repository": "main",
-      "size": 56761,
       "sha256": "7b05bc778b8b25cd880835b40114182bd4d1581717504d0129c810c0a14291cb",
-      "index_control_checksum": "Q14j+c5OMsvdJ78cidhOg7phxCkLw="
+      "size": 56761,
+      "version": "1.4-r0"
     }
   ],
   "oci_helper_sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"

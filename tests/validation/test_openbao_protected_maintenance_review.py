@@ -27,7 +27,7 @@ class ReviewRegressionTests(unittest.TestCase):
     run_ceremony = fixtures.CeremonyTests.run_ceremony
 
     def test_exact_owned_version_is_supported_and_unknown_suffixes_are_denied(self):
-        owned = "2.7.2+hyhome.go1.27.3.net0.62.0.r1"
+        owned = "2.7.3+hyhome.go1.27.4.net0.62.0.r1"
         M.check_seal({**fixtures.seal(), "version": owned}, CLUSTER)
         for earlier in (
             "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
