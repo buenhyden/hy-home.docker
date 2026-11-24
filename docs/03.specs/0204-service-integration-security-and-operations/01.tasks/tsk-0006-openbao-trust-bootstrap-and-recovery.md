@@ -4229,6 +4229,28 @@ Prometheus and Alertmanager queries were run read-only on HOME. The approved
 commit for the window becomes the merge commit that carries the driver; the
 issuer helper is installed from that commit in prep.
 
+**Independent review of the driver.** A read-only `security-auditor` review of
+`b3187f822` returned FAIL with three blocking findings, all fixed in the
+follow-up commit. (1) and (2): the window path record was sourced inside a step
+function, so its `declare -p` lines became local and later steps lost
+`P01_SCRIPT_DIR` and `P01_INPUTS`; the driver now reloads the record and its own
+state at top level before every step, and a flow test with stubbed
+`owner-window.sh` and `sudo` fails on the old driver and passes on the new one.
+(3) The running-backup gate accepted the oneshot `activating` state; it now
+requires `inactive`. Non-blocking fixes: the bootstrap, ceremony and sweep are
+separate resume points, as are the silence and the alert record; failed alert
+queries stop instead of reading as "no alerts"; the W0 checks now include the
+last backup result, the SEC01 lookup date (until 2026-12-01), `/dev/shm` without
+`noexec`, the R2 headroom and the audit/mount list as confirmations; Gatus
+BLOCKED is reported at the end; and `git` runs through `p01_git`.
+
+**Backup gate observation.** The daily HOME backup has failed on 2026-11-13,
+11-14, 11-17 to 11-19 and 11-21 to 11-24, mostly with "BACKUP_STATE_REPO_DIR
+uses 8269 MiB, at or over the 8 GiB budget; Restic backup skipped"; the last
+success was 2026-11-16. RUN-0105 W0 requires a passing last backup, so the
+window is blocked until the owner decides how to bring the local Restic
+repository back under budget.
+
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.

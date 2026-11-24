@@ -25,12 +25,15 @@ class WindowDriverTests(unittest.TestCase):
         runner = (RUNBOOKS / "0085-openbao.md").read_text()
         runner = "p01_git() {" + runner.split("p01_git() {", 1)[1].split("```", 1)[0]
         self.assertIn(runner, driver)
-        rows = re.findall(r"^(\S+(?: ?\| ?\S+)*)\)$", WINDOW.read_text(), re.M)
+        rows = re.findall(r"^([a-z0-9| -]+)\)$", WINDOW.read_text(), re.M)
         steps = {s.strip() for row in rows for s in row.split("|")}
-        used = set(re.findall(r"\bow ([a-z][a-z0-9-]*)", driver))
-        used |= set(re.findall(r'owner-window\.sh"? ([a-z][a-z0-9-]*)', driver))
+        code = "\n".join(
+            line for line in driver.splitlines() if not line.lstrip().startswith("#")
+        )
+        used = set(re.findall(r"\bow ([a-z][a-z0-9-]*)", code))
+        used |= set(re.findall(r'owner-window\.sh"? ([a-z][a-z0-9-]*)', code))
         self.assertGreaterEqual(len(used), 20)
-        self.assertLessEqual(used - {"copy"}, steps)
+        self.assertLessEqual(used, steps)
 
     def test_bad_arguments_stop_before_any_state(self):
         with tempfile.TemporaryDirectory() as runtime:
@@ -48,6 +51,57 @@ class WindowDriverTests(unittest.TestCase):
                     )
                     self.assertEqual(done.returncode, 2)
                     self.assertEqual(os.listdir(runtime), [])
+
+
+class WindowDriverFlowTests(unittest.TestCase):
+    def test_finish_sees_paths_a_later_step_added(self):
+        # The vars file is reloaded at top level before every step, so a path an
+        # owner-window step appended (P01_INPUTS) reaches Finish.
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            runtime, scripts, bin_dir = tmp / "run", tmp / "scripts", tmp / "bin"
+            for d in (runtime, scripts, bin_dir):
+                d.mkdir()
+            inputs = tmp / "inputs"
+            inputs.mkdir()
+            (inputs / "w3b-receipt.json").write_text("{}")
+            log = tmp / "calls"
+            (scripts / "owner-window.sh").write_text(f'echo "ow $*" >>{log}\n')
+            (bin_dir / "sudo").write_text(f'#!/bin/sh\necho "sudo $*" >>{log}\n')
+            (bin_dir / "sudo").chmod(0o755)
+            (runtime / "p01-window-run.state").write_text("T0=1\n")
+            (runtime / "p01-window.vars").write_text(
+                f'declare -- P01_SCRIPT_DIR="{scripts}"\n'
+                f'declare -- P01_INPUTS="{inputs}"\n'
+            )
+            evidence = tmp / "evidence"
+            done = subprocess.run(
+                ["bash", str(DRIVER), "0" * 40, "finish"],
+                env={
+                    "PATH": f"{bin_dir}:/usr/bin:/bin",
+                    "HOME": str(tmp),
+                    "XDG_RUNTIME_DIR": str(runtime),
+                    "P01_EVIDENCE_DIR": str(evidence),
+                },
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(done.returncode, 0, done.stderr)
+            self.assertTrue((evidence / "inputs" / "w3b-receipt.json").is_file())
+            self.assertEqual(
+                log.read_text().splitlines(),
+                [
+                    f"ow evidence {evidence}",
+                    "ow cleanup",
+                    "sudo systemctl start hyhome-backup.timer",
+                ],
+            )
+
+    def test_no_step_sources_the_window_record(self):
+        driver = DRIVER.read_text()
+        for body in re.findall(r"^step_\w+\(\) \{\n(.*?)^\}", driver, re.M | re.S):
+            self.assertNotIn("p01-window.vars", body)
 
 
 class OwnerWindowScriptTests(unittest.TestCase):
