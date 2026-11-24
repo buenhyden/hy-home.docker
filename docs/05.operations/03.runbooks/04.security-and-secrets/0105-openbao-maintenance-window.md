@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -398,6 +398,22 @@ script는 그 script만 끝나고 셸은 남으므로 명령마다 exit 0을 확
 셸에서 `. "$XDG_RUNTIME_DIR/p01-window.vars"`로 되살린 뒤 정리나 재시도를 한다. 값·token은 이
 파일에 넣지 않는다. 마지막 로그인 세션이 끝나면 logind가 W1 custody가 있는
 `$XDG_RUNTIME_DIR`를 지우므로 Linger나 별도 세션으로 막는다.
+
+###### Window Driver
+<!-- core-payload-level:6 -->
+
+[window driver](../../../../infra/03-security/openbao/scripts/window-run.sh)는 이 window의 준비부터
+Finish까지(W2 생략, K8s writer 없음)를 위 순서대로 실행한다. 같은 깨끗한 셸에서 `p01_run`을 붙여 넣은 뒤
+`p01_run <승인 commit> infra/03-security/openbao/scripts/window-run.sh <승인 commit>`로 실행한다.
+share와 token은 `owner-window.sh`의 숨김 prompt로만 받고, 각 단계가 exit 0이 아니면 멈춰 Abort and
+Cleanup Rules를 출력하며 다시 시도하지 않는다. 원인을 고친 뒤 효과가 없던 단계는 둘째 인자(`prep`부터
+`finish`까지의 단계 이름)로 이어서 실행한다. 단계마다 window 경로 기록을 다시 읽으므로 앞 단계가 남긴
+경로를 뒤 단계가 쓴다. `operator_tools`·`issuance_journal`·`agent_volume`의 기본값은 SPEC-0204
+TSK-0006의 2026-11-24 W0 기록이고, W3 snapshot 경로와 증거 경로는 window마다 새로 정하는 driver
+기본값이며 끝에 출력하는 `P01_SNAPSHOT_DIRECTORY`를 Task에 기록한다. 바꿀 때만 실행 전에 export한다.
+마지막 backup 실패, 7일이 지난 SEC01 stable 조회, 실행 중인 backup이면 시작하지 않는다. 기대 버전과
+Raft identity 같은 고정 사실은 driver 안에 있고, K8s writer나 W2가 필요한 window는 이 driver를 쓰지
+않는다.
 
 ###### W0 Expected Results
 <!-- core-payload-level:6 -->

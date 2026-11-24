@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.41"
+version: "0.2.42"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4215,6 +4215,48 @@ and Finish skips `k8s-writers.sh`.
 - `agent_volume`: `hy-home-infra_openbao-agent-data`, the volume mounted at
   `/openbao/agent` in the running Agent.
 - `XDG_RUNTIME_DIR` is a 0700 tmpfs, and Linger is `yes`.
+
+#### Window driver 2026-11-24
+
+The owner asked for one script that runs steps 1 to 13 with the inputs listed.
+`infra/03-security/openbao/scripts/window-run.sh` runs prep, W0, W1, W1c, W3,
+W3b, W3a, W4, W5, W6, W7 and Finish in that order through the bootstrap's
+hash-checked `owner-window.sh` copy, with W2 skipped and no K8s writer, as the W0
+inputs above record. It embeds the RUN-0085 runner verbatim (a test keeps them
+equal), reads no secret value, stops at the first nonzero step with the abort
+rules, enforces the T+15/45/55/80 stops, and resumes only from a named step. Its
+Prometheus and Alertmanager queries were run read-only on HOME. The approved
+commit for the window becomes the merge commit that carries the driver; the
+issuer helper is installed from that commit in prep.
+
+**Independent review of the driver.** A read-only `security-auditor` review of
+`b3187f822` returned FAIL with three blocking findings, all fixed in the
+follow-up commit. (1) and (2): the window path record was sourced inside a step
+function, so its `declare -p` lines became local and later steps lost
+`P01_SCRIPT_DIR` and `P01_INPUTS`; the driver now reloads the record and its own
+state at top level before every step. A flow test runs a driver copy against a
+temporary checkout with stubbed `owner-window.sh` and `sudo`: the stubbed W3b
+appends `P01_INPUTS` and Finish must use it. It fails on `b3187f822` and passes
+now, without the HOME path, so it also runs in CI.
+(3) The running-backup gate accepted the oneshot `activating` state; it now
+requires `inactive`. Non-blocking fixes: the bootstrap, ceremony and sweep are
+separate resume points, as are the silence and the alert record; failed alert
+queries stop instead of reading as "no alerts"; prep refuses a SEC01 lookup
+older than 2026-12-01, stops the backup timer before it checks for a running
+backup, and fails on a `git` error; W0 checks the last backup result and the
+backup journal (a read failure stops it), a tmpfs `/dev/shm` without `noexec`,
+and asks for the R2 headroom and the audit/mount list; a fresh run ignores a
+previous window's record until W0 clears it; Finish copies only the contract,
+lease and receipts; and Gatus BLOCKED is reported at the end. A second read-only
+review of `90f9ae240` confirmed the three blocking fixes and found that the
+first flow test needed the HOME path, which the rewrite above removes.
+
+**Backup gate observation.** The daily HOME backup has failed on 2026-11-13,
+11-14, 11-17 to 11-19 and 11-21 to 11-24, mostly with "BACKUP_STATE_REPO_DIR
+uses 8269 MiB, at or over the 8 GiB budget; Restic backup skipped"; the last
+success was 2026-11-16. RUN-0105 W0 requires a passing last backup, so the
+window is blocked until the owner decides how to bring the local Restic
+repository back under budget.
 
 ### Blockers and Decisions
 
