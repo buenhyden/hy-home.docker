@@ -968,7 +968,8 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 rows[name][key]["latest_ref"],
             )
         for decision, group, count in (
-            ("patch", "patch", 12),
+            # Five 2026-11-11 patch rows were resolved on 2026-11-24 (patch_resolved).
+            ("patch", "patch", 7),
             ("no-fix", "no_fix", 6),
             ("defer", "defer", 42),
         ):
@@ -983,6 +984,14 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     rows[name][key]["security_ref"],
                 )
                 self.assertTrue(lookups[group][name]["next_action"])
+        resolved = set(lookups.get("patch_resolved", {}))
+        for name in resolved:
+            self.assertEqual("not-affected", rows[name]["decision"])
+            self.assertEqual(
+                f"release-lookups.json#/{key}/patch_resolved/{name}",
+                rows[name][key]["security_ref"],
+            )
+            self.assertTrue(lookups["patch_resolved"][name]["resolution"])
         final = {name for name, row in rows.items() if "candidate_image" in row}
         self.assertEqual({"keycloak", "open_notebook", "qdrant"}, final)
         for name, evidence in lookups["patch"].items():

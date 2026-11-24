@@ -59,7 +59,7 @@ from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 
 SOURCE = "mng-pg"
-SOURCE_IMAGE_TAG = "hy-home/mng-pg:18.7-pgbackrest"
+SOURCE_IMAGE_TAG = "hy-home/mng-pg:18.7-pgbackrest2.60.1"
 STANZA = "mng"
 UID = "70"
 LABEL_KEY = "hy.rehearsal"

@@ -56624,17 +56624,17 @@
       },
       "dev-perf-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
-          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
-          "assessment_version": "18.7",
+          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
+          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
         "source_action": "patch",
-        "security_decision": "patch",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/",
@@ -56677,16 +56677,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -56698,31 +56698,21 @@
           "advisory_urls": [],
           "current_version": null,
           "candidate_version": null
-        },
-        "patch_component": {
-          "name": "pgBackRest",
-          "current_version": "2.58.0",
-          "candidate_version": "2.60.0",
-          "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
-            "https://pgbackrest.org/news.html"
-          ],
-          "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "dev-pg": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
-          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
-          "assessment_version": "18.7",
+          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
+          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
         "source_action": "patch",
-        "security_decision": "patch",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/",
@@ -56765,16 +56755,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -56786,16 +56776,6 @@
           "advisory_urls": [],
           "current_version": null,
           "candidate_version": null
-        },
-        "patch_component": {
-          "name": "pgBackRest",
-          "current_version": "2.58.0",
-          "candidate_version": "2.60.0",
-          "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
-            "https://pgbackrest.org/news.html"
-          ],
-          "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "dev-pg-exporter": {
@@ -56803,7 +56783,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
+          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56857,17 +56837,17 @@
       },
       "dev-pg-monitor-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
-          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
-          "assessment_version": "18.7",
+          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
+          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
         "source_action": "patch",
-        "security_decision": "patch",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/",
@@ -56910,16 +56890,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -56931,31 +56911,21 @@
           "advisory_urls": [],
           "current_version": null,
           "candidate_version": null
-        },
-        "patch_component": {
-          "name": "pgBackRest",
-          "current_version": "2.58.0",
-          "candidate_version": "2.60.0",
-          "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
-            "https://pgbackrest.org/news.html"
-          ],
-          "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "dev-platform-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
-          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
-          "assessment_version": "18.7",
+          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
+          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
         "source_action": "patch",
-        "security_decision": "patch",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/",
@@ -56998,16 +56968,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -57019,16 +56989,6 @@
           "advisory_urls": [],
           "current_version": null,
           "candidate_version": null
-        },
-        "patch_component": {
-          "name": "pgBackRest",
-          "current_version": "2.58.0",
-          "candidate_version": "2.60.0",
-          "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
-            "https://pgbackrest.org/news.html"
-          ],
-          "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "dev-valkey": {
@@ -57036,7 +56996,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
+          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57120,7 +57080,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
-          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
+          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
           "assessment_version": "1.96.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58231,7 +58191,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/mlflow:3.17.2-local",
-          "source_input_sha256": "5034f7cea43c89b7a1a7366087b2011cecc56faa3104e3330700573c6eda87f4",
+          "source_input_sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9",
           "assessment_version": "inventory 3.16.1; Compose 3.17.2-local; Dockerfile 3.18.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58314,11 +58274,11 @@
       },
       "mlflow-db-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
-          "source_input_sha256": "5034f7cea43c89b7a1a7366087b2011cecc56faa3104e3330700573c6eda87f4",
-          "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
+          "source_input_sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9",
+          "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -58326,28 +58286,27 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/"
         ],
         "concrete_advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/docs/18/release-18-7.html"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.",
-        "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open.",
+        "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open."
+          "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -58363,17 +58322,17 @@
       },
       "mng-pg": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/mng-pg:18.7-pgbackrest",
-          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
-          "assessment_version": "18.7",
+          "declaration": "hy-home/mng-pg:18.7-pgbackrest2.60.1",
+          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
         "source_action": "patch",
-        "security_decision": "patch",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/",
@@ -58399,16 +58358,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24). pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24). pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24). pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
-          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24). pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -58420,16 +58379,6 @@
           "advisory_urls": [],
           "current_version": null,
           "candidate_version": null
-        },
-        "patch_component": {
-          "name": "pgBackRest",
-          "current_version": "2.58.0",
-          "candidate_version": "2.60.0",
-          "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
-            "https://pgbackrest.org/news.html"
-          ],
-          "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "mng-pg-exporter": {
@@ -58437,7 +58386,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
+          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58491,11 +58440,11 @@
       },
       "mng-pg-init": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
-          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
-          "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
+          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -58503,28 +58452,27 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/"
         ],
         "concrete_advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/docs/18/release-18-7.html"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.",
-        "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open.",
+        "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open."
+          "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -58540,11 +58488,11 @@
       },
       "mng-pg-monitor-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
-          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
-          "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
+          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -58552,28 +58500,27 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/"
         ],
         "concrete_advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/docs/18/release-18-7.html"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.",
-        "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open.",
+        "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open."
+          "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -58592,7 +58539,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
+          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58676,7 +58623,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
-          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
+          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
           "assessment_version": "1.96.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60329,7 +60276,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2@sha256:420341d4fbfb00a621c313f47e530ad75703f969bbc7520d0d72bc71bb53cef9",
-          "source_input_sha256": "2082ae28c2fbca4b7b03bbca364054119cb7efcaa987bbbfd31f4f1ab4a233e9",
+          "source_input_sha256": "3efa013ae9e02ac613aa55bba7a7a7f9ebed14d637c8b9de94ea77ba94df29c8",
           "assessment_version": "3.0.0-pactbroker2.121.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60384,11 +60331,11 @@
       },
       "pact-broker-db-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
-          "declaration": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
-          "source_input_sha256": "2082ae28c2fbca4b7b03bbca364054119cb7efcaa987bbbfd31f4f1ab4a233e9",
-          "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
+          "source_input_sha256": "3efa013ae9e02ac613aa55bba7a7a7f9ebed14d637c8b9de94ea77ba94df29c8",
+          "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -60396,28 +60343,27 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
           "https://www.postgresql.org/support/security/"
         ],
         "concrete_advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/docs/18/release-18-7.html"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.",
-        "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open.",
+        "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open."
+          "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -65984,90 +65930,6 @@
       }
     },
     "patch": {
-      "dev-perf-provision": {
-        "decision": "patch",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-perf-provision",
-        "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
-        "source_input_sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382",
-        "operational_execution": "NOT_RUN",
-        "component": "pgBackRest",
-        "fixed_candidate_version": "2.60.0",
-        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-perf-provision/patch_component/evidence_refs",
-        "final_image": null,
-        "candidate_scope": "custom-image",
-        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
-        "producer": "infra/04-data/dev-db/pg/Dockerfile",
-        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
-        "package_lookup_refs": [
-          "pgbackrest-v3.23",
-          "pgbackrest-edge",
-          "pgbackrest-news"
-        ],
-        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance."
-      },
-      "dev-pg": {
-        "decision": "patch",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-pg",
-        "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
-        "source_input_sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382",
-        "operational_execution": "NOT_RUN",
-        "component": "pgBackRest",
-        "fixed_candidate_version": "2.60.0",
-        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-pg/patch_component/evidence_refs",
-        "final_image": null,
-        "candidate_scope": "custom-image",
-        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
-        "producer": "infra/04-data/dev-db/pg/Dockerfile",
-        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
-        "package_lookup_refs": [
-          "pgbackrest-v3.23",
-          "pgbackrest-edge",
-          "pgbackrest-news"
-        ],
-        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance."
-      },
-      "dev-pg-monitor-provision": {
-        "decision": "patch",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-pg-monitor-provision",
-        "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
-        "source_input_sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382",
-        "operational_execution": "NOT_RUN",
-        "component": "pgBackRest",
-        "fixed_candidate_version": "2.60.0",
-        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-pg-monitor-provision/patch_component/evidence_refs",
-        "final_image": null,
-        "candidate_scope": "custom-image",
-        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
-        "producer": "infra/04-data/dev-db/pg/Dockerfile",
-        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
-        "package_lookup_refs": [
-          "pgbackrest-v3.23",
-          "pgbackrest-edge",
-          "pgbackrest-news"
-        ],
-        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance."
-      },
-      "dev-platform-provision": {
-        "decision": "patch",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-platform-provision",
-        "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
-        "source_input_sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382",
-        "operational_execution": "NOT_RUN",
-        "component": "pgBackRest",
-        "fixed_candidate_version": "2.60.0",
-        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-platform-provision/patch_component/evidence_refs",
-        "final_image": null,
-        "candidate_scope": "custom-image",
-        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
-        "producer": "infra/04-data/dev-db/pg/Dockerfile",
-        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
-        "package_lookup_refs": [
-          "pgbackrest-v3.23",
-          "pgbackrest-edge",
-          "pgbackrest-news"
-        ],
-        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance."
-      },
       "keycloak": {
         "decision": "patch",
         "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/keycloak",
@@ -66091,27 +65953,6 @@
           "keycloak-java-finding"
         ],
         "next_action": "Obtain publisher signature and publisher SBOM if available; review Red Hat Java advisories, then test compatibility and recovery before a separate deployment decision."
-      },
-      "mng-pg": {
-        "decision": "patch",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/mng-pg",
-        "declared_subject": "hy-home/mng-pg:18.6-pgbackrest",
-        "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
-        "operational_execution": "NOT_RUN",
-        "component": "pgBackRest",
-        "fixed_candidate_version": "2.60.0",
-        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/mng-pg/patch_component/evidence_refs",
-        "final_image": null,
-        "candidate_scope": "custom-image",
-        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
-        "producer": "infra/04-data/mng-db/pg/backup/Dockerfile",
-        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
-        "package_lookup_refs": [
-          "pgbackrest-v3.24",
-          "pgbackrest-edge",
-          "pgbackrest-news"
-        ],
-        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance."
       },
       "open_notebook": {
         "decision": "patch",
@@ -73349,6 +73190,118 @@
         "output_sha256": "ffd2b39c2b369ec2b6d60cdce5a4730d068ac2284d4a6ed8fd81866125b4e60a",
         "evaluated_at": "2026-11-10T22:35:52.272146+00:00",
         "ledger_sha256": "89e22f4c2ecfcbcbf9d395b77fd68a36188c0394ac41738325ffb615c3527590"
+      }
+    },
+    "patch_resolved": {
+      "dev-perf-provision": {
+        "decision": "patch",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-perf-provision",
+        "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+        "source_input_sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382",
+        "operational_execution": "NOT_RUN",
+        "component": "pgBackRest",
+        "fixed_candidate_version": "2.60.0",
+        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-perf-provision/patch_component/evidence_refs",
+        "final_image": null,
+        "candidate_scope": "custom-image",
+        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
+        "producer": "infra/04-data/dev-db/pg/Dockerfile",
+        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
+        "package_lookup_refs": [
+          "pgbackrest-v3.23",
+          "pgbackrest-edge",
+          "pgbackrest-news"
+        ],
+        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance.",
+        "resolution": "2026-11-24: pgBackRest 2.60.1 built from its checksum-pinned release tarball and PostgreSQL 18.7 replace the 2.57/2.58 builds this entry proposed to patch; the current advisory review is NOT_AFFECTED."
+      },
+      "dev-pg": {
+        "decision": "patch",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-pg",
+        "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+        "source_input_sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382",
+        "operational_execution": "NOT_RUN",
+        "component": "pgBackRest",
+        "fixed_candidate_version": "2.60.0",
+        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-pg/patch_component/evidence_refs",
+        "final_image": null,
+        "candidate_scope": "custom-image",
+        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
+        "producer": "infra/04-data/dev-db/pg/Dockerfile",
+        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
+        "package_lookup_refs": [
+          "pgbackrest-v3.23",
+          "pgbackrest-edge",
+          "pgbackrest-news"
+        ],
+        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance.",
+        "resolution": "2026-11-24: pgBackRest 2.60.1 built from its checksum-pinned release tarball and PostgreSQL 18.7 replace the 2.57/2.58 builds this entry proposed to patch; the current advisory review is NOT_AFFECTED."
+      },
+      "dev-pg-monitor-provision": {
+        "decision": "patch",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-pg-monitor-provision",
+        "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+        "source_input_sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382",
+        "operational_execution": "NOT_RUN",
+        "component": "pgBackRest",
+        "fixed_candidate_version": "2.60.0",
+        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-pg-monitor-provision/patch_component/evidence_refs",
+        "final_image": null,
+        "candidate_scope": "custom-image",
+        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
+        "producer": "infra/04-data/dev-db/pg/Dockerfile",
+        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
+        "package_lookup_refs": [
+          "pgbackrest-v3.23",
+          "pgbackrest-edge",
+          "pgbackrest-news"
+        ],
+        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance.",
+        "resolution": "2026-11-24: pgBackRest 2.60.1 built from its checksum-pinned release tarball and PostgreSQL 18.7 replace the 2.57/2.58 builds this entry proposed to patch; the current advisory review is NOT_AFFECTED."
+      },
+      "dev-platform-provision": {
+        "decision": "patch",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-platform-provision",
+        "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+        "source_input_sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382",
+        "operational_execution": "NOT_RUN",
+        "component": "pgBackRest",
+        "fixed_candidate_version": "2.60.0",
+        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/dev-platform-provision/patch_component/evidence_refs",
+        "final_image": null,
+        "candidate_scope": "custom-image",
+        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
+        "producer": "infra/04-data/dev-db/pg/Dockerfile",
+        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
+        "package_lookup_refs": [
+          "pgbackrest-v3.23",
+          "pgbackrest-edge",
+          "pgbackrest-news"
+        ],
+        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance.",
+        "resolution": "2026-11-24: pgBackRest 2.60.1 built from its checksum-pinned release tarball and PostgreSQL 18.7 replace the 2.57/2.58 builds this entry proposed to patch; the current advisory review is NOT_AFFECTED."
+      },
+      "mng-pg": {
+        "decision": "patch",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/mng-pg",
+        "declared_subject": "hy-home/mng-pg:18.6-pgbackrest",
+        "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+        "operational_execution": "NOT_RUN",
+        "component": "pgBackRest",
+        "fixed_candidate_version": "2.60.0",
+        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/mng-pg/patch_component/evidence_refs",
+        "final_image": null,
+        "candidate_scope": "custom-image",
+        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
+        "producer": "infra/04-data/mng-db/pg/backup/Dockerfile",
+        "build_input_package": "pgBackRest 2.60.0-r0 (Alpine edge/community/x86_64)",
+        "package_lookup_refs": [
+          "pgbackrest-v3.24",
+          "pgbackrest-edge",
+          "pgbackrest-news"
+        ],
+        "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance.",
+        "resolution": "2026-11-24: pgBackRest 2.60.1 built from its checksum-pinned release tarball and PostgreSQL 18.7 replace the 2.57/2.58 builds this entry proposed to patch; the current advisory review is NOT_AFFECTED."
       }
     }
   }
