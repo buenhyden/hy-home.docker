@@ -2790,6 +2790,17 @@ def _sso_scenario_summary(mode, result):
             "browser_status": result["text/html"]["status"],
             "json_status": result["application/json"]["status"],
         }
+    if "app" not in result:
+        # Storybook rehearsal modes return one result per requested path.
+        return {
+            "mode": mode,
+            "callback_status": result.get("callback"),
+            "paths": {
+                path: item.get("status")
+                for path, item in result.items()
+                if isinstance(item, dict)
+            },
+        }
     return {
         "mode": mode,
         "callback_status": result["callback"],
