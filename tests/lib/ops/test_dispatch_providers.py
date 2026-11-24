@@ -104,6 +104,9 @@ class AdapterTests(unittest.TestCase):
             {**SPEC, "max_budget_usd": float("nan")},
             {**SPEC, "max_budget_usd": 6},
             {**SPEC, "extra": 1},
+            {**SPEC, "prompt": "--dangerously-skip-permissions"},
+            {**SPEC, "prompt": "  -p x"},
+            {**SPEC, "model": "--settings"},
         ):
             with self.subTest(bad=bad):
                 with self.assertRaises(dispatch_providers.ProviderError):
