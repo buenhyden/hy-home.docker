@@ -74,7 +74,6 @@
       "images": [
         "ghcr.io/zalando/spilo-17:4.0-p3",
         "postgres:18.6-alpine",
-        "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
         "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
       ],
       "compose_files": [
@@ -96,7 +95,7 @@
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b"
+            "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
           ]
         },
         {
@@ -108,13 +107,13 @@
         {
           "compose_file": "infra/08-ai/mlflow/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b"
+            "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
           ]
         },
         {
           "compose_file": "infra/11-quality/pact-broker/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b"
+            "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
           ]
         },
         {
@@ -1388,7 +1387,7 @@
         "hy-home/mng-pg": "local-custom"
       },
       "images": [
-        "hy-home/mng-pg:18.7-pgbackrest"
+        "hy-home/mng-pg:18.7-pgbackrest2.60.1"
       ],
       "compose_files": [
         "infra/04-data/mng-db/docker-compose.yml"
@@ -1397,7 +1396,7 @@
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "hy-home/mng-pg:18.7-pgbackrest"
+            "hy-home/mng-pg:18.7-pgbackrest2.60.1"
           ]
         }
       ]
@@ -1689,7 +1688,7 @@
         "hy-home/dev-pg": "local-custom"
       },
       "images": [
-        "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2"
+        "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2"
       ],
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml"
@@ -1698,7 +1697,7 @@
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
-            "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2"
+            "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2"
           ]
         }
       ]
