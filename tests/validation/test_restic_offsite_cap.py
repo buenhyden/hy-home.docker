@@ -204,6 +204,9 @@ class CapRehearsalTests(unittest.TestCase):
         )
         self.assertLess(after, before - 1_000_000)
         self.assertEqual(self.remote_snapshots(), 1)
+        # The kept snapshot is still whole: every pack it needs reads back.
+        check = self.offsite("cmd", "check", "--read-data")
+        self.assertEqual(check.returncode, 0, check.stderr)
 
     def test_cmd_refuses_a_write(self):
         result = self.offsite("cmd", "backup", "/data")

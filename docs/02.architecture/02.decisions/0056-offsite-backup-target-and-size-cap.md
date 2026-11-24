@@ -176,8 +176,9 @@ into the remote Restic (day-level remote RPO, no keys or egress on `mng-pg`);
 required a bucket lock, a bucket-scoped token and a manual remote
 `forget-prune`; and kept R2 credentials as files under `secrets/backup/`, not in
 OpenBao. It sized the copy against a 5 GiB cap that "fits inside the free tier
-(10 GB)". Every decision carries forward; the cap is now the enforced 9 GB
-upload limit (7.5 GB since 2026-11-25) under the owner's 10 GB ceiling.
+(10 GB)". Every decision carries forward; the cap is now an enforced upload
+limit under the owner's 10 GB ceiling, 9 GB at adoption and 7.5 GB since
+2026-11-25.
 
 #### Consequences
 
@@ -192,6 +193,11 @@ On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
 options table under Trade-offs was derived from the options it records. The
 decision text is unchanged.
+
+On 2026-11-25 the owner directed a second in-place amendment:
+the upload cap moved from 9 GB to 7.5 GB, and remote space is reclaimed by an
+owner-run `prune` that deletes only packs no snapshot uses, because the 30-day
+lock refused the remote `forget-prune` (SPEC-0204 TSK-0006).
 
 If a cloud KMS is later chosen for OpenBao unseal
 ([ADR-0042](0042-openbao-unseal-method.md)), decide whether it shares the R2

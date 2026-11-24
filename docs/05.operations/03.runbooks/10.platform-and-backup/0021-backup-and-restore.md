@@ -537,8 +537,9 @@ docker compose --profile backup run --rm --no-deps \
 ```
 
 `--max-repack-size 0`이라 새 pack을 쓰지 않는다. 마지막 줄 `R2 repository size: <전> -> <후> bytes`를
-Evidence에 적는다. 아직 30일 lock 아래의 pack은 R2가 거부해 남고 run은 실패한다. 남은 pack은
-이후 `prune`이 다시 지운다. 끝나면 `restic-offsite check`로 `no errors were found`를 확인한다.
+Evidence에 적는다. 아직 30일 lock 아래의 pack은 R2가 거부해 남는다. restic은 `unable to remove`를
+남기고도 exit 0으로 끝날 수 있으므로 전후 크기와 그 경고를 함께 본다. 남은 pack은 어떤 index에도
+없는 상태로 남아 lock이 풀린 뒤의 `prune`이 지운다. 끝나면 `restic-offsite check`로 `no errors were found`를 확인한다.
 
 ###### 8.6 R2 비용과 무료 한도 검토
 <!-- core-payload-level:4 -->
@@ -551,7 +552,7 @@ Infrequent Access에는 무료 한도가 없다. `DeleteObject`와
 
 | 항목 | 예상 사용량 | 관리 |
 | --- | --- | --- |
-| Storage | 2026-10-20 owner가 bucket을 비우고 재초기화(저장소 `f6973d0274`)한 뒤 2026-10-21 03:36 copy 후 5,552,354,483 byte(registry 제외) | 9 GB에서 업로드 거부(8.2); 8 GB에서 `HyhomeOffsiteRepoNearFreeTier`; 8.5 |
+| Storage | 2026-10-20 owner가 bucket을 비우고 재초기화(저장소 `f6973d0274`)한 뒤 2026-10-21 03:36 copy 후 5,552,354,483 byte(registry 제외) | 7.5 GB에서 업로드 거부(8.2); 7 GB에서 `HyhomeOffsiteRepoNearFreeTier`; 8.5 |
 | Class A (PutObject, ListObjects 등) | 하루 copy 한 번에 pack, index, snapshot, lock 업로드와 list 수십 건, 한 달 수천 건 | 실측 operation과 계정 전체 사용량 검토 |
 | Class B (GetObject, HeadObject 등) | copy의 index 읽기, 일요일 check의 10% pack 읽기, 한 달 수천 건 | 실측 operation과 계정 전체 사용량 검토 |
 

@@ -166,7 +166,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
    repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). 올린 뒤 저장 byte가
    7.5 GB(2026-11-25 owner가 9 GB에서 하향, ADR-0056)를 넘을 수 있으면 업로드를 거부하고 run이 실패한다. 그동안 원격 RPO는 지켜지지
    않는다. 원격 보존은 owner가 매달 실행하는 `forget-prune`(최근 30일 전부와 월 1개씩
-   12개월)이다. 상한은 이 repository의 파일만 세므로 같은 계정의 다른 R2 사용은 따로
+   12개월)이고, 상한에 가까우면 snapshot을 지우지 않는 `prune`으로 쓰이지 않는 pack을 지운다. 상한은 이 repository의 파일만 세므로 같은 계정의 다른 R2 사용은 따로
    확인한다(RUN-0021 8.2, 8.5, 8.6). 그 전까지는 모든
    복사본이 한 host에 있어 **offsite recovery는 제공되지 않는다**.
 2. SSD repository의 크기 예산은 `BACKUP_STATE_MAX_GIB`(8 GiB, owner 2026-10-10; 이전 5 GiB, 2026-09-22)

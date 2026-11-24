@@ -233,9 +233,10 @@ case "$action" in
     prune)
         # Deletes only packs that no snapshot uses; no snapshot is removed.
         # Owner-run with its own confirmation (RUN-0021 8.5). --max-repack-size 0
-        # never writes repacked packs, so R2 cannot grow under the lock. A pack
-        # still under the 30-day bucket lock is refused, stays as an unused pack
-        # until a later prune, and fails the run.
+        # never writes repacked packs, so R2 cannot grow under the lock. R2
+        # refuses a pack still under the 30-day bucket lock; restic reports it
+        # ("unable to remove") and may still exit 0, so compare the two sizes.
+        # The pack stays unreferenced and a later prune removes it.
         if [ "${HYHOME_PRUNE_CONFIRM:-}" != "delete-unused-remote-packs" ]; then
             echo "prune needs HYHOME_PRUNE_CONFIRM=delete-unused-remote-packs" >&2
             exit 64
@@ -244,7 +245,8 @@ case "$action" in
         before="$(stored_bytes)"
         status=0
         restic prune --max-repack-size 0 || status=$?
-        echo "R2 repository size: $before -> $(stored_bytes) bytes"
+        after="$(stored_bytes)" || { after=unreadable; [ "$status" -ne 0 ] || status=65; }
+        echo "R2 repository size: $before -> $after bytes"
         exit "$status"
         ;;
     restore)
@@ -319,7 +321,7 @@ case "$action" in
     cmd)
         case "${1:-}" in
             forget | prune | unlock)
-                echo "'$1' is not run directly; use forget-prune (RUN-0021 8.5)" >&2
+                echo "'$1' is not run directly; use forget-prune or prune (RUN-0021 8.5)" >&2
                 exit 64
                 ;;
             snapshots | stats | ls | cat | find | check | diff | dump | list | version) ;;
