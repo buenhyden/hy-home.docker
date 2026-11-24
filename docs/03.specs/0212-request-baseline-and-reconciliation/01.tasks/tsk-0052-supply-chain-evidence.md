@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -323,14 +323,21 @@ artifact verification and the current gate results.
 | Storybook ingress rehearsal (first run) | 104 | W109 | `HYHOME_STORYBOOK_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.StorybookIngressRehearsalTests` | PR1174 head with the next 16.4.5 images, before the harness fix | FAIL | Three of four tests raised KeyError in the shared SSO summary helper before any assertion, on main with the old image as well; a harness defect, not a Storybook result | required | - |
 | Storybook ingress rehearsal | 104 | W109 | `HYHOME_STORYBOOK_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.StorybookIngressRehearsalTests` | PR1174 head after the summary fix (f35f30ad) | PASS | 4/4: anonymous requests get no content and no login page, non-admins never reach the origin, admins read index, iframe, assets and manifests, and the remote MCP serves readers with a token for its URL only | required | Storybook ingress rehearsal (first run) |
 | HOME apply of Storybook next 16.4.5 | 104 | W109 | `storybook_image.py build --push` and `verify --registry`, then the RUN-0086 recreate of storybook and storybook-mcp | Owner request 2026-11-24: apply the merged Renovate versions and PostgreSQL 18.7 to the running HOME services; PR1174 merged cebbfcec | PASS | Pre-check: both healthy on 9cd150bf. Post-check: both healthy on 9a8ccbf3; an anonymous request to storybook.hy.home.arpa gets 302 to Keycloak. Rollback: the 9cd150bf images remain locally and in the local registry. A final comparison finds only openbao and openbao-agent off their declarations, from an earlier change outside this apply | required | - |
+| pgBackRest 2.60.1 apply (first run) | 104 | W109 | Runtime apply of mng-pg and dev-pg with pgBackRest 2.60.1 (RUN-0086 recreate) | Owner request 2026-11-24: move the provisioning jobs to 18.7, update pgBackRest and update openbao; PR1176 images | FAIL | Both recreated healthy on PostgreSQL 18.7 with pgBackRest 2.60.1 after pre-upgrade diff backups, but `COPY --chmod=0644` had made /etc/pgbackrest mode 0644, so `pgbackrest check` and WAL archiving failed with permission denied. A runtime `chmod 0755` restored check and archiving (failed_count 0) within minutes | required | - |
+| pgBackRest 2.60.1 apply | 104 | W109 | Runtime apply of mng-pg and dev-pg with pgBackRest 2.60.1 (RUN-0086 recreate) | Owner request 2026-11-24: move the provisioning jobs to 18.7, update pgBackRest and update openbao; PR1177 images that create /etc/pgbackrest as 0755 | PASS | Pre-upgrade diff backups, recreate, healthy; /etc/pgbackrest drwxr-xr-x, `pgbackrest check` passes, pg_stat_archiver failed_count 0 on both. Full backups with 2.60.1: 20261124-111938F (mng) and 20261124-112045F (dev). Rollback: the previous 18.7 images with pgBackRest 2.58 remain locally | required | pgBackRest 2.60.1 apply (first run) |
+| PostgreSQL 18.7 provisioning jobs | 104 | W109 | Compose pin and image pull | Owner request 2026-11-24: move the provisioning jobs to 18.7, update pgBackRest and update openbao; mlflow-db-provision, mng-pg-init, mng-pg-monitor-provision, pact-broker-db-provision | PASS | PR1176 pins postgres:18.7-alpine@0115267a and the image is pulled; the one-shot jobs were not re-run and take 18.7 at their next start | required | - |
+| OpenBao 2.7.3 r4 owned build | 104 | W109 | `prepare-openbao-materials.py --allow-go-proxy`, `build-owned-image.py --phase plan` and `--phase build`, Syft and Grype | Owner request 2026-11-24: move the provisioning jobs to 18.7, update pgBackRest and update openbao; cosign-verified v2.7.3 source 0439ef58, Go 1.27.4 builder, go-jose v4 4.1.9 patch | PASS | Materials PASS (materials.json db042d0f), plan PASS, two-pass build PASS with binary 2e883560 and OCI identity matching, manifest 240e4a88; `bao version` v2.7.3+hyhome.go1.27.4.net0.62.0.r1. Syft 321 packages; Grype (DB 2026-11-24) High 11 and Medium 11: five OpenSSL 3.5.9-r1 CVEs without an Alpine fix and go-jose v3 3.0.5. PR1178 pins r4 | required | - |
+| OpenBao r4 HOME window | 104 | W109 | RUN-0105 W3 snapshot, W4 server upgrade with manual unseal, W5 Agent reissue | HOME openbao and openbao-agent on 2.7.1 | NOT_RUN | The SEC01 gate needs the owner's acceptance of the r4 residuals, and W4 needs two unseal shares and a root token in owner custody; the agent cannot run the window. HOME still runs 2.7.1, which three High advisories affect | required | - |
 
 ### Resolution Links
 
 Nothing was linked here before this Task moved to the common form. "Renovate PR hosted
 CI" resolves its first PR1141 run through the same hosted check after the
-restore pin fix. "PostgreSQL 18.6 exposure" stays open for the provisioning jobs still on 18.6;
+restore pin fix. "PostgreSQL 18.6 exposure" is closed by the 18.7 jobs pin;
 mng-pg and dev-pg run 18.7 since the HOME apply. The second Storybook
-ingress rehearsal resolves the first, which failed in the test harness.
+ingress rehearsal resolves the first, which failed in the test harness. The
+second pgBackRest 2.60.1 apply resolves the first, whose config directory
+permission broke archiving. The OpenBao r4 window stays open for the owner.
 
 ## Acceptance Decision
 
