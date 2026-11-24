@@ -103,17 +103,17 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md'
 
       # [What] R2 offsite repository near the free tier / R2 무료 한도 근접
-      # R2 bills stored bytes above 10 GB a month; 8 GB leaves room for the
-      # owner's monthly remote forget-prune (RUN-0021 8.5, ADR-0056).
+      # Uploads stop at 7.5 GB (ADR-0056); 7 GB leaves room for the owner's
+      # remote forget-prune or prune (RUN-0021 8.5) before copies are refused.
       - alert: HyhomeOffsiteRepoNearFreeTier
-        expr: hyhome_backup_offsite_repo_bytes > 8e9
+        expr: hyhome_backup_offsite_repo_bytes > 7e9
         for: 1h
         labels:
           severity: warning
           domain: backup
         annotations:
-          summary: 'R2 오프사이트 저장소가 8 GB를 넘음'
-          description: 'R2 Restic 저장소가 {{ $value | humanize1024 }}B입니다. 무료 한도 10 GB를 넘기 전에 RUN-0021 8.5의 원격 forget-prune을 실행하세요.'
+          summary: 'R2 오프사이트 저장소가 7 GB를 넘음'
+          description: 'R2 Restic 저장소가 {{ $value | humanize1024 }}B입니다. 7.5 GB 업로드 상한에 닿기 전에 RUN-0021 8.5의 원격 forget-prune 또는 prune을 실행하세요.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md'
 
       # [What] System disk under 25 GiB free / 시스템 디스크 여유 25GiB 미만

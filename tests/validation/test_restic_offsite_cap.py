@@ -30,7 +30,7 @@ def branch(script, name):
 class CapContractTests(unittest.TestCase):
     def test_every_upload_checks_the_cap_first(self):
         script = SCRIPT.read_text(encoding="utf-8")
-        self.assertIn("max_bytes=9000000000", script)
+        self.assertIn("max_bytes=7500000000", script)
         # The variable can only lower the cap.
         self.assertIn('[ "$BACKUP_OFFSITE_MAX_BYTES" -lt "$max_bytes" ]', script)
         copy = branch(script, "copy")
@@ -41,6 +41,11 @@ class CapContractTests(unittest.TestCase):
         )
         # Prune never writes repacked packs.
         self.assertIn("--max-repack-size 0", branch(script, "forget-prune"))
+        # prune deletes unused packs only: its own confirmation, never a forget.
+        prune = branch(script, "prune")
+        self.assertIn("delete-unused-remote-packs", prune)
+        self.assertIn("restic prune --max-repack-size 0", prune)
+        self.assertNotIn("forget", prune)
         self.assertIn("cmd runs read-only commands only", script)
 
     def test_orchestrator_records_the_size_on_failed_runs_too(self):
@@ -107,7 +112,7 @@ class CapRehearsalTests(unittest.TestCase):
         )
         subprocess.run(["rm", "-rf", str(self.work)], check=False)
 
-    def run_in(self, args, cap=None):
+    def run_in(self, args, cap=None, extra=()):
         argv = ["docker", "run", "--rm", "--network", "none"]
         for name in SECRETS:
             argv += ["-v", f"{self.work / 'secrets' / name}:/run/secrets/{name}:ro"]
@@ -130,6 +135,7 @@ class CapRehearsalTests(unittest.TestCase):
         ]
         if cap:
             variables.append(f"BACKUP_OFFSITE_MAX_BYTES={cap}")
+        variables.extend(extra)
         for variable in variables:
             argv += ["-e", variable]
         argv += ["--entrypoint", "/bin/sh", IMAGE, *args]
@@ -141,8 +147,8 @@ class CapRehearsalTests(unittest.TestCase):
             check=False,
         )
 
-    def offsite(self, *args, cap=None):
-        return self.run_in(["/opt/hyhome/offsite.sh", *args], cap=cap)
+    def offsite(self, *args, cap=None, extra=()):
+        return self.run_in(["/opt/hyhome/offsite.sh", *args], cap=cap, extra=extra)
 
     def remote_snapshots(self):
         result = self.offsite("cmd", "snapshots", "--json")
@@ -165,6 +171,42 @@ class CapRehearsalTests(unittest.TestCase):
         # Nothing new to send: a cap just above the stored size still passes.
         again = self.offsite("copy", cap=stored + 100_000)
         self.assertEqual(again.returncode, 0, again.stderr)
+
+    def test_prune_removes_unused_packs_and_keeps_every_snapshot(self):
+        self.assertEqual(self.offsite("copy", cap=50_000_000).returncode, 0)
+        (self.work / "data/blob").write_bytes(os.urandom(2_000_000))
+        second = self.run_in(
+            [
+                "-c",
+                "RESTIC_PASSWORD_FILE=/run/secrets/restic_password"
+                " RESTIC_REPOSITORY=/repo/state /usr/bin/restic backup -q /data",
+            ]
+        )
+        self.assertEqual(second.returncode, 0, second.stderr)
+        self.assertEqual(self.offsite("copy", cap=50_000_000).returncode, 0)
+        # Leave the first snapshot's data unused on the remote side.
+        dropped = self.run_in(
+            [
+                "-c",
+                "RESTIC_PASSWORD_FILE=/run/secrets/restic_offsite_password"
+                " RESTIC_REPOSITORY=/r2 /usr/bin/restic forget -q --group-by '' --keep-last 1",
+            ]
+        )
+        self.assertEqual(dropped.returncode, 0, dropped.stderr)
+        refused = self.offsite("prune")
+        self.assertEqual(refused.returncode, 64)
+        done = self.offsite(
+            "prune", extra=["HYHOME_PRUNE_CONFIRM=delete-unused-remote-packs"]
+        )
+        self.assertEqual(done.returncode, 0, done.stderr)
+        before, after = (
+            int(x) for x in done.stdout.split("R2 repository size: ")[1].split()[0:3:2]
+        )
+        self.assertLess(after, before - 1_000_000)
+        self.assertEqual(self.remote_snapshots(), 1)
+        # The kept snapshot is still whole: every pack it needs reads back.
+        check = self.offsite("cmd", "check", "--read-data")
+        self.assertEqual(check.returncode, 0, check.stderr)
 
     def test_cmd_refuses_a_write(self):
         result = self.offsite("cmd", "backup", "/data")

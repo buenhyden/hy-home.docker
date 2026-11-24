@@ -1,13 +1,13 @@
 ---
 title: "Backup and Restore Runbook"
-version: "2.2.0"
+version: "2.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-24"
+updated: "2026-11-25"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -459,12 +459,14 @@ local backup과 offsite copy는 공유 기억을 담지 않는다. copy는 원�
 
 R2 repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). `copy`와 `artifact`는
 올리기 전에 지금 저장된 byte(사용하지 않는 pack 포함)에 이번에 올릴 수 있는 최대량의
-105%를 더해 보고, 9 GB를 넘을 수 있으면 아무것도 올리지 않는다. 그때는
-`refused: up to … bytes after this upload, cap 9000000000`과 exit 66을 남기고 unit이
-실패한다. 남는 1 GB는 pack header, index, 추정 오차 몫이다. 30일 bucket lock 때문에 올린
+105%를 더해 보고, 7.5 GB를 넘을 수 있으면 아무것도 올리지 않는다. 그때는
+`refused: up to … bytes after this upload, cap 7500000000`과 exit 66을 남기고 unit이
+실패한다. 105%가 pack header, index, 추정 오차 몫이다. 상한은 2026-11-25 owner가
+9 GB에서 7.5 GB로 낮췄다(ADR-0056). 그날 8.5의 원격 `forget-prune`은 30일 lock에 거부됐고,
+공간은 snapshot을 지우지 않는 8.5의 `prune`으로 되찾는다. 30일 bucket lock 때문에 올린
 것은 그 안에 지울 수 없으므로 미리 막는다. 거부된 동안에는 새 원격 사본이 없다. 8.5로 lock이
-풀린 snapshot을 정리해 9 GB 아래로 내려야 다시 올라간다. 상한을 올리거나 lock을 약화하지
-않는다. `cmd`는 읽기 명령(`snapshots`, `stats`, `ls`, `cat`, `find`, `check`, `diff`,
+풀린 snapshot이나 쓰이지 않는 pack을 정리해 7.5 GB 아래로 내려야 다시 올라간다. 새 ADR-0056 결정 없이 상한을 올리지 않고 lock을
+약화하지 않는다. `cmd`는 읽기 명령(`snapshots`, `stats`, `ls`, `cat`, `find`, `check`, `diff`,
 `dump`, `list`, `version`)만 넘긴다. 이 상한은 이 repository의 파일만 센다. 같은 계정의
 다른 R2 사용은 8.6에서 따로 확인한다.
 
@@ -526,6 +528,19 @@ artifact(`hy-home-openbao-w3` tag)는 이 정책으로 줄이지 않고 모두 �
 지운다. lock 아래에서 repack이 저장량을 늘리지 못하게 하려는 것이다. 이는 snapshot timestamp 기준이며 object 생성 시각·R2 lock 만료와 같지 않다. remote prune/lock 조합은 현재 미검증이다. 삭제/repack이 잠금에 거부되면 중단하고 owner에게 전달하며 다음 달 자동 해소나 index 안전을 가정하지 않는다. 잠금을 약화하거나 object 일부를 직접 삭제하지 않는다. 성공 후에도 `restic-offsite check`로 `no errors were found`를 확인한다.
 Evidence에는 실행 시각, 지운 snapshot 수, 전후 `R2 repository size`를 적는다.
 
+snapshot은 그대로 두고 어떤 snapshot도 쓰지 않는 pack만 지우려면 owner가 `prune`을 실행한다(approval:
+원격 삭제). `forget-prune`이 lock에 거부된 snapshot 때문에 prune에 닿지 못할 때, 또는 상한에 가까울 때 쓴다:
+
+```bash
+docker compose --profile backup run --rm --no-deps \
+  -e HYHOME_PRUNE_CONFIRM=delete-unused-remote-packs restic-offsite prune
+```
+
+`--max-repack-size 0`이라 새 pack을 쓰지 않는다. 마지막 줄 `R2 repository size: <전> -> <후> bytes`를
+Evidence에 적는다. 아직 30일 lock 아래의 pack은 R2가 거부해 남는다. restic은 `unable to remove`를
+남기고도 exit 0으로 끝날 수 있으므로 전후 크기와 그 경고를 함께 본다. 남은 pack은 어떤 index에도
+없는 상태로 남아 lock이 풀린 뒤의 `prune`이 지운다. 끝나면 `restic-offsite check`로 `no errors were found`를 확인한다.
+
 ###### 8.6 R2 비용과 무료 한도 검토
 <!-- core-payload-level:4 -->
 
@@ -537,7 +552,7 @@ Infrequent Access에는 무료 한도가 없다. `DeleteObject`와
 
 | 항목 | 예상 사용량 | 관리 |
 | --- | --- | --- |
-| Storage | 2026-10-20 owner가 bucket을 비우고 재초기화(저장소 `f6973d0274`)한 뒤 2026-10-21 03:36 copy 후 5,552,354,483 byte(registry 제외) | 9 GB에서 업로드 거부(8.2); 8 GB에서 `HyhomeOffsiteRepoNearFreeTier`; 8.5 |
+| Storage | 2026-10-20 owner가 bucket을 비우고 재초기화(저장소 `f6973d0274`)한 뒤 2026-10-21 03:36 copy 후 5,552,354,483 byte(registry 제외) | 7.5 GB에서 업로드 거부(8.2); 7 GB에서 `HyhomeOffsiteRepoNearFreeTier`; 8.5 |
 | Class A (PutObject, ListObjects 등) | 하루 copy 한 번에 pack, index, snapshot, lock 업로드와 list 수십 건, 한 달 수천 건 | 실측 operation과 계정 전체 사용량 검토 |
 | Class B (GetObject, HeadObject 등) | copy의 index 읽기, 일요일 check의 10% pack 읽기, 한 달 수천 건 | 실측 operation과 계정 전체 사용량 검토 |
 

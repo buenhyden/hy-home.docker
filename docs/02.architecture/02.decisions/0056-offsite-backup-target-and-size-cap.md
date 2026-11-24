@@ -1,13 +1,13 @@
 ---
 title: "Offsite Backup Target with an Enforced Size Cap"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 layer: "architecture"
 artifact_id: "ADR-0056"
 parent_ids:
@@ -61,7 +61,8 @@ copies the snapshots of both local repositories into one Cloudflare R2 Restic
 repository, and `restic-offsite` is the only backup job with egress, on its own
 `restic_offsite_net`. On 2026-10-20 the owner ruled that the R2 repository must
 never pass 10 GB. `offsite.sh` refuses every upload that could take the stored
-bytes past 9 GB (`max_bytes=9000000000`), counts every stored file including
+bytes past 7.5 GB (`max_bytes=7500000000`, lowered from 9 GB by the owner on
+2026-11-25), counts every stored file including
 unused packs, fails closed when it cannot read the size, and allows the cap only
 to be lowered (`BACKUP_OFFSITE_MAX_BYTES`). The bucket has a 30-day lock.
 
@@ -142,12 +143,16 @@ Costs are order-of-magnitude list-price estimates from 2026-09-25.
    state set (day-level remote RPO). WAL-level remote RPO through
    `repo2-type=s3` needs a new decision.
 3. The R2 repository never passes 10 GB. Every upload that could take the
-   stored bytes past 9 GB is refused; the margin covers pack headers, index
-   files and estimate error. The cap may be lowered, never raised, without a
-   new decision.
+   stored bytes past 7.5 GB is refused; the projection adds 5% for pack
+   headers, index files and estimate error. The cap may be lowered, never
+   raised, without a new decision. The owner lowered it from 9 GB to 7.5 GB on
+   2026-11-25 and chose to reclaim space by removing unused packs only, with
+   every snapshot kept.
 4. The bucket keeps a 30-day lock, and the host token is scoped to that bucket.
    The daily run never deletes; remote `forget-prune` is a separate,
-   owner-run monthly procedure (RUN-0021).
+   owner-run monthly procedure, and `prune` is the owner-run removal of packs
+   no snapshot uses (RUN-0021 8.5). Snapshot times are not upload times, so
+   either can meet objects still under the lock.
 5. R2 credentials live only as files under `secrets/backup/` (0600, injected
    as Docker Secrets) plus an offline copy; they are never stored in OpenBao.
 6. Only `restic-offsite` has egress, on `restic_offsite_net`.
@@ -171,8 +176,9 @@ into the remote Restic (day-level remote RPO, no keys or egress on `mng-pg`);
 required a bucket lock, a bucket-scoped token and a manual remote
 `forget-prune`; and kept R2 credentials as files under `secrets/backup/`, not in
 OpenBao. It sized the copy against a 5 GiB cap that "fits inside the free tier
-(10 GB)". Every decision carries forward; the cap is now the enforced 9 GB
-upload limit under the owner's 10 GB ceiling.
+(10 GB)". Every decision carries forward; the cap is now an enforced upload
+limit under the owner's 10 GB ceiling, 9 GB at adoption and 7.5 GB since
+2026-11-25.
 
 #### Consequences
 
@@ -187,6 +193,11 @@ On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
 options table under Trade-offs was derived from the options it records. The
 decision text is unchanged.
+
+On 2026-11-25 the owner directed a second in-place amendment:
+the upload cap moved from 9 GB to 7.5 GB, and remote space is reclaimed by an
+owner-run `prune` that deletes only packs no snapshot uses, because the 30-day
+lock refused the remote `forget-prune` (SPEC-0204 TSK-0006).
 
 If a cloud KMS is later chosen for OpenBao unseal
 ([ADR-0042](0042-openbao-unseal-method.md)), decide whether it shares the R2

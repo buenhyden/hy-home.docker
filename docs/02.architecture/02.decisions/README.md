@@ -1,13 +1,13 @@
 ---
 title: "Architecture Decision Records"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 layer: "architecture"
 ---
 
@@ -79,7 +79,7 @@ ADR은 구현 명세나 운영 절차가 아니므로 이 디렉터리는 그것
 | [0053-observability-storage-on-seaweedfs.md](0053-observability-storage-on-seaweedfs.md) | LGTM stack과 Alloy를 유지하고 Loki·Tempo object store를 SeaweedFS S3로 두는 accepted decision |
 | [0054-mailpit-home-stalwart-lab.md](0054-mailpit-home-stalwart-lab.md) | HOME SMTP trap은 Mailpit, Stalwart는 미승격 LAB으로 두는 accepted decision |
 | [0055-segmented-per-flow-networks.md](0055-segmented-per-flow-networks.md) | `10.250.0.0/16` 안의 흐름별 `/24` 분리 network와 필요한 곳에만 고정 IP를 두는 accepted decision |
-| [0056-offsite-backup-target-and-size-cap.md](0056-offsite-backup-target-and-size-cap.md) | Cloudflare R2 offsite 사본과 10 GB 상한 아래 9 GB upload 거부를 정한 accepted decision |
+| [0056-offsite-backup-target-and-size-cap.md](0056-offsite-backup-target-and-size-cap.md) | Cloudflare R2 offsite 사본과 10 GB 상한 아래 7.5 GB upload 거부를 정한 accepted decision |
 | [0059-native-oidc-open-webui-and-airflow.md](0059-native-oidc-open-webui-and-airflow.md) | Open WebUI와 Airflow UI를 ForwardAuth 없이 native OIDC로 두고 workflow·AI 하드닝을 잇는 accepted decision |
 | [0060-hermes-report-source-contract.md](0060-hermes-report-source-contract.md) | Hermes `source_text`를 확정된 전체 일일 보고서 원문으로 두고 receipt 집합은 비공개 감사 기록으로 보존하는 accepted decision |
 | [0061-dedicated-ingress-for-sso-only-backends.md](0061-dedicated-ingress-for-sso-only-backends.md) | `sso-auth`만으로 보호되는 Traefik backend를 공유 `edge_net`에서 빼고 Traefik만 함께 붙는 전용 내부 ingress 망에 두는 proposed decision |
@@ -159,7 +159,7 @@ docs/02.architecture/02.decisions/
 - [`ADR-0055`](0055-segmented-per-flow-networks.md):
   `10.250.0.0/16` 안의 흐름별 `/24` 분리 network와 필요한 곳에만 고정 IP를 두는 accepted decision. 소유자가 2026-11-06에 채택했다.
 - [`ADR-0056`](0056-offsite-backup-target-and-size-cap.md):
-  Cloudflare R2 offsite 사본과 10 GB 상한 아래 9 GB upload 거부를 정한 accepted decision. 소유자가 2026-11-06에 채택했다.
+  Cloudflare R2 offsite 사본과 10 GB 상한 아래 7.5 GB upload 거부를 정한 accepted decision. 소유자가 2026-11-06에 채택했고 2026-11-25에 상한을 9 GB에서 7.5 GB로 낮췄다.
 - [`ADR-0059`](0059-native-oidc-open-webui-and-airflow.md):
   Open WebUI와 Airflow UI를 ForwardAuth 없이 native OIDC로 두고 workflow·AI 하드닝을 잇는 accepted decision. 소유자가 2026-11-06에 채택했다.
 - [`ADR-0060`](0060-hermes-report-source-contract.md):

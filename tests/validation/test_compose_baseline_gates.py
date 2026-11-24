@@ -2322,16 +2322,21 @@ docker() {
         self.assertIn("copy --no-lock --from-repo", script)
         self.assertNotIn("set -x", script)
         self.assertIn("forget | prune | unlock)", script)
-        # Remote deletion lives only in the confirmed forget-prune action, and
-        # keeps every snapshot inside the 30-day bucket lock.
+        # Remote deletion lives only in the two confirmed owner actions:
+        # forget-prune, and prune, which deletes unused packs and no snapshot.
         prune = script.split("forget-prune)")[1].split(";;")[0]
+        unused = script.split("\n    prune)")[1].split(";;")[0]
+        self.assertIn(
+            '"${HYHOME_PRUNE_CONFIRM:-}" != "delete-unused-remote-packs"', unused
+        )
+        self.assertNotIn("forget", unused)
         self.assertIn(
             '"${HYHOME_PRUNE_CONFIRM:-}" != "delete-old-remote-snapshots"', prune
         )
         self.assertIn("--keep-within 30d", prune)
         # A recovery artifact (RUN-0105 W3b) is never thinned by the policy.
         self.assertIn("--keep-tag hy-home-openbao-w3", prune)
-        outside = script.replace(prune, "")
+        outside = script.replace(prune, "").replace(unused, "")
         self.assertNotRegex(outside, r"\brestic (forget|prune|unlock)\b")
         # copy reports the stored size for the free-tier alert.
         self.assertIn("stats --mode raw-data --json", script)
@@ -2352,7 +2357,7 @@ docker() {
             ROOT
             / "infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml"
         ).read_text(encoding="utf-8")
-        self.assertIn("hyhome_backup_offsite_repo_bytes > 8e9", rules)
+        self.assertIn("hyhome_backup_offsite_repo_bytes > 7e9", rules)
         # Plaintext exports are gone and SeaweedFS vacuum resumes before upload.
         self.assertLess(script.rindex("\ncleanup\n"), copy)
 

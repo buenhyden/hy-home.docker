@@ -1,13 +1,13 @@
 ---
 title: "Restic Backup Jobs"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 ---
 
 # Restic Backup Jobs
@@ -75,7 +75,7 @@ restic/
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | 로컬 Restic 저장소 `/repo/state`, `/repo/host` (`BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`) | `restic` | `restic-offsite` (읽기 전용 `DAC_READ_SEARCH`) | `restic_password`로 암호화된 두 저장소이며 `create_host_path: false`를 사용한다. | 같은 파일시스템이면 종료 코드 64, 잠금 사용 중이면 75, `BACKUP_STATE_MAX_GIB` 이상이면 Restic 단계를 실패 처리한다. |
-| R2 저장소 `s3:https://<BACKUP_OFFSITE_R2_ACCOUNT_ID>.r2.cloudflarestorage.com/<BACKUP_OFFSITE_R2_BUCKET>` | `restic-offsite` (`restic_offsite_net`) | Cloudflare R2 오프사이트 저장소 | `restic copy --no-lock --from-repo`로 복사하며 R2 키는 환경 변수로만 넘긴다. | 원격이 9 GB를 넘을 수 있으면 exit 66으로 끝나고 실패하면 unit도 실패한다. |
+| R2 저장소 `s3:https://<BACKUP_OFFSITE_R2_ACCOUNT_ID>.r2.cloudflarestorage.com/<BACKUP_OFFSITE_R2_BUCKET>` | `restic-offsite` (`restic_offsite_net`) | Cloudflare R2 오프사이트 저장소 | `restic copy --no-lock --from-repo`로 복사하며 R2 키는 환경 변수로만 넘긴다. | 원격이 7.5 GB를 넘을 수 있으면 exit 66으로 끝나고 실패하면 unit도 실패한다. |
 | 지표 `hyhome_backup_offsite_repo_bytes` | 호스트 오케스트레이터 `bin/hyhome-backup.sh` | 이 README는 소비자를 기록하지 않는다. | `copy`가 남긴 원격 저장 byte 수를 기록한다. | run이 실패해도 기록하며 복구는 RUN-0021을 따른다. |
 
 ###### Inputs and Outputs
@@ -113,11 +113,12 @@ restic/
   비어 있으면 오케스트레이터는 이 단계를 건너뜁니다. 로컬 backup과 check가
   성공한 뒤 `copy`를 실행하고, 일요일에는 `check --read-data-subset 10%`도
   실행합니다. 실패하면 unit도 실패합니다. `copy`와 `artifact`는 올린 뒤 원격이
-  9 GB를 넘을 수 있으면 아무것도 올리지 않고 exit 66으로 끝납니다(owner 상한 10 GB,
+  7.5 GB를 넘을 수 있으면 아무것도 올리지 않고 exit 66으로 끝납니다(owner 상한 10 GB,
   RUN-0021 8.2). `copy`는 원격의 저장 byte 수를 남기고, 오케스트레이터는 run이
   실패해도 이를 `hyhome_backup_offsite_repo_bytes`로 기록합니다. `cmd`는 읽기
   명령만 넘깁니다.
-  원격 삭제는 owner가 확인 값과 함께 매달 실행하는 `forget-prune`뿐입니다
+  원격 삭제는 owner가 확인 값과 함께 실행하는 `forget-prune`(매달)과,
+  snapshot을 지우지 않고 쓰이지 않는 pack만 지우는 `prune`뿐입니다
   (RUN-0021 8.5, 무료 한도 관리는 8.6).
 - `mng-pg`는 로컬 빌드이며 레지스트리가 없습니다. pull에는
   `docker compose pull --ignore-buildable`을 사용합니다.

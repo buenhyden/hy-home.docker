@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.42"
+version: "0.2.43"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-11-24"
+updated: "2026-11-25"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -4257,6 +4257,50 @@ uses 8269 MiB, at or over the 8 GiB budget; Restic backup skipped"; the last
 success was 2026-11-16. RUN-0105 W0 requires a passing last backup, so the
 window is blocked until the owner decides how to bring the local Restic
 repository back under budget.
+
+#### Backup gate repair 2026-11-25
+
+The first driver run (2026-11-25, commit `1239c4649`) stopped at W0 on the last
+backup result, as designed, after prep had stopped `hyhome-backup.timer`. No
+OpenBao step ran. Two causes kept the daily backup failing since 2026-11-17:
+the local state directory (Restic plus pgBackRest) was 8269 MiB against the
+8 GiB budget, and on the days under budget the R2 copy was refused with
+"refused: up to 9674140971 bytes after this upload, cap 9000000000".
+
+- **Local `forget-prune` (RUN-0021 step 7, owner-approved).** 2026-11-25
+  00:15 KST. It removed two host-set snapshots (2026-10-08 and 2026-10-10) and
+  repacked; the state set kept its 35 snapshots. The budget directory measured
+  6555 MiB afterwards, under 8 GiB.
+- **Remote `forget-prune` (RUN-0021 8.5, owner-approved).** 2026-11-25 00:17
+  KST. Its one selected snapshot, `d0f50bdd`, was refused 20 times with "The
+  object is locked by the bucket policy", so nothing was deleted and prune did
+  not run. Per 8.5 the run stopped there; the lock was not weakened. A following
+  `restic-offsite check` reported `no errors were found` over 77 snapshots. R2
+  stores 7,745,275,077 bytes while the snapshots reference 4.586 GiB, so about
+  2.8 GB is unused packs that a prune can reclaim once their locks expire.
+- **Cap decision.** The owner first chose 9.9 GB, then set the R2 upload cap to
+  7.5 GB instead and asked to remove what exceeds it, oldest first. Read-only
+  sizing showed that the R2 snapshots reference only 4.586 GiB of the
+  7,745,275,077 stored bytes, and that deleting old R2 snapshots alone would not
+  hold because `restic copy` re-uploads every local snapshot the remote lacks.
+  The owner then chose to remove unused packs only and keep every snapshot:
+  `offsite.sh` `max_bytes=7500000000` and a new owner-run `prune` action
+  (`HYHOME_PRUNE_CONFIRM=delete-unused-remote-packs`, `restic prune
+  --max-repack-size 0`, no forget), with ADR-0056 1.1.0, POL-0021-R9/R10 and
+  RUN-0021 8.2/8.5 following. After a prune to about 4.9 GB, the pending copy of
+  about 1.9 GB fits under 7.5 GB. Packs still under the 30-day lock stay until
+  it expires.
+  With `HYHOME_BACKUP_REHEARSAL=1`, the six `test_restic_offsite_cap` tests
+  passed, including a disposable prune that dropped unused data, kept the one
+  remaining snapshot, and refused to run without its confirmation. The first
+  prune rehearsal kept everything because its two synthetic snapshots had
+  different container hostnames, so `forget --keep-last 1` kept one per host;
+  the test now forgets with `--group-by ''`.
+
+Next: after this change merges, the remote `prune` runs once with the owner's
+approval of this scope, then the owner runs `hyhome-backup.service` once,
+checks `Result=success`, restarts `hyhome-backup.timer`, and reruns the window
+driver from `prep` on the merge commit.
 
 ### Blockers and Decisions
 
