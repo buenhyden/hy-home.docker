@@ -339,12 +339,16 @@ unit also names the brief `session`, `request_revision` and `brief_revision`;
 right before the spawn the dispatcher runs the brief's `check ... dispatch`
 for the unit's owned paths and fails the unit if the brief does not allow it.
 A provider worker runs the installed CLI non-interactively (Claude:
-`--print --safe-mode --restricted`, file tools only, `--max-budget-usd`;
-Codex: `exec --json` inside the dispatcher's sandbox) with the network, its
-binary and its credential file read-only and a private HOME added to the same
-read-only-root boundary; its session, cost and error from the final JSON go to
-the report, and a provider error fails the unit. The network is open to the
-worker for its API; that is a monitored boundary, not a block.
+`--print --safe-mode --restricted`, file tools only and denied the private
+HOME, `--max-budget-usd`) with the network, its binary and its credential file
+read-only and a private HOME added to the same read-only-root boundary; its
+session, cost and error from the final JSON go to the report, a provider error
+fails the unit, and a result whose patch or log holds a credential value is
+rejected and its log wiped. The worker has no network-capable tool; only the
+CLI process uses the shared network, a monitored boundary rather than a block.
+A Codex unit is refused: its model gets a shell, which with the host network
+and its credentials could reach loopback services and the token, until an
+egress-limited network namespace exists.
 A unit starts only when every dependency succeeded and it holds leases on all its
 owned paths and shared resources; each lease carries a rising fencing
 generation, and a result from an expired or taken-over lease is refused, as is

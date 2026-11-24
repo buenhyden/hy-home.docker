@@ -377,6 +377,11 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         if spec:
             output = (root / f"{uid}.log").read_text(errors="replace")
             result[uid]["provider"] = dispatch_providers.result(spec["name"], output)
+        if spec and dispatch_providers.leaks(
+            job["profile"], (root / f"{uid}.log").read_bytes()
+        ):
+            (root / f"{uid}.log").write_bytes(b"")
+            return finish(uid, "rejected", "result holds a credential value")
         if code != 0:
             return finish(uid, "failed", f"exit {code}")
         if spec and result[uid]["provider"]["is_error"]:
@@ -405,6 +410,9 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         patch = _wt(
             gitdir, tree, "diff", "--cached", "--no-renames", "--binary", job["start"]
         )
+        if spec and dispatch_providers.leaks(job["profile"], patch):
+            (root / f"{uid}.log").write_bytes(b"")
+            return finish(uid, "rejected", "result holds a credential value")
         # Workers can reach the run folder, so the accepted patch is kept in
         # memory and the file is a record that is never read back.
         patches[uid] = patch
@@ -495,6 +503,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         running[u["id"]] = dict(
             **execution,
             git_view=view,
+            profile=profile,
             tokens=tokens,
             holder=holder,
             worktree=tree,

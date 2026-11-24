@@ -8,6 +8,14 @@ the profile adds only what the provider needs to run, the network for its
 API, its binary and its credential file read-only, and a private HOME. The
 provider's final JSON gives the session, cost and error that the dispatcher
 records. The cgroup scope still owns every process the worker starts.
+
+The credential file is inside the sandbox because the CLI must read it, so
+the worker's file tools are denied the private HOME and a result whose patch
+or log holds any credential value is rejected. Claude gets no network-capable
+tool; only its CLI process uses the shared network. Codex gives the model a
+shell, which with the host network and its credentials could reach loopback
+services and the token, so it is refused until an egress-limited network
+namespace exists.
 """
 
 from __future__ import annotations
@@ -29,6 +37,7 @@ NETWORK_FILES = (
     "/etc/ca-certificates",
 )
 CLAUDE_TOOLS = "Read,Edit,Write,Glob,Grep"
+MIN_SECRET_CHARS = 16
 
 
 class ProviderError(ValueError):
@@ -56,6 +65,8 @@ def validate(spec: object) -> dict:
     budget = spec.get("max_budget_usd")
     if name not in ADAPTERS:
         raise ProviderError(f"provider must be one of {sorted(ADAPTERS)}")
+    if name in REFUSED:
+        raise ProviderError(f"{name}: {REFUSED[name]}")
     if not all(
         isinstance(v, str) and v.strip() and "\0" not in v for v in (model, prompt)
     ):
@@ -86,6 +97,16 @@ def _claude(spec: dict) -> tuple[list[str], dict]:
         CLAUDE_TOOLS,
         "--allowedTools",
         CLAUDE_TOOLS,
+        "--settings",
+        json.dumps(
+            {
+                "permissions": {
+                    "deny": [
+                        f"{tool}(/{WORKER_HOME}/**)" for tool in CLAUDE_TOOLS.split(",")
+                    ]
+                }
+            }
+        ),
         "--strict-mcp-config",
         "--mcp-config",
         '{"mcpServers":{}}',
@@ -134,6 +155,37 @@ def _codex(spec: dict) -> tuple[list[str], dict]:
 
 
 ADAPTERS = {"claude": _claude, "codex": _codex}
+REFUSED = {
+    "codex": "its shell would share the host network with its credentials;"
+    " it needs an egress-limited network namespace first"
+}
+
+
+def _secrets(value) -> set[str]:
+    if isinstance(value, dict):
+        return set().union(*(_secrets(item) for item in value.values()), set())
+    if isinstance(value, list):
+        return set().union(*(_secrets(item) for item in value), set())
+    return (
+        {value} if isinstance(value, str) and len(value) >= MIN_SECRET_CHARS else set()
+    )
+
+
+def leaks(profile: dict, data: bytes) -> bool:
+    """True when a credential value bound into the worker appears in data.
+
+    Values are compared in memory only and never printed or stored.
+    """
+    for source, target in profile["binds"]:
+        if not target.startswith(WORKER_HOME + "/"):
+            continue
+        try:
+            values = _secrets(json.loads(Path(source).read_text()))
+        except (OSError, ValueError):
+            continue
+        if any(value.encode() in data for value in values):
+            return True
+    return False
 
 
 def launch(spec: dict) -> tuple[list[str], dict]:

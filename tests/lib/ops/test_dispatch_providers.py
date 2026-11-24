@@ -64,11 +64,30 @@ class AdapterTests(unittest.TestCase):
             set(private),
         )  # nothing else of the personal HOME is visible
 
-    def test_codex_uses_its_own_home_and_the_external_sandbox(self):
-        argv, profile = dispatch_providers.launch({**SPEC, "name": "codex"})
-        self.assertEqual(["exec", "--json"], argv[1:3])
-        self.assertIn("--dangerously-bypass-approvals-and-sandbox", argv)
-        self.assertEqual("/tmp/home/.codex", profile["env"]["CODEX_HOME"])
+    def test_codex_is_refused_without_an_egress_limited_network(self):
+        # A Codex worker has a shell; with the host network and its
+        # credentials it could reach loopback services and the token.
+        with self.assertRaisesRegex(dispatch_providers.ProviderError, "network"):
+            dispatch_providers.validate({**SPEC, "name": "codex"})
+
+    def test_claude_denies_its_file_tools_the_private_home(self):
+        argv, _ = dispatch_providers.launch(SPEC)
+        settings = json.loads(argv[argv.index("--settings") + 1])
+        for tool in ("Read", "Edit", "Write", "Glob", "Grep"):
+            self.assertIn(f"{tool}(//tmp/home/**)", settings["permissions"]["deny"])
+        self.assertNotIn("Bash", argv[argv.index("--tools") + 1])
+
+    def test_a_credential_value_in_a_result_is_found(self):
+        credential = self.home / ".claude" / ".credentials.json"
+        credential.parent.mkdir()
+        credential.write_text(
+            json.dumps({"oauth": {"accessToken": "sk-ant-oat01-" + "x" * 40, "n": 3}})
+        )
+        _, profile = dispatch_providers.launch(SPEC)
+        clean = b"a summary"
+        leaked = b"token: sk-ant-oat01-" + b"x" * 40
+        self.assertFalse(dispatch_providers.leaks(profile, clean))
+        self.assertTrue(dispatch_providers.leaks(profile, leaked))
 
     def test_an_invalid_spec_is_refused_before_anything_starts(self):
         for bad in (

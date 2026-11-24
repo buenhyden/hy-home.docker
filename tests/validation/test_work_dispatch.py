@@ -626,6 +626,19 @@ class DispatchTests(unittest.TestCase):
         self.assertEqual("failed", entry["status"])
         self.assertTrue(entry["provider"]["is_error"])
 
+    def test_a_result_holding_a_credential_value_is_rejected_and_wiped(self):
+        with mock.patch.object(
+            dispatch.dispatch_providers,
+            "leaks",
+            side_effect=lambda _p, data: b"done" in data,
+        ):
+            report, _ = self.provider_run([self.provider_unit("a", "a.txt")])
+        (entry,) = report["units"]
+        self.assertEqual(("rejected", "result holds a credential value"),
+                         (entry["status"], entry["reason"]))  # fmt: skip
+        log = self.state / "runs" / report["run_id"] / "a.log"
+        self.assertEqual(b"", log.read_bytes())
+
     def test_provider_plans_need_a_brief_identity_and_a_valid_spec(self):
         good = self.provider_unit("a", "a.txt")
         for plan in (
