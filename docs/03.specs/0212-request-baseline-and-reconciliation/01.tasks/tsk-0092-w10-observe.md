@@ -1,6 +1,6 @@
 ---
 title: "W10 Observe Task"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -169,6 +169,10 @@ times, are not recorded by any store and stay unmeasured.
 | Daily backups after | 148 | W164 | `journalctl -u hyhome-backup.service`, lifecycle and size lines only | 2026-11-21 to 24 runs, read 2026-11-24 by TSK-0111 | FAIL | 4 of 4 failed: 11-21 and 11-24 skipped Restic at 8267 and 8269 MiB of state; 11-22 and 11-23 ran local Restic and checks (8075 and 8208 MiB) but the offsite copy was refused at the R2 cap (9.59 GB after upload against 9 GB, owner limit 10 GB; R2 held 7.75 GB) | required | - |
 | Second dry run | 148 | W164 | `restic forget --prune --dry-run` with the step 7 policy | State repository only, read-only, 2026-11-24, after the owner approved one state forget-prune | PASS | Remove 2 of 37 state snapshots (92aae3b4 of 2026-10-08, ed693e17 of 2026-10-10); prune 1.124 GiB; host would also drop 2, so the runbook command covering both sets was not used | required | - |
 | Second state prune | 148 | W164 | `restic forget --prune` with the step 7 policy, state set only | Owner approval of 2026-11-24 for one state forget-prune | PASS | Removed IDs equal the dry run; 1.124 GiB pruned; `restic check` on state: no errors, 35 snapshots; restic part 6402 MiB, about 7.1 GiB with pgBackRest against the 8 GiB budget; host and R2 untouched | required | - |
+| OpenBao keep RED | 148 | W164 | `test_offsite_script_copies_without_deleting_and_samples_remote_data` | New `--keep-tag hy-home-openbao-w3` assertion on `707451061` | FAIL | The policy grouped by host and tags would have thinned the two distinct RUN-0105 OpenBao snapshots of 2026-10-22 (c07dcd25, 8fe28d5c) to one | required | - |
+| OpenBao keep GREEN | 148 | W164 | `test_offsite_script_copies_without_deleting_and_samples_remote_data` | `offsite.sh` with `--keep-tag hy-home-openbao-w3`, PR 1162 | PASS | Test passes; shellcheck clean; RUN-0021 2.2.0 states the exception | required | OpenBao keep RED |
+| Remote forget-prune | 148 | W164 | RUN-0021 8.5 `restic-offsite forget-prune` | Owner approval of 2026-11-24, merged `c6aec1ab6`, 11:16 to 11:30 KST | FAIL | Exit 3: 30 of 31 selected snapshots removed (107 to 77; both OpenBao snapshots kept); snapshot d0f50bdd of 2026-10-13 refused, "The object is locked by the bucket policy", so restic stopped before prune and no pack was deleted; R2 stored 7,745,258,882 bytes, unchanged | required | - |
+| Remote check after | 148 | W164 | `restic-offsite cmd check` | R2 repository after the refused run | PASS | No errors; 77 snapshots | required | - |
 
 ### Resolution Links
 
@@ -198,8 +202,12 @@ over 8 GiB and the R2 copy hits its 9 GB cap while the locked memory copies
 of criterion138 remain. On 2026-11-24 the owner approved one state
 forget-prune (Second state prune), which brought the state repository to
 about 7.1 GiB; the next daily backup must still succeed, and the R2 cap,
-which a local prune does not lower, is still the owner's decision. Elapsed
-time does not close these rows.
+which a local prune does not lower, is still open: the approved remote
+forget-prune removed 30 snapshots but a locked snapshot stopped it before
+prune (Remote forget-prune), so R2 holds the same bytes. Per RUN-0021 8.5 the
+run stopped there; the lock was not weakened and no object was deleted
+directly. A later 8.5 run after that lock ends, or an R2 cap decision, is the
+owner's. Elapsed time does not close these rows.
 
 ## Handoff
 
