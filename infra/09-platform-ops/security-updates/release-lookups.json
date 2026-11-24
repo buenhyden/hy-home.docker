@@ -61800,10 +61800,10 @@
         "task": "SPEC-0212-TSK-0052",
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/storybook:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-          "source_input_sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7",
+          "declaration": "hy-home/storybook:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+          "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
           "assessment_version": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-          "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
+          "version_binding_note": "Rebuilt on 2026-11-24 from commit 9a8ccbf3, which only moves next to 16.4.5 for its security fix; the base images are unchanged, so the version-based assessment carries over and runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
         "bounded_research_applicability": "UNKNOWN",
@@ -61860,10 +61860,10 @@
         "task": "SPEC-0212-TSK-0052",
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/storybook-mcp:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-          "source_input_sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7",
+          "declaration": "hy-home/storybook-mcp:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+          "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
           "assessment_version": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-          "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
+          "version_binding_note": "Rebuilt on 2026-11-24 from commit 9a8ccbf3, which only moves next to 16.4.5 for its security fix; the base images are unchanged, so the version-based assessment carries over and runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
         "bounded_research_applicability": "AFFECTED_AT_DECLARED_BASE_VERSION",
