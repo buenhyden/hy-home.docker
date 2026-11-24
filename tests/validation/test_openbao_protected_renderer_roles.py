@@ -24,7 +24,7 @@ SPEC.loader.exec_module(M)
 
 CLUSTER = fixtures.CLUSTER
 APPROLE = "auth/approle/role/hy-home-renderer"
-OLD_IMAGE = "sha256:11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641"
+OLD_IMAGE = "sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
 
 
 def plan():
@@ -384,7 +384,9 @@ class NativeRehearsalTests(unittest.TestCase):
     def test_native_apply_on_the_running_home_image(self):
         # W1c runs before W4, so HOME's current server version receives it.
         fixture = self.native.OwnedFixture(
-            image=OLD_IMAGE, version="2.6.2", image_reference="openbao/openbao:2.6.2"
+            image=OLD_IMAGE,
+            version="2.7.1+hyhome.go1.27.3.net0.60.0.r1",
+            image_reference="hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8",
         )
         self.rehearse(fixture)
 

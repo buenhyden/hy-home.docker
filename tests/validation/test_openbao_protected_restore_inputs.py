@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -216,7 +217,7 @@ class ContractTests(unittest.TestCase):
                     "dev": info.st_dev,
                     "ino": info.st_ino,
                     "cluster_id": "51fbfa38-a715-7dca-629f-3f07233749f4",
-                    "version": "2.6.2",
+                    "version": "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
                     "http_status": 200,
                     "saved_at_utc": "2026-10-14T12:01:00+00:00",
                 }
@@ -362,7 +363,7 @@ class NativeRehearsalTests(unittest.TestCase):
     """
 
     OLD_IMAGE = (
-        "sha256:11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641"
+        "sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
     )
 
     def produce(self, *arguments):
@@ -382,8 +383,8 @@ class NativeRehearsalTests(unittest.TestCase):
 
         fixture = native.OwnedFixture(
             image=self.OLD_IMAGE,
-            version="2.6.2",
-            image_reference="openbao/openbao:2.6.2",
+            version="2.7.1+hyhome.go1.27.3.net0.60.0.r1",
+            image_reference="hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8",
         )
         self.addCleanup(fixture.cleanup)
         tmp = tempfile.TemporaryDirectory()
@@ -692,18 +693,31 @@ class NativeRehearsalTests(unittest.TestCase):
                 break
             time.sleep(0.25)
         values = {}
-        for index, (route, writes) in enumerate(
-            (("02-auth/keycloak", 2), ("06-observability/grafana", 1))
-        ):
+        # The Agent is healthy only when every agent.hcl template renders, so
+        # each KV path and field the templates read gets a synthetic value.
+        fields = agent_kv_fields()
+        canaries = ("02-auth/keycloak", "06-observability/grafana")
+        for route in sorted(fields):
+            if route not in canaries:
+                ok(
+                    "POST",
+                    "secret/data/hy-home/" + route,
+                    {
+                        "data": {
+                            name: uuid.uuid4().hex for name in sorted(fields[route])
+                        }
+                    },
+                )
+        for index, (route, writes) in enumerate(zip(canaries, (2, 1), strict=True)):
             for _ in range(writes):
                 value = (
                     uuid.uuid4().hex if canary_values is None else canary_values[index]
                 )
-                version = ok(
-                    "POST",
-                    "secret/data/hy-home/" + route,
-                    {"data": {"admin_password": value}},
-                )["data"]["version"]
+                data = {name: uuid.uuid4().hex for name in sorted(fields[route])}
+                data["admin_password"] = value
+                version = ok("POST", "secret/data/hy-home/" + route, {"data": data})[
+                    "data"
+                ]["version"]
             values[route] = (value, version)
         ok("POST", "sys/auth/approle", {"type": "approle"})
         ok(
@@ -757,6 +771,23 @@ class NativeRehearsalTests(unittest.TestCase):
             )
         self.assertEqual((code, output.getvalue()), (0, "RENDERER_ROLES_APPLIED\n"))
         return (values["02-auth/keycloak"], values["06-observability/grafana"])
+
+
+def agent_kv_fields():
+    """KV route -> fields read by every template agent.hcl renders."""
+    config = ROOT / "infra/03-security/openbao/config"
+    hcl = (config / "agent.hcl").read_text()
+    sources = re.findall(r'source\s*=\s*"/openbao/config/(templates/[^"]+)"', hcl)
+    fields = {}
+    for source in sources:
+        for block in (config / source).read_text().split('with secret "')[1:]:
+            path, body = block.split('"', 1)
+            route = path.removeprefix("secret/data/hy-home/")
+            names = fields.setdefault(route, set())
+            names.update(re.findall(r"\.Data\.data\.(\w+)", body.split("end")[0]))
+    if not sources or not fields:
+        raise AssertionError("agent.hcl names no KV template")
+    return fields
 
 
 class NativeOptInTests(unittest.TestCase):

@@ -30,13 +30,13 @@ import time
 import types
 from pathlib import Path
 
-TARGET = Path("/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261022-06")
+TARGET = Path("/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261124-07")
 PARENT_IDENTITY = (2064, 115612004, 1000, 1000)
-ATTEMPT = "p01-restore-20261022-06"
-LEDGER = ".p01-restore-20261022-06.attempt.json"
+ATTEMPT = "p01-restore-20261124-07"
+LEDGER = ".p01-restore-20261124-07.attempt.json"
 CLUSTER = "51fbfa38-a715-7dca-629f-3f07233749f4"
-OLD_IMAGE = "sha256:11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641"
-OLD_VERSION = "2.6.2"
+OLD_IMAGE = "sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
+OLD_VERSION = "2.7.1+hyhome.go1.27.3.net0.60.0.r1"
 OWNED_VERSION = "2.7.3+hyhome.go1.27.4.net0.62.0.r1"
 PARENT_NAME = "protected-maintenance.py"
 PARENT_SHA256 = "0aead560593cd30d4e0f2d45f1a7a69a2ac7c1dd032c3abca6c1c6270daf861b"
