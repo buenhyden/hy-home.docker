@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -378,6 +379,31 @@ class ComposeStartTests(unittest.TestCase):
         self.assertEqual("controller_exit_7", result["failure"])
         self.assertNotIn("private-secret", str(result))
 
+    def test_any_error_or_interrupt_after_the_claim_keeps_its_token(self):
+        for error, failure in ((KeyError("x"), "controller_error"),
+                               (subprocess.TimeoutExpired("docker", 300), "controller_error"),
+                               (KeyboardInterrupt(), "interrupted")):  # fmt: skip
+            with self.subTest(error=type(error).__name__):
+                plan = self.plan("target", ["db"])
+                with (
+                    mock.patch.object(
+                        compose_start,
+                        "_operating_admission",
+                        return_value=(
+                            mock.Mock(),
+                            {"token": "owned-start"},
+                            mock.Mock(),
+                        ),
+                    ),
+                    mock.patch(
+                        "scripts.lib.ops.dispatch_process.run_registered_docker",
+                        side_effect=error,
+                    ),
+                ):
+                    result = compose_start.execute_plan(self.root, plan)
+                self.assertEqual("owned-start", result["recovery_token"])
+                self.assertEqual(failure, result["failure"])
+
     def test_registered_process_and_lab_errors_return_recovery_result(self):
         from scripts.lib.ops.dispatch_process import ProcessError
         from scripts.operations.lab import LabError
@@ -447,7 +473,14 @@ class ComposeStartTests(unittest.TestCase):
             ),
         ):
             result = compose_start.recover_start(self.root, record["token"])
-        self.assertEqual({"result": "RECOVERED", "cleanup_pending": False}, result)
+        self.assertEqual(
+            {
+                "result": "RECOVERED",
+                "cleanup_pending": False,
+                "incomplete_services": ["api", "db"],
+            },
+            result,
+        )
         verify.assert_any_call(record, stop=True)
         admission.release.assert_called_once()
 
@@ -468,14 +501,30 @@ class ComposeStartTests(unittest.TestCase):
             mock.patch.object(
                 dispatch_process, "verify_registered_docker_absent", return_value=True
             ),
+            mock.patch.object(
+                dispatch_process, "cleanup_registered_docker", return_value=True
+            ),
         ):
             admission.release.reset_mock()
             admission.release.side_effect = lambda token, verify: verify(record)
+            # A running container the live inventory does not account for.
+            admission.observe.return_value = {"services": []}
+            result = compose_start.recover_start(self.root, record["token"])
+            self.assertEqual(
+                {
+                    "result": "RECOVERY_BLOCKED",
+                    "reason": "resources_partial_or_unknown",
+                },
+                result,
+            )
+            # A partial start whose running containers are accounted releases.
+            admission.observe.return_value = {"services": ["db"]}
             result = compose_start.recover_start(self.root, record["token"])
         self.assertEqual(
             {
-                "result": "RECOVERY_BLOCKED",
-                "reason": "resources_partial_or_unknown",
+                "result": "RECOVERED",
+                "cleanup_pending": False,
+                "incomplete_services": ["api"],
             },
             result,
         )
@@ -512,6 +561,116 @@ class ComposeStartTests(unittest.TestCase):
             admission.release.side_effect = lambda token, verify: verify(record)
             result = compose_start.recover_start(self.root, record["token"])
         self.assertEqual({"result": "RECOVERED", "cleanup_pending": False}, result)
+
+    def test_recover_refuses_a_start_whose_process_is_still_running(self):
+        record = {
+            "token": "a" * 32,
+            "kind": "compose-start",
+            "workspace_id": "workspace",
+            "binding_id": "binding",
+            "daemon_id": "daemon",
+            "project": "hy-home-operating",
+            "services": ["db"],
+            "owner": {"pid": 1, "start_ticks": 1, "boot_id": "boot", "pgid": 1},
+            "metadata": {"one_shot_services": []},
+        }
+        admission = mock.Mock(
+            workspace_id="workspace", binding_id="binding", daemon_id="daemon"
+        )
+        admission.records.return_value = [record]
+        with (
+            mock.patch(
+                "scripts.operations.lab.execution_admission", return_value=admission
+            ),
+            mock.patch(
+                "scripts.lib.ops.environment_admission.process_status",
+                return_value="alive",
+            ),
+        ):
+            result = compose_start.recover_start(self.root, record["token"])
+        self.assertEqual(
+            {"result": "RECOVERY_BLOCKED", "reason": "start_still_running"}, result
+        )
+        admission.release.assert_not_called()
+
+    def test_recover_without_a_token_finds_only_owned_abandoned_starts(self):
+        def claim(token, kind="compose-start", workspace="workspace"):
+            return {
+                "token": token,
+                "kind": kind,
+                "workspace_id": workspace,
+                "binding_id": "binding",
+                "daemon_id": "daemon",
+                "owner": {"pid": int(token[0], 16) + 1},
+            }
+
+        dead, live = claim("a" * 32), claim("b" * 32)
+        lab_claim, foreign = claim("c" * 32, kind="lab"), claim("d" * 32, "x", "other")
+        admission = mock.Mock(
+            workspace_id="workspace", binding_id="binding", daemon_id="daemon"
+        )
+        admission.records.return_value = [dead, live, lab_claim, foreign]
+        with (
+            mock.patch(
+                "scripts.operations.lab.execution_admission", return_value=admission
+            ),
+            mock.patch(
+                "scripts.lib.ops.environment_admission.process_status",
+                side_effect=lambda owner: "alive" if owner["pid"] == 12 else "absent",
+            ),
+            mock.patch.object(
+                compose_start,
+                "recover_start",
+                return_value={"result": "RECOVERED", "cleanup_pending": False},
+            ) as recover,
+        ):
+            result = compose_start.recover_abandoned(self.root)
+        recover.assert_called_once_with(self.root, dead["token"])
+        self.assertEqual("RECOVERED", result["result"])
+        self.assertEqual([dead["token"]], list(result["claims"]))
+
+    def test_recover_releases_a_claim_that_never_recorded_its_job_policy(self):
+        # admission.update failed before any Docker effect, so there is no
+        # one_shot_services, no operation directory and nothing to account.
+        record = {
+            "token": "d" * 32,
+            "kind": "compose-start",
+            "workspace_id": "workspace",
+            "binding_id": "binding",
+            "daemon_id": "daemon",
+            "project": "hy-home-operating",
+            "services": ["db"],
+            "owner": {"pid": 1, "start_ticks": 1, "boot_id": "boot", "pgid": 1},
+            "metadata": {},
+        }
+        admission = mock.Mock(
+            workspace_id="workspace", binding_id="binding", daemon_id="daemon"
+        )
+        admission.records.return_value = [record]
+        admission.release.side_effect = lambda token, verify: verify(record)
+        with (
+            mock.patch(
+                "scripts.operations.lab.execution_admission", return_value=admission
+            ),
+            mock.patch("scripts.operations.lab.running_containers", return_value=[]),
+            mock.patch(
+                "scripts.lib.ops.environment_admission.process_status",
+                return_value="absent",
+            ),
+            mock.patch(
+                "scripts.lib.ops.dispatch_process.cleanup_unstarted_registered_docker",
+                return_value=True,
+            ),
+        ):
+            result = compose_start.recover_start(self.root, record["token"])
+        self.assertEqual(
+            {
+                "result": "RECOVERED",
+                "cleanup_pending": False,
+                "incomplete_services": ["db"],
+            },
+            result,
+        )
 
     def test_recover_cleans_a_pre_controller_setup_failure_before_release(self):
         from scripts.lib.ops import dispatch_process
@@ -553,7 +712,14 @@ class ComposeStartTests(unittest.TestCase):
             ) as cleanup,
         ):
             result = compose_start.recover_start(self.root, record["token"])
-        self.assertEqual({"result": "RECOVERED", "cleanup_pending": False}, result)
+        self.assertEqual(
+            {
+                "result": "RECOVERED",
+                "cleanup_pending": False,
+                "incomplete_services": ["db"],
+            },
+            result,
+        )
         cleanup.assert_called_once_with(record)
         admission.release.assert_called_once()
 
@@ -571,7 +737,14 @@ class ComposeStartTests(unittest.TestCase):
             admission.release.reset_mock()
             admission.release.side_effect = lambda token, verify: verify(record)
             result = compose_start.recover_start(self.root, record["token"])
-        self.assertEqual({"result": "RECOVERED", "cleanup_pending": False}, result)
+        self.assertEqual(
+            {
+                "result": "RECOVERED",
+                "cleanup_pending": False,
+                "incomplete_services": ["db"],
+            },
+            result,
+        )
 
     def write_env(self, value):
         (self.root / "infra/overlay.yml").write_text(
@@ -818,6 +991,14 @@ class ComposeStartTests(unittest.TestCase):
             mock.patch.object(module, "create_plan", side_effect=ValueError("secret")),
         ):
             self.assertEqual(module.main(["plan", "--target", "db"]), 2)
+        interrupted = io.StringIO()
+        with (
+            contextlib.redirect_stdout(interrupted),
+            mock.patch.object(module, "create_plan", side_effect=KeyboardInterrupt),
+        ):
+            # Before any claim exists an interrupt leaves nothing to recover.
+            self.assertEqual(module.main(["plan", "--target", "db"]), 130)
+        self.assertEqual('{"result": "BLOCKED"}\n', interrupted.getvalue())
         failed_output = io.StringIO()
         with (
             contextlib.redirect_stdout(failed_output),
@@ -965,6 +1146,67 @@ class OperatingAdmissionHandoffTests(unittest.TestCase):
                 reads.append(1)
                 if len(reads) == 1:
                     raise AdmissionError("admission_state_unavailable")
+                return real()
+
+            with (
+                mock.patch.object(lab, "execution_admission", return_value=admission),
+                mock.patch.object(
+                    lab,
+                    "render",
+                    return_value={"name": "p", "services": {"app": service}},
+                ),
+                mock.patch(
+                    "scripts.lib.ops.dispatch_process.prepare_registered_docker"
+                ),
+                mock.patch.object(admission, "records", side_effect=busy_once),
+            ):
+                with self.assertRaises(compose_start._OperatingSetupError) as caught:
+                    compose_start._operating_admission(
+                        Path(folder), {"project": "p", "targets": ["app"]}
+                    )
+            self.assertTrue(caught.exception.token)
+            if not caught.exception.released:
+                self.assertEqual([caught.exception.token], [r["token"] for r in real()])
+
+    def test_an_interrupt_after_setup_still_returns_the_claim(self):
+        # The fill-disk claim exists once admit returns; a busy admission store
+        # on the next read must surface as a setup failure, not escape.
+        from scripts.lib.ops.environment_admission import Admission
+        from scripts.operations import lab
+
+        with tempfile.TemporaryDirectory() as folder:
+            admission = Admission(
+                Path(folder) / "state",
+                namespace="handoff",
+                workspace_id=folder,
+                inventory=("app", "other"),
+                limits={
+                    "cpus": 8,
+                    "memory_bytes": 8 * 2**30,
+                    "disk_bytes": 2**30,
+                    "runtime_seconds": 300,
+                },
+                observe=lambda: {
+                    "services": [],
+                    "budget": {"cpus": 0, "memory_bytes": 0, "disk_bytes": 0},
+                },
+            )
+            service = {
+                "cpus": 0.5,
+                "mem_limit": str(256 * 2**20),
+                "deploy": {
+                    "resources": {
+                        "reservations": {"cpus": 0.1, "memory": str(128 * 2**20)}
+                    }
+                },
+            }
+            real = admission.records
+            reads = []
+
+            def busy_once():
+                reads.append(1)
+                if len(reads) == 1:
+                    raise KeyboardInterrupt
                 return real()
 
             with (

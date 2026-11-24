@@ -3,6 +3,8 @@
 
 import argparse
 import json
+import signal
+import subprocess
 import sys
 from pathlib import Path
 
@@ -13,9 +15,14 @@ from scripts.lib.ops.compose_start import (  # noqa: E402
     create_plan,
     execute_plan,
     load_plan,
+    recover_abandoned,
     recover_start,
 )
 from scripts.operations.lab import LabError  # noqa: E402
+
+
+def _interrupt(signum, frame):
+    raise KeyboardInterrupt
 
 
 class SafeParser(argparse.ArgumentParser):
@@ -36,7 +43,8 @@ def main(argv=None):
     up = commands.add_parser("up")
     up.add_argument("--plan", required=True)
     recover = commands.add_parser("recover")
-    recover.add_argument("--token", required=True)
+    # Without --token, recover every owned start whose process has exited.
+    recover.add_argument("--token")
     args = parser.parse_args(argv)
     try:
         if args.command == "plan":
@@ -51,14 +59,31 @@ def main(argv=None):
         elif args.command == "up":
             if args.root != ROOT:
                 raise ValueError("unsupported_execution_root")
+            # SIGTERM ends a start like Ctrl-C, so the claim's token is printed.
+            signal.signal(signal.SIGTERM, _interrupt)
             result = execute_plan(args.root, load_plan(args.root, args.plan))
         else:
             if args.root != ROOT:
                 raise ValueError("unsupported_execution_root")
-            result = recover_start(args.root, args.token)
-    except (OSError, ValueError, TypeError, KeyError, LabError):
+            result = (
+                recover_start(args.root, args.token)
+                if args.token
+                else recover_abandoned(args.root)
+            )
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        LabError,
+        subprocess.SubprocessError,
+    ):
         print(json.dumps({"result": "BLOCKED"}))
         return 2
+    except KeyboardInterrupt:
+        # execute_plan returns a claim's token itself; this is before any claim.
+        print(json.dumps({"result": "BLOCKED"}))
+        return 130
     print(json.dumps(result, sort_keys=True, ensure_ascii=True))
     return 1 if result.get("result") in {"START_FAILED", "RECOVERY_BLOCKED"} else 0
 

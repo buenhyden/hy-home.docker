@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.9.1"
+version: "2.10.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -429,9 +429,13 @@ no global prune or automatic operating-root teardown is part of recovery.
 The root operating-start command reports a recovery token when its result is
 uncertain. Run `python3 scripts/operations/compose-start.py recover --token
 <token>` from this checkout. Recovery stops only the matching controller scope
-and releases its reservation when the selected services are absent or fully
-present in the current live inventory. Partial or unknown services keep the
-reservation charged; recovery never tears down the operating Compose project.
+and releases its reservation once every running selected container is
+accounted in the current live inventory. A partial start is released and its
+missing or failed services are reported as `incomplete_services`; an unknown
+controller or unaccounted running container keeps the reservation charged.
+A start that was killed before printing its token is recovered by running
+`recover` without `--token`, which reconciles each owned start claim whose
+process has exited. Recovery never tears down the operating Compose project.
 
 Changes to these libraries select their mirrored behavior regressions and
 actual LAB/Compose/dispatch consumers. A temporary dummy environment can prove

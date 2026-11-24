@@ -2218,13 +2218,21 @@ def stop(args, env, name: str, *, expected_token=None) -> int:
         and r.get("metadata", {}).get("entry", {}).get("lab") == name
     ]
     target = ledger_dir(env) / f"{name}.json" if env.get("LAB_DATA_DIR") else None
-    if target is None or not target.is_file():
+    entry = (
+        json.loads(target.read_text(encoding="utf-8"))
+        if target is not None and target.is_file()
+        else None
+    )
+    # cmd_up writes the ledger only after binding its claim, so a stopped
+    # ledger from an earlier run must not hide a newer live claim.
+    if entry is None or (
+        candidates
+        and entry.get("admission_token") not in {r["token"] for r in candidates}
+    ):
         if len(candidates) != 1:
             raise LabError(f"no unique owned intent for {name}")
         entry = candidates[0]["metadata"]["entry"]
         target = pathlib.Path(candidates[0]["metadata"]["entry_path"])
-    else:
-        entry = json.loads(target.read_text(encoding="utf-8"))
     if not str(entry.get("project", "")).startswith(LAB_PROJECT_PREFIX):
         raise LabError(f"ledger for {name} names a non-LAB project")
     if expected_token is not None and entry.get("admission_token") != expected_token:
@@ -2256,6 +2264,27 @@ def stop(args, env, name: str, *, expected_token=None) -> int:
         raise LabError(
             "start controller is still live or unknown; reservation retained"
         )
+    if "operation_record" not in entry:
+        # cmd_up records the operation only after prepare_registered_docker
+        # succeeds, and no Docker effect precedes it. The check above leaves
+        # a dead owner or this caller, so remove only the partial pre-spawn
+        # files, as compose-start recovery does, and release without a down.
+        from scripts.lib.ops.dispatch_process import (
+            cleanup_unstarted_registered_docker,
+        )
+
+        if not cleanup_unstarted_registered_docker(
+            records[0], owner_may_be_live=expected_token is not None
+        ):
+            raise LabError("pre-controller files are unverified; reservation retained")
+        released = admission.release(
+            entry["admission_token"],
+            verify=lambda record: _owned_project(args, entry, absent=True),
+        )
+        entry["state"] = "stopped" if released else "stop-failed"
+        entry["stopped_at"] = dt.datetime.now(dt.UTC).isoformat()
+        write_entry(target, entry)
+        return 0 if released else 1
     if not verify_registered_docker_absent(records[0], stop=True):
         raise LabError(
             "Compose controller is still live or unknown; reservation retained"
@@ -2367,7 +2396,7 @@ def supervise(
                 admission=admission,
                 token=token,
             )
-        except subprocess.TimeoutExpired:
+        except (subprocess.SubprocessError, ValueError, LabError):
             pass  # the caller's `down` still removes the project
         return outcome, code
     finally:
@@ -2550,7 +2579,10 @@ def cmd_reap(args, env) -> int:
             "stop-failed",
             "stopped",
         }:
-            code = max(code, stop(args, env, entry["lab"]))
+            try:
+                code = max(code, stop(args, env, entry["lab"]))
+            except (LabError, OSError, ValueError, subprocess.SubprocessError):
+                code = max(code, 1)  # one stuck LAB must not stop the others
     return code
 
 
@@ -2616,6 +2648,9 @@ def main(argv: list[str] | None = None) -> int:
     except LabError as exc:
         print(f"lab.py: {exc}", file=sys.stderr)
         return exc.code
+    except subprocess.SubprocessError as exc:
+        print(f"lab.py: {type(exc).__name__}", file=sys.stderr)
+        return 1
     except (AttributeError, KeyError, TypeError, ValueError) as exc:
         # Bad env values, a hand-edited ledger or a rendered value of an
         # unexpected type are invalid input, not a crash.

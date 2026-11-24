@@ -443,8 +443,12 @@ def _group_absent(identity):
     return False
 
 
-def _disk_problem(paths, budget):
-    """Inspect owned inode metadata only; never follow a worker's symlink."""
+def _disk_problem(paths, budget, headroom=True):
+    """Inspect owned inode metadata only; never follow a worker's symlink.
+
+    The host headroom check guards only starts: a stop, down or wait frees or
+    holds space and must still run when the disk is nearly full.
+    """
     total, count = 0, 0
     try:
         for path in paths:
@@ -456,7 +460,7 @@ def _disk_problem(paths, budget):
                     try:
                         found = os.fstat(current)
                         space = os.fstatvfs(current)
-                        if (
+                        if headroom and (
                             space.f_bavail * space.f_frsize
                             < space.f_blocks * space.f_frsize / 10
                         ):
@@ -554,6 +558,7 @@ def _spawn(
     trusted_docker=False,
     disk_paths=None,
     provider=None,
+    headroom=True,
 ):
     record = reservation or admission.admit(services=(), budget=budget, kind=kind)
     token = record["token"]
@@ -611,7 +616,7 @@ def _spawn(
         saved = json.loads(path.read_text())
         if saved["token"] != token or process_status(saved["identity"]) != "alive":
             raise OSError("worker ownership changed before release")
-        problem = _disk_problem(disk_paths, budget["disk_bytes"])
+        problem = _disk_problem(disk_paths, budget["disk_bytes"], headroom=headroom)
         if problem:
             raise ProcessError(problem)
         if register:
@@ -636,7 +641,10 @@ def _spawn(
         }
     except BaseException:
         if process is not None:
-            identity = process_identity(process.pid)
+            try:
+                identity = process_identity(process.pid)
+            except AdmissionError:
+                identity = None  # kill anyway; an unknown identity is not released
             _kill(process)
             absent = _scope_absent(scope, token, stop=True)
             if register and identity is not None:
@@ -791,6 +799,10 @@ def _verify_operation(record, directory, *, stop=False):
     ):
         return False
     absent = _scope_absent(saved["scope"], token, stop=stop)
+    if saved.get("identity") is None:
+        # The bootstrap never acknowledged, so it was never sent a command;
+        # once the claim owner has exited, its control pipe reads EOF.
+        return absent and process_status(record["owner"]) == "absent"
     deadline = time.monotonic() + (2 if stop else 0)
     while process_status(saved["identity"]) == "alive" and time.monotonic() < deadline:
         time.sleep(TICK)
@@ -962,6 +974,7 @@ def run_registered_docker(argv, *, cwd, timeout, admission, token, env=None):
             register=False,
             trusted_docker=True,
             disk_paths=(directory,),
+            headroom=operation == "up",
         )
         try:
             try:

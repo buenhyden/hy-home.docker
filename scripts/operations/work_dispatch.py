@@ -59,6 +59,7 @@ from scripts.lib.ops.environment_admission import (  # noqa: E402
     process_identity,
     process_status,
 )
+from scripts.operations.lab import LabError  # noqa: E402
 
 STORE_NAME = "dispatch.sqlite3"
 CANCEL_NAME = "cancel"
@@ -485,10 +486,11 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
                     provider=profile,
                 )
         except (
-            subprocess.CalledProcessError,
+            subprocess.SubprocessError,
             OSError,
             AdmissionError,
-            PlanError,
+            ValueError,
+            LabError,
         ) as error:
             safe_cleanup = not spawn_attempted
             if not safe_cleanup and reservation is not None:
@@ -678,8 +680,9 @@ def _integrate(
             except (
                 OSError,
                 AdmissionError,
-                PlanError,
-                subprocess.CalledProcessError,
+                ValueError,
+                LabError,
+                subprocess.SubprocessError,
             ) as error:
                 if not spawn_attempted:
                     shutil.rmtree(view, ignore_errors=True)
@@ -852,7 +855,11 @@ def main(argv: list[str] | None = None) -> int:
         cancel(state)
         return 0
     if args.command == "cleanup":
-        print(json.dumps(cleanup(args.repo, state), indent=2))
+        try:
+            print(json.dumps(cleanup(args.repo, state), indent=2))
+        except (AdmissionError, LabError, OSError, subprocess.SubprocessError) as error:
+            print(f"CLEANUP_REFUSED: {error}", file=sys.stderr)
+            return 2
         return 0
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda *_: cancel(state))
@@ -860,6 +867,9 @@ def main(argv: list[str] | None = None) -> int:
         report = run(args.repo, state, json.loads(args.plan.read_text()))
     except (PlanError, AdmissionError) as error:
         print(f"PLAN_REFUSED: {error}", file=sys.stderr)
+        return 2
+    except (LabError, OSError, subprocess.SubprocessError) as error:
+        print(f"RUN_REFUSED: {error}", file=sys.stderr)
         return 2
     print(json.dumps(report, indent=2))
     return 0 if report["status"] == "succeeded" else 1

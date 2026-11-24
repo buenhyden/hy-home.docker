@@ -1567,6 +1567,59 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual([], self.admission.records())
         self.assertFalse(self.started())
 
+    def _reap_a_start_that_failed_in_prepare(self, prepare_failure):
+        from scripts.lib.ops import dispatch_process
+
+        with mock.patch.object(
+            dispatch_process, "prepare_registered_docker", side_effect=prepare_failure
+        ):
+            self.assertNotEqual(0, self.up())
+        record = self.admission.records()[0]
+        past = dt.datetime.now(dt.UTC) - dt.timedelta(minutes=1)
+        entry = {**record["metadata"]["entry"], "expires_at": past.isoformat()}
+        self.admission.update(record["token"], entry=entry)
+        self.calls.clear()
+        with (
+            mock.patch(
+                "scripts.lib.ops.environment_admission.process_status",
+                return_value="absent",
+            ),
+            mock.patch.object(
+                dispatch_process, "process_status", return_value="absent"
+            ),
+        ):
+            self.assertEqual(0, self.main("reap"))
+        self.assertEqual([], self.admission.records())
+        # No controller ever ran, so there is no Compose project to take down.
+        self.assertFalse(any("down" in call for call in self.calls))
+
+    def test_p07_reap_releases_an_entry_bound_before_its_operation_directory(self):
+        from scripts.lib.ops import dispatch_process
+
+        self._reap_a_start_that_failed_in_prepare(
+            dispatch_process.ProcessError("lock timeout")
+        )
+
+    def test_p07_reap_releases_an_operation_directory_never_created(self):
+        from scripts.lib.ops import dispatch_process
+
+        def record_then_fail(admission, token):
+            missing = admission.path.parent / "operations" / token
+            admission.update(token, docker_operation_dir=str(missing))
+            raise dispatch_process.ProcessError("unsafe Docker operation directory")
+
+        self._reap_a_start_that_failed_in_prepare(record_then_fail)
+
+    def test_p07_reap_prefers_a_live_claim_over_an_earlier_stopped_ledger(self):
+        from scripts.lib.ops import dispatch_process
+
+        self.assertEqual(0, self.up())
+        self.assertEqual(0, self.main("down", "cassandra"))
+        self.assertEqual("stopped", self.ledger()["state"])
+        self._reap_a_start_that_failed_in_prepare(
+            dispatch_process.ProcessError("lock timeout")
+        )
+
     def test_p07_successful_cleanup_is_idempotent_without_core_tombstone(self):
         self.assertEqual(0, self.up())
         self.assertEqual(0, self.main("down", "cassandra"))
@@ -2085,6 +2138,18 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(
             ["down", "--timeout", "30"], [c for c in self.calls if "down" in c][-1][-3:]
         )
+
+    def test_a_stop_that_times_out_is_reported_not_raised(self) -> None:
+        self.assertEqual(0, self.up())
+        entry = self.ledger()
+        past = dt.datetime.now(dt.UTC) - dt.timedelta(minutes=1)
+        entry["expires_at"] = past.isoformat()
+        (self.data / ".ledger/cassandra.json").write_text(json.dumps(entry))
+        with mock.patch.object(
+            lab, "stop", side_effect=subprocess.TimeoutExpired("docker", 30)
+        ):
+            self.assertEqual(1, self.main("reap"))
+            self.assertEqual(1, self.main("down", "cassandra"))
 
     def test_reap_stops_only_expired_leases(self) -> None:
         self.assertEqual(0, self.up())
