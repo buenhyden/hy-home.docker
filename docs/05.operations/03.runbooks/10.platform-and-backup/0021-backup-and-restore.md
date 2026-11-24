@@ -1,13 +1,13 @@
 ---
 title: "Backup and Restore Runbook"
-version: "2.2.0"
+version: "2.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-24"
+updated: "2026-11-25"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -459,12 +459,13 @@ local backup과 offsite copy는 공유 기억을 담지 않는다. copy는 원�
 
 R2 repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). `copy`와 `artifact`는
 올리기 전에 지금 저장된 byte(사용하지 않는 pack 포함)에 이번에 올릴 수 있는 최대량의
-105%를 더해 보고, 9 GB를 넘을 수 있으면 아무것도 올리지 않는다. 그때는
-`refused: up to … bytes after this upload, cap 9000000000`과 exit 66을 남기고 unit이
-실패한다. 남는 1 GB는 pack header, index, 추정 오차 몫이다. 30일 bucket lock 때문에 올린
+105%를 더해 보고, 9.9 GB를 넘을 수 있으면 아무것도 올리지 않는다. 그때는
+`refused: up to … bytes after this upload, cap 9900000000`과 exit 66을 남기고 unit이
+실패한다. 105%가 pack header, index, 추정 오차 몫이다. 상한은 2026-11-25 owner가
+9 GB에서 9.9 GB로 올렸다(ADR-0056). 그날 8.5의 원격 `forget-prune`은 30일 lock에 거부됐다. 30일 bucket lock 때문에 올린
 것은 그 안에 지울 수 없으므로 미리 막는다. 거부된 동안에는 새 원격 사본이 없다. 8.5로 lock이
-풀린 snapshot을 정리해 9 GB 아래로 내려야 다시 올라간다. 상한을 올리거나 lock을 약화하지
-않는다. `cmd`는 읽기 명령(`snapshots`, `stats`, `ls`, `cat`, `find`, `check`, `diff`,
+풀린 snapshot을 정리해 9.9 GB 아래로 내려야 다시 올라간다. 새 ADR-0056 결정 없이 상한을 올리지 않고 lock을
+약화하지 않는다. `cmd`는 읽기 명령(`snapshots`, `stats`, `ls`, `cat`, `find`, `check`, `diff`,
 `dump`, `list`, `version`)만 넘긴다. 이 상한은 이 repository의 파일만 센다. 같은 계정의
 다른 R2 사용은 8.6에서 따로 확인한다.
 

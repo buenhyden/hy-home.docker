@@ -30,11 +30,11 @@ AWS_SECRET_ACCESS_KEY="$(secret r2_secret_access_key)"
 export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 
 # The owner forbids the R2 repository from ever passing 10 GB (2026-10-20).
-# Every upload is refused when it could take the stored bytes past 9 GB: the
-# gigabyte left covers pack headers, index files and estimate error, and the
-# 30-day bucket lock means nothing written can be deleted in time. The
+# Every upload is refused when it could take the stored bytes past 9.9 GB (owner
+# 2026-11-25, raised from 9 GB): the projection already adds 5% for packing, and
+# the 30-day bucket lock means nothing written can be deleted in time. The
 # variable can only lower the cap; tests use it.
-max_bytes=9000000000
+max_bytes=9900000000
 case "${BACKUP_OFFSITE_MAX_BYTES:-}" in
     '') ;;
     *[!0-9]*) echo "BACKUP_OFFSITE_MAX_BYTES must be a byte count" >&2; exit 64 ;;

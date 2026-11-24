@@ -1,13 +1,13 @@
 ---
 title: "Restic Backup Jobs"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 ---
 
 # Restic Backup Jobs
@@ -113,7 +113,7 @@ restic/
   비어 있으면 오케스트레이터는 이 단계를 건너뜁니다. 로컬 backup과 check가
   성공한 뒤 `copy`를 실행하고, 일요일에는 `check --read-data-subset 10%`도
   실행합니다. 실패하면 unit도 실패합니다. `copy`와 `artifact`는 올린 뒤 원격이
-  9 GB를 넘을 수 있으면 아무것도 올리지 않고 exit 66으로 끝납니다(owner 상한 10 GB,
+  9.9 GB를 넘을 수 있으면 아무것도 올리지 않고 exit 66으로 끝납니다(owner 상한 10 GB,
   RUN-0021 8.2). `copy`는 원격의 저장 byte 수를 남기고, 오케스트레이터는 run이
   실패해도 이를 `hyhome_backup_offsite_repo_bytes`로 기록합니다. `cmd`는 읽기
   명령만 넘깁니다.

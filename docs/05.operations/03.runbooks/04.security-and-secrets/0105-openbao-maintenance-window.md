@@ -1,13 +1,13 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-24"
+updated: "2026-11-25"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -423,7 +423,7 @@ Raft identity 같은 고정 사실은 driver 안에 있고, K8s writer나 W2가 
 stable 조회)가 기록돼 있고 위 TLS preflight가 PASS여야 한다. 하나라도 아니면 중단한다.
 R2 줄은 exit 0이고 저장소 `f6973d0274`의 state·host snapshot 이력을 보여야 한다(2026-10-20
 owner 승인으로 비운 bucket에 재초기화하고 첫 copy·check가 통과했다. SPEC-0204 TSK-0009). 저장된 byte에
-W3 snapshot·receipt 크기의 1.05배를 더한 값이 `offsite.sh`의 상한(9,000,000,000 byte, owner의
+W3 snapshot·receipt 크기의 1.05배를 더한 값이 `offsite.sh`의 상한(9,900,000,000 byte, owner의
 10 GB 절대 상한) 안이어야 한다. 둘 중 하나라도 아니면 window를 열지 않는다. W3b는 W1·W1c·W2·W3
 뒤에 있으므로 거기서 멈추면 root 절차와 Agent의 일회용 SecretID를 이미 쓴 뒤다. 저장소가 없다고
 나와도 `restic-offsite init`으로 고치지 않는다. 새 key와 ID가 생기고 기존 data는 lock 아래에 남아

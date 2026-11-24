@@ -30,7 +30,7 @@ def branch(script, name):
 class CapContractTests(unittest.TestCase):
     def test_every_upload_checks_the_cap_first(self):
         script = SCRIPT.read_text(encoding="utf-8")
-        self.assertIn("max_bytes=9000000000", script)
+        self.assertIn("max_bytes=9900000000", script)
         # The variable can only lower the cap.
         self.assertIn('[ "$BACKUP_OFFSITE_MAX_BYTES" -lt "$max_bytes" ]', script)
         copy = branch(script, "copy")

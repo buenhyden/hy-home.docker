@@ -1,13 +1,13 @@
 ---
 title: "Backup and Restore Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -113,7 +113,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | POL-0021-R6 | 항상 | 필수: `BACKUP_STATE_REPO_DIR`(system SSD)에는 data-disk state의 복사본을, `BACKUP_HOST_REPO_DIR`(data disk)에는 `secrets/`와 `.env`의 복사본을 둔다 | none | none |
 | POL-0021-R7 | 로컬 backup과 check 성공 후 | 필수: `restic-offsite`가 두 Restic repository의 snapshot을 state set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2 repository 하나로 복사한다 | none | RUN-0021의 R2 설정과 첫 copy 성공 |
 | POL-0021-R8 | 항상 | 필수: R2 repository는 10 GB를 절대 넘지 않는다 | none | none |
-| POL-0021-R9 | 올린 뒤 저장 byte가 9 GB를 넘을 수 있을 때 | 필수: 업로드를 거부하고 run을 실패시킨다 | 업로드 거부와 run 실패 | none |
+| POL-0021-R9 | 올린 뒤 저장 byte가 9.9 GB를 넘을 수 있을 때 | 필수: 업로드를 거부하고 run을 실패시킨다 | 업로드 거부와 run 실패 | none |
 | POL-0021-R10 | 원격 보존 | 필수: owner가 매달 `forget-prune`(최근 30일 전부와 월 1개씩 12개월)을 실행한다 | 수동 | none |
 | POL-0021-R11 | 같은 계정의 다른 R2 사용 | 필수: 상한이 이 repository의 파일만 세므로 따로 확인한다(RUN-0021 8.2, 8.5, 8.6) | 수동 | none |
 | POL-0021-R12 | SSD repository 예산 | 필수: SSD repository 크기를 `BACKUP_STATE_MAX_GIB`(8 GiB) 예산 안에 둔다 | none | none |
@@ -164,7 +164,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
    관리하거나 지우지 못한다. owner가 RUN-0021의 R2 설정을 마치고 첫 copy가
    성공하면 원격 사본이 생긴다. 전체 export 성공과 격리 restore를 별도로 확인하기 전 recoverability는 미검증이며 원격 RPO 하루는 계획 목표다. R2
    repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). 올린 뒤 저장 byte가
-   9 GB를 넘을 수 있으면 업로드를 거부하고 run이 실패한다. 그동안 원격 RPO는 지켜지지
+   9.9 GB(2026-11-25 owner가 9 GB에서 상향, ADR-0056)를 넘을 수 있으면 업로드를 거부하고 run이 실패한다. 그동안 원격 RPO는 지켜지지
    않는다. 원격 보존은 owner가 매달 실행하는 `forget-prune`(최근 30일 전부와 월 1개씩
    12개월)이다. 상한은 이 repository의 파일만 세므로 같은 계정의 다른 R2 사용은 따로
    확인한다(RUN-0021 8.2, 8.5, 8.6). 그 전까지는 모든
