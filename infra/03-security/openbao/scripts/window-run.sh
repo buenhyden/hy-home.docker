@@ -154,7 +154,7 @@ step_w0() {
   [ "$(printf '%s\n' "$image" | wc -l)" = 1 ] || die "expected one pinned OpenBao image"
   run sh infra/03-security/openbao/scripts/check-tls-material.sh "${tls%/ca.pem}" "$image"
   run bash infra/03-security/openbao/scripts/owner-window.sh preflight
-  ask "preflight: R2 stored bytes plus 1.05x the snapshot stay under 9,900,000,000?" || die "R2 headroom not confirmed"
+  ask "preflight: R2 stored bytes plus 1.05x the snapshot stay under 7,500,000,000?" || die "R2 headroom not confirmed"
   [ "$(docker inspect -f '{{.Image}}' openbao)" = "$OLD_IMAGE" ] || die "openbao does not run the reviewed 2.7.1 image"
   [ "$(server .sealed)" = false ] || die "server is sealed"
   [ "$(server .version)" = "$OLD_VERSION" ] || die "server is not $OLD_VERSION"

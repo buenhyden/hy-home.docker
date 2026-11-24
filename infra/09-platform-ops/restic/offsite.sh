@@ -1,10 +1,10 @@
 #!/bin/sh
 # Offsite Restic entrypoint (ADR-0056): one Cloudflare R2 repository that
 # receives the snapshots of both local repositories (state and host).
-# Usage: offsite.sh {snapshots|init|copy|check|forget-prune|restore <host-id> <state-id>|cmd <restic args...>}
+# Usage: offsite.sh {snapshots|init|copy|check|forget-prune|prune|restore <host-id> <state-id>|cmd <restic args...>}
 # The daily run never deletes. forget-prune is the owner-run, separately
 # confirmed monthly procedure that keeps the remote inside the R2 free tier
-# (RUN-0021); it keeps every snapshot within the 30-day bucket lock.
+# (RUN-0021); prune is the owner-run removal of unused packs alone.
 set -eu
 
 SETS="state host"
@@ -30,11 +30,11 @@ AWS_SECRET_ACCESS_KEY="$(secret r2_secret_access_key)"
 export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 
 # The owner forbids the R2 repository from ever passing 10 GB (2026-10-20).
-# Every upload is refused when it could take the stored bytes past 9.9 GB (owner
-# 2026-11-25, raised from 9 GB): the projection already adds 5% for packing, and
-# the 30-day bucket lock means nothing written can be deleted in time. The
-# variable can only lower the cap; tests use it.
-max_bytes=9900000000
+# Every upload is refused when it could take the stored bytes past 7.5 GB (owner
+# 2026-11-25, lowered from 9 GB): the projection adds 5% for packing, and the
+# 30-day bucket lock means nothing written can be deleted in time. The variable
+# can only lower the cap; tests use it.
+max_bytes=7500000000
 case "${BACKUP_OFFSITE_MAX_BYTES:-}" in
     '') ;;
     *[!0-9]*) echo "BACKUP_OFFSITE_MAX_BYTES must be a byte count" >&2; exit 64 ;;
@@ -166,9 +166,10 @@ case "$action" in
         ;;
     forget-prune)
         # Deletes remote snapshots and data. Owner-run only, with an explicit,
-        # separately approved confirmation (RUN-0021 8.5). Everything younger
-        # than the 30-day bucket lock stays, so no locked object is removed;
-        # older history keeps one snapshot per month for a year.
+        # separately approved confirmation (RUN-0021 8.5). Snapshot times are
+        # not upload times, so a snapshot older than 30 days can still be under
+        # the bucket lock; R2 then refuses its removal and the run fails.
+        # Older history keeps one snapshot per month for a year.
         if [ "${HYHOME_PRUNE_CONFIRM:-}" != "delete-old-remote-snapshots" ]; then
             echo "forget-prune needs HYHOME_PRUNE_CONFIRM=delete-old-remote-snapshots" >&2
             exit 64
@@ -228,6 +229,23 @@ case "$action" in
             entries="$entries${entries:+,}{\"name\":\"$name\",\"bytes\":$size,\"sha256\":\"$local_sum\"}"
         done
         echo "{\"state\":\"W3B_STORED\",\"snapshot_id\":\"$id\",\"tag\":\"hy-home-openbao-w3\",\"files\":[$entries]}"
+        ;;
+    prune)
+        # Deletes only packs that no snapshot uses; no snapshot is removed.
+        # Owner-run with its own confirmation (RUN-0021 8.5). --max-repack-size 0
+        # never writes repacked packs, so R2 cannot grow under the lock. A pack
+        # still under the 30-day bucket lock is refused, stays as an unused pack
+        # until a later prune, and fails the run.
+        if [ "${HYHOME_PRUNE_CONFIRM:-}" != "delete-unused-remote-packs" ]; then
+            echo "prune needs HYHOME_PRUNE_CONFIRM=delete-unused-remote-packs" >&2
+            exit 64
+        fi
+        require_initialized
+        before="$(stored_bytes)"
+        status=0
+        restic prune --max-repack-size 0 || status=$?
+        echo "R2 repository size: $before -> $(stored_bytes) bytes"
+        exit "$status"
         ;;
     restore)
         # RUN-0021 8.3: restore one paired host and state snapshot into an

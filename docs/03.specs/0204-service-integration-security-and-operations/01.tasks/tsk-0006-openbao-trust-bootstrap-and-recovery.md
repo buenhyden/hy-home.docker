@@ -4278,14 +4278,27 @@ the local state directory (Restic plus pgBackRest) was 8269 MiB against the
   `restic-offsite check` reported `no errors were found` over 77 snapshots. R2
   stores 7,745,275,077 bytes while the snapshots reference 4.586 GiB, so about
   2.8 GB is unused packs that a prune can reclaim once their locks expire.
-- **Cap decision.** The owner chose to raise the R2 upload cap from 9 GB to
-  9.9 GB, still under the 10 GB ceiling (ADR-0056 1.1.0, POL-0021-R9, RUN-0021
-  8.2, `offsite.sh` `max_bytes=9900000000`). The refused projection of
-  9,674,140,971 bytes fits under it.
-  With `HYHOME_BACKUP_REHEARSAL=1`, the five `test_restic_offsite_cap` tests,
-  including the disposable over-cap and under-cap copy rehearsals, passed.
+- **Cap decision.** The owner first chose 9.9 GB, then set the R2 upload cap to
+  7.5 GB instead and asked to remove what exceeds it, oldest first. Read-only
+  sizing showed that the R2 snapshots reference only 4.586 GiB of the
+  7,745,275,077 stored bytes, and that deleting old R2 snapshots alone would not
+  hold because `restic copy` re-uploads every local snapshot the remote lacks.
+  The owner then chose to remove unused packs only and keep every snapshot:
+  `offsite.sh` `max_bytes=7500000000` and a new owner-run `prune` action
+  (`HYHOME_PRUNE_CONFIRM=delete-unused-remote-packs`, `restic prune
+  --max-repack-size 0`, no forget), with ADR-0056 1.1.0, POL-0021-R9/R10 and
+  RUN-0021 8.2/8.5 following. After a prune to about 4.9 GB, the pending copy of
+  about 1.9 GB fits under 7.5 GB. Packs still under the 30-day lock stay until
+  it expires.
+  With `HYHOME_BACKUP_REHEARSAL=1`, the six `test_restic_offsite_cap` tests
+  passed, including a disposable prune that dropped unused data, kept the one
+  remaining snapshot, and refused to run without its confirmation. The first
+  prune rehearsal kept everything because its two synthetic snapshots had
+  different container hostnames, so `forget --keep-last 1` kept one per host;
+  the test now forgets with `--group-by ''`.
 
-Next: after this change merges, the owner runs `hyhome-backup.service` once,
+Next: after this change merges, the remote `prune` runs once with the owner's
+approval of this scope, then the owner runs `hyhome-backup.service` once,
 checks `Result=success`, restarts `hyhome-backup.timer`, and reruns the window
 driver from `prep` on the merge commit.
 
