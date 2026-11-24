@@ -1,6 +1,6 @@
 ---
 title: "P12 Parallel Provider Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -139,10 +139,12 @@ wiring has one.
 | E14 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=work_dispatch.py run PLAN with two Claude units | Brief revision 4, 0.3-CPU budgets, model claude-haiku-5-5, 0.3 USD cap each, run 20261124T095454-d83d81 | PASS | Both succeeded: a active 5.16-22.08 s (session 83aad322, 0.0045 USD), b 9.25-22.72 s (session ff670873, 0.0034 USD), 12.8 s of overlap, elapsed 27.8 s against 30.4 s of unit time; each changed only its owned file with five accurate bullets on its module; integration passed (sha256 cef99563); main checkout clean, no worker scope or live lease left | required | E07,E12,E13 |
 | E15 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=work_dispatch.py run with one long Claude unit, then work_dispatch.py cancel | Run 20261124T095544-7c297c | PASS | Cancel 4 s after the scope appeared; the unit ended cancelled at 10.9 s, its scope was gone, no provider process remained and its worktree was removed | required | - |
 | E16 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=task_forecast.py observe SPEC-0212-TSK-0110 --status completed; score --type harness-change --time-basis elapsed | Real store, 2026-11-24T00:15:14Z to 00:56:10Z | PASS | 40.9 elapsed minutes against P30 25, P50 45, P80 90; two completed harness-change tasks, insufficient sample | optional | - |
+| E17 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers | Leading-dash regressions on 0fb55d55, after an automated review found that a prompt or model starting with a dash could be read as a CLI option | FAIL | Witnessed RED: 3 subtests accepted `--dangerously-skip-permissions`, `-p x` after leading spaces and `--settings` | required | - |
+| E18 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers | Guard in validate | PASS | Exit0; the three values are refused before any argv is built; the dispatcher suite also passes | required | E17 |
 
 ##### Resolution Links
 
-E03 resolves the witnessed failures in E02 and E09 those in E08. E14 resolves E07, E12 and E13. E07 was refused by admission from the
+E03 resolves the witnessed failures in E02 and E09 those in E08. E14 resolves E07, E12 and E13. E18 resolves E17. E07 was refused by admission from the
 linked worktree.
 
 #### Acceptance Decision
@@ -151,7 +153,7 @@ linked worktree.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 166 | pending | E01,E03,E04,E05,E06,E09,E10,E11,E14,E15 | Implementation, focused regressions, a real overlapping two-worker Claude run with integration and a real cancellation are recorded; a Codex worker and owner acceptance in P16 remain | @buenhyden |
+| 166 | pending | E01,E03,E04,E05,E06,E09,E10,E11,E14,E15,E18 | Implementation, focused regressions, a real overlapping two-worker Claude run with integration and a real cancellation are recorded; a Codex worker and owner acceptance in P16 remain | @buenhyden |
 
 ##### Remaining Conditions
 

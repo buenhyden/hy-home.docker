@@ -77,6 +77,9 @@ def validate(spec: object) -> dict:
         isinstance(v, str) and v.strip() and "\0" not in v for v in (model, prompt)
     ):
         raise ProviderError("provider model and prompt must be non-empty text")
+    if any(value.lstrip().startswith("-") for value in (model, prompt)):
+        # Each is a CLI argument; a leading dash would be read as an option.
+        raise ProviderError("provider model and prompt must not start with '-'")
     if (
         type(budget) not in (int, float)
         or not math.isfinite(budget)
