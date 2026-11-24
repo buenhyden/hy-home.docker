@@ -1,6 +1,6 @@
 ---
 title: "P12 Parallel Provider Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -134,11 +134,16 @@ wiring has one.
 | E09 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.validation.test_work_dispatch | Security fix | PASS | Exit0; with the process and surface-ownership suites 79 tests, one opt-in skipped (NOT_RUN) | required | E08 |
 | E10 | 166 | W182 | method=observation; tool=Claude Code 2.1.331; command=claude --print --safe-mode --restricted with Read, Glob and Grep, asked to read a decoy outside the working directory, then a symlink to it inside | A synthetic decoy file in the session scratchpad, 2026-11-24; deleted afterwards | PASS | Both refused: the file tools are restricted to the working directory and the link points outside it; the decoy value never appeared; cost 0.0015 USD | required | - |
 | E11 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.validation.test_work_dispatch tests.lib.ops.test_dispatch_process tests.lib.test_surface_ownership | Encoded-scan and binary-or-link rejection added | PASS | Exit0; 80 tests, one opt-in skipped (NOT_RUN); these two cases were written after their code and carry no witnessed RED | required | - |
+| E12 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=work_dispatch.py run PLAN with two Claude units | Merged dispatcher 6c105ce5 from the primary checkout, brief revision 3 granting dispatch only, run 20261124T095324-6f261e | FAIL | The brief check refused both units before any spawn: "This action exceeds the bound request brief scope", since `check ... dispatch` needs both the edit and dispatch actions per path; no worker, cost or lease | required | - |
+| E13 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=work_dispatch.py run PLAN with two Claude units | Brief revision 4 with edit and dispatch, default 1-CPU budgets, run 20261124T095349-af1abe | FAIL | Unit a ran in the sandbox and succeeded (session 7f65135c, 0.0045 USD, 3 turns); unit b was refused by aggregate admission, `cpus_budget_exceeded`: the live Docker services already reserve 9.0 of the 10 host CPUs | required | - |
+| E14 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=work_dispatch.py run PLAN with two Claude units | Brief revision 4, 0.3-CPU budgets, model claude-haiku-5-5, 0.3 USD cap each, run 20261124T095454-d83d81 | PASS | Both succeeded: a active 5.16-22.08 s (session 83aad322, 0.0045 USD), b 9.25-22.72 s (session ff670873, 0.0034 USD), 12.8 s of overlap, elapsed 27.8 s against 30.4 s of unit time; each changed only its owned file with five accurate bullets on its module; integration passed (sha256 cef99563); main checkout clean, no worker scope or live lease left | required | E07,E12,E13 |
+| E15 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=work_dispatch.py run with one long Claude unit, then work_dispatch.py cancel | Run 20261124T095544-7c297c | PASS | Cancel 4 s after the scope appeared; the unit ended cancelled at 10.9 s, its scope was gone, no provider process remained and its worktree was removed | required | - |
+| E16 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=task_forecast.py observe SPEC-0212-TSK-0110 --status completed; score --type harness-change --time-basis elapsed | Real store, 2026-11-24T00:15:14Z to 00:56:10Z | PASS | 40.9 elapsed minutes against P30 25, P50 45, P80 90; two completed harness-change tasks, insufficient sample | optional | - |
 
 ##### Resolution Links
 
-E03 resolves the witnessed failures in E02 and E09 those in E08. E07 is resolved by the real run
-from the primary checkout after the merge.
+E03 resolves the witnessed failures in E02 and E09 those in E08. E14 resolves E07, E12 and E13. E07 was refused by admission from the
+linked worktree.
 
 #### Acceptance Decision
 
@@ -146,14 +151,15 @@ from the primary checkout after the merge.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 166 | pending | E01,E03,E04,E05,E06,E09,E10,E11 | Implementation and focused regressions are recorded; the real two-worker run, the Codex run after its limit and owner acceptance in P16 remain | @buenhyden |
+| 166 | pending | E01,E03,E04,E05,E06,E09,E10,E11,E14,E15 | Implementation, focused regressions, a real overlapping two-worker Claude run with integration and a real cancellation are recorded; a Codex worker and owner acceptance in P16 remain | @buenhyden |
 
 ##### Remaining Conditions
 
-The real two-worker Claude run from the primary checkout follows the merge
-and is recorded here with its overlap, sessions, costs and integration. The
-Codex worker needs an egress-limited network namespace, an owner decision,
-and runs after 2026-11-27 12:53.
+A Codex worker needs an egress-limited network namespace (slirp4netns or
+pasta, not installed: an owner decision) and its account limit lifted after
+2026-11-27 12:53; until then the Codex adapter is refused, not complete. A
+provider worker needs a CPU budget that fits beside the live services, about
+0.3 CPU each on this host.
 
 #### Handoff
 
