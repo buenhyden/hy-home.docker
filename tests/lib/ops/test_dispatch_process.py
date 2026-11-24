@@ -452,6 +452,24 @@ class RegisteredDockerTests(unittest.TestCase):
             "case",
         ]
 
+    def test_a_controller_spawn_failure_is_a_structured_process_error(self):
+        with (
+            mock.patch.object(
+                execution,
+                "_spawn",
+                side_effect=OSError("worker ownership handshake failed"),
+            ),
+            mock.patch.object(execution, "_verify_operation", return_value=True),
+        ):
+            with self.assertRaisesRegex(execution.ProcessError, "spawn failed"):
+                execution.run_registered_docker(
+                    self.argv,
+                    cwd=self.root,
+                    timeout=10,
+                    admission=self.store,
+                    token=self.claim["token"],
+                )
+
     def test_only_local_generated_lifecycle_commands_enter_trusted_lane(self):
         for command in (
             ["sh", "-c", "true"],

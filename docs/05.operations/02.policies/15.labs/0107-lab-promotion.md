@@ -1,13 +1,13 @@
 ---
 title: "LAB Promotion Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "operations"
 artifact_id: "POL-0107"
 parent_ids:
@@ -143,6 +143,9 @@ Actual inputs and preconditions are those declared by the role payload below.
 | POL-0107-R68 | 승격 Task 시 | 필수: 각 승격 Task가 owner의 판단(Tier/Linux/Composition)을 checklist로 기록한다 | 수동 | none |
 | POL-0107-R69 | 항상 | 필수: host reserve 표(CPUs 2, Memory MiB 4096, Disk percent 10)와 `lab.py`의 `PROMOTION_RESERVE`를 같게 둔다 | `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy` | none |
 | POL-0107-R70 | 항상 | 필수: external-workload allowance 표(Allowance CPUs 2, Allowance MiB 6144)와 `lab.py`의 `PROMOTION_EXTERNAL_ALLOWANCE`를 같게 둔다 | `tests/validation/test_lab_controller.py`의 `test_allowance_matches_policy` | none |
+| POL-0107-R71 | 항상 | 필수: LAB은 상시 구동 대상이 아니며 필요할 때 lease로만 띄우고 끝나면 내린다 | `python3 scripts/operations/lab.py reap` | none |
+| POL-0107-R72 | LAB 테스트·QA 시 | 필수: LAB의 테스트와 QA는 그 LAB의 목적(실험·검증 대상) 범위로 한정하며 HOME 수준의 완비를 요구하지 않는다 | none | none |
+| POL-0107-R73 | 승격 시 | 필수: HOME 수준의 테스트·QA 완비는 `infra/`로 옮겨 HOME이 될 때 승격 Task가 갖춘다; 상시 구동 준비는 `infra/`의 HOME에만 요구한다 | none | 승격 Task 기록 |
 
 ###### Standard layout
 <!-- core-payload-level:4 -->
@@ -155,6 +158,16 @@ Actual inputs and preconditions are those declared by the role payload below.
 - LAB은 `hy-home-lab-`로 시작하는 자신의 Compose project(예: `hy-home-lab-kafka`,
   `hy-home-lab-opensearch`), LAB network, `LAB_*` endpoint 입력,
   `LAB_DATA_DIR` 아래 데이터와 `lab.py check`의 격리를 유지한다.
+
+###### Operating scope and QA
+<!-- core-payload-level:4 -->
+
+- LAB은 상시 구동하지 않는다. 필요할 때 lease로 띄우고, 만료된 lease는 `lab.py reap`이 내린다.
+- LAB의 테스트와 QA는 그 LAB의 목적에 맞춘다. 격리·layout·manifest 검사는 유지하되, HOME과
+  같은 수준의 테스트·QA 완비나 상시 구동 준비를 LAB에 요구하지 않는다. 실제 LAB 기동이 없는
+  것은 결함이 아니다.
+- HOME 수준의 테스트·QA는 LAB을 `infra/`로 옮겨 HOME이 될 때 승격 Task가 완비한다. 상시
+  구동할 수 있도록 준비되어야 하는 것은 `infra/`의 HOME뿐이다.
 
 ###### Promotion manifest
 <!-- core-payload-level:4 -->
@@ -351,6 +364,7 @@ Task를 열기 전마다 검토한다.
 - readiness: 강제 수단 없음 `POL-0107-R41`
 - reservation: 강제 수단 없음 `POL-0107-R58`~`R62`, `POL-0107-R64`~`R67`
 - owner 확인 항목: 수동 검토 `POL-0107-R68`
+- 운영 범위와 QA: 강제 수단 없음 `POL-0107-R72`; 승격 Task 기록 `POL-0107-R73`
 - Owner check items(Tier/Linux/Composition)는 `OWNER_JUDGMENT`로 보고되며 측정값도 차단도 아니고 승격 Task의 owner checklist에 의존한다.
 - 측정하지 못한 readiness 값은 `NOT_RUN`이며 통과가 아니다.
 - `postgresql-ha`는 측정 전이라 resources `FAIL`이며 승격 전 부하 측정이 필요하다.

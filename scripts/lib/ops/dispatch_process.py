@@ -960,22 +960,26 @@ def run_registered_docker(argv, *, cwd, timeout, admission, token, env=None):
         )
         if record["kind"] == "compose-start":
             admission.update(token, docker_operation_token=operation_token)
-        execution = _spawn(
-            argv,
-            root=directory,
-            name="controller",
-            cwd=cwd,
-            env=os.environ if env is None else env,
-            stdout=subprocess.DEVNULL,
-            admission=None,
-            budget=budget,
-            kind="docker-controller",
-            reservation={**record, "token": operation_token},
-            register=False,
-            trusted_docker=True,
-            disk_paths=(directory,),
-            headroom=operation == "up",
-        )
+        try:
+            execution = _spawn(
+                argv,
+                root=directory,
+                name="controller",
+                cwd=cwd,
+                env=os.environ if env is None else env,
+                stdout=subprocess.DEVNULL,
+                admission=None,
+                budget=budget,
+                kind="docker-controller",
+                reservation={**record, "token": operation_token},
+                register=False,
+                trusted_docker=True,
+                disk_paths=(directory,),
+                headroom=operation == "up",
+            )
+        except OSError as error:
+            # _spawn already reaped its worker; callers handle ValueError.
+            raise ProcessError("Docker controller spawn failed") from error
         try:
             try:
                 code = execution["process"].wait(timeout=timeout)

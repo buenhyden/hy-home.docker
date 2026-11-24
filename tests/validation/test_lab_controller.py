@@ -1620,6 +1620,30 @@ class LifecycleTests(unittest.TestCase):
             dispatch_process.ProcessError("lock timeout")
         )
 
+    def test_p07_reap_never_stops_a_newer_unexpired_claim(self):
+        from scripts.lib.ops import dispatch_process
+
+        self.assertEqual(0, self.up())
+        self.assertEqual(0, self.main("down", "cassandra"))
+        stopped = self.ledger()
+        past = dt.datetime.now(dt.UTC) - dt.timedelta(minutes=1)
+        stopped["expires_at"] = past.isoformat()
+        (self.data / ".ledger/cassandra.json").write_text(json.dumps(stopped))
+        with mock.patch.object(
+            dispatch_process,
+            "prepare_registered_docker",
+            side_effect=dispatch_process.ProcessError("lock timeout"),
+        ):
+            self.assertNotEqual(0, self.up())
+        newer = self.admission.records()[0]["token"]
+        with mock.patch(
+            "scripts.lib.ops.environment_admission.process_status",
+            return_value="absent",
+        ):
+            # Only the earlier, stopped entry is expired; the newer lease is not.
+            self.assertEqual(0, self.main("reap"))
+        self.assertEqual([newer], [r["token"] for r in self.admission.records()])
+
     def test_p07_successful_cleanup_is_idempotent_without_core_tombstone(self):
         self.assertEqual(0, self.up())
         self.assertEqual(0, self.main("down", "cassandra"))

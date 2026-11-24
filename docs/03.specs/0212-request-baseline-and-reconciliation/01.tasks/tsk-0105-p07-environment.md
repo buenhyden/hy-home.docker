@@ -1,6 +1,6 @@
 ---
 title: "P07 Environment Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -208,6 +208,9 @@ mechanisms, remaining quota limits and unobserved billing without fake PASS.
 | E69 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_environment_admission tests.lib.ops.test_compose_start tests.lib.ops.test_dispatch_process tests.validation.test_lab_controller tests.validation.test_work_dispatch tests.lib.document_governance.test_generation7 | Each new regression for the E65-E67 findings before its fix | FAIL | RED observed one at a time: reap of a pre-directory LAB claim (reap exit1, claim kept), a directory recorded but never created, the stale stopped ledger (reap 0 with the claim kept), the unacknowledged controller, partial-start release, token-less recovery, an unreadable worker identity, the live-start refusal and the pre-claim interrupt. The E63/E64 regressions were written with their repairs in the preceding context; their RED is not separately recorded | required | - |
 | E70 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_environment_admission tests.lib.ops.test_compose_start tests.lib.ops.test_dispatch_process tests.validation.test_lab_controller tests.validation.test_work_dispatch tests.lib.document_governance.test_generation7 | Commit 38156d0e | PASS | Exit0; 301 tests, 1 opt-in Native skipped and NOT_RUN. An earlier full run once missed the work_dispatch 1.9s timing bound by 0.091s under load and passed 3/3 alone, so that is a timing flake, not a regression. Synthetic/local proof, not live LAB or HOME runtime | required | E69 |
 | E71 | 161 | W177 | method=automated; tool=Python3.12.3; command=check-document-metadata.py --mode check-changed --base-ref origin/main; check-document-links.py --mode all --changed; check-document-corpus-lifecycle.py --readiness | Branch codex/p07-review-repairs over main ee5a1a83 with 161 accepted | PASS | Metadata selected871, violations0; links938 documents,9145 links, failures0; lifecycle violations0 and occupancy violations0, and criterion 161 no longer appears as not accepted or unresolved | required | - |
+| E72 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_environment_admission tests.lib.ops.test_compose_start tests.lib.ops.test_dispatch_process tests.validation.test_lab_controller tests.validation.test_work_dispatch | New regressions for the E68 follow-ups before their fixes, over main 509bae8c | FAIL | RED observed: with an expired stopped ledger from an earlier run beside a newer unexpired claim, reap released the newer claim (assertion 0 != 1); a controller spawn OSError escaped run_registered_docker instead of a structured ProcessError | required | - |
+| E73 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_environment_admission tests.lib.ops.test_compose_start tests.lib.ops.test_dispatch_process tests.validation.test_lab_controller tests.validation.test_work_dispatch | reap passes the snapshot token it judged expired and stop leaves a different current claim alone; a controller spawn OSError becomes ProcessError, which every entrypoint catches | PASS | Exit0; 289 tests, 1 opt-in Native skipped and NOT_RUN. The third follow-up is fail-closed accounting, not a defect: a running container whose service left the root definition cannot be measured, so the claim stays charged; harness-maintenance 2.10.1 records the remedy (restore the definition, recover, reapply) | required | E72 |
+| E74 | 161 | W177 | method=automated; tool=Python3.12.3; command=check-document-metadata.py --mode check-changed --base-ref origin/main; check-document-links.py --mode all --changed; check-document-corpus-lifecycle.py; python3 -m unittest tests.validation.test_lab_layout tests.validation.test_lab_isolation | POL-0107 1.1.0 (R71-R73), harness-maintenance 2.10.1 and this Task over main 509bae8c | PASS | Metadata selected4, violations0; links PASS; lifecycle violations0, occupancy violations0; LAB layout and isolation tests OK | required | - |
 
 ##### Resolution Links
 
@@ -235,7 +238,13 @@ CLI it names is gone. The owner chose a current-CLI re-review plus the SDLC
 3.1.0 rule that lets a later review by the same tool at an equal or newer
 version resolve an earlier review. Five 2.1.331 reviews failed (E63-E67), each
 verified finding was repaired with a regression (E69/E70), and E68 passed and
-resolves E16 and E63-E67. E68's three non-blocking notes stay follow-ups. Not changed: the root
+resolves E16 and E63-E67. E68's three non-blocking notes were then handled: E73 resolves the
+regressions E72 for the reap race and the spawn error, and the inventory
+dependency is recorded as fail-closed accounting with its remedy. On
+2026-11-24 the owner also set the LAB scope (POL-0107 1.1.0 R71-R73): a LAB is
+not always running, its tests and QA serve its own purpose, and HOME-level QA
+is completed at promotion, so no live LAB start is required here; only the
+`infra/` HOME must stay ready to run. Not changed: the root
 compose_start still classifies exited-0 containers by `restart: no` before
 release. Every current root definition with that policy is a job, and a
 misclassified job only keeps its reservation, so the result is conservative.
@@ -263,8 +272,7 @@ host (E49-E51). The 1.2.0 delivery PR and its hosted check are recorded with
 that delivery. E56/E57 observed and resolved the E33 cause, and E58 records
 the PR1143 and post-merge hosted runs. E59-E62 close the verified re-review
 follow-ups. E68 resolves E16 under the newer-review rule and E70 the E69 regressions, so
-criterion 161 is accepted. E68's non-blocking follow-ups remain open work, not
-acceptance conditions. Retain live/uncertain
+criterion 161 is accepted. E72/E73 close E68's non-blocking follow-ups. Retain live/uncertain
 reservations and preexisting unrelated work.
 
 #### Handoff
