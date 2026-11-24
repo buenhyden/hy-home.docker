@@ -88,6 +88,11 @@ class AdapterTests(unittest.TestCase):
         leaked = b"token: sk-ant-oat01-" + b"x" * 40
         self.assertFalse(dispatch_providers.leaks(profile, clean))
         self.assertTrue(dispatch_providers.leaks(profile, leaked))
+        import base64
+
+        token = b"sk-ant-oat01-" + b"x" * 40
+        for encoded in (base64.b64encode(token), token.hex().encode()):
+            self.assertTrue(dispatch_providers.leaks(profile, b"note " + encoded))
 
     def test_an_invalid_spec_is_refused_before_anything_starts(self):
         for bad in (

@@ -20,9 +20,11 @@ namespace exists.
 
 from __future__ import annotations
 
+import base64
 import json
 import math
 import os
+import urllib.parse
 from pathlib import Path
 
 MAX_BUDGET_USD = 5.0
@@ -37,6 +39,10 @@ NETWORK_FILES = (
     "/etc/ca-certificates",
 )
 CLAUDE_TOOLS = "Read,Edit,Write,Glob,Grep"
+# Restricted mode already confines file tools to the worktree, symlinks
+# included (observed with a decoy); these rules repeat the boundary for the
+# paths that hold credentials or process state.
+DENIED_PATHS = (WORKER_HOME, "/tmp", "/proc", "/run")
 MIN_SECRET_CHARS = 16
 
 
@@ -102,7 +108,9 @@ def _claude(spec: dict) -> tuple[list[str], dict]:
             {
                 "permissions": {
                     "deny": [
-                        f"{tool}(/{WORKER_HOME}/**)" for tool in CLAUDE_TOOLS.split(",")
+                        f"{tool}(/{path}/**)"
+                        for tool in CLAUDE_TOOLS.split(",")
+                        for path in DENIED_PATHS
                     ]
                 }
             }
@@ -183,9 +191,23 @@ def leaks(profile: dict, data: bytes) -> bool:
             values = _secrets(json.loads(Path(source).read_text()))
         except (OSError, ValueError):
             continue
-        if any(value.encode() in data for value in values):
+        if any(form in data for value in values for form in _forms(value)):
             return True
     return False
+
+
+def _forms(value: str) -> set[bytes]:
+    """The value and the encodings a model could write it in."""
+    raw = value.encode()
+    return {
+        raw,
+        base64.b64encode(raw),
+        base64.urlsafe_b64encode(raw),
+        raw.hex().encode(),
+        raw.hex().upper().encode(),
+        urllib.parse.quote(value, safe="").encode(),
+        json.dumps(value)[1:-1].encode(),
+    }
 
 
 def launch(spec: dict) -> tuple[list[str], dict]:

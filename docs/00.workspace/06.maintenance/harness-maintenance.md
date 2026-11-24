@@ -343,8 +343,9 @@ A provider worker runs the installed CLI non-interactively (Claude:
 HOME, `--max-budget-usd`) with the network, its binary and its credential file
 read-only and a private HOME added to the same read-only-root boundary; its
 session, cost and error from the final JSON go to the report, a provider error
-fails the unit, and a result whose patch or log holds a credential value is
-rejected and its log wiped. The worker has no network-capable tool; only the
+fails the unit, and a result whose patch or log holds a credential value (also
+base64, hex, URL- or JSON-escaped) or whose patch holds binary content or a
+link is rejected and its log wiped. The worker has no network-capable tool; only the
 CLI process uses the shared network, a monitored boundary rather than a block.
 A Codex unit is refused: its model gets a shell, which with the host network
 and its credentials could reach loopback services and the token, until an

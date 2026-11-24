@@ -410,6 +410,14 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         patch = _wt(
             gitdir, tree, "diff", "--cached", "--no-renames", "--binary", job["start"]
         )
+        if spec:
+            numstat = _wt(gitdir, tree, "diff", "--cached", "--no-renames",
+                          "--numstat", "-z", job["start"])  # fmt: skip
+            modes = _wt(gitdir, tree, "diff", "--cached", "--no-renames",
+                        "--summary", job["start"])  # fmt: skip
+            if b"-\t-\t" in numstat or b" 120000 " in modes:
+                # Binary content or a link cannot be checked for credentials.
+                return finish(uid, "rejected", "provider result holds a binary or link")
         if spec and dispatch_providers.leaks(job["profile"], patch):
             (root / f"{uid}.log").write_bytes(b"")
             return finish(uid, "rejected", "result holds a credential value")

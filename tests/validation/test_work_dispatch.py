@@ -639,6 +639,19 @@ class DispatchTests(unittest.TestCase):
         log = self.state / "runs" / report["run_id"] / "a.log"
         self.assertEqual(b"", log.read_bytes())
 
+    def test_a_provider_binary_or_link_result_is_rejected(self):
+        ok = ' echo \'{"type":"result","subtype":"success","is_error":false}\''
+        for body in ("printf '\\000\\001' > a.txt;", "ln -s /tmp/home a.txt;"):
+            with self.subTest(body=body):
+                report, _ = self.provider_run(
+                    [self.provider_unit("a", "a.txt")], script=body + ok
+                )
+                (entry,) = report["units"]
+                self.assertEqual(
+                    ("rejected", "provider result holds a binary or link"),
+                    (entry["status"], entry["reason"]),
+                )
+
     def test_provider_plans_need_a_brief_identity_and_a_valid_spec(self):
         good = self.provider_unit("a", "a.txt")
         for plan in (

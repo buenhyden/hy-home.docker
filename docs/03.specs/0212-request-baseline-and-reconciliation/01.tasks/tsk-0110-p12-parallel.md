@@ -99,7 +99,15 @@ with the host network and its credentials. Claude's file tools are now
 denied the private HOME, a result whose patch or log holds any credential
 value is rejected and the log wiped, and Codex is refused until an
 egress-limited network namespace exists; neither slirp4netns nor pasta is
-installed, so that needs an owner decision. A first real run from the worktree code was
+installed, so that needs an owner decision. A second review noted that byte
+matching alone can be evaded and that a path rule is weaker than keeping the
+file out of reach. Restricted mode is the primary confinement: a decoy run
+showed it refuses a file outside the working directory and a symlink inside
+it that points out (E10). The rules now also deny `/tmp`, `/proc` and `/run`,
+a provider patch with binary content or a link is rejected, and the scan
+covers base64, hex, URL- and JSON-escaped forms. The credential stays
+readable by the CLI process inside the sandbox; a brokered short-lived token
+would remove it and needs a token the owner issues. A first real run from the worktree code was
 refused by admission ("execution admission must use this repository root"):
 the dispatcher only runs against its own checkout, and the brief is bound to
 the primary checkout, so the real run uses the merged dispatcher from the
@@ -124,6 +132,8 @@ wiring has one.
 | E07 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=work_dispatch.py run PLAN with two Claude units | Dispatcher code from the linked worktree against the primary checkout, 2026-11-24 | FAIL | Admission refused before any spawn: execution admission must use this repository root; no worker, cost or lease remained | required | - |
 | E08 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.validation.test_work_dispatch | Security regressions on e30f87ab | FAIL | Witnessed RED: 1 failure and 3 errors: Codex accepted, no HOME deny, no credential scan, a leaking result accepted | required | - |
 | E09 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.validation.test_work_dispatch | Security fix | PASS | Exit0; with the process and surface-ownership suites 79 tests, one opt-in skipped (NOT_RUN) | required | E08 |
+| E10 | 166 | W182 | method=observation; tool=Claude Code 2.1.331; command=claude --print --safe-mode --restricted with Read, Glob and Grep, asked to read a decoy outside the working directory, then a symlink to it inside | A synthetic decoy file in the session scratchpad, 2026-11-24; deleted afterwards | PASS | Both refused: the file tools are restricted to the working directory and the link points outside it; the decoy value never appeared; cost 0.0015 USD | required | - |
+| E11 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.validation.test_work_dispatch tests.lib.ops.test_dispatch_process tests.lib.test_surface_ownership | Encoded-scan and binary-or-link rejection added | PASS | Exit0; 80 tests, one opt-in skipped (NOT_RUN); these two cases were written after their code and carry no witnessed RED | required | - |
 
 ##### Resolution Links
 
@@ -136,7 +146,7 @@ from the primary checkout after the merge.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 166 | pending | E01,E03,E04,E05,E06,E09 | Implementation and focused regressions are recorded; the real two-worker run, the Codex run after its limit and owner acceptance in P16 remain | @buenhyden |
+| 166 | pending | E01,E03,E04,E05,E06,E09,E10,E11 | Implementation and focused regressions are recorded; the real two-worker run, the Codex run after its limit and owner acceptance in P16 remain | @buenhyden |
 
 ##### Remaining Conditions
 
