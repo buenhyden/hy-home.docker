@@ -21,6 +21,7 @@ FROM ${PG_BASE}
 COPY --from=pgbackrest-build /tmp/build/src/pgbackrest /usr/bin/pgbackrest
 RUN apk add --no-cache libpq lz4-libs zstd-libs libbz2 libxml2 yaml libssh2 \
     && install -d -o postgres -g postgres -m 0750 /var/lib/pgbackrest /var/spool/pgbackrest \
+    && install -d -m 0755 /etc/pgbackrest \
     && pgbackrest version
 
 COPY --chmod=0644 pgbackrest.conf /etc/pgbackrest/pgbackrest.conf
