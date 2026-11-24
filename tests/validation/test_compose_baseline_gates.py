@@ -2087,6 +2087,11 @@ class BackupContractTests(unittest.TestCase):
             '                --tag "hyhome-$set" --keep-daily 30',
             prune,
         )
+        # trim repeats its date in the confirmation and keeps the newest of each set.
+        trim = script.split("    trim)")[1].split(";;")[0]
+        self.assertIn('= "delete-snapshots-before-$1" ] && confirmed=true', trim)
+        self.assertIn("| map(sort_by(.time) | .[:-1])", script)
+        self.assertIn('index("hy-home-openbao-w3") | not', script)
         init = script.split("    init)")[1].split(";;")[0]
         self.assertIn("already initialized; skipped", init)
         passthrough = script.split("    cmd)")[1]
@@ -2336,7 +2341,10 @@ docker() {
         self.assertIn("--keep-within 30d", prune)
         # A recovery artifact (RUN-0105 W3b) is never thinned by the policy.
         self.assertIn("--keep-tag hy-home-openbao-w3", prune)
-        outside = script.replace(prune, "").replace(unused, "")
+        trim = script.split("    trim)")[1].split(";;")[0]
+        self.assertIn('!= "delete-snapshots-before-$1" ]', trim)
+        self.assertIn("restic prune --max-repack-size 0", trim)
+        outside = script.replace(prune, "").replace(unused, "").replace(trim, "")
         self.assertNotRegex(outside, r"\brestic (forget|prune|unlock)\b")
         # copy reports the stored size for the free-tier alert.
         self.assertIn("stats --mode raw-data --json", script)
@@ -4048,6 +4056,11 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         ).stdout
         self.assertEqual("synthetic-secret", restored)
         self.assertEqual(64, run("forget-prune", check=False).returncode)
+        # trim lists without its date-bound confirmation and deletes nothing.
+        self.assertEqual(64, run("trim", check=False).returncode)
+        listed = run("trim", "2999-01-01", check=False)
+        self.assertEqual(64, listed.returncode)
+        self.assertIn("trim: 0 state snapshots before 2999-01-01", listed.stdout)
         self.assertEqual(
             64, run("cmd", "state", "forget", "latest", check=False).returncode
         )

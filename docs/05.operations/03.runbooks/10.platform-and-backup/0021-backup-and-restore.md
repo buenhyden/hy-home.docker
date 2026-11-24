@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "2.2.1"
+version: "2.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -540,6 +540,31 @@ docker compose --profile backup run --rm --no-deps \
 Evidence에 적는다. 아직 30일 lock 아래의 pack은 R2가 거부해 남는다. restic은 `unable to remove`를
 남기고도 exit 0으로 끝날 수 있으므로 전후 크기와 그 경고를 함께 본다. 남은 pack은 어떤 index에도
 없는 상태로 남아 lock이 풀린 뒤의 `prune`이 지운다. 끝나면 `restic-offsite check`로 `no errors were found`를 확인한다.
+
+2026-11-25 첫 `prune`은 새 index를 쓴 뒤 옛 index 파일 삭제에서 "The object is locked by the
+bucket policy"로 멈췄다(pack은 지우지 않음, 이어진 check는 `no errors were found`와 중복 index 경고).
+8.1과 달리 `index/`가 lock 아래에 있다는 뜻이다. owner가 Cloudflare의 bucket lock 규칙에서
+`index/`를 덮는 규칙(빈 prefix나 bucket 전체 규칙 포함)을 지운 뒤에야 `prune`·`forget-prune`·`trim`이
+끝까지 간다. 그 전에는 다시 실행하지 않는다.
+
+오래된 snapshot을 날짜 기준으로 지우려면 owner가 로컬과 R2에 **같은 날짜**로 `trim`을 실행한다
+(approval: 로컬과 원격 삭제). R2만 지우면 다음 `copy`가 로컬에 남은 snapshot을 다시 올린다. 각 set의
+가장 새로운 snapshot과 RUN-0105 OpenBao artifact(`hy-home-openbao-w3` tag)는 고르지 않는다. 확인 값
+없이 실행하면 지울 목록만 출력하고 exit 64로 끝나므로 먼저 목록을 검토한다:
+
+```bash
+docker compose --profile backup run --rm --no-deps restic trim 2026-10-27
+docker compose --profile backup run --rm --no-deps restic-offsite trim 2026-10-27
+# 목록을 승인한 뒤 같은 날짜를 확인 값에 넣어 실행한다
+docker compose --profile backup run --rm --no-deps \
+  -e HYHOME_TRIM_CONFIRM=delete-snapshots-before-2026-10-27 restic trim 2026-10-27
+docker compose --profile backup run --rm --no-deps \
+  -e HYHOME_TRIM_CONFIRM=delete-snapshots-before-2026-10-27 restic-offsite trim 2026-10-27
+```
+
+로컬 `trim`은 지운 뒤 `prune`(repack 포함)을, R2 `trim`은 `prune --max-repack-size 0`을 실행한다.
+R2에서 아직 lock 아래인 snapshot은 거부돼 남고 run은 0이 아닌 값으로 끝난다. Evidence에는 날짜,
+목록의 개수, 전후 `R2 repository size`와 로컬 budget 크기를 적고 `restic-offsite check`를 확인한다.
 
 ###### 8.6 R2 비용과 무료 한도 검토
 <!-- core-payload-level:4 -->

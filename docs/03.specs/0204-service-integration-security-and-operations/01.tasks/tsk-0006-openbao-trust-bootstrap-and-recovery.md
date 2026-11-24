@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.43"
+version: "0.2.44"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4297,7 +4297,26 @@ the local state directory (Restic plus pgBackRest) was 8269 MiB against the
   different container hostnames, so `forget --keep-last 1` kept one per host;
   the test now forgets with `--group-by ''`.
 
-Next: after this change merges, the remote `prune` runs once with the owner's
+- **First remote prune (owner-approved), 2026-11-25 07:21 KST.** It found
+  1.329 GiB of fully unused packs to delete and 1.291 GiB left in partly used
+  packs, wrote the new index, then stopped deleting the old index files with
+  "The object is locked by the bucket policy": `index/` is under the bucket
+  lock, unlike RUN-0021 8.1. No pack was deleted; R2 went from 7,745,258,882 to
+  7,749,639,833 bytes, and `restic-offsite check` reported `no errors were
+  found` with non-critical duplicate index entries. It was not retried.
+- **Sizing correction.** Even a full prune would leave about 6.3 GB, and the
+  pending copy of up to about 1.9 GB would take it to about 8.2 GB, over 7.5 GB.
+  The owner then chose to remove the `index/` lock rule in Cloudflare and to
+  trim the oldest snapshots. A new owner-run `trim <date>` in `backup.sh` and
+  `offsite.sh` deletes snapshots older than the date from both the local and R2
+  repositories (the newest of each set and the OpenBao W3 artifacts are kept),
+  needs `HYHOME_TRIM_CONFIRM=delete-snapshots-before-<date>`, and only lists
+  without it. Its read-only preview for 2026-10-27 lists 27 R2 snapshots and 14
+  state plus 14 host local snapshots. The R2 snapshots that remain from
+  2026-10-27 on reference 2.687 GiB.
+
+Next: the owner removes the `index/` lock rule, approves the trim list, and the
+trim runs on both sides. Then, after this change merges, the remote `prune` runs once with the owner's
 approval of this scope, then the owner runs `hyhome-backup.service` once,
 checks `Result=success`, restarts `hyhome-backup.timer`, and reruns the window
 driver from `prep` on the merge commit.

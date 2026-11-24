@@ -1,6 +1,6 @@
 ---
 title: "Offsite Backup Target with an Enforced Size Cap"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -150,8 +150,10 @@ Costs are order-of-magnitude list-price estimates from 2026-09-25.
    every snapshot kept.
 4. The bucket keeps a 30-day lock, and the host token is scoped to that bucket.
    The daily run never deletes; remote `forget-prune` is a separate,
-   owner-run monthly procedure, and `prune` is the owner-run removal of packs
-   no snapshot uses (RUN-0021 8.5). Snapshot times are not upload times, so
+   owner-run monthly procedure, `prune` is the owner-run removal of packs
+   no snapshot uses, and `trim` the owner-run removal of snapshots older than
+   an approved date, run on the local repositories with the same date so the
+   next copy does not upload them again (RUN-0021 8.5). Snapshot times are not upload times, so
    either can meet objects still under the lock.
 5. R2 credentials live only as files under `secrets/backup/` (0600, injected
    as Docker Secrets) plus an offline copy; they are never stored in OpenBao.

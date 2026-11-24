@@ -1,6 +1,6 @@
 ---
 title: "Restic Backup Jobs"
-version: "2.0.1"
+version: "2.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -118,7 +118,8 @@ restic/
   실패해도 이를 `hyhome_backup_offsite_repo_bytes`로 기록합니다. `cmd`는 읽기
   명령만 넘깁니다.
   원격 삭제는 owner가 확인 값과 함께 실행하는 `forget-prune`(매달)과,
-  snapshot을 지우지 않고 쓰이지 않는 pack만 지우는 `prune`뿐입니다
+  snapshot을 지우지 않고 쓰이지 않는 pack만 지우는 `prune`, 승인한 날짜보다
+  오래된 snapshot을 로컬과 같은 날짜로 지우는 `trim`뿐입니다
   (RUN-0021 8.5, 무료 한도 관리는 8.6).
 - `mng-pg`는 로컬 빌드이며 레지스트리가 없습니다. pull에는
   `docker compose pull --ignore-buildable`을 사용합니다.
