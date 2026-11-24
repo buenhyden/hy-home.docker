@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.4.0"
+version: "2.5.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -292,27 +292,38 @@ or other work. Remove the timer with
 
 `scripts/operations/task_forecast.py` records P30, P50 and P80 completion
 minutes before a task starts, records the outcome once afterwards, and scores
-each quantile. Records live in `.workspace-capture/forecast.sqlite3`, excluded
+each quantile. P30, P50 and P80 are the times by which the task completes with
+probability 0.3, 0.5 and 0.8, not progress shares. A forecast needs
+`--assumptions` (including expected blocking waits) and `--reference-class`;
+the store counts the completed tasks of the same type and time basis that had
+ended before it (`comparable_prior`), and below 20 the forecast is shown as an
+`uncalibrated prior`. Records live in `.workspace-capture/forecast.sqlite3`, excluded
 from Git and backup. The default time basis is elapsed time; to measure working
 time only, use `--time-basis active` and `--active-minutes` on the outcome.
 
 ```bash
-python3 scripts/operations/task_forecast.py forecast TASK-REF --type ci-run --p30 10 --p50 15 --p80 25
+python3 scripts/operations/task_forecast.py forecast TASK-REF --type ci-run --p30 10 --p50 15 --p80 25 --assumptions "one runner, no queue" --reference-class "hosted CI runs of this repository"
 python3 scripts/operations/task_forecast.py observe TASK-REF --status completed --started-at 2026-11-18T10:00:00+09:00 --finished-at 2026-11-18T10:18:00+09:00
-python3 scripts/operations/task_forecast.py score --type ci-run
+python3 scripts/operations/task_forecast.py score --type ci-run --time-basis elapsed
 ```
 
 A changed estimate adds a revision; existing values cannot be edited or
 replaced (REPLACE), and a task with an outcome takes no new estimate. This
 protection stops SQL edits only, not dropping triggers or replacing the store
 file. Minutes must be finite, and a future finish time or active time longer
-than elapsed time is refused. Scoring uses the last revision fixed before the
-task started and refuses an outcome whose only estimates came after the start.
+than elapsed time is refused. An outcome is completed, failed, cancelled or
+blocked (ended waiting on a permission or decision), stores the last revision
+fixed before the task started and is scored against it; an outcome whose only
+estimates came after the start is refused.
 `score` reports per-quantile sample size, the share of actual values at or
 under the estimate (coverage) with its 95% Wilson interval, and pinball loss,
-counting failed and cancelled tasks apart as censored samples. Fewer than 20
-completed samples show `insufficient sample`, and a mix of task types shows
-`pooled across types`; neither reads as a calibrated 80% guarantee. A forecast
+counting failed, cancelled and blocked tasks apart as censored samples and
+forecasts without an outcome as `open`. It lists each task type and time basis
+group; a selection mixing elapsed and active time shows `mixed time bases`,
+fewer than 20 completed samples show `insufficient sample`, and a mix of task
+types shows `pooled across types`; none reads as a calibrated 80% guarantee.
+A forecast error never blocks a commit; under- and over-estimation per group
+is read in the observe report. A forecast
 is a planning reference, never a deadline, an approval or a reason to skip a
 required check, and the completion distribution of parallel work is not the sum
 of per-task P80s.

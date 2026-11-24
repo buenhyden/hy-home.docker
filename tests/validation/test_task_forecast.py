@@ -13,6 +13,7 @@ from unittest import mock
 from scripts.operations import task_forecast as forecast
 
 START = "2026-11-18T10:00:00+00:00"
+REQUIRED = {"assumptions": "one runner, no waits", "reference_class": "ci runs"}
 
 
 class ForecastTests(unittest.TestCase):
@@ -28,7 +29,7 @@ class ForecastTests(unittest.TestCase):
             "ci-run",
             *quantiles,
             forecasted_at=extra.pop("at", "2026-11-18T09:00:00+00:00"),
-            **extra,
+            **{**REQUIRED, **extra},
         )
 
     def test_inverted_negative_or_unknown_inputs_are_refused(self) -> None:
@@ -104,6 +105,7 @@ class ForecastTests(unittest.TestCase):
                 2,
                 3,
                 forecasted_at="2026-11-18T09:00:00+00:00",
+                **REQUIRED,
             )
             forecast.observe(
                 self.directory, task, "completed", START, "2026-11-18T10:02:00+00:00"
@@ -227,6 +229,72 @@ class ForecastTests(unittest.TestCase):
         self.assertAlmostEqual(0.7923, high, places=4)
         # pinball at p=0.5 for actuals 5, 25, 50 against q=20
         self.assertAlmostEqual((7.5 + 2.5 + 15) / 3, p50["pinball"])
+
+    def finish(self, task, minutes, status="completed", **extra):
+        end = f"2026-11-18T{10 + minutes // 60:02d}:{minutes % 60:02d}:00+00:00"
+        return forecast.observe(self.directory, task, status, START, end, **extra)
+
+    def test_a_score_never_mixes_time_bases(self) -> None:
+        self.predict("T1")
+        self.finish("T1", 15)
+        self.predict("T2", time_basis="active")
+        self.finish("T2", 40, active_minutes=15)
+        with mock.patch.object(forecast, "MIN_CALIBRATION_SAMPLE", 1):
+            mixed = forecast.score(self.directory, "ci-run")
+            elapsed = forecast.score(self.directory, "ci-run", "elapsed")
+        self.assertEqual("mixed time bases; score one basis", mixed["calibration"])
+        self.assertEqual(
+            [("ci-run", "active", 1), ("ci-run", "elapsed", 1)],
+            [
+                (g["task_type"], g["time_basis"], g["completed"])
+                for g in mixed["groups"]
+            ],
+        )
+        self.assertEqual(
+            ("empirical", 1), (elapsed["calibration"], elapsed["completed"])
+        )
+
+    def test_the_comparable_sample_is_counted_from_earlier_completed_tasks(self):
+        self.predict("T1")
+        self.finish("T1", 30)  # done at 10:30
+        for task, at, extra in (
+            ("T2", "2026-11-18T11:00:00+00:00", {}),
+            ("T3", "2026-11-18T11:00:00+00:00", {"time_basis": "active"}),
+            ("T4", "2026-11-18T10:10:00+00:00", {}),
+        ):
+            self.predict(task, at=at, sample_size=10, **extra)
+        connection = forecast.connect(self.directory)
+        prior = dict(
+            connection.execute("SELECT task_ref, comparable_prior FROM forecasts")
+        )
+        connection.close()
+        self.assertEqual({"T1": 0, "T2": 1, "T3": 0, "T4": 0}, prior)
+
+    def test_an_outcome_names_its_forecast_and_blocked_or_open_is_not_scored(self):
+        self.predict("T1")
+        self.predict("T1", quantiles=(12, 22, 32), at="2026-11-18T09:30:00+00:00")
+        self.assertEqual(2, self.finish("T1", 20)["revision"])
+        connection = forecast.connect(self.directory)
+        linked = connection.execute(
+            "SELECT forecast_revision FROM outcomes WHERE task_ref='T1'"
+        ).fetchone()[0]
+        connection.close()
+        self.assertEqual(2, linked)
+        self.predict("T2")
+        self.finish("T2", 90, status="blocked")
+        self.predict("T3")
+        result = forecast.score(self.directory, "ci-run", "elapsed")
+        self.assertEqual(
+            (1, 1, 1), (result["completed"], result["blocked"], result["open"])
+        )
+
+    def test_a_forecast_without_assumptions_or_reference_class_is_refused(self):
+        for missing in ("assumptions", "reference_class"):
+            with self.subTest(missing=missing):
+                with self.assertRaises(forecast.ForecastError):
+                    self.predict(**{missing: " "})
+        with self.assertRaises(forecast.ForecastError):
+            self.predict(sample_size=True)
 
     def test_an_empty_score_has_no_coverage_or_bound(self) -> None:
         p50 = forecast.score(self.directory)["quantiles"]["p50"]
