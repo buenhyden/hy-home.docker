@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.9.0"
+version: "2.9.1"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"

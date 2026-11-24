@@ -1,6 +1,6 @@
 ---
 title: "P12 Parallel Provider Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"

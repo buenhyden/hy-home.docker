@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "2.8.0"
+version: "2.8.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
