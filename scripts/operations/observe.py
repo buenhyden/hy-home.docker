@@ -21,6 +21,7 @@ import datetime as dt
 import json
 import re
 import sqlite3
+import statistics
 import subprocess
 import sys
 import time
@@ -30,6 +31,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts.lib.hooks import session_capture as capture  # noqa: E402
+from scripts.lib.ops.dispatch_providers import ADAPTERS  # noqa: E402
 from scripts.operations import session_analysis as analysis  # noqa: E402
 from scripts.operations.agent_memory import MemoryStoreError  # noqa: E402
 
@@ -47,6 +49,8 @@ WATCHED = {
         f"journalctl --user -u {analysis.UNIT}.service; session_analysis.py status",
     ),
 }
+# A renamed unit keeps the runs it made under its earlier name.
+ALIASES = {f"{analysis.UNIT}.service": (f"{analysis.LEGACY_UNIT}.service",)}
 CAPTURE_OWNER = "HARNESS-MAINTENANCE session capture / @buenhyden"
 ANALYSIS_OWNER = WATCHED[f"{analysis.UNIT}.service"][1]
 DISPATCH_OWNER = "HARNESS-MAINTENANCE parallel work dispatch / @buenhyden"
@@ -59,9 +63,9 @@ RESTRICTED = "not seeing messages from other users"
 # finished runs can lie further apart than one day.
 MISSED_RUN_WINDOW = dt.timedelta(hours=29)
 UNMEASURED = [
-    "queue wait before each job starts",
+    "queue wait before jobs outside dispatch runs",
     "context loading inside agents and reviewers",
-    "token and money cost",
+    "billed money cost; dispatch shows only the provider CLI's own estimate",
     "analysis runs before the last one that ended other than complete",
 ]
 
@@ -121,6 +125,14 @@ def system_journal(unit: str, scope: str, since: str, until: str) -> list[str]:
 def _reason(text: str | None) -> str:
     """A capture reason without the counts it embeds, so one cause is one row."""
     return re.sub(r"\b\d+ ", "", text or "unknown").strip()
+
+
+def _number(value) -> float | None:
+    return (
+        value
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+        else None
+    )
 
 
 def report(directory: Path, since: str, until: str, journal=system_journal) -> dict:
@@ -236,10 +248,45 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
             if last in FAILED_ANALYSIS or last == "unknown":
                 fail("analysis", f"last run {last}", 1, ANALYSIS_OWNER,
                      "session_analysis.py status")  # fmt: skip
+    # The improvement chain as it stands now, not windowed: source events ->
+    # hypothesis -> review -> Task -> check -> effect. An effect not yet
+    # observed is counted apart, never as a zero.
+    found = rows(
+        "analysis", ANALYSIS_OWNER, "analysis.sqlite3", "SELECT * FROM candidates"
+    )  # fmt: skip
+    promoted = rows(
+        "analysis", ANALYSIS_OWNER, "analysis.sqlite3",
+        "SELECT COUNT(*) AS n FROM promotions WHERE state='promoted'",
+    )  # fmt: skip
+
+    def column(row, name):
+        return row[name] if name in row.keys() else None
+
+    decisions = collections.Counter(row["decision"] for row in found)
+    linked = [row for row in found if column(row, "task_ref")]
     result["analysis"] = {
         "runs": dict(run_states),
         "last_status": last,
         "pending_candidates": pending[0]["n"] if pending else 0,
+        "chain": {
+            "candidates": len(found),
+            "with_sources": sum(
+                (row["source_event_ids"] or "[]") != "[]" for row in found
+            ),
+            **{d: decisions[d] for d in ("pending", "rejected", "accepted")},
+            "promoted": promoted[0]["n"] if promoted else 0,
+            "linked_to_task": len(linked),
+            "effect": dict(
+                collections.Counter(
+                    column(row, "effect")
+                    for row in linked
+                    if column(row, "effect") in analysis.EFFECTS
+                )
+            ),
+            "effect_unobserved": sum(
+                column(row, "effect") not in analysis.EFFECTS for row in linked
+            ),
+        },
     }
 
     # Forecast outcomes recorded inside the window.
@@ -267,6 +314,10 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
     # Dispatch reports sit in a folder workers can write: read them as claims
     # and echo only values that match a fixed shape.
     dispatched = collections.Counter()
+    unit_states = collections.Counter()
+    elapsed = unit_seconds = 0.0
+    waits = []
+    providers = {}
     for path in sorted((directory / "dispatch" / "runs").glob("*/report.json")):
         name = (
             path.parent.name
@@ -285,6 +336,49 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
                  "inspect that run folder")  # fmt: skip
             continue
         status = run.get("status") if run.get("status") in RUN_STATES else "unknown"
+        units = [u for u in run.get("units") or [] if isinstance(u, dict)]
+        for u in units:
+            state = u.get("status") if u.get("status") in RUN_STATES else "unknown"
+            began = _number(u.get("started"))
+            # A unit that failed before it started was refused by the brief,
+            # the plan or admission: blocked, not a worker failure.
+            unit_states[
+                "blocked" if state == "failed" and began is None else state
+            ] += 1
+            if began is not None:
+                waits.append(began)
+            provider = u.get("provider")
+            if isinstance(provider, dict):
+                label = (
+                    provider.get("name")
+                    if provider.get("name") in ADAPTERS
+                    else "unrecognised"
+                )
+                seen = providers.setdefault(
+                    label,
+                    {
+                        "units": 0,
+                        "cli_estimate_usd": 0.0,
+                        "turns": 0,
+                        "cost_unknown": 0,
+                    },
+                )
+                seen["units"] += 1
+                cost = _number(provider.get("cost_usd"))
+                if cost is None or cost < 0:
+                    seen["cost_unknown"] += 1
+                else:
+                    seen["cli_estimate_usd"] = round(seen["cli_estimate_usd"] + cost, 6)
+                turns = provider.get("num_turns")
+                seen["turns"] += turns if type(turns) is int and turns > 0 else 0
+        if (
+            status == "failed"
+            and units
+            and not any(_number(u.get("started")) is not None for u in units)
+        ):
+            status = "blocked"
+        elapsed += _number(run.get("elapsed_seconds")) or 0
+        unit_seconds += _number(run.get("unit_seconds")) or 0
         task = run.get("task")
         owner = (
             task
@@ -295,14 +389,34 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
         if status not in ("succeeded", "cancelled"):
             fail("dispatch", f"{name} {status}", 1, owner,
                  "work_dispatch.py report in that run folder")  # fmt: skip
-    result["dispatch"] = {"runs": dict(dispatched)}
+    result["dispatch"] = {
+        "runs": dict(dispatched),
+        "units": dict(unit_states),
+        "elapsed_seconds": round(elapsed, 3),
+        "unit_seconds": round(unit_seconds, 3),
+        # Seconds from a run's start to each unit's start: plan, admission and setup.
+        "start_wait_seconds": (
+            {
+                "n": len(waits),
+                "median": round(statistics.median(waits), 3),
+                "max": round(max(waits), 3),
+            }
+            if waits
+            else {"n": 0, "median": None, "max": None}
+        ),
+        "providers": providers,
+    }
 
     # Scheduled units: count, never copy, journal lines.
     daily = high - low >= MISSED_RUN_WINDOW
     units = {}
     for unit, (scope, owner, step) in WATCHED.items():
         try:
-            lines = journal(unit, scope, since, until)
+            lines = [
+                line
+                for name in (unit, *ALIASES.get(unit, ()))
+                for line in journal(name, scope, since, until)
+            ]
         except OSError:
             units[unit] = {"state": "unreadable"}
             fail("unit", unit, 1, owner,

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.8.0"
+version: "2.9.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -450,6 +450,15 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W180 | 164 | Apply the D10 capture and analysis delta: redact-then-cap, 30/90-day expiry, final response, ingest-sequence cursor, accumulated provenance, backlog and a checkout-bound timer | W179 | TSK-0108 | Focused RED/GREEN capture, analysis and observe tests; a synthetic-store CLI run; the real store migration and timer move observed after merge; governance and document checks plus normal hosted delivery |
 | W181 | 165 | Score forecasts per task type and time basis, count the comparable prior sample, link outcomes to their revision and add blocked and open states | W180 | TSK-0109 | Focused RED/GREEN forecast and observe tests; a real pre-start forecast and outcome for TSK-0109; governance and document checks plus normal hosted delivery |
 | W182 | 166 | Add Claude and Codex provider units to the existing dispatcher with a brief check, a provider sandbox profile and recorded results, and run two real independent workers | W181 | TSK-0110 | Focused RED/GREEN dispatcher and adapter tests; a real two-worker Claude run with overlap and integration; governance and document checks plus normal hosted delivery |
+| W183 | 167 | Link dispatch, provider cost, analysis candidates and their Task and effect in the observe report, expire dispatch run text and folders, and record the real backup results in their owner Task | W182 | TSK-0111 | Focused RED/GREEN observe, analysis and dispatch tests; a read-only observe report on the real stores; governance and document checks plus normal hosted delivery |
+
+###### Current P13 observability boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0111](01.tasks/tsk-0111-p13-observability.md) owns criterion167/W183.
+The stores, timers and observe report stay; the report links what they
+already hold. Criterion148 stays with TSK-0092 and its backup budget with the
+owner.
 
 ###### Current P12 parallel provider boundary
 <!-- core-payload-level:4 -->

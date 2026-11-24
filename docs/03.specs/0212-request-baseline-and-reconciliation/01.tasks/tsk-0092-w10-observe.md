@@ -1,10 +1,10 @@
 ---
 title: "W10 Observe Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0092"
 parent_ids:
@@ -165,7 +165,8 @@ times, are not recorded by any store and stay unmeasured.
 | Observe re-review | 148 | W164 | Fresh-context `code-reviewer` review | `4194f807e`, round 2 | PASS | Approve with follow-up: nine findings resolved, four low follow-ups fixed; 102 s | required | Observe review |
 | Follow-up RED | 148 | W164 | `test_observe` | New tests on `4194f807e` | FAIL | 3 failures, 1 error | required | - |
 | Follow-up GREEN | 148 | W164 | `test_observe` | Follow-up fix | PASS | 13 tests | required | Follow-up RED |
-| Backup under budget | 148 | W164 | Daily `hyhome-backup.service` | 2026-11-20 03:42 KST run | NOT_RUN | Not yet run | required | - |
+| Backup under budget | 148 | W164 | Daily `hyhome-backup.service` | 2026-11-20 03:42 KST run | FAIL | Exit 1: local Restic and checks ran, the state repository ended at 8200 MiB (over 8 GiB), and the offsite copy was refused at the R2 cap (9.41 GB after upload against 9 GB); read from the journal on 2026-11-24 by TSK-0111 | required | - |
+| Daily backups after | 148 | W164 | `journalctl -u hyhome-backup.service`, lifecycle and size lines only | 2026-11-21 to 24 runs, read 2026-11-24 by TSK-0111 | FAIL | 4 of 4 failed: 11-21 and 11-24 skipped Restic at 8267 and 8269 MiB of state; 11-22 and 11-23 ran local Restic and checks (8075 and 8208 MiB) but the offsite copy was refused at the R2 cap (9.59 GB after upload against 9 GB, owner limit 10 GB; R2 held 7.75 GB) | required | - |
 
 ### Resolution Links
 
@@ -188,8 +189,12 @@ On 2026-11-19 the owner kept criterion 148 pending: the SDLC accepts it only
 after its open required rows are resolved; TSK-0095 lists them with their
 next check.
 
-The 2026-11-20 daily backup must show the state repository under budget;
-with about 330 MiB of headroom the budget decision may return.
+The daily backup must show the state repository under budget and the
+offsite copy within the R2 cap. Every run from 2026-11-20 to 24 failed
+(Backup under budget, Daily backups after): the state repository grew back
+over 8 GiB and the R2 copy hits its 9 GB cap while the locked memory copies
+of criterion138 remain. The budget, a further prune or the R2 cap is the
+owner's decision; elapsed time does not close this row.
 
 ## Handoff
 

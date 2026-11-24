@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.6.0"
+version: "2.7.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -246,7 +246,8 @@ event IDs, frequency, condition, proposal, risk and acceptance test. Source
 events only accumulate; `candidates` counts those whose record expired as
 `source_expired`. A candidate's captured `pattern` clears with its content, a
 pending candidate is removed 90 days after creation and a decided one 30 days
-after the decision. Results go
+after the decision; one linked to a Task with no effect recorded yet stays
+until 90 days after the decision. Results go
 to `.workspace-capture/analysis.sqlite3`; the last run's state goes to
 `analysis-status.json` and the systemd journal.
 
@@ -258,6 +259,8 @@ python3 scripts/operations/session_analysis.py candidates
 python3 scripts/operations/session_analysis.py decide "<candidate ID>" rejected --owner "<reviewer>"
 python3 scripts/operations/session_analysis.py promote
 python3 scripts/operations/session_analysis.py promote --include-earlier
+python3 scripts/operations/session_analysis.py link "<candidate ID>" --task SPEC-0212-TSK-0111 --check "<evidence row>"
+python3 scripts/operations/session_analysis.py effect "<candidate ID>" unchanged --sample 3
 ```
 
 `install-timer` installs the user systemd timer
@@ -284,7 +287,11 @@ reviewed fields changed is marked `stale` and not promoted.
 `--include-earlier` first records intents for candidates accepted before the
 outbox existed; run it only on the owner's decision. Making the record
 `current` still needs owner review and a source pin, and a policy, skill or
-checker changes only through a separate Task and approval. Missing capture or a failed analysis never blocks a commit, push
+checker changes only through a separate Task and approval. `link` ties an
+accepted candidate to the Task that carries its change and the evidence row
+that checks it; `effect` records `improved`, `unchanged` or `worsened` only
+after a later comparison with the sample size it used. Until then the effect is
+null and counted as unobserved, never as a success or a zero. Missing capture or a failed analysis never blocks a commit, push
 or other work. Remove the timer with
 `systemctl --user disable --now hy-home-session-analysis-<workspace key>.timer`.
 
@@ -360,7 +367,10 @@ unit blocks only its descendants; a cancel stops running workers and the
 integration check and starts nothing new. When every unit succeeds, the patches
 apply in turn to the base commit and the integration check runs again within
 `integration_timeout` (default 600 seconds); a worker's success never stands in
-for the integrated result. Result patches stay in the run folder and a person or
+for the integrated result. Each daily analysis run removes worker logs and
+patches 30 days after a finished run's report and the run folder after 90 days,
+keeping a folder that still has a process record for `cleanup`.
+Result patches stay in the run folder until then and a person or
 integrator applies them to a real branch after checking that the patch's
 SHA-256 equals the `sha256` the dispatcher printed. Treat result files as
 untrusted data, not permission or acceptance. A worktree separates files only;
@@ -430,11 +440,18 @@ and this checkout's `hy-home-session-analysis-<workspace key>.service`. Each fai
 and next step: backup failures go to RUN-0021, the others to this guide.
 Journal lines are counted, never copied, and no log text, prompt or secret is
 moved. The report records its own run time as observation cost and lists what it
-cannot measure (queue wait, context loading, tokens and cost). An unreadable
+cannot measure (queue wait outside dispatch, context loading, billed cost). An unreadable
 store, a journal that hides lines, and a daily unit with no run in 29 hours
 (allowing a 30-minute timer delay and up to 4 hours of run time) are reported as
-failures, not as zero. Dispatch reports are worker-writable, so only fields of
-the fixed format are copied. The report is not a check or an approval, and each
+failures, not as zero. Runs of the analysis unit under its earlier fixed name
+count for the current unit. Dispatch reports are worker-writable, so only fields of
+the fixed format are copied. A unit that failed before it started (brief, plan
+or admission refusal) counts as `blocked`, and a run with only such units is
+`blocked`, not `failed`. Dispatch also shows run and unit seconds, the wait from
+run start to each unit start, and per provider the CLI's own cost estimate,
+turns and units whose cost it did not report; billed cost stays unmeasured. The
+analysis `chain` counts candidates from source events through review, Task
+link and effect, with unobserved effects apart. The report is not a check or an approval, and each
 failure is resolved in its owner record.
 
 ```bash
