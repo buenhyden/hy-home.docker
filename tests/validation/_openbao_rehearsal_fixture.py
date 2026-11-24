@@ -102,8 +102,8 @@ class OwnedFixture:
                 "cached image identity does not match reviewed fixture"
             )
         version = self.docker("version", "--format", "{{.Server.Version}}")
-        if version.stdout.strip() != b"29.8.2":
-            raise RehearsalFailure("Docker server differs from reviewed 29.8.2 input")
+        if version.stdout.strip() != b"29.9.2":
+            raise RehearsalFailure("Docker server differs from reviewed 29.9.2 input")
         self.certificates()
         self.docker(
             "network", "create", "--internal", "--label", self.owner, self.network

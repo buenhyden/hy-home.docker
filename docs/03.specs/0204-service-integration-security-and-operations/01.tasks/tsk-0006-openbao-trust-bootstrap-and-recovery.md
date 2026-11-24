@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.39"
+version: "0.2.40"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -4133,6 +4133,58 @@ lifetime offset (no alert), a two-token burst (fires after 5 minutes) and its
 resolution. On the last 26 hours of HOME data the new expression crosses the
 threshold only from 11:41Z to 11:51Z, and reads `0` now. Prometheus picks the
 rule up only after the change is merged and Prometheus reloads its rules.
+
+#### W3a attempt -07 for the 2.7.3 window 2026-11-24
+
+**Request.** The owner asked to make the RUN-0105 window runnable now and
+approved creating the new empty restore target ("진행한다. 빈 디렉토리 생성도
+승인한다. 현재 기준으로 진행할 수 있도록 한다."). No window step, HOME
+recreate or secret read ran in this unit.
+
+**Why W3a was blocked.** `protected-semantic-restore.py` still named the spent
+`p01-restore-20261022-06` attempt and the 2.6.2 old image `11fd73a2…`, while
+HOME runs the owned 2.7.1 r1 image `a58fb110…` and reports
+`2.7.1+hyhome.go1.27.3.net0.60.0.r1`. W3a would block, and W4 needs W3a.
+
+**Change.** The attempt, target and ledger are now `p01-restore-20261124-07`;
+`OLD_IMAGE` is `a58fb110…` and `OLD_VERSION` the reported 2.7.1 r1 string.
+The candidate stays 2.7.3 r4. The parent directory was re-read on 2026-11-24 as
+device2064/inode115612004, UID/GID1000, unchanged; the `-07` target does not
+exist and is not pre-created, because the client creates it in W3a. The
+`p01-bootstrap.sh` manifest hash for the client was updated. RUN-0105 now passes
+the reported 2.7.1 r1 string to `w3` and names `-07` in its residue checks.
+
+**Rehearsal drift found and fixed.** The opt-in native rehearsal failed on
+`main` too (pre-existing, `INDETERMINATE`). Two fixture causes: the fixture pinned
+Docker 29.8.2 while the host now runs 29.9.2, and since `1fd1fa4e6`
+(2026-10-28) `agent.hcl` renders 19 templates while the synthetic seed wrote only
+the two canary paths, so the Agent health check never passed. The seed now
+writes every KV path and field the templates read. The rehearsal images are now
+the real HOME 2.7.1 r1 old image and the 2.7.3 r4 candidate.
+
+**SEC01 stable lookup.** `gh release view --repo openbao/openbao` at
+2026-11-24T13:31Z returned v2.7.3, published 2026-11-19, not a prerelease; the
+pinned image is that release. The 7-day window gate holds until 2026-12-01.
+
+**Checks.** With `HYHOME_OPENBAO_REHEARSAL=1`, the four
+`NativeRehearsalTests` in `test_openbao_protected_restore_inputs` passed (4 of 4,
+471 s), including full `perform()` to an `accepted` ledger, with no
+`hy-home.attempt`-labelled container, volume or network and no `/dev/shm`
+attempt directory left. Both renderer-role native rehearsals passed on the 2.7.3
+r4 and HOME 2.7.1 r1 images. Every `tests/validation/test_openbao_*` module
+passed without the opt-in flag, and the changed-document metadata check reports
+no violation.
+
+**Independent review.** A read-only `security-auditor` review of `5557a1e10`
+returned PASS with no blocking finding. It traced the W3 receipt version, the
+contract producer, `w3a` and `w4` gates and found no stale runtime value. Its two
+non-blocking notes, the template count (19, not 20) and a substring split in the
+seed parser, were fixed in the follow-up commit.
+
+**Still owner-held.** Custody re-attestation, the k3d ESO/Argo writer stop
+inputs, the backup timer, the two shares and the window itself. The rehearsal
+parent directories under the session scratchpad hold UID 100 synthetic data for
+the owner to remove.
 
 ### Blockers and Decisions
 

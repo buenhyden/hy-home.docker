@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -522,7 +522,7 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   `"$(cat …)"`로만 넘긴다. W5의 숨김 prompt 대신 `BAO_TOKEN="$(cat "$XDG_RUNTIME_DIR/p01-op-w5.token")"`를
   써도 된다. token과 share는 화면에 띄우지 않고 clipboard 기록·동기화를 끈 상태에서 붙여 넣으며,
   붙여 넣은 뒤 clipboard를 비운다. 이 token은 window 끝이나 중단 때 Recovery or Forward Repair의 Abort and Cleanup Rules대로 폐기하고 지운다.
-- **기준선.** 실행 중 `openbao` image ID가 restore의 이전 image(`11fd73a2…`)와 같고,
+- **기준선.** 실행 중 `openbao` image ID가 restore의 이전 image(2026-11-24 기준 `a58fb110…`, 2.7.1 r1)와 같고, <!-- runtime-version-exception: migration — W3a의 이전 image는 2026-11-24 관측한 실행 중 HOME 버전이며 protected-semantic-restore.py가 고정함 -->
   `openbao-agent`가 `healthy`이며(W1c health 정지의 기준; 이전 window가 W3 뒤 멈춰 Agent가 그때부터
   정지 상태로 기록돼 있으면 정지를 기준으로 하고, W1c는 health 대신 렌더 파일이 그대로인지만
   본다), `/dev/shm`이 `noexec` 없는
@@ -858,7 +858,7 @@ bash "$P01_SCRIPT_DIR/owner-window.sh" lease-start
 ```
 
 ```bash
-bash "$P01_SCRIPT_DIR/owner-window.sh" w3 <새 절대 경로> 2.6.2 # <!-- runtime-version-exception: migration — fixed observed pre-upgrade HOME version check -->
+bash "$P01_SCRIPT_DIR/owner-window.sh" w3 <새 절대 경로> 2.7.1+hyhome.go1.27.3.net0.60.0.r1 # <!-- runtime-version-exception: migration — fixed observed pre-upgrade HOME version check -->
 ```
 
 기대: exit0/`SAVED`, barrier-encrypted `raft-pre-upgrade.snap`과 값 없는
@@ -955,6 +955,12 @@ window를 닫기 전에 owner 전용 영구 저장소(tmpfs 밖, 문서 밖)에 
 2026-10-22 12:40–12:42 accepted로 사용 완료됐다. `-05`와 `-06` 모두 재사용하지 않는다.
 다음 실행은 새 attempt·빈 대상·정확한 부모 identity와 도구 상수를 변경·검토하고 새 승인
 commit/manifest를 설치하기 전까지 BLOCKED다. 기존 숫자와 경로는 역사 증거로 남긴다.
+2026-11-24 owner 승인으로 다음 attempt를 `p01-restore-20261124-07`로 정했다. 대상
+`/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261124-07`은 미리 만들지 않으며
+restore client가 W3a에서 직접 만든다(빈 대상 생성 승인). 부모 identity는 2026-11-24에 다시 본
+device2064/inode115612004·UID/GID1000 그대로다. 이전 image는 실행 중인 2.7.1 r1(`a58fb110…`, <!-- runtime-version-exception: migration — W3a의 이전 image는 2026-11-24 관측한 실행 중 HOME 버전이며 protected-semantic-restore.py가 고정함 -->
+`2.7.1+hyhome.go1.27.3.net0.60.0.r1`), candidate는 2.7.3 r4다. 이 상수를 담은 승인 commit이 <!-- runtime-version-exception: migration — W3a의 이전 image는 2026-11-24 관측한 실행 중 HOME 버전이며 protected-semantic-restore.py가 고정함 -->
+새 `P01_APPROVED_COMMIT`이다(SPEC-0204 TSK-0006).
 
 ###### Protected Restore Client
 <!-- core-payload-level:6 -->
@@ -997,8 +1003,8 @@ container와 시험이 직접 만든 named volume을 정리한 뒤 각 이름을
 새 해시 manifest와 정확한 `P01_APPROVED_COMMIT` 검토·승인·설치가 필요합니다.
 `RESTORE_ACCEPTED`/exit0만 성공이며 `INDETERMINATE`/exit2에서는 대상·ledger를 보존하고
 다시 실행하지 않습니다. exit가 0이 아니거나 실행이 끊기면(kill, 터미널 닫힘, 전원) `RESIDUE` 줄이
-없어도 ledger 상태와 `/dev/shm/p01-restore-20261022-06-*`를 보고,
-`docker ps -a`·`docker volume ls`·`docker network ls`를 `--filter label=hy-home.attempt=p01-restore-20261022-06`로
+없어도 ledger 상태와 `/dev/shm/p01-restore-20261124-07-*`를 보고,
+`docker ps -a`·`docker volume ls`·`docker network ls`를 `--filter label=hy-home.attempt=p01-restore-20261124-07`로
 조회해 남은 container·volume·network를 값 없이 기록합니다. 익명 volume에는 이 label이
 없으므로 label 조회만으로 정리 완료를 판단하지 않습니다. 끊긴 실행은 unseal된
 `-candidate`와 계속 렌더하는 `-agent`를 남길 수 있습니다. 소유권을 확인한 정확한 생성
