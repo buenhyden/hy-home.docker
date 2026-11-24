@@ -1,13 +1,13 @@
 ---
 title: "OpenBao Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -416,6 +416,7 @@ CVE-2025-60876, GO-2026-5932 처분)을 받아들였다. 처음 수용한 manife
 2026-10-21 stable 조회에서 Go 1.27.3의 crypto/x509 수정(CVE-2026-111943)이 나와 교체됐고, owner는 같은
 처분을 가진 교체 image manifest `a58fb110`(Go 1.27.3)을 같은 날 승인했다("이미지 교체 승인"). 교체 image의 재스캔(Grype DB 2026-10-20)도 CVE-2025-60876 Medium 3건과 GO-2026-5932 Unknown 1건만 보고했고, 두 항목의 처분은 바뀌지 않았다. <!-- runtime-version-exception: history — 승인 시점 교체 image의 builder Go 버전이며 build-inputs.json이 pin을 소유함 -->
 2026-11-10에 image가 OpenBao v2.7.2 기반 r3 manifest `ef27a440`(Go 1.27.3, x/net 0.62.0, Alpine 3.24.4)으로 교체됐다. 재스캔(Grype DB 2026-11-10)은 Critical 0, High 1, Medium 5, Unknown 1이다. owner는 같은 날 fixed release가 없는 go-jose/v3 v3.0.5의 GHSA-mgcc-cww5-fp2q(High)와 GHSA-vvm8-gf78-28g4·GHSA-4w3g-jfj2-cw2q(Medium)의 잔여 위험을 수용했다("accept go-jose v3 residual risk"). go-jose/v3는 hashicorp/cap와 okta-sdk-golang을 통해 package 수준에서 도달하며 호출 수준 도달은 추적하지 않았다. 서명 없음, CVE-2025-60876, GO-2026-5932 처분은 그대로다. <!-- runtime-version-exception: history — 승인 시점 교체 image의 builder Go와 x/net 버전이며 build-inputs.json이 pin을 소유함 -->
+2026-11-24에 image가 OpenBao v2.7.3 기반 r4 manifest `240e4a88`(Go 1.27.4, x/net 0.62.0, go-jose v4 4.1.9, Alpine 3.24.4, OpenSSL 3.5.9-r1)으로 교체됐다. v2.7.3이 r3에 없는 보안 수정(GHSA-fgmw-h9wp-wc7g, GHSA-h8fh-pmch-cjww)을 담아 r3로는 W4 gate가 실패했기 때문이다. 재스캔(Grype DB 2026-11-24)은 Critical 0, High 11, Medium 11이다. owner는 같은 날 Alpine 수정 package가 없는 OpenSSL 3.5.9의 High 5건(CVE-2026-107493, CVE-2026-107494, CVE-2026-121482, CVE-2026-124709, CVE-2026-84786)과 Medium 2건(CVE-2026-35190, CVE-2026-95690), fixed release가 없는 go-jose/v3 v3.0.5(GHSA-mgcc-cww5-fp2q High, GHSA-4w3g-jfj2-cw2q·GHSA-vvm8-gf78-28g4 Medium), otel sdk/trace v1.45.0의 GHSA-q7gw-24fr-5p69(Medium) 잔여 위험을 수용했다("Accept the remaining scan findings (the 5 OpenSSL CVEs and go-jose v3)", 이어 나머지 Medium도 수용). 서명 없음과 CVE-2025-60876 처분은 그대로다. OpenSSL·otel 수정 release가 나오면 이 수용도 끝나며 다음 image에서 다시 판단한다. <!-- runtime-version-exception: history — 승인 시점 교체 image의 builder Go와 module 버전이며 build-inputs.json이 pin을 소유함 -->
 만료는 SEC01 기준 15 수용이나 image 교체 중 이른 때다. 서명 없음은 기준 15 수용 뒤에도 남을 수 있으므로 그때 따로 판단한다. 이와
 별도로, window 시작 7일 안의 stable 조회에서 이 image에 영향을 주는 보안 수정이 나오면 W4·W5
 gate가 실패한다. 같은 window가 쓰는 Traefik·Prometheus image의 수용은 각 서비스 정책
