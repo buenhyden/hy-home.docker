@@ -159,7 +159,7 @@ class CandidateContract(unittest.TestCase):
 
     def test_opensearch_root_selection_does_not_override_lab_builds(self):
         package = ROOT / "infra/04-data/opensearch"
-        dashboards = "opensearchproject/opensearch-dashboards:3.9.0@sha256:256d4cea5928868ac09bca642a0ac8285a2b7e4b7fdd45c4ec06e75a5cf3184c"
+        dashboards = "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc"
         root = yaml.safe_load((package / "docker-compose.yml").read_text())
         lab = yaml.safe_load(
             (ROOT / "labs/opensearch-cluster/docker-compose.yml").read_text()

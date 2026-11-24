@@ -29,7 +29,7 @@ copyable scaffold를 설명하지만, accepted current SDLC truth나 active 서�
 ## Image and Build
 
 - 빌드 단계는
-  `alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6`,
+  `alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf`,
   런타임 단계는
   `nginxinc/nginx-unprivileged:1.31.7-alpine3.24-slim@sha256:a8cb0f33d51fa107c96fd2bd3a71aaf564ec131e9d2bdf8700944f0ed8b170d7`으로 고정한다.
 - multi-stage build를 사용하며 런타임 이미지에는 정적 자산과 Nginx 설정만
