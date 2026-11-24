@@ -91,7 +91,7 @@ class FakeDocker:
                 "Image": IMAGE_ID,
                 "State": {"Running": True},
                 "Config": {
-                    "Image": "hy-home/mng-pg:18.6-pgbackrest",
+                    "Image": "hy-home/mng-pg:18.7-pgbackrest",
                     "Env": ["POSTGRES_USER=admin_role", "PGDATA=/x"],
                 },
                 "Mounts": [

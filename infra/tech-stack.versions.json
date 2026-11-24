@@ -1388,7 +1388,7 @@
         "hy-home/mng-pg": "local-custom"
       },
       "images": [
-        "hy-home/mng-pg:18.6-pgbackrest"
+        "hy-home/mng-pg:18.7-pgbackrest"
       ],
       "compose_files": [
         "infra/04-data/mng-db/docker-compose.yml"
@@ -1397,7 +1397,7 @@
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "hy-home/mng-pg:18.6-pgbackrest"
+            "hy-home/mng-pg:18.7-pgbackrest"
           ]
         }
       ]
@@ -1689,7 +1689,7 @@
         "hy-home/dev-pg": "local-custom"
       },
       "images": [
-        "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2"
+        "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2"
       ],
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml"
@@ -1698,7 +1698,7 @@
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
-            "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2"
+            "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2"
           ]
         }
       ]
