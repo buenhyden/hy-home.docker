@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.10.0"
+version: "2.10.1"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -435,7 +435,11 @@ missing or failed services are reported as `incomplete_services`; an unknown
 controller or unaccounted running container keeps the reservation charged.
 A start that was killed before printing its token is recovered by running
 `recover` without `--token`, which reconciles each owned start claim whose
-process has exited. Recovery never tears down the operating Compose project.
+process has exited. Recovery accounts running containers against the current
+root definition, so a running selected container whose service was removed
+or renamed cannot be measured and keeps the claim charged; restore the
+definition, recover, then reapply the edit. Recovery never tears down the
+operating Compose project.
 
 Changes to these libraries select their mirrored behavior regressions and
 actual LAB/Compose/dispatch consumers. A temporary dummy environment can prove

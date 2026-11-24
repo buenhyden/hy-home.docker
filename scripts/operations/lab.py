@@ -2203,7 +2203,7 @@ def cmd_up(args, env, *, wait: bool = True, operation_id=None) -> int:
     return 0
 
 
-def stop(args, env, name: str, *, expected_token=None) -> int:
+def stop(args, env, name: str, *, expected_token=None, snapshot_token=None) -> int:
     from scripts.lib.ops.dispatch_process import cleanup_registered_docker
 
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", name):
@@ -2233,6 +2233,9 @@ def stop(args, env, name: str, *, expected_token=None) -> int:
             raise LabError(f"no unique owned intent for {name}")
         entry = candidates[0]["metadata"]["entry"]
         target = pathlib.Path(candidates[0]["metadata"]["entry_path"])
+    if snapshot_token is not None and entry.get("admission_token") != snapshot_token:
+        # reap judged an earlier claim expired; a newer one is not its to stop.
+        return 0
     if not str(entry.get("project", "")).startswith(LAB_PROJECT_PREFIX):
         raise LabError(f"ledger for {name} names a non-LAB project")
     if expected_token is not None and entry.get("admission_token") != expected_token:
@@ -2580,7 +2583,15 @@ def cmd_reap(args, env) -> int:
             "stopped",
         }:
             try:
-                code = max(code, stop(args, env, entry["lab"]))
+                code = max(
+                    code,
+                    stop(
+                        args,
+                        env,
+                        entry["lab"],
+                        snapshot_token=entry.get("admission_token"),
+                    ),
+                )
             except (LabError, OSError, ValueError, subprocess.SubprocessError):
                 code = max(code, 1)  # one stuck LAB must not stop the others
     return code
