@@ -146,8 +146,8 @@ Costs are order-of-magnitude list-price estimates from 2026-09-25.
    stored bytes past 7.5 GB is refused; the projection adds 5% for pack
    headers, index files and estimate error. The cap may be lowered, never
    raised, without a new decision. The owner lowered it from 9 GB to 7.5 GB on
-   2026-11-25 and chose to reclaim space by removing unused packs only, with
-   every snapshot kept.
+   2026-11-25: space is reclaimed by removing unused packs and, when that is not
+   enough, by an owner-approved trim of the oldest snapshots on both sides.
 4. The bucket keeps a 30-day lock, and the host token is scoped to that bucket.
    The daily run never deletes; remote `forget-prune` is a separate,
    owner-run monthly procedure, `prune` is the owner-run removal of packs

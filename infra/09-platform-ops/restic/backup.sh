@@ -27,16 +27,19 @@ require_initialized() {
     fi
 }
 
-# Snapshots older than $1 (YYYY-MM-DD), one "id time host tags" line each. The
+# Snapshots older than $1 (a UTC date, YYYY-MM-DD), one "id time host tags" line
+# each; a date after today is refused. The
 # newest snapshot of every host/tag set and every RUN-0105 OpenBao artifact
 # (tag hy-home-openbao-w3) are never selected.
 trim_list() {
-    json="$(restic snapshots --json)" || { echo "snapshot listing failed" >&2; exit 65; }
+    json="$(restic snapshots --no-lock --json)" || { echo "snapshot listing failed" >&2; exit 65; }
     printf '%s' "$json" | jq -r --arg before "$1" '
-        group_by([.hostname, ((.tags // []) | join(","))])
+        if $before > (now | strftime("%Y-%m-%d")) then error("trim date is in the future") else . end
+        | group_by([.hostname, ((.tags // []) | join(","))])
         | map(sort_by(.time) | .[:-1]) | add // []
         | map(select(.time < $before and ((.tags // []) | index("hy-home-openbao-w3") | not)))
-        | sort_by(.time) | .[] | "\(.id) \(.time[0:19]) \(.hostname) \((.tags // []) | join(","))"'
+        | sort_by(.time) | .[] | "\(.id) \(.time) \(.hostname) \((.tags // []) | join(","))"' ||
+        { echo "trim list failed" >&2; exit 64; }
 }
 
 # trim needs a date and the matching confirmation; without it, only the list.

@@ -209,33 +209,36 @@ class CapRehearsalTests(unittest.TestCase):
         self.assertEqual(check.returncode, 0, check.stderr)
 
     def test_trim_lists_without_confirmation_and_keeps_the_newest(self):
-        for _ in range(2):
+        # Two backdated snapshots of one set; the setUp snapshot is today's.
+        for day in ("2020-01-01", "2020-01-02"):
             (self.work / "data/blob").write_bytes(os.urandom(1_000_000))
             made = self.run_in(
                 [
                     "-c",
                     "RESTIC_PASSWORD_FILE=/run/secrets/restic_password"
-                    " RESTIC_REPOSITORY=/repo/state"
-                    " /usr/bin/restic backup -q --host h --tag hyhome-state /data",
+                    " RESTIC_REPOSITORY=/repo/state /usr/bin/restic backup -q"
+                    f" --host h --tag hyhome-state --time '{day} 00:00:00' /data",
                 ]
             )
             self.assertEqual(made.returncode, 0, made.stderr)
         self.assertEqual(self.offsite("copy", cap=50_000_000).returncode, 0)
         self.assertEqual(self.remote_snapshots(), 3)
-        listed = self.offsite("trim", "2999-01-01")
+        self.assertEqual(self.offsite("trim", "2999-01-01").returncode, 64)
+        self.assertEqual(self.offsite("trim", "not-a-date").returncode, 64)
+        listed = self.offsite("trim", "2021-01-01")
         self.assertEqual(listed.returncode, 64)
-        self.assertIn("trim: 1 R2 snapshots before 2999-01-01", listed.stdout)
+        self.assertIn("trim: 1 R2 snapshots before 2021-01-01", listed.stdout)
         self.assertEqual(self.remote_snapshots(), 3)
         wrong = self.offsite(
             "trim",
-            "2999-01-01",
-            extra=["HYHOME_TRIM_CONFIRM=delete-snapshots-before-2999-01-02"],
+            "2021-01-01",
+            extra=["HYHOME_TRIM_CONFIRM=delete-snapshots-before-2021-01-02"],
         )
         self.assertEqual(wrong.returncode, 64)
         done = self.offsite(
             "trim",
-            "2999-01-01",
-            extra=["HYHOME_TRIM_CONFIRM=delete-snapshots-before-2999-01-01"],
+            "2021-01-01",
+            extra=["HYHOME_TRIM_CONFIRM=delete-snapshots-before-2021-01-01"],
         )
         self.assertEqual(done.returncode, 0, done.stderr)
         # Host h keeps its newest; the setUp snapshot is alone in its set.

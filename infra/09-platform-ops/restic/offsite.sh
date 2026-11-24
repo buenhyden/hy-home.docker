@@ -64,16 +64,19 @@ stored_bytes() {
 }
 
 # "<id> <tree>" for each snapshot of the repository restic is pointed at.
-# Snapshots older than $1 (YYYY-MM-DD), one "id time host tags" line each. The
+# Snapshots older than $1 (a UTC date, YYYY-MM-DD), one "id time host tags" line
+# each; a date after today is refused. The
 # newest snapshot of every host/tag set and every RUN-0105 OpenBao artifact
 # (tag hy-home-openbao-w3) are never selected.
 trim_list() {
-    json="$(restic snapshots --json)" || { echo "snapshot listing failed" >&2; exit 65; }
+    json="$(restic snapshots --no-lock --json)" || { echo "snapshot listing failed" >&2; exit 65; }
     printf '%s' "$json" | jq -r --arg before "$1" '
-        group_by([.hostname, ((.tags // []) | join(","))])
+        if $before > (now | strftime("%Y-%m-%d")) then error("trim date is in the future") else . end
+        | group_by([.hostname, ((.tags // []) | join(","))])
         | map(sort_by(.time) | .[:-1]) | add // []
         | map(select(.time < $before and ((.tags // []) | index("hy-home-openbao-w3") | not)))
-        | sort_by(.time) | .[] | "\(.id) \(.time[0:19]) \(.hostname) \((.tags // []) | join(","))"'
+        | sort_by(.time) | .[] | "\(.id) \(.time) \(.hostname) \((.tags // []) | join(","))"' ||
+        { echo "trim list failed" >&2; exit 64; }
 }
 
 # trim needs a date and the matching confirmation; without it, only the list.
@@ -285,7 +288,8 @@ case "$action" in
         fi
         before="$(stored_bytes)"
         status=0
-        # A snapshot still under the bucket lock is refused and stays; the rest go.
+        # R2 refuses a snapshot still under the bucket lock; restic may then stop
+        # the remaining deletions too, so list again to see what is left.
         # shellcheck disable=SC2046 # one argument per snapshot ID.
         [ -z "$list" ] || restic forget $(printf '%s\n' "$list" | cut -d' ' -f1) || status=$?
         restic prune --max-repack-size 0 || status=$?
@@ -365,7 +369,7 @@ case "$action" in
     cmd)
         case "${1:-}" in
             forget | prune | unlock)
-                echo "'$1' is not run directly; use forget-prune or prune (RUN-0021 8.5)" >&2
+                echo "'$1' is not run directly; use forget-prune, prune or trim (RUN-0021 8.5)" >&2
                 exit 64
                 ;;
             snapshots | stats | ls | cat | find | check | diff | dump | list | version) ;;

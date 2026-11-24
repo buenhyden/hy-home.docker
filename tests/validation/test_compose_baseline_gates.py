@@ -4058,9 +4058,10 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         self.assertEqual(64, run("forget-prune", check=False).returncode)
         # trim lists without its date-bound confirmation and deletes nothing.
         self.assertEqual(64, run("trim", check=False).returncode)
-        listed = run("trim", "2999-01-01", check=False)
+        self.assertEqual(64, run("trim", "2999-01-01", check=False).returncode)
+        listed = run("trim", "2021-01-01", check=False)
         self.assertEqual(64, listed.returncode)
-        self.assertIn("trim: 0 state snapshots before 2999-01-01", listed.stdout)
+        self.assertIn("trim: 0 state snapshots before 2021-01-01", listed.stdout)
         self.assertEqual(
             64, run("cmd", "state", "forget", "latest", check=False).returncode
         )

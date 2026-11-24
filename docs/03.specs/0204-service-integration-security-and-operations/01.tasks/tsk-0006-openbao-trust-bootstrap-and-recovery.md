@@ -4314,6 +4314,15 @@ the local state directory (Restic plus pgBackRest) was 8269 MiB against the
   without it. Its read-only preview for 2026-10-27 lists 27 R2 snapshots and 14
   state plus 14 host local snapshots. The R2 snapshots that remain from
   2026-10-27 on reference 2.687 GiB.
+  With `HYHOME_BACKUP_REHEARSAL=1`, 22 tests passed: every
+  `test_restic_offsite_cap` test, including a trim rehearsal on backdated
+  snapshots (list only, future and malformed dates refused, a wrong date in the
+  confirmation refused, the newest of the set kept, `check --read-data` clean),
+  the local restic rehearsal with the trim gate, and `BackupContractTests`. A
+  read-only `security-auditor` review returned PASS; its non-blocking notes
+  were applied (UTC dates printed in full, future dates refused, a lock-free
+  listing, the timer stop and partial-refusal wording in RUN-0021, and two
+  stale sentences).
 
 Next: the owner removes the `index/` lock rule, approves the trim list, and the
 trim runs on both sides. Then, after this change merges, the remote `prune` runs once with the owner's
