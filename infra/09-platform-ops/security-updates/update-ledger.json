@@ -2324,7 +2324,7 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-09-17T08:12:07Z",
       "advisory_urls": [
-        "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100&page=1",
+        "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100",
         "https://github.com/prometheus/alertmanager/security/advisories/GHSA-v86x-5fm3-5p7j",
         "https://github.com/prometheus/alertmanager/security/advisories/GHSA-w5g2-x24w-p3fq"
       ],
@@ -2491,14 +2491,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 0.34.2 is the exact current security fix; upgrading to 0.35.0 is not required for the two published direct advisories and requires compatibility review because of documented breaking changes.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 0.35.0 is newer than both published fixed boundaries (0.25.1, 0.34.2), re-checked on 2026-11-24 for the Renovate update from 0.34.2.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "0.34.2",
+          "declaration": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "0.35.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -2506,7 +2506,7 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100&page=1",
+          "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100",
           "https://github.com/prometheus/alertmanager/security/advisories/GHSA-v86x-5fm3-5p7j",
           "https://github.com/prometheus/alertmanager/security/advisories/GHSA-w5g2-x24w-p3fq"
         ],
@@ -2517,11 +2517,11 @@
         "advisory_discovery": [
           {
             "supplier": "prometheus/alertmanager",
-            "url": "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100",
             "unique_advisories": 2,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -2529,18 +2529,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "0.34.2 is the exact current security fix; upgrading to 0.35.0 is not required for the two published direct advisories and requires compatibility review because of documented breaking changes.",
-        "next_action": "Keep 0.34.2 for security acceptance of direct advisories; evaluate 0.35.0 separately as a source/compatibility change and obtain digest-bound SBOM evidence for the selected image.",
+        "reason": "Selected 0.35.0 is newer than both published fixed boundaries (0.25.1, 0.34.2), re-checked on 2026-11-24 for the Renovate update from 0.34.2.",
+        "next_action": "Keep 0.35.0; its documented breaking changes are checked at the next owner-approved observability recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "0.34.2",
+          "target_retained": "0.35.0",
           "observed_latest": "0.35.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Keep 0.34.2 for security acceptance of direct advisories; evaluate 0.35.0 separately as a source/compatibility change and obtain digest-bound SBOM evidence for the selected image."
+          "reason": "Selected 0.35.0 is newer than both published fixed boundaries (0.25.1, 0.34.2), re-checked on 2026-11-24 for the Renovate update from 0.34.2.",
+          "next_action": "Keep 0.35.0; its documented breaking changes are checked at the next owner-approved observability recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -2597,9 +2597,8 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-10-22T23:47:12Z",
       "advisory_urls": [
-        "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100&page=1",
-        "https://grafana.com/security/security-advisories/cve-2024-8975/",
-        "https://grafana.com/security/security-advisories/cve-2026-75889/"
+        "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100",
+        "https://github.com/advisories/GHSA-chqx-36rm-rf8h"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -2749,14 +2748,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected1.21.3 is outside the following official direct/named-component affected ranges: CVE-2024-8975 affected=<1.3.3, fixed=>=1.3.3; CVE-2026-75889 affected=<1.19.0, fixed=>=1.19.0. Complete selected image and OS dependencies remain unassessed.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 1.22.0 is outside the only Go advisory-database range for github.com/grafana/alloy (GHSA-chqx-36rm-rf8h, fixed 1.3.4/1.4.1) and above the 1.19.0 boundary the 2026-11-11 review recorded; the repository lists no advisory (2026-11-24).",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "1.21.3",
+          "declaration": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "1.22.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -2764,22 +2763,20 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100&page=1",
-          "https://grafana.com/security/security-advisories/cve-2024-8975/",
-          "https://grafana.com/security/security-advisories/cve-2026-75889/"
+          "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100",
+          "https://github.com/advisories/GHSA-chqx-36rm-rf8h"
         ],
         "concrete_advisory_refs": [
-          "https://grafana.com/security/security-advisories/cve-2024-8975/",
-          "https://grafana.com/security/security-advisories/cve-2026-75889/"
+          "https://github.com/advisories/GHSA-chqx-36rm-rf8h"
         ],
         "advisory_discovery": [
           {
             "supplier": "grafana/alloy",
-            "url": "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_LISTED",
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -2787,16 +2784,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected1.21.3 is outside the following official direct/named-component affected ranges: CVE-2024-8975 affected=<1.3.3, fixed=>=1.3.3; CVE-2026-75889 affected=<1.19.0, fixed=>=1.19.0. Complete selected image and OS dependencies remain unassessed.",
-        "next_action": "Retain 1.21.3; attach exact-image SBOM/scan evidence before closing full-image security acceptance.",
+        "reason": "Selected 1.22.0 is outside the only Go advisory-database range for github.com/grafana/alloy (GHSA-chqx-36rm-rf8h, fixed 1.3.4/1.4.1) and above the 1.19.0 boundary the 2026-11-11 review recorded; the repository lists no advisory (2026-11-24).",
+        "next_action": "Keep 1.22.0; obtain exact-digest SBOM evidence separately.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "1.21.3",
+          "target_retained": "1.22.0",
           "observed_latest": "1.21.3",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain 1.21.3; attach exact-image SBOM/scan evidence before closing full-image security acceptance."
+          "reason": "Selected 1.22.0 is outside the only Go advisory-database range for github.com/grafana/alloy (GHSA-chqx-36rm-rf8h, fixed 1.3.4/1.4.1) and above the 1.19.0 boundary the 2026-11-11 review recorded; the repository lists no advisory (2026-11-24).",
+          "next_action": "Keep 1.22.0; obtain exact-digest SBOM evidence separately."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -3104,7 +3101,7 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-09-18T22:43:39Z",
       "advisory_urls": [
-        "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -3249,14 +3246,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository advisory was listed; no image SBOM/transitive scan was performed. cAdvisor is privileged/high-trust and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository or Go advisory-database advisory is listed for 0.61.1 (2026-11-24); no image SBOM/transitive scan was performed. cAdvisor is privileged and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "0.60.6",
+          "declaration": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "0.61.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -3264,17 +3261,17 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "google/cadvisor",
-            "url": "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_LISTED",
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -3282,18 +3279,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "No public repository advisory was listed; no image SBOM/transitive scan was performed. cAdvisor is privileged/high-trust and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
-        "next_action": "Retain the pin operationally and require exact-digest SBOM, base-image scan, Go vulnerability evaluation, and privilege/exposure review.",
+        "reason": "No public repository or Go advisory-database advisory is listed for 0.61.1 (2026-11-24); no image SBOM/transitive scan was performed. cAdvisor is privileged and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
+        "next_action": "Keep 0.61.1 deferred until exact-digest SBOM or scan evidence exists.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "0.60.6",
+          "target_retained": "0.61.1",
           "observed_latest": "0.60.6",
           "previous_gate_missing": [
             "stable_channel"
           ],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain the pin operationally and require exact-digest SBOM, base-image scan, Go vulnerability evaluation, and privilege/exposure review."
+          "reason": "No public repository or Go advisory-database advisory is listed for 0.61.1 (2026-11-24); no image SBOM/transitive scan was performed. cAdvisor is privileged and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
+          "next_action": "Keep 0.61.1 deferred until exact-digest SBOM or scan evidence exists."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -4863,7 +4860,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "4.9.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -7182,18 +7179,13 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-10-24T14:18:48Z",
       "advisory_urls": [
-        "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100&page=1",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-3v9w-6365-9w54",
+        "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100",
         "https://github.com/amir20/dozzle/security/advisories/GHSA-7hjf-g4w8-w279",
         "https://github.com/amir20/dozzle/security/advisories/GHSA-8683-6wwr-q7rq",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-j643-x8pv-8m67",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-m855-r557-5rc5",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-p2w3-6x73-2f6x",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq",
         "https://github.com/amir20/dozzle/security/advisories/GHSA-v879-vjhp-gmhc",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-w7qr-q9fh-fj35",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj"
+        "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
+        "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj",
+        "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -7358,14 +7350,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 11.4.2 is outside all publisher-declared application ranges and equals the inventoried stable latest version.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 11.5.0 is above every publisher-declared affected range; the newest of the eleven published advisories ends at v11.2.0 (2026-11-24).",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
-          "source_input_sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222",
-          "assessment_version": "11.4.2",
+          "declaration": "amir20/dozzle:v11.5.0@sha256:74600d62dd73a72a5d36fbd0c98af649203df921d74310b7ed383ef63392358e",
+          "source_input_sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21",
+          "assessment_version": "11.5.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -7373,40 +7365,30 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100&page=1",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-3v9w-6365-9w54",
+          "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-7hjf-g4w8-w279",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-8683-6wwr-q7rq",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-j643-x8pv-8m67",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-m855-r557-5rc5",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-p2w3-6x73-2f6x",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-v879-vjhp-gmhc",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-w7qr-q9fh-fj35",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj"
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj",
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-3v9w-6365-9w54",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-7hjf-g4w8-w279",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-8683-6wwr-q7rq",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-j643-x8pv-8m67",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-m855-r557-5rc5",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-p2w3-6x73-2f6x",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-v879-vjhp-gmhc",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-w7qr-q9fh-fj35",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj"
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj",
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq"
         ],
         "advisory_discovery": [
           {
             "supplier": "amir20/dozzle",
-            "url": "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100",
             "unique_advisories": 11,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -7414,16 +7396,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 11.4.2 is outside all publisher-declared application ranges and equals the inventoried stable latest version.",
-        "next_action": "Keep digest and scan image layers.",
+        "reason": "Selected 11.5.0 is above every publisher-declared affected range; the newest of the eleven published advisories ends at v11.2.0 (2026-11-24).",
+        "next_action": "Keep 11.5.0.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/dozzle",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "11.4.2",
+          "target_retained": "11.5.0",
           "observed_latest": "11.4.2",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Keep digest and scan image layers."
+          "reason": "Selected 11.5.0 is above every publisher-declared affected range; the newest of the eleven published advisories ends at v11.2.0 (2026-11-24).",
+          "next_action": "Keep 11.5.0."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -8276,7 +8258,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/gatus:local",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "v5.37.0 exact source; custom image not built",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -8385,55 +8367,11 @@
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100&page=1",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-2j8f-6whh-frc8",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-2x6g-h2hg-rq84",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-3j9m-hcv9-rpj8",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-3p62-42x7-gxg5",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-4724-7jwc-3fpw",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-5hcf-rqj9-xh96",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-63g3-9jq3-mccv",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-69j6-29vr-p3j9",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-7533-c8qv-jm9m",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-7rqg-hjwc-6mjf",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-82gq-xfg3-5j7v",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-8pjx-jj86-j47p",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-8wjh-59cw-9xh4",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-8xmm-x63g-f6xv",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-9rrr-6fq2-4f99",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-c3q8-26ph-9g2q",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-cmf4-h3xc-jw8w",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-ff5c-938w-8c9q",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-gj7m-853r-289r",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-jv32-5578-pxjc",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-mpwp-42x6-4wmx",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-mx47-6497-3fv2",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-p978-56hq-r492",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-rhxj-gh46-jvw8",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-vqc4-mpj8-jxch",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-vw7q-p2qg-4m5f",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-x744-mm8v-vpgr",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-xc3p-28hw-q24g",
-        "https://grafana.com/security/security-advisories/cve-2026-100105/",
-        "https://grafana.com/security/security-advisories/cve-2026-103506/",
-        "https://grafana.com/security/security-advisories/cve-2026-12704/",
-        "https://grafana.com/security/security-advisories/cve-2026-13719/",
-        "https://grafana.com/security/security-advisories/cve-2026-13720/",
-        "https://grafana.com/security/security-advisories/cve-2026-14199/",
-        "https://grafana.com/security/security-advisories/cve-2026-15577/",
-        "https://grafana.com/security/security-advisories/cve-2026-15815/",
-        "https://grafana.com/security/security-advisories/cve-2026-17033/",
-        "https://grafana.com/security/security-advisories/cve-2026-17183/",
-        "https://grafana.com/security/security-advisories/cve-2026-19475/",
-        "https://grafana.com/security/security-advisories/cve-2026-33374/",
-        "https://grafana.com/security/security-advisories/cve-2026-76154/",
-        "https://grafana.com/security/security-advisories/cve-2026-81841/",
-        "https://grafana.com/security/security-advisories/cve-2026-81842/",
-        "https://grafana.com/security/security-advisories/cve-2026-88858/",
-        "https://grafana.com/security/security-advisories/cve-2026-88967/",
-        "https://grafana.com/security/security-advisories/cve-2026-92539/",
-        "https://grafana.com/security/security-advisories/cve-2026-93294/",
-        "https://grafana.com/security/security-advisories/cve-2026-95502/"
+        "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100",
+        "https://github.com/advisories/GHSA-3w66-95m3-8jxg",
+        "https://github.com/advisories/GHSA-9g84-39mm-q4p3",
+        "https://github.com/advisories/GHSA-f74p-cwhp-x2wx",
+        "https://github.com/advisories/GHSA-9493-h4f5-633x"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -8599,14 +8537,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected OSS 13.3.0 is later than every fixed 13.x threshold in the newest vendor advisory page. Enterprise-only and distinct MCP/plugin products were not inherited into the OSS image assessment.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected OSS 13.3.1 is later than every 13.x fixed threshold in the Go advisory database for github.com/grafana/grafana (newest ranges end below 13.0.2, published 2026-06-22) on 2026-11-24. The vendor advisory page was not re-read for this update; Enterprise-only and plugin products are not inherited.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "13.3.0",
+          "declaration": "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "13.3.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -8614,114 +8552,26 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100&page=1",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-2j8f-6whh-frc8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-2x6g-h2hg-rq84",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-3j9m-hcv9-rpj8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-3p62-42x7-gxg5",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-4724-7jwc-3fpw",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-5hcf-rqj9-xh96",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-63g3-9jq3-mccv",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-69j6-29vr-p3j9",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-7533-c8qv-jm9m",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-7rqg-hjwc-6mjf",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-82gq-xfg3-5j7v",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8pjx-jj86-j47p",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8wjh-59cw-9xh4",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8xmm-x63g-f6xv",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-9rrr-6fq2-4f99",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-c3q8-26ph-9g2q",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-cmf4-h3xc-jw8w",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-ff5c-938w-8c9q",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-gj7m-853r-289r",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-jv32-5578-pxjc",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-mpwp-42x6-4wmx",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-mx47-6497-3fv2",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-p978-56hq-r492",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-rhxj-gh46-jvw8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-vqc4-mpj8-jxch",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-vw7q-p2qg-4m5f",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-x744-mm8v-vpgr",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-xc3p-28hw-q24g",
-          "https://grafana.com/security/security-advisories/cve-2026-100105/",
-          "https://grafana.com/security/security-advisories/cve-2026-103506/",
-          "https://grafana.com/security/security-advisories/cve-2026-12704/",
-          "https://grafana.com/security/security-advisories/cve-2026-13719/",
-          "https://grafana.com/security/security-advisories/cve-2026-13720/",
-          "https://grafana.com/security/security-advisories/cve-2026-14199/",
-          "https://grafana.com/security/security-advisories/cve-2026-15577/",
-          "https://grafana.com/security/security-advisories/cve-2026-15815/",
-          "https://grafana.com/security/security-advisories/cve-2026-17033/",
-          "https://grafana.com/security/security-advisories/cve-2026-17183/",
-          "https://grafana.com/security/security-advisories/cve-2026-19475/",
-          "https://grafana.com/security/security-advisories/cve-2026-33374/",
-          "https://grafana.com/security/security-advisories/cve-2026-76154/",
-          "https://grafana.com/security/security-advisories/cve-2026-81841/",
-          "https://grafana.com/security/security-advisories/cve-2026-81842/",
-          "https://grafana.com/security/security-advisories/cve-2026-88858/",
-          "https://grafana.com/security/security-advisories/cve-2026-88967/",
-          "https://grafana.com/security/security-advisories/cve-2026-92539/",
-          "https://grafana.com/security/security-advisories/cve-2026-93294/",
-          "https://grafana.com/security/security-advisories/cve-2026-95502/"
+          "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100",
+          "https://github.com/advisories/GHSA-3w66-95m3-8jxg",
+          "https://github.com/advisories/GHSA-9g84-39mm-q4p3",
+          "https://github.com/advisories/GHSA-f74p-cwhp-x2wx",
+          "https://github.com/advisories/GHSA-9493-h4f5-633x"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/grafana/grafana/security/advisories/GHSA-2j8f-6whh-frc8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-2x6g-h2hg-rq84",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-3j9m-hcv9-rpj8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-3p62-42x7-gxg5",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-4724-7jwc-3fpw",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-5hcf-rqj9-xh96",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-63g3-9jq3-mccv",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-69j6-29vr-p3j9",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-7533-c8qv-jm9m",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-7rqg-hjwc-6mjf",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-82gq-xfg3-5j7v",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8pjx-jj86-j47p",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8wjh-59cw-9xh4",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8xmm-x63g-f6xv",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-9rrr-6fq2-4f99",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-c3q8-26ph-9g2q",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-cmf4-h3xc-jw8w",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-ff5c-938w-8c9q",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-gj7m-853r-289r",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-jv32-5578-pxjc",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-mpwp-42x6-4wmx",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-mx47-6497-3fv2",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-p978-56hq-r492",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-rhxj-gh46-jvw8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-vqc4-mpj8-jxch",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-vw7q-p2qg-4m5f",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-x744-mm8v-vpgr",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-xc3p-28hw-q24g",
-          "https://grafana.com/security/security-advisories/cve-2026-100105/",
-          "https://grafana.com/security/security-advisories/cve-2026-103506/",
-          "https://grafana.com/security/security-advisories/cve-2026-12704/",
-          "https://grafana.com/security/security-advisories/cve-2026-13719/",
-          "https://grafana.com/security/security-advisories/cve-2026-13720/",
-          "https://grafana.com/security/security-advisories/cve-2026-14199/",
-          "https://grafana.com/security/security-advisories/cve-2026-15577/",
-          "https://grafana.com/security/security-advisories/cve-2026-15815/",
-          "https://grafana.com/security/security-advisories/cve-2026-17033/",
-          "https://grafana.com/security/security-advisories/cve-2026-17183/",
-          "https://grafana.com/security/security-advisories/cve-2026-19475/",
-          "https://grafana.com/security/security-advisories/cve-2026-33374/",
-          "https://grafana.com/security/security-advisories/cve-2026-76154/",
-          "https://grafana.com/security/security-advisories/cve-2026-81841/",
-          "https://grafana.com/security/security-advisories/cve-2026-81842/",
-          "https://grafana.com/security/security-advisories/cve-2026-88858/",
-          "https://grafana.com/security/security-advisories/cve-2026-88967/",
-          "https://grafana.com/security/security-advisories/cve-2026-92539/",
-          "https://grafana.com/security/security-advisories/cve-2026-93294/",
-          "https://grafana.com/security/security-advisories/cve-2026-95502/"
+          "https://github.com/advisories/GHSA-3w66-95m3-8jxg",
+          "https://github.com/advisories/GHSA-9g84-39mm-q4p3",
+          "https://github.com/advisories/GHSA-f74p-cwhp-x2wx",
+          "https://github.com/advisories/GHSA-9493-h4f5-633x"
         ],
         "advisory_discovery": [
           {
             "supplier": "grafana/grafana",
-            "url": "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100",
             "unique_advisories": 28,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -8729,16 +8579,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected OSS 13.3.0 is later than every fixed 13.x threshold in the newest vendor advisory page. Enterprise-only and distinct MCP/plugin products were not inherited into the OSS image assessment.",
-        "next_action": "Retain 13.3.0 and its digest; preserve edition/component boundaries and attach exact-image SBOM/scan evidence. Continue polling the vendor index because only its newest page was re-opened in this pass.",
+        "reason": "Selected OSS 13.3.1 is later than every 13.x fixed threshold in the Go advisory database for github.com/grafana/grafana (newest ranges end below 13.0.2, published 2026-06-22) on 2026-11-24. The vendor advisory page was not re-read for this update; Enterprise-only and plugin products are not inherited.",
+        "next_action": "Keep 13.3.1.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "13.3.0",
+          "target_retained": "13.3.1",
           "observed_latest": "13.3.0",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain 13.3.0 and its digest; preserve edition/component boundaries and attach exact-image SBOM/scan evidence. Continue polling the vendor index because only its newest page was re-opened in this pass."
+          "reason": "Selected OSS 13.3.1 is later than every 13.x fixed threshold in the Go advisory database for github.com/grafana/grafana (newest ranges end below 13.0.2, published 2026-06-22) on 2026-11-24. The vendor advisory page was not re-read for this update; Enterprise-only and plugin products are not inherited.",
+          "next_action": "Keep 13.3.1."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -8791,8 +8641,8 @@
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://www.postgresql.org/docs/18/release-18-6.html",
-        "https://www.postgresql.org/support/security/"
+        "https://www.postgresql.org/support/security/",
+        "https://www.postgresql.org/docs/18/release-18-7.html"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -8965,14 +8815,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -8980,28 +8830,27 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/support/security/",
+          "https://www.postgresql.org/docs/18/release-18-7.html"
         ],
         "concrete_advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/docs/18/release-18-7.html"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.",
-        "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open.",
+        "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+        "next_action": "Keep 18.7; other services still on 18.6 need their own update.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open."
+          "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+          "next_action": "Keep 18.7; other services still on 18.6 need their own update."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -11148,7 +10997,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/loki:3.7.8-seaweedfs",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "3.7.8",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -15986,7 +15835,7 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-07-14T12:34:45Z",
       "advisory_urls": [
-        "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -16147,14 +15996,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository advisory was listed; exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository or Go advisory-database advisory is listed for 1.13.1 (2026-11-24); exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "1.12.1",
+          "declaration": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "1.13.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -16162,17 +16011,17 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "prometheus/node_exporter",
-            "url": "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_LISTED",
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -16180,16 +16029,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "No public repository advisory was listed; exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
-        "next_action": "Retain the current pin and host read-only controls; obtain exact-digest SBOM/base scan and verify enabled collectors/capabilities before full security acceptance.",
+        "reason": "No public repository or Go advisory-database advisory is listed for 1.13.1 (2026-11-24); exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
+        "next_action": "Keep 1.13.1 deferred until exact-digest SBOM or scan evidence exists.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "1.12.1",
+          "target_retained": "1.13.1",
           "observed_latest": "1.12.1",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain the current pin and host read-only controls; obtain exact-digest SBOM/base scan and verify enabled collectors/capabilities before full security acceptance."
+          "reason": "No public repository or Go advisory-database advisory is listed for 1.13.1 (2026-11-24); exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
+          "next_action": "Keep 1.13.1 deferred until exact-digest SBOM or scan evidence exists."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -20249,14 +20098,7 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-10-21T16:15:57Z",
       "advisory_urls": [
-        "https://github.com/prometheus/prometheus/releases/tag/v3.15.0",
-        "https://pkg.go.dev/vuln/GO-2026-6612",
-        "https://pkg.go.dev/vuln/GO-2026-6603",
-        "https://pkg.go.dev/vuln/GO-2026-6611",
-        "https://pkg.go.dev/vuln/GO-2026-6617",
-        "https://pkg.go.dev/vuln/GO-2026-6608",
-        "https://pkg.go.dev/vuln/GO-2026-6609",
-        "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100&page=1",
+        "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100",
         "https://github.com/prometheus/prometheus/security/advisories/GHSA-4v48-4q5m-8vx4",
         "https://github.com/prometheus/prometheus/security/advisories/GHSA-8rm2-7qqf-34qm",
         "https://github.com/prometheus/prometheus/security/advisories/GHSA-fw8g-cg8f-9j28",
@@ -20420,14 +20262,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 3.15.1 is outside all six direct advisory ranges and is the documented security patch release. 3.16.0 does not need to be adopted solely for these advisories.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 3.16.0 is outside all six direct advisory ranges (newest fixed 3.11.3/3.12.0), re-checked on 2026-11-24 for the Renovate update from 3.15.1.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "3.15.1",
+          "declaration": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "3.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -20435,7 +20277,7 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100&page=1",
+          "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100",
           "https://github.com/prometheus/prometheus/security/advisories/GHSA-4v48-4q5m-8vx4",
           "https://github.com/prometheus/prometheus/security/advisories/GHSA-8rm2-7qqf-34qm",
           "https://github.com/prometheus/prometheus/security/advisories/GHSA-fw8g-cg8f-9j28",
@@ -20454,11 +20296,11 @@
         "advisory_discovery": [
           {
             "supplier": "prometheus/prometheus",
-            "url": "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100",
             "unique_advisories": 6,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -20466,18 +20308,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "3.15.1 is outside all six direct advisory ranges and is the documented security patch release. 3.16.0 does not need to be adopted solely for these advisories.",
-        "next_action": "Keep 3.15.1 for current security acceptance; evaluate 3.16.0 separately for compatibility and obtain exact-digest SBOM/base image evidence.",
+        "reason": "3.16.0 is outside all six direct advisory ranges (newest fixed 3.11.3/3.12.0), re-checked on 2026-11-24 for the Renovate update from 3.15.1.",
+        "next_action": "Keep 3.16.0; obtain exact-digest SBOM/base image evidence separately.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "3.15.1",
+          "target_retained": "3.16.0",
           "observed_latest": "3.16.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Keep 3.15.1 for current security acceptance; evaluate 3.16.0 separately for compatibility and obtain exact-digest SBOM/base image evidence."
+          "reason": "3.16.0 is outside all six direct advisory ranges (newest fixed 3.11.3/3.12.0), re-checked on 2026-11-24 for the Renovate update from 3.15.1.",
+          "next_action": "Keep 3.16.0; obtain exact-digest SBOM/base image evidence separately."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -20706,7 +20548,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "1.11.5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -20800,10 +20642,8 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-10-21T18:30:23Z",
       "advisory_urls": [
-        "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100&page=1",
-        "https://github.com/grafana/pyroscope/pull/5966",
-        "https://github.com/grafana/pyroscope/pull/5973",
-        "https://grafana.com/security/security-advisories/cve-2025-41118/"
+        "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100",
+        "https://github.com/advisories/GHSA-m9hq-h476-h2g8"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -20953,14 +20793,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected2.4.3 is outside the following official direct/named-component affected ranges: CVE-2025-41118 affected=<1.15.2 on 1.15.x; 1.16.0, fixed=>=1.15.2,<1.16.0 or >=1.16.1; all 1.17.x; CVE-2026-116587 / GHSA-mgcc-cww5-fp2q affected=go-jose 4.1.4 in prior Pyroscope 2.4 line, fixed=go-jose 4.1.6 in Pyroscope 2.4.3; GO-2026-6860 / CVE-2026-78661 affected=x/net 0.60.0 in prior Pyroscope 2.4 line, fixed=x/net 0.62.0 in Pyroscope 2.4.3; GO-2026-6866 / CVE-2026-97045 affected=x/net 0.60.0 in prior Pyroscope 2.4 line, fixed=x/net 0.62.0 in Pyroscope 2.4.3. Complete selected image and OS dependencies remain unassessed.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 2.4.4 is outside the Go advisory-database range for github.com/grafana/pyroscope (GHSA-m9hq-h476-h2g8, fixed 1.15.2/1.16.1) on 2026-11-24; the go-jose fix the 2026-11-11 review found in 2.4.3 is carried forward, not re-checked.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "2.4.3",
+          "declaration": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "2.4.4",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -20968,24 +20808,20 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100&page=1",
-          "https://github.com/grafana/pyroscope/pull/5966",
-          "https://github.com/grafana/pyroscope/pull/5973",
-          "https://grafana.com/security/security-advisories/cve-2025-41118/"
+          "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100",
+          "https://github.com/advisories/GHSA-m9hq-h476-h2g8"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/grafana/pyroscope/pull/5966",
-          "https://github.com/grafana/pyroscope/pull/5973",
-          "https://grafana.com/security/security-advisories/cve-2025-41118/"
+          "https://github.com/advisories/GHSA-m9hq-h476-h2g8"
         ],
         "advisory_discovery": [
           {
             "supplier": "grafana/pyroscope",
-            "url": "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_LISTED",
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -20993,16 +20829,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected2.4.3 is outside the following official direct/named-component affected ranges: CVE-2025-41118 affected=<1.15.2 on 1.15.x; 1.16.0, fixed=>=1.15.2,<1.16.0 or >=1.16.1; all 1.17.x; CVE-2026-116587 / GHSA-mgcc-cww5-fp2q affected=go-jose 4.1.4 in prior Pyroscope 2.4 line, fixed=go-jose 4.1.6 in Pyroscope 2.4.3; GO-2026-6860 / CVE-2026-78661 affected=x/net 0.60.0 in prior Pyroscope 2.4 line, fixed=x/net 0.62.0 in Pyroscope 2.4.3; GO-2026-6866 / CVE-2026-97045 affected=x/net 0.60.0 in prior Pyroscope 2.4 line, fixed=x/net 0.62.0 in Pyroscope 2.4.3. Complete selected image and OS dependencies remain unassessed.",
-        "next_action": "Retain 2.4.3 and verify its selected digest/SBOM; do not infer base-image completeness from the release security notes.",
+        "reason": "Selected 2.4.4 is outside the Go advisory-database range for github.com/grafana/pyroscope (GHSA-m9hq-h476-h2g8, fixed 1.15.2/1.16.1) on 2026-11-24; the go-jose fix the 2026-11-11 review found in 2.4.3 is carried forward, not re-checked.",
+        "next_action": "Keep 2.4.4.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "2.4.3",
+          "target_retained": "2.4.4",
           "observed_latest": "2.4.3",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain 2.4.3 and verify its selected digest/SBOM; do not infer base-image completeness from the release security notes."
+          "reason": "Selected 2.4.4 is outside the Go advisory-database range for github.com/grafana/pyroscope (GHSA-m9hq-h476-h2g8, fixed 1.15.2/1.16.1) on 2026-11-24; the go-jose fix the 2026-11-11 review found in 2.4.3 is carried forward, not re-checked.",
+          "next_action": "Keep 2.4.4."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -26206,7 +26042,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/tempo:3.1.0-seaweedfs",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "3.1.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
