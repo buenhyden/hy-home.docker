@@ -1,6 +1,6 @@
 ---
 title: "P12 Parallel Provider Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -141,10 +141,15 @@ wiring has one.
 | E16 | 166 | W182 | method=observation; tool=Python3.12.3 CLI; command=task_forecast.py observe SPEC-0212-TSK-0110 --status completed; score --type harness-change --time-basis elapsed | Real store, 2026-11-24T00:15:14Z to 00:56:10Z | PASS | 40.9 elapsed minutes against P30 25, P50 45, P80 90; two completed harness-change tasks, insufficient sample | optional | - |
 | E17 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers | Leading-dash regressions on 0fb55d55, after an automated review found that a prompt or model starting with a dash could be read as a CLI option | FAIL | Witnessed RED: 3 subtests accepted `--dangerously-skip-permissions`, `-p x` after leading spaces and `--settings` | required | - |
 | E18 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers | Guard in validate | PASS | Exit0; the three values are refused before any argv is built; the dispatcher suite also passes | required | E17 |
+| E19 | 166 | W182 | method=observation; tool=passt pasta, bubblewrap; command=TCP connect probes from a pasta network namespace | 2026-11-24, after the owner installed passt, before the AppArmor profile | FAIL | pasta could neither create nor join a user namespace (`uid_map: Operation not permitted`; `Couldn't switch to pasta namespaces`): Ubuntu restricts unprivileged user namespaces and `/usr/bin/pasta` had no profile | required | - |
+| E20 | 166 | W182 | method=observation; tool=passt pasta, bubblewrap; command=TCP connect probes from a pasta network namespace | After the owner's `/etc/apparmor.d/pasta-userns` profile, `pasta --config-net` with default flags, then without port forwarding | FAIL | Defaults forwarded namespace loopback to the host (127.0.0.1:5000 open) and mapped the gateway to it; even with forwarding off, the Docker and k8s bridge addresses (10.250.x, 10.42.0.1), the LAN router and host services on 0.0.0.0 stayed reachable through NAT | required | - |
+| E21 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.lib.ops.test_dispatch_process.EgressBoundaryTests | Egress regressions on e8141be6 | FAIL | Witnessed RED: 1 failure and 3 errors: Codex refused, no resolver choice, no pasta wrapper, an injected resolver accepted | required | - |
+| E22 | 166 | W182 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_dispatch_providers tests.lib.ops.test_dispatch_process.EgressBoundaryTests | Codex `egress: public` with the first public upstream nameserver; the dispatcher wraps bubblewrap in pasta with no forwarding, no gateway mapping, 198.18.0.0/24 and the private ranges unreachable | PASS | Exit0; 10 tests; with the dispatcher and surface suites 84 tests, 1 opt-in skipped (NOT_RUN) | required | E21 |
+| E23 | 166 | W182 | method=observation; tool=passt pasta, bubblewrap; command=TCP connect probes from a pasta network namespace | The dispatcher's own `_bounded_command` for an egress provider, run through systemd-run, pasta and bubblewrap on this host | PASS | 10.250.5.1:9100, 10.250.1.128:9119, 10.250.4.1:8644 and :22, 10.42.0.1:22, 192.168.0.1:80, 192.168.0.13/.14:443, the gateway and 127.0.0.1:5000 all unreachable; 1.1.1.1:443 open; DNS through 8.8.8.8 resolved; the worker's `ip route del` refused (`Operation not permitted`) | required | E19,E20 |
 
 ##### Resolution Links
 
-E03 resolves the witnessed failures in E02 and E09 those in E08. E14 resolves E07, E12 and E13. E18 resolves E17. E07 was refused by admission from the
+E03 resolves the witnessed failures in E02 and E09 those in E08. E14 resolves E07, E12 and E13. E18 resolves E17. E22 resolves E21, and E23 resolves E19 and E20. E07 was refused by admission from the
 linked worktree.
 
 #### Acceptance Decision
@@ -157,9 +162,11 @@ linked worktree.
 
 ##### Remaining Conditions
 
-A Codex worker needs an egress-limited network namespace (slirp4netns or
-pasta, not installed: an owner decision) and its account limit lifted after
-2026-11-27 12:53; until then the Codex adapter is refused, not complete. A
+The Codex worker runs in the egress-limited namespace (E23, ENVIRONMENT-
+CONSTRAINTS R173); a real Codex run waits for its account limit to lift
+after 2026-11-27 12:53. Hosts on public addresses stay reachable by design,
+so its credential is still exposed to the shell it runs; a brokered
+short-lived token would remove that and needs a token the owner issues. A
 provider worker needs a CPU budget that fits beside the live services, about
 0.3 CPU each on this host.
 

@@ -64,11 +64,26 @@ class AdapterTests(unittest.TestCase):
             set(private),
         )  # nothing else of the personal HOME is visible
 
-    def test_codex_is_refused_without_an_egress_limited_network(self):
-        # A Codex worker has a shell; with the host network and its
-        # credentials it could reach loopback services and the token.
-        with self.assertRaisesRegex(dispatch_providers.ProviderError, "network"):
-            dispatch_providers.validate({**SPEC, "name": "codex"})
+    def resolvers(self, *servers):
+        path = self.home / "resolv.conf"
+        path.write_text("".join(f"nameserver {s}\n" for s in servers))
+        return mock.patch.object(dispatch_providers, "RESOLVER_FILES", (str(path),))
+
+    def test_codex_runs_only_in_the_egress_limited_network(self):
+        # A Codex worker has a shell: it gets its own network namespace with
+        # every private range unreachable and a public resolver, never the
+        # host network or the host's loopback resolver.
+        with self.resolvers("127.0.0.53", "10.0.0.1", "8.8.8.8"):
+            argv, profile = dispatch_providers.launch({**SPEC, "name": "codex"})
+        self.assertEqual(str(self.home / "versions/codex"), argv[0])
+        self.assertEqual(("public", "8.8.8.8"), (profile["egress"], profile["dns"]))
+        targets = [target for _, target in profile["binds"]]
+        self.assertNotIn("/etc/resolv.conf", targets)
+
+    def test_codex_without_a_public_resolver_is_refused(self):
+        with self.resolvers("127.0.0.53", "192.168.0.1"):
+            with self.assertRaisesRegex(dispatch_providers.ProviderError, "resolver"):
+                dispatch_providers.launch({**SPEC, "name": "codex"})
 
     def test_claude_denies_its_file_tools_the_private_home(self):
         argv, _ = dispatch_providers.launch(SPEC)

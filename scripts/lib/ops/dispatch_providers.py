@@ -21,6 +21,7 @@ namespace exists.
 from __future__ import annotations
 
 import base64
+import ipaddress
 import json
 import math
 import os
@@ -29,6 +30,9 @@ from pathlib import Path
 
 MAX_BUDGET_USD = 5.0
 WORKER_HOME = "/tmp/home"
+# Upstream resolvers first: the host's stub resolver on loopback is not
+# reachable from an egress-limited network namespace.
+RESOLVER_FILES = ("/run/systemd/resolve/resolv.conf", "/etc/resolv.conf")
 # Read-only host files a provider needs for DNS and TLS.
 NETWORK_FILES = (
     "/etc/hosts",
@@ -156,20 +160,38 @@ def _codex(spec: dict) -> tuple[list[str], dict]:
         spec["prompt"],
     ]
     credential = Path.home() / ".codex" / "auth.json"
+    # Its shell never shares the host network: it runs in its own namespace
+    # where every private range is unreachable (dispatch_process).
     return argv, {
         "binds": [
             (str(binary), str(binary)),
             (str(credential), f"{WORKER_HOME}/.codex/auth.json"),
         ],
         "env": {"HOME": WORKER_HOME, "CODEX_HOME": f"{WORKER_HOME}/.codex"},
+        "egress": "public",
     }
 
 
 ADAPTERS = {"claude": _claude, "codex": _codex}
-REFUSED = {
-    "codex": "its shell would share the host network with its credentials;"
-    " it needs an egress-limited network namespace first"
-}
+REFUSED: dict[str, str] = {}
+
+
+def public_resolver() -> str:
+    """The first upstream nameserver with a public address."""
+    for name in RESOLVER_FILES:
+        try:
+            lines = Path(name).read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            parts = line.split()
+            if len(parts) >= 2 and parts[0] == "nameserver":
+                try:
+                    if ipaddress.ip_address(parts[1]).is_global:
+                        return parts[1]
+                except ValueError:
+                    continue
+    raise ProviderError("no public DNS resolver for the egress-limited network")
 
 
 def _secrets(value) -> set[str]:
@@ -218,7 +240,9 @@ def launch(spec: dict) -> tuple[list[str], dict]:
     argv, profile = ADAPTERS[validate(spec)["name"]](spec)
     resolver = os.path.realpath("/etc/resolv.conf")
     profile["binds"] += [(path, path) for path in NETWORK_FILES if Path(path).exists()]
-    if Path(resolver).exists():
+    if profile.get("egress") == "public":
+        profile["dns"] = public_resolver()
+    elif Path(resolver).exists():
         profile["binds"].append((resolver, "/etc/resolv.conf"))
         if resolver.startswith("/run/"):
             # A stub resolver file sits under /run, which the sandbox replaces.

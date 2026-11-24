@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import fcntl
+import ipaddress
 import json
 import os
 import re
@@ -232,7 +233,61 @@ def _bounded_command(command, token, budget, *, cwd, env, git_view=None, provide
         "--remount-ro",
         "/",
     ]
-    return _scope_command([*boundary, "--", *command], token, budget)
+    boundary = [*boundary, "--", *command]
+    if provider is not None and provider.get("egress") == "public":
+        boundary = _egress_limited(boundary, provider["dns"])
+    return _scope_command(boundary, token, budget)
+
+
+# Ranges an egress-limited worker must never reach: the host's own bridges and
+# services, the LAN, carrier-grade NAT and link-local metadata addresses.
+PRIVATE_RANGES = (
+    "10.0.0.0/8",
+    "172.16.0.0/12",
+    "192.168.0.0/16",
+    "100.64.0.0/10",
+    "169.254.0.0/16",
+)
+# Run as root of pasta's own user namespace, before bubblewrap drops every
+# capability: cut the private ranges, then hand the resolver to bubblewrap.
+EGRESS_SETUP = (
+    "set -e; for net in "
+    + " ".join(PRIVATE_RANGES)
+    + '; do /usr/sbin/ip route add unreachable "$net"; done; '
+    + 'dns="$1"; shift; exec "$@" 3<<EOF\nnameserver $dns\nEOF\n'
+)
+
+
+def _egress_limited(boundary, dns):
+    """Wrap bubblewrap in a pasta network namespace with public egress only.
+
+    pasta forwards no port either way and does not map its gateway to the
+    host, the namespace uses 198.18.0.0/24 so no private route is needed, and
+    bubblewrap shares that namespace without any capability to change it.
+    """
+    if not ipaddress.ip_address(dns).is_global:
+        raise ValueError("the egress resolver must be a public address")
+    bwrap = boundary.index("--share-net")
+    inner = [
+        *boundary[:bwrap],
+        "--ro-bind-data",
+        "3",
+        "/etc/resolv.conf",
+        *boundary[bwrap:],
+    ]
+    return [
+        "/usr/bin/pasta",
+        "--config-net",
+        "--quiet",
+        "-4",
+        "--no-map-gw",
+        "-T", "none", "-U", "none", "-t", "none", "-u", "none",
+        "-a", "198.18.0.2", "-n", "24", "-g", "198.18.0.1",
+        "-D", dns,
+        "--",
+        "/bin/sh", "-c", EGRESS_SETUP, "sh", dns,
+        *inner,
+    ]  # fmt: skip
 
 
 def _scope_command(command, token, budget):
