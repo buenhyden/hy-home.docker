@@ -1,10 +1,10 @@
 ---
 title: "P02 Local Feedback Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0100"
 parent_ids:
@@ -252,7 +252,7 @@ no local row or acceptance prose resolves a hosted failure.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 156 | pending | E06, E07, E08, E10, E14, E15, E17, E18, E19, E23, E24, E25, E26 | Implementation, local/hosted verification and source delivery complete; owner acceptance remains separate | @buenhyden |
+| 156 | accepted | E06, E07, E08, E10, E14, E15, E17, E18, E19, E23, E24, E25, E26 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ### Remaining Conditions
 

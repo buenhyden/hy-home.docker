@@ -1,6 +1,6 @@
 ---
 title: "P09 Shared Memory Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -141,7 +141,7 @@ with the D09 exclusion of conflicted records.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 163 | pending | E01,E03,E05,E06,E07,E08,E09,E10,E11 | Implementation, focused regressions and a disposable-clone CLI promotion are recorded; owner acceptance remains | @buenhyden |
+| 163 | accepted | E01,E03,E05,E06,E07,E08,E09,E10,E11 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ##### Remaining Conditions
 

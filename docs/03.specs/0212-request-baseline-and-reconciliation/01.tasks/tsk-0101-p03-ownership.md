@@ -1,10 +1,10 @@
 ---
 title: "P03 Ownership Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0101"
 parent_ids:
@@ -175,7 +175,7 @@ from every local/source observation and from owner acceptance.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 157 | pending | E04, E05, E06, E08, E10, E12, E15, E16, E17, E19, E20, E21, E24, E26, E27 | Implementation, local/hosted verification and source delivery complete; owner acceptance remains separate | @buenhyden |
+| 157 | accepted | E04, E05, E06, E08, E10, E12, E15, E16, E17, E19, E20, E21, E24, E26, E27 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ### Remaining Conditions
 

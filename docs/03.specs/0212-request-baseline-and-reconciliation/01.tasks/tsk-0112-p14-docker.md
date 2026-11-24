@@ -1,6 +1,6 @@
 ---
 title: "P14 Docker Task"
-version: "0.1.0"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -119,10 +119,12 @@ another host's data.
 | E12 | 168 | W184 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest on the 13 other suites that read the templates or compose_controls | Change | NOT_RUN | 526 tests passed, 1 opt-in skipped; tests.lib.ops.test_root_resource_assessment could not import locally (no `referencing` package in this Python), left to hosted CI | required | - |
 | E13 | 168 | W184 | method=automated; tool=GitHub Actions candidate-core, Python3.14.8; command=changed candidate validation | PR 1164 first push | FAIL | Two real failures: a compose-controls fixture still treated `restart: "no"` alone as a job, and the SEC01 ledger and release lookups held the old k6 Compose hash | required | - |
 | E14 | 168 | W184 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_compose_baseline_gates tests.lib.supply_chain.test_update_gates | Fixture labelled; `ledger_rebind --write` re-bound the k6 row and include input (hash only); the k6 reviewed-subject hash in the ledger and release lookups follows the file, as in a0ec32eb1 | PASS | Exit0; baseline suite with an unlabelled restart-no case now reported, 43 supply-chain tests | required | - |
+| E15 | 168 | W184 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest on the 13 other suites that read the templates or compose_controls | `main` 1b7e76aa with the repository `.venv` first on `PATH` (it carries `referencing`), 2026-11-24 (P16) | PASS | Exit0; 555 tests, 1 opt-in skipped (NOT_RUN); tests.lib.ops.test_root_resource_assessment imported and passed | required | E12 |
+| E16 | 168 | W184 | method=automated; tool=GitHub Actions candidate-core, Python3.14.8; command=changed candidate validation | PR 1164 head a2d65816 after E14 | PASS | Every check passed and the PR merged clean as c001d125 | required | E13 |
 
 ##### Resolution Links
 
-E03 resolves E02, E05 resolves E04 and E07 resolves E06. E14 fixes the
+E03 resolves E02, E05 resolves E04 and E07 resolves E06. E15 resolves E12 and E16 resolves E13. E14 fixes the
 hosted failures of E13; hosted CI on the fixed head is the gate.
 
 #### Acceptance Decision
@@ -131,7 +133,7 @@ hosted failures of E13; hosted CI on the fixed head is the gate.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 168 | pending | E01,E03,E05,E07,E08,E09,E10,E11 | Implementation, focused regressions, the controls check on every scope and a read-only real selection are recorded; owner acceptance in P16 remains | @buenhyden |
+| 168 | accepted | E01,E03,E05,E07,E08,E09,E10,E11 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). The recreated HOME job containers are observed at the owner's next `up`. | @buenhyden |
 
 ##### Remaining Conditions
 

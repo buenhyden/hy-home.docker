@@ -1,6 +1,6 @@
 ---
 title: "P05 Documents and SDLC Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0103"
 parent_ids:
@@ -229,7 +229,7 @@ launchers are excluded, not converted into successful checks.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 159 | pending | E02, E03, E06, E07, E17, E20, E21, E25, E26, E27, E28, E30 | P05 implementation, verification, scoped independent correction review and source integration complete. Actual owner acceptance remains pending; intent undecided, accepted by nobody, no reassignment | @buenhyden |
+| 159 | accepted | E02, E03, E06, E07, E17, E20, E21, E25, E26, E27, E28, E30 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ##### Remaining Conditions
 

@@ -1,6 +1,6 @@
 ---
 title: "P11 Task Forecast Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -128,7 +128,7 @@ E03 resolves the witnessed failures in E02.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 165 | pending | E01,E03,E04,E05,E06,E07,E08,E09,E10 | Implementation, focused regressions, a real pre-start forecast and its outcome are recorded; owner acceptance in P16 remains | @buenhyden |
+| 165 | accepted | E01,E03,E04,E05,E06,E07,E08,E09,E10 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). Calibration waits for 20 comparable completed tasks. | @buenhyden |
 
 ##### Remaining Conditions
 
