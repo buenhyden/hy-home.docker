@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.7.0"
+version: "2.8.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -350,6 +350,12 @@ keeps the append-only forecast store, pre-start scoring, censoring and the
 Wilson and pinball computations, and adds only the D11 delta: scoring per
 task type and time basis, a store-counted comparable sample, the outcome's
 forecast revision, blocked and open states and required assumptions.
+
+The direct P12-PARALLEL1.2.0 request adds criterion166/W182 in TSK-0110. It
+keeps the DAG, fenced leases, P07 admission, the cgroup scope and the
+read-only-root sandbox, and adds only the D12 delta: Claude and Codex
+provider units with a brief check before spawn, a provider sandbox profile,
+recorded provider results and a real run of two independent workers.
 
 #### Scope
 
@@ -1516,6 +1522,15 @@ target, backup, recovery boundary, and action-specific authorization.
      blocked work with failed and cancelled; count open forecasts; group
      scores by task type and time basis and never label a mixed selection
      calibrated; keep forecast error out of every gate.
+
+166. TSK-0110 applies P12-PARALLEL1.2.0 to the current Docker workspace.
+     Let a plan unit name a Claude or Codex provider with a model, prompt and
+     USD cap; check the bound brief for every owned path right before spawn;
+     run the installed CLI's non-interactive argv in the existing sandbox
+     with only the network, its binary, its credential file and a private
+     HOME added; record the session, cost and error; and run two real
+     independent workers whose execution overlaps and whose results
+     integrate.
 
 ##### Evidence Requirements
 

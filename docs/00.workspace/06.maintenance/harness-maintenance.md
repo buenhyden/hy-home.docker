@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.5.0"
+version: "2.6.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -331,8 +331,25 @@ of per-task P80s.
 ##### Parallel work dispatch
 
 `scripts/operations/work_dispatch.py` runs the work units of a JSON plan as shell
-workers, each in its own Git worktree. A unit names its command, dependencies,
-owned paths and shared resources (for example `port:5432`, `registry:writer`).
+or provider workers, each in its own Git worktree. A unit names its command, or
+a `provider` with `name` (`claude` or `codex`), `model`, `prompt` and
+`max_budget_usd` (at most 5), plus dependencies, owned paths and shared
+resources (for example `port:5432`, `registry:writer`). A plan with a provider
+unit also names the brief `session`, `request_revision` and `brief_revision`;
+right before the spawn the dispatcher runs the brief's `check ... dispatch`
+for the unit's owned paths and fails the unit if the brief does not allow it.
+A provider worker runs the installed CLI non-interactively (Claude:
+`--print --safe-mode --restricted`, file tools only and denied the private
+HOME, `--max-budget-usd`) with the network, its binary and its credential file
+read-only and a private HOME added to the same read-only-root boundary; its
+session, cost and error from the final JSON go to the report, a provider error
+fails the unit, and a result whose patch or log holds a credential value (also
+base64, hex, URL- or JSON-escaped) or whose patch holds binary content or a
+link is rejected and its log wiped. The worker has no network-capable tool; only the
+CLI process uses the shared network, a monitored boundary rather than a block.
+A Codex unit is refused: its model gets a shell, which with the host network
+and its credentials could reach loopback services and the token, until an
+egress-limited network namespace exists.
 A unit starts only when every dependency succeeded and it holds leases on all its
 owned paths and shared resources; each lease carries a rising fencing
 generation, and a result from an expired or taken-over lease is refused, as is

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Run dependent work units on shell workers in separate Git worktrees.
+"""Run dependent work units on shell or provider workers in separate worktrees.
 
-A plan lists units with their command, dependencies, owned paths and shared
-resources. A unit starts only when every dependency succeeded and it holds a
+A plan lists units with their command, or a Claude or Codex provider with a
+model, prompt and USD cap, plus dependencies, owned paths and shared
+resources. A provider unit starts only after the bound request brief allows
+dispatch to every path it owns, and its final JSON (session, cost, error) is
+kept in the report. A unit starts only when every dependency succeeded and it holds a
 lease on each owned path and shared resource; each lease carries a fencing
 generation, so a result whose lease expired or was taken over is refused. A
 worktree separates files, not processes: it is not a sandbox. A result that
@@ -35,6 +38,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts.lib.hooks import session_capture as capture  # noqa: E402
+from scripts.lib.ops import dispatch_providers  # noqa: E402
 from scripts.lib.ops.dispatch_process import (  # noqa: E402
     ProcessError as PlanError,
 )
@@ -234,7 +238,21 @@ def _validate(plan: dict) -> dict[str, dict]:
             raise PlanError(f"unit id {uid!r} is not a plain token")
     graph = {}
     for u in units:
-        if not _argv(u.get("command")):
+        if "provider" in u:
+            if "command" in u:
+                raise PlanError(f"{u['id']} names both a command and a provider")
+            try:
+                dispatch_providers.validate(u["provider"])
+            except dispatch_providers.ProviderError as error:
+                raise PlanError(f"{u['id']}: {error}") from error
+            if not all(
+                isinstance(plan.get(key), str) and plan[key]
+                for key in ("session", "request_revision")
+            ):
+                raise PlanError(
+                    "a provider unit needs the plan's session and request_revision"
+                )
+        elif not _argv(u.get("command")):
             raise PlanError(f"{u['id']} needs a command list of strings")
         for dep in u.get("depends_on", []):
             if dep not in ids:
@@ -269,6 +287,32 @@ def _ancestors(units: dict, uid: str) -> set[str]:
             seen.add(dep)
             stack.extend(units[dep].get("depends_on", []))
     return seen
+
+
+def _brief_problem(repo: Path, plan: dict, owned: list[str]) -> str | None:
+    """None when the bound brief allows dispatch to every owned path."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.lib.hooks.request_brief",
+            "check",
+            plan["session"],
+            "dispatch",
+            plan["request_revision"],
+            str(plan.get("brief_revision", "")),
+            *owned,
+        ],
+        cwd=repo,
+        env=dict(os.environ, PYTHONPATH=str(ROOT)),
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    if result.returncode == 0:
+        return None
+    return (result.stderr.strip().splitlines() or ["brief check failed"])[0][:200]
 
 
 def _execution_admission(repo, *, recovery=False):
@@ -329,8 +373,19 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         # Background children must not outlive the worker into the checks.
         _killpg(job["process"].pid)
         code = job["process"].wait()
+        spec = units[uid].get("provider")
+        if spec:
+            output = (root / f"{uid}.log").read_text(errors="replace")
+            result[uid]["provider"] = dispatch_providers.result(spec["name"], output)
+        if spec and dispatch_providers.leaks(
+            job["profile"], (root / f"{uid}.log").read_bytes()
+        ):
+            (root / f"{uid}.log").write_bytes(b"")
+            return finish(uid, "rejected", "result holds a credential value")
         if code != 0:
             return finish(uid, "failed", f"exit {code}")
+        if spec and result[uid]["provider"]["is_error"]:
+            return finish(uid, "failed", "provider reported an error")
         gitdir, tree = job["gitdir"], job["worktree"]
         try:
             _wt(gitdir, tree, "add", "-A")
@@ -355,6 +410,17 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         patch = _wt(
             gitdir, tree, "diff", "--cached", "--no-renames", "--binary", job["start"]
         )
+        if spec:
+            numstat = _wt(gitdir, tree, "diff", "--cached", "--no-renames",
+                          "--numstat", "-z", job["start"])  # fmt: skip
+            modes = _wt(gitdir, tree, "diff", "--cached", "--no-renames",
+                        "--summary", job["start"])  # fmt: skip
+            if b"-\t-\t" in numstat or b" 120000 " in modes:
+                # Binary content or a link cannot be checked for credentials.
+                return finish(uid, "rejected", "provider result holds a binary or link")
+        if spec and dispatch_providers.leaks(job["profile"], patch):
+            (root / f"{uid}.log").write_bytes(b"")
+            return finish(uid, "rejected", "result holds a credential value")
         # Workers can reach the run folder, so the accepted patch is kept in
         # memory and the file is a record that is never read back.
         patches[uid] = patch
@@ -371,6 +437,14 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         tokens = leases.acquire(resources, holder, lease_seconds or timeout + 60)
         if tokens is None:
             return
+        command, profile = u.get("command"), None
+        if "provider" in u:
+            problem = _brief_problem(repo, plan, owned)
+            if problem:
+                leases.release(tokens, holder)
+                result[u["id"]].update(status="failed", reason=problem)
+                return
+            command, profile = dispatch_providers.launch(u["provider"])
         tree = root / "wt" / u["id"]
         reservation = None
         spawn_attempted = False
@@ -396,7 +470,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
             with open(root / f"{u['id']}.log", "wb") as log:
                 spawn_attempted = True
                 execution = _spawn(
-                    u["command"],
+                    command,
                     root=root,
                     name=u["id"],
                     cwd=tree,
@@ -408,6 +482,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
                     reservation=reservation,
                     git_view=view,
                     disk_paths=(tree, view, root / f"{u['id']}.log"),
+                    provider=profile,
                 )
         except (
             subprocess.CalledProcessError,
@@ -436,6 +511,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         running[u["id"]] = dict(
             **execution,
             git_view=view,
+            profile=profile,
             tokens=tokens,
             holder=holder,
             worktree=tree,
