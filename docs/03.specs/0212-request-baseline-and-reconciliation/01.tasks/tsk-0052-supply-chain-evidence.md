@@ -1,10 +1,10 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0052"
 parent_ids:
@@ -313,10 +313,17 @@ artifact verification and the current gate results.
 | Security-update gate (artifact continuation) | 104 | W109 | `security_update_gate` | Same 89 rows and source closure | FAIL | Exit2; 29 pending independent verification, 54 blocked-evidence, six blocked-no-fix. Exact candidate and scan gaps fell from 12 to nine; the primary advisory gap fell from two to one. | required | - |
 | Artifact gate regression | 104 | W109 | Focused supply-chain and CI routing tests | Ledger and lookup references | PASS | RED reproduced the absent artifact evidence. The final focused run passed 97 tests; static policy passed five contracts and 13 cases. | required | - |
 | Controller dependency audit | 104 | W109 | `pip-audit` and `npm audit` | Controller lock and Storybook production lock | FAIL | Python audit reported 25 findings across 36 checked requirements. Storybook npm audit reported zero. Both locks match the source baseline; controller findings need separate dependency triage. | optional | - |
+| Renovate advisory refresh 2026-11-24 | 104 | W109 | Official advisory listings: GitHub repository advisories, the Go advisory database and the PostgreSQL security page | PR1048 aws-cli 2.40.4; PR1141 alertmanager 0.35.0, alloy 1.22.0, cadvisor 0.61.1, dozzle 11.5.0, grafana 13.3.1, postgres 18.7 (grafana-db-provision), node-exporter 1.13.1, prometheus 3.16.0, pyroscope 2.4.4 | PASS | Each version change got a fresh advisory review bound to its new subject in update-ledger and release-lookups: seven NOT_AFFECTED outside every published range, cadvisor and node-exporter UNKNOWN (no published advisory, no image scan). Rows whose image did not change follow only their Compose input hash; same-tag digest refreshes in PR1047 keep their version-based assessment. No image was pulled, scanned or recreated | required | - |
+| Renovate subject rebind regression | 104 | W109 | Focused supply-chain, readiness and restore tests | Each Renovate head after its Renovate rebase plus the evidence commit | PASS | PR1048: update-gate, ledger-rebind and policy tests OK. PR1141: the same 57 tests OK, plus the Prometheus isolated restore test after its image followed the 3.16.0 pin. PR1047: 201 tests OK, with the readiness identity list (keycloak 26.8.2, traefik v3.8.0 latest digests and amd64 config IDs), the sample alpine build material and opensearch-dashboards pins following the update as in b9349ad3e | required | - |
+| Renovate PR hosted CI (first PR1141 run) | 104 | W109 | `gh pr checks` on the merged head | PR1141 head 4e6dae3f | FAIL | candidate-core failed `test_image_matches_the_compose_pin`: scripts/operations/prometheus-isolated-restore.py still pinned prometheus v3.15.1; fixed in 1c162e85 | required | - |
+| Renovate PR hosted CI | 104 | W109 | `gh pr checks` on the merged head | PR1140 (merged e2839452), PR1048 (d8665e3f), PR1141 (9808e2d4), PR1047 (710645e6); each brought up to date by a Renovate run with the rebase label and merged one at a time, security first | PASS | candidate-core, candidate-quality, candidate-routing, CodeQL and GitGuardian passed on every merged head with none pending. Merge is not application: no HOME service was recreated | required | Renovate PR hosted CI (first PR1141 run) |
+| PostgreSQL 18.6 exposure | 104 | W109 | PostgreSQL security page, checked 2026-11-24 | Rows still declaring postgres 18.6: mng-pg (server) and the mlflow, mng-pg-init, mng-pg-monitor-provision and pact-broker provisioning jobs | FAIL | 18.7 fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150 (CVSS 8.8, authenticated code execution). The 2026-11-11 assessments predate them and now carry that note; the fix is the per-image data-tier update to 18.7 and an owner-approved recreate, not yet done | required | - |
 
 ### Resolution Links
 
-None: nothing was recorded here before this Task moved to the common form.
+Nothing was linked here before this Task moved to the common form. "Renovate PR hosted
+CI" resolves its first PR1141 run through the same hosted check after the
+restore pin fix. "PostgreSQL 18.6 exposure" stays open until the 18.7 update.
 
 ## Acceptance Decision
 
