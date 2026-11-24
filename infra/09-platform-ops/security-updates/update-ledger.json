@@ -117,11 +117,11 @@
     },
     {
       "path": "infra/04-data/dev-db/docker-compose.yml",
-      "sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9"
+      "sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd"
     },
     {
       "path": "infra/04-data/mng-db/docker-compose.yml",
-      "sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa"
+      "sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8"
     },
     {
       "path": "infra/04-data/neo4j/docker-compose.yml",
@@ -4920,7 +4920,7 @@
       "service": "dev-perf-provision",
       "scope": "root",
       "compose_file": "infra/04-data/dev-db/docker-compose.yml",
-      "current_declared": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+      "current_declared": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
       "profiles_declared": [
         "quality-results"
       ],
@@ -4928,25 +4928,25 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "18.6",
-      "target_version": "18.6",
+      "target_version": "18.7",
       "channel": "stable",
       "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-        "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+        "https://www.postgresql.org/docs/18/release-18-7.html",
+        "https://www.postgresql.org/support/security/",
+        "https://pgbackrest.org/news.html",
+        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+        "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-        "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-        "https://pgbackrest.org/news.html",
-        "https://www.postgresql.org/docs/18/release-18-6.html",
-        "https://www.postgresql.org/support/security/"
+        "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -4957,13 +4957,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_EXTENSION_SOAK_AND_BACKUP_PACKAGE",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "PostgreSQL18.6 is current. Official release20Oct and new image20Oct; normal7daywindow incomplete26Oct. Loader hook/preload ordering and ALTER EXTENSION/data format/recovery require specific migration checks. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
-        "exit_condition": "After2026-10-27T16:15:46Z exact image/config/PG18/package/extension ABI, changelogGUC applicability, isolated upgrade+restore; new owned customimage receipt. Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+        "discovered_at": "2026-11-24T08:27:11.462993+00:00",
+        "next_validation_due": "2026-12-01T08:27:11.462993+00:00",
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -4980,8 +4980,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+      "source_refreshed_at": "2026-11-24T08:27:11.462993+00:00",
+      "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5052,16 +5052,16 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+      "target_source_image": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "target_digest_evidence": "UNKNOWN: Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "18.6",
-        "source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+        "source_version": "18.7",
+        "source_image": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
       "historical_stable_lookup_observations": [
         {
@@ -5127,16 +5127,16 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-      "current_version": "2.57.0",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+      "current_version": "2.58.0",
       "candidate_version": "2.60.0",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
-          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
-          "assessment_version": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
+          "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -5144,25 +5144,23 @@
         "source_action": "patch",
         "security_decision": "patch",
         "advisory_refs": [
-          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
+          "https://pgbackrest.org/news.html",
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
         ],
         "concrete_advisory_refs": [
-          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://pgbackrest.org/news.html",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
         ],
         "advisory_discovery": [
           {
@@ -5187,16 +5185,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-        "next_action": "Rebuild from pgBackRest >=2.59.3, preferably 2.60.0; complete repository-key and restore actions separately.",
+        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Rebuild from pgBackRest >=2.59.3, preferably 2.60.0; complete repository-key and restore actions separately."
+          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -5211,31 +5209,25 @@
         },
         "patch_component": {
           "name": "pgBackRest",
-          "current_version": "2.57.0",
+          "current_version": "2.58.0",
           "candidate_version": "2.60.0",
           "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-            "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-            "https://pgbackrest.org/news.html",
-            "https://www.postgresql.org/docs/18/release-18-6.html",
-            "https://www.postgresql.org/support/security/"
+            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+            "https://pgbackrest.org/news.html"
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "master_20261111_artifact_review": {
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/dev-perf-provision"
-      }
+      },
+      "upstream_reported_tag": "UNKNOWN"
     },
     {
       "service": "dev-pg",
       "scope": "root",
       "compose_file": "infra/04-data/dev-db/docker-compose.yml",
-      "current_declared": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+      "current_declared": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
       "profiles_declared": [
         "dev-data",
         "analytics-engineering",
@@ -5263,25 +5255,25 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "18.6",
-      "target_version": "18.6",
+      "target_version": "18.7",
       "channel": "stable",
       "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-        "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+        "https://www.postgresql.org/docs/18/release-18-7.html",
+        "https://www.postgresql.org/support/security/",
+        "https://pgbackrest.org/news.html",
+        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+        "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-        "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-        "https://pgbackrest.org/news.html",
-        "https://www.postgresql.org/docs/18/release-18-6.html",
-        "https://www.postgresql.org/support/security/"
+        "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -5292,13 +5284,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_EXTENSION_SOAK_AND_BACKUP_PACKAGE",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "PostgreSQL18.6 is current. Official release20Oct and new image20Oct; normal7daywindow incomplete26Oct. Loader hook/preload ordering and ALTER EXTENSION/data format/recovery require specific migration checks. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
-        "exit_condition": "After2026-10-27T16:15:46Z exact image/config/PG18/package/extension ABI, changelogGUC applicability, isolated upgrade+restore; new owned customimage receipt. Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+        "discovered_at": "2026-11-24T08:27:11.462993+00:00",
+        "next_validation_due": "2026-12-01T08:27:11.462993+00:00",
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -5319,8 +5311,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+      "source_refreshed_at": "2026-11-24T08:27:11.462993+00:00",
+      "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5448,16 +5440,16 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-      "current_version": "2.57.0",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+      "current_version": "2.58.0",
       "candidate_version": "2.60.0",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
-          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
-          "assessment_version": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
+          "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -5465,25 +5457,23 @@
         "source_action": "patch",
         "security_decision": "patch",
         "advisory_refs": [
-          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
+          "https://pgbackrest.org/news.html",
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
         ],
         "concrete_advisory_refs": [
-          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://pgbackrest.org/news.html",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
         ],
         "advisory_discovery": [
           {
@@ -5508,16 +5498,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-        "next_action": "Rebuild from pgBackRest >=2.59.3, preferably 2.60.0; vendor subkey check, new full backup, restore rehearsal, and deployment require separate approval.",
+        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Rebuild from pgBackRest >=2.59.3, preferably 2.60.0; vendor subkey check, new full backup, restore rehearsal, and deployment require separate approval."
+          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -5532,24 +5522,28 @@
         },
         "patch_component": {
           "name": "pgBackRest",
-          "current_version": "2.57.0",
+          "current_version": "2.58.0",
           "candidate_version": "2.60.0",
           "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-            "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-            "https://pgbackrest.org/news.html",
-            "https://www.postgresql.org/docs/18/release-18-6.html",
-            "https://www.postgresql.org/support/security/"
+            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+            "https://pgbackrest.org/news.html"
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "master_20261111_artifact_review": {
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/dev-pg"
+      },
+      "target_declared_digest": "UNKNOWN",
+      "upstream_reported_tag": "UNKNOWN",
+      "target_source_image": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+      "target_digest_evidence": "UNKNOWN: Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "current_target_artifact_binding": {
+        "source_version": "18.7",
+        "source_image": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -5630,7 +5624,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+      "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5769,7 +5763,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -5830,7 +5824,7 @@
       "service": "dev-pg-monitor-provision",
       "scope": "root",
       "compose_file": "infra/04-data/dev-db/docker-compose.yml",
-      "current_declared": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+      "current_declared": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
       "profiles_declared": [
         "dev-data",
         "analytics-engineering",
@@ -5855,25 +5849,25 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "18.6",
-      "target_version": "18.6",
+      "target_version": "18.7",
       "channel": "stable",
       "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-        "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+        "https://www.postgresql.org/docs/18/release-18-7.html",
+        "https://www.postgresql.org/support/security/",
+        "https://pgbackrest.org/news.html",
+        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+        "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-        "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-        "https://pgbackrest.org/news.html",
-        "https://www.postgresql.org/docs/18/release-18-6.html",
-        "https://www.postgresql.org/support/security/"
+        "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -5884,13 +5878,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_EXTENSION_SOAK_AND_BACKUP_PACKAGE",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "PostgreSQL18.6 is current. Official release20Oct and new image20Oct; normal7daywindow incomplete26Oct. Loader hook/preload ordering and ALTER EXTENSION/data format/recovery require specific migration checks. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
-        "exit_condition": "After2026-10-27T16:15:46Z exact image/config/PG18/package/extension ABI, changelogGUC applicability, isolated upgrade+restore; new owned customimage receipt. Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+        "discovered_at": "2026-11-24T08:27:11.462993+00:00",
+        "next_validation_due": "2026-12-01T08:27:11.462993+00:00",
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -5911,8 +5905,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+      "source_refreshed_at": "2026-11-24T08:27:11.462993+00:00",
+      "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5983,16 +5977,16 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+      "target_source_image": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "target_digest_evidence": "UNKNOWN: Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "18.6",
-        "source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+        "source_version": "18.7",
+        "source_image": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
       "historical_stable_lookup_observations": [
         {
@@ -6058,16 +6052,16 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-      "current_version": "2.57.0",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+      "current_version": "2.58.0",
       "candidate_version": "2.60.0",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
-          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
-          "assessment_version": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
+          "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -6075,25 +6069,23 @@
         "source_action": "patch",
         "security_decision": "patch",
         "advisory_refs": [
-          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
+          "https://pgbackrest.org/news.html",
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
         ],
         "concrete_advisory_refs": [
-          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://pgbackrest.org/news.html",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
         ],
         "advisory_discovery": [
           {
@@ -6118,16 +6110,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-        "next_action": "Consume the rebuilt custom image after its source and backup acceptance.",
+        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Consume the rebuilt custom image after its source and backup acceptance."
+          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -6142,31 +6134,25 @@
         },
         "patch_component": {
           "name": "pgBackRest",
-          "current_version": "2.57.0",
+          "current_version": "2.58.0",
           "candidate_version": "2.60.0",
           "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-            "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-            "https://pgbackrest.org/news.html",
-            "https://www.postgresql.org/docs/18/release-18-6.html",
-            "https://www.postgresql.org/support/security/"
+            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+            "https://pgbackrest.org/news.html"
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "master_20261111_artifact_review": {
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/dev-pg-monitor-provision"
-      }
+      },
+      "upstream_reported_tag": "UNKNOWN"
     },
     {
       "service": "dev-platform-provision",
       "scope": "root",
       "compose_file": "infra/04-data/dev-db/docker-compose.yml",
-      "current_declared": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+      "current_declared": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
       "profiles_declared": [
         "analytics-engineering",
         "cdc"
@@ -6175,25 +6161,25 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "18.6",
-      "target_version": "18.6",
+      "target_version": "18.7",
       "channel": "stable",
       "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-        "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+        "https://www.postgresql.org/docs/18/release-18-7.html",
+        "https://www.postgresql.org/support/security/",
+        "https://pgbackrest.org/news.html",
+        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+        "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
         "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-        "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-        "https://pgbackrest.org/news.html",
-        "https://www.postgresql.org/docs/18/release-18-6.html",
-        "https://www.postgresql.org/support/security/"
+        "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -6204,13 +6190,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_EXTENSION_SOAK_AND_BACKUP_PACKAGE",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "PostgreSQL18.6 is current. Official release20Oct and new image20Oct; normal7daywindow incomplete26Oct. Loader hook/preload ordering and ALTER EXTENSION/data format/recovery require specific migration checks. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
-        "exit_condition": "After2026-10-27T16:15:46Z exact image/config/PG18/package/extension ABI, changelogGUC applicability, isolated upgrade+restore; new owned customimage receipt. Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+        "discovered_at": "2026-11-24T08:27:11.462993+00:00",
+        "next_validation_due": "2026-12-01T08:27:11.462993+00:00",
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -6227,8 +6213,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+      "source_refreshed_at": "2026-11-24T08:27:11.462993+00:00",
+      "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6299,16 +6285,16 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+      "target_source_image": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "target_digest_evidence": "UNKNOWN: Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "18.6",
-        "source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+        "source_version": "18.7",
+        "source_image": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
       "historical_stable_lookup_observations": [
         {
@@ -6374,16 +6360,16 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-      "current_version": "2.57.0",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+      "current_version": "2.58.0",
       "candidate_version": "2.60.0",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
-          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
-          "assessment_version": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
+          "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -6391,25 +6377,23 @@
         "source_action": "patch",
         "security_decision": "patch",
         "advisory_refs": [
-          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
+          "https://pgbackrest.org/news.html",
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
         ],
         "concrete_advisory_refs": [
-          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://pgbackrest.org/news.html",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m"
         ],
         "advisory_discovery": [
           {
@@ -6434,16 +6418,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-        "next_action": "Consume the rebuilt custom image after its source and backup acceptance.",
+        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Consume the rebuilt custom image after its source and backup acceptance."
+          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1 in the repository advisory listing. pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -6458,25 +6442,19 @@
         },
         "patch_component": {
           "name": "pgBackRest",
-          "current_version": "2.57.0",
+          "current_version": "2.58.0",
           "candidate_version": "2.60.0",
           "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-            "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100&page=1",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
-            "https://github.com/timescale/timescaledb/security/advisories/GHSA-vgp2-jj5c-828m",
-            "https://pgbackrest.org/news.html",
-            "https://www.postgresql.org/docs/18/release-18-6.html",
-            "https://www.postgresql.org/support/security/"
+            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+            "https://pgbackrest.org/news.html"
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "master_20261111_artifact_review": {
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/dev-platform-provision"
-      }
+      },
+      "upstream_reported_tag": "UNKNOWN"
     },
     {
       "service": "dev-valkey",
@@ -6559,7 +6537,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T03:08:02+00:00",
-      "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+      "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6806,7 +6784,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -6954,7 +6932,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T06:36:12+09:00",
-      "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+      "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
@@ -7084,7 +7062,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
-          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_input_sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd",
           "assessment_version": "1.96.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -11925,7 +11903,7 @@
       "service": "mng-pg",
       "scope": "root",
       "compose_file": "infra/04-data/mng-db/docker-compose.yml",
-      "current_declared": "hy-home/mng-pg:18.6-pgbackrest",
+      "current_declared": "hy-home/mng-pg:18.7-pgbackrest",
       "profiles_declared": [
         "mng",
         "core",
@@ -11957,20 +11935,20 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "18.6",
-      "target_version": "18.6",
+      "target_version": "18.7",
       "channel": "stable",
       "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
+        "https://www.postgresql.org/docs/18/release-18-7.html",
+        "https://www.postgresql.org/support/security/",
         "https://pgbackrest.org/news.html",
-        "https://www.postgresql.org/docs/18/release-18-6.html",
-        "https://www.postgresql.org/support/security/"
+        "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -11981,13 +11959,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_PACKAGE_AND_RESTORE",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "PostgreSQL18.6 application is current. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
-        "exit_condition": "Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+        "discovered_at": "2026-11-24T08:27:11.462993+00:00",
+        "next_validation_due": "2026-12-01T08:27:11.462993+00:00",
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -12008,8 +11986,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+      "source_refreshed_at": "2026-11-24T08:27:11.462993+00:00",
+      "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12135,16 +12113,16 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24). pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
       "current_version": "2.58.0",
       "candidate_version": "2.60.0",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T08:29:08.692881+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/mng-pg:18.6-pgbackrest",
-          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
-          "assessment_version": "hy-home/mng-pg:18.6-pgbackrest",
+          "declaration": "hy-home/mng-pg:18.7-pgbackrest",
+          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
+          "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -12152,15 +12130,14 @@
         "source_action": "patch",
         "security_decision": "patch",
         "advisory_refs": [
-          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
           "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [
-          "https://pgbackrest.org/news.html",
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://pgbackrest.org/news.html"
         ],
         "advisory_discovery": [
           {
@@ -12177,16 +12154,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
-        "next_action": "Rebuild from pgBackRest >=2.59.3, preferably 2.60.0; vendor subkey check, new full backup, restore rehearsal, and deployment require separate approval.",
+        "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24). pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+        "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Rebuild from pgBackRest >=2.59.3, preferably 2.60.0; vendor subkey check, new full backup, restore rehearsal, and deployment require separate approval."
+          "reason": "PostgreSQL 18.7 is the release that fixes the current PostgreSQL 18 advisories (official security page, 2026-11-24). pgBackRest 2.58.0 is below 2.59.3 and both repository configs set repo1-cipher-type=aes-256-cbc, so the vendor's weak encryption subkey notice applies; Alpine 3.24 offers only 2.58.0-r0.",
+          "next_action": "Adopt pgBackRest 2.59.3 or later when the base distribution ships it, then rotate the repository subkeys per the vendor notice."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -12204,16 +12181,25 @@
           "current_version": "2.58.0",
           "candidate_version": "2.60.0",
           "evidence_refs": [
-            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100&page=1",
-            "https://pgbackrest.org/news.html",
-            "https://www.postgresql.org/docs/18/release-18-6.html",
-            "https://www.postgresql.org/support/security/"
+            "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+            "https://pgbackrest.org/news.html"
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "master_20261111_artifact_review": {
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/mng-pg"
+      },
+      "target_declared_digest": "UNKNOWN",
+      "upstream_reported_tag": "UNKNOWN",
+      "target_source_image": "hy-home/mng-pg:18.7-pgbackrest",
+      "target_digest_evidence": "UNKNOWN: Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "current_target_artifact_binding": {
+        "source_version": "18.7",
+        "source_image": "hy-home/mng-pg:18.7-pgbackrest",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Owner-requested local build (2026-11-24) on the PostgreSQL 18.7 base with pgBackRest 2.58.0: a local tag without a registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -12298,7 +12284,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+      "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12437,7 +12423,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -12577,7 +12563,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-24T16:42:44+09:00",
-      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+      "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12717,7 +12703,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
-          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
           "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -12845,7 +12831,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-24T16:42:44+09:00",
-      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+      "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12985,7 +12971,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
-          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
           "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -13114,7 +13100,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T03:08:02+00:00",
-      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+      "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13361,7 +13347,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -13512,7 +13498,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T06:36:12+09:00",
-      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+      "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
@@ -13642,7 +13628,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
-          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_input_sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8",
           "assessment_version": "1.96.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -51785,6 +51771,398 @@
             "target_manifest_digest": "sha256:21078ecfcba8a0cd7e1a384f75b3509899661dd21823bf1da21b5a4674aaceb9",
             "target_config_digest": "UNKNOWN",
             "target_declared_digest": "sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
+    },
+    {
+      "source_revision": "358287a0cf0124753e57f57b7829fb6a7bbd4b70",
+      "refreshed_at": "2026-11-24T08:27:11.462993+00:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "0fa226f17d67f5f5d55826ebf17199994fa96327dee91e40f2a3433e41319eea",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "3b74cc820cde1057e7f2c412133bc324a0f916afd58afb185b53ce88619165da"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "2b8f8444fb5f34c8f2284f64ead1ca11c55aab4d4ff648a79cf5e73ea39fa8e2"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "8476de753db160fc427b1cfc12351ea2f9ecc6576ea9974d1570c9f5910cf617"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "c9e94c9c7ded44186708e48b34570733fde24ac244051291fd313644d815706c"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "f22e273419baed978d603b57d58fc5ca9a0053a594604fb0de7a503d81d79664"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "5034f7cea43c89b7a1a7366087b2011cecc56faa3104e3330700573c6eda87f4"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "2082ae28c2fbca4b7b03bbca364054119cb7efcaa987bbbfd31f4f1ab4a233e9"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/04-data/dev-db/docker-compose.yml",
+        "infra/04-data/mng-db/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "dev-perf-provision",
+          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-pg",
+          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-pg-exporter",
+          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "dev-pg-monitor-provision",
+          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-platform-provision",
+          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-valkey",
+          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_refreshed_at": "2026-11-10T03:08:02+00:00"
+        },
+        {
+          "service": "dev-valkey-exporter",
+          "source_input_sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9",
+          "source_refreshed_at": "2026-11-10T06:36:12+09:00"
+        },
+        {
+          "service": "mng-pg",
+          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-pg-exporter",
+          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "mng-pg-init",
+          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_refreshed_at": "2026-11-24T16:42:44+09:00"
+        },
+        {
+          "service": "mng-pg-monitor-provision",
+          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_refreshed_at": "2026-11-24T16:42:44+09:00"
+        },
+        {
+          "service": "mng-valkey",
+          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_refreshed_at": "2026-11-10T03:08:02+00:00"
+        },
+        {
+          "service": "mng-valkey-exporter",
+          "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
+          "source_refreshed_at": "2026-11-10T06:36:12+09:00"
+        }
+      ],
+      "meaning": "5 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 13 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "dev-perf-provision",
+        "dev-pg",
+        "dev-pg-monitor-provision",
+        "dev-platform-provision",
+        "mng-pg"
+      ],
+      "previous_service_images": [
+        {
+          "service": "dev-perf-provision",
+          "current_declared": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "proposed_declared": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "DEFER_EXTENSION_SOAK_AND_BACKUP_PACKAGE",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "PostgreSQL18.6 is current. Official release20Oct and new image20Oct; normal7daywindow incomplete26Oct. Loader hook/preload ordering and ALTER EXTENSION/data format/recovery require specific migration checks. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
+              "exit_condition": "After2026-10-27T16:15:46Z exact image/config/PG18/package/extension ABI, changelogGUC applicability, isolated upgrade+restore; new owned customimage receipt. Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "dev-pg",
+          "current_declared": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "proposed_declared": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+          "previous_fields": {
+            "target_version": "18.6",
+            "disposition": "DEFER_EXTENSION_SOAK_AND_BACKUP_PACKAGE",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "PostgreSQL18.6 is current. Official release20Oct and new image20Oct; normal7daywindow incomplete26Oct. Loader hook/preload ordering and ALTER EXTENSION/data format/recovery require specific migration checks. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
+              "exit_condition": "After2026-10-27T16:15:46Z exact image/config/PG18/package/extension ABI, changelogGUC applicability, isolated upgrade+restore; new owned customimage receipt. Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "dev-pg-monitor-provision",
+          "current_declared": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "proposed_declared": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "DEFER_EXTENSION_SOAK_AND_BACKUP_PACKAGE",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "PostgreSQL18.6 is current. Official release20Oct and new image20Oct; normal7daywindow incomplete26Oct. Loader hook/preload ordering and ALTER EXTENSION/data format/recovery require specific migration checks. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
+              "exit_condition": "After2026-10-27T16:15:46Z exact image/config/PG18/package/extension ABI, changelogGUC applicability, isolated upgrade+restore; new owned customimage receipt. Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "dev-platform-provision",
+          "current_declared": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "proposed_declared": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.58-r2",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "DEFER_EXTENSION_SOAK_AND_BACKUP_PACKAGE",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "PostgreSQL18.6 is current. Official release20Oct and new image20Oct; normal7daywindow incomplete26Oct. Loader hook/preload ordering and ALTER EXTENSION/data format/recovery require specific migration checks. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
+              "exit_condition": "After2026-10-27T16:15:46Z exact image/config/PG18/package/extension ABI, changelogGUC applicability, isolated upgrade+restore; new owned customimage receipt. Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "mng-pg",
+          "current_declared": "hy-home/mng-pg:18.6-pgbackrest",
+          "proposed_declared": "hy-home/mng-pg:18.7-pgbackrest",
+          "previous_fields": {
+            "target_version": "18.6",
+            "disposition": "DEFER_PACKAGE_AND_RESTORE",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "PostgreSQL18.6 application is current. Official Alpine branch packages remain2.58/2.57;2.60 changes checksum failure behavior for restore/expire and cannot be substituted by editing apk version.",
+              "exit_condition": "Compatible packaged or explicitly owned-build binary, exact platform/ABI; normal+bad-checksum restore/expire and recovery regression before source adoption.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
             "platform": "linux/amd64",
             "applicability": "UNKNOWN",
             "signature": "NOT_RUN",
