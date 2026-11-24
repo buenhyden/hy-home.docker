@@ -1960,6 +1960,22 @@ class BackupContractTests(unittest.TestCase):
         self.assertIn("must be a single line", entrypoint)
         self.assertNotIn("repo1-cipher-pass", config)
 
+    def test_pgbackrest_config_directory_is_traversable_before_copy(self) -> None:
+        # COPY --chmod=0644 into a missing directory made it 0644 too, so
+        # postgres could not read pgbackrest.conf (2026-11-24 apply).
+        for path in (
+            f"{PGBACKREST_DIR}/Dockerfile",
+            "infra/04-data/dev-db/pg/Dockerfile",
+        ):
+            with self.subTest(path=path):
+                text = (ROOT / path).read_text(encoding="utf-8")
+                final = text.rsplit("\nFROM ", 1)[1]
+                self.assertIn("install -d -m 0755 /etc/pgbackrest", final)
+                self.assertLess(
+                    final.index("install -d -m 0755 /etc/pgbackrest"),
+                    final.index("pgbackrest.conf /etc/pgbackrest/pgbackrest.conf"),
+                )
+
     def test_restic_job_reads_sources_read_only_and_has_no_network(self) -> None:
         service = _compose_service(RESTIC_COMPOSE, "restic")
         self.assertEqual(["backup"], service["profiles"])
