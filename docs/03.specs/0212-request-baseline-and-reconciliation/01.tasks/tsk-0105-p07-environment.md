@@ -1,6 +1,6 @@
 ---
 title: "P07 Environment Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -199,6 +199,15 @@ mechanisms, remaining quota limits and unobserved billing without fake PASS.
 | E60 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_lab_controller tests.lib.ops.test_compose_start | New regressions for the E59 findings before the fix | FAIL | 163 tests, 2 failures and 5 errors: inspection timeout and invalid output, an exited job with a stale health status, a dead job, the all-missing ledger record, the post-claim state read and the pre-claim LabError CLI path. The state-read fixture first failed on its own full-inventory guard; after a second inventory service it reproduced the escaping `admission_state_unavailable` on the old source | required | - |
 | E61 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_lab_controller tests.lib.ops.test_compose_start | wait_ready inspection guard and job-exit order, ledger record on every failure, the claimed-record read inside the setup guard, and LabError mapped to BLOCKED in the CLI | PASS | Exit0; 163 tests | required | E60 |
 | E62 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest of the fourteen E47 modules plus tests.validation.test_script_manifest | Follow-up candidate | PASS | Exit0; 541 tests, 30 opt-in integration tests skipped and NOT_RUN | required | - |
+| E63 | 161 | W177 | method=review; tool=Claude CLI2.1.331; existing first-party Max OAuth; opus5.5/high; safe/restricted; Glob/Grep/Read only; command=- | Disposable copy of the six P07 runtime files (lab.py, compose_start.py, compose-start.py, environment_admission.py, dispatch_process.py, work_dispatch.py) over main df6bf44d; E16 findings H1/M1/M2/M3 and N1 | FAIL | Actual catalog Glob/Grep/Read, SDK estimate USD1.23, no raw stream kept. Blocking: the disk-headroom check refused teardown (down/stop), and launch errors leaked admission leases; H1, M2 and M3 partial. Each finding was verified in the source before its repair (E69/E70) | required | - |
+| E64 | 161 | W177 | method=review; tool=Claude CLI2.1.331; existing first-party Max OAuth; opus5.5/high; safe/restricted; Glob/Grep/Read only; command=- | Disposable copy of the six P07 runtime files (lab.py, compose_start.py, compose-start.py, environment_admission.py, dispatch_process.py, work_dispatch.py) after the E63 repairs | FAIL | SDK estimate USD1.29. M1, M2, M3 and N1 resolved. Blocking: an interrupt inside the start setup guard escaped without the claim token, and a claim that never recorded its job policy could not be recovered | required | - |
+| E65 | 161 | W177 | method=review; tool=Claude CLI2.1.331; existing first-party Max OAuth; opus5.5/high; safe/restricted; Glob/Grep/Read only; command=- | Disposable copy of the six P07 runtime files (lab.py, compose_start.py, compose-start.py, environment_admission.py, dispatch_process.py, work_dispatch.py) after the E64 repairs | FAIL | 11 turns, 179.5s, USD1.04, 0 denials. Blocking: a LAB claim whose entry was bound before its Docker operation directory could never be released by stop or reap. H1 partial: recovery refused every partial start; the owner then decided that recovery releases a partial start once its running containers are accounted | required | - |
+| E66 | 161 | W177 | method=review; tool=Claude CLI2.1.331; existing first-party Max OAuth; opus5.5/high; safe/restricted; Glob/Grep/Read only; command=- | Disposable copy of the six P07 runtime files (lab.py, compose_start.py, compose-start.py, environment_admission.py, dispatch_process.py, work_dispatch.py) after the E65 repairs and the owner's partial-start policy | FAIL | 13 turns, 201.0s, USD1.09, 0 denials. The E65 repair was incomplete: stop still ran compose down through the registered lane (KeyError without a directory), and a recorded but never created directory stayed unverifiable. H1 partial: a killed start never printed its token | required | - |
+| E67 | 161 | W177 | method=review; tool=Claude CLI2.1.331; existing first-party Max OAuth; opus5.5/high; safe/restricted; Glob/Grep/Read only; command=- | Disposable copy of the six P07 runtime files (lab.py, compose_start.py, compose-start.py, environment_admission.py, dispatch_process.py, work_dispatch.py) after the E66 repairs | FAIL | 12 turns, 171.2s, USD1.09, 0 denials. Blocking B1: a controller whose bootstrap never acknowledged kept identity None and blocked recovery forever. B2: a stopped ledger from an earlier run hid a newer live LAB claim from stop and reap | required | - |
+| E68 | 161 | W177 | method=review; tool=Claude CLI2.1.331; existing first-party Max OAuth; opus5.5/high; safe/restricted; Glob/Grep/Read only; command=- | Disposable copy of the six P07 runtime files (lab.py, compose_start.py, compose-start.py, environment_admission.py, dispatch_process.py, work_dispatch.py), byte-identical to commit 38156d0e; E16 and E63-E67 findings plus the owner's partial-start policy | PASS | 13 turns, 311.3s, USD1.31, 0 denials; no raw stream kept. H1 (including killed starts), the pre-directory LAB claim, B1, B2, M1, M2, M3 and N1 all RESOLVED; no blocking defect. Non-blocking follow-ups: reap can stop a newer unexpired LAB started between its snapshot and its stop call; an OSError from the Docker lane prints a traceback from lab.py (the claim stays recoverable); recovery stays blocked while the root Compose inventory differs from the claim's. Source reading only, no runtime | required | E16,E63,E64,E65,E66,E67 |
+| E69 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_environment_admission tests.lib.ops.test_compose_start tests.lib.ops.test_dispatch_process tests.validation.test_lab_controller tests.validation.test_work_dispatch tests.lib.document_governance.test_generation7 | Each new regression for the E65-E67 findings before its fix | FAIL | RED observed one at a time: reap of a pre-directory LAB claim (reap exit1, claim kept), a directory recorded but never created, the stale stopped ledger (reap 0 with the claim kept), the unacknowledged controller, partial-start release, token-less recovery, an unreadable worker identity, the live-start refusal and the pre-claim interrupt. The E63/E64 regressions were written with their repairs in the preceding context; their RED is not separately recorded | required | - |
+| E70 | 161 | W177 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.ops.test_environment_admission tests.lib.ops.test_compose_start tests.lib.ops.test_dispatch_process tests.validation.test_lab_controller tests.validation.test_work_dispatch tests.lib.document_governance.test_generation7 | Commit 38156d0e | PASS | Exit0; 301 tests, 1 opt-in Native skipped and NOT_RUN. An earlier full run once missed the work_dispatch 1.9s timing bound by 0.091s under load and passed 3/3 alone, so that is a timing flake, not a regression. Synthetic/local proof, not live LAB or HOME runtime | required | E69 |
+| E71 | 161 | W177 | method=automated; tool=Python3.12.3; command=check-document-metadata.py --mode check-changed --base-ref origin/main; check-document-links.py --mode all --changed; check-document-corpus-lifecycle.py --readiness | Branch codex/p07-review-repairs over main ee5a1a83 with 161 accepted | PASS | Metadata selected871, violations0; links938 documents,9145 links, failures0; lifecycle violations0 and occupancy violations0, and criterion 161 no longer appears as not accepted or unresolved | required | - |
 
 ##### Resolution Links
 
@@ -221,9 +230,12 @@ failure: a 2s health timeout that a python health command cannot meet under
 the fixture's own 0.1 CPU quota. It was not the restart-policy defect. E57
 resolves E33 and E56 through the same check with only that budget corrected.
 E59 re-reviewed the E16 findings and found three verified follow-ups. E61
-resolves their regressions in E60. E16 itself stays unresolved: the 2.1.329
-CLI it names is gone, and recording E59 under that Check would misstate the
-tool. P16 decides whether E59 supersedes it. Not changed: the root
+resolves their regressions in E60. E16 stayed unresolved because the 2.1.329
+CLI it names is gone. The owner chose a current-CLI re-review plus the SDLC
+3.1.0 rule that lets a later review by the same tool at an equal or newer
+version resolve an earlier review. Five 2.1.331 reviews failed (E63-E67), each
+verified finding was repaired with a regression (E69/E70), and E68 passed and
+resolves E16 and E63-E67. E68's three non-blocking notes stay follow-ups. Not changed: the root
 compose_start still classifies exited-0 containers by `restart: no` before
 release. Every current root definition with that policy is a job, and a
 misclassified job only keeps its reservation, so the result is conservative.
@@ -240,7 +252,7 @@ a successful alternative.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 161 | pending | E01,E02,E03,E44,E46,E49,E50,E51,E57,E58,E59,E61 | On 2026-11-24 (P16, TSK-0114) the owner accepted 161 with E59 superseding E16, but E16 stays an unresolved required row: only a row with its Check text may resolve it, and its Claude CLI 2.1.329 is gone; acceptance is recorded once the owner settles that rule | @buenhyden |
+| 161 | accepted | E01,E02,E03,E44,E46,E49,E50,E51,E57,E58,E59,E61,E68,E70 | The owner accepted 161 on 2026-11-24 (P16, TSK-0114); E68, a current-CLI restricted review PASS, resolves E16 under the SDLC newer-review rule, so no required row stays open | @buenhyden |
 
 ##### Remaining Conditions
 
@@ -250,8 +262,9 @@ the owned LAB readiness, use, unhealthy diagnostics and cleanup passed on the
 host (E49-E51). The 1.2.0 delivery PR and its hosted check are recorded with
 that delivery. E56/E57 observed and resolved the E33 cause, and E58 records
 the PR1143 and post-merge hosted runs. E59-E62 close the verified re-review
-follow-ups. E16 remains an unresolved review row only because its CLI version
-is gone; P16 owns that decision with owner acceptance. Retain live/uncertain
+follow-ups. E68 resolves E16 under the newer-review rule and E70 the E69 regressions, so
+criterion 161 is accepted. E68's non-blocking follow-ups remain open work, not
+acceptance conditions. Retain live/uncertain
 reservations and preexisting unrelated work.
 
 #### Handoff

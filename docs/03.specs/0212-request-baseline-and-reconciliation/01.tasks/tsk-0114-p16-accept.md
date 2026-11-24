@@ -1,6 +1,6 @@
 ---
 title: "P16 Acceptance Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -53,8 +53,8 @@ and prepare P17's managed refs.
 The direct P16-ACCEPT1.2.0 request authorizes this workspace, acceptance
 records, read-only observation and normal commit, push, PR and merge. On
 2026-11-24 the owner, in this chat, accepted criteria 154 to 161, 163, 165
-and 167 to 169 (with E59 superseding E16 for 161; 161 stays pending, see
-Blockers), chose to install pasta
+and 167 to 169 (161 was recorded once TSK-0105 E68, a current-CLI review PASS,
+resolved E16), chose to install pasta
 before the Codex worker is implemented, approved deleting the merged remote
 branches now, and asked for the CodeQL alerts to be reviewed and recorded.
 Start was clean `main` 1b7e76aa on branch `codex/p16-accept-1-2-0` in the
@@ -79,7 +79,7 @@ environment E, owner acceptance A):
 | 158 | P04, R02 | done | hosted CI | accepted | none |
 | 159 | P05 | done | hosted CI | accepted | none |
 | 160 | P06 | done | two bounded Claude reviews | accepted | none |
-| 161 | P07 | done | owned LAB readiness and cleanup | pending | E16 cannot be resolved under the SDLC rule (its CLI version is gone); the owner's acceptance with E59 waits for a decision on that rule |
+| 161 | P07 | done | owned LAB readiness and cleanup | accepted | none: TSK-0105 E68, a Claude CLI 2.1.331 restricted review PASS, resolves E16 under the SDLC 3.1.0 newer-review rule |
 | 162 | P08 | done | Claude observed; Codex unobserved | pending | Codex native brief run after 2026-11-27 12:53 |
 | 163 | P09 | done | shared memory round trip reused | accepted | none |
 | 164 | P10 | done | store migration observed | pending | first scheduled run of the renamed unit (2026-11-25 03:00); Codex final-response capture after 2026-11-27 12:53 |
@@ -93,7 +93,7 @@ environment E, owner acceptance A):
 | 153 | W09 follow-up | done | ReDoS re-check PASS; owner dismissed all 10 alerts, 0 open | pending | none; owner acceptance only |
 
 Cutover readiness: **not ready**. Required boundaries stay open for 138,
-148, 161, 162, 164 and 166, and 153 has no open required row (the owner dismissed its alerts) and waits
+148, 162, 164 and 166, and 153 has no open required row (the owner dismissed its alerts) and waits
 for acceptance only. Hosted CI on
 `main` passed for the current heads, so no required CI is cancelled or
 failing. Q-01 to Q-04 are settled; no new question affects the cutover
@@ -112,11 +112,12 @@ to this workspace.
 
 ##### Blockers and Decisions
 
-The lifecycle check refuses an accepted criterion with an unresolved
-required row, so 161 cannot be accepted while E16 stands: a resolving row
-must repeat E16's Check text, which names Claude CLI 2.1.329, and that CLI is
-gone; recording E59 under it would misstate the tool. The owner decides
-whether E16 is retired by an SDLC exception or reviewed again. The CodeQL review reused TSK-0097's 2026-11-19 analysis and re-measured it
+The lifecycle check refused 161 while E16 stood: a resolving row had to
+repeat E16's Check text, which names the removed Claude CLI 2.1.329. The
+owner chose a current-CLI re-review plus a narrow SDLC rule (3.1.0) that lets
+a later same-tool review at an equal or newer version resolve an earlier
+review. TSK-0105 E68 passed after five failing reviews were repaired, and 161
+is accepted. The CodeQL review reused TSK-0097's 2026-11-19 analysis and re-measured it
 (TSK-0097 "ReDoS re-check"): the five ReDoS alerts are false positives and
 the five password alerts are synthetic test fixtures; no code changed, and
 dismissal stays with the owner. passt is not installed (`pasta`, `passt`
@@ -140,6 +141,7 @@ answers; a merge or a PASS was not taken as acceptance.
 | E07 | 170 | W186 | method=automated; tool=Python3.12.3; command=document corpus lifecycle on the acceptances | Change before 161 and 168 were settled | FAIL | `accepted criterion 161 has an unresolved required observation`, then the same for 168 | required | - |
 | E08 | 170 | W186 | method=automated; tool=Python3.12.3; command=document corpus lifecycle on the acceptances | 161 kept pending; TSK-0112 E15 and E16 added | PASS | 0 violations | required | E07 |
 | E09 | 170 | W186 | method=observation; tool=which; command=which pasta passt slirp4netns | This host, after the owner installed passt and the pasta AppArmor profile | PASS | `/usr/bin/pasta` present and able to create its namespace (TSK-0110 E23) | required | E05 |
+| E10 | 170 | W186 | method=automated; tool=Python3.12.3; command=document corpus lifecycle on the acceptances | 161 accepted after TSK-0105 E68 resolved E16 | PASS | 0 violations; 161 is no longer reported | required | - |
 
 ##### Resolution Links
 
@@ -155,7 +157,7 @@ E08 resolves E07 and E09 resolves E05.
 
 ##### Remaining Conditions
 
-P17 starts only when 138, 148, 161, 162, 164 and 166 have closed their required
+P17 starts only when 138, 148, 162, 164 and 166 have closed their required
 boundaries: observe Codex after
 2026-11-27 12:53, see the 2026-11-25 03:00 analysis run, clear the R2 cap and
 see a successful daily backup, and remove the locked R2 memory copies after
