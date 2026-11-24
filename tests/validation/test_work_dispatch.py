@@ -683,5 +683,37 @@ class DispatchTests(unittest.TestCase):
                     self.run_plan(units)
 
 
+class RunLifetimeTests(unittest.TestCase):
+    def test_worker_text_expires_at_30_days_and_the_run_at_90(self) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        state = Path(temporary.name)
+
+        def made(name: str, days: int, *extra: str) -> Path:
+            root = state / "runs" / name
+            root.mkdir(parents=True)
+            for file in ("report.json", "a.log", "a.patch", "integrated.patch", *extra):
+                (root / file).write_text("x")
+            then = time.time() - days * 86400
+            os.utime(root / "report.json", (then, then))
+            return root
+
+        recent = made("20261120T000000-aaaaaa", 1)
+        old = made("20261001T000000-bbbbbb", 40)
+        ancient = made("20260801T000000-cccccc", 100)
+        held = made("20260801T000000-dddddd", 100, "a.process.json")
+        other = made("not-a-run", 100)
+        running = state / "runs" / "20260801T000000-eeeeee"
+        running.mkdir()
+        (running / "a.log").write_text("x")
+        dispatch.expire_runs(state)
+        self.assertTrue((recent / "a.log").exists())
+        self.assertEqual(["report.json"], sorted(p.name for p in old.iterdir()))
+        self.assertFalse(ancient.exists())
+        self.assertTrue((held / "a.process.json").exists())
+        self.assertTrue((other / "a.log").exists())
+        self.assertTrue((running / "a.log").exists())
+
+
 if __name__ == "__main__":
     unittest.main()

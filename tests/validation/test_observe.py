@@ -82,19 +82,18 @@ class ObserveTests(unittest.TestCase):
         self.write_run("20261119T010000-abcdef", {
             "task": "SPEC-0212-TSK-0090", "status": "failed",
         })  # fmt: skip
-        self.journal = fake_journal(
-            {
-                "hyhome-backup.service": [
-                    "hyhome-backup.service: Failed with result 'exit-code'.",
-                    "journal body marker do-not-copy-this",
-                    "hyhome-backup.service: Failed with result 'exit-code'.",
-                    "Finished hyhome-backup.service - HOME backup.",
-                ],
-                f"{analysis.UNIT}.service": [
-                    f"Finished {analysis.UNIT}.service.",
-                ],
-            }
-        )
+        self.journal_lines = {
+            "hyhome-backup.service": [
+                "hyhome-backup.service: Failed with result 'exit-code'.",
+                "journal body marker do-not-copy-this",
+                "hyhome-backup.service: Failed with result 'exit-code'.",
+                "Finished hyhome-backup.service - HOME backup.",
+            ],
+            f"{analysis.UNIT}.service": [
+                f"Finished {analysis.UNIT}.service.",
+            ],
+        }
+        self.journal = fake_journal(self.journal_lines)
 
     def write_run(self, name: str, content) -> Path:
         run = self.directory / "dispatch" / "runs" / name
@@ -224,6 +223,98 @@ class ObserveTests(unittest.TestCase):
         result = observe.report(empty, at(minutes=-30), UNTIL, journal=fake_journal({}))
         self.assertEqual(0, result["capture"]["events"])
         self.assertEqual([], result["failures"])
+
+    def test_the_retired_analysis_unit_name_still_counts_its_runs(self) -> None:
+        journal = dict(self.journal_lines)
+        journal[f"{analysis.UNIT}.service"] = []
+        journal[f"{analysis.LEGACY_UNIT}.service"] = [
+            f"Finished {analysis.LEGACY_UNIT}.service."
+        ]
+        result = self.report(journal=fake_journal(journal))
+        unit = result["units"][f"{analysis.UNIT}.service"]
+        self.assertEqual((0, 1), (unit["failed"], unit["succeeded"]))
+        self.assertNotIn(
+            f"{analysis.UNIT}.service",
+            [f["item"] for f in result["failures"] if f["source"] == "unit"],
+        )
+
+    def test_a_run_refused_before_any_worker_started_is_blocked(self) -> None:
+        self.write_run("20261119T040000-000003", {
+            "task": "SPEC-0212-TSK-0110", "status": "failed",
+            "units": [{"id": "a", "status": "failed", "reason": "brief scope"}],
+        })  # fmt: skip
+        result = self.report()
+        self.assertEqual({"failed": 1, "blocked": 1}, result["dispatch"]["runs"])
+        self.assertIn(
+            "20261119T040000-000003 blocked",
+            [f["item"] for f in result["failures"]],
+        )
+
+    def test_dispatch_units_time_and_cli_cost_are_linked(self) -> None:
+        self.write_run("20261119T050000-000004", {
+            "task": "SPEC-0212-TSK-0110", "status": "failed",
+            "elapsed_seconds": 15.8, "unit_seconds": 11.2,
+            "units": [
+                {"id": "a", "status": "succeeded", "started": 4.4,
+                 "provider": {"name": "claude", "cost_usd": 0.004,
+                              "num_turns": 3, "is_error": False}},
+                {"id": "b", "status": "failed", "reason": "could not start"},
+                {"id": "c", "status": "succeeded", "started": 1.0,
+                 "provider": {"name": "forged provider text", "cost_usd": "lots"}},
+            ],
+        })  # fmt: skip
+        result = self.report()
+        self.assertIn(
+            "20261119T050000-000004 failed", [f["item"] for f in result["failures"]]
+        )
+        dispatch = result["dispatch"]
+        self.assertEqual({"succeeded": 2, "blocked": 1}, dispatch["units"])
+        self.assertEqual(
+            (15.8, 11.2), (dispatch["elapsed_seconds"], dispatch["unit_seconds"])
+        )
+        self.assertEqual(
+            {"n": 2, "median": 2.7, "max": 4.4}, dispatch["start_wait_seconds"]
+        )
+        self.assertEqual(
+            {"claude": {"units": 1, "cli_estimate_usd": 0.004, "turns": 3,
+                        "cost_unknown": 0},
+             "unrecognised": {"units": 1, "cli_estimate_usd": 0.0, "turns": 0,
+                              "cost_unknown": 1}},
+            dispatch["providers"],
+        )  # fmt: skip
+        self.assertNotIn("forged provider text", json.dumps(dispatch))
+
+    def test_the_candidate_chain_keeps_unobserved_effects_apart(self) -> None:
+        store = analysis.connect(self.directory)
+        for cid, decision, task, effect in (
+            ("c1", "pending", None, None),
+            ("c2", "rejected", None, None),
+            ("c3", "accepted", None, None),
+            ("c4", "accepted", "SPEC-0212-TSK-0111", None),
+            ("c5", "accepted", "SPEC-0212-TSK-0111", "improved"),
+        ):
+            store.execute(
+                "INSERT INTO candidates (candidate_id, rule, decision, task_ref,"
+                " effect, source_event_ids) VALUES (?, 'r', ?, ?, ?, ?)",
+                (cid, decision, task, effect, '["e1"]' if cid != "c1" else "[]"),
+            )
+        store.execute(
+            "INSERT INTO promotions (candidate_id, review_digest, request, state,"
+            " created_at) VALUES ('c5', 'd', '{}', 'promoted', ?)",
+            (at(hours=-1),),
+        )
+        store.close()
+        chain = self.report()["analysis"]["chain"]
+        self.assertEqual(
+            {"candidates": 5, "with_sources": 4, "pending": 1, "rejected": 1,
+             "accepted": 3, "promoted": 1, "linked_to_task": 2,
+             "effect": {"improved": 1}, "effect_unobserved": 1},
+            chain,
+        )  # fmt: skip
+
+    def test_billed_cost_stays_unmeasured(self) -> None:
+        unmeasured = " ".join(self.report()["unmeasured"])
+        self.assertIn("billed", unmeasured)
 
     def test_a_reversed_window_is_refused(self) -> None:
         with self.assertRaises(ValueError):

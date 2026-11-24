@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts.lib.hooks import session_capture as capture  # noqa: E402
+from scripts.operations import work_dispatch  # noqa: E402
 
 POLICY_EDITION = "1"
 STORE_NAME = "analysis.sqlite3"
@@ -65,7 +66,8 @@ SCHEMA = (
     " proposed_change TEXT, expected_benefit TEXT, risk TEXT, test_plan TEXT,"
     " frequency INTEGER, conditions TEXT, source_event_ids TEXT,"
     " decision TEXT NOT NULL DEFAULT 'pending', decided_by TEXT, decided_at TEXT,"
-    " created_at TEXT, pattern_expires_at TEXT)",
+    " created_at TEXT, pattern_expires_at TEXT, task_ref TEXT, check_ref TEXT,"
+    " effect TEXT, effect_sample INTEGER, effect_at TEXT)",
     # The promotion outbox: one intent per accepted, reviewed candidate.
     "CREATE TABLE IF NOT EXISTS promotions (candidate_id TEXT PRIMARY KEY,"
     " review_digest TEXT NOT NULL, request TEXT NOT NULL,"
@@ -130,7 +132,9 @@ def connect(directory: Path) -> sqlite3.Connection:
 ADDED = {
     "runs": ("cursor_start INTEGER", "cursor_end INTEGER", "log_offset INTEGER",
              "log_head TEXT", "backlog INTEGER"),
-    "candidates": ("created_at TEXT", "pattern_expires_at TEXT"),
+    "candidates": ("created_at TEXT", "pattern_expires_at TEXT", "task_ref TEXT",
+                   "check_ref TEXT", "effect TEXT", "effect_sample INTEGER",
+                   "effect_at TEXT"),
 }  # fmt: skip
 
 
@@ -578,13 +582,17 @@ def expire(connection) -> None:
         "UPDATE candidates SET pattern=NULL WHERE pattern_expires_at < ?",
         (stamp(current),),
     )
+    # A candidate linked to a Task waits for its effect up to the 90-day
+    # metadata lifetime; any other decided one leaves after 30 days.
     connection.execute(
         "DELETE FROM candidates WHERE (decision='pending' AND created_at < ?)"
         " OR (decision!='pending' AND decided_at < ? AND candidate_id NOT IN"
-        " (SELECT candidate_id FROM promotions WHERE state='pending'))",
+        " (SELECT candidate_id FROM promotions WHERE state='pending')"
+        " AND (task_ref IS NULL OR effect IS NOT NULL OR decided_at < ?))",
         (
             stamp(current - dt.timedelta(days=CANDIDATE_DAYS)),
             stamp(current - dt.timedelta(days=CLOSED_CANDIDATE_DAYS)),
+            stamp(current - dt.timedelta(days=CANDIDATE_DAYS)),
         ),
     )
     connection.execute(
@@ -620,6 +628,7 @@ def run(directory: Path, trigger: str) -> dict:
     analysis_key = None
     try:
         capture.prune(directory)  # the daily content and record expiry
+        work_dispatch.expire_runs(directory / "dispatch")  # D10 worker text
         moved = capture.rekeys(directory)
         cursor, offset, head = _cursor(connection, directory)
         for attempt in range(1, ATTEMPTS + 1):
@@ -819,6 +828,48 @@ def decide(directory: Path, candidate_id: str, decision: str, owner: str) -> dic
     if not changed:
         raise LookupError("no pending candidate with that ID")
     return {"candidate_id": candidate_id, "decision": decision}
+
+
+TASK_REF = re.compile(r"SPEC-\d{4}-TSK-\d{4}")
+EFFECTS = ("improved", "unchanged", "worsened")
+
+
+def _follow_up(directory: Path, candidate_id: str, query: str, values: tuple) -> None:
+    connection = connect(directory)
+    try:
+        changed = connection.execute(query, (*values, candidate_id)).rowcount
+    finally:
+        connection.close()
+    if not changed:
+        raise LookupError("no accepted candidate with that ID at this step")
+
+
+def link(directory: Path, candidate_id: str, task_ref: str, check: str) -> dict:
+    """Tie an accepted candidate to the Task that changes it and its check row."""
+    if not TASK_REF.fullmatch(task_ref or "") or not check or len(check) > 200:
+        raise ValueError("link needs SPEC-####-TSK-#### and a check row name")
+    _follow_up(
+        directory, candidate_id,
+        "UPDATE candidates SET task_ref=?, check_ref=? WHERE candidate_id=?"
+        " AND decision='accepted' AND effect IS NULL",
+        (task_ref, check),
+    )  # fmt: skip
+    return {"candidate_id": candidate_id, "task_ref": task_ref, "check_ref": check}
+
+
+def effect(directory: Path, candidate_id: str, result: str, sample: int) -> dict:
+    """Record the observed effect of a linked change against a compared sample."""
+    if result not in EFFECTS or type(sample) is not int or sample < 1:
+        raise ValueError(
+            "effect needs improved, unchanged or worsened and a sample of 1+"
+        )
+    _follow_up(
+        directory, candidate_id,
+        "UPDATE candidates SET effect=?, effect_sample=?, effect_at=?"
+        " WHERE candidate_id=? AND task_ref IS NOT NULL",
+        (result, sample, stamp(now())),
+    )  # fmt: skip
+    return {"candidate_id": candidate_id, "effect": result, "sample": sample}
 
 
 class PromotionError(Exception):
@@ -1029,6 +1080,14 @@ def main(argv: list[str] | None = None) -> int:
     deciding.add_argument("candidate_id")
     deciding.add_argument("decision", choices=("accepted", "rejected"))
     deciding.add_argument("--owner", required=True)
+    linking = commands.add_parser("link")
+    linking.add_argument("candidate_id")
+    linking.add_argument("--task", required=True)
+    linking.add_argument("--check", required=True)
+    observing = commands.add_parser("effect")
+    observing.add_argument("candidate_id")
+    observing.add_argument("result", choices=EFFECTS)
+    observing.add_argument("--sample", type=int, required=True)
     promoting = commands.add_parser("promote")
     promoting.add_argument(
         "--include-earlier",
@@ -1054,6 +1113,10 @@ def main(argv: list[str] | None = None) -> int:
             result = decide(directory, args.candidate_id, args.decision, args.owner)
             if args.decision == "accepted":
                 result["promotion"] = promote(directory)
+        elif args.command == "link":
+            result = link(directory, args.candidate_id, args.task, args.check)
+        elif args.command == "effect":
+            result = effect(directory, args.candidate_id, args.result, args.sample)
         elif args.command == "promote":
             result = {
                 "promotion": promote(directory, include_earlier=args.include_earlier)
@@ -1068,6 +1131,9 @@ def main(argv: list[str] | None = None) -> int:
     except LookupError as error:
         print(f"SESSION_ANALYSIS_NOT_FOUND: {error}", file=sys.stderr)
         return 1
+    except ValueError as error:
+        print(f"SESSION_ANALYSIS_REFUSED: {error}", file=sys.stderr)
+        return 2
     except SchedulerError as error:
         print(f"SESSION_ANALYSIS_SCHEDULER: {error}", file=sys.stderr)
         return 1

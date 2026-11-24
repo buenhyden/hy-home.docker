@@ -805,6 +805,36 @@ def cleanup(repo: Path, state: Path) -> list[str]:
     return removed
 
 
+RUN_NAME = re.compile(r"\d{8}T\d{6}-[0-9a-f]{6}")
+TEXT_DAYS, RUN_DAYS = 30, 90  # worker text, then the whole finished run
+
+
+def expire_runs(state: Path) -> list[str]:
+    """Drop worker logs and patches 30 days after a run ends, the run after 90.
+
+    Only finished runs (a report exists) are touched; a run with a process
+    record left for recovery keeps its folder for `cleanup`.
+    """
+    removed = []
+    current = time.time()
+    for root in sorted((state / "runs").glob("*")):
+        report = root / "report.json"
+        if (
+            not RUN_NAME.fullmatch(root.name)
+            or root.is_symlink()
+            or not report.is_file()
+        ):
+            continue
+        age = (current - report.stat().st_mtime) / 86400
+        if age > RUN_DAYS and not list(root.glob("*.process.json")):
+            shutil.rmtree(root, ignore_errors=True)
+            removed.append(root.name)
+        elif age > TEXT_DAYS:
+            for path in [*root.glob("*.log"), *root.glob("*.patch")]:
+                path.unlink(missing_ok=True)
+    return removed
+
+
 def main(argv: list[str] | None = None) -> int:
     values = sys.argv[1:] if argv is None else argv
     if len(values) == 4 and values[0] == "--bootstrap":

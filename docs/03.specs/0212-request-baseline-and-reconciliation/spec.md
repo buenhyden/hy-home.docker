@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.8.0"
+version: "2.9.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -356,6 +356,13 @@ keeps the DAG, fenced leases, P07 admission, the cgroup scope and the
 read-only-root sandbox, and adds only the D12 delta: Claude and Codex
 provider units with a brief check before spawn, a provider sandbox profile,
 recorded provider results and a real run of two independent workers.
+
+The direct P13-OBSERVABILITY1.2.0 request adds criterion167/W183 in TSK-0111.
+It keeps the capture, analysis, forecast and dispatch stores and the observe
+report, adds no telemetry store, and adds only the D13 delta: dispatch
+blocked states, time and CLI cost estimates, the analysis candidate chain to a
+Task and an observed effect, the D10 lifetime for dispatch run folders, and
+the real backup result in its owner Task.
 
 #### Scope
 
@@ -1531,6 +1538,16 @@ target, backup, recovery boundary, and action-specific authorization.
      HOME added; record the session, cost and error; and run two real
      independent workers whose execution overlaps and whose results
      integrate.
+
+167. TSK-0111 applies P13-OBSERVABILITY1.2.0 to the current Docker
+     workspace. Let the observe report count a unit refused before it started
+     as blocked, show dispatch run and start-wait seconds and each provider's
+     CLI cost estimate apart from billed cost, count the analysis unit's runs
+     under its earlier name, and show the candidate chain from source events
+     to an observed effect with unobserved effects apart; link an accepted
+     candidate to its Task and check and record its effect with a sample;
+     expire dispatch worker text at 30 days and run folders at 90; and record
+     the real daily backup results in TSK-0092 without closing criterion148.
 
 ##### Evidence Requirements
 

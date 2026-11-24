@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -196,6 +197,65 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual(("rejected", 3), (kept["decision"], kept["frequency"]))
         with self.assertRaises(LookupError):
             analysis.decide(self.directory, found["candidate_id"], "accepted", "owner")
+
+    def test_an_accepted_candidate_links_to_its_task_then_its_effect(self):
+        self.repeated()
+        self.run_once()
+        (found,) = self.repeats()
+        cid = found["candidate_id"]
+        task, check = "SPEC-0212-TSK-0111", "Observe GREEN"
+        with self.assertRaises(LookupError):  # not reviewed yet
+            analysis.link(self.directory, cid, task, check)
+        analysis.decide(self.directory, cid, "accepted", "owner")
+        with self.assertRaises(ValueError):
+            analysis.link(self.directory, cid, "free text owner", check)
+        with self.assertRaises(LookupError):  # no Task yet
+            analysis.effect(self.directory, cid, "improved", 3)
+        analysis.link(self.directory, cid, task, check)
+        (row,) = self.repeats(everything=True)
+        self.assertIsNone(row["effect"])  # unobserved stays null, not zero
+        for result, sample in (("improved", 0), ("better", 2), ("improved", True)):
+            with self.assertRaises(ValueError):
+                analysis.effect(self.directory, cid, result, sample)
+        analysis.effect(self.directory, cid, "unchanged", 4)
+        (row,) = self.repeats(everything=True)
+        self.assertEqual(
+            (task, check, "unchanged", 4),
+            (row["task_ref"], row["check_ref"], row["effect"], row["effect_sample"]),
+        )
+        self.assertTrue(row["effect_at"])
+
+    def test_a_linked_candidate_waits_for_its_effect_up_to_90_days(self):
+        self.repeated()
+        self.run_once()
+        (found,) = self.repeats()
+        cid = found["candidate_id"]
+        analysis.decide(self.directory, cid, "accepted", "owner")
+        analysis.link(self.directory, cid, "SPEC-0212-TSK-0111", "Observe GREEN")
+        store = analysis.connect(self.directory)
+        store.execute("UPDATE promotions SET state='promoted'")
+
+        def decided(days):
+            when = analysis.now() - dt.timedelta(days=days)
+            store.execute("UPDATE candidates SET decided_at=?", (analysis.stamp(when),))
+
+        decided(analysis.CLOSED_CANDIDATE_DAYS + 1)
+        self.run_once()
+        self.assertEqual(1, len(self.repeats(everything=True)))
+        decided(analysis.CANDIDATE_DAYS + 1)
+        self.run_once()
+        store.close()
+        self.assertEqual([], self.repeats(everything=True))
+
+    def test_the_daily_run_expires_old_dispatch_runs(self):
+        old = self.directory / "dispatch" / "runs" / "20260801T000000-abcdef"
+        old.mkdir(parents=True)
+        (old / "report.json").write_text("{}")
+        then = analysis.now().timestamp() - 100 * 86400
+        os.utime(old / "report.json", (then, then))
+        self.prompt("first prompt", "a")
+        self.run_once()
+        self.assertFalse(old.exists())
 
     def test_capture_gaps_and_failures_become_candidates(self):
         self.prompt("one prompt only", "gap")
