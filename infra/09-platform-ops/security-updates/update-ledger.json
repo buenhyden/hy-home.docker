@@ -149,11 +149,11 @@
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40"
+      "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
-      "sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222"
+      "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
     },
     {
       "path": "infra/07-workflow/airflow/docker-compose.yml",
@@ -2291,7 +2291,7 @@
       "service": "alertmanager",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+      "current_declared": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
       "profiles_declared": [
         "obs",
         "alerting"
@@ -2314,7 +2314,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "0.35.0",
-      "target_version": "0.34.2",
+      "target_version": "0.35.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.606055+00:00",
       "release_url": "https://github.com/prometheus/alertmanager/releases/tag/v0.35.0",
@@ -2324,7 +2324,7 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-09-17T08:12:07Z",
       "advisory_urls": [
-        "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100&page=1",
+        "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100",
         "https://github.com/prometheus/alertmanager/security/advisories/GHSA-v86x-5fm3-5p7j",
         "https://github.com/prometheus/alertmanager/security/advisories/GHSA-w5g2-x24w-p3fq"
       ],
@@ -2340,8 +2340,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T11:20:38+00:00",
-        "next_validation_due": "2026-11-17T11:20:38+00:00",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -2357,8 +2357,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -2419,14 +2419,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+      "target_source_image": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "0.34.2",
-        "source_image": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+        "source_version": "0.35.0",
+        "source_image": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -2491,14 +2491,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 0.34.2 is the exact current security fix; upgrading to 0.35.0 is not required for the two published direct advisories and requires compatibility review because of documented breaking changes.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 0.35.0 is newer than both published fixed boundaries (0.25.1, 0.34.2), re-checked on 2026-11-24 for the Renovate update from 0.34.2.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "0.34.2",
+          "declaration": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "0.35.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -2506,7 +2506,7 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100&page=1",
+          "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100",
           "https://github.com/prometheus/alertmanager/security/advisories/GHSA-v86x-5fm3-5p7j",
           "https://github.com/prometheus/alertmanager/security/advisories/GHSA-w5g2-x24w-p3fq"
         ],
@@ -2517,11 +2517,11 @@
         "advisory_discovery": [
           {
             "supplier": "prometheus/alertmanager",
-            "url": "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/prometheus/alertmanager/security-advisories?per_page=100",
             "unique_advisories": 2,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -2529,18 +2529,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "0.34.2 is the exact current security fix; upgrading to 0.35.0 is not required for the two published direct advisories and requires compatibility review because of documented breaking changes.",
-        "next_action": "Keep 0.34.2 for security acceptance of direct advisories; evaluate 0.35.0 separately as a source/compatibility change and obtain digest-bound SBOM evidence for the selected image.",
+        "reason": "Selected 0.35.0 is newer than both published fixed boundaries (0.25.1, 0.34.2), re-checked on 2026-11-24 for the Renovate update from 0.34.2.",
+        "next_action": "Keep 0.35.0; its documented breaking changes are checked at the next owner-approved observability recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "0.34.2",
+          "target_retained": "0.35.0",
           "observed_latest": "0.35.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Keep 0.34.2 for security acceptance of direct advisories; evaluate 0.35.0 separately as a source/compatibility change and obtain digest-bound SBOM evidence for the selected image."
+          "reason": "Selected 0.35.0 is newer than both published fixed boundaries (0.25.1, 0.34.2), re-checked on 2026-11-24 for the Renovate update from 0.34.2.",
+          "next_action": "Keep 0.35.0; its documented breaking changes are checked at the next owner-approved observability recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -2562,7 +2562,7 @@
       "service": "alloy",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
+      "current_declared": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
       "profiles_declared": [
         "obs",
         "logs",
@@ -2587,7 +2587,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "1.21.3",
-      "target_version": "1.21.3",
+      "target_version": "1.22.0",
       "channel": "stable",
       "checked_at": "2026-11-10T21:00:16Z",
       "release_url": "https://github.com/grafana/alloy/releases/tag/v1.21.3",
@@ -2597,9 +2597,8 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-10-22T23:47:12Z",
       "advisory_urls": [
-        "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100&page=1",
-        "https://grafana.com/security/security-advisories/cve-2024-8975/",
-        "https://grafana.com/security/security-advisories/cve-2026-75889/"
+        "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100",
+        "https://github.com/advisories/GHSA-chqx-36rm-rf8h"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -2613,8 +2612,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T11:20:38+00:00",
-        "next_validation_due": "2026-11-17T11:20:38+00:00",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -2630,11 +2629,11 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
+      "target_source_image": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
@@ -2687,8 +2686,8 @@
       },
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "1.21.3",
-        "source_image": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
+        "source_version": "1.22.0",
+        "source_image": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -2749,14 +2748,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected1.21.3 is outside the following official direct/named-component affected ranges: CVE-2024-8975 affected=<1.3.3, fixed=>=1.3.3; CVE-2026-75889 affected=<1.19.0, fixed=>=1.19.0. Complete selected image and OS dependencies remain unassessed.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 1.22.0 is outside the only Go advisory-database range for github.com/grafana/alloy (GHSA-chqx-36rm-rf8h, fixed 1.3.4/1.4.1) and above the 1.19.0 boundary the 2026-11-11 review recorded; the repository lists no advisory (2026-11-24).",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "1.21.3",
+          "declaration": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "1.22.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -2764,22 +2763,20 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100&page=1",
-          "https://grafana.com/security/security-advisories/cve-2024-8975/",
-          "https://grafana.com/security/security-advisories/cve-2026-75889/"
+          "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100",
+          "https://github.com/advisories/GHSA-chqx-36rm-rf8h"
         ],
         "concrete_advisory_refs": [
-          "https://grafana.com/security/security-advisories/cve-2024-8975/",
-          "https://grafana.com/security/security-advisories/cve-2026-75889/"
+          "https://github.com/advisories/GHSA-chqx-36rm-rf8h"
         ],
         "advisory_discovery": [
           {
             "supplier": "grafana/alloy",
-            "url": "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/grafana/alloy/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_LISTED",
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -2787,16 +2784,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected1.21.3 is outside the following official direct/named-component affected ranges: CVE-2024-8975 affected=<1.3.3, fixed=>=1.3.3; CVE-2026-75889 affected=<1.19.0, fixed=>=1.19.0. Complete selected image and OS dependencies remain unassessed.",
-        "next_action": "Retain 1.21.3; attach exact-image SBOM/scan evidence before closing full-image security acceptance.",
+        "reason": "Selected 1.22.0 is outside the only Go advisory-database range for github.com/grafana/alloy (GHSA-chqx-36rm-rf8h, fixed 1.3.4/1.4.1) and above the 1.19.0 boundary the 2026-11-11 review recorded; the repository lists no advisory (2026-11-24).",
+        "next_action": "Keep 1.22.0; obtain exact-digest SBOM evidence separately.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "1.21.3",
+          "target_retained": "1.22.0",
           "observed_latest": "1.21.3",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain 1.21.3; attach exact-image SBOM/scan evidence before closing full-image security acceptance."
+          "reason": "Selected 1.22.0 is outside the only Go advisory-database range for github.com/grafana/alloy (GHSA-chqx-36rm-rf8h, fixed 1.3.4/1.4.1) and above the 1.19.0 boundary the 2026-11-11 review recorded; the repository lists no advisory (2026-11-24).",
+          "next_action": "Keep 1.22.0; obtain exact-digest SBOM evidence separately."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -3070,7 +3067,7 @@
       "service": "cadvisor",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+      "current_declared": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
       "profiles_declared": [
         "obs",
         "obs-host",
@@ -3094,17 +3091,17 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "0.60.6",
-      "target_version": "0.60.6",
+      "target_version": "0.61.1",
       "channel": "stable",
       "checked_at": "2026-11-10T21:00:16Z",
       "release_url": "https://github.com/google/cadvisor/releases/tag/v0.60.6",
-      "target_index_digest": "sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
-      "target_manifest_digest": "sha256:bd7c00644d65e6c9fc2c151cab70d2e86d7fe3e0182cfb9863120ec2e017cf01",
+      "target_index_digest": "UNKNOWN",
+      "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-09-18T22:43:39Z",
       "advisory_urls": [
-        "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -3115,13 +3112,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "NO_CHANGE_APPLICATION_VERSION",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
-        "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -3134,13 +3131,13 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
-      "target_declared_digest": "sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
-      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed.",
+      "target_source_image": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
+      "target_declared_digest": "UNKNOWN",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
         "google/cadvisor"
       ],
@@ -3249,14 +3246,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository advisory was listed; no image SBOM/transitive scan was performed. cAdvisor is privileged/high-trust and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository or Go advisory-database advisory is listed for 0.61.1 (2026-11-24); no image SBOM/transitive scan was performed. cAdvisor is privileged and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "0.60.6",
+          "declaration": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "0.61.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -3264,17 +3261,17 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "google/cadvisor",
-            "url": "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/google/cadvisor/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_LISTED",
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -3282,18 +3279,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "No public repository advisory was listed; no image SBOM/transitive scan was performed. cAdvisor is privileged/high-trust and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
-        "next_action": "Retain the pin operationally and require exact-digest SBOM, base-image scan, Go vulnerability evaluation, and privilege/exposure review.",
+        "reason": "No public repository or Go advisory-database advisory is listed for 0.61.1 (2026-11-24); no image SBOM/transitive scan was performed. cAdvisor is privileged and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
+        "next_action": "Keep 0.61.1 deferred until exact-digest SBOM or scan evidence exists.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "0.60.6",
+          "target_retained": "0.61.1",
           "observed_latest": "0.60.6",
           "previous_gate_missing": [
             "stable_channel"
           ],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain the pin operationally and require exact-digest SBOM, base-image scan, Go vulnerability evaluation, and privilege/exposure review."
+          "reason": "No public repository or Go advisory-database advisory is listed for 0.61.1 (2026-11-24); no image SBOM/transitive scan was performed. cAdvisor is privileged and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
+          "next_action": "Keep 0.61.1 deferred until exact-digest SBOM or scan evidence exists."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -3309,6 +3306,14 @@
       },
       "master_20261111_artifact_review": {
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/cadvisor"
+      },
+      "upstream_reported_tag": "UNKNOWN",
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "current_target_artifact_binding": {
+        "source_version": "0.61.1",
+        "source_image": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -4716,7 +4721,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T07:19:46+09:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4855,7 +4860,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "4.9.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -7141,7 +7146,7 @@
       "service": "dozzle",
       "scope": "root",
       "compose_file": "infra/06-observability/dozzle/docker-compose.yml",
-      "current_declared": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
+      "current_declared": "amir20/dozzle:v11.5.0@sha256:74600d62dd73a72a5d36fbd0c98af649203df921d74310b7ed383ef63392358e",
       "profiles_declared": [
         "admin",
         "admin-logs"
@@ -7164,7 +7169,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "11.4.2",
-      "target_version": "11.4.2",
+      "target_version": "11.5.0",
       "channel": "stable",
       "checked_at": "2026-11-10T21:00:16Z",
       "release_url": "https://github.com/amir20/dozzle/releases/tag/v11.4.2",
@@ -7174,18 +7179,13 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-10-24T14:18:48Z",
       "advisory_urls": [
-        "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100&page=1",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-3v9w-6365-9w54",
+        "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100",
         "https://github.com/amir20/dozzle/security/advisories/GHSA-7hjf-g4w8-w279",
         "https://github.com/amir20/dozzle/security/advisories/GHSA-8683-6wwr-q7rq",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-j643-x8pv-8m67",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-m855-r557-5rc5",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-p2w3-6x73-2f6x",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq",
         "https://github.com/amir20/dozzle/security/advisories/GHSA-v879-vjhp-gmhc",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-w7qr-q9fh-fj35",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj"
+        "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
+        "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj",
+        "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -7199,8 +7199,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T11:20:38+00:00",
-        "next_validation_due": "2026-11-17T11:20:38+00:00",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -7216,11 +7216,11 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
+      "target_source_image": "amir20/dozzle:v11.5.0@sha256:74600d62dd73a72a5d36fbd0c98af649203df921d74310b7ed383ef63392358e",
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
@@ -7288,8 +7288,8 @@
       "target_build_materials": [],
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "11.4.2",
-        "source_image": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
+        "source_version": "11.5.0",
+        "source_image": "amir20/dozzle:v11.5.0@sha256:74600d62dd73a72a5d36fbd0c98af649203df921d74310b7ed383ef63392358e",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -7350,14 +7350,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 11.4.2 is outside all publisher-declared application ranges and equals the inventoried stable latest version.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 11.5.0 is above every publisher-declared affected range; the newest of the eleven published advisories ends at v11.2.0 (2026-11-24).",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
-          "source_input_sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222",
-          "assessment_version": "11.4.2",
+          "declaration": "amir20/dozzle:v11.5.0@sha256:74600d62dd73a72a5d36fbd0c98af649203df921d74310b7ed383ef63392358e",
+          "source_input_sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21",
+          "assessment_version": "11.5.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -7365,40 +7365,30 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100&page=1",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-3v9w-6365-9w54",
+          "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-7hjf-g4w8-w279",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-8683-6wwr-q7rq",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-j643-x8pv-8m67",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-m855-r557-5rc5",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-p2w3-6x73-2f6x",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-v879-vjhp-gmhc",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-w7qr-q9fh-fj35",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj"
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj",
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-3v9w-6365-9w54",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-7hjf-g4w8-w279",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-8683-6wwr-q7rq",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-j643-x8pv-8m67",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-m855-r557-5rc5",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-p2w3-6x73-2f6x",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq",
           "https://github.com/amir20/dozzle/security/advisories/GHSA-v879-vjhp-gmhc",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-w7qr-q9fh-fj35",
-          "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj"
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-p66q-2gfp-8v55",
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-xcw9-qmmf-vqxj",
+          "https://github.com/amir20/dozzle/security/advisories/GHSA-r9cj-7m9r-h6hq"
         ],
         "advisory_discovery": [
           {
             "supplier": "amir20/dozzle",
-            "url": "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/amir20/dozzle/security-advisories?per_page=100",
             "unique_advisories": 11,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -7406,16 +7396,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 11.4.2 is outside all publisher-declared application ranges and equals the inventoried stable latest version.",
-        "next_action": "Keep digest and scan image layers.",
+        "reason": "Selected 11.5.0 is above every publisher-declared affected range; the newest of the eleven published advisories ends at v11.2.0 (2026-11-24).",
+        "next_action": "Keep 11.5.0.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/dozzle",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "11.4.2",
+          "target_retained": "11.5.0",
           "observed_latest": "11.4.2",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Keep digest and scan image layers."
+          "reason": "Selected 11.5.0 is above every publisher-declared affected range; the newest of the eleven published advisories ends at v11.2.0 (2026-11-24).",
+          "next_action": "Keep 11.5.0."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -7797,7 +7787,7 @@
       "upstream_reported_tag": "v5.37.0",
       "next_fact_command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8268,7 +8258,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/gatus:local",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "v5.37.0 exact source; custom image not built",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -8338,7 +8328,7 @@
       "service": "grafana",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
+      "current_declared": "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf",
       "profiles_declared": [
         "obs",
         "obs-core",
@@ -8367,7 +8357,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "13.3.0",
-      "target_version": "13.3.0",
+      "target_version": "13.3.1",
       "channel": "stable",
       "checked_at": "2026-11-10T21:00:17Z",
       "release_url": "https://github.com/grafana/grafana/releases/tag/v13.3.0",
@@ -8377,55 +8367,11 @@
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100&page=1",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-2j8f-6whh-frc8",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-2x6g-h2hg-rq84",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-3j9m-hcv9-rpj8",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-3p62-42x7-gxg5",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-4724-7jwc-3fpw",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-5hcf-rqj9-xh96",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-63g3-9jq3-mccv",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-69j6-29vr-p3j9",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-7533-c8qv-jm9m",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-7rqg-hjwc-6mjf",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-82gq-xfg3-5j7v",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-8pjx-jj86-j47p",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-8wjh-59cw-9xh4",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-8xmm-x63g-f6xv",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-9rrr-6fq2-4f99",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-c3q8-26ph-9g2q",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-cmf4-h3xc-jw8w",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-ff5c-938w-8c9q",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-gj7m-853r-289r",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-jv32-5578-pxjc",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-mpwp-42x6-4wmx",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-mx47-6497-3fv2",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-p978-56hq-r492",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-rhxj-gh46-jvw8",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-vqc4-mpj8-jxch",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-vw7q-p2qg-4m5f",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-x744-mm8v-vpgr",
-        "https://github.com/grafana/grafana/security/advisories/GHSA-xc3p-28hw-q24g",
-        "https://grafana.com/security/security-advisories/cve-2026-100105/",
-        "https://grafana.com/security/security-advisories/cve-2026-103506/",
-        "https://grafana.com/security/security-advisories/cve-2026-12704/",
-        "https://grafana.com/security/security-advisories/cve-2026-13719/",
-        "https://grafana.com/security/security-advisories/cve-2026-13720/",
-        "https://grafana.com/security/security-advisories/cve-2026-14199/",
-        "https://grafana.com/security/security-advisories/cve-2026-15577/",
-        "https://grafana.com/security/security-advisories/cve-2026-15815/",
-        "https://grafana.com/security/security-advisories/cve-2026-17033/",
-        "https://grafana.com/security/security-advisories/cve-2026-17183/",
-        "https://grafana.com/security/security-advisories/cve-2026-19475/",
-        "https://grafana.com/security/security-advisories/cve-2026-33374/",
-        "https://grafana.com/security/security-advisories/cve-2026-76154/",
-        "https://grafana.com/security/security-advisories/cve-2026-81841/",
-        "https://grafana.com/security/security-advisories/cve-2026-81842/",
-        "https://grafana.com/security/security-advisories/cve-2026-88858/",
-        "https://grafana.com/security/security-advisories/cve-2026-88967/",
-        "https://grafana.com/security/security-advisories/cve-2026-92539/",
-        "https://grafana.com/security/security-advisories/cve-2026-93294/",
-        "https://grafana.com/security/security-advisories/cve-2026-95502/"
+        "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100",
+        "https://github.com/advisories/GHSA-3w66-95m3-8jxg",
+        "https://github.com/advisories/GHSA-9g84-39mm-q4p3",
+        "https://github.com/advisories/GHSA-f74p-cwhp-x2wx",
+        "https://github.com/advisories/GHSA-9493-h4f5-633x"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -8439,8 +8385,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T11:20:38+00:00",
-        "next_validation_due": "2026-11-17T11:20:38+00:00",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -8456,11 +8402,11 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
+      "target_source_image": "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
@@ -8528,8 +8474,8 @@
       },
       "target_build_materials": [],
       "current_target_artifact_binding": {
-        "source_version": "13.3.0",
-        "source_image": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
+        "source_version": "13.3.1",
+        "source_image": "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -8591,14 +8537,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected OSS 13.3.0 is later than every fixed 13.x threshold in the newest vendor advisory page. Enterprise-only and distinct MCP/plugin products were not inherited into the OSS image assessment.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected OSS 13.3.1 is later than every 13.x fixed threshold in the Go advisory database for github.com/grafana/grafana (newest ranges end below 13.0.2, published 2026-06-22) on 2026-11-24. The vendor advisory page was not re-read for this update; Enterprise-only and plugin products are not inherited.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "13.3.0",
+          "declaration": "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "13.3.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -8606,114 +8552,26 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100&page=1",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-2j8f-6whh-frc8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-2x6g-h2hg-rq84",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-3j9m-hcv9-rpj8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-3p62-42x7-gxg5",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-4724-7jwc-3fpw",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-5hcf-rqj9-xh96",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-63g3-9jq3-mccv",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-69j6-29vr-p3j9",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-7533-c8qv-jm9m",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-7rqg-hjwc-6mjf",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-82gq-xfg3-5j7v",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8pjx-jj86-j47p",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8wjh-59cw-9xh4",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8xmm-x63g-f6xv",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-9rrr-6fq2-4f99",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-c3q8-26ph-9g2q",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-cmf4-h3xc-jw8w",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-ff5c-938w-8c9q",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-gj7m-853r-289r",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-jv32-5578-pxjc",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-mpwp-42x6-4wmx",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-mx47-6497-3fv2",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-p978-56hq-r492",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-rhxj-gh46-jvw8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-vqc4-mpj8-jxch",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-vw7q-p2qg-4m5f",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-x744-mm8v-vpgr",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-xc3p-28hw-q24g",
-          "https://grafana.com/security/security-advisories/cve-2026-100105/",
-          "https://grafana.com/security/security-advisories/cve-2026-103506/",
-          "https://grafana.com/security/security-advisories/cve-2026-12704/",
-          "https://grafana.com/security/security-advisories/cve-2026-13719/",
-          "https://grafana.com/security/security-advisories/cve-2026-13720/",
-          "https://grafana.com/security/security-advisories/cve-2026-14199/",
-          "https://grafana.com/security/security-advisories/cve-2026-15577/",
-          "https://grafana.com/security/security-advisories/cve-2026-15815/",
-          "https://grafana.com/security/security-advisories/cve-2026-17033/",
-          "https://grafana.com/security/security-advisories/cve-2026-17183/",
-          "https://grafana.com/security/security-advisories/cve-2026-19475/",
-          "https://grafana.com/security/security-advisories/cve-2026-33374/",
-          "https://grafana.com/security/security-advisories/cve-2026-76154/",
-          "https://grafana.com/security/security-advisories/cve-2026-81841/",
-          "https://grafana.com/security/security-advisories/cve-2026-81842/",
-          "https://grafana.com/security/security-advisories/cve-2026-88858/",
-          "https://grafana.com/security/security-advisories/cve-2026-88967/",
-          "https://grafana.com/security/security-advisories/cve-2026-92539/",
-          "https://grafana.com/security/security-advisories/cve-2026-93294/",
-          "https://grafana.com/security/security-advisories/cve-2026-95502/"
+          "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100",
+          "https://github.com/advisories/GHSA-3w66-95m3-8jxg",
+          "https://github.com/advisories/GHSA-9g84-39mm-q4p3",
+          "https://github.com/advisories/GHSA-f74p-cwhp-x2wx",
+          "https://github.com/advisories/GHSA-9493-h4f5-633x"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/grafana/grafana/security/advisories/GHSA-2j8f-6whh-frc8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-2x6g-h2hg-rq84",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-3j9m-hcv9-rpj8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-3p62-42x7-gxg5",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-4724-7jwc-3fpw",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-5hcf-rqj9-xh96",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-63g3-9jq3-mccv",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-69j6-29vr-p3j9",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-7533-c8qv-jm9m",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-7rqg-hjwc-6mjf",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-82gq-xfg3-5j7v",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8pjx-jj86-j47p",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8wjh-59cw-9xh4",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-8xmm-x63g-f6xv",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-9rrr-6fq2-4f99",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-c3q8-26ph-9g2q",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-cmf4-h3xc-jw8w",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-ff5c-938w-8c9q",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-gj7m-853r-289r",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-jv32-5578-pxjc",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-mpwp-42x6-4wmx",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-mx47-6497-3fv2",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-p978-56hq-r492",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-rhxj-gh46-jvw8",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-vqc4-mpj8-jxch",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-vw7q-p2qg-4m5f",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-x744-mm8v-vpgr",
-          "https://github.com/grafana/grafana/security/advisories/GHSA-xc3p-28hw-q24g",
-          "https://grafana.com/security/security-advisories/cve-2026-100105/",
-          "https://grafana.com/security/security-advisories/cve-2026-103506/",
-          "https://grafana.com/security/security-advisories/cve-2026-12704/",
-          "https://grafana.com/security/security-advisories/cve-2026-13719/",
-          "https://grafana.com/security/security-advisories/cve-2026-13720/",
-          "https://grafana.com/security/security-advisories/cve-2026-14199/",
-          "https://grafana.com/security/security-advisories/cve-2026-15577/",
-          "https://grafana.com/security/security-advisories/cve-2026-15815/",
-          "https://grafana.com/security/security-advisories/cve-2026-17033/",
-          "https://grafana.com/security/security-advisories/cve-2026-17183/",
-          "https://grafana.com/security/security-advisories/cve-2026-19475/",
-          "https://grafana.com/security/security-advisories/cve-2026-33374/",
-          "https://grafana.com/security/security-advisories/cve-2026-76154/",
-          "https://grafana.com/security/security-advisories/cve-2026-81841/",
-          "https://grafana.com/security/security-advisories/cve-2026-81842/",
-          "https://grafana.com/security/security-advisories/cve-2026-88858/",
-          "https://grafana.com/security/security-advisories/cve-2026-88967/",
-          "https://grafana.com/security/security-advisories/cve-2026-92539/",
-          "https://grafana.com/security/security-advisories/cve-2026-93294/",
-          "https://grafana.com/security/security-advisories/cve-2026-95502/"
+          "https://github.com/advisories/GHSA-3w66-95m3-8jxg",
+          "https://github.com/advisories/GHSA-9g84-39mm-q4p3",
+          "https://github.com/advisories/GHSA-f74p-cwhp-x2wx",
+          "https://github.com/advisories/GHSA-9493-h4f5-633x"
         ],
         "advisory_discovery": [
           {
             "supplier": "grafana/grafana",
-            "url": "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100",
             "unique_advisories": 28,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -8721,16 +8579,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected OSS 13.3.0 is later than every fixed 13.x threshold in the newest vendor advisory page. Enterprise-only and distinct MCP/plugin products were not inherited into the OSS image assessment.",
-        "next_action": "Retain 13.3.0 and its digest; preserve edition/component boundaries and attach exact-image SBOM/scan evidence. Continue polling the vendor index because only its newest page was re-opened in this pass.",
+        "reason": "Selected OSS 13.3.1 is later than every 13.x fixed threshold in the Go advisory database for github.com/grafana/grafana (newest ranges end below 13.0.2, published 2026-06-22) on 2026-11-24. The vendor advisory page was not re-read for this update; Enterprise-only and plugin products are not inherited.",
+        "next_action": "Keep 13.3.1.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "13.3.0",
+          "target_retained": "13.3.1",
           "observed_latest": "13.3.0",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain 13.3.0 and its digest; preserve edition/component boundaries and attach exact-image SBOM/scan evidence. Continue polling the vendor index because only its newest page was re-opened in this pass."
+          "reason": "Selected OSS 13.3.1 is later than every 13.x fixed threshold in the Go advisory database for github.com/grafana/grafana (newest ranges end below 13.0.2, published 2026-06-22) on 2026-11-24. The vendor advisory page was not re-read for this update; Enterprise-only and plugin products are not inherited.",
+          "next_action": "Keep 13.3.1."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -8749,7 +8607,7 @@
       "service": "grafana-db-provision",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "current_declared": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
       "profiles_declared": [
         "obs",
         "obs-core",
@@ -8773,7 +8631,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "18.6",
-      "target_version": "18.6",
+      "target_version": "18.7",
       "channel": "stable",
       "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
@@ -8783,8 +8641,8 @@
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://www.postgresql.org/docs/18/release-18-6.html",
-        "https://www.postgresql.org/support/security/"
+        "https://www.postgresql.org/support/security/",
+        "https://www.postgresql.org/docs/18/release-18-7.html"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -8798,8 +8656,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -8822,8 +8680,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8884,12 +8742,12 @@
       },
       "target_declared_digest": "UNKNOWN",
       "upstream_reported_tag": "UNKNOWN",
-      "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "target_source_image": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "18.6",
-        "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+        "source_version": "18.7",
+        "source_image": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -8957,14 +8815,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -8972,28 +8830,27 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/support/security/",
+          "https://www.postgresql.org/docs/18/release-18-7.html"
         ],
         "concrete_advisory_refs": [
-          "https://www.postgresql.org/docs/18/release-18-6.html",
-          "https://www.postgresql.org/support/security/"
+          "https://www.postgresql.org/docs/18/release-18-7.html"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "18.6 is the fixed release for current supported PostgreSQL 18 advisories.",
-        "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open.",
+        "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+        "next_action": "Keep 18.7; other services still on 18.6 need their own update.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "18.6",
+          "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain PostgreSQL 18.6; keep Alpine/full-image verification open."
+          "reason": "18.7 is the fixed release for the current PostgreSQL 18 advisories on the official security page (2026-11-24), including CVE-2026-120139, -120142, -120144 and -120150 that affect 18.6.",
+          "next_action": "Keep 18.7; other services still on 18.6 need their own update."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -10997,7 +10854,7 @@
       "upstream_reported_tag": "v3.7.8",
       "next_fact_command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11140,7 +10997,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/loki:3.7.8-seaweedfs",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "3.7.8",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -15944,7 +15801,7 @@
       "service": "node-exporter",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+      "current_declared": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
       "profiles_declared": [
         "obs",
         "obs-host",
@@ -15968,7 +15825,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "1.12.1",
-      "target_version": "1.12.1",
+      "target_version": "1.13.1",
       "channel": "stable",
       "checked_at": "2026-11-10T21:00:17Z",
       "release_url": "https://github.com/prometheus/node_exporter/releases/tag/v1.12.1",
@@ -15978,7 +15835,7 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-07-14T12:34:45Z",
       "advisory_urls": [
-        "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -15992,8 +15849,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -16009,8 +15866,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -16071,14 +15928,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+      "target_source_image": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "1.12.1",
-        "source_image": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "source_version": "1.13.1",
+        "source_image": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -16139,14 +15996,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository advisory was listed; exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository or Go advisory-database advisory is listed for 1.13.1 (2026-11-24); exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "1.12.1",
+          "declaration": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "1.13.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -16154,17 +16011,17 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "prometheus/node_exporter",
-            "url": "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/prometheus/node_exporter/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_LISTED",
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -16172,16 +16029,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "No public repository advisory was listed; exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
-        "next_action": "Retain the current pin and host read-only controls; obtain exact-digest SBOM/base scan and verify enabled collectors/capabilities before full security acceptance.",
+        "reason": "No public repository or Go advisory-database advisory is listed for 1.13.1 (2026-11-24); exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
+        "next_action": "Keep 1.13.1 deferred until exact-digest SBOM or scan evidence exists.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "1.12.1",
+          "target_retained": "1.13.1",
           "observed_latest": "1.12.1",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain the current pin and host read-only controls; obtain exact-digest SBOM/base scan and verify enabled collectors/capabilities before full security acceptance."
+          "reason": "No public repository or Go advisory-database advisory is listed for 1.13.1 (2026-11-24); exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
+          "next_action": "Keep 1.13.1 deferred until exact-digest SBOM or scan evidence exists."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -20205,7 +20062,7 @@
       "service": "prometheus",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+      "current_declared": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
       "profiles_declared": [
         "obs",
         "obs-core",
@@ -20231,24 +20088,17 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.16.0",
-      "target_version": "3.15.1",
+      "target_version": "3.16.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.891813+00:00",
       "release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.16.0",
-      "target_index_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
-      "target_manifest_digest": "sha256:d445d1806b38f85b5c394a1b87f94113fde0473b45245922c2e8b1bd41fa68ae",
-      "target_config_digest": "sha256:876ae6bcb0d6c9190d799e82c996fbe5faecdaaa0ec84f5e7dd272c0542ea63c",
-      "platform": "linux/amd64",
+      "target_index_digest": "UNKNOWN",
+      "target_manifest_digest": "UNKNOWN",
+      "target_config_digest": "UNKNOWN",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-10-21T16:15:57Z",
       "advisory_urls": [
-        "https://github.com/prometheus/prometheus/releases/tag/v3.15.0",
-        "https://pkg.go.dev/vuln/GO-2026-6612",
-        "https://pkg.go.dev/vuln/GO-2026-6603",
-        "https://pkg.go.dev/vuln/GO-2026-6611",
-        "https://pkg.go.dev/vuln/GO-2026-6617",
-        "https://pkg.go.dev/vuln/GO-2026-6608",
-        "https://pkg.go.dev/vuln/GO-2026-6609",
-        "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100&page=1",
+        "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100",
         "https://github.com/prometheus/prometheus/security/advisories/GHSA-4v48-4q5m-8vx4",
         "https://github.com/prometheus/prometheus/security/advisories/GHSA-8rm2-7qqf-34qm",
         "https://github.com/prometheus/prometheus/security/advisories/GHSA-fw8g-cg8f-9j28",
@@ -20256,22 +20106,22 @@
         "https://github.com/prometheus/prometheus/security/advisories/GHSA-vx57-7f4q-fpc7",
         "https://github.com/prometheus/prometheus/security/advisories/GHSA-wg65-39gg-5wfj"
       ],
-      "applicability": "Owner decision 2026-10-30: the SEC01 risk acceptance recorded for the previous pin lapsed 7 days after the fixed upstream build appeared and is superseded by the adopted fixed image prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2 (SPEC-0204-TSK-0021). Prior text preserved after 'PRIOR:'. Adopted build reports go1.27.3 and golang.org/x/net v0.60.0 (owner-supplied release facts; the image was not pulled or inspected). Independent applicability review of the new image: NOT_RUN. PRIOR: REVIEWED_INDEPENDENTLY_OWNER_ACCEPTED_WITH_EXPIRY: APPLICABLE DoS only - GO-2026-6608 and GO-2026-6609 after Traefik auth or unauthenticated inside the Docker networks; Go HTTP/2 server IDs NOT_APPLICABLE (plain HTTP); busybox ash/awk CVEs NOT_APPLICABLE (repository start.sh only). v3.15.0 adds no ID over running v3.14.0 and removes 5 High. Expires at the earlier of: an upstream release built with Go >= 1.26.9/1.27.2 and x/net >= 0.60.0 (adopt within 7 days), or 2026-11-15 (re-decide an owned Traefik build); revoke early on WAN exposure or a public exploit.",
+      "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN for the adopted pin: config boot / promtool checks, backup, rollback and HOME recreation are owner steps in SPEC-0204-TSK-0021. PRIOR: PASS_SYNTHETIC_ONLY: promtool check config --syntax-only on prometheus.yml and prometheus.dev.yml and check rules on 13 rule files pass on v3.14.0 and v3.15.0; HOME adoption NOT_RUN",
+      "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
       "rollback": "NOT_RUN",
       "native_test": "NOT_RUN",
       "deployment": "NOT_RUN",
-      "signature": "NOT_RUN: publisher signature not checked",
-      "sbom_scan": "NOT_RUN: no owner-approved pull and no offline Syft/Grype scan of the adopted pin yet (SPEC-0204-TSK-0021). Prior-pin PASS receipt retained in previous_adopted_pin_assessment.",
-      "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+      "signature": "NOT_RUN",
+      "sbom_scan": "NOT_RUN",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-30T03:01:50.900933+00:00",
-        "next_validation_due": "2026-11-02T03:01:50+00:00",
-        "reason": "Fixed upstream pin adopted in Compose source by owner decision 2026-10-30; pull, offline scan, independent applicability review, config/rules checks, backup, HOME recreation and rollback are NOT_RUN.",
-        "exit_condition": "Run the owner steps recorded in SPEC-0204-TSK-0021, then re-run the latest/security gates at the delivery head.",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -20283,15 +20133,15 @@
         "sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "v3.15.1",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run the owner steps in SPEC-0204-TSK-0021: approved pull, offline scan, promtool checks, HOME recreation.",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "prom/prometheus:v3.15.1",
-      "target_declared_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
-      "target_digest_evidence": "Anonymous registry API on 2026-10-30T03:01:50Z: OCI/Docker index and linux/amd64 manifest raw SHA256 equal the response digest; no pull, signature, scan, build, runtime or HOME deployment.",
+      "target_source_image": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
+      "target_declared_digest": "UNKNOWN",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
         "prometheus/prometheus"
       ],
@@ -20412,14 +20262,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 3.15.1 is outside all six direct advisory ranges and is the documented security patch release. 3.16.0 does not need to be adopted solely for these advisories.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 3.16.0 is outside all six direct advisory ranges (newest fixed 3.11.3/3.12.0), re-checked on 2026-11-24 for the Renovate update from 3.15.1.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "3.15.1",
+          "declaration": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "3.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -20427,7 +20277,7 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100&page=1",
+          "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100",
           "https://github.com/prometheus/prometheus/security/advisories/GHSA-4v48-4q5m-8vx4",
           "https://github.com/prometheus/prometheus/security/advisories/GHSA-8rm2-7qqf-34qm",
           "https://github.com/prometheus/prometheus/security/advisories/GHSA-fw8g-cg8f-9j28",
@@ -20446,11 +20296,11 @@
         "advisory_discovery": [
           {
             "supplier": "prometheus/prometheus",
-            "url": "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/prometheus/prometheus/security-advisories?per_page=100",
             "unique_advisories": 6,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -20458,18 +20308,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "3.15.1 is outside all six direct advisory ranges and is the documented security patch release. 3.16.0 does not need to be adopted solely for these advisories.",
-        "next_action": "Keep 3.15.1 for current security acceptance; evaluate 3.16.0 separately for compatibility and obtain exact-digest SBOM/base image evidence.",
+        "reason": "3.16.0 is outside all six direct advisory ranges (newest fixed 3.11.3/3.12.0), re-checked on 2026-11-24 for the Renovate update from 3.15.1.",
+        "next_action": "Keep 3.16.0; obtain exact-digest SBOM/base image evidence separately.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "3.15.1",
+          "target_retained": "3.16.0",
           "observed_latest": "3.16.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Keep 3.15.1 for current security acceptance; evaluate 3.16.0 separately for compatibility and obtain exact-digest SBOM/base image evidence."
+          "reason": "3.16.0 is outside all six direct advisory ranges (newest fixed 3.11.3/3.12.0), re-checked on 2026-11-24 for the Renovate update from 3.15.1.",
+          "next_action": "Keep 3.16.0; obtain exact-digest SBOM/base image evidence separately."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -20493,6 +20343,13 @@
       },
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/prometheus"
+      },
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "current_target_artifact_binding": {
+        "source_version": "3.16.0",
+        "source_image": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -20563,7 +20420,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
@@ -20691,7 +20548,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "1.11.5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -20752,7 +20609,7 @@
       "service": "pyroscope",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
+      "current_declared": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
       "profiles_declared": [
         "obs",
         "profiling"
@@ -20775,7 +20632,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "2.4.3",
-      "target_version": "2.4.3",
+      "target_version": "2.4.4",
       "channel": "stable",
       "checked_at": "2026-11-10T21:00:19Z",
       "release_url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.3",
@@ -20785,10 +20642,8 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-10-21T18:30:23Z",
       "advisory_urls": [
-        "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100&page=1",
-        "https://github.com/grafana/pyroscope/pull/5966",
-        "https://github.com/grafana/pyroscope/pull/5973",
-        "https://grafana.com/security/security-advisories/cve-2025-41118/"
+        "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100",
+        "https://github.com/advisories/GHSA-m9hq-h476-h2g8"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -20802,8 +20657,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T11:20:38+00:00",
-        "next_validation_due": "2026-11-17T11:20:38+00:00",
+        "discovered_at": "2026-11-24T16:21:46+09:00",
+        "next_validation_due": "2026-12-01T16:21:46+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -20819,11 +20674,11 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_refreshed_at": "2026-11-24T16:21:46+09:00",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
+      "target_source_image": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
@@ -20876,8 +20731,8 @@
       },
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "2.4.3",
-        "source_image": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
+        "source_version": "2.4.4",
+        "source_image": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -20938,14 +20793,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected2.4.3 is outside the following official direct/named-component affected ranges: CVE-2025-41118 affected=<1.15.2 on 1.15.x; 1.16.0, fixed=>=1.15.2,<1.16.0 or >=1.16.1; all 1.17.x; CVE-2026-116587 / GHSA-mgcc-cww5-fp2q affected=go-jose 4.1.4 in prior Pyroscope 2.4 line, fixed=go-jose 4.1.6 in Pyroscope 2.4.3; GO-2026-6860 / CVE-2026-78661 affected=x/net 0.60.0 in prior Pyroscope 2.4 line, fixed=x/net 0.62.0 in Pyroscope 2.4.3; GO-2026-6866 / CVE-2026-97045 affected=x/net 0.60.0 in prior Pyroscope 2.4 line, fixed=x/net 0.62.0 in Pyroscope 2.4.3. Complete selected image and OS dependencies remain unassessed.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 2.4.4 is outside the Go advisory-database range for github.com/grafana/pyroscope (GHSA-m9hq-h476-h2g8, fixed 1.15.2/1.16.1) on 2026-11-24; the go-jose fix the 2026-11-11 review found in 2.4.3 is carried forward, not re-checked.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
-          "declaration": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-          "assessment_version": "2.4.3",
+          "declaration": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "assessment_version": "2.4.4",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -20953,24 +20808,20 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100&page=1",
-          "https://github.com/grafana/pyroscope/pull/5966",
-          "https://github.com/grafana/pyroscope/pull/5973",
-          "https://grafana.com/security/security-advisories/cve-2025-41118/"
+          "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100",
+          "https://github.com/advisories/GHSA-m9hq-h476-h2g8"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/grafana/pyroscope/pull/5966",
-          "https://github.com/grafana/pyroscope/pull/5973",
-          "https://grafana.com/security/security-advisories/cve-2025-41118/"
+          "https://github.com/advisories/GHSA-m9hq-h476-h2g8"
         ],
         "advisory_discovery": [
           {
             "supplier": "grafana/pyroscope",
-            "url": "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/grafana/pyroscope/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_LISTED",
+            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -20978,16 +20829,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected2.4.3 is outside the following official direct/named-component affected ranges: CVE-2025-41118 affected=<1.15.2 on 1.15.x; 1.16.0, fixed=>=1.15.2,<1.16.0 or >=1.16.1; all 1.17.x; CVE-2026-116587 / GHSA-mgcc-cww5-fp2q affected=go-jose 4.1.4 in prior Pyroscope 2.4 line, fixed=go-jose 4.1.6 in Pyroscope 2.4.3; GO-2026-6860 / CVE-2026-78661 affected=x/net 0.60.0 in prior Pyroscope 2.4 line, fixed=x/net 0.62.0 in Pyroscope 2.4.3; GO-2026-6866 / CVE-2026-97045 affected=x/net 0.60.0 in prior Pyroscope 2.4 line, fixed=x/net 0.62.0 in Pyroscope 2.4.3. Complete selected image and OS dependencies remain unassessed.",
-        "next_action": "Retain 2.4.3 and verify its selected digest/SBOM; do not infer base-image completeness from the release security notes.",
+        "reason": "Selected 2.4.4 is outside the Go advisory-database range for github.com/grafana/pyroscope (GHSA-m9hq-h476-h2g8, fixed 1.15.2/1.16.1) on 2026-11-24; the go-jose fix the 2026-11-11 review found in 2.4.3 is carried forward, not re-checked.",
+        "next_action": "Keep 2.4.4.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "2.4.3",
+          "target_retained": "2.4.4",
           "observed_latest": "2.4.3",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain 2.4.3 and verify its selected digest/SBOM; do not infer base-image completeness from the release security notes."
+          "reason": "Selected 2.4.4 is outside the Go advisory-database range for github.com/grafana/pyroscope (GHSA-m9hq-h476-h2g8, fixed 1.15.2/1.16.1) on 2026-11-24; the go-jose fix the 2026-11-11 review found in 2.4.3 is carried forward, not re-checked.",
+          "next_action": "Keep 2.4.4."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -26062,7 +25913,7 @@
       "upstream_reported_tag": "v3.1.0",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+      "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.0-seaweedfs",
@@ -26191,7 +26042,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/tempo:3.1.0-seaweedfs",
-          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
           "assessment_version": "3.1.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -50694,6 +50545,561 @@
               "service_owner_role": "Existing service owner named by current_public_assessment"
             },
             "source_refreshed_at": "2026-11-10T20:31:24+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
+    },
+    {
+      "source_revision": "d8665e3f895fb2bc5708a1ba50e523083f866be1",
+      "refreshed_at": "2026-11-24T16:21:46+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "bc7b0064217429ca16783918bc5c6ef71297eafa4b5648ff63767f0352eee24a",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "3b74cc820cde1057e7f2c412133bc324a0f916afd58afb185b53ce88619165da"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "2b8f8444fb5f34c8f2284f64ead1ca11c55aab4d4ff648a79cf5e73ea39fa8e2"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "4e5f6d533d69c6c16a3f0d8101862283593a7ad2e38e249129c40826ca107e3f"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "f5ff8a8581e719a3b8398ed24503f6ac92c97b7bca8480fc800f78406eff7889"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "c9e94c9c7ded44186708e48b34570733fde24ac244051291fd313644d815706c"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "f22e273419baed978d603b57d58fc5ca9a0053a594604fb0de7a503d81d79664"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "c567ca166971331217a51b42e86990c45881d6a24ae9be26e0563040bf9d26fe"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/06-observability/docker-compose.yml",
+        "infra/06-observability/dozzle/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "alertmanager",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "alloy",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "cadvisor",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "dcgm-exporter",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-10T07:19:46+09:00"
+        },
+        {
+          "service": "dozzle",
+          "source_input_sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "gatus",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "grafana",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "grafana-db-provision",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "loki",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "node-exporter",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "prometheus",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "pushgateway",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "pyroscope",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "tempo",
+          "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "9 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 14 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "alertmanager",
+        "alloy",
+        "cadvisor",
+        "dozzle",
+        "grafana",
+        "grafana-db-provision",
+        "node-exporter",
+        "prometheus",
+        "pyroscope"
+      ],
+      "previous_service_images": [
+        {
+          "service": "alertmanager",
+          "current_declared": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+          "proposed_declared": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
+          "previous_fields": {
+            "target_version": "0.34.2",
+            "target_source_image": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T11:20:38+00:00",
+              "next_validation_due": "2026-11-17T11:20:38+00:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T11:20:38+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "alloy",
+          "current_declared": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
+          "proposed_declared": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
+          "previous_fields": {
+            "target_version": "1.21.3",
+            "target_source_image": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T11:20:38+00:00",
+              "next_validation_due": "2026-11-17T11:20:38+00:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T11:20:38+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "cadvisor",
+          "current_declared": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+          "proposed_declared": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
+          "previous_fields": {
+            "target_version": "0.60.6",
+            "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
+            "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed.",
+            "disposition": "NO_CHANGE_APPLICATION_VERSION",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
+              "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+            "target_index_digest": "sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+            "target_manifest_digest": "sha256:bd7c00644d65e6c9fc2c151cab70d2e86d7fe3e0182cfb9863120ec2e017cf01",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "dozzle",
+          "current_declared": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
+          "proposed_declared": "amir20/dozzle:v11.5.0@sha256:74600d62dd73a72a5d36fbd0c98af649203df921d74310b7ed383ef63392358e",
+          "previous_fields": {
+            "target_version": "11.4.2",
+            "target_source_image": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T11:20:38+00:00",
+              "next_validation_due": "2026-11-17T11:20:38+00:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T11:20:38+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "grafana",
+          "current_declared": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
+          "proposed_declared": "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf",
+          "previous_fields": {
+            "target_version": "13.3.0",
+            "target_source_image": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T11:20:38+00:00",
+              "next_validation_due": "2026-11-17T11:20:38+00:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T11:20:38+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "grafana-db-provision",
+          "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "proposed_declared": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "node-exporter",
+          "current_declared": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+          "proposed_declared": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
+          "previous_fields": {
+            "target_version": "1.12.1",
+            "target_source_image": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "prometheus",
+          "current_declared": "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+          "proposed_declared": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
+          "previous_fields": {
+            "target_version": "3.15.1",
+            "target_source_image": "prom/prometheus:v3.15.1",
+            "target_digest_evidence": "Anonymous registry API on 2026-10-30T03:01:50Z: OCI/Docker index and linux/amd64 manifest raw SHA256 equal the response digest; no pull, signature, scan, build, runtime or HOME deployment.",
+            "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-30T03:01:50.900933+00:00",
+              "next_validation_due": "2026-11-02T03:01:50+00:00",
+              "reason": "Fixed upstream pin adopted in Compose source by owner decision 2026-10-30; pull, offline scan, independent applicability review, config/rules checks, backup, HOME recreation and rollback are NOT_RUN.",
+              "exit_condition": "Run the owner steps recorded in SPEC-0204-TSK-0021, then re-run the latest/security gates at the delivery head.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+            "target_index_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+            "target_manifest_digest": "sha256:d445d1806b38f85b5c394a1b87f94113fde0473b45245922c2e8b1bd41fa68ae",
+            "target_config_digest": "sha256:876ae6bcb0d6c9190d799e82c996fbe5faecdaaa0ec84f5e7dd272c0542ea63c",
+            "target_declared_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+            "platform": "linux/amd64",
+            "applicability": "Owner decision 2026-10-30: the SEC01 risk acceptance recorded for the previous pin lapsed 7 days after the fixed upstream build appeared and is superseded by the adopted fixed image prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2 (SPEC-0204-TSK-0021). Prior text preserved after 'PRIOR:'. Adopted build reports go1.27.3 and golang.org/x/net v0.60.0 (owner-supplied release facts; the image was not pulled or inspected). Independent applicability review of the new image: NOT_RUN. PRIOR: REVIEWED_INDEPENDENTLY_OWNER_ACCEPTED_WITH_EXPIRY: APPLICABLE DoS only - GO-2026-6608 and GO-2026-6609 after Traefik auth or unauthenticated inside the Docker networks; Go HTTP/2 server IDs NOT_APPLICABLE (plain HTTP); busybox ash/awk CVEs NOT_APPLICABLE (repository start.sh only). v3.15.0 adds no ID over running v3.14.0 and removes 5 High. Expires at the earlier of: an upstream release built with Go >= 1.26.9/1.27.2 and x/net >= 0.60.0 (adopt within 7 days), or 2026-11-15 (re-decide an owned Traefik build); revoke early on WAN exposure or a public exploit.",
+            "upstream_reported_tag": "v3.15.1",
+            "signature": "NOT_RUN: publisher signature not checked",
+            "sbom_scan": "NOT_RUN: no owner-approved pull and no offline Syft/Grype scan of the adopted pin yet (SPEC-0204-TSK-0021). Prior-pin PASS receipt retained in previous_adopted_pin_assessment.",
+            "compatibility": "NOT_RUN for the adopted pin: config boot / promtool checks, backup, rollback and HOME recreation are owner steps in SPEC-0204-TSK-0021. PRIOR: PASS_SYNTHETIC_ONLY: promtool check config --syntax-only on prometheus.yml and prometheus.dev.yml and check rules on 13 rule files pass on v3.14.0 and v3.15.0; HOME adoption NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "pyroscope",
+          "current_declared": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
+          "proposed_declared": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
+          "previous_fields": {
+            "target_version": "2.4.3",
+            "target_source_image": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T11:20:38+00:00",
+              "next_validation_due": "2026-11-17T11:20:38+00:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T11:20:38+00:00",
             "target_index_digest": "UNKNOWN",
             "target_manifest_digest": "UNKNOWN",
             "target_config_digest": "UNKNOWN",

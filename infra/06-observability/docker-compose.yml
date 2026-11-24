@@ -69,7 +69,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2
+    image: prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06
     container_name: prometheus
     hostname: prometheus
     group_add:
@@ -255,7 +255,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4
+    image: grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189
     container_name: alloy
     # Own reservation: peak 0.023 CPU / 217 MiB, above its template's other members;
     # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
@@ -351,7 +351,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
-    image: grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205
+    image: grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf
     container_name: grafana
     hostname: grafana
     group_add:
@@ -514,7 +514,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-job-low
-    image: postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
+    image: postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71
     container_name: grafana-db-provision
     hostname: grafana-db-provision
     group_add:
@@ -558,7 +558,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low
-    image: quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
+    image: quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7
     container_name: node-exporter
     # The host network namespace makes the netdev, netstat, sockstat and
     # tcpstat collectors report the host, not this container. The listener is
@@ -617,7 +617,7 @@ services:
         reservations:
           cpus: "0.05"
           memory: 64M
-    image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
+    image: ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916
     container_name: cadvisor
     hostname: cadvisor
     privileged: true
@@ -743,7 +743,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b
+    image: grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870
     container_name: pyroscope
     hostname: pyroscope
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
@@ -786,7 +786,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
-    image: prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b
+    image: prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c
     container_name: alertmanager
     hostname: alertmanager
     group_add:
