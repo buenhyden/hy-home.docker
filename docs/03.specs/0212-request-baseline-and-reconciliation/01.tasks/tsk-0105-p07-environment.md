@@ -1,6 +1,6 @@
 ---
 title: "P07 Environment Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-23"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0105"
 parent_ids:
@@ -240,7 +240,7 @@ a successful alternative.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 161 | pending | E01,E02,E03,E44,E46,E49,E50,E51,E57,E58,E59,E61 | Implementation, focused regressions, independent source review, hosted CI and the bounded owned LAB runtime case recorded. Only owner acceptance remains, which P16 may collect; accepted by nobody | @buenhyden |
+| 161 | pending | E01,E02,E03,E44,E46,E49,E50,E51,E57,E58,E59,E61 | On 2026-11-24 (P16, TSK-0114) the owner accepted 161 with E59 superseding E16, but E16 stays an unresolved required row: only a row with its Check text may resolve it, and its Claude CLI 2.1.329 is gone; acceptance is recorded once the owner settles that rule | @buenhyden |
 
 ##### Remaining Conditions
 

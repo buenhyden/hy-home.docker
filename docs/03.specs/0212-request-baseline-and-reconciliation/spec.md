@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.11.0"
+version: "2.12.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -374,6 +374,12 @@ The direct P15-CLEANUP1.2.0 request adds criterion169/W185 in TSK-0113. It
 keeps the `_workspace` staging contract and every tool's own cleanup, and adds
 only the D15 delta: a lifecycle rule for one-off work artifacts, the current
 classification of the staging surface and removal of what this program owns.
+
+The direct P16-ACCEPT1.2.0 request adds criterion170/W186 in TSK-0114. It
+records the owner's acceptance of the technically complete criteria, the
+P17 readiness ledger with its open required boundaries, and the P17
+preparation of managed remote refs; it does not mark the cutover ready while
+a required boundary is open.
 
 #### Scope
 
@@ -1574,6 +1580,13 @@ target, backup, recovery boundary, and action-specific authorization.
      `_workspace/` by its current consumer; remove only what this program
      owns and nothing reads; keep the 1.2.0 input package until P17; and
      confirm no tracked file depends on the package.
+
+170. TSK-0114 applies P16-ACCEPT1.2.0 to the current Docker workspace.
+     Separate design, code, regression, real environment and owner
+     acceptance for criteria 154 to 169 and the earlier open criteria 138,
+     148 and 153; record the owner's acceptance only where the owner gave
+     it; list every open required boundary that keeps the cutover not ready;
+     and prepare P17's managed remote refs and worktrees.
 
 ##### Evidence Requirements
 

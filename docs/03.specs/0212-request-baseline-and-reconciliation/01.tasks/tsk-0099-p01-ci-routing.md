@@ -1,10 +1,10 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-23"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0099"
 parent_ids:
@@ -396,7 +396,7 @@ E47 and E48. E46 compares the same candidate on the same host.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 155 | pending | E16, E17, E19, E21, E23, E26, E28, E30, E31, E33, E34, E36, E37, E38, E42, E45, E46, E49, E50, E51 | Implementation, verification and merge complete; 1.1.0 maintenance confirmed; owner acceptance remains separate | @buenhyden |
+| 155 | accepted | E16, E17, E19, E21, E23, E26, E28, E30, E31, E33, E34, E36, E37, E38, E42, E45, E46, E49, E50, E51 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ### Remaining Conditions
 

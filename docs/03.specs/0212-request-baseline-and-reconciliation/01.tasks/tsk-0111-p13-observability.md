@@ -1,6 +1,6 @@
 ---
 title: "P13 Observability Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -133,7 +133,7 @@ recorded as criterion148 rows in TSK-0092 and stay open there.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 167 | pending | E01,E04,E06,E10,E11 | Implementation, focused regressions and a read-only report on the real stores are recorded; owner acceptance in P16 remains | @buenhyden |
+| 167 | accepted | E01,E04,E06,E10,E11 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). Effects stay unobserved until a candidate is linked and compared. | @buenhyden |
 
 ##### Remaining Conditions
 

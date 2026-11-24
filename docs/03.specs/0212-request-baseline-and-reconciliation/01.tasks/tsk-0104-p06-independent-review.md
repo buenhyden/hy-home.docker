@@ -1,6 +1,6 @@
 ---
 title: "P06 Independent Review Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0104"
 parent_ids:
@@ -155,7 +155,7 @@ Carry uses real same-condition proof, not input order or a not-required label.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 160 | pending | E01,E02,E03,E04,E07,E10,E11,E13,E14,E15,E16 | Implementation, final local checks and scoped native review observed; hosted source integration observed at E15/E16. Human acceptance remains unrecorded; intent undecided, accepted by nobody | @buenhyden |
+| 160 | accepted | E01,E02,E03,E04,E07,E10,E11,E13,E14,E15,E16 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ##### Remaining Conditions
 

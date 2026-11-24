@@ -1,6 +1,6 @@
 ---
 title: "P15 Cleanup Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -113,11 +113,11 @@ its `workspace_governance_4_2_0_20261116/` row no longer exists on disk.
 | E02 | 169 | W185 | method=observation; tool=GNU coreutils; command=rm -r and rmdir of the two exact owned paths | `_workspace/workspace_governance_remediation_1_1_0_20261120/` and `.worktrees/docs/` | NOT_RUN | Refused by the session permission classifier before any deletion; left to the owner | required | - |
 | E03 | 169 | W185 | method=automated; tool=Python3.12.3; command=check-agent-governance-contract.py --mode repository --section all | Change | PASS | 0 failures | required | - |
 | E04 | 169 | W185 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.lib.test_surface_ownership | Change | PASS | Exit0; the staging tracking test included | required | - |
+| E05 | 169 | W185 | method=observation; tool=GNU coreutils; command=rm -r and rmdir of the two exact owned paths | Owner run from the repository root, 2026-11-24 | PASS | The owner's `rm -r` removed `_workspace/workspace_governance_remediation_1_1_0_20261120/`; `.worktrees/docs/` was already absent when the owner's `rmdir` ran; `_workspace/` holds `diagnostics/`, `repo-support/`, the 1.2.0 package and its README | required | E02 |
 
 ##### Resolution Links
 
-No row resolves another; E02 stays NOT_RUN until the owner removes the two
-targets.
+E05 resolves E02.
 
 #### Acceptance Decision
 
@@ -125,20 +125,13 @@ targets.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 169 | pending | E01,E03,E04 | Rules and classification are recorded; the owned removal (E02) is the owner's and owner acceptance in P16 remains | @buenhyden |
+| 169 | accepted | E01,E03,E04 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ##### Remaining Conditions
 
-The owner removes the two owned targets from the repository root:
-
-```bash
-# doc-paths: illustrative
-rm -r _workspace/workspace_governance_remediation_1_1_0_20261120
-rmdir .worktrees/docs
-```
-
-The 1.2.0 package stays until P17, whose last step deletes it; if P17
-fails, it stays with its owner until P17 resumes and succeeds.
+The two owned targets are gone (E05). The 1.2.0 package stays until P17,
+whose last step deletes it; if P17 fails, it stays with its owner until P17
+resumes and succeeds.
 
 #### Handoff
 
@@ -149,9 +142,8 @@ rule; the tools own their cleanup. This Task owns execution evidence only.
 
 ##### Next Owner
 
-The owner runs the removal above and decides criterion169 in P16. The next
-input for this workspace is P16-ACCEPT; it is not executed automatically.
-Keep the package through P17.
+The owner accepted criterion169 in P16; TSK-0114 owns the readiness
+ledger. Keep the package through P17.
 
 ## 적용과 확인
 

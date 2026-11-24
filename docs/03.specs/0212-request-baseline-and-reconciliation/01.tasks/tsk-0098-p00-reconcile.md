@@ -1,10 +1,10 @@
 ---
 title: "P00 Current Workspace Reconciliation Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0098"
 parent_ids:
@@ -328,7 +328,7 @@ unchanged implementation tests or independent review.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 154 | pending | E17, E18, E20, E21, E22, E23, E24, E25, E26, E27 | P00 1.1.0 reconciliation/local and hosted verification complete; owner acceptance has not been supplied | @buenhyden |
+| 154 | accepted | E17, E18, E20, E21, E22, E23, E24, E25, E26, E27 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ### Remaining Conditions
 

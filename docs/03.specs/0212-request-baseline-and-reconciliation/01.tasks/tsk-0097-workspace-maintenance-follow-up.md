@@ -1,10 +1,10 @@
 ---
 title: "Workspace Maintenance Follow-up Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0097"
 parent_ids:
@@ -99,6 +99,7 @@ and names each script until the guide is active.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ReDoS measurement | 153 | W169 | Reported attack strings at 12, 16 and 20 repetitions against each flagged pattern | `main` at `eadd81adc` | PASS | 0.0 s for every case | required | - |
 | Alert dismissal | 153 | W169 | `gh api` PATCH of alerts 46 to 51 and 53 to 57 | GitHub code scanning | NOT_RUN | Refused by the session permission classifier | required | - |
+| ReDoS re-check | 153 | W169 | The flagged `hook_rules.py` and `test_lab_isolation.py` patterns against the reported repetitions written with a real 0x7f byte, at 8 to 24 repetitions, plus 3,000 random units at 20 repetitions | `main` at `1b7e76aad`, 2026-11-24 (P16) | PASS | At most 0.2 ms at 80 repetitions; no super-linear growth; 10 alerts open (46-48, 50, 51, 53-57); the earlier `test_compose_baseline_gates.py` alert is gone | required | - |
 | Venv test modules | 153 | W169 | `python3 -m unittest` per module over `tests/lib` and `tests/validation` with `.venv/bin` first on `PATH` | This branch | PASS | 210 of 210 modules after the in-progress records were completed | required | - |
 | Document checks | 153 | W169 | links `--mode all` and `--mode alignment`, operations catalog, corpus lifecycle, script manifest, agent governance contract, renderer `--check` | This branch | PASS | All exit 0 | required | - |
 | Fenced heading fix | 153 | W169 | `test_open_task_resolves_unnumbered_routes_only_in_evidence_rows` | `47df34c63` and its parent | PASS | FAIL without the fix, OK with it | required | - |
@@ -117,8 +118,10 @@ None.
 
 ### Remaining Conditions
 
-The eleven CodeQL alerts stay open until dismissed; the maintenance guide's
-promotion to active and the runtime-authority move are a separate change.
+The ten open CodeQL alerts stay open until the owner dismisses them, the
+ReDoS ones (46-48, 50, 51) as false positives and the fixture ones (53-57) as
+used in tests, with this Task as the reason. The maintenance guide is active
+(2.8.0); the runtime-authority move is a separate change.
 
 ## Handoff
 

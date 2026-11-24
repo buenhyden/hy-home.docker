@@ -1,6 +1,6 @@
 ---
 title: "P04 Templates Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -232,7 +232,7 @@ changed contract unless its dependency scope and guarantee still match.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 158 | pending | E09, E11, E39, E40, E42, E49, E50, E51, E53  | Implementation, scoped verification and source delivery complete; actual owner acceptance remains a separate pending decision | @buenhyden |
+| 158 | accepted | E09, E11, E39, E40, E42, E49, E50, E51, E53 | Owner @buenhyden accepted on 2026-11-24 in this chat during P16 (TSK-0114). | @buenhyden |
 
 ##### Remaining Conditions
 
