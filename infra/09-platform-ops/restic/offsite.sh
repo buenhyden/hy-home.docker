@@ -1,10 +1,11 @@
 #!/bin/sh
 # Offsite Restic entrypoint (ADR-0056): one Cloudflare R2 repository that
 # receives the snapshots of both local repositories (state and host).
-# Usage: offsite.sh {snapshots|init|copy|check|forget-prune|prune|restore <host-id> <state-id>|cmd <restic args...>}
+# Usage: offsite.sh {snapshots|init|copy|check|forget-prune|prune|trim <YYYY-MM-DD>|restore <host-id> <state-id>|cmd <restic args...>}
 # The daily run never deletes. forget-prune is the owner-run, separately
 # confirmed monthly procedure that keeps the remote inside the R2 free tier
-# (RUN-0021); prune is the owner-run removal of unused packs alone.
+# (RUN-0021); prune is the owner-run removal of unused packs alone, and trim the
+# owner-run removal of snapshots older than a date, run on the local repositories too.
 set -eu
 
 SETS="state host"
@@ -63,6 +64,29 @@ stored_bytes() {
 }
 
 # "<id> <tree>" for each snapshot of the repository restic is pointed at.
+# Snapshots older than $1 (a UTC date, YYYY-MM-DD), one "id time host tags" line
+# each; a date after today is refused. The
+# newest snapshot of every host/tag set and every RUN-0105 OpenBao artifact
+# (tag hy-home-openbao-w3) are never selected.
+trim_list() {
+    json="$(restic snapshots --no-lock --json)" || { echo "snapshot listing failed" >&2; exit 65; }
+    printf '%s' "$json" | jq -r --arg before "$1" '
+        if $before > (now | strftime("%Y-%m-%d")) then error("trim date is in the future") else . end
+        | group_by([.hostname, ((.tags // []) | join(","))])
+        | map(sort_by(.time) | .[:-1]) | add // []
+        | map(select(.time < $before and ((.tags // []) | index("hy-home-openbao-w3") | not)))
+        | sort_by(.time) | .[] | "\(.id) \(.time) \(.hostname) \((.tags // []) | join(","))"' ||
+        { echo "trim list failed" >&2; exit 64; }
+}
+
+# trim needs a date and the matching confirmation; without it, only the list.
+trim_gate() {
+    case "${1:-}" in
+        [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;;
+        *) echo "trim needs a date: trim YYYY-MM-DD" >&2; exit 64 ;;
+    esac
+}
+
 snapshot_trees() {
     json="$(restic snapshots --json "$@")" || { echo "snapshot listing failed" >&2; exit 65; }
     printf '%s' "$json" | grep -oE '"(tree|id)":"[0-9a-f]{64}"' |
@@ -249,6 +273,30 @@ case "$action" in
         echo "R2 repository size: $before -> $after bytes"
         exit "$status"
         ;;
+    trim)
+        # Deletes R2 snapshots older than the date, then unused packs. Owner-run,
+        # with the date repeated in the confirmation (RUN-0021 8.5). Run the
+        # local trim with the same date too, or the next copy re-uploads them.
+        trim_gate "${1:-}"
+        require_initialized
+        list="$(trim_list "$1")"
+        [ -z "$list" ] || printf '%s\n' "$list"
+        echo "trim: $(printf '%s' "$list" | grep -c .) R2 snapshots before $1"
+        if [ "${HYHOME_TRIM_CONFIRM:-}" != "delete-snapshots-before-$1" ]; then
+            echo "listed only; to delete them set HYHOME_TRIM_CONFIRM=delete-snapshots-before-$1" >&2
+            exit 64
+        fi
+        before="$(stored_bytes)"
+        status=0
+        # R2 refuses a snapshot still under the bucket lock; restic may then stop
+        # the remaining deletions too, so list again to see what is left.
+        # shellcheck disable=SC2046 # one argument per snapshot ID.
+        [ -z "$list" ] || restic forget $(printf '%s\n' "$list" | cut -d' ' -f1) || status=$?
+        restic prune --max-repack-size 0 || status=$?
+        after="$(stored_bytes)" || { after=unreadable; [ "$status" -ne 0 ] || status=65; }
+        echo "R2 repository size: $before -> $after bytes"
+        exit "$status"
+        ;;
     restore)
         # RUN-0021 8.3: restore one paired host and state snapshot into an
         # owned, empty scratch mounted at /restore. Never writes to R2 (no
@@ -321,7 +369,7 @@ case "$action" in
     cmd)
         case "${1:-}" in
             forget | prune | unlock)
-                echo "'$1' is not run directly; use forget-prune or prune (RUN-0021 8.5)" >&2
+                echo "'$1' is not run directly; use forget-prune, prune or trim (RUN-0021 8.5)" >&2
                 exit 64
                 ;;
             snapshots | stats | ls | cat | find | check | diff | dump | list | version) ;;

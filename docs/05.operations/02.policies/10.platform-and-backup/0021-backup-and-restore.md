@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Policy"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -114,7 +114,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | POL-0021-R7 | 로컬 backup과 check 성공 후 | 필수: `restic-offsite`가 두 Restic repository의 snapshot을 state set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2 repository 하나로 복사한다 | none | RUN-0021의 R2 설정과 첫 copy 성공 |
 | POL-0021-R8 | 항상 | 필수: R2 repository는 10 GB를 절대 넘지 않는다 | none | none |
 | POL-0021-R9 | 올린 뒤 저장 byte가 7.5 GB를 넘을 수 있을 때 | 필수: 업로드를 거부하고 run을 실패시킨다 | 업로드 거부와 run 실패 | none |
-| POL-0021-R10 | 원격 보존 | 필수: owner가 매달 `forget-prune`(최근 30일 전부와 월 1개씩 12개월)을 실행하고, 상한에 가까우면 snapshot을 지우지 않는 `prune`으로 쓰이지 않는 pack을 지운다 | 수동 | none |
+| POL-0021-R10 | 원격 보존 | 필수: owner가 매달 `forget-prune`(최근 30일 전부와 월 1개씩 12개월)을 실행하고, 상한에 가까우면 snapshot을 지우지 않는 `prune`으로 쓰이지 않는 pack을 지우며, 그래도 넘으면 owner가 승인한 날짜보다 오래된 snapshot을 로컬과 원격에서 같은 날짜로 `trim`한다 | 수동 | none |
 | POL-0021-R11 | 같은 계정의 다른 R2 사용 | 필수: 상한이 이 repository의 파일만 세므로 따로 확인한다(RUN-0021 8.2, 8.5, 8.6) | 수동 | none |
 | POL-0021-R12 | SSD repository 예산 | 필수: SSD repository 크기를 `BACKUP_STATE_MAX_GIB`(8 GiB) 예산 안에 둔다 | none | none |
 | POL-0021-R13 | pgBackRest와 export 이후 검사에서 예산 초과 | 필수: run을 실패시키고 해당 Restic 단계를 건너뛴다 | pgBackRest와 export 이후 크기 검사 | none |

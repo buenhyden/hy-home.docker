@@ -3,7 +3,7 @@
 #   state: allowlisted data-disk trees, consistent exports and the pgBackRest
 #          repository                                        -> BACKUP_STATE_REPO_DIR
 #   host:  secrets/ and .env on the system disk              -> BACKUP_HOST_REPO_DIR
-# Usage: backup.sh {snapshots|init|backup|check|forget-prune|cmd <state|host> <restic args...>}
+# Usage: backup.sh {snapshots|init|backup|check|forget-prune|trim <YYYY-MM-DD>|cmd <state|host> <restic args...>}
 set -eu
 
 SETS="state host"
@@ -25,6 +25,29 @@ require_initialized() {
         echo "repository '$1' is not initialized; run: backup.sh init" >&2
         exit 65
     fi
+}
+
+# Snapshots older than $1 (a UTC date, YYYY-MM-DD), one "id time host tags" line
+# each; a date after today is refused. The
+# newest snapshot of every host/tag set and every RUN-0105 OpenBao artifact
+# (tag hy-home-openbao-w3) are never selected.
+trim_list() {
+    json="$(restic snapshots --no-lock --json)" || { echo "snapshot listing failed" >&2; exit 65; }
+    printf '%s' "$json" | jq -r --arg before "$1" '
+        if $before > (now | strftime("%Y-%m-%d")) then error("trim date is in the future") else . end
+        | group_by([.hostname, ((.tags // []) | join(","))])
+        | map(sort_by(.time) | .[:-1]) | add // []
+        | map(select(.time < $before and ((.tags // []) | index("hy-home-openbao-w3") | not)))
+        | sort_by(.time) | .[] | "\(.id) \(.time) \(.hostname) \((.tags // []) | join(","))"' ||
+        { echo "trim list failed" >&2; exit 64; }
+}
+
+# trim needs a date and the matching confirmation; without it, only the list.
+trim_gate() {
+    case "${1:-}" in
+        [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;;
+        *) echo "trim needs a date: trim YYYY-MM-DD" >&2; exit 64 ;;
+    esac
 }
 
 action="${1:-snapshots}"
@@ -100,6 +123,32 @@ case "$action" in
             RESTIC_REPOSITORY="$(repo_for "$set")" restic forget --prune --group-by host,tags \
                 --tag "hyhome-$set" --keep-daily 30 --keep-weekly 13 --keep-monthly 12
         done
+        ;;
+    trim)
+        # Deletes local snapshots older than the date in both sets, then their
+        # unused data. Owner-run, with the date repeated in the confirmation, and
+        # paired with offsite.sh trim on the same date (RUN-0021 8.5).
+        trim_gate "${1:-}"
+        confirmed=false
+        [ "${HYHOME_TRIM_CONFIRM:-}" = "delete-snapshots-before-$1" ] && confirmed=true
+        status=0
+        for set in $SETS; do
+            require_initialized "$set"
+            export RESTIC_REPOSITORY
+            RESTIC_REPOSITORY="$(repo_for "$set")"
+            list="$(trim_list "$1")"
+            [ -z "$list" ] || printf '%s\n' "$list"
+            echo "trim: $(printf '%s' "$list" | grep -c .) $set snapshots before $1"
+            [ "$confirmed" = true ] || continue
+            # shellcheck disable=SC2046 # one argument per snapshot ID.
+            [ -z "$list" ] || restic forget $(printf '%s\n' "$list" | cut -d' ' -f1) || status=$?
+            restic prune || status=$?
+        done
+        if [ "$confirmed" != true ]; then
+            echo "listed only; to delete them set HYHOME_TRIM_CONFIRM=delete-snapshots-before-$1" >&2
+            exit 64
+        fi
+        exit "$status"
         ;;
     cmd)
         set_name="${1:?cmd needs a set}"
