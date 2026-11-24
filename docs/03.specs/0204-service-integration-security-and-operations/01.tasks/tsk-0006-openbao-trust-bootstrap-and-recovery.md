@@ -4234,15 +4234,22 @@ issuer helper is installed from that commit in prep.
 follow-up commit. (1) and (2): the window path record was sourced inside a step
 function, so its `declare -p` lines became local and later steps lost
 `P01_SCRIPT_DIR` and `P01_INPUTS`; the driver now reloads the record and its own
-state at top level before every step, and a flow test with stubbed
-`owner-window.sh` and `sudo` fails on the old driver and passes on the new one.
+state at top level before every step. A flow test runs a driver copy against a
+temporary checkout with stubbed `owner-window.sh` and `sudo`: the stubbed W3b
+appends `P01_INPUTS` and Finish must use it. It fails on `b3187f822` and passes
+now, without the HOME path, so it also runs in CI.
 (3) The running-backup gate accepted the oneshot `activating` state; it now
 requires `inactive`. Non-blocking fixes: the bootstrap, ceremony and sweep are
 separate resume points, as are the silence and the alert record; failed alert
-queries stop instead of reading as "no alerts"; the W0 checks now include the
-last backup result, the SEC01 lookup date (until 2026-12-01), `/dev/shm` without
-`noexec`, the R2 headroom and the audit/mount list as confirmations; Gatus
-BLOCKED is reported at the end; and `git` runs through `p01_git`.
+queries stop instead of reading as "no alerts"; prep refuses a SEC01 lookup
+older than 2026-12-01, stops the backup timer before it checks for a running
+backup, and fails on a `git` error; W0 checks the last backup result and the
+backup journal (a read failure stops it), a tmpfs `/dev/shm` without `noexec`,
+and asks for the R2 headroom and the audit/mount list; a fresh run ignores a
+previous window's record until W0 clears it; Finish copies only the contract,
+lease and receipts; and Gatus BLOCKED is reported at the end. A second read-only
+review of `90f9ae240` confirmed the three blocking fixes and found that the
+first flow test needed the HOME path, which the rewrite above removes.
 
 **Backup gate observation.** The daily HOME backup has failed on 2026-11-13,
 11-14, 11-17 to 11-19 and 11-21 to 11-24, mostly with "BACKUP_STATE_REPO_DIR

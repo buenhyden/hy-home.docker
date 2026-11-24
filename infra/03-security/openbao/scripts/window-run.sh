@@ -126,15 +126,20 @@ audit_size() { docker exec openbao stat -c %s /openbao/audit/audit.json; }
 
 step_prep() {
   say "1. checkout, backup timer, issuer helper"
-  [ -z "$(p01_git --work-tree="$HOME_ROOT" status --porcelain)" ] || die "checkout is not clean"
+  local dirty
+  dirty="$(p01_git --work-tree="$HOME_ROOT" status --porcelain)" || die "git status failed"
+  [ -z "$dirty" ] || die "checkout is not clean"
   [ "$(p01_git rev-parse HEAD)" = "$C" ] || die "checkout HEAD is not $C"
   [ ! -e docker-compose.override.yml ] || die "docker-compose.override.yml present"
   [ "$(date +%F)" \< "$SEC01_LOOKUP_UNTIL" ] || [ "$(date +%F)" = "$SEC01_LOOKUP_UNTIL" ] ||
     die "the SEC01 latest-stable lookup is older than 7 days: repeat it (RUN-0105 SEC01 Image Gate)"
-  # A oneshot backup reads "activating" while it runs; only "inactive" is idle.
-  [ "$(systemctl is-active hyhome-backup.service)" = inactive ] || die "a backup run is not inactive; wait for it"
+  # Stop the timer first so no run starts after the check. A oneshot backup reads
+  # "activating" while it runs and "failed" after a failed run; only those block.
   run sudo systemctl stop hyhome-backup.timer
   [ "$(systemctl is-active hyhome-backup.timer)" = inactive ] || die "backup timer still active"
+  case "$(systemctl is-active hyhome-backup.service)" in
+    activating | active | reloading) die "a backup run is in progress; wait for it" ;;
+  esac
   if [ ! -f "$operator_tools/$C/issue-renderer-secret-id.sh" ]; then
     run p01_run "$C" infra/03-security/openbao/scripts/install-renderer-issuer.sh "$HOME_ROOT" "$C" "$operator_tools/$C"
   fi
@@ -155,7 +160,10 @@ step_w0() {
   [ "$(server .version)" = "$OLD_VERSION" ] || die "server is not $OLD_VERSION"
   [ "$(docker exec openbao /bin/stat -c '%d/%i' /openbao/data)" = "$RAFT_ID" ] || die "Raft mount is not $RAFT_ID"
   agent_healthy || die "openbao-agent is not healthy"
-  ! findmnt -n -o OPTIONS /dev/shm | grep -qw noexec || die "/dev/shm is noexec"
+  local shm
+  shm="$(findmnt -n -o FSTYPE,OPTIONS /dev/shm)" || die "/dev/shm not mounted"
+  case "$shm" in tmpfs\ *) ;; *) die "/dev/shm is not a tmpfs" ;; esac
+  case ",${shm#* }," in *,noexec,*) die "/dev/shm is noexec" ;; esac
   [ "$(docker inspect -f '{{.Image}}' traefik)" = "$(docker image inspect -f '{{.Id}}' "$(docker compose --profile core config --images traefik)")" ] ||
     die "traefik does not run its Compose pin"
   docker exec traefik test -f /openbao-ca/ca.pem || die "traefik lacks /openbao-ca/ca.pem"
@@ -163,7 +171,10 @@ step_w0() {
     die "prometheus lacks the OpenBao CA mount"
   # W0 needs a passing last backup; W2 is skipped only while its snapshot token still works.
   [ "$(systemctl show hyhome-backup.service -p Result --value)" = success ] || die "the last HOME backup failed (RUN-0105 W0)"
-  ! journalctl -u hyhome-backup.service --since '-1 day' --no-pager 2>/dev/null | grep -qi 'snapshot token' ||
+  local journal
+  journal="$(journalctl -u hyhome-backup.service --since '-1 day' --no-pager)" || die "backup journal unreadable"
+  [ -n "$journal" ] || die "no backup journal for the last day"
+  ! grep -qi 'snapshot token' <<<"$journal" ||
     die "the last backup reported a snapshot token problem: W2 is needed, which this driver does not run"
   T0=$(date +%s)
   note T0 "$T0"
@@ -302,7 +313,11 @@ step_finish() {
   [ -n "${P01_INPUTS:-}" ] || die "P01_INPUTS unset in the window path record"
   mkdir -p "$P01_EVIDENCE_DIR" || die "no evidence directory"
   run ow evidence "$P01_EVIDENCE_DIR"
-  run cp -a "$P01_INPUTS" "$P01_EVIDENCE_DIR/inputs"
+  # The contract, lease and receipts; the bundle is a repository copy and stays behind.
+  mkdir -p "$P01_EVIDENCE_DIR/inputs" || die "no evidence inputs directory"
+  for f in "$P01_INPUTS"/*.json "$P01_INPUTS"/w3a-accepted; do
+    [ ! -f "$f" ] || run cp -p "$f" "$P01_EVIDENCE_DIR/inputs/"
+  done
   run ow cleanup
   run sudo systemctl start hyhome-backup.timer
   [ -z "${GATUS_BLOCKED:-}" ] || echo "Gatus recreation: BLOCKED (record it in TSK-0006)"
@@ -310,7 +325,7 @@ step_finish() {
   echo "Window finished. Record the status lines, P01_SNAPSHOT_DIRECTORY=$P01_W3_DIR and $P01_EVIDENCE_DIR in TSK-0006."
 }
 
-if [ "$start_index" -gt 0 ]; then
+if [ "$START" != prep ]; then
   [ -f "$STATE" ] || die "no $STATE: start from prep"
 else
   : >"$STATE"
@@ -321,7 +336,10 @@ for step in "${STEPS[@]:start_index}"; do
   # be local, and each owner-window.sh call can add paths to these files.
   # shellcheck disable=SC1090
   . "$STATE"
-  # shellcheck disable=SC1091
-  [ ! -f "$XDG_RUNTIME_DIR/p01-window.vars" ] || . "$XDG_RUNTIME_DIR/p01-window.vars"
+  # Until W0's preflight clears it, the record may still hold a previous window's paths.
+  if [ "$step" != prep ] && [ "$step" != w0 ] && [ -f "$XDG_RUNTIME_DIR/p01-window.vars" ]; then
+    # shellcheck disable=SC1091
+    . "$XDG_RUNTIME_DIR/p01-window.vars"
+  fi
   "step_$step"
 done
