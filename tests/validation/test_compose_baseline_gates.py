@@ -1941,8 +1941,11 @@ class BackupContractTests(unittest.TestCase):
 
     def test_pgbackrest_image_pins_package_and_restores_default_umask(self) -> None:
         dockerfile = (ROOT / PGBACKREST_DIR / "Dockerfile").read_text(encoding="utf-8")
+        # pgBackRest is built from a checksum-pinned release tarball.
         self.assertRegex(
-            dockerfile, r"apk add --no-cache pgbackrest=\d+\.\d+\.\d+-r\d+"
+            dockerfile,
+            r"ADD --checksum=sha256:[0-9a-f]{64} \\\n\s+https://github\.com/pgbackrest/"
+            r"pgbackrest/archive/refs/tags/release/\d+\.\d+\.\d+\.tar\.gz",
         )
         entrypoint = (ROOT / PGBACKREST_DIR / "entrypoint.sh").read_text(
             encoding="utf-8"
