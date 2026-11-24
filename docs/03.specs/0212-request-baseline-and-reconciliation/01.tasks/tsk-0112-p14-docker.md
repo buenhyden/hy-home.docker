@@ -117,10 +117,13 @@ another host's data.
 | E10 | 168 | W184 | method=observation; tool=Docker Compose 5.6.1; command=lab.py select airflow-scheduler | Real HOME model and containers, read-only | PASS | Closure airflow-init and airflow-scheduler; jobs [airflow-init]; 58 of 89 services running after the start; no problem; nothing started | required | - |
 | E11 | 168 | W184 | method=automated; tool=Python3.12.3; command=check-document-metadata.py --mode check-changed --base-ref origin/main; check-operations-catalog.py | Change | PASS | 0 violations; catalog PASS | required | - |
 | E12 | 168 | W184 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest on the 13 other suites that read the templates or compose_controls | Change | NOT_RUN | 526 tests passed, 1 opt-in skipped; tests.lib.ops.test_root_resource_assessment could not import locally (no `referencing` package in this Python), left to hosted CI | required | - |
+| E13 | 168 | W184 | method=automated; tool=GitHub Actions candidate-core, Python3.14.8; command=changed candidate validation | PR 1164 first push | FAIL | Two real failures: a compose-controls fixture still treated `restart: "no"` alone as a job, and the SEC01 ledger and release lookups held the old k6 Compose hash | required | - |
+| E14 | 168 | W184 | method=automated; tool=Python3.12.3 unittest; command=python3 -m unittest tests.validation.test_compose_baseline_gates tests.lib.supply_chain.test_update_gates | Fixture labelled; `ledger_rebind --write` re-bound the k6 row and include input (hash only); the k6 reviewed-subject hash in the ledger and release lookups follows the file, as in a0ec32eb1 | PASS | Exit0; baseline suite with an unlabelled restart-no case now reported, 43 supply-chain tests | required | - |
 
 ##### Resolution Links
 
-E03 resolves E02, E05 resolves E04 and E07 resolves E06.
+E03 resolves E02, E05 resolves E04 and E07 resolves E06. E14 fixes the
+hosted failures of E13; hosted CI on the fixed head is the gate.
 
 #### Acceptance Decision
 
