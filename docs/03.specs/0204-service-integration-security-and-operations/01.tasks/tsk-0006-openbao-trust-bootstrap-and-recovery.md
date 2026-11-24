@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.41"
+version: "0.2.42"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4215,6 +4215,19 @@ and Finish skips `k8s-writers.sh`.
 - `agent_volume`: `hy-home-infra_openbao-agent-data`, the volume mounted at
   `/openbao/agent` in the running Agent.
 - `XDG_RUNTIME_DIR` is a 0700 tmpfs, and Linger is `yes`.
+
+#### Window driver 2026-11-24
+
+The owner asked for one script that runs steps 1 to 13 with the inputs listed.
+`infra/03-security/openbao/scripts/window-run.sh` runs prep, W0, W1, W1c, W3,
+W3b, W3a, W4, W5, W6, W7 and Finish in that order through the bootstrap's
+hash-checked `owner-window.sh` copy, with W2 skipped and no K8s writer, as the W0
+inputs above record. It embeds the RUN-0085 runner verbatim (a test keeps them
+equal), reads no secret value, stops at the first nonzero step with the abort
+rules, enforces the T+15/45/55/80 stops, and resumes only from a named step. Its
+Prometheus and Alertmanager queries were run read-only on HOME. The approved
+commit for the window becomes the merge commit that carries the driver; the
+issuer helper is installed from that commit in prep.
 
 ### Blockers and Decisions
 

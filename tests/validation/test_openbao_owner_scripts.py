@@ -16,6 +16,40 @@ RUNBOOKS = ROOT / "docs/05.operations/03.runbooks/04.security-and-secrets"
 RUNBOOK = RUNBOOKS / "0105-openbao-maintenance-window.md"
 
 
+DRIVER = ROOT / "infra/03-security/openbao/scripts/window-run.sh"
+
+
+class WindowDriverTests(unittest.TestCase):
+    def test_driver_reuses_the_reviewed_runner_and_real_steps(self):
+        driver = DRIVER.read_text()
+        runner = (RUNBOOKS / "0085-openbao.md").read_text()
+        runner = "p01_git() {" + runner.split("p01_git() {", 1)[1].split("```", 1)[0]
+        self.assertIn(runner, driver)
+        rows = re.findall(r"^(\S+(?: ?\| ?\S+)*)\)$", WINDOW.read_text(), re.M)
+        steps = {s.strip() for row in rows for s in row.split("|")}
+        used = set(re.findall(r"\bow ([a-z][a-z0-9-]*)", driver))
+        used |= set(re.findall(r'owner-window\.sh"? ([a-z][a-z0-9-]*)', driver))
+        self.assertGreaterEqual(len(used), 20)
+        self.assertLessEqual(used - {"copy"}, steps)
+
+    def test_bad_arguments_stop_before_any_state(self):
+        with tempfile.TemporaryDirectory() as runtime:
+            for args in ([], ["abc"], ["0" * 40, "nope"], ["0" * 40, "w1", "x"]):
+                with self.subTest(args=args):
+                    done = subprocess.run(
+                        ["bash", str(DRIVER), *args],
+                        env={
+                            "PATH": "/usr/bin:/bin",
+                            "HOME": runtime,
+                            "XDG_RUNTIME_DIR": runtime,
+                        },
+                        capture_output=True,
+                        check=False,
+                    )
+                    self.assertEqual(done.returncode, 2)
+                    self.assertEqual(os.listdir(runtime), [])
+
+
 class OwnerWindowScriptTests(unittest.TestCase):
     def test_runbook_copies_and_calls_every_step(self):
         runbook = "".join(
