@@ -1,6 +1,6 @@
 ---
 title: "P11 Task Forecast Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -115,6 +115,8 @@ change for `blocked`.
 | E06 | 165 | W181 | method=observation; tool=Python3.12.3 CLI; command=task_forecast.py forecast with and without assumptions | A temporary capture directory | PASS | With them: comparable_prior 0, `uncalibrated prior` and the probability meaning printed; without them: FORECAST_REFUSED exit 2 | required | - |
 | E07 | 165 | W181 | method=automated; tool=Python3.12.3; command=check-agent-governance-contract.py --mode repository --section all; check-script-manifest.py; provider_surface_renderer.py --check; check-document-metadata.py --mode check-changed; check-document-links.py --mode all --changed | Changed-profile selection on the candidate | PASS | Governance failures0; manifest valid; renderer drift0; metadata violations0; links failures0 | required | - |
 | E08 | 165 | W181 | method=observation; tool=Python3.12.3 CLI; command=task_forecast.py forecast SPEC-0212-TSK-0109 | Real store, 2026-11-23T23:55:52Z, before the first edit | PASS | Revision 1 recorded with type harness-change, elapsed basis, P30 60, P50 90, P80 150, assumptions and reference class | required | - |
+| E09 | 165 | W181 | method=automated; tool=GitHub Actions CI Quality Gates; command=candidate-core changed candidate validation | PR1155 head f1b265bb, run45294136858 | PASS | candidate-core, candidate-quality and candidate-routing passed; CodeQL and GitGuardian passed | required | - |
+| E10 | 165 | W181 | method=observation; tool=Python3.12.3 CLI; command=task_forecast.py observe SPEC-0212-TSK-0109 --status completed; score --type harness-change --time-basis elapsed; score | Real store after merge 76d4be9c, start 2026-11-23T23:56:00Z, end 2026-11-24T00:07:25Z | PASS | Outcome stored with forecast_revision 1; actual 11.4 elapsed minutes against P30 60, P50 90, P80 150, coverage 1.0 at every quantile, so this forecast was far too wide; insufficient sample; the unfiltered score lists two groups (harness-change and pr-hosted-ci, both elapsed); the earlier rows keep empty comparable_prior and forecast_revision | required | - |
 
 ##### Resolution Links
 
@@ -126,14 +128,14 @@ E03 resolves the witnessed failures in E02.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 165 | pending | E01,E03,E04,E05,E06,E07,E08 | Implementation, focused regressions and a real pre-start forecast are recorded; the real outcome of this Task and owner acceptance in P16 remain | @buenhyden |
+| 165 | pending | E01,E03,E04,E05,E06,E07,E08,E09,E10 | Implementation, focused regressions, a real pre-start forecast and its outcome are recorded; owner acceptance in P16 remains | @buenhyden |
 
 ##### Remaining Conditions
 
-The outcome of SPEC-0212-TSK-0109 is recorded in the real store after the
-merge and scored with `score --type harness-change --time-basis elapsed`.
-One sample stays an insufficient sample; calibration needs 20 comparable
-completed tasks.
+The outcome is measured to the merge of the implementation; the later
+evidence update is outside it. One sample stays an insufficient sample;
+calibration needs 20 comparable completed tasks, and P13 reads the
+over-estimate shown in E10 per group.
 
 #### Handoff
 
