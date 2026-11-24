@@ -26,6 +26,7 @@ services:
     read_only: true
     labels:
       <<: *tier-label
+      hy-home.role: job
     volumes:
       - k6-data:/scripts:ro
     networks:

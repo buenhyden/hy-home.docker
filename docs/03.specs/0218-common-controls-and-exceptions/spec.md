@@ -1,13 +1,13 @@
 ---
 title: "Common Controls and Exceptions"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "specs"
 artifact_id: "SPEC-0218"
 parent_ids:
@@ -98,7 +98,9 @@ with P08. Consumer retirement remains with CLN01 and the owning executor.
    `reviewed`, `review_by` and `release_condition`. Orphan, duplicate,
    wildcard, unregistered, expired, overlong, stale and mismatched entries
    fail, and a root and a LAB service of one name are distinct.
-3. Lifecycle is not weakening. A job (`restart: "no"`) needs no healthcheck
+3. Lifecycle is not weakening. A job (label `hy-home.role: job`, which
+   the job templates set and which requires `restart: "no"`; the restart
+   policy alone is not a role) needs no healthcheck
    and a service that reads no secret needs no Docker secret; neither is an
    exception.
 4. Secret group. `SECRETS_GID` is granted by the leaf that reads a Docker

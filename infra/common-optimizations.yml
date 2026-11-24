@@ -170,6 +170,8 @@ services:
     logging: *default-logging
     labels:
       <<: *labels-managed
+      # The HOME job role (P14): done only when it exits 0.
+      hy-home.role: job
     read_only: true
     tmpfs:
       - /tmp
@@ -181,6 +183,8 @@ services:
     logging: *default-logging
     labels:
       <<: *labels-managed
+      # The HOME job role (P14): done only when it exits 0.
+      hy-home.role: job
     read_only: true
     tmpfs:
       - /tmp

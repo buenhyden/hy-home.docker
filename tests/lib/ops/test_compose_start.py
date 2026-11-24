@@ -901,7 +901,11 @@ class OperatingAdmissionHandoffTests(unittest.TestCase):
                 "name": "hy-home-infra",
                 "services": {
                     "app": service,
-                    "job": {**service, "restart": "no"},
+                    "job": {
+                        **service,
+                        "restart": "no",
+                        "labels": {"hy-home.role": "job"},
+                    },
                     "other": service,
                 },
             }
@@ -1020,8 +1024,12 @@ class OperatingAdmissionHandoffTests(unittest.TestCase):
             model = {
                 "name": "hy-home-infra",
                 "services": {
-                    "app": service,
-                    "job": {**service, "restart": "no"},
+                    "app": {**service, "restart": "no"},  # no label: a service
+                    "job": {
+                        **service,
+                        "restart": "no",
+                        "labels": {"hy-home.role": "job"},
+                    },
                     "other": service,
                 },
             }

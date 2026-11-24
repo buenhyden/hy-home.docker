@@ -469,6 +469,10 @@ def _operating_admission(root, plan):
     admission = lab.execution_admission(root)
     model = lab.render("/usr/bin/docker", root / ".env", None)
     selected = {name: model["services"][name] for name in plan["targets"]}
+    roles, role_problems = lab.home_roles(selected)
+    if role_problems:
+        raise ValueError("invalid_service_role")
+    jobs = {name for name, role in roles.items() if role == "job"}
     footprint = lab.footprint({**model, "services": selected})
     failed, unmeasured = lab.candidate_problems(footprint)
     if failed or unmeasured:
@@ -498,11 +502,7 @@ def _operating_admission(root, plan):
     try:
         admission.update(
             claimed["token"],
-            one_shot_services=sorted(
-                name
-                for name, service in selected.items()
-                if service.get("restart") == "no"
-            ),
+            one_shot_services=sorted(jobs),
         )
         prepare_registered_docker(admission, claimed["token"])
         # Inside the setup guard: the fill-disk claim already exists, so a
@@ -547,7 +547,7 @@ def _operating_admission(root, plan):
                 or (
                     c.get("status") == "exited"
                     and c.get("exit_code") == 0
-                    and selected[c["service"]].get("restart") == "no"
+                    and c["service"] in jobs
                 )
             )
         }
