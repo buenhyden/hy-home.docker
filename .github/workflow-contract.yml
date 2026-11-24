@@ -682,6 +682,7 @@
         "tests.validation.test_session_analysis",
         "tests.validation.test_task_forecast",
         "tests.lib.ops.test_dispatch_process",
+        "tests.lib.ops.test_dispatch_providers",
         "tests.validation.test_work_dispatch",
         "tests.validation.test_observe",
         "--optional-runtime-skips",
@@ -1713,7 +1714,9 @@
       {
         "prefixes": [
           "scripts/lib/ops/dispatch_process.py",
-          "tests/lib/ops/test_dispatch_process.py"
+          "scripts/lib/ops/dispatch_providers.py",
+          "tests/lib/ops/test_dispatch_process.py",
+          "tests/lib/ops/test_dispatch_providers.py"
         ],
         "suites": [
           "agent-governance",
@@ -2423,7 +2426,9 @@
       {
         "prefixes": [
           "scripts/lib/ops/dispatch_process.py",
-          "tests/lib/ops/test_dispatch_process.py"
+          "scripts/lib/ops/dispatch_providers.py",
+          "tests/lib/ops/test_dispatch_process.py",
+          "tests/lib/ops/test_dispatch_providers.py"
         ],
         "root_gate_ids": [
           "leaf.execution-environment-regressions"

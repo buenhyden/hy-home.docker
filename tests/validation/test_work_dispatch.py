@@ -554,6 +554,91 @@ class DispatchTests(unittest.TestCase):
         self.assertEqual("failed", report["integration"]["status"])
         self.assertEqual(1, len(git(self.repo, "worktree", "list").splitlines()))
 
+    def provider_unit(self, uid: str, owned: str, **spec) -> dict:
+        return {
+            "id": uid,
+            "provider": {
+                "name": "claude",
+                "model": "claude-haiku-5-5",
+                "prompt": f"write {owned}",
+                "max_budget_usd": 0.25,
+                **spec,
+            },
+            "owned_paths": [owned],
+            "timeout": 30,
+        }
+
+    def provider_run(self, units, fresh=True, script=None) -> dict:
+        def launch(spec):
+            owned = spec["prompt"].split()[-1]
+            body = script or (
+                f"sleep 1; echo done > {owned}; echo"
+                ' \'{"type":"result","subtype":"success","is_error":false,'
+                '"session_id":"s-1","total_cost_usd":0.01,"num_turns":2}\''
+            )
+            return ["sh", "-c", body], {"binds": [], "env": {}, "share_net": True}
+
+        brief = mock.Mock(return_value=None if fresh else "brief is stale")
+        with (
+            mock.patch.object(dispatch.dispatch_providers, "launch", launch),
+            mock.patch.object(dispatch, "_brief_problem", brief),
+        ):
+            report = self.run_plan(units, session="s", request_revision="r" * 32)
+        return report, brief
+
+    def test_provider_units_run_together_and_report_their_session_and_cost(self):
+        report, brief = self.provider_run(
+            [self.provider_unit("a", "a.txt"), self.provider_unit("b", "b.txt")]
+        )
+        self.assertEqual("succeeded", report["status"], report)
+        for entry in report["units"]:
+            self.assertEqual(
+                ("claude", "s-1", 0.01, False),
+                tuple(
+                    entry["provider"][k]
+                    for k in ("name", "session_id", "cost_usd", "is_error")
+                ),
+            )
+        self.assertLess(report["elapsed_seconds"], 1.9)  # the two overlapped
+        self.assertEqual(
+            [
+                mock.call(self.repo, mock.ANY, ["a.txt"]),
+                mock.call(self.repo, mock.ANY, ["b.txt"]),
+            ],
+            sorted(brief.call_args_list, key=str),
+        )
+
+    def test_a_stale_brief_starts_no_provider_worker(self):
+        report, _ = self.provider_run([self.provider_unit("a", "a.txt")], fresh=False)
+        (entry,) = report["units"]
+        self.assertEqual(
+            ("failed", "brief is stale"), (entry["status"], entry["reason"])
+        )
+        self.assertNotIn("started", entry)
+
+    def test_a_provider_error_result_fails_the_unit(self):
+        script = (
+            "echo done > a.txt; echo"
+            ' \'{"type":"result","subtype":"error_max_budget_usd","is_error":true}\''
+        )
+        report, _ = self.provider_run([self.provider_unit("a", "a.txt")], script=script)
+        (entry,) = report["units"]
+        self.assertEqual("failed", entry["status"])
+        self.assertTrue(entry["provider"]["is_error"])
+
+    def test_provider_plans_need_a_brief_identity_and_a_valid_spec(self):
+        good = self.provider_unit("a", "a.txt")
+        for plan in (
+            {"units": [good]},  # no session or request revision
+            {"units": [self.provider_unit("a", "a.txt", max_budget_usd=50)],
+             "session": "s", "request_revision": "r" * 32},
+            {"units": [{**good, "command": ["true"]}], "session": "s",
+             "request_revision": "r" * 32},
+        ):  # fmt: skip
+            with self.subTest(plan=plan):
+                with self.assertRaises(dispatch.PlanError):
+                    dispatch._validate(plan)
+
     def test_bad_plans_are_refused(self) -> None:
         for units in (
             [unit("a", "true", depends=["b"]), unit("b", "true", depends=["a"])],

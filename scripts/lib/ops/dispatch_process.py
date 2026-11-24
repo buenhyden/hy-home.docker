@@ -151,7 +151,12 @@ def _git_view(gitdir, tree, base, directory, disk_bytes):
     return directory
 
 
-def _bounded_command(command, token, budget, *, cwd, env, git_view=None):
+def _bounded_command(command, token, budget, *, cwd, env, git_view=None, provider=None):
+    """Bubblewrap with a read-only root and only the worktree writable.
+
+    A provider profile adds the network, its own read-only binds and its
+    environment; nothing else of the host becomes visible.
+    """
     boundary = [
         "/usr/bin/bwrap",
         "--unshare-all",
@@ -191,6 +196,12 @@ def _bounded_command(command, token, budget, *, cwd, env, git_view=None):
         "--tmpfs",
         "/run",
     ]
+    if provider is not None:
+        boundary.append("--share-net")
+        for source, target in provider["binds"]:
+            boundary += ["--ro-bind", source, target]
+        for name, value in provider["env"].items():
+            boundary += ["--setenv", name, value]
     if git_view is not None:
         boundary += [
             "--ro-bind",
@@ -451,6 +462,7 @@ def _spawn(
     register=True,
     trusted_docker=False,
     disk_paths=None,
+    provider=None,
 ):
     record = reservation or admission.admit(services=(), budget=budget, kind=kind)
     token = record["token"]
@@ -461,8 +473,9 @@ def _spawn(
     scope = None
     descriptors = []
     try:
+        extra = {"provider": provider} if provider is not None else {}
         command, scope = builder(
-            command, token, budget, cwd=cwd, env=env, git_view=git_view
+            command, token, budget, cwd=cwd, env=env, git_view=git_view, **extra
         )
         _write_record(
             path,

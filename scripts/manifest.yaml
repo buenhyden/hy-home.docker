@@ -797,6 +797,17 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_dispatch_process.py
+- path: scripts/lib/ops/dispatch_providers.py
+  kind: library
+  authority: docs/00.workspace/06.maintenance/harness-maintenance.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/work_dispatch.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_dispatch_providers.py
 - path: scripts/lib/ops/environment_admission.py
   kind: library
   authority: docs/00.workspace/06.maintenance/harness-maintenance.md
