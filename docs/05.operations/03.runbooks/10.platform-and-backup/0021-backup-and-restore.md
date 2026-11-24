@@ -1,13 +1,13 @@
 ---
 title: "Backup and Restore Runbook"
-version: "2.1.0"
+version: "2.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -520,7 +520,8 @@ docker compose --profile backup run --rm --no-deps \
 ```
 
 최근 30일의 snapshot은 모두 두고, 그보다 오래된 것은 한 달에 하나씩 12개월치만
-남긴다(`--keep-within 30d --keep-monthly 12`, host와 tag별). prune은
+남긴다(`--keep-within 30d --keep-monthly 12`, host와 tag별). RUN-0105의 OpenBao 복구
+artifact(`hy-home-openbao-w3` tag)는 이 정책으로 줄이지 않고 모두 남긴다(`--keep-tag`). prune은
 `--max-repack-size 0`으로 일부만 쓰이는 pack을 다시 쓰지 않고, 통째로 쓰이지 않는 pack만
 지운다. lock 아래에서 repack이 저장량을 늘리지 못하게 하려는 것이다. 이는 snapshot timestamp 기준이며 object 생성 시각·R2 lock 만료와 같지 않다. remote prune/lock 조합은 현재 미검증이다. 삭제/repack이 잠금에 거부되면 중단하고 owner에게 전달하며 다음 달 자동 해소나 index 안전을 가정하지 않는다. 잠금을 약화하거나 object 일부를 직접 삭제하지 않는다. 성공 후에도 `restic-offsite check`로 `no errors were found`를 확인한다.
 Evidence에는 실행 시각, 지운 snapshot 수, 전후 `R2 repository size`를 적는다.

@@ -174,9 +174,11 @@ case "$action" in
             exit 64
         fi
         require_initialized
+        # --keep-tag: the RUN-0105 OpenBao artifacts are recovery points, never thinned.
         # --max-repack-size 0: prune only deletes whole unused packs and never
         # writes repacked ones, which could outgrow the cap under the lock.
-        restic forget --prune --max-repack-size 0 --group-by host,tags --keep-within 30d --keep-monthly 12
+        restic forget --prune --max-repack-size 0 --group-by host,tags --keep-within 30d --keep-monthly 12 \
+            --keep-tag hy-home-openbao-w3
         size="$(stored_bytes)"
         echo "R2 repository size: $size bytes"
         ;;

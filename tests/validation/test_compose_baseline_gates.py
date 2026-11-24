@@ -2306,6 +2306,8 @@ docker() {
             '"${HYHOME_PRUNE_CONFIRM:-}" != "delete-old-remote-snapshots"', prune
         )
         self.assertIn("--keep-within 30d", prune)
+        # A recovery artifact (RUN-0105 W3b) is never thinned by the policy.
+        self.assertIn("--keep-tag hy-home-openbao-w3", prune)
         outside = script.replace(prune, "")
         self.assertNotRegex(outside, r"\brestic (forget|prune|unlock)\b")
         # copy reports the stored size for the free-tier alert.
