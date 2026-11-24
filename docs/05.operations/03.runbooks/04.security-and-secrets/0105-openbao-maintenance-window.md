@@ -1,13 +1,13 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -119,7 +119,7 @@ OpenBao 외부 custody에서 `${DEFAULT_SECURITY_DIR}/openbao/tls/{ca.pem,server
 적용한다. 시작 전 아래 read-only preflight를 실행한다. stdout은 check label과 PASS/FAIL만 출력한다.
 
 ```bash
-sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DIR/openbao/tls" hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5 # <!-- runtime-version-exception: compatibility — preflight requires the exact owned image; docker-compose.yml owns the pin -->
+sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DIR/openbao/tls" hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa # <!-- runtime-version-exception: compatibility — preflight requires the exact owned image; docker-compose.yml owns the pin -->
 ```
 
 명령은 만료·CA chain·정확한 SAN·cert/key 일치와 UID100:GID1000의 읽기를 검증한다.
@@ -349,7 +349,7 @@ BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근이 1인 관리자 c
 ###### SEC01 Image Gate
 <!-- core-payload-level:5 -->
 
-Compose는 두 OpenBao service 모두 자체 빌드 image(OpenBao v2.7.2 r3, manifest `ef27a440`, Go 1.27.3)를 고정한다. <!-- runtime-version-exception: history — 현재 고정 image의 builder Go 버전이며 build-inputs.json이 pin을 소유함 -->
+Compose는 두 OpenBao service 모두 자체 빌드 image(OpenBao v2.7.3 r4, manifest `240e4a88`, Go 1.27.4)를 고정한다. <!-- runtime-version-exception: history — 현재 고정 image의 builder Go 버전이며 build-inputs.json이 pin을 소유함 -->
 W4/W5의 SEC01 gate는 두 가지다(2026-10-14 owner 결정): owner가 이 image의 잔여 위험(서명 없음,
 CVE-2025-60876, GO-2026-5932 처분과 2026-11-10의 go-jose/v3 수용)을 수용한 기록(2026-11-10 r3 수용, POL-0085)과, window 시작 7일 안의 최신 stable
 조회다. fix-forward라 image는 window 뒤에도 실행되므로 이 수용은 window가 아니라 SEC01 기준

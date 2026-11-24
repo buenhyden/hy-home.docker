@@ -26,9 +26,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "infra/03-security/openbao"
-IMAGE = "sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5"
-VERSION = "2.7.2+hyhome.go1.27.3.net0.62.0.r1"
-IMAGE_REFERENCE = "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5"
+IMAGE = "sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa"
+VERSION = "2.7.3+hyhome.go1.27.4.net0.62.0.r1"
+IMAGE_REFERENCE = "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa"
 PORT = 8240
 CLUSTER_PORT = 8241
 

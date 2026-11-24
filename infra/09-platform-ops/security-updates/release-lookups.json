@@ -59736,11 +59736,11 @@
       },
       "openbao": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T11:52:58.734755+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
-          "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
-          "assessment_version": "2.7.2 custom exact digest",
+          "declaration": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
+          "source_input_sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344",
+          "assessment_version": "2.7.3+hyhome.go1.27.4.net0.62.0.r1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -59880,17 +59880,17 @@
           "Existing exact-subject risk acceptance and expiry remain at their original scope; this review neither renews acceptance nor copies approved disposition into the gate. Selected go-jose/v3 has no patched release; upstream v4 fix is not inherited.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Core 2.7.2 advisories are fixed, but the exact image contains affected go-jose/v3 3.0.5 and affected-but-tracked-unreachable BusyBox wget. Existing owner acceptance is preserved, not renewed.",
+        "reason": "OpenBao 2.7.3 carries the 2.7.2 core advisory fixes and the 2.7.3 security fixes (GHSA-fgmw-h9wp-wc7g, GHSA-h8fh-pmch-cjww), built with Go 1.27.4. The exact r4 image still contains go-jose/v3 3.0.5 (GHSA-mgcc-cww5-fp2q, no fix release) and OpenSSL 3.5.9-r1 with five High CVEs that Alpine has not yet fixed (Grype 2026-11-24: High 11, Medium 11). Owner acceptance of these residuals is required before the window.",
         "next_action": "Monitor upstream/fixed dependency, trace call reachability, and enforce the existing expiry/replacement boundary.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "await-publisher-fix-and-review-mitigation",
-          "target_retained": "2.7.2",
+          "target_retained": "2.7.3",
           "observed_latest": "2.7.2",
           "previous_gate_missing": [
             "stable_channel"
           ],
-          "reason": "A newer upstream/core release alone does not close vendor-unpatched dependency or open-ended advisory ranges; no fresh risk acceptance is granted.",
+          "reason": "OpenBao 2.7.3 carries the 2.7.2 core advisory fixes and the 2.7.3 security fixes (GHSA-fgmw-h9wp-wc7g, GHSA-h8fh-pmch-cjww), built with Go 1.27.4. The exact r4 image still contains go-jose/v3 3.0.5 (GHSA-mgcc-cww5-fp2q, no fix release) and OpenSSL 3.5.9-r1 with five High CVEs that Alpine has not yet fixed (Grype 2026-11-24: High 11, Medium 11). Owner acceptance of these residuals is required before the window.",
           "next_action": "Monitor upstream/fixed dependency, trace call reachability, and enforce the existing expiry/replacement boundary."
         },
         "operational_execution": "NOT_RUN",
@@ -59911,11 +59911,11 @@
       },
       "openbao-agent": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T11:52:58.734755+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
-          "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
-          "assessment_version": "2.7.2 custom exact digest",
+          "declaration": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
+          "source_input_sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344",
+          "assessment_version": "2.7.3+hyhome.go1.27.4.net0.62.0.r1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -60055,17 +60055,17 @@
           "Existing exact-subject risk acceptance and expiry remain at their original scope; this review neither renews acceptance nor copies approved disposition into the gate. Selected go-jose/v3 has no patched release; upstream v4 fix is not inherited.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The Agent uses the same exact custom image and shares package-level residuals. Its command changes reachability, not package presence.",
+        "reason": "The Agent uses the same exact r4 image and shares its package-level residuals (go-jose/v3 3.0.5, OpenSSL 3.5.9-r1 High CVEs without an Alpine fix). Its command changes reachability, not package presence.",
         "next_action": "Establish Agent-specific reachability for go-jose call paths and keep the same accepted residual expiry.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "await-publisher-fix-and-review-mitigation",
-          "target_retained": "2.7.2",
+          "target_retained": "2.7.3",
           "observed_latest": "2.7.2",
           "previous_gate_missing": [
             "stable_channel"
           ],
-          "reason": "A newer upstream/core release alone does not close vendor-unpatched dependency or open-ended advisory ranges; no fresh risk acceptance is granted.",
+          "reason": "The Agent uses the same exact r4 image and shares its package-level residuals (go-jose/v3 3.0.5, OpenSSL 3.5.9-r1 High CVEs without an Alpine fix). Its command changes reachability, not package presence.",
           "next_action": "Establish Agent-specific reachability for go-jose call paths and keep the same accepted residual expiry."
         },
         "operational_execution": "NOT_RUN",

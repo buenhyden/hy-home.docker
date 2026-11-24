@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "infra/03-security/openbao/scripts/check-tls-material.sh"
-IMAGE = "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5"
+IMAGE = "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa"
 READ_SCRIPT = 'for f in /tls/ca.pem /tls/server.pem /tls/server-key.pem; do [ -r "$f" ] && [ -s "$f" ] || exit 1; done'
 EVENT_ACTIONS = ("create", "start", "die", "destroy")
 NATIVE_RESOURCES = "--memory=32m --memory-swap=32m --cpus=0.25 --pids-limit=16".split()

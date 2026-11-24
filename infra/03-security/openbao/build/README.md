@@ -1,13 +1,13 @@
 ---
 title: "Owned OpenBao Build"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 ---
 
 # Owned OpenBao build
@@ -39,9 +39,9 @@ updated: "2026-11-20"
 ###### Overview
 <!-- core-payload-level:4 -->
 
-OpenBao 2.7.2의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.3, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
+OpenBao 2.7.3의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.4, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
 `golang.org/x/net` 0.62.0, `go-jose/v4` 4.1.9, `klauspost/compress` 1.20.4 세 module 버전을 사용합니다. <!-- runtime-version-exception: migration — 검토된 build packet의 고정 module migration material이며 build-inputs.json이 pin을 소유함 -->
-결과 버전은 `2.7.2+hyhome.go1.27.3.net0.62.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
+결과 버전은 `2.7.3+hyhome.go1.27.4.net0.62.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
 서명된 이미지가 아닙니다. 다른 의존성의 취약점 해결을 보장하지 않습니다.
 
 ###### Audience
@@ -61,6 +61,10 @@ export만 정렬된 한 layer로 포장합니다. HOME 배포, 인증, 발급은
 2026-10-21 packet은 Go 1.27.3 builder로 다시 고정했습니다(CVE-2026-111943, crypto/x509). <!-- runtime-version-exception: migration — 검토된 build packet의 고정 builder 변경이며 build-inputs.json이 pin을 소유함 -->
 source, module, APK 입력은 그대로이고 builder와 그 서명 receipt만 바뀌었습니다.
 이 README는 packet의 일부이므로 바꾸면 packet SHA와 image label이 달라집니다.
+
+2026-11-24 packet(`r4`)은 source를 서명된 최신 stable 2.7.3으로 올리고(upstream 보안 수정 GHSA-fgmw-h9wp-wc7g, GHSA-h8fh-pmch-cjww) <!-- runtime-version-exception: migration — 검토된 build packet의 고정 source 변경이며 build-inputs.json이 pin을 소유함 -->
+Go builder를 stdlib 보안 수정이 든 1.27.4로 올렸습니다. 2.7.3의 go.mod는 이미 x/net 0.62.0과 klauspost/compress 1.20.4를
+가지므로 patch는 go-jose v4를 4.1.9로 올리는 것만 남습니다. Alpine runtime과 APK closure는 receipt를 새로 검증합니다.
 
 2026-11-10 packet(`r3`)은 source를 서명된 최신 stable release로 올리고(upstream 보안 수정 GHSA 4건) <!-- runtime-version-exception: migration — 검토된 build packet의 고정 source 변경이며 build-inputs.json이 pin을 소유함 -->
 patch를 그 release의 root go.mod/go.sum 위에서 다시 만들어 x/net, go-jose v4, klauspost/compress의 보안 수정 버전만 올렸습니다.

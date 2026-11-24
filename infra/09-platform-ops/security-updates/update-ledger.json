@@ -113,7 +113,7 @@
     },
     {
       "path": "infra/03-security/openbao/docker-compose.yml",
-      "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+      "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
     },
     {
       "path": "infra/04-data/dev-db/docker-compose.yml",
@@ -17169,7 +17169,7 @@
       "service": "openbao",
       "scope": "root",
       "compose_file": "infra/03-security/openbao/docker-compose.yml",
-      "current_declared": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+      "current_declared": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
       "profiles_declared": [
         "security",
         "secrets",
@@ -17195,7 +17195,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "2.7.2",
-      "target_version": "2.7.2",
+      "target_version": "2.7.3",
       "channel": "UNKNOWN",
       "checked_at": "2026-11-10T22:26:50.676852+00:00",
       "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.2",
@@ -17276,9 +17276,9 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T20:16:36+09:00",
-        "next_validation_due": "2026-11-17T20:16:36+09:00",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "discovered_at": "2026-11-24T19:36:33+09:00",
+        "next_validation_due": "2026-12-01T19:36:33+09:00",
+        "reason": "Owned build r4 (2026-11-24) from the cosign-verified OpenBao v2.7.3 source with Go 1.27.4: two-pass reproducible binary and OCI identity (manifest 240e4a88); Syft SBOM and Grype scan recorded, no publisher signature, and no compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
@@ -17293,14 +17293,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T20:16:36+09:00",
-      "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
+      "source_refreshed_at": "2026-11-24T19:36:33+09:00",
+      "source_input_sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
-      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "target_source_image": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
+      "candidate_evidence_scope": "Owned build r4 (2026-11-24) from the cosign-verified OpenBao v2.7.3 source with Go 1.27.4: two-pass reproducible binary and OCI identity (manifest 240e4a88); Syft SBOM and Grype scan recorded, no publisher signature, and no compatibility, native, deployment or recovery result exists for it.",
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "target_digest_evidence": "UNKNOWN: Owned build r4 (2026-11-24) from the cosign-verified OpenBao v2.7.3 source with Go 1.27.4: two-pass reproducible binary and OCI identity (manifest 240e4a88); Syft SBOM and Grype scan recorded, no publisher signature, and no compatibility, native, deployment or recovery result exists for it.",
       "historical_candidate_openbao_receipts": [
         {
           "reported_by": "SEC01 native worker via root",
@@ -17590,10 +17590,10 @@
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
       },
       "current_target_artifact_binding": {
-        "source_version": "2.7.2",
-        "source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+        "source_version": "2.7.3",
+        "source_image": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+        "reason": "Owned build r4 (2026-11-24) from the cosign-verified OpenBao v2.7.3 source with Go 1.27.4: two-pass reproducible binary and OCI identity (manifest 240e4a88); Syft SBOM and Grype scan recorded, no publisher signature, and no compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
       "master_20261110_public_refresh": {
         "task": "SPEC-0212-TSK-0052",
@@ -17655,14 +17655,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "no-fix",
       "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Core 2.7.2 advisories are fixed, but the exact image contains affected go-jose/v3 3.0.5 and affected-but-tracked-unreachable BusyBox wget. Existing owner acceptance is preserved, not renewed.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. OpenBao 2.7.3 carries the 2.7.2 core advisory fixes and the 2.7.3 security fixes (GHSA-fgmw-h9wp-wc7g, GHSA-h8fh-pmch-cjww), built with Go 1.27.4. The exact r4 image still contains go-jose/v3 3.0.5 (GHSA-mgcc-cww5-fp2q, no fix release) and OpenSSL 3.5.9-r1 with five High CVEs that Alpine has not yet fixed (Grype 2026-11-24: High 11, Medium 11). Owner acceptance of these residuals is required before the window.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T11:52:58.734755+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
-          "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
-          "assessment_version": "2.7.2 custom exact digest",
+          "declaration": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
+          "source_input_sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344",
+          "assessment_version": "2.7.3+hyhome.go1.27.4.net0.62.0.r1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -17802,17 +17802,17 @@
           "Existing exact-subject risk acceptance and expiry remain at their original scope; this review neither renews acceptance nor copies approved disposition into the gate. Selected go-jose/v3 has no patched release; upstream v4 fix is not inherited.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Core 2.7.2 advisories are fixed, but the exact image contains affected go-jose/v3 3.0.5 and affected-but-tracked-unreachable BusyBox wget. Existing owner acceptance is preserved, not renewed.",
+        "reason": "OpenBao 2.7.3 carries the 2.7.2 core advisory fixes and the 2.7.3 security fixes (GHSA-fgmw-h9wp-wc7g, GHSA-h8fh-pmch-cjww), built with Go 1.27.4. The exact r4 image still contains go-jose/v3 3.0.5 (GHSA-mgcc-cww5-fp2q, no fix release) and OpenSSL 3.5.9-r1 with five High CVEs that Alpine has not yet fixed (Grype 2026-11-24: High 11, Medium 11). Owner acceptance of these residuals is required before the window.",
         "next_action": "Monitor upstream/fixed dependency, trace call reachability, and enforce the existing expiry/replacement boundary.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "await-publisher-fix-and-review-mitigation",
-          "target_retained": "2.7.2",
+          "target_retained": "2.7.3",
           "observed_latest": "2.7.2",
           "previous_gate_missing": [
             "stable_channel"
           ],
-          "reason": "A newer upstream/core release alone does not close vendor-unpatched dependency or open-ended advisory ranges; no fresh risk acceptance is granted.",
+          "reason": "OpenBao 2.7.3 carries the 2.7.2 core advisory fixes and the 2.7.3 security fixes (GHSA-fgmw-h9wp-wc7g, GHSA-h8fh-pmch-cjww), built with Go 1.27.4. The exact r4 image still contains go-jose/v3 3.0.5 (GHSA-mgcc-cww5-fp2q, no fix release) and OpenSSL 3.5.9-r1 with five High CVEs that Alpine has not yet fixed (Grype 2026-11-24: High 11, Medium 11). Owner acceptance of these residuals is required before the window.",
           "next_action": "Monitor upstream/fixed dependency, trace call reachability, and enforce the existing expiry/replacement boundary."
         },
         "operational_execution": "NOT_RUN",
@@ -17840,7 +17840,7 @@
       "service": "openbao-agent",
       "scope": "root",
       "compose_file": "infra/03-security/openbao/docker-compose.yml",
-      "current_declared": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+      "current_declared": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
       "profiles_declared": [
         "security",
         "secrets",
@@ -17866,7 +17866,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "2.7.2",
-      "target_version": "2.7.2",
+      "target_version": "2.7.3",
       "channel": "UNKNOWN",
       "checked_at": "2026-11-10T22:26:50.676852+00:00",
       "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.2",
@@ -17947,9 +17947,9 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T20:16:36+09:00",
-        "next_validation_due": "2026-11-17T20:16:36+09:00",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "discovered_at": "2026-11-24T19:36:33+09:00",
+        "next_validation_due": "2026-12-01T19:36:33+09:00",
+        "reason": "Owned build r4 (2026-11-24) from the cosign-verified OpenBao v2.7.3 source with Go 1.27.4: two-pass reproducible binary and OCI identity (manifest 240e4a88); Syft SBOM and Grype scan recorded, no publisher signature, and no compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
@@ -17964,14 +17964,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T20:16:36+09:00",
-      "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
+      "source_refreshed_at": "2026-11-24T19:36:33+09:00",
+      "source_input_sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
-      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "target_source_image": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
+      "candidate_evidence_scope": "Owned build r4 (2026-11-24) from the cosign-verified OpenBao v2.7.3 source with Go 1.27.4: two-pass reproducible binary and OCI identity (manifest 240e4a88); Syft SBOM and Grype scan recorded, no publisher signature, and no compatibility, native, deployment or recovery result exists for it.",
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "target_digest_evidence": "UNKNOWN: Owned build r4 (2026-11-24) from the cosign-verified OpenBao v2.7.3 source with Go 1.27.4: two-pass reproducible binary and OCI identity (manifest 240e4a88); Syft SBOM and Grype scan recorded, no publisher signature, and no compatibility, native, deployment or recovery result exists for it.",
       "historical_candidate_openbao_receipts": [
         {
           "reported_by": "SEC01 native worker via root",
@@ -18261,10 +18261,10 @@
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
       },
       "current_target_artifact_binding": {
-        "source_version": "2.7.2",
-        "source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+        "source_version": "2.7.3",
+        "source_image": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+        "reason": "Owned build r4 (2026-11-24) from the cosign-verified OpenBao v2.7.3 source with Go 1.27.4: two-pass reproducible binary and OCI identity (manifest 240e4a88); Syft SBOM and Grype scan recorded, no publisher signature, and no compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
       "master_20261110_public_refresh": {
         "task": "SPEC-0212-TSK-0052",
@@ -18326,14 +18326,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "no-fix",
       "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The Agent uses the same exact custom image and shares package-level residuals. Its command changes reachability, not package presence.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The Agent uses the same exact r4 image and shares its package-level residuals (go-jose/v3 3.0.5, OpenSSL 3.5.9-r1 High CVEs without an Alpine fix). Its command changes reachability, not package presence.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-24T11:52:58.734755+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
-          "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
-          "assessment_version": "2.7.2 custom exact digest",
+          "declaration": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
+          "source_input_sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344",
+          "assessment_version": "2.7.3+hyhome.go1.27.4.net0.62.0.r1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "AFFECTED",
@@ -18473,17 +18473,17 @@
           "Existing exact-subject risk acceptance and expiry remain at their original scope; this review neither renews acceptance nor copies approved disposition into the gate. Selected go-jose/v3 has no patched release; upstream v4 fix is not inherited.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The Agent uses the same exact custom image and shares package-level residuals. Its command changes reachability, not package presence.",
+        "reason": "The Agent uses the same exact r4 image and shares its package-level residuals (go-jose/v3 3.0.5, OpenSSL 3.5.9-r1 High CVEs without an Alpine fix). Its command changes reachability, not package presence.",
         "next_action": "Establish Agent-specific reachability for go-jose call paths and keep the same accepted residual expiry.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "await-publisher-fix-and-review-mitigation",
-          "target_retained": "2.7.2",
+          "target_retained": "2.7.3",
           "observed_latest": "2.7.2",
           "previous_gate_missing": [
             "stable_channel"
           ],
-          "reason": "A newer upstream/core release alone does not close vendor-unpatched dependency or open-ended advisory ranges; no fresh risk acceptance is granted.",
+          "reason": "The Agent uses the same exact r4 image and shares its package-level residuals (go-jose/v3 3.0.5, OpenSSL 3.5.9-r1 High CVEs without an Alpine fix). Its command changes reachability, not package presence.",
           "next_action": "Establish Agent-specific reachability for go-jose call paths and keep the same accepted residual expiry."
         },
         "operational_execution": "NOT_RUN",
@@ -52415,6 +52415,244 @@
             "target_config_digest": "UNKNOWN",
             "platform": "linux/amd64",
             "applicability": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
+    },
+    {
+      "source_revision": "1da34f10352f1ec6433f21219a20740f07b82e41",
+      "refreshed_at": "2026-11-24T19:36:33+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "b7c88e298dac71bf29c76f9d1b3021d04391707dec9282963fc41768cb470a88",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "3b74cc820cde1057e7f2c412133bc324a0f916afd58afb185b53ce88619165da"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "2b8f8444fb5f34c8f2284f64ead1ca11c55aab4d4ff648a79cf5e73ea39fa8e2"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "f9ab863a2bfc8ba9f6ce9df24382f870e96ae9c17abe87ecf5ab6aff8d9becfd"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "1d26c9d425dc6ebdc88d8a9dc8aa92130ca6745522153ce5032523ed87a4ded8"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "8476de753db160fc427b1cfc12351ea2f9ecc6576ea9974d1570c9f5910cf617"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "c9e94c9c7ded44186708e48b34570733fde24ac244051291fd313644d815706c"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "f22e273419baed978d603b57d58fc5ca9a0053a594604fb0de7a503d81d79664"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "5034f7cea43c89b7a1a7366087b2011cecc56faa3104e3330700573c6eda87f4"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "2082ae28c2fbca4b7b03bbca364054119cb7efcaa987bbbfd31f4f1ab4a233e9"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02"
+        }
+      ],
+      "changed_inputs": [
+        "infra/03-security/openbao/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "openbao",
+          "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
+          "source_refreshed_at": "2026-11-10T20:16:36+09:00"
+        },
+        {
+          "service": "openbao-agent",
+          "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
+          "source_refreshed_at": "2026-11-10T20:16:36+09:00"
+        }
+      ],
+      "meaning": "2 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 2 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "openbao",
+        "openbao-agent"
+      ],
+      "previous_service_images": [
+        {
+          "service": "openbao",
+          "current_declared": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+          "proposed_declared": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
+          "previous_fields": {
+            "target_version": "2.7.2",
+            "target_source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T20:16:36+09:00",
+              "next_validation_due": "2026-11-17T20:16:36+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T20:16:36+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "openbao-agent",
+          "current_declared": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+          "proposed_declared": "hy-home/openbao:2.7.3-go1.27.4-net0.62.0-r1@sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa",
+          "previous_fields": {
+            "target_version": "2.7.2",
+            "target_source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T20:16:36+09:00",
+              "next_validation_due": "2026-11-17T20:16:36+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T20:16:36+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
             "signature": "NOT_RUN",
             "sbom_scan": "NOT_RUN",
             "compatibility": "NOT_RUN",
