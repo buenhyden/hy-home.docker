@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.6.0"
+version: "2.7.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -344,6 +344,12 @@ keeps the capture hooks, transcript reconcile, lease fencing, deterministic
 rules and the P09 outbox, and adds only the D10 delta: an ingest-sequence
 cursor, accumulated provenance, redaction before the byte cap, the 30/90-day
 split, the visible final response and a checkout-bound scheduler.
+
+The direct P11-FORECAST1.2.0 request adds criterion165/W181 in TSK-0109. It
+keeps the append-only forecast store, pre-start scoring, censoring and the
+Wilson and pinball computations, and adds only the D11 delta: scoring per
+task type and time basis, a store-counted comparable sample, the outcome's
+forecast revision, blocked and open states and required assumptions.
 
 #### Scope
 
@@ -1501,6 +1507,15 @@ target, backup, recovery boundary, and action-specific authorization.
      candidates, so a same-second or late event counts once; accumulate
      source events; report the unread backlog; expire candidates at 90/30
      days; name and bind the timer to the primary checkout and its store.
+
+165. TSK-0109 applies P11-FORECAST1.2.0 to the current Docker workspace.
+     Define P30/P50/P80 as completion probabilities, not progress; require
+     assumptions and a reference class; store the count of comparable tasks
+     completed before each revision and label fewer than 20 an uncalibrated
+     prior; store the revision an outcome is scored against; censor
+     blocked work with failed and cancelled; count open forecasts; group
+     scores by task type and time basis and never label a mixed selection
+     calibrated; keep forecast error out of every gate.
 
 ##### Evidence Requirements
 

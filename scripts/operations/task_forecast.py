@@ -3,11 +3,18 @@
 
 A forecast is fixed before the task starts and never edited: a changed
 estimate is a new revision, and SQLite triggers refuse any update or delete.
-An outcome is recorded once, as completed, failed or cancelled, and closes the
-task. `score` reports, per quantile, how often the actual time fell at or under
-the forecast with its 95% Wilson interval and the mean pinball loss, with the
-sample size; failed and cancelled tasks are censored and counted apart. A forecast is a planning aid, not a deadline,
-an approval or a reason to skip a required check.
+P30, P50 and P80 are the times by which the task completes with probability
+0.3, 0.5 and 0.8, not progress shares. Each revision records its assumptions
+and reference class, and the number of comparable tasks (same type and time
+basis) that had completed in this store before it was made. An outcome is
+recorded once, as completed, failed, cancelled or blocked, names the
+revision it is scored against and closes the task. `score` groups by task
+type and time basis and reports, per quantile, how often the actual time fell
+at or under the forecast with its 95% Wilson interval and the mean pinball
+loss, with the sample size; failed, cancelled and blocked tasks are censored
+and counted apart, and open forecasts are counted. A forecast is a planning
+aid, not a deadline, an approval, a gate or a reason to skip a required
+check.
 """
 
 from __future__ import annotations
@@ -30,7 +37,8 @@ from scripts.operations.agent_memory import MemoryStoreError  # noqa: E402
 STORE_NAME = "forecast.sqlite3"
 UNITS = ("minutes",)
 TIME_BASES = ("elapsed", "active")
-STATUSES = ("completed", "failed", "cancelled")
+STATUSES = ("completed", "failed", "cancelled", "blocked")
+CENSORED = STATUSES[1:]
 QUANTILES = (("p30", 0.3), ("p50", 0.5), ("p80", 0.8))
 # ponytail: a flat floor; a per-type calibration rule can replace it with data
 MIN_CALIBRATION_SAMPLE = 20
@@ -39,12 +47,12 @@ SCHEMA = (
     " revision INTEGER NOT NULL, task_type TEXT NOT NULL, unit TEXT NOT NULL,"
     " time_basis TEXT NOT NULL, p30 REAL NOT NULL, p50 REAL NOT NULL,"
     " p80 REAL NOT NULL, assumptions TEXT, reference_class TEXT,"
-    " sample_size INTEGER, forecasted_at TEXT NOT NULL,"
+    " sample_size INTEGER, forecasted_at TEXT NOT NULL, comparable_prior INTEGER,"
     " PRIMARY KEY (task_ref, revision))",
     "CREATE TABLE IF NOT EXISTS outcomes (task_ref TEXT PRIMARY KEY,"
     " status TEXT NOT NULL, started_at TEXT NOT NULL, finished_at TEXT NOT NULL,"
     " active_minutes REAL, runner_wait_minutes REAL, user_wait_minutes REAL,"
-    " observed_at TEXT NOT NULL)",
+    " observed_at TEXT NOT NULL, forecast_revision INTEGER)",
     "CREATE TRIGGER IF NOT EXISTS forecasts_no_update BEFORE UPDATE ON forecasts"
     " BEGIN SELECT RAISE(ABORT, 'forecasts are append-only'); END",
     "CREATE TRIGGER IF NOT EXISTS forecasts_no_delete BEFORE DELETE ON forecasts"
@@ -93,7 +101,42 @@ def connect(directory: Path) -> sqlite3.Connection:
     connection.execute("PRAGMA busy_timeout = 1000")
     for statement in SCHEMA:
         connection.execute(statement)
+    for table, column in (
+        ("forecasts", "comparable_prior INTEGER"),
+        ("outcomes", "forecast_revision INTEGER"),
+    ):  # a store written before these columns
+        present = {row[1] for row in connection.execute(f"PRAGMA table_info({table})")}
+        if column.split()[0] not in present:
+            connection.execute(f"ALTER TABLE {table} ADD COLUMN {column}")
     return connection
+
+
+def _comparable(connection, task_type: str, time_basis: str, before: str) -> int:
+    """Completed tasks of the same type and basis that ended before `before`."""
+    count = 0
+    for outcome in connection.execute(
+        "SELECT * FROM outcomes WHERE status='completed'"
+    ).fetchall():
+        if _when(outcome["finished_at"]) > _when(before):
+            continue
+        chosen = _scored(connection, outcome)
+        if chosen and (chosen["task_type"], chosen["time_basis"]) == (
+            task_type,
+            time_basis,
+        ):
+            count += 1
+    return count
+
+
+def _scored(connection, outcome):
+    """The revision an outcome is scored against: the stored link, else the
+    last revision fixed before its start (an outcome before the link)."""
+    if outcome["forecast_revision"] is not None:
+        return connection.execute(
+            "SELECT * FROM forecasts WHERE task_ref=? AND revision=?",
+            (outcome["task_ref"], outcome["forecast_revision"]),
+        ).fetchone()
+    return _pre_start(connection, outcome["task_ref"], _when(outcome["started_at"]))[1]
 
 
 def forecast(
@@ -114,6 +157,10 @@ def forecast(
     """Append a revision; refuse inversion, bad units and a closed task."""
     if not task_ref or not task_type:
         raise ForecastError("task_ref and task_type are required")
+    if not assumptions.strip() or not reference_class.strip():
+        raise ForecastError("assumptions and reference_class are required")
+    if type(sample_size) is not int or sample_size < 0:
+        raise ForecastError("sample_size must be a whole number, 0 or more")
     if unit not in UNITS:
         raise ForecastError(f"unit must be one of {UNITS}")
     if time_basis not in TIME_BASES:
@@ -140,7 +187,10 @@ def forecast(
             + 1
         )
         connection.execute(
-            "INSERT INTO forecasts VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO forecasts (task_ref, revision, task_type, unit,"
+            " time_basis, p30, p50, p80, assumptions, reference_class,"
+            " sample_size, forecasted_at, comparable_prior)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 task_ref,
                 revision,
@@ -154,6 +204,7 @@ def forecast(
                 reference_class,
                 sample_size,
                 at,
+                _comparable(connection, task_type, time_basis, at),
             ),
         )
         connection.execute("COMMIT")
@@ -219,7 +270,9 @@ def observe(
             connection.execute("ROLLBACK")
             raise ForecastError(problem)
         connection.execute(
-            "INSERT INTO outcomes VALUES (?,?,?,?,?,?,?,?)",
+            "INSERT INTO outcomes (task_ref, status, started_at, finished_at,"
+            " active_minutes, runner_wait_minutes, user_wait_minutes, observed_at,"
+            " forecast_revision) VALUES (?,?,?,?,?,?,?,?,?)",
             (
                 task_ref,
                 status,
@@ -229,6 +282,7 @@ def observe(
                 runner_wait_minutes,
                 user_wait_minutes,
                 now(),
+                chosen["revision"],
             ),
         )
         connection.execute("COMMIT")
@@ -254,22 +308,47 @@ def _wilson(hits: int, n: int, z: float = 1.96) -> tuple[float, float] | None:
     return (round(centre - margin, 4), round(centre + margin, 4))
 
 
-def score(directory: Path, task_type: str | None = None) -> dict:
-    """Coverage and pinball per quantile over completed tasks; censored apart."""
+def score(
+    directory: Path, task_type: str | None = None, time_basis: str | None = None
+) -> dict:
+    """Coverage and pinball per quantile over completed tasks; censored apart.
+
+    Only one task type on one time basis is a comparable group; a wider
+    selection is reported with its groups and never labelled empirical.
+    """
     connection = connect(directory)
     try:
         outcomes = connection.execute(
             "SELECT * FROM outcomes ORDER BY task_ref"
         ).fetchall()
-        completed, censored = [], {"failed": 0, "cancelled": 0}
-        for outcome in outcomes:
-            _, chosen = _pre_start(
-                connection, outcome["task_ref"], _when(outcome["started_at"])
+        closed = {outcome["task_ref"] for outcome in outcomes}
+        latest = connection.execute(
+            "SELECT f.* FROM forecasts f WHERE revision=(SELECT max(revision)"
+            " FROM forecasts g WHERE g.task_ref=f.task_ref)"
+        ).fetchall()
+        completed, censored = [], dict.fromkeys(CENSORED, 0)
+        groups: dict[tuple[str, str], dict] = {}
+
+        def selected(row) -> bool:
+            return (task_type is None or row["task_type"] == task_type) and (
+                time_basis is None or row["time_basis"] == time_basis
             )
-            if task_type and chosen["task_type"] != task_type:
+
+        def group(row) -> dict:
+            key = (row["task_type"], row["time_basis"])
+            return groups.setdefault(
+                key,
+                {"task_type": key[0], "time_basis": key[1], "completed": 0,
+                 "censored": 0, "open": 0},
+            )  # fmt: skip
+
+        for outcome in outcomes:
+            chosen = _scored(connection, outcome)
+            if chosen is None or not selected(chosen):
                 continue
             if outcome["status"] in censored:
                 censored[outcome["status"]] += 1
+                group(chosen)["censored"] += 1
                 continue
             elapsed = (
                 _when(outcome["finished_at"]) - _when(outcome["started_at"])
@@ -280,6 +359,12 @@ def score(directory: Path, task_type: str | None = None) -> dict:
                 else elapsed
             )
             completed.append((chosen, actual))
+            group(chosen)["completed"] += 1
+        opened = 0
+        for row in latest:
+            if row["task_ref"] not in closed and selected(row):
+                opened += 1
+                group(row)["open"] += 1
     finally:
         connection.close()
     quantiles = {}
@@ -298,20 +383,27 @@ def score(directory: Path, task_type: str | None = None) -> dict:
                 else None
             ),
         }
+    bases = {basis for _, basis in groups}
+    types = {kind for kind, _ in groups}
+    calibration = (
+        "mixed time bases; score one basis"
+        if len(bases) > 1
+        else "insufficient sample"
+        if len(completed) < MIN_CALIBRATION_SAMPLE
+        else "pooled across types; score one type"
+        if task_type is None or len(types) > 1
+        else "empirical"
+    )
     return {
         "task_type": task_type,
+        "time_basis": time_basis,
         "completed": len(completed),
-        "failed": censored["failed"],
-        "cancelled": censored["cancelled"],
-        "calibration": (
-            "insufficient sample"
-            if len(completed) < MIN_CALIBRATION_SAMPLE
-            else "empirical"
-            if task_type
-            else "pooled across types; score one type"
-        ),
-        "note": "completed tasks only; failed and cancelled tasks are censored,"
-        " not scored",
+        **censored,
+        "open": opened,
+        "calibration": calibration,
+        "groups": [groups[key] for key in sorted(groups)],
+        "note": "completed tasks only; failed, cancelled and blocked tasks are"
+        " censored, open forecasts are not scored",
         "quantiles": quantiles,
     }
 
@@ -337,6 +429,7 @@ def main(argv: list[str] | None = None) -> int:
         seen.add_argument(f"--{name}-minutes", type=float)
     scoring = commands.add_parser("score")
     scoring.add_argument("--type", dest="task_type")
+    scoring.add_argument("--time-basis", choices=TIME_BASES)
     args = parser.parse_args(argv)
     try:
         directory = capture.capture_dir()
@@ -356,6 +449,23 @@ def main(argv: list[str] | None = None) -> int:
                     sample_size=args.sample_size,
                 ),
             }
+            connection = connect(directory)
+            try:
+                prior = connection.execute(
+                    "SELECT comparable_prior FROM forecasts WHERE task_ref=?"
+                    " AND revision=?",
+                    (args.task_ref, result["revision"]),
+                ).fetchone()[0]
+            finally:
+                connection.close()
+            result.update(
+                comparable_prior=prior,
+                calibration="uncalibrated prior"
+                if prior < MIN_CALIBRATION_SAMPLE
+                else "comparable sample",
+                meaning="P30/P50/P80: completion within that time with"
+                " probability 0.3/0.5/0.8, not progress",
+            )
         elif args.command == "observe":
             result = observe(
                 directory,
@@ -368,7 +478,7 @@ def main(argv: list[str] | None = None) -> int:
                 user_wait_minutes=args.user_wait_minutes,
             )
         else:
-            result = score(directory, args.task_type)
+            result = score(directory, args.task_type, args.time_basis)
     except (ForecastError, MemoryStoreError, OSError, sqlite3.Error) as error:
         print(f"FORECAST_REFUSED: {error}", file=sys.stderr)
         return 2

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.6.0"
+version: "2.7.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -448,6 +448,16 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W178 | 162 | Gate the first recognized edit on a bound brief once a request is observed, show a one-time user notice per bound revision and keep a bindable draft route | W177 | TSK-0106 | Focused RED/GREEN gate, notice, draft and dispatcher tests; one bounded native refusal-then-edit per supported provider; governance and document checks plus normal hosted delivery |
 | W179 | 163 | Add D09 source states, conflicted exclusion, typed request values and the revision-bound promotion outbox to the existing memory and analysis stores | W178 | TSK-0107 | Focused RED/GREEN memory, retrieval and promotion tests; a disposable-clone CLI promotion; read-only real store reads; governance and document checks plus normal hosted delivery |
 | W180 | 164 | Apply the D10 capture and analysis delta: redact-then-cap, 30/90-day expiry, final response, ingest-sequence cursor, accumulated provenance, backlog and a checkout-bound timer | W179 | TSK-0108 | Focused RED/GREEN capture, analysis and observe tests; a synthetic-store CLI run; the real store migration and timer move observed after merge; governance and document checks plus normal hosted delivery |
+| W181 | 165 | Score forecasts per task type and time basis, count the comparable prior sample, link outcomes to their revision and add blocked and open states | W180 | TSK-0109 | Focused RED/GREEN forecast and observe tests; a real pre-start forecast and outcome for TSK-0109; governance and document checks plus normal hosted delivery |
+
+###### Current P11 forecast boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0109](01.tasks/tsk-0109-p11-forecast.md) owns criterion165/W181. The
+append-only store, pre-start scoring, censoring and the Wilson and pinball
+computations stay; existing rows keep their values and gain empty new
+columns. The P12 dispatcher and P13 observe consume the groups; forecast
+error never becomes a gate.
 
 ###### Current P10 session capture and analysis boundary
 <!-- core-payload-level:4 -->

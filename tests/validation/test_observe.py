@@ -73,8 +73,9 @@ class ObserveTests(unittest.TestCase):
         )
         for task, status in (("T1", "completed"), ("T2", "failed")):
             forecast.forecast(
-                self.directory, task, "ci-run", 1, 2, 3, forecasted_at=at(hours=-4)
-            )
+                self.directory, task, "ci-run", 1, 2, 3, forecasted_at=at(hours=-4),
+                assumptions="test", reference_class="test",
+            )  # fmt: skip
             forecast.observe(
                 self.directory, task, status, at(hours=-3), at(hours=-2, minutes=-55)
             )
@@ -181,7 +182,7 @@ class ObserveTests(unittest.TestCase):
     def test_a_forecast_reference_is_echoed_only_in_task_form(self) -> None:
         forecast.forecast(
             self.directory, "free text owner", "ci-run", 1, 2, 3,
-            forecasted_at=at(hours=-4),
+            forecasted_at=at(hours=-4), assumptions="test", reference_class="test",
         )  # fmt: skip
         forecast.observe(
             self.directory, "free text owner", "failed", at(hours=-3), at(hours=-2)
