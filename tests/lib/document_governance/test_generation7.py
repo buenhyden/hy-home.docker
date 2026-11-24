@@ -157,6 +157,31 @@ class Generation7EvidenceTests(unittest.TestCase):
         )
         self.assertFalse(self.contract(fixed).unresolved_failures)
 
+    def test_a_newer_review_by_the_same_tool_may_resolve_an_earlier_review(self):
+        def task(later):
+            fixed = current_task("FAIL", resolves="Broken")
+            return dataclasses.replace(
+                fixed,
+                body=fixed.body.replace(
+                    "| Broken | 1 | W1 | Integration |",
+                    "| Broken | 1 | W1 | method=review; tool=Claude CLI2.1.329;"
+                    " direct context; command=- |",
+                ).replace("| Good | 1 | W1 | Unit |", f"| Good | 1 | W1 | {later} |"),
+            )
+
+        newer = "method=review; tool=Claude CLI2.1.331; safe/restricted; command=-"
+        self.assertFalse(self.contract(task(newer)).unresolved_failures)
+        for later in (
+            "method=review; tool=Claude CLI2.1.300; direct context; command=-",
+            "method=review; tool=Codex CLI0.172.0; direct context; command=-",
+            "method=automated; tool=Claude CLI2.1.331; command=-",
+        ):
+            with self.subTest(later=later):
+                with self.assertRaisesRegex(
+                    module.SpecPackageError, "same Check and Work Unit"
+                ):
+                    self.contract(task(later))
+
     def test_acceptance_requires_a_current_owner(self):
         missing = current_task("PASS")
         missing = dataclasses.replace(

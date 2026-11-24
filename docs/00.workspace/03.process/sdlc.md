@@ -1,13 +1,13 @@
 ---
 title: "Software Development Lifecycle"
-version: "3.0.0"
+version: "3.1.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 ---
 
 # Software Development Lifecycle
@@ -192,8 +192,11 @@ Evidence rows record observations only: criterion, Work Unit, Check, Input,
 Result, Location, Required, and Resolves. Required is either `required` or
 `optional`. A required non-PASS observation remains open until a later PASS
 row in the same Task explicitly resolves it for a shared criterion with the
-same Check and Work Unit. An optional observation does not itself block
-acceptance. Input names the revision or candidate examined and, where they
+same Check and Work Unit. A review (`method=review`) is the one exception: a
+later review by the same tool at an equal or newer version, on the same Work
+Unit, may resolve an earlier review, because a review's mode and scope belong
+in Input and an earlier tool version may no longer be installed. An optional
+observation does not itself block acceptance. Input names the revision or candidate examined and, where they
 affect the result, the environment and tool version. Check names what was
 proved: a document or contract check and a checker's own regression test are
 different Checks. A PASS on another revision supports acceptance only when that

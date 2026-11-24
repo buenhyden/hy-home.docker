@@ -16,6 +16,18 @@ from scripts.lib.ops import dispatch_process as execution
 from scripts.lib.ops.environment_admission import Admission
 
 
+class DiskHeadroomTests(unittest.TestCase):
+    def test_low_headroom_refuses_a_start_but_never_a_teardown(self):
+        # bsize, frsize, blocks, bfree, bavail, files, ffree, favail, flag, namemax
+        low = os.statvfs_result((4096, 4096, 1000, 10, 10, 0, 0, 0, 0, 255))
+        with (
+            tempfile.TemporaryDirectory() as folder,
+            mock.patch.object(execution.os, "fstatvfs", return_value=low),
+        ):
+            self.assertIn("headroom", execution._disk_problem([folder], 2**20))
+            self.assertIsNone(execution._disk_problem([folder], 2**20, headroom=False))
+
+
 class EgressBoundaryTests(unittest.TestCase):
     def test_an_egress_limited_provider_runs_inside_pasta_with_private_ranges_cut(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -251,6 +263,61 @@ class SpawnFailureTests(unittest.TestCase):
         self.assertEqual([], admission.records())
         self.assertFalse(process_file.exists())
 
+    def test_an_unreadable_identity_still_kills_the_worker_and_keeps_the_error(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name)
+        budget = {
+            "cpus": 1,
+            "memory_bytes": 1024**2,
+            "disk_bytes": 1024**2,
+            "runtime_seconds": 60,
+        }
+        admission = Admission(
+            root / "admission",
+            namespace="host",
+            workspace_id="repo",
+            inventory=["one"],
+            limits={
+                "cpus": 2,
+                "memory_bytes": 2 * 1024**2,
+                "disk_bytes": 2 * 1024**2,
+                "runtime_seconds": 120,
+            },
+        )
+        reservation = admission.admit(kind="worker", budget=budget)
+        scope = "hy-home-worker-" + reservation["token"] + ".scope"
+        with (
+            mock.patch.object(
+                execution, "_bounded_command", return_value=(["/usr/bin/true"], scope)
+            ),
+            mock.patch.object(
+                execution.subprocess, "Popen", return_value=mock.Mock(pid=4242)
+            ),
+            mock.patch.object(execution.select, "select", return_value=([], [], [])),
+            mock.patch.object(
+                execution,
+                "process_identity",
+                side_effect=execution.AdmissionError("proc unreadable"),
+            ),
+            mock.patch.object(execution, "_kill") as kill,
+            mock.patch.object(execution, "_scope_absent", return_value=True),
+        ):
+            with self.assertRaisesRegex(OSError, "handshake"):
+                execution._spawn(
+                    ["/usr/bin/true"],
+                    root=root,
+                    name="unit",
+                    cwd=root,
+                    env={},
+                    stdout=subprocess.DEVNULL,
+                    admission=admission,
+                    budget=budget,
+                    kind="worker",
+                    reservation=reservation,
+                )
+        kill.assert_called_once()
+
     def test_intent_write_failure_releases_only_an_absent_owned_reservation(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
@@ -398,6 +465,36 @@ class RegisteredDockerTests(unittest.TestCase):
         ):
             self.assertTrue(execution.cleanup_unstarted_registered_docker(self.record))
         self.assertFalse(self.directory.exists())
+
+    def test_an_unacknowledged_controller_is_absent_once_its_owner_has_exited(self):
+        token = "e" * 32
+        execution._write_record(
+            self.directory / "operation.json",
+            {
+                "claim_token": self.claim["token"],
+                "operation_token": token,
+                "state": "intent",
+            },
+        )
+        execution._write_record(
+            self.directory / "controller.process.json",
+            {
+                "token": token,
+                "state": "intent",
+                "identity": None,
+                "scope": "hy-home-worker-" + token + ".scope",
+            },
+        )
+        # The bootstrap never acknowledged, so it never received a command.
+        for owner, expected in (("alive", False), ("absent", True)):
+            with (
+                self.subTest(owner=owner),
+                mock.patch.object(execution, "process_status", return_value=owner),
+                mock.patch.object(execution, "_scope_absent", return_value=True),
+            ):
+                self.assertEqual(
+                    expected, execution.verify_registered_docker_absent(self.record)
+                )
 
     def test_concurrent_operation_cannot_overwrite_the_current_journal(self):
         original = (self.directory / "operation.json").read_bytes()

@@ -665,6 +665,22 @@ class DispatchTests(unittest.TestCase):
                 with self.assertRaises(dispatch.PlanError):
                     dispatch._validate(plan)
 
+    def test_a_failed_admission_observation_fails_the_unit_not_the_run(self) -> None:
+        from scripts.operations.lab import LabError
+
+        for error in (LabError("docker inspect failed", 1),
+                      subprocess.TimeoutExpired("docker", 30)):  # fmt: skip
+            with self.subTest(error=type(error).__name__):
+                with mock.patch.object(self.admission, "admit", side_effect=error):
+                    report = self.run_plan([unit("a", "true", owned=["a.txt"])])
+                self.assertEqual("failed", report["status"])
+                (failed,) = report["units"]
+                self.assertEqual("failed", failed["status"])
+                store = dispatch.Leases(self.state)
+                taken = store.acquire(["path:a.txt"], "probe", 10)
+                self.assertIsNotNone(taken)  # the lease was released
+                store.release(taken, "probe")
+
     def test_bad_plans_are_refused(self) -> None:
         for units in (
             [unit("a", "true", depends=["b"]), unit("b", "true", depends=["a"])],

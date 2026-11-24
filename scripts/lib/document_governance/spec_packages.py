@@ -1555,6 +1555,29 @@ def _registered_common_section(registry: DocumentRegistry, key: str) -> str:
     return value
 
 
+_REVIEW_TOOL = re.compile(r"(?P<name>.*?)(?P<version>\d+(?:\.\d+)*)")
+
+
+def _review_tool(check: str):
+    """The tool name and version of a `method=review` Check, else None."""
+    fields = dict(
+        part.strip().split("=", 1) for part in check.split(";") if "=" in part
+    )
+    if fields.get("method") != "review" or "tool" not in fields:
+        return None
+    match = _REVIEW_TOOL.fullmatch(fields["tool"].strip())
+    if not match or not match["name"].strip():
+        return None
+    return match["name"].strip(), tuple(int(n) for n in match["version"].split("."))
+
+
+def _newer_review(earlier: str, later: str) -> bool:
+    """A review may resolve an earlier review by the same tool at an equal or
+    newer version; the review's mode and scope belong to Input (SDLC)."""
+    old, new = _review_tool(earlier), _review_tool(later)
+    return bool(old and new and old[0] == new[0] and new[1] >= old[1])
+
+
 def _cell_references(value: str, label: str) -> tuple[str, ...]:
     references = tuple(item.strip() for item in value.split(","))
     if not references or any(not item for item in references):
@@ -2123,7 +2146,12 @@ def _v6_evidence_contract(
                             f"{task.path}: Resolves must name an earlier FAIL row "
                             "that shares a criterion"
                         )
-                    if generation >= 7 and (earlier[2], earlier[3]) != (unit, check):
+                    if generation >= 7 and (
+                        earlier[2] != unit
+                        or (
+                            earlier[3] != check and not _newer_review(earlier[3], check)
+                        )
+                    ):
                         raise SpecPackageError(
                             "Resolves requires the same Check and Work Unit"
                         )

@@ -508,7 +508,14 @@ def _operating_admission(root, plan):
         # Inside the setup guard: the fill-disk claim already exists, so a
         # failed state read must still return its token for recovery.
         claimed = next(r for r in admission.records() if r["token"] == claimed["token"])
-    except (OSError, ValueError, lab.LabError, StopIteration) as error:
+    except (
+        OSError,
+        ValueError,
+        lab.LabError,
+        StopIteration,
+        KeyboardInterrupt,
+    ) as error:
+        # An interrupt here also leaves the fill-disk claim: return its token.
         released = False
         cleanup_pending = False
         try:
@@ -609,7 +616,6 @@ def execute_plan(root, document, *, runner=None):
         if not error.released:
             result["recovery_token"] = error.token
         return result
-    from scripts.operations.lab import LabError
 
     try:
         admission.attach(
@@ -658,7 +664,10 @@ def execute_plan(root, document, *, runner=None):
                 "recovery_required": False,
                 "cleanup_pending": cleanup_pending,
             }
-    except (OSError, subprocess.TimeoutExpired, ValueError, LabError):
+    except KeyboardInterrupt:
+        # SIGINT or SIGTERM: the claim stays, so its token must reach the caller.
+        failure = "interrupted"
+    except Exception:
         failure = "controller_error"
     failed = {
         "result": "START_FAILED",
@@ -700,7 +709,13 @@ def recover_start(root, token):
         or not record["services"]
     ):
         return {"result": "RECOVERY_BLOCKED", "reason": "ownership_mismatch"}
+    if process_status(record["owner"]) == "alive":
+        # An interrupted start prints its token as it exits; never race one.
+        return {"result": "RECOVERY_BLOCKED", "reason": "start_still_running"}
     one_shot_services = record["metadata"].get("one_shot_services")
+    if one_shot_services is None and not record["metadata"].get("docker_operation_dir"):
+        # The job policy was never recorded, so the claim never reached Docker.
+        one_shot_services = []
     if (
         not isinstance(one_shot_services, list)
         or any(not isinstance(name, str) for name in one_shot_services)
@@ -728,6 +743,8 @@ def recover_start(root, token):
             "reason": "pre_controller_cleanup_unverified",
         }
 
+    incomplete = []
+
     def accounted(_record):
         if controller_started and not verify_registered_docker_absent(record):
             return False
@@ -740,22 +757,24 @@ def recover_start(root, token):
             if item["project"] == record["project"]
             and item["service"] in record["services"]
         ]
-        if not selected:
-            return True
-        if {item["service"] for item in selected} != set(record["services"]):
-            return False
-        for item in selected:
-            if item["running"]:
-                continue
-            if not (
+        # With the controller gone nothing else starts; every later claim
+        # observes live containers itself, so a partial start only has to
+        # have its running containers accounted, and is reported, not held.
+        done = {
+            item["service"]
+            for item in selected
+            if item["running"]
+            or (
                 item.get("status") == "exited"
                 and item.get("exit_code") == 0
                 and item["service"] in one_shot_services
-            ):
-                return False
-        observed = admission.observe()
+            )
+        }
+        incomplete[:] = sorted(set(record["services"]) - done)
         running_services = {item["service"] for item in selected if item["running"]}
-        return running_services <= set(observed["services"])
+        return not running_services or running_services <= set(
+            admission.observe()["services"]
+        )
 
     try:
         released = admission.release(token, verify=accounted)
@@ -763,9 +782,41 @@ def recover_start(root, token):
         released = False
     if not released:
         return {"result": "RECOVERY_BLOCKED", "reason": "resources_partial_or_unknown"}
-    if controller_started and not cleanup_registered_docker(record):
-        return {"result": "RECOVERED", "cleanup_pending": True}
-    return {"result": "RECOVERED", "cleanup_pending": False}
+    result = {
+        "result": "RECOVERED",
+        "cleanup_pending": bool(
+            controller_started and not cleanup_registered_docker(record)
+        ),
+    }
+    if incomplete:
+        result["incomplete_services"] = incomplete
+    return result
+
+
+def recover_abandoned(root):
+    """Recover each owned start claim whose start process has exited.
+
+    A killed start never prints its token, so recovery finds it by ownership.
+    """
+    from scripts.lib.ops.environment_admission import process_status
+    from scripts.operations import lab
+
+    try:
+        admission = lab.execution_admission(_root(root))
+        tokens = [
+            row["token"]
+            for row in admission.records()
+            if row["kind"] == "compose-start"
+            and row["workspace_id"] == admission.workspace_id
+            and row["binding_id"] == admission.binding_id
+            and row["daemon_id"] == admission.daemon_id
+            and process_status(row["owner"]) == "absent"
+        ]
+    except (OSError, subprocess.SubprocessError, ValueError, lab.LabError):
+        return {"result": "RECOVERY_BLOCKED", "reason": "environment_unavailable"}
+    claims = {token: recover_start(root, token) for token in tokens}
+    blocked = any(item["result"] != "RECOVERED" for item in claims.values())
+    return {"result": "RECOVERY_BLOCKED" if blocked else "RECOVERED", "claims": claims}
 
 
 def load_plan(root, path):
