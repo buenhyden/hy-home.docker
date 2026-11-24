@@ -239,23 +239,56 @@ def _bounded_command(command, token, budget, *, cwd, env, git_view=None, provide
     return _scope_command(boundary, token, budget)
 
 
-# Ranges an egress-limited worker must never reach: the host's own bridges and
-# services, the LAN, carrier-grade NAT and link-local metadata addresses.
-PRIVATE_RANGES = (
+# Every non-global IPv4 range an egress-limited worker must never reach: the
+# host's bridges and services, the LAN, CGNAT, link-local metadata, special
+# and documentation ranges, multicast and reserved space. 198.18.0.0/15 is cut
+# too; the namespace's own 198.18.0.0/24 stays on its more specific link route.
+# 127.0.0.0/8 is the namespace's own loopback, and pasta forwards no port.
+BLOCKED_RANGES = (
+    "0.0.0.0/8",
     "10.0.0.0/8",
-    "172.16.0.0/12",
-    "192.168.0.0/16",
     "100.64.0.0/10",
     "169.254.0.0/16",
+    "172.16.0.0/12",
+    "192.0.0.0/24",
+    "192.0.2.0/24",
+    "192.168.0.0/16",
+    "198.18.0.0/15",
+    "198.51.100.0/24",
+    "203.0.113.0/24",
+    "224.0.0.0/4",
+    "240.0.0.0/4",
 )
-# Run as root of pasta's own user namespace, before bubblewrap drops every
-# capability: cut the private ranges, then hand the resolver to bubblewrap.
-EGRESS_SETUP = (
-    "set -e; for net in "
-    + " ".join(PRIVATE_RANGES)
-    + '; do /usr/sbin/ip route add unreachable "$net"; done; '
-    + 'dns="$1"; shift; exec "$@" 3<<EOF\nnameserver $dns\nEOF\n'
-)
+
+
+def _host_global_addresses():
+    """The host's own public IPv4 addresses, which NAT would otherwise reach."""
+    done = subprocess.run(
+        ["/usr/sbin/ip", "-j", "-4", "addr"], capture_output=True, text=True,
+        timeout=5, check=False,
+    )  # fmt: skip
+    if done.returncode != 0:
+        raise ValueError("the host address list is unavailable")
+    try:
+        found = {
+            str(ipaddress.ip_address(item["local"]))
+            for link in json.loads(done.stdout)
+            for item in link.get("addr_info", [])
+        }
+    except (ValueError, KeyError, TypeError) as error:
+        raise ValueError("the host address list is unreadable") from error
+    return sorted(f"{a}/32" for a in found if ipaddress.ip_address(a).is_global)
+
+
+def _egress_setup(blocked):
+    """Run as root of pasta's own user namespace, before bubblewrap drops every
+    capability: cut every blocked range, then hand the resolver to bubblewrap."""
+    return (
+        "set -e; for net in "
+        + " ".join(blocked)
+        + '; do /usr/sbin/ip route add unreachable "$net"; done; '
+        + 'dns="$1"; shift; exec "$@" 3<<EOF\nnameserver $dns\nEOF\n'
+    )
 
 
 def _egress_limited(boundary, dns):
@@ -267,6 +300,9 @@ def _egress_limited(boundary, dns):
     """
     if not ipaddress.ip_address(dns).is_global:
         raise ValueError("the egress resolver must be a public address")
+    blocked = [*BLOCKED_RANGES, *_host_global_addresses()]
+    for net in blocked:
+        ipaddress.ip_network(net)  # every routed value is a validated network
     bwrap = boundary.index("--share-net")
     inner = [
         *boundary[:bwrap],
@@ -285,7 +321,7 @@ def _egress_limited(boundary, dns):
         "-a", "198.18.0.2", "-n", "24", "-g", "198.18.0.1",
         "-D", dns,
         "--",
-        "/bin/sh", "-c", EGRESS_SETUP, "sh", dns,
+        "/bin/sh", "-c", _egress_setup(blocked), "sh", dns,
         *inner,
     ]  # fmt: skip
 

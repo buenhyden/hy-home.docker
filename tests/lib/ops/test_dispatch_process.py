@@ -57,6 +57,43 @@ class EgressBoundaryTests(unittest.TestCase):
         data = command.index("--ro-bind-data", bwrap)
         self.assertEqual(["3", "/etc/resolv.conf"], command[data + 1 : data + 3])
 
+    def test_every_non_global_range_and_the_hosts_own_addresses_are_cut(self):
+        host = '[{"addr_info": [{"local": "203.0.114.7"}, {"local": "10.0.0.5"}]}]'
+        done = subprocess.CompletedProcess([], 0, host, "")
+        with (
+            tempfile.TemporaryDirectory() as folder,
+            mock.patch.object(execution.subprocess, "run", return_value=done),
+        ):
+            command, _ = execution._bounded_command(
+                ["codex"], "a" * 32,
+                {"cpus": 0.3, "memory_bytes": 2**30, "disk_bytes": 2**30,
+                 "runtime_seconds": 60},
+                cwd=folder, env={},
+                provider={"binds": [], "env": {}, "share_net": True,
+                          "egress": "public", "dns": "8.8.8.8"},
+            )  # fmt: skip
+        script = command[command.index("-c", command.index("/usr/bin/pasta")) + 1]
+        for net in ("0.0.0.0/8", "192.0.0.0/24", "192.0.2.0/24", "198.18.0.0/15",
+                    "198.51.100.0/24", "203.0.113.0/24", "224.0.0.0/4",
+                    "240.0.0.0/4", "203.0.114.7/32"):  # fmt: skip
+            self.assertIn(net, script)
+
+    def test_an_unreadable_host_address_list_is_refused(self):
+        failed = subprocess.CompletedProcess([], 1, "", "boom")
+        with (
+            tempfile.TemporaryDirectory() as folder,
+            mock.patch.object(execution.subprocess, "run", return_value=failed),
+        ):
+            with self.assertRaises(ValueError):
+                execution._bounded_command(
+                    ["codex"], "a" * 32,
+                    {"cpus": 0.3, "memory_bytes": 2**30, "disk_bytes": 2**30,
+                     "runtime_seconds": 60},
+                    cwd=folder, env={},
+                    provider={"binds": [], "env": {}, "share_net": True,
+                              "egress": "public", "dns": "8.8.8.8"},
+                )  # fmt: skip
+
     def test_an_invalid_resolver_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:
             with self.assertRaises(ValueError):
