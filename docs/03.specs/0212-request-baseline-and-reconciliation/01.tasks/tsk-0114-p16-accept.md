@@ -1,6 +1,6 @@
 ---
 title: "P16 Acceptance Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -90,10 +90,11 @@ environment E, owner acceptance A):
 | 169 | P15 | done | owned removal (TSK-0113 E05) | accepted | none |
 | 138 | W08 | done | removal refused by R2 lock | pending | remove the locked R2 memory copies after 2026-12-10 |
 | 148 | W10 | done | daily backup failing | pending | R2 at its 9 GB cap: a remote prune after the lock of snapshot d0f50bdd ends, or an R2 cap decision, then a successful daily backup |
-| 153 | W09 follow-up | done | ReDoS re-check PASS | pending | owner dismisses 10 CodeQL alerts (TSK-0097) |
+| 153 | W09 follow-up | done | ReDoS re-check PASS; owner dismissed all 10 alerts, 0 open | pending | none; owner acceptance only |
 
 Cutover readiness: **not ready**. Required boundaries stay open for 138,
-148, 161, 162, 164 and 166, and 153 waits for the owner's dismissal. Hosted CI on
+148, 161, 162, 164 and 166, and 153 has no open required row (the owner dismissed its alerts) and waits
+for acceptance only. Hosted CI on
 `main` passed for the current heads, so no required CI is cancelled or
 failing. Q-01 to Q-04 are settled; no new question affects the cutover
 beyond the Codex worker choice already made.
@@ -154,7 +155,7 @@ E08 resolves E07; E05 stays FAIL until the owner installs passt.
 ##### Remaining Conditions
 
 P17 starts only when 138, 148, 161, 162, 164 and 166 have closed their required
-boundaries and the owner has decided 153: install passt, observe Codex after
+boundaries: install passt, observe Codex after
 2026-11-27 12:53, see the 2026-11-25 03:00 analysis run, clear the R2 cap and
 see a successful daily backup, and remove the locked R2 memory copies after
 2026-12-10.
