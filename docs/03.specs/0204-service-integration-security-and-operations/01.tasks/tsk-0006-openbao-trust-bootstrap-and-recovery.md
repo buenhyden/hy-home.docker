@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.40"
+version: "0.2.41"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4185,6 +4185,36 @@ seed parser, were fixed in the follow-up commit.
 inputs, the backup timer, the two shares and the window itself. The rehearsal
 parent directories under the session scratchpad hold UID 100 synthetic data for
 the owner to remove.
+
+#### W0 owner inputs for the 2.7.3 window 2026-11-24
+
+**Custody re-attestation (owner-attested).** On 2026-11-24 the owner stated,
+without values, that since the 2026-11-11 record there has been no key rotation
+or move, no share rekey, no CA key replacement, no change or loss of place A and
+no change to the exposure premise. This is the RUN-0105 re-confirmation of the
+last valid record, so the custody precondition holds for this window.
+
+**K8s writers.** `k3d cluster list` on the HOME host returned no cluster at
+2026-11-24 23:07 KST, no kubectl context exists, and the owner (@buenhyden)
+confirmed that no cluster runs. No Kubernetes login subject can write to
+OpenBao, so W3 runs `w3 … --writers-checked` (checked by @buenhyden, 23:07 KST)
+and Finish skips `k8s-writers.sh`.
+
+**Window.** 120 minutes, scheduled outside the 03:30 KST backup run.
+
+**Operator inputs (paths only, checked by metadata).**
+
+- `P01_APPROVED_COMMIT` and `issuer_commit`:
+  `10bd9f43ec36933e40d93b6c34776cf736ee8f53` (PR #1181 merge, CI and
+  independent review passed). The helper must be installed from this commit,
+  because the earlier installed helpers pin older images.
+- `operator_tools`: `/home/hyunyoun/.local/share/hy-home-openbao-tools` (0700,
+  owner).
+- `issuance_journal`: `/home/hyunyoun/.local/share/hy-home-openbao-journal`
+  (0700, owner; anchor last written 2026-11-09).
+- `agent_volume`: `hy-home-infra_openbao-agent-data`, the volume mounted at
+  `/openbao/agent` in the running Agent.
+- `XDG_RUNTIME_DIR` is a 0700 tmpfs, and Linger is `yes`.
 
 ### Blockers and Decisions
 
