@@ -74,7 +74,7 @@
       "images": [
         "ghcr.io/zalando/spilo-17:4.0-p3",
         "postgres:18.6-alpine",
-        "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+        "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
         "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
       ],
       "compose_files": [
@@ -96,7 +96,7 @@
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
+            "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b"
           ]
         },
         {
@@ -108,13 +108,13 @@
         {
           "compose_file": "infra/08-ai/mlflow/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
+            "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b"
           ]
         },
         {
           "compose_file": "infra/11-quality/pact-broker/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
+            "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b"
           ]
         },
         {
@@ -528,7 +528,7 @@
         "yanwk/comfyui-boot": "external"
       },
       "images": [
-        "yanwk/comfyui-boot:cu126-slim@sha256:2860c103583fbbd03f2e324116395a47e68ad0ef84fc3689f03b42a63fba41a6"
+        "yanwk/comfyui-boot:cu126-slim@sha256:f64b9ed83e84820748f442a2701b871e80504e3251abfdb72eda2b493e392669"
       ],
       "compose_files": [
         "infra/08-ai/comfyui/docker-compose.yml"
@@ -537,7 +537,7 @@
         {
           "compose_file": "infra/08-ai/comfyui/docker-compose.yml",
           "images": [
-            "yanwk/comfyui-boot:cu126-slim@sha256:2860c103583fbbd03f2e324116395a47e68ad0ef84fc3689f03b42a63fba41a6"
+            "yanwk/comfyui-boot:cu126-slim@sha256:f64b9ed83e84820748f442a2701b871e80504e3251abfdb72eda2b493e392669"
           ]
         }
       ]
@@ -1079,7 +1079,7 @@
         "neo4j": "external"
       },
       "images": [
-        "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6"
+        "neo4j:5.26.33-community@sha256:51d0314ef86074f519003da8dd4daaa9fff72b8479672b742d7cab7f3064e3ed"
       ],
       "compose_files": [
         "infra/04-data/neo4j/docker-compose.yml"
@@ -1088,7 +1088,7 @@
         {
           "compose_file": "infra/04-data/neo4j/docker-compose.yml",
           "images": [
-            "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6"
+            "neo4j:5.26.33-community@sha256:51d0314ef86074f519003da8dd4daaa9fff72b8479672b742d7cab7f3064e3ed"
           ]
         }
       ]
@@ -1102,7 +1102,7 @@
       },
       "images": [
         "opensearchproject/opensearch-dashboards:3.8.0",
-        "opensearchproject/opensearch-dashboards:3.9.0@sha256:256d4cea5928868ac09bca642a0ac8285a2b7e4b7fdd45c4ec06e75a5cf3184c"
+        "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc"
       ],
       "compose_files": [
         "infra/04-data/opensearch/docker-compose.yml",
@@ -1112,7 +1112,7 @@
         {
           "compose_file": "infra/04-data/opensearch/docker-compose.yml",
           "images": [
-            "opensearchproject/opensearch-dashboards:3.9.0@sha256:256d4cea5928868ac09bca642a0ac8285a2b7e4b7fdd45c4ec06e75a5cf3184c"
+            "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc"
           ]
         },
         {
@@ -1212,7 +1212,7 @@
         "registry": "external"
       },
       "images": [
-        "registry:3.1.2@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8"
+        "registry:3.1.2@sha256:82f6ff4a7f982960c8aa51617fea3aabc485df6e55cce80d22deb1de36f1bc3c"
       ],
       "compose_files": [
         "infra/09-platform-ops/registry/docker-compose.yml"
@@ -1221,7 +1221,7 @@
         {
           "compose_file": "infra/09-platform-ops/registry/docker-compose.yml",
           "images": [
-            "registry:3.1.2@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8"
+            "registry:3.1.2@sha256:82f6ff4a7f982960c8aa51617fea3aabc485df6e55cce80d22deb1de36f1bc3c"
           ]
         }
       ]
@@ -1410,7 +1410,7 @@
         "python": "external"
       },
       "images": [
-        "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a"
+        "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd"
       ],
       "compose_files": [
         "infra/08-ai/crawl4ai/docker-compose.yml",
@@ -1420,13 +1420,13 @@
         {
           "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
           "images": [
-            "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a"
+            "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd"
           ]
         },
         {
           "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
           "images": [
-            "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a"
+            "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd"
           ]
         }
       ]
