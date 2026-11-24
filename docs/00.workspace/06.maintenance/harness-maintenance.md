@@ -1,6 +1,6 @@
 ---
 title: "Harness Maintenance"
-version: "2.8.0"
+version: "2.9.0"
 type: "governance/workspace-guide"
 status: "active"
 owner: "@buenhyden"
@@ -354,9 +354,17 @@ fails the unit, and a result whose patch or log holds a credential value (also
 base64, hex, URL- or JSON-escaped) or whose patch holds binary content or a
 link is rejected and its log wiped. The worker has no network-capable tool; only the
 CLI process uses the shared network, a monitored boundary rather than a block.
-A Codex unit is refused: its model gets a shell, which with the host network
-and its credentials could reach loopback services and the token, until an
-egress-limited network namespace exists.
+A Codex unit's model gets a shell, so it never shares the host network
+(ENVIRONMENT-CONSTRAINTS R173): the sandbox runs inside a `pasta` network
+namespace that forwards no port either way, does not map its gateway to the
+host and uses 198.18.0.0/24; a setup step makes 10.0.0.0/8, 172.16.0.0/12,
+192.168.0.0/16, 100.64.0.0/10 and 169.254.0.0/16 unreachable before
+bubblewrap drops every capability, and the worker resolves names through the
+first public upstream nameserver. Without one the unit is refused. The host
+needs the `passt` package and an AppArmor profile that lets `/usr/bin/pasta`
+create user namespaces (`/etc/apparmor.d/pasta-userns`, the same form as
+`lxc-unshare`); without it pasta fails with `uid_map: Operation not
+permitted`.
 A unit starts only when every dependency succeeded and it holds leases on all its
 owned paths and shared resources; each lease carries a rising fencing
 generation, and a result from an expired or taken-over lease is refused, as is

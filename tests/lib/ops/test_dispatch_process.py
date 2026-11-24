@@ -16,6 +16,48 @@ from scripts.lib.ops import dispatch_process as execution
 from scripts.lib.ops.environment_admission import Admission
 
 
+class EgressBoundaryTests(unittest.TestCase):
+    def test_an_egress_limited_provider_runs_inside_pasta_with_private_ranges_cut(self):
+        with tempfile.TemporaryDirectory() as folder:
+            command, _ = execution._bounded_command(
+                ["codex", "exec"], "a" * 32,
+                {"cpus": 0.3, "memory_bytes": 2**30, "disk_bytes": 2**30,
+                 "runtime_seconds": 60},
+                cwd=folder, env={},
+                provider={"binds": [], "env": {}, "share_net": True,
+                          "egress": "public", "dns": "8.8.8.8"},
+            )  # fmt: skip
+        pasta = command.index("/usr/bin/pasta")
+        for flag in ("--config-net", "--no-map-gw", "-4"):
+            self.assertIn(flag, command[pasta:])
+        for option in ("-T", "-U", "-t", "-u"):
+            self.assertEqual("none", command[command.index(option, pasta) + 1])
+        self.assertEqual("198.18.0.1", command[command.index("-g", pasta) + 1])
+        script = command[command.index("-c", pasta) + 1]
+        for net in ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16",
+                    "100.64.0.0/10", "169.254.0.0/16"):  # fmt: skip
+            self.assertIn(net, script)
+        self.assertIn("unreachable", script)
+        self.assertEqual("8.8.8.8", command[command.index("-c", pasta) + 3])
+        bwrap = command.index("/usr/bin/bwrap")
+        self.assertLess(pasta, bwrap)
+        self.assertIn("--share-net", command[bwrap:])
+        data = command.index("--ro-bind-data", bwrap)
+        self.assertEqual(["3", "/etc/resolv.conf"], command[data + 1 : data + 3])
+
+    def test_an_invalid_resolver_is_refused(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with self.assertRaises(ValueError):
+                execution._bounded_command(
+                    ["codex"], "a" * 32,
+                    {"cpus": 0.3, "memory_bytes": 2**30, "disk_bytes": 2**30,
+                     "runtime_seconds": 60},
+                    cwd=folder, env={},
+                    provider={"binds": [], "env": {}, "share_net": True,
+                              "egress": "public", "dns": "8.8.8.8; id"},
+                )  # fmt: skip
+
+
 class DispatchProcessTests(unittest.TestCase):
     def test_controller_does_not_forward_unselected_environment_secrets(self):
         found = execution._controller_environment(

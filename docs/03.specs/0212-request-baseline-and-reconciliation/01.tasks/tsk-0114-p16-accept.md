@@ -1,6 +1,6 @@
 ---
 title: "P16 Acceptance Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -84,7 +84,7 @@ environment E, owner acceptance A):
 | 163 | P09 | done | shared memory round trip reused | accepted | none |
 | 164 | P10 | done | store migration observed | pending | first scheduled run of the renamed unit (2026-11-25 03:00); Codex final-response capture after 2026-11-27 12:53 |
 | 165 | P11 | done | real forecast and outcome | accepted | none (calibration needs 20 samples) |
-| 166 | P12 | Claude done; Codex refused | two-worker Claude run and cancel | pending | Codex worker: owner installs passt, then implementation and a real run after 2026-11-27 12:53 |
+| 166 | P12 | done, Codex in the egress-limited namespace (TSK-0110 E22, E23) | two-worker Claude run and cancel; egress boundary observed | pending | a real Codex worker run after 2026-11-27 12:53 |
 | 167 | P13 | done | read-only real report | accepted | none (effects unobserved by design) |
 | 168 | P14 | done | read-only real selection | accepted | none: TSK-0112 E15 (555 tests with the repository venv) and E16 (hosted pass on the fixed head) resolve its open rows; job recreation is seen at the next owner `up` |
 | 169 | P15 | done | owned removal (TSK-0113 E05) | accepted | none |
@@ -139,10 +139,11 @@ answers; a merge or a PASS was not taken as acceptance.
 | E06 | 170 | W186 | method=automated; tool=Python3.12.3; command=document corpus lifecycle, metadata check-changed | Change | PASS | 0 violations | required | - |
 | E07 | 170 | W186 | method=automated; tool=Python3.12.3; command=document corpus lifecycle on the acceptances | Change before 161 and 168 were settled | FAIL | `accepted criterion 161 has an unresolved required observation`, then the same for 168 | required | - |
 | E08 | 170 | W186 | method=automated; tool=Python3.12.3; command=document corpus lifecycle on the acceptances | 161 kept pending; TSK-0112 E15 and E16 added | PASS | 0 violations | required | E07 |
+| E09 | 170 | W186 | method=observation; tool=which; command=which pasta passt slirp4netns | This host, after the owner installed passt and the pasta AppArmor profile | PASS | `/usr/bin/pasta` present and able to create its namespace (TSK-0110 E23) | required | E05 |
 
 ##### Resolution Links
 
-E08 resolves E07; E05 stays FAIL until the owner installs passt.
+E08 resolves E07 and E09 resolves E05.
 
 #### Acceptance Decision
 
@@ -155,7 +156,7 @@ E08 resolves E07; E05 stays FAIL until the owner installs passt.
 ##### Remaining Conditions
 
 P17 starts only when 138, 148, 161, 162, 164 and 166 have closed their required
-boundaries: install passt, observe Codex after
+boundaries: observe Codex after
 2026-11-27 12:53, see the 2026-11-25 03:00 analysis run, clear the R2 cap and
 see a successful daily backup, and remove the locked R2 memory copies after
 2026-12-10.
