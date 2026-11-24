@@ -784,7 +784,9 @@ def agent_kv_fields():
             path, body = block.split('"', 1)
             route = path.removeprefix("secret/data/hy-home/")
             names = fields.setdefault(route, set())
-            names.update(re.findall(r"\.Data\.data\.(\w+)", body.split("end")[0]))
+            names.update(
+                re.findall(r"\.Data\.data\.(\w+)", re.split(r"\{\{-?\s*end\b", body)[0])
+            )
     if not sources or not fields:
         raise AssertionError("agent.hcl names no KV template")
     return fields

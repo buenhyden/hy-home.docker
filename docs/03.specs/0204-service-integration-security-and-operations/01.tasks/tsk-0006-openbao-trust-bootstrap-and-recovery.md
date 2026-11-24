@@ -4157,7 +4157,7 @@ the reported 2.7.1 r1 string to `w3` and names `-07` in its residue checks.
 **Rehearsal drift found and fixed.** The opt-in native rehearsal failed on
 `main` too (pre-existing, `INDETERMINATE`). Two fixture causes: the fixture pinned
 Docker 29.8.2 while the host now runs 29.9.2, and since `1fd1fa4e6`
-(2026-10-28) `agent.hcl` renders 20 templates while the synthetic seed wrote only
+(2026-10-28) `agent.hcl` renders 19 templates while the synthetic seed wrote only
 the two canary paths, so the Agent health check never passed. The seed now
 writes every KV path and field the templates read. The rehearsal images are now
 the real HOME 2.7.1 r1 old image and the 2.7.3 r4 candidate.
@@ -4174,6 +4174,12 @@ attempt directory left. Both renderer-role native rehearsals passed on the 2.7.3
 r4 and HOME 2.7.1 r1 images. Every `tests/validation/test_openbao_*` module
 passed without the opt-in flag, and the changed-document metadata check reports
 no violation.
+
+**Independent review.** A read-only `security-auditor` review of `5557a1e10`
+returned PASS with no blocking finding. It traced the W3 receipt version, the
+contract producer, `w3a` and `w4` gates and found no stale runtime value. Its two
+non-blocking notes, the template count (19, not 20) and a substring split in the
+seed parser, were fixed in the follow-up commit.
 
 **Still owner-held.** Custody re-attestation, the k3d ESO/Argo writer stop
 inputs, the backup timer, the two shares and the window itself. The rehearsal
