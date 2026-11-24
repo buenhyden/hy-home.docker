@@ -174,7 +174,8 @@ def _limits(service: dict) -> dict:
 
 
 def is_job(service: dict) -> bool:
-    return str(service.get("restart", "")) == "no"
+    """A one-shot by its declared role (P14); the restart policy is not a role."""
+    return (service.get("labels") or {}).get("hy-home.role") == "job"
 
 
 def _positive_limit(value: object, kind: str) -> bool:

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.9.0"
+version: "2.10.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -363,6 +363,12 @@ report, adds no telemetry store, and adds only the D13 delta: dispatch
 blocked states, time and CLI cost estimates, the analysis candidate chain to a
 Task and an observed effect, the D10 lifetime for dispatch run folders, and
 the real backup result in its owner Task.
+
+The direct P14-DOCKER1.2.0 request adds criterion168/W184 in TSK-0112. It
+keeps the HOME selector, the shared admission union against the product
+inventory and the whole-stack refusal, and adds only the D14 delta: the HOME
+job role comes from the `hy-home.role` label, never from the restart policy,
+in the selector, the operating start and the common-controls check.
 
 #### Scope
 
@@ -1548,6 +1554,14 @@ target, backup, recovery boundary, and action-specific authorization.
      candidate to its Task and check and record its effect with a sample;
      expire dispatch worker text at 30 days and run folders at 90; and record
      the real daily backup results in TSK-0092 without closing criterion148.
+
+168. TSK-0112 applies P14-DOCKER1.2.0 to the current Docker workspace.
+     Declare each HOME job with the `hy-home.role: job` label on the job
+     templates and k6; make the HOME selector, the operating Compose start
+     and the common-controls check read that label instead of
+     `restart: "no"`; list the selected jobs in the selection report; keep
+     every awaited `service_completed_successfully` dependency a job and
+     every job `restart: "no"`; and start no service.
 
 ##### Evidence Requirements
 

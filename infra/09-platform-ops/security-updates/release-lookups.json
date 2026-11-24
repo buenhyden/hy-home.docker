@@ -57618,7 +57618,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "UNKNOWN",
-          "source_input_sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757",
+          "source_input_sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455",
           "assessment_version": "2.3.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },

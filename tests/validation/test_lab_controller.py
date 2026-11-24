@@ -2907,6 +2907,38 @@ class HomeSelectionTests(unittest.TestCase):
         self.assertEqual((5, 5), (report["union"], report["total"]))
         self.assertIn("every", " ".join(report["problems"]))
 
+    def test_roles_come_from_the_role_label_never_from_restart(self):
+        services = {
+            "init": {"restart": "no", "labels": {"hy-home.role": "job"}},
+            "daemon": {"restart": "no"},
+            "api": {"labels": {"hy-home.role": "service"}},
+            "odd": {"labels": {"hy-home.role": "batch"}},
+        }
+        roles, problems = lab.home_roles(services)
+        self.assertEqual(
+            {"init": "job", "daemon": "service", "api": "service", "odd": "batch"},
+            roles,
+        )
+        self.assertEqual(1, len(problems))
+        self.assertIn("odd", problems[0])
+
+    def test_the_selection_names_the_jobs_to_wait_for_to_exit(self):
+        home = {
+            "name": "hy-home-infra",
+            "services": {
+                "app": {"profiles": ["core"], "depends_on": {"init": {}}},
+                "init": {
+                    "profiles": ["core"],
+                    "restart": "no",
+                    "labels": {"hy-home.role": "job"},
+                },
+                "web": {"profiles": ["edge"]},
+            },
+        }
+        report = lab.home_selection(home, ["app"], [], [])
+        self.assertEqual(["init"], report["jobs"])
+        self.assertEqual([], report["problems"])
+
     def test_other_projects_and_stopped_containers_do_not_count(self):
         running = self.running("web", "cron", project="hy-home-lab-x")
         running.append({"project": "hy-home-infra", "service": "web",

@@ -95,6 +95,29 @@ class TierLayoutTests(unittest.TestCase):
                     )
         self.assertLessEqual(set(exceptions), seen)
 
+    def test_home_jobs_declare_their_role(self):
+        """A HOME job carries `hy-home.role: job` (P14); restart is not a role."""
+        from scripts.operations import lab
+
+        services = lab.render("docker", ROOT / ".env.example", None)["services"]
+        roles, problems = lab.home_roles(services)
+        self.assertEqual([], problems)
+        awaited = {
+            target
+            for service in services.values()
+            for target, rule in (service.get("depends_on") or {}).items()
+            if rule.get("condition") == "service_completed_successfully"
+        }
+        for name in sorted(awaited):
+            with self.subTest(awaited=name):
+                self.assertEqual("job", roles[name])
+        for name, role in sorted(roles.items()):
+            if role == "job":
+                with self.subTest(job=name):
+                    # A job that Docker restarts would run again on its own.
+                    self.assertEqual("no", services[name].get("restart"))
+        self.assertGreaterEqual(sum(r == "job" for r in roles.values()), 19)
+
     def test_retired_influxdb_has_no_active_deployment(self):
         # ADR-0047: absence from the deployable model, not a repository-wide
         # string ban; history and research keep their wording.

@@ -1,13 +1,13 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
@@ -87,8 +87,8 @@ Actual inputs and preconditions are those declared by the role payload below.
 | POL-0001-R17 | `infra/` Compose | 필수: `container_name`과 `hostname`은 서비스 이름과 같다 | none | none |
 | POL-0001-R18 | `network_mode: host`로 실행하는 `node-exporter` | 허용: `hostname`을 선언하지 않는다 | none | none |
 | POL-0001-R19 | 서비스 이름과 다른 `container_name` | 필수: root 레지스트리의 `naming_exceptions`에 `container_name`과 `reason`으로 등록한다 | `tests.validation.test_infra_tier_layout` | none |
-| POL-0001-R20 | `restart: "no"`인 job | 허용: healthcheck 없이 둔다 | none | none |
-| POL-0001-R21 | `restart: "no"`인 job의 healthcheck 부재 | 금지: lifecycle 사실을 예외로 등록한다 | none | none |
+| POL-0001-R20 | `hy-home.role: job` label을 선언한 job | 허용: healthcheck 없이 둔다. job은 `restart: "no"`여야 하며 restart 정책만으로는 job이 되지 않는다 | `tests.validation.test_infra_tier_layout` | none |
+| POL-0001-R21 | job의 healthcheck 부재 | 금지: lifecycle 사실을 예외로 등록한다 | none | none |
 | POL-0001-R22 | secret을 읽지 않는 서비스 | 허용: Docker secret 없이 둔다(비적용) | none | none |
 | POL-0001-R23 | 예외 등록 시 | 금지: wildcard 서비스/파일/scope | none | none |
 | POL-0001-R24 | 예외 등록 시 | 금지: 미등록 control | none | none |
@@ -119,7 +119,7 @@ Actual inputs and preconditions are those declared by the role payload below.
     root 레지스트리의 `naming_exceptions`에 `container_name`과 `reason`으로 등록한다
     (`tests.validation.test_infra_tier_layout`가 검사).
 - **약화 예외가 아닌 것**:
-  - `restart: "no"`인 job은 healthcheck가 필요 없다. lifecycle 사실이므로 예외로 등록하지 않는다.
+  - `hy-home.role: job` label을 선언한 job은 healthcheck가 필요 없다. lifecycle 사실이므로 예외로 등록하지 않는다. `template-job-low`·`template-job-med`가 이 label을 준다. restart 정책은 Docker의 재시작 동작일 뿐 역할이 아니다(P14).
   - secret을 읽지 않는 서비스에는 Docker secret이 필요 없다(비적용).
 - **Disallowed**:
   - wildcard 서비스·파일·scope, 미등록 control, 중복 예외

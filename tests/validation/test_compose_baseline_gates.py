@@ -642,9 +642,13 @@ class ComposeControlsTests(unittest.TestCase):
                 self.assertIn(f"root/a: {control}", findings[0])
 
     def test_a_job_needs_no_healthcheck_and_no_service_needs_a_secret(self) -> None:
-        job = {**COMPLIANT, "restart": "no"}
+        # The role label makes the job (P14); restart "no" alone does not.
+        job = {**COMPLIANT, "restart": "no", "labels": {"hy-home.role": "job"}}
         job.pop("healthcheck")
         self.assertEqual([], self.check(self.models(a=job)))
+        unlabelled = {**COMPLIANT, "restart": "no"}
+        unlabelled.pop("healthcheck")
+        self.assertTrue(self.check(self.models(a=unlabelled)))
 
     def test_unregistered_controls_are_reported_but_not_enforced(self) -> None:
         service = {**COMPLIANT, "init": False}

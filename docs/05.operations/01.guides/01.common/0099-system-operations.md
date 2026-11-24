@@ -1,13 +1,13 @@
 ---
 title: "System Operations Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-24"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -95,10 +95,12 @@ POL-0078을 함께 확인한다. profile은 보안 격리나 별도 호스트가
 | 확인 수준 | 확인하는 사실 | 아직 증명하지 못하는 것 |
 | --- | --- | --- |
 | 정적 선택·구성 검증 | include, profile, 참조 경로와 선언된 의존성의 일관성 | 실제 mount, credential, 자원 여유, 애플리케이션 동작 |
-| 초기화 작업 완료 | 대상 작업의 종료 코드와 완료 조건 | 이후 daemon의 가용성 또는 데이터 복구 |
+| 초기화 작업 완료 | `hy-home.role: job` 작업의 종료 코드 0과 완료 조건 | 이후 daemon의 가용성 또는 데이터 복구 |
 | 컨테이너 실행·health | 각 소스가 정의한 검사 통과 | 인증·권한·업무 요청의 성공 |
 | 인증된 기능 점검 | 허용 사용자와 대상 기능의 실제 결과 | 다른 기능, 부하 여유 또는 복구 가능성 |
 | 보호된 백업과 격리 복원 | 명시한 범위·복구 시점의 복원 및 앱 검증 | 다른 데이터와 전체 호스트 장애 복구 |
+
+역할은 `hy-home.role` label이 정한다. `job`은 종료 코드 0으로 끝나야 완료이고, 그 밖의 서비스는 실행 중이며 선언한 healthcheck를 통과해야 준비된 것이다. `restart` 정책은 Docker의 재시작 동작일 뿐 역할 판정에 쓰지 않는다. `lab.py select`는 선택한 closure의 `jobs`를 보여 주고, `compose_start`와 common controls 검사는 같은 label을 읽는다.
 
 티어 번호는 기동 순서가 아니다. 예를 들어 [Airflow](../../../../infra/07-workflow/airflow/docker-compose.yml)는
 `airflow-init`의 `service_completed_successfully`를, [Open Notebook](../../../../infra/08-ai/open-notebook/docker-compose.yml)은

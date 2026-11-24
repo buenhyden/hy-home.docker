@@ -747,6 +747,27 @@ def running_containers(docker: str) -> list[dict]:
     return containers
 
 
+HOME_ROLE_LABEL = "hy-home.role"
+
+
+def home_roles(services: dict) -> tuple[dict[str, str], list[str]]:
+    """Each HOME service's declared role and the label problems.
+
+    `hy-home.role: job` marks a one-shot that is done only when it exits 0;
+    any other service must be running and, if it declares one, healthy. The
+    restart policy is Docker's restart behavior and is never read as a role.
+    """
+    roles, problems = {}, []
+    for name, service in sorted(services.items()):
+        labels = service.get("labels") or {}
+        role = roles[name] = labels.get(HOME_ROLE_LABEL, "service")
+        if role not in LAB_ROLES:
+            problems.append(
+                f"{name}: {HOME_ROLE_LABEL} must be service or job, not {role!r}"
+            )
+    return roles, problems
+
+
 def home_selection(
     model: dict, services: list[str], profiles: list[str], containers: list[dict]
 ) -> dict:
@@ -793,9 +814,13 @@ def home_selection(
         problems.append(
             f"the start would leave every one of {len(declared)} HOME services running"
         )
+    roles, role_problems = home_roles({n: declared[n] for n in closure})
+    problems += role_problems
     return {
         "project": model.get("name"),
         "closure": sorted(closure),
+        # Wait for these to exit 0; every other closure member to run (healthy).
+        "jobs": sorted(n for n, role in roles.items() if role == "job"),
         "added_by_dependency": sorted(closure - picked),
         "already_running": sorted(closure & running),
         "union": len(union),

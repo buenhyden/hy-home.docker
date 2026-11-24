@@ -176,6 +176,16 @@ class P09ComposeControlsTests(unittest.TestCase):
             ),
         )
 
+    def test_the_role_label_not_the_restart_policy_makes_a_job(self):
+        job = {"restart": "no", "labels": {"hy-home.role": "job"}}
+        daemon = {"restart": "no"}
+        self.assertTrue(controls.is_job(job))
+        self.assertFalse(controls.is_job(daemon))
+        self.assertNotIn("healthcheck", controls.deviations(job, ()))
+        found = controls.deviations(daemon, ())
+        self.assertEqual("absent", found["healthcheck"])
+        self.assertEqual("no", found["restart"])
+
     def test_nonpositive_and_malformed_resource_limits_are_not_accepted(self):
         invalid = {"cpus": "0", "mem_limit": "0m", "pids_limit": -1}
         found = controls.deviations(invalid, ())
