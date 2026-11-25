@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.44"
+version: "0.2.45"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4324,11 +4324,31 @@ the local state directory (Restic plus pgBackRest) was 8269 MiB against the
   listing, the timer stop and partial-refusal wording in RUN-0021, and two
   stale sentences).
 
-Next: the owner removes the `index/` lock rule, approves the trim list, and the
-trim runs on both sides. Then, after this change merges, the remote `prune` runs once with the owner's
-approval of this scope, then the owner runs `hyhome-backup.service` once,
-checks `Result=success`, restarts `hyhome-backup.timer`, and reruns the window
-driver from `prep` on the merge commit.
+- **Trim to 2026-11-11 (owner-approved date; `index/` lock rule removed by the
+  owner).** The local `trim` (08:15 KST) deleted 28 state and 28 host
+  snapshots and freed 4.303 GiB; the budget directory measured 2162 MiB. The
+  R2 `trim` (from 08:16:50 KST) selected 63 of 77 snapshots and deleted 24,
+  then restic kept retrying four snapshot objects (`4c139a52`, `ba0b28e5`,
+  `d0f50bdd`, `d97bb573`) refused with "The object is locked by the bucket
+  policy" (735 refusals in 1 h 47 min) without exiting. `snapshots/` is still
+  under the 30-day lock, which counts from the re-upload by `restic copy`, not
+  from the snapshot time. Per RUN-0021 8.5 the run was stopped at 10:05 KST
+  before its prune; 53 snapshots remain, 41 of them before the cutoff.
+- **Stale lock (owner-approved unlock).** The stopped run left exclusive lock
+  `18eaf9b1`. restic 0.19.1 still refused a new exclusive lock 32 minutes
+  later, so it does not drop a stale exclusive lock by itself. With no restic
+  container or host process and `hyhome-backup.service` inactive, a plain
+  `restic unlock` (no `--remove-all`), run with the `offsite.sh` environment
+  header because `cmd unlock` is refused, removed 1 lock at 10:35 KST.
+- **Remote `prune` (owner-approved), 10:35-10:36 KST.** It deleted 179 unused
+  packs (2.779 GiB) and rewrote 76 indexes with no lock refusal: `R2 repository
+  size: 7749627208 -> 4759529907 bytes`, under the 7.5 GB cap. The following
+  `restic-offsite check` reported `no errors were found` over 53 snapshots.
+
+Next: the owner runs `hyhome-backup.service` once, checks `Result=success`,
+restarts `hyhome-backup.timer`, and reruns the window driver from `prep` on the
+current main commit. The 41 locked R2 snapshots before 2026-11-11 can be
+trimmed after their lock expires.
 
 ### Blockers and Decisions
 

@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "2.2.2"
+version: "2.2.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -566,7 +566,13 @@ docker compose --profile backup run --rm --no-deps \
 
 로컬 `trim`은 지운 뒤 `prune`(repack 포함)을, R2 `trim`은 `prune --max-repack-size 0`을 실행한다.
 R2에서 아직 lock 아래인 snapshot은 거부되고, restic이 나머지 삭제도 멈출 수 있으므로 run이
-0이 아닌 값으로 끝나면 확인 값 없이 다시 실행해 남은 목록을 본다. Evidence에는 날짜,
+0이 아닌 값으로 끝나면 확인 값 없이 다시 실행해 남은 목록을 본다. 30일 lock은 snapshot 시각이 아니라
+R2에 올라간 시각(다시 올린 `copy` 포함)부터 센다. 2026-11-25에는 `snapshots/`가 lock 아래에 있어
+restic이 거부된 snapshot을 끝없이 다시 시도하며 끝나지 않았다. 컨테이너 로그에 "locked by the bucket
+policy"가 이어지면 run을 멈춘다. 멈춘 run은 배타 lock을 남기고 restic 0.19.1은 30분이 지나도 이를
+스스로 무시하지 않는다. `cmd unlock`은 거부되므로, 다른 restic 프로세스가 없고
+`hyhome-backup.service`가 `inactive`임을 확인한 뒤 owner 승인으로 `offsite.sh`의 환경 설정 부분을
+읽은 셸에서 `restic unlock`(`--remove-all` 없이)을 한 번 실행하고, 이어서 `prune`을 실행한다. Evidence에는 날짜,
 목록의 개수, 전후 `R2 repository size`와 로컬 budget 크기를 적고 `restic-offsite check`를 확인한다.
 
 ###### 8.6 R2 비용과 무료 한도 검토
