@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.46"
+version: "0.2.47"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4395,10 +4395,23 @@ The completed run (T0 11:01:05 KST) reached `finish`:
   generation). It resolved by 11:22 KST with no OpenBao alert left; the
   unrelated `ObservationSelectionMissing` has been active since 2026-11-18.
 
-Next: the owner decides what to keep of the first W3 attempt's snapshot
-directory and inputs and of the accepted restore target, per RUN-0105. The
-41 locked R2 snapshots before 2026-11-11 can be trimmed after their lock
-expires.
+**Post-window cleanup (owner decision "cleanup", 2026-11-25).** The first
+attempt's credential-free inputs and snapshot receipt were copied to
+`attempt1/` in the evidence directory; then its snapshot directory
+`openbao-p01-20261125` and inputs `p01-inputs.BCg7W9` were shredded and
+removed, along with the final inputs already in the evidence and the three
+`p01-client.*` helper copies, leaving no `p01-*` in the runtime directory.
+Before removal, no container, volume or network carried the
+`hy-home.attempt=p01-restore-20261124-07` label and `/dev/shm` held no
+attempt residue. The owner removed the UID 100 restore target
+`p01-restore-20261124-07` with sudo; the `-05`, `-06` and `-07` attempt
+ledgers stay as history. The W3 artifact `openbao-p01-20261125-2` and its R2
+copy are kept.
+
+Next: the 41 R2 snapshots before 2026-11-11 stay under the bucket lock until
+30 days after their upload; the latest of them was copied on 2026-11-10
+04:04 KST, so the owner runs the R2 `trim 2026-11-11` (RUN-0021 8.5) on or
+after 2026-12-11. The local repositories are already trimmed to that date.
 
 ### Blockers and Decisions
 
