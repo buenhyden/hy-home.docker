@@ -1,13 +1,13 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.12.0"
+version: "2.13.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-24"
+updated: "2026-11-25"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -454,6 +454,14 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W184 | 168 | Read the HOME job role from the `hy-home.role` label in the selector, the operating start and the common-controls check, and label the job templates and k6 | W183 | TSK-0112 | Focused RED/GREEN selector, start, controls and real-root role tests; a read-only selection on the real model; governance and document checks plus normal hosted delivery |
 | W185 | 169 | State the one-off artifact lifecycle, classify the staging surface by consumer and remove only owned finished artifacts | W184 | TSK-0113 | Governance and document checks; the staging tracking test; an exact-path removal by the owner; normal hosted delivery |
 | W186 | 170 | Record owner acceptance, the P17 readiness ledger and the remote-ref preparation | W185 | TSK-0114 | Document checks; read-only CI, ref and store observations; normal hosted delivery |
+| W187 | 171 | Re-observe workspace identity, the Compose inventory and the Spec Package census at current `main`, reuse accepted inventory work and route each open item to one next owner | W186 | TSK-0115 | Value-free Compose counts, read-only runtime listing, package verifier, inventory tests and document checks; normal hosted delivery |
+
+###### Current D01 v8 inventory boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0115](01.tasks/tsk-0115-d01-inventory-v8.md) owns criterion171/W187. It
+records observation and routing only; each open item stays with the owner it
+names.
 
 ###### Current P16 acceptance boundary
 <!-- core-payload-level:4 -->

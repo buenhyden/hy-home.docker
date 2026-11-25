@@ -1,13 +1,13 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.12.0"
+version: "2.13.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-24"
+updated: "2026-11-25"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -380,6 +380,11 @@ records the owner's acceptance of the technically complete criteria, the
 P17 readiness ledger with its open required boundaries, and the P17
 preparation of managed remote refs; it does not mark the cutover ready while
 a required boundary is open.
+
+The direct D01 lifecycle v8 request adds criterion171/W187 in TSK-0115. It
+re-observes the workspace, Compose and Spec Package inventory at the current
+`main`, reuses accepted inventory work instead of rebuilding it, and routes
+each open item to one next owner; it changes no source or runtime state.
 
 #### Scope
 
@@ -1587,6 +1592,13 @@ target, backup, recovery boundary, and action-specific authorization.
      148 and 153; record the owner's acceptance only where the owner gave
      it; list every open required boundary that keeps the cutover not ready;
      and prepare P17's managed remote refs and worktrees.
+
+171. TSK-0115 applies D01 lifecycle v8 to the current Docker workspace.
+     Freeze the local and remote `main` identity; recount the root Compose
+     definitions, services, jobs and running set without printing values;
+     census every Spec, Plan and Task status; reuse accepted inventory and
+     trace work; and route each open item, with its precondition, to one
+     next owner and prompt.
 
 ##### Evidence Requirements
 
