@@ -1,6 +1,6 @@
 ---
 title: "SearXNG Recovery Runbook"
-version: "2.1.0"
+version: "2.2.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -150,6 +150,25 @@ n8n 재생성이 함께 필요하다.
 
    새 값은 0600 netrc로 200, 옛 값은 401임을 확인한다. 옛 값 확인이 끝나기 전에 그 사본을 지우지
    않는다. 원격 소비자(서버 B의 netrc 등)는 새 값으로 바꾼 뒤 다시 확인한다.
+7. 다른 host의 프로그램(예: 서버 B)을 `/search` API에 연결한다. 그 host에서 프로그램을 실행하는
+   계정과 런타임(Windows native, WSL, Node, Python 등) 기준으로 한다.
+   1. 이름 해석: `searxng.${DEFAULT_URL}`이 서버 A의 LAN 주소로 풀리는지 확인한다. LAN DNS가 없으면
+      그 정확한 이름 한 줄을 hosts에 넣는다(wildcard는 hosts에서 동작하지 않는다).
+   2. TLS 신뢰: HOME의 공개 `rootCA.pem`만 옮기고 CA private key는 옮기지 않는다. 런타임마다
+      신뢰 저장소가 다르다. Windows native는 현재 사용자 신뢰 루트, WSL·Linux는
+      `/usr/local/share/ca-certificates/`와 `update-ca-certificates`, Node는 `NODE_EXTRA_CA_CERTS`,
+      Python `requests`는 `REQUESTS_CA_BUNDLE`을 쓴다. TLS 검증을 끄지 않는다.
+   3. 자격 전달: 사용자 이름은 `.env`의 `SEARXNG_API_USERNAME`, 비밀번호는 `AI-011` 파일 값이다.
+      화면·채팅·명령 인자를 거치지 않게 그 host에서 SSH로 받아 바로 권한 0600 파일에 쓴다.
+      Windows에서는 사용자 전용 폴더에 두고 `icacls`로 그 사용자만 읽게 한다.
+   4. 프로그램 설정: base URL은 `https://searxng.${DEFAULT_URL}`, 요청은
+      `/search?q=<검색어>&format=json`이다. Basic 인증 header를 첫 요청부터 보내야 한다.
+      `searxng-api` router는 `Authorization: Basic` header가 있는 요청만 받고, header 없는 요청은
+      SSO router로 가서 302 로그인 HTML을 받는다. 401 challenge를 기다린 뒤에야 자격을 보내는
+      client는 실패하므로 preemptive Basic으로 설정한다.
+   5. 확인: 그 host·그 계정에서 자격 없이 302, 틀린 자격 401, 올바른 자격 200과 JSON `results`를
+      받는다. 302 HTML이나 잘린 JSON은 성공이 아니다.
+   6. 회전 뒤: 6단계로 값을 바꾸면 이 host의 파일도 3번 방법으로 다시 받고 5번으로 확인한다.
 
 ##### Stop Conditions
 

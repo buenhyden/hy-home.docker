@@ -1,13 +1,13 @@
 ---
 title: "SearXNG Usage Guide"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 layer: "operations"
 artifact_id: "GDE-0110"
 parent_ids:
@@ -108,7 +108,9 @@ SearXNG는 HOME의 공유 메타검색 서비스다. 컨테이너는 internal `s
   갱신한다.
 - **다른 host의 프로그램**: `https://searxng.${DEFAULT_URL}/search?q=<query>&format=json`을 Basic 자격 증명으로
   호출한다. 사용자 이름은 `.env`의 `SEARXNG_API_USERNAME`, 비밀번호는 `secrets/tools/searxng/searxng_api_password.txt`(`AI-011`)이며
-  `gen-secrets.sh`가 htpasswd를 만든다. 그 host는 `searxng.${DEFAULT_URL}` 이름 해석과 HOME 인증서 신뢰가 필요하다.
+  둘과 htpasswd(`INFRA-008`)는 owner가 만들며 `gen-secrets.sh`는 다루지 않는다(회전은 RUN-0110 6단계).
+  그 host는 `searxng.${DEFAULT_URL}` 이름 해석, 실행 런타임의 HOME 인증서 신뢰, 첫 요청부터 보내는
+  Basic header가 필요하다(설정은 RUN-0110 7단계).
 - **호스트 소비자**: `http://127.0.0.1:8890`을 호출하고 정책의 소비자 표에
   기록한다. 호스트 Hermes는 `~/.hermes/config.yaml`의 `web.search_backend: searxng`와
   `~/.hermes/.env`의 `SEARXNG_URL`을 쓴다. 이 값은 추적하지 않는다.
