@@ -6121,6 +6121,21 @@ class RouteAuthContractTests(unittest.TestCase):
         )
         self.assertEqual([], bare)
 
+    def test_guide_route_table_names_exactly_the_exempt_routers(self) -> None:
+        # GDE-0079 documents this map; a router added to one and not the
+        # other is drift (searxng-api was missing from the guide).
+        guide = (
+            ROOT / "docs/05.operations/01.guides/03.identity-and-access/"
+            "0079-application-auth-integration.md"
+        ).read_text()
+        start = guide.index("| Router | Authentication without the SSO chain |")
+        documented = set()
+        for line in guide[start:].splitlines()[2:]:
+            if not line.startswith("|"):
+                break
+            documented.update(re.findall(r"`([^`]+)`", line.split("|")[1]))
+        self.assertEqual(sorted(ROUTES_WITHOUT_SSO), sorted(documented))
+
     def test_n8n_router_exclusions_ignore_letter_case(self) -> None:
         """n8n's Express serves /METRICS too, so a case-sensitive PathPrefix
         exclusion lets it fall through to the general router."""

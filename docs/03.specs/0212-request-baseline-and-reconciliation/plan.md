@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.14.0"
+version: "2.15.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -456,6 +456,13 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W186 | 170 | Record owner acceptance, the P17 readiness ledger and the remote-ref preparation | W185 | TSK-0114 | Document checks; read-only CI, ref and store observations; normal hosted delivery |
 | W187 | 171 | Re-observe workspace identity, the Compose inventory and the Spec Package census at current `main`, reuse accepted inventory work and route each open item to one next owner | W186 | TSK-0115 | Value-free Compose counts, read-only runtime listing, package verifier, inventory tests and document checks; normal hosted delivery |
 | W188 | 172 | Reuse accepted OpenBao and secret results, remove the LAB-only renderer grants and Agent templates with re-pinned digests, and record the owner window and the AI-011/INFRA-008 rotation | W187 | TSK-0116 | Secret structure, SMTP and catalog checks; OpenBao and secret test modules; document, manifest, Compose and hardening checks; normal hosted delivery |
+| W189 | 173 | Census and probe every route from server A, align the GDE-0079 no-SSO table with the route contract under a regression, and record the B-side checks and open host items | W188 | TSK-0117 | Route census, TLS-verified unauthenticated probes and negatives, RED/GREEN route-table test, route contract tests, document checks; normal hosted delivery |
+
+###### Current D02 v8 route boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0117](01.tasks/tsk-0117-d02-network-auth-v8.md) owns criterion173/W189.
+Server A observations are recorded; B-side acceptance stays with the owner.
 
 ###### Current D07 v8 secret boundary
 <!-- core-payload-level:4 -->
