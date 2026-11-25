@@ -301,7 +301,7 @@ services:
   # the reviewed Blog-data dev commit in the tag. Its own profile keeps it out
   # of every existing selection; n8n-worker (ingest) and Traefik (exact-path
   # export and attestation routes) are its only peers.
-  # --- n8n Assistant code sandbox (profile n8n-sandbox, in HOME) -----------
+  # --- n8n Assistant code sandbox (profile n8n-sandbox, opt-in) -------------
   # Owner decision 2026-11-09: the runner is the privileged Docker-in-Docker
   # image of the n8n reference stack (sandbox service 1.8.1). It is the only
   # privileged service in this file (infra/common-optimizations.exceptions.json,

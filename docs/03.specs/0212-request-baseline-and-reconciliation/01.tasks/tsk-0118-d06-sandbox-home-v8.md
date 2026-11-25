@@ -1,6 +1,6 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -76,7 +76,11 @@ authority; this record is not.
   exception no longer cites an opt-in profile as mitigation and is re-reviewed
   on 2026-11-25; its recorded impact (a sandbox break-out reaches host-level
   rights, the internet and, through NAT, the host LAN) is unchanged.
-- The n8n Compose section comment no longer says opt-in.
+- The n8n Compose file is unchanged. A first attempt reworded its section
+  comment, which still says opt-in, but the update ledger and the
+  2026-11-11 advisory review pin that file's exact bytes; rebinding a dated
+  security review to input it never examined would misstate it, so the edit
+  was reverted (E05). POL-0078 owns the selection.
 
 ###### Verification
 
@@ -95,6 +99,7 @@ started or recreated.
 | --- | --- | --- |
 | D06-T01 local Ollama consumption by server A/B agents | Not run in this pass | D06 follow-up |
 | D06-T03/T04 negative tests inside the sandbox (forbidden IP, metadata, other DB, cancel and cleanup) | Not run | D06 follow-up with owner approval |
+| Stale "opt-in" comment on the n8n Compose sandbox section | Kept; changes with the next reviewed n8n Compose update | n8n Compose owner |
 | D06-T05 Wiki preparation and D06-T06 tool comparison | Not run | D06 follow-up |
 
 ##### Blockers and Decisions
@@ -111,11 +116,13 @@ the security impact stays recorded in the exception.
 | E01 | 174 | W190 | method=automated; tool=Python3 venv; command=compose-start.py --root "$PWD" plan --selection HOME --dev-data-expected on | Change | PASS | 17 profiles, 51 targets including the three sandbox services | required | - |
 | E02 | 174 | W190 | method=automated; tool=Python3 venv; command=python -m unittest tests.lib.ops.test_compose_start tests.validation.test_p02_service_contracts tests.validation.test_service_wiring_contracts | Change | PASS | 100 OK | required | - |
 | E03 | 174 | W190 | method=automated; tool=Python3 venv, bash; command=check-document-metadata.py; check-operations-catalog.py; check-conftest-policy.sh --mode corpus; check-supply-chain-policy.py --check; check-all-hardening.sh | Change | PASS | 0 violations; catalog pass; 45/45; supply chain pass; all hardening checks passed | required | - |
+| E05 | 174 | W190 | method=automated; tool=Python3 venv; command=python -m unittest tests.lib.supply_chain.test_update_gates | PR #1213 head f26032a58 (hosted candidate-core) | FAIL | The comment edit changed the n8n Compose hash pinned by the update ledger and the advisory review; the Compose file and ledger were restored to main | required | - |
+| E06 | 174 | W190 | method=automated; tool=Python3 venv; command=python -m unittest tests.lib.supply_chain.test_update_gates | Compose file and ledger identical to main | PASS | update-gates suite OK | required | E05 |
 | E04 | 174 | W190 | method=observation; tool=docker; command=docker inspect n8n-sandbox-runner-1 and n8n-sandbox-api | HOME, 2026-11-25 | PASS | Privileged runner without host port or host socket, two sandbox networks, 4 GiB/3 CPU/4096 pids, healthy; API without host port, healthy | required | - |
 
 ##### Resolution Links
 
-None: no row resolves another.
+E06 resolves E05.
 
 #### Acceptance Decision
 
@@ -123,7 +130,7 @@ None: no row resolves another.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 174 | pending | E01,E02,E03,E04 | The HOME selection change and its checks are complete; owner acceptance is not given | @buenhyden |
+| 174 | pending | E01,E02,E03,E04,E06 | The HOME selection change and its checks are complete; owner acceptance is not given | @buenhyden |
 
 ##### Remaining Conditions
 
