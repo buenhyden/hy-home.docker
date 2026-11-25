@@ -1,6 +1,6 @@
 ---
 title: "D02 v8 Network and Gateway Authentication Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -160,10 +160,12 @@ firewall evidence stays NOT_RUN rather than inferred from A-side results.
 | E08 | 173 | W189 | method=observation; tool=Windows browser; command=- | 192.168.0.22, owner, 2026-11-25 | PASS | Owner reported successful login to Grafana, Keycloak, n8n, OpenBao and Gatus from server B | required | - |
 | E09 | 173 | W189 | method=observation; tool=curl in WSL; command=unauthenticated GET per host with the public CA; `curl http://192.168.0.13:8644/` | 192.168.0.22 WSL, owner, 2026-11-25 | FAIL | 31 of 38 hosts return the same codes as server A with `tls=0`; `8644 000`; opensearch-dashboard, opensearch, pyroscope, s3, terrakube-api, terrakube-executor and terrakube-ui do not resolve in WSL (`000`), whose hosts list names only some hosts | required | - |
 | E10 | 173 | W189 | method=observation; tool=PowerShell 7 Invoke-WebRequest; command=GET per host without redirect following; `GET http://192.168.0.13:8644/` | 192.168.0.22 Windows, owner, 2026-11-25 | FAIL | Codes 200, 401 and 404 match server A; hosts that redirect on server A raise the PowerShell 3xx exception, with no TLS error; 8644 closed; the same seven names fail with "no such host", so the Windows hosts list (which WSL copies) lacks them | required | - |
+| E11 | 173 | W189 | method=observation; tool=curl in WSL; command=unauthenticated GET per host with the public CA; `curl http://192.168.0.13:8644/` | 192.168.0.22 WSL after the owner added the seven names to the Windows hosts list, 2026-11-25 | PASS | All 38 hosts return the same codes as server A with `tls=0` (opensearch and terrakube 404, pyroscope 302, s3 403); `8644 000` | required | E09 |
+| E12 | 173 | W189 | method=observation; tool=curl in WSL; command=SearXNG `/search?format=json` with the new credential from a 0600 file | 192.168.0.22 WSL, owner, 2026-11-25 | PASS | 200 with a JSON `results` list (RUN-0110 step 7) | required | - |
 
 ##### Resolution Links
 
-E05 resolves E04.
+E05 resolves E04; E11 resolves E09.
 
 #### Acceptance Decision
 
@@ -171,12 +173,12 @@ E05 resolves E04.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 173 | pending | E01,E02,E03,E05,E06,E07,E08 | Server A census, the route-table fix, the Hermes loopback bind and the server B browser logins are complete; the server B curl census of all hosts and the program API checks stay open | @buenhyden |
+| 173 | pending | E01,E02,E03,E05,E06,E07,E08,E11,E12 | Server A census, the route-table fix, the Hermes loopback bind, the server B browser logins, the server B WSL census of all hosts and the SearXNG API from server B are complete; the Windows census rerun (E10) and the OpenClaw and Hermes Agent API consumption stay open | @buenhyden |
 
 ##### Remaining Conditions
 
-Name resolution on server B for the seven hosts E09 could not reach, then a
-rerun of the census (browser logins are done, E08), OpenClaw
+A rerun of the Windows census after the hosts change (resolves E10; the WSL
+census is done, E11, and the browser logins, E08), OpenClaw
 and Hermes Agent consumption (a server B program calling SearXNG follows
 RUN-0110 step 7), and a B-side refusal check of 192.168.0.13:8644; then owner
 acceptance. The old SearXNG credential's refusal is settled in SPEC-0212
