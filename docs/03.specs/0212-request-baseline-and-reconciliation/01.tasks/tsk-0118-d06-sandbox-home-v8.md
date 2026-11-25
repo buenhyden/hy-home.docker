@@ -217,10 +217,12 @@ the security impact stays recorded in the exception.
 | E19 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_metadata_sync | Change on d9a96ebe9 | FAIL | 2 failures: INFRA-009 htpasswd path has no row in secrets/SENSITIVE_ENV_VARS.md.example, which the owner adds | required | - |
 | E20 | 175 | W191 | method=automated; tool=Python3 venv, bash; command=check-document-metadata.py --mode check-changed and check-active; check-document-links.py --mode all --changed; check-document-corpus-lifecycle.py; check-operations-catalog.py; check-supply-chain-policy.py --check; check-template-security-baseline.sh; check-conftest-policy.sh --mode corpus | Change on d9a96ebe9 | PASS | 0 metadata violations; links pass; lifecycle 0 violations; catalog pass after re-rendering the ollama and traefik inventory rows; supply chain pass; 0 template findings; 45/45 | required | - |
 | E21 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_metadata_sync | Change plus owner template rows for INFRA-009, AI-012 and AI-013 | PASS | 107 OK together with the Ollama route, route-auth and update-gate suites | required | E19 |
+| E22 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_catalog_contract | PR #1215 head 4bb792e4b (hosted candidate-core) | FAIL | 2 failures: the new entries pointed evidence_ref at TSK-0118 while the catalog contract requires the SPEC-0204 catalog Task, and AI-012 sat before AI-011 so the rendered view order differed from the template | required | - |
+| E23 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_catalog_contract | Entries ordered AI-010 to AI-013, evidence_ref on SPEC-0204 TSK-0010 | PASS | 106 OK together with the secret metadata and catalog library suites | required | E22 |
 
 ##### Resolution Links
 
-E06 resolves E05; E15 resolves E13; E21 resolves E19.
+E06 resolves E05; E15 resolves E13; E21 resolves E19; E23 resolves E22.
 
 #### Acceptance Decision
 
@@ -229,7 +231,7 @@ E06 resolves E05; E15 resolves E13; E21 resolves E19.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 174 | accepted | E01,E02,E03,E04,E06 | Owner @buenhyden accepted on 2026-11-25 in this chat after the HOME selection change and its checks | @buenhyden |
-| 175 | pending | E07,E08,E09,E10,E11,E14,E15,E16,E17,E18,E19,E20,E21 | Server A runtime checks, the no-egress probe and a real Code node run pass; JS code generation from strings is allowed (E17); the owner added the template rows (E21); the server B run is open | @buenhyden |
+| 175 | pending | E07,E08,E09,E10,E11,E14,E15,E16,E17,E18,E19,E20,E21,E22,E23 | Server A runtime checks, the no-egress probe and a real Code node run pass; JS code generation from strings is allowed (E17); the owner added the template rows (E21); the server B run is open | @buenhyden |
 
 ##### Remaining Conditions
 
