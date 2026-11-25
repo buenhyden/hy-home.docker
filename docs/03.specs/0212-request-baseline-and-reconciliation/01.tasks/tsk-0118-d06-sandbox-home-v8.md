@@ -98,7 +98,7 @@ started or recreated.
 | Item | State | Owner |
 | --- | --- | --- |
 | Stale "opt-in" comment on the n8n Compose sandbox section | Kept; changes with the next reviewed n8n Compose update | n8n Compose owner |
-| Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | NOT_RUN (E11); the `ollama-api` route is added (E18), the credential, template rows and B proxy remain (E19) | Owner on server B |
+| Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | NOT_RUN (E11); the `ollama-api` route is added (E18), template rows added (E21); the credential and B proxy remain | Owner on server B |
 | JS Code node can generate code from strings (E17) | FAIL: upstream n8n 2.46.6 runner creates its `vm` context without `codeGeneration: {strings: false}` | Owner decides: accept as upstream limitation or carry a patched runner |
 | Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database for a rerun | Owner may delete it |
 | Hermes user config keeps an `ollama-cloud` provider entry (`https://ollama.com/v1`) and `--provider custom -m lfm2.5:8b` answered without reaching local Ollama (E08) | Owner decision 2026-11-26: local and cloud Ollama run as separate providers; the `ollama-cloud` entry stays and HOME Ollama keeps `OLLAMA_NO_CLOUD=1`. The bypass finding stays recorded; user-global config is not changed under repository authority | Owner |
@@ -216,10 +216,11 @@ the security impact stays recorded in the exception.
 | E18 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_compose_baseline_gates.OllamaPortContractTests tests.validation.test_compose_baseline_gates.RouteAuthContractTests tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_ledger_rebind | Change on d9a96ebe9 | PASS | Ollama route test errors on main (KeyError ollama-api.rule) and passes with the change; route-auth and 57 supply-chain tests OK | required | - |
 | E19 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_metadata_sync | Change on d9a96ebe9 | FAIL | 2 failures: INFRA-009 htpasswd path has no row in secrets/SENSITIVE_ENV_VARS.md.example, which the owner adds | required | - |
 | E20 | 175 | W191 | method=automated; tool=Python3 venv, bash; command=check-document-metadata.py --mode check-changed and check-active; check-document-links.py --mode all --changed; check-document-corpus-lifecycle.py; check-operations-catalog.py; check-supply-chain-policy.py --check; check-template-security-baseline.sh; check-conftest-policy.sh --mode corpus | Change on d9a96ebe9 | PASS | 0 metadata violations; links pass; lifecycle 0 violations; catalog pass after re-rendering the ollama and traefik inventory rows; supply chain pass; 0 template findings; 45/45 | required | - |
+| E21 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_metadata_sync | Change plus owner template rows for INFRA-009, AI-012 and AI-013 | PASS | 107 OK together with the Ollama route, route-auth and update-gate suites | required | E19 |
 
 ##### Resolution Links
 
-E06 resolves E05; E15 resolves E13.
+E06 resolves E05; E15 resolves E13; E21 resolves E19.
 
 #### Acceptance Decision
 
@@ -228,13 +229,12 @@ E06 resolves E05; E15 resolves E13.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 174 | accepted | E01,E02,E03,E04,E06 | Owner @buenhyden accepted on 2026-11-25 in this chat after the HOME selection change and its checks | @buenhyden |
-| 175 | pending | E07,E08,E09,E10,E11,E14,E15,E16,E17,E18,E19,E20 | Server A runtime checks, the no-egress probe and a real Code node run pass; JS code generation from strings is allowed (E17); the server B run and the template rows are open | @buenhyden |
+| 175 | pending | E07,E08,E09,E10,E11,E14,E15,E16,E17,E18,E19,E20,E21 | Server A runtime checks, the no-egress probe and a real Code node run pass; JS code generation from strings is allowed (E17); the owner added the template rows (E21); the server B run is open | @buenhyden |
 
 ##### Remaining Conditions
 
-None for criterion174. Criterion175 needs the owner's template rows and
-credential (E19), the server B run (E11), a decision on E17 and owner
-acceptance; the items under Left open stay with their owner.
+None for criterion174. Criterion175 needs the owner's credential and
+server B run (E11), a decision on E17 and owner acceptance; the items under Left open stay with their owner.
 
 #### Handoff
 
