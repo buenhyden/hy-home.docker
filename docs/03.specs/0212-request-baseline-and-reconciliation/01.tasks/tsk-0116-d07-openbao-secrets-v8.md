@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -206,6 +206,23 @@ and registry, the sync checks report `files_changed=0`, `.env` is 0600 with
 one link, Compose renders 89 services, and the Opsflow worker mount Compose
 renders equals the running `airflow-worker` mount, so no recreate is needed.
 
+###### Independent review of the window commit on 2026-11-25
+
+RUN-0105 needs an independent review of the window commit. A read-only
+`security-auditor` review of `767449bf5..edb8283dd` (OpenBao source and the
+changed tests) returned FAIL with one HIGH finding:
+`protected-semantic-restore.py` `_verify_bundle` still required the four
+deleted templates (22 entries) while `protected-restore-inputs.py` builds an
+18-entry bundle, so a protected restore would refuse every new bundle; the
+test fixture repeated the stale list, and the consumer-migration README still
+said the operator policy was unchanged. Confirmed at source. Fixed: the four
+entries leave `required` and the fixture, `p01-bootstrap.sh` re-pins the
+script (20/20 manifest pins match), and `BundleParityTests` asserts that
+`_verify_bundle` requires exactly the built bundle and that every `agent.hcl`
+template is in it; it failed before the fix and passes after. A second
+independent review of the fix returned PASS; its LOW note, that the test
+should read `required` only inside `_verify_bundle`, is applied.
+
 ###### AI-011/INFRA-008 rotation procedure as first written (superseded)
 
 1. Replace `secrets/tools/searxng/searxng_api_password.txt` with a new random
@@ -260,11 +277,15 @@ chat, as listed under Inputs and Authority.
 | E17 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-catalog.py --root "$PWD" render; check-views | HOME `f4d1f0c74` | PASS | `STAGING_RENDERED`, then `P02_VIEWS_MATCH` | required | - |
 | E18 | 172 | W188 | method=automated; tool=sha256sum, Python3; command=every p01-bootstrap.sh manifest pin and protected-renderer-roles.py pin against its file | Operator narrowing | PASS | 20/20 and 8/8 match | required | - |
 | E19 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest tests.lib.ops.test_openbao_issuance plus the 25 OpenBao, secret catalog and secret metadata modules | Operator narrowing | PASS | 587 OK, 15 skipped (opt-in integration, NOT_RUN) | required | - |
+| E21 | 172 | W188 | method=review; tool=security-auditor; command=- | OpenBao change set `767449bf5..edb8283dd` | FAIL | HIGH: restore `required` set kept four deleted templates; LOW: README contradiction | required | - |
+| E22 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_openbao_protected_semantic_restore | New parity test before the fix | FAIL | `required` had 4 more entries than the built bundle | required | - |
+| E23 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_openbao_protected_semantic_restore | After the fix | PASS | OK; with the 26 OpenBao and secret modules 588 OK, 15 skipped; 20/20 pins match | required | E22 |
+| E24 | 172 | W188 | method=review; tool=security-auditor; command=- | The fix on top of `edb8283dd` | PASS | Parity holds, README fixed, no other HOME breakage; LOW test-scope note applied | required | E21 |
 | E16 | 172 | W188 | method=observation; tool=curl; command=old-value netrc on `/search` from 192.168.0.22 | Server B | NOT_RUN | Owner check; the old value exists only in that host's netrc | required | - |
 
 ##### Resolution Links
 
-E05 resolves E04; E10 resolves E09; E20 resolves E01.
+E05 resolves E04; E10 resolves E09; E20 resolves E01; E23 resolves E22; E24 resolves E21.
 
 #### Acceptance Decision
 
@@ -272,7 +293,7 @@ E05 resolves E04; E10 resolves E09; E20 resolves E01.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16,E17,E18,E19,E20 | Source change, Agent restart, template removal, catalog update, the server A rotation and the `.env` structure (E20) are done; E16 is open, and the narrowed policy waits for the next window | @buenhyden |
+| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16,E17,E18,E19,E20,E21,E23,E24 | Source change, Agent restart, template removal, catalog update, the server A rotation and the `.env` structure (E20) are done; E16 is open, and the narrowed policy waits for the next window | @buenhyden |
 
 ##### Remaining Conditions
 
