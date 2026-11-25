@@ -1,13 +1,13 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -118,7 +118,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets; monitoring initialization: mng-pg-monitor-provision | current |
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init, mng-pg-monitor-provision | current |
 | `mongodb` | topology | 독립 LAB MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` | No | initialization: mongo-key-generator, mongo-init | current |
-| `n8n-sandbox` | capability | n8n Assistant 코드 sandbox: 인증서 생성 job, sandbox API, privileged Docker-in-Docker runner(owner 결정 2026-11-09); 기본 선택에서 제외 | `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1` | No | initialization: n8n-sandbox-certs (mTLS 자료 생성) | current |
+| `n8n-sandbox` | capability | n8n Assistant 코드 sandbox: 인증서 생성 job, sandbox API, privileged Docker-in-Docker runner(owner 결정 2026-11-09); 2026-11-25 owner 결정으로 HOME 선택에 포함, certs는 단발 job | `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1` | No | initialization: n8n-sandbox-certs (mTLS 자료 생성) | current |
 | `notebook` | capability | Open Notebook과 SurrealDB 저장소 | `surrealdb`, `open_notebook` | No | normal service startup | current |
 | `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: seaweedfs-buckets, grafana-db-provision | current |
 | `obs-core` | capability | 메트릭 수집·대시보드 | `prometheus`, `grafana`, `grafana-db-provision` | No | initialization: grafana-db-provision | current |
@@ -358,7 +358,7 @@ DEV/HOME 실행·복구가 검증된 것은 아니다.
 
 | Named selection | Profiles | Forbidden categories |
 | --- | --- | --- |
-| HOME | `core`, `mng`, `ai`, `workflow`, `searxng`, `obs-core`, `obs-host`, `availability`, `logs`, `alerting`, `storage`, `tracing`, `profiling`, `obs-gpu`, `registry` | `automation`, `lifecycle`, `topology` |
+| HOME | `core`, `mng`, `ai`, `workflow`, `n8n-sandbox`, `searxng`, `obs-core`, `obs-host`, `availability`, `logs`, `alerting`, `storage`, `tracing`, `profiling`, `obs-gpu`, `registry` | `automation`, `lifecycle`, `topology` |
 
 `dev-data`는 `dev`·`local`에 포함되지 않는다. 현재 선택은 위 HOME 행과 소유자가 승인한
 exact profile을 따르며, 과거에 관측된 profile 조합은 현재 activation 권한이 아니다.

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.15.0"
+version: "2.16.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -395,6 +395,11 @@ The direct D02 lifecycle v8 request adds criterion173/W189 in TSK-0117. It
 reuses the accepted Traefik, DNS, TLS and machine-route contracts, records the
 A-side route census, closes the GDE-0079 route-table drift with a regression,
 and hands the B-side acceptance and the host Hermes listener to the owner.
+
+The direct D06 lifecycle v8 request adds criterion174/W190 in TSK-0118. By the
+owner's choice it adds the n8n Assistant sandbox API and runner to the HOME
+selection with the certs job, updates the privileged exception, and leaves
+the remaining D06 items to their owners.
 
 #### Scope
 
@@ -1623,6 +1628,12 @@ target, backup, recovery boundary, and action-specific authorization.
      listeners and negative cases; make GDE-0079 name every router outside
      the SSO chain with a regression that fails on drift; and record the
      B-side checks and open host items with their owner.
+
+174. TSK-0118 applies D06 lifecycle v8 to the current Docker workspace.
+     Add `n8n-sandbox` to the HOME selection so the sandbox API and runner
+     are HOME services and the certs job stays one-shot; update the runner's
+     privileged exception; verify the selector plan and the running
+     boundaries; and record the D06 items left open.
 
 ##### Evidence Requirements
 
