@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.46"
+version: "0.2.47"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
