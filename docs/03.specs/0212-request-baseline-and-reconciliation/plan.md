@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.13.0"
+version: "2.14.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -455,6 +455,13 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W185 | 169 | State the one-off artifact lifecycle, classify the staging surface by consumer and remove only owned finished artifacts | W184 | TSK-0113 | Governance and document checks; the staging tracking test; an exact-path removal by the owner; normal hosted delivery |
 | W186 | 170 | Record owner acceptance, the P17 readiness ledger and the remote-ref preparation | W185 | TSK-0114 | Document checks; read-only CI, ref and store observations; normal hosted delivery |
 | W187 | 171 | Re-observe workspace identity, the Compose inventory and the Spec Package census at current `main`, reuse accepted inventory work and route each open item to one next owner | W186 | TSK-0115 | Value-free Compose counts, read-only runtime listing, package verifier, inventory tests and document checks; normal hosted delivery |
+| W188 | 172 | Reuse accepted OpenBao and secret results, remove the LAB-only renderer grants and Agent templates with re-pinned digests, and record the owner window and the AI-011/INFRA-008 rotation | W187 | TSK-0116 | Secret structure, SMTP and catalog checks; OpenBao and secret test modules; document, manifest, Compose and hardening checks; normal hosted delivery |
+
+###### Current D07 v8 secret boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0116](01.tasks/tsk-0116-d07-openbao-secrets-v8.md) owns criterion172/W188.
+The source change takes effect only through the owner window it records.
 
 ###### Current D01 v8 inventory boundary
 <!-- core-payload-level:4 -->

@@ -8,7 +8,7 @@ set +x
 set -uo pipefail
 
 usage() {
-  echo "usage: $0 oauth2-proxy|opensearch-dashboards|kafbat-ui|dozzle|gatus|airflow-apiserver|open-webui|superset" >&2
+  echo "usage: $0 oauth2-proxy|opensearch-dashboards|kafbat-ui|dozzle|gatus|airflow-apiserver" >&2
   exit 2
 }
 [ "$#" -eq 1 ] || usage
@@ -31,10 +31,6 @@ case "$service" in
   airflow-apiserver) secret=airflow_keycloak_client_secret dir=airflow stem=airflow_client_secret
     path_env=AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD command=cat
     client_env=AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID ;;
-  open-webui) secret=openwebui_oidc_client_secret dir=open-webui stem=openwebui_oidc_client_secret
-    path_env=OPENWEBUI_OIDC_CLIENT_SECRET_FILE client_env=OAUTH_CLIENT_ID ;;
-  superset) secret=superset_oidc_client_secret dir=superset stem=superset_oidc_client_secret
-    path_env=SUPERSET_OIDC_CLIENT_SECRET_FILE client_env=SUPERSET_OIDC_CLIENT_ID ;;
   *) usage ;;
 esac
 agent=${OPENBAO_AGENT_CONTAINER:-openbao-agent}

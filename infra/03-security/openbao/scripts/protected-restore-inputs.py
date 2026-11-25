@@ -47,10 +47,6 @@ BUNDLE = (
     "config/templates/gatus_oidc_client_secret_version.ctmpl",
     "config/templates/airflow_client_secret.ctmpl",
     "config/templates/airflow_client_secret_version.ctmpl",
-    "config/templates/openwebui_oidc_client_secret.ctmpl",
-    "config/templates/openwebui_oidc_client_secret_version.ctmpl",
-    "config/templates/superset_oidc_client_secret.ctmpl",
-    "config/templates/superset_oidc_client_secret_version.ctmpl",
     "config/templates/keycloak_admin_password_version.ctmpl",
     "config/templates/grafana_admin_password_version.ctmpl",
 )

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.13.0"
+version: "2.14.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -385,6 +385,11 @@ The direct D01 lifecycle v8 request adds criterion171/W187 in TSK-0115. It
 re-observes the workspace, Compose and Spec Package inventory at the current
 `main`, reuses accepted inventory work instead of rebuilding it, and routes
 each open item to one next owner; it changes no source or runtime state.
+
+The direct D07 lifecycle v8 request adds criterion172/W188 in TSK-0116. It
+reuses the accepted OpenBao window, restore, catalog and SMTP results, removes
+the renderer grants and Agent templates that no HOME consumer uses, and hands
+the live window and the AI-011/INFRA-008 rotation to the owner.
 
 #### Scope
 
@@ -1599,6 +1604,13 @@ target, backup, recovery boundary, and action-specific authorization.
      census every Spec, Plan and Task status; reuse accepted inventory and
      trace work; and route each open item, with its precondition, to one
      next owner and prompt.
+
+172. TSK-0116 applies D07 lifecycle v8 to the current Docker workspace.
+     Reuse the accepted 2026-11-25 OpenBao window and restore; check the env
+     structure, SMTP single source and secret catalog without values; remove
+     from source the renderer read grants and Agent templates whose consumers
+     are LAB-only, with their digest pins and tests; and record the owner
+     window order and the AI-011/INFRA-008 rotation procedure.
 
 ##### Evidence Requirements
 
