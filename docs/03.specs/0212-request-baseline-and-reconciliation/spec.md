@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.14.0"
+version: "2.15.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -390,6 +390,11 @@ The direct D07 lifecycle v8 request adds criterion172/W188 in TSK-0116. It
 reuses the accepted OpenBao window, restore, catalog and SMTP results, removes
 the renderer grants and Agent templates that no HOME consumer uses, and hands
 the live window and the AI-011/INFRA-008 rotation to the owner.
+
+The direct D02 lifecycle v8 request adds criterion173/W189 in TSK-0117. It
+reuses the accepted Traefik, DNS, TLS and machine-route contracts, records the
+A-side route census, closes the GDE-0079 route-table drift with a regression,
+and hands the B-side acceptance and the host Hermes listener to the owner.
 
 #### Scope
 
@@ -1611,6 +1616,13 @@ target, backup, recovery boundary, and action-specific authorization.
      from source the renderer read grants and Agent templates whose consumers
      are LAB-only, with their digest pins and tests; and record the owner
      window order and the AI-011/INFRA-008 rotation procedure.
+
+173. TSK-0117 applies D02 lifecycle v8 to the current Docker workspace.
+     Census every Traefik HTTP router and Host and probe each from server A
+     through 192.168.0.13 with the public CA and no credentials; record
+     listeners and negative cases; make GDE-0079 name every router outside
+     the SSO chain with a regression that fails on drift; and record the
+     B-side checks and open host items with their owner.
 
 ##### Evidence Requirements
 
