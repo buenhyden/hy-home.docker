@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -125,6 +125,33 @@ until it is recreated.
    follow-up change.
 5. Update IAM-011 and IAM-013 delivery in the catalog to match.
 
+###### Window steps run on 2026-11-25
+
+The owner asked in this chat to run the window steps and finish D07. The
+renderer issuer helper was installed from `ea699b9db`, the owner removed
+`/openbao/out/open-webui` and `/openbao/out/superset` and ran RUN-0103
+`agent-restart` through `p01_run`: `issue rc=0`, Agent healthy, and only the
+seven current output directories remain. Independently afterwards: the Agent
+started 07:46:25Z, is healthy with a failing streak of 0, runs a 16-template
+`agent.hcl`, and Keycloak, Grafana, oauth2-proxy, kafbat-ui, Dozzle, Gatus and
+the Airflow API server are healthy. Step 4 then deleted the four templates.
+
+Step 5 sets IAM-011 and IAM-013 to the catalog shape for a root secret with no
+current consumer, as PG-020 uses: no consumers, `BLOCKED_FACTS`,
+`RETAINED_FOR_RECOVERY`, `NO_CHANGE`, no destination binding and no
+`kv_path`; consumption is `UNKNOWN` and its evidence pointer null. Import and
+delivery stay `CONFIRMED` with their TSK-0014 evidence, because those
+deliveries happened; the contract test names both as `DELIVERY_RETIRED`.
+`check-views` reports `P02_VIEW_DRIFT` on clean `main` as well, so it is not
+from this change.
+
+Not done: step 3, writing the narrowed `renderer` policy, needs the W1 root
+token (`roles-apply`), and the operator policy cannot write `sys/policy`. The
+running Agent no longer reads the two paths; only the renderer token's right
+to read them remains, so the write is left for the next owner window. The two
+KV values under `hy-home/08-ai/open-webui` and `hy-home/12-analytics/superset`
+stay until the owner approves their deletion (D11).
+
 ###### AI-011/INFRA-008 rotation, owner-run
 
 1. Replace `secrets/tools/searxng/searxng_api_password.txt` with a new random
@@ -141,7 +168,8 @@ until it is recreated.
 
 | Prompt | Item | Precondition |
 | --- | --- | --- |
-| Owner | T01 `.env` value diagnosis, window steps 1–5, rotation 1–5 | Owner access to private files, OpenBao and 192.168.0.22 |
+| Owner | T01 `.env` value diagnosis, rotation 1–5, narrowed renderer policy in the next window | Owner access to private files, OpenBao root and 192.168.0.22 |
+| D11 | Delete the two retained KV values once approved | Owner approval |
 | D02 | Old SearXNG credential refused; B route acceptance | Rotation done |
 | D06 | Sandbox default selection (REQ-27) | Owner choice against POL-0078 |
 | D10 | Task lifecycle states of TSK-0098 to TSK-0114 | None |
@@ -169,6 +197,10 @@ chat, as listed under Inputs and Authority.
 | E08 | 172 | W188 | method=observation; tool=-; command=- | HOME runtime | NOT_RUN | Window steps and rotation are owner steps above | required | - |
 | E09 | 172 | W188 | method=observation; tool=docker; command=docker inspect openbao-agent health log | HOME `0bc8e76de`, 16:00–16:02 KST | FAIL | `health-agent.sh` exit 1 four times after the early pull; four templates missing from the directory mount | required | - |
 | E10 | 172 | W188 | method=observation; tool=docker; command=docker inspect openbao-agent health log | HOME with the four templates restored from `767449bf5`, 16:02:58 KST | PASS | exit 0, status healthy, failing streak 0 | required | E09 |
+| E11 | 172 | W188 | method=observation; tool=owner-window.sh; command=p01_run ea699b9db owner-window.sh agent-restart | Owner run, 2026-11-25 07:46Z | PASS | `issue rc=0`, Agent healthy, seven output directories | required | - |
+| E12 | 172 | W188 | method=observation; tool=docker; command=docker inspect and exec on openbao-agent and the seven consumers | After E11 | PASS | 16 templates, no stale output directory, all healthy | required | - |
+| E13 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-catalog.py --root "$PWD" check | Template removal and IAM-011/IAM-013 change | PASS | `P02_METADATA_VALID`, 152 entries, 6 aliases | required | - |
+| E14 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest over the 25 OpenBao, secret catalog and secret metadata modules | Template removal and IAM-011/IAM-013 change | PASS | 534 OK, 15 skipped (opt-in integration, NOT_RUN) | required | - |
 
 ##### Resolution Links
 
@@ -180,12 +212,13 @@ E05 resolves E04; E10 resolves E09.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10 | Source change and findings are recorded; E01 is blocked and E08 waits for the owner window and rotation | @buenhyden |
+| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14 | Source change, Agent restart, template removal and catalog update are done; E01 and the rotation in E08 are open, and the narrowed policy waits for the next window | @buenhyden |
 
 ##### Remaining Conditions
 
-E01 owner diagnosis of the private `.env` value; the owner window steps; the
-AI-011/INFRA-008 rotation with old-credential refusal; then owner acceptance.
+E01 owner diagnosis of the private `.env` value; the AI-011/INFRA-008
+rotation with old-credential refusal; the narrowed renderer policy in the next
+root window; then owner acceptance.
 
 #### Handoff
 
