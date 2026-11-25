@@ -1,6 +1,6 @@
 ---
 title: "D02 v8 Network and Gateway Authentication Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -165,10 +165,12 @@ firewall evidence stays NOT_RUN rather than inferred from A-side results.
 | E13 | 173 | W189 | method=observation; tool=PowerShell 7 Invoke-WebRequest; command=GET per host without redirect following; `GET http://192.168.0.13:8644/` | 192.168.0.22 Windows after the hosts change, owner, 2026-11-25 | PASS | All 38 hosts connect with no TLS or name error: 200, 401, 403 and 404 match server A and the hosts that redirect on server A raise the PowerShell 3xx exception; the port 8644 probe was not repeated (closed in E10 and E11) | required | E10 |
 | E14 | 173 | W189 | method=observation; tool=PowerShell 7, curl; command=loopback SearXNG proxy on server B: `GET /other`, `/search?format=json`, listener address, proxy log | 192.168.0.22 Windows, owner, 2026-11-25 | PASS | `other 404`; 53 results through `http://127.0.0.1:8889/search`; listens on 127.0.0.1 only; upstream 200 twice | required | - |
 | E15 | 173 | W189 | method=observation; tool=OpenClaw 2026.11.309.0 SearXNG plugin; command=web search with `baseUrl` set to the HOME URL, then to the loopback proxy | 192.168.0.22 Windows, owner, 2026-11-25 | PASS | With `https://searxng.hy.home.arpa` the search fails (no Basic header, SSO redirect); with `http://127.0.0.1:8889` OpenClaw searches through SearXNG successfully | required | - |
+| E16 | 173 | W189 | method=observation; tool=-; command=- | Server B checks E08, E11 to E15 and the server A listener readout, 2026-11-25 | PASS | Server B side done; from server B only 80 and 443 answer on 192.168.0.13 and 8644 is closed; the server A host firewall rules were not read (no root), so exposure is judged from the listeners and the server B probes | required | E06 |
+| E17 | 173 | W189 | method=observation; tool=PowerShell 7 ScheduledTasks; command=task action through `conhost.exe --headless`, listener, search through the proxy, task state | 192.168.0.22 Windows, owner, 2026-11-25 22:02 KST | PASS | No console window; listens on 127.0.0.1 only; 53 results; task `Running` and set to start at logon | optional | - |
 
 ##### Resolution Links
 
-E05 resolves E04; E11 resolves E09; E13 resolves E10.
+E05 resolves E04; E11 resolves E09; E13 resolves E10; E16 resolves E06.
 
 #### Acceptance Decision
 
@@ -176,16 +178,11 @@ E05 resolves E04; E11 resolves E09; E13 resolves E10.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 173 | pending | E01,E02,E03,E05,E06,E07,E08,E11,E12,E13,E14,E15 | Server A census, the route-table fix, the Hermes loopback bind, every server B check and OpenClaw searching through the server B loopback proxy (E14, E15) are complete; owner acceptance remains | @buenhyden |
+| 173 | accepted | E01,E02,E03,E05,E07,E08,E11,E12,E13,E14,E15,E16 | Owner @buenhyden accepted on 2026-11-25 in this chat after the server A census, the route-table fix, the Hermes loopback bind, every server B check and OpenClaw searching through the server B loopback proxy; the server A host firewall rules were not read, and exposure is judged from listeners and server B probes | @buenhyden |
 
 ##### Remaining Conditions
 
-Hermes Agent v0.23.4 on server A searches over loopback and needs no Traefik
-route. OpenClaw 2026.11.309.0 cannot send the Basic header, so by owner choice
-a loopback-only proxy on server B adds it (RUN-0110 step 7) and OpenClaw uses
-`http://127.0.0.1:8889`; the proxy is verified (E14) and OpenClaw searches through it (E15). Remaining:
-owner acceptance. The old SearXNG credential's refusal is settled in SPEC-0212
-TSK-0116 E25.
+None for criterion173.
 
 #### Handoff
 
