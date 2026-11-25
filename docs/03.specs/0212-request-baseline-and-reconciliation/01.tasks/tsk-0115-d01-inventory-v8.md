@@ -1,6 +1,6 @@
 ---
 title: "D01 v8 Inventory Reconciliation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -172,12 +172,12 @@ None: no row resolves another.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 171 | pending | E01,E02,E03,E04,E05,E06,E07 | The inventory and routing are recorded; owner acceptance is not given | @buenhyden |
+| 171 | accepted | E01,E02,E03,E04,E05,E06,E07 | Owner @buenhyden accepted on 2026-11-25 in this chat; the routed items are tracked by their owners (D07 in TSK-0116, D02 in TSK-0117) | @buenhyden |
 
 ##### Remaining Conditions
 
-Owner acceptance of criterion171. The routed items stay open with the owners
-listed above; this Task does not close them.
+None for criterion171. The routed items stay with the owners listed above;
+this Task does not close them.
 
 #### Handoff
 
