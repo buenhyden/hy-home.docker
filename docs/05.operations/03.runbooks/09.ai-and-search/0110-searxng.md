@@ -1,13 +1,13 @@
 ---
 title: "SearXNG Recovery Runbook"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 layer: "operations"
 artifact_id: "RUN-0110"
 parent_ids:
@@ -119,6 +119,13 @@ n8n 재생성이 함께 필요하다.
 
    ```bash
    docker compose --profile searxng up -d searxng
+   ```
+
+   `settings.yml`만 바뀐 경우 Compose는 변경을 감지하지 못해 `up -d`가 컨테이너를
+   그대로 둔다. 이때는 `--force-recreate`를 붙여 재생성한다.
+
+   ```bash
+   docker compose --profile searxng up -d --force-recreate searxng
    ```
 
 4. 소비자를 연결하거나 해제할 때는 정책의 소비자 표와
