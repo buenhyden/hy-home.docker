@@ -1,6 +1,6 @@
 ---
 title: "SearXNG Recovery Runbook"
-version: "2.2.0"
+version: "2.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -169,6 +169,11 @@ n8n 재생성이 함께 필요하다.
    5. 확인: 그 host·그 계정에서 자격 없이 302, 틀린 자격 401, 올바른 자격 200과 JSON `results`를
       받는다. 302 HTML이나 잘린 JSON은 성공이 아니다.
    6. 회전 뒤: 6단계로 값을 바꾸면 이 host의 파일도 3번 방법으로 다시 받고 5번으로 확인한다.
+   7. Basic header를 설정할 수 없는 client(예: OpenClaw SearXNG plugin은 `baseUrl`만 받는다):
+      그 host의 `127.0.0.1`에만 listen하는 작은 프록시가 비밀번호 파일에서 header를 붙여
+      `GET /search`만 HOME으로 전달하고, 다른 경로는 404로 거부한다. 프록시는 요청마다 파일을
+      읽어 회전 뒤 재시작이 필요 없고, 응답 코드만 기록한다. client의 base URL은
+      `http://127.0.0.1:<port>`이다. HOME·Traefik route는 바꾸지 않는다.
 
 ##### Stop Conditions
 
