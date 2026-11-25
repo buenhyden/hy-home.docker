@@ -1,13 +1,13 @@
 ---
 title: "Ollama Usage Guide"
-version: "3.0.0"
+version: "3.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -178,6 +178,13 @@ GTX 1060 6 GiB에서는 [tev1:0.8b](https://ollama.com/library/tev1)를 먼저 �
 
 Open WebUI는 2026-11-10부터 독립 LAB이며 HOME network에 합류하지 않는다. LAB은 승인된 endpoint
 (`LAB_OPEN_WEBUI_OLLAMA_BASE_URL`)로만 Ollama에 닿는다([GDE-0057](../15.labs/0057-open-webui.md)).
+
+다른 host의 프로그램(예: 서버 B의 OpenClaw)은 `https://ollama.${DEFAULT_URL}`에 Basic 자격 증명을 첫 요청부터
+보낸다. `ollama-api` router는 `Authorization: Basic` header가 있는 추론·조회 경로(`/api/chat`, `/api/generate`,
+`/api/embed`, `/api/embeddings`, `/api/tags`, `/api/show`, `/api/version`, `/api/ps`, `/v1/`)만 받고
+`ollama-api-auth`(htpasswd `INFRA-009`, `AI-012`·`AI-013`)로 검사한다. header가 없거나 다른 경로이면 SSO router로
+가서 302 로그인 HTML을 받으므로 base URL만 받는 client는 그 host의 loopback 프록시를 거친다
+([runbook](../../03.runbooks/09.ai-and-search/0056-ollama.md#remote-program-access)). 모델 관리는 SSO 뒤에 남는다.
 
 ###### Exporter Observability Check
 <!-- core-payload-level:5 -->

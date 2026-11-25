@@ -1035,6 +1035,50 @@ class OllamaPortContractTests(unittest.TestCase):
             "ollama:12434", services["ollama-exporter"]["environment"]["OLLAMA_HOST"]
         )
 
+    def test_programs_reach_inference_paths_with_basic_and_browsers_keep_sso(self):
+        # SPEC-0212 TSK-0118 E11: unattended clients (OpenClaw on B) got a 302 to
+        # Keycloak. They send Basic credentials to inference and lookup paths
+        # only; model management stays behind SSO (owner, 2026-11-26).
+        import yaml
+
+        labels = yaml.safe_load(
+            (ROOT / "infra/08-ai/ollama/docker-compose.yml").read_text()
+        )["services"]["ollama"]["labels"]
+        self.assertEqual(
+            "gateway-standard-chain@file,sso-errors@file,sso-auth@file",
+            labels["traefik.http.routers.ollama.middlewares"],
+        )
+        rule = labels["traefik.http.routers.ollama-api.rule"]
+        self.assertIn("HeaderRegexp(`Authorization`, `^Basic `)", rule)
+        for path in ("chat", "generate", "embed", "embeddings", "tags", "show"):
+            self.assertIn(f"Path(`/api/{path}`)", rule)
+        self.assertIn("PathPrefix(`/v1/`)", rule)
+        for path in ("pull", "push", "delete", "create", "copy", "blobs"):
+            self.assertNotIn(f"/api/{path}", rule)
+        self.assertNotIn("PathPrefix(`/api", rule)
+        self.assertEqual(
+            "gateway-standard-chain@file,ollama-api-auth@file",
+            labels["traefik.http.routers.ollama-api.middlewares"],
+        )
+        self.assertEqual("ollama", labels["traefik.http.routers.ollama-api.service"])
+        middleware = yaml.safe_load(
+            (ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml").read_text()
+        )["http"]["middlewares"]["ollama-api-auth"]
+        self.assertEqual(
+            "/run/secrets/traefik_ollama_api_htpasswd",
+            middleware["basicAuth"]["usersFile"],
+        )
+        traefik = yaml.safe_load(
+            (ROOT / "infra/01-gateway/traefik/docker-compose.yml").read_text()
+        )["services"]["traefik"]
+        self.assertIn("traefik_ollama_api_htpasswd", traefik["secrets"])
+        self.assertEqual(
+            "./secrets/auth/traefik/traefik_ollama_api_htpasswd.txt",
+            yaml.safe_load((ROOT / "docker-compose.yml").read_text())["secrets"][
+                "traefik_ollama_api_htpasswd"
+            ]["file"],
+        )
+
 
 MNG_DB_COMPOSE = "infra/04-data/mng-db/docker-compose.yml"
 PG_CLUSTER_COMPOSE = "labs/postgresql-ha/docker-compose.yml"
@@ -6045,6 +6089,7 @@ ROUTES_WITHOUT_SSO = {
     "opensearch-dashboards": "security-plugin",
     "prometheus-api": "gateway-basic-auth",
     "searxng-api": "gateway-basic-auth",
+    "ollama-api": "gateway-basic-auth",
     # Signed machine API
     "s3": "sigv4",
     # MCP resource server: Keycloak bearer tokens for its own URL (SPEC-0219)

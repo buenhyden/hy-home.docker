@@ -1,13 +1,13 @@
 ---
 title: "Ollama Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -164,6 +164,36 @@ docker compose exec open_notebook curl -f http://ollama:${OLLAMA_PORT:-11434}/ap
 ```
 
 Open WebUI는 2026-11-10부터 HOME network 밖의 독립 LAB이며 승인된 endpoint로만 Ollama에 닿는다.
+
+###### Remote Program Access
+
+다른 host의 프로그램(예: 서버 B의 OpenClaw)은 `ollama-api` router(POL-0056-R24)로만 들어온다.
+
+1. 자격(`AI-013`)과 Traefik hash(`INFRA-009`)는 owner가 만든다. 사용자 이름은 `.env`의
+   `OLLAMA_API_USERNAME`(`AI-012`)이다. `gen-secrets.sh`는 hash를 계산할 뿐 비밀번호를 만들지 않는다.
+   값은 화면·인자·로그에 내지 않는다. 처음 만들 때와 회전할 때 같다(Traefik 재생성으로 모든 route가 몇 초 끊긴다).
+
+   ```bash
+   umask 077
+   mkdir -p secrets/tools/ollama
+   f=secrets/tools/ollama/ollama_api_password.txt
+   h=secrets/auth/traefik/traefik_ollama_api_htpasswd.txt
+   u=$(sed -n 's/^OLLAMA_API_USERNAME="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p' .env)
+   [ -n "$u" ] && openssl rand -hex 24 | tr -d '\n' > "$f" &&
+     htpasswd -iBn "$u" < "$f" | head -1 > "$h.new" && chmod 640 "$h.new" && mv "$h.new" "$h" &&
+     docker compose --profile core up -d --no-deps --force-recreate traefik &&
+     docker compose --profile ai up -d --no-deps ollama
+   ```
+
+2. 서버 A에서 확인한다. 자격 없이 `/api/tags`는 302, 틀린 자격은 401, 0600 netrc의 올바른 자격은 200과
+   JSON `models`, 올바른 자격의 `/api/pull`은 302(SSO)다.
+3. 다른 host 연결은 [SearXNG runbook](0110-searxng.md) 7단계의 이름 해석·TLS 신뢰·자격 전달 방법을 그대로 쓴다.
+   base URL만 받는 client(OpenClaw `api: ollama` provider 등)는 그 host의 `127.0.0.1`에만 listen하는 프록시가
+   비밀번호 파일에서 Basic header를 붙여 허용 경로만 `https://ollama.${DEFAULT_URL}`로 전달하고, 다른 경로는
+   404로 거부한다. 요청 body와 streaming 응답을 그대로 흘려야 한다. client base URL은 `/v1` 없이
+   `http://127.0.0.1:<port>`이다.
+4. 그 host·그 계정에서 프록시를 거쳐 `/api/tags` 200과 짧은 `/api/chat` 응답을 받고, 서버 A Ollama log에 같은
+   시각의 200이 있으면 연결된 것이다. 302 HTML이나 Ollama log에 없는 응답은 성공이 아니다.
 
 ###### Scoped Upgrade Check and Rollback
 <!-- core-payload-level:4 -->

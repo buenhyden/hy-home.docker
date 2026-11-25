@@ -1,13 +1,13 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -435,7 +435,7 @@ TCP router는 두지 않는다.
 | `storybook-mcp` | 자체 URL용 Keycloak bearer token(MCP resource server, SPEC-0219) |
 | `open-notebook` | application password와 IP allowlist |
 | `opensearch`(두 variant), `opensearch-dashboards` | OpenSearch security plugin |
-| `dashboard`(Traefik), `prometheus-api`, `searxng-api` | Traefik basic auth(`prometheus-api`, `searxng-api`는 `Authorization: Basic` 헤더가 있는 요청만 받고, 헤더 없는 요청은 SSO router로 간다) |
+| `dashboard`(Traefik), `prometheus-api`, `searxng-api`, `ollama-api` | Traefik basic auth(`prometheus-api`, `searxng-api`, `ollama-api`는 `Authorization: Basic` 헤더가 있는 요청만 받고, 헤더 없는 요청은 SSO router로 간다) |
 | `s3` | S3 SigV4 identity |
 | `hermes-blog-ingestion-webhook` | n8n 헤더 인증; `POST /webhook/hermes-blog-ingestion` 정확한 경로만, 출발지 `192.168.0.13/32` |
 | `blog-export-read`, `blog-export-ack`, `blog-attestation` | Blog-data Gateway 단일 범위 Bearer(`export_read`, `export_ack`, `attest`); 정확한 경로·메서드만, 출발지 `192.168.0.22/32`(Export)와 `192.168.0.13/32`(Attestation) |

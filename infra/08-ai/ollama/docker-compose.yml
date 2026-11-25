@@ -78,6 +78,13 @@ services:
       traefik.http.routers.ollama.tls: 'true'
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
       traefik.http.routers.ollama.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      # Programs on other hosts (OpenClaw on B): Basic credentials, inference and
+      # lookup paths only. Model management stays behind SSO (OPS-0056).
+      traefik.http.routers.ollama-api.rule: Host(`ollama.${DEFAULT_URL}`) && HeaderRegexp(`Authorization`, `^Basic `) && (Path(`/api/chat`) || Path(`/api/generate`) || Path(`/api/embed`) || Path(`/api/embeddings`) || Path(`/api/tags`) || Path(`/api/show`) || Path(`/api/version`) || Path(`/api/ps`) || PathPrefix(`/v1/`))
+      traefik.http.routers.ollama-api.entrypoints: websecure
+      traefik.http.routers.ollama-api.tls: 'true'
+      traefik.http.routers.ollama-api.middlewares: gateway-standard-chain@file,ollama-api-auth@file
+      traefik.http.routers.ollama-api.service: ollama
     networks:
       ollama_ingress_net: {}
       ai_net: {}
