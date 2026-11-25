@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.45"
+version: "0.2.46"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4345,10 +4345,60 @@ the local state directory (Restic plus pgBackRest) was 8269 MiB against the
   size: 7749627208 -> 4759529907 bytes`, under the 7.5 GB cap. The following
   `restic-offsite check` reported `no errors were found` over 53 snapshots.
 
-Next: the owner runs `hyhome-backup.service` once, checks `Result=success`,
-restarts `hyhome-backup.timer`, and reruns the window driver from `prep` on the
-current main commit. The 41 locked R2 snapshots before 2026-11-11 can be
-trimmed after their lock expires.
+The owner's manual `hyhome-backup.service` run (10:49-10:51:43 KST) ended
+`Result=success` with no refusal; R2 stood at 5,438,320,366 bytes.
+
+#### OpenBao 2.7.3 Window — 2026-11-25
+
+The owner ran `window-run.sh` on main `3544cccd54c16cac23ba578457a8b19853b281ef`.
+Two runs stopped with exit 1 and no server effect before the completed run:
+
+- **Prep during the manual backup.** The first run stopped at prep with "a
+  backup run is in progress"; nothing ran.
+- **W1 BLOCKED (exit 1).** The custody directory held only `.lock` and no
+  `initialization.json`, so the helper stopped after reading the token and
+  both shares but before `POST sys/generate-root-token/attempt`. Seal status,
+  cluster ID, version and `started:false` were as expected through the same
+  Traefik route, so the remaining cause is the two-distinct-shares check (a
+  repeated paste is the likely case; the values were not inspected). The
+  owner ran `cleanup` (no root custody, no `--discard-root`) and restarted
+  from `prep`.
+- **W3a BLOCKED (exit 1), first W3 attempt.** No restore target or ledger for
+  `p01-restore-20261124-07` existed. `check-token w3a` returned `permission
+  denied` for the stored 21-byte W3a token, so the helper stopped at its
+  operator lookup. Because RUN-0105 forbids a new login between W3 and the
+  end of W3a, the owner took and checked a new W3a token first and reran from
+  `w3` into a new snapshot directory; the first attempt's snapshot directory
+  `openbao-p01-20261125` and inputs `p01-inputs.BCg7W9` were kept.
+
+The completed run (T0 11:01:05 KST) reached `finish`:
+
+- W1 custody `DELIVERED`; renderer roles `RENDERER_ROLES_PLANNED` then
+  `RENDERER_ROLES_APPLIED`; W7 `ROOT_REVOKED_OPERATOR_HEALTHY`.
+- W3 snapshot `P01_SNAPSHOT_DIRECTORY=/home/hyunyoun/storage/ops-snapshots/openbao-p01-20261125-2`
+  (68 KiB, receipt version of the old server); W3b `W3B_STORED`, R2 snapshot
+  `2823831d20f1d60b4a94376e6435d2f16435e25a806ecd506d6db006941eca61`.
+- W3a ledger `.p01-restore-20261124-07.attempt.json` state `accepted` and
+  the `w3a-accepted` marker; the restore target directory remains.
+- After W4-W6, `openbao` and `openbao-agent` both run image
+  `sha256:240e4a8870b2732eb24c3851611f3c5bda296e25ae4521691023f169afbdf8fa`,
+  healthy; seal status reports unsealed, cluster
+  `51fbfa38-a715-7dca-629f-3f07233749f4` and the new version string.
+- Silence `778f88af-2bf8-4a73-a857-4f3be350cb36` is gone and
+  `hyhome-backup.timer` is active. Cleanup revoked the W1 token; the W3a and
+  W7 tokens were already expired or revoked.
+- Evidence: `/home/hyunyoun/p01-evidence/20261125-openbao-2.7.3` (8 receipts,
+  `inputs/` and `window-alerts.txt`). The window alerts were the expected
+  `OpenBaoMetricsScrapeFailing` and `OpenBaoAgentMetricsScrapeFailing`
+  (pending) and `OpenBaoTooManyPendingTokens` (firing from 11:05:53 KST: one
+  more token created than stored within 15 minutes, matching the W1 root
+  generation). It resolved by 11:22 KST with no OpenBao alert left; the
+  unrelated `ObservationSelectionMissing` has been active since 2026-11-18.
+
+Next: the owner decides what to keep of the first W3 attempt's snapshot
+directory and inputs and of the accepted restore target, per RUN-0105. The
+41 locked R2 snapshots before 2026-11-11 can be trimmed after their lock
+expires.
 
 ### Blockers and Decisions
 
