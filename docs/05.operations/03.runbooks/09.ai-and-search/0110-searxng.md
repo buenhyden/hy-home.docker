@@ -1,6 +1,6 @@
 ---
 title: "SearXNG Recovery Runbook"
-version: "2.0.1"
+version: "2.1.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -132,6 +132,24 @@ n8n 재생성이 함께 필요하다.
    `tests.validation.test_p02_service_contracts.SharedSearchContractTests.ADMITTED`를 함께 고친다.
 5. 제거 승인을 받으면 호스트 소비자 설정(Hermes `web.search_backend`)과 컨테이너
    소비자(`search_net` 합류)를 먼저 해제한 뒤 include와 문서를 정리한다.
+6. `/search` API 자격(`AI-011`)과 Traefik hash(`INFRA-008`)는 owner가 직접 만든 값이다.
+   catalog에서 `AI-011`은 `VERIFY_RUNTIME`, `INFRA-008`은 `derived_runtime`이라
+   `gen-secrets.sh`는 둘 다 만들거나 다시 계산하지 않는다. 노출 등으로 회전할 때는 새 값을 파일에
+   쓰고 bcrypt hash를 표준입력으로 다시 만든 뒤 Traefik만 재생성한다(모든 route가 몇 초 끊긴다).
+   값은 화면·인자·로그에 내지 않는다.
+
+   ```bash
+   umask 077
+   f=secrets/tools/searxng/searxng_api_password.txt
+   h=secrets/auth/traefik/traefik_searxng_api_htpasswd.txt
+   u=$(sed -n 's/^SEARXNG_API_USERNAME="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p' .env)
+   [ -n "$u" ] && openssl rand -hex 24 | tr -d '\n' > "$f" &&
+     htpasswd -iBn "$u" < "$f" | head -1 > "$h.new" && chmod 640 "$h.new" && mv "$h.new" "$h" &&
+     docker compose --profile core up -d --no-deps --force-recreate traefik
+   ```
+
+   새 값은 0600 netrc로 200, 옛 값은 401임을 확인한다. 옛 값 확인이 끝나기 전에 그 사본을 지우지
+   않는다. 원격 소비자(서버 B의 netrc 등)는 새 값으로 바꾼 뒤 다시 확인한다.
 
 ##### Stop Conditions
 
