@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -170,6 +170,25 @@ other routes are unchanged. The old-value refusal can only be checked from
 still rejects its input, as before the rotation (E01). RUN-0110 step 6 now
 carries the manual procedure.
 
+###### Remaining-items review on 2026-11-25
+
+The owner asked to review the remaining items and finish what can be done.
+
+- `secret-catalog.py check-views` drifted only because the catalog had
+  changed; `render` rewrote the ignored, value-free staging views under
+  `.agent-work/p02-views` and `check-views` returns `P02_VIEWS_MATCH`.
+- `operator.hcl` still granted create, read and update on the two LAB-only KV
+  paths. They are removed in source and the `operator.hcl` and
+  `protected-renderer-roles.py` digests are re-pinned; all 20 bootstrap
+  manifest pins and all 8 renderer-role pins match their files. The policy is
+  not mounted, so a HOME pull changes nothing live; the next window writes it
+  with `renderer` in one `roles-apply`.
+- The opt-in rehearsal test still listed the four deleted templates and seeded
+  the two KV paths; both are removed. RUN-0105 named "19" templates for the
+  post-check; it now refers to every template in `agent.hcl`.
+- Deleting the two KV values needs root: `operator.hcl` never granted delete
+  on them. It belongs in the same window, after the owner approves it.
+
 ###### AI-011/INFRA-008 rotation procedure as first written (superseded)
 
 1. Replace `secrets/tools/searxng/searxng_api_password.txt` with a new random
@@ -220,6 +239,9 @@ chat, as listed under Inputs and Authority.
 | E13 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-catalog.py --root "$PWD" check | Template removal and IAM-011/IAM-013 change | PASS | `P02_METADATA_VALID`, 152 entries, 6 aliases | required | - |
 | E14 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest over the 25 OpenBao, secret catalog and secret metadata modules | Template removal and IAM-011/IAM-013 change | PASS | 534 OK, 15 skipped (opt-in integration, NOT_RUN) | required | - |
 | E15 | 172 | W188 | method=observation; tool=curl, stat, docker; command=new-value netrc on `/search`, invalid Basic, file modes, Traefik health | Server A after the corrected rotation, 17:13 KST | PASS | new 200, invalid 401, files 0600/0640, Traefik healthy | required | - |
+| E17 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-catalog.py --root "$PWD" render; check-views | HOME `f4d1f0c74` | PASS | `STAGING_RENDERED`, then `P02_VIEWS_MATCH` | required | - |
+| E18 | 172 | W188 | method=automated; tool=sha256sum, Python3; command=every p01-bootstrap.sh manifest pin and protected-renderer-roles.py pin against its file | Operator narrowing | PASS | 20/20 and 8/8 match | required | - |
+| E19 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest tests.lib.ops.test_openbao_issuance plus the 25 OpenBao, secret catalog and secret metadata modules | Operator narrowing | PASS | 587 OK, 15 skipped (opt-in integration, NOT_RUN) | required | - |
 | E16 | 172 | W188 | method=observation; tool=curl; command=old-value netrc on `/search` from 192.168.0.22 | Server B | NOT_RUN | Owner check; the old value exists only in that host's netrc | required | - |
 
 ##### Resolution Links
@@ -232,13 +254,14 @@ E05 resolves E04; E10 resolves E09.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16 | Source change, Agent restart, template removal, catalog update and the server A rotation are done; E01 and E16 are open, and the narrowed policy waits for the next window | @buenhyden |
+| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16,E17,E18,E19 | Source change, Agent restart, template removal, catalog update and the server A rotation are done; E01 and E16 are open, and the narrowed policy waits for the next window | @buenhyden |
 
 ##### Remaining Conditions
 
 E01 owner diagnosis of the private `.env` value; E16, the old-credential
-refusal from 192.168.0.22; the narrowed renderer policy in the next root
-window; then owner acceptance.
+refusal from 192.168.0.22; in the next root window, `roles-apply` for the
+narrowed `renderer` and `hy-home-operator` policies and, if approved, deletion
+of the two retained KV values; then owner acceptance.
 
 #### Handoff
 

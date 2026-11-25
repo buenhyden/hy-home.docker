@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -97,7 +97,7 @@ W0 조건(CI와 독립 검토를 통과한 `P01_APPROVED_COMMIT`, 1인 관리자
 | 24 | W4 Server Upgrade and Manual Unseal: `owner-window.sh w4 <device/inode>`로 server 재생성과 수동 unseal | 새 image로 재생성되고 Raft mount identity가 불변이며 threshold 뒤 `Sealed false`이다 | mount identity 변경, unseal 실패, cluster ID 변경, audit backend 실패이면 중단하고 fix-forward하며 이전 image를 붙이지 않는다. T+80까지 시작하지 않으면 HOME server를 바꾸지 않고 멈춘다 |
 | 25 | W5 Agent Upgrade and Reissue: server unsealed·health 통과 뒤 `owner-window.sh w5-create`로 SecretID 재전달, Agent telemetry 확인, Gatus 재생성 | Agent `healthy`, 렌더 bytes와 version 일치, `up{job="openbao-agent"}`가 1이다 | 재인증 실패나 health 실패이면 중단하며 Agent는 server보다 앞서 rollback하지 않는다. Prometheus/Gatus 확인이 어긋나면 해당 부분은 BLOCKED다 |
 | 26 | W6 Audit and Logrotate Check: 새 server의 `openbao-audit` mount와 `audit.json`(0600, UID100/GID1000), device·inode·용량, 요청 전후 성장 확인 | 문서에 기록 없음 | audit device를 끄거나 `copytruncate`로 바꾸지 않고 공간·권한과 재개방을 복구한다 |
-| 27 | W7 Post Check: renderer 재인증, consumer 읽기, 기존 경보, `up{job="openbao"}` 확인 | 19개 template 렌더 결과가 일치하고 기존 경보가 조용하다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 27 | W7 Post Check: renderer 재인증, consumer 읽기, 기존 경보, `up{job="openbao"}` 확인 | `agent.hcl`의 모든 template 렌더 결과가 일치하고 기존 경보가 조용하다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 | 28 | W7 Root Revocation: `token w7`, `check-token w7`, `revoke-root` | exit 0 / `ROOT_REVOKED_OPERATOR_HEALTHY`만 완료이며 root lookup 403이다 | 관리자 접근이 준비되지 않으면 POST 전에 중단하고 폐기 후 확인이 불확실하면 exit 2로 custody를 보존하며 같은 mutation을 재시도하지 않는다 |
 | 29 | Finish: `k8s-writers.sh finish`로 W3에 저장된 UID/replica와 변경 목록을 써서 멈춘 K8s writer를 복구하고 ESO gate를 실행한다 | `ESO_GATE_PASS`이며 Store Ready, 실제 refresh, Application 상태까지 통과해야 완료다 | nonzero(exit 1)이면 Finish FAIL로 남기고 실패한 namespace/name/Store/조건/시각/실행자/다음 검토 입력을 값 없이 Task에 기록하며 새 축소와 무한 재시도는 하지 않는다. 강제 갱신은 외부 ESO 운영자의 별도 승인 뒤에만 한다 |
 | 30 | W8 Cold Boot: 별도 window에서 cold boot | 문서에 기록 없음 | 별도 승인이 필요하다 |
@@ -1144,7 +1144,7 @@ rotation을 성공으로 처리하지 않습니다.
 ###### W7 Post Check
 <!-- core-payload-level:5 -->
 
-renderer 재인증, consumer 읽기(`agent.hcl`이 선택한 19개 template 렌더 결과
+renderer 재인증, consumer 읽기(`agent.hcl`이 선택한 모든 template 렌더 결과
 일치), `OpenBaoSealed` 등 기존 경보가 조용한지, `up{job="openbao"}`를 확인합니다. 다음
 backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 backup timer와
 hy-home.k8s 로그인 주체를 아래 Finish대로 복구·검증하고, 경보를 기록한 뒤 silence를 지웁니다.

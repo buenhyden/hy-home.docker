@@ -45,7 +45,7 @@ POLICIES = (
     (
         "hy-home-operator",
         "policies/operator.hcl",
-        "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b",
+        "6afa1699f8965247ef24f2fcadaabbdc74ebe74ee4291010b4774048e6523dd0",
     ),
 )
 TOKEN_ROLES = (
