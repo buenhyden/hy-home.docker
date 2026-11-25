@@ -198,7 +198,7 @@ class SecretCatalogContractTests(unittest.TestCase):
                 self.assertTrue(list(validator.iter_errors(candidate)))
 
     # P06 deliveries proven on HOME; every other entry makes no runtime claim.
-    # IAM-004 and IAM-013 still have a held consumer, so consumption stays open.
+    # IAM-004 still has a held consumer, so consumption stays open.
     DEPLOYED = MappingProxyType(
         {
             "IAM-002": ("hy-home/02-auth/keycloak", "admin_password"),
@@ -207,15 +207,18 @@ class SecretCatalogContractTests(unittest.TestCase):
             "IAM-004": ("hy-home/02-auth/oauth2-proxy", "client_secret"),
             "IAM-009": ("hy-home/05-messaging/kafbat", "client_secret"),
             "IAM-010": ("hy-home/06-observability/dozzle", "client_secret"),
-            "IAM-011": ("hy-home/08-ai/open-webui", "client_secret"),
             "IAM-012": ("hy-home/06-observability/gatus", "client_secret"),
-            "IAM-013": ("hy-home/12-analytics/superset", "client_secret"),
             "AUTO-015": ("hy-home/07-workflow/airflow", "client_secret"),
         }
     )
-    HELD_CONSUMER = frozenset({"IAM-004", "IAM-013"})
+    HELD_CONSUMER = frozenset({"IAM-004"})
+    # Delivered through the Agent until their consumers moved to LAB; the Agent
+    # no longer renders them (SPEC-0212 TSK-0116), but the history stays.
+    DELIVERY_RETIRED = frozenset({"IAM-011", "IAM-013"})
 
     def migrated_lanes(self, identifier):
+        if identifier in self.DELIVERY_RETIRED:
+            return ("observed", "imported", "delivered")
         if identifier not in self.DEPLOYED:
             return ()
         lanes = ("observed", "imported", "delivered")
