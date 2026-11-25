@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.16.0"
+version: "0.17.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1927,6 +1927,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | Gateway credential scopes | 23 | W83 | Credential producers and scopes in the live Gateway `/run/config.json`, digests excluded | HOME `blog-ingestion` 2026-11-25 | PASS | Five credentials, all producer `hermes`: `ingest`; `read`; `attest`+`read`; `export_read`; `export_ack`. Ingestion succeeds and only the first holds `ingest`, so n8n's Gateway credential is ingest-only. | required | - |
 | Attestation tally | 23 | W83 | Every saved report since the plugin release accounted for, from the live Gateway database read-only (counts only) | HOME `blog-ingestion`, reports received 2026-11-20 to 2026-11-25 KST | PASS | 18 reports: 17 attested with exports acknowledged or held, 1 (news, 2026-11-25) in attester retry; none quarantined, none unaccounted. | required | - |
 | Gateway contract fixtures at pin | 23 | W82 | Compare the workload fixtures with the contracts inside image `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48` | `tests/fixtures/` vs `/app/scripts/lib/ingestion/contracts/` | FAIL | `ingestion-v1.schema.json` is identical; `openapi-v1.json` (1.0.0 vs 1.1.0) and `responses-v1.schema.json` lag the image with additions only (review history endpoints, candidate `matching`). The ingestion request the transport sends is unchanged. | required | - |
+| Gateway contract fixtures at pin rerun | 23 | W82 | Compare the workload fixtures with the contracts inside image `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48` | `openapi-v1.json` and `responses-v1.schema.json` copied verbatim from the image, digests updated in `test_upstream_fixture_integrity` | PASS | All three contract fixtures now equal the image's files (`c2ee177a…`, `820333ee…`, `fb701d71…`); the workload suite passes 504 tests, including the 24 adapter and transport tests that load them. | required | Gateway contract fixtures at pin |
 
 ### Resolution Links
 
