@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.14.0"
+version: "0.15.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1918,6 +1918,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | Direct path operational live | 23 | W83 | Live Gateway, credentials, publication, Traefik route, Hermes plugin | Hermes 07:00 KST Cron runs 2026-11-20 to 2026-11-25: `submit_research_report` results in the Hermes session store | PASS | 18 real submissions (news, devops and business ideas, three a day) returned HTTP 201 with `persisted: true` and `duplicate: false`. Ten earlier attempts stopped at Hermes's own pre-submission checks (`source_quality` 9, `report_path_not_allowed` 1) and were resubmitted. | required | Direct path operational |
 | Production attester live | 23 | W83 | Real `hermes-attester` account, key, `attest`+`read` token, `export` block, timer and a real item verification | `hermes-attester.service` journal 2026-11-18 to 2026-11-25 | PASS | Every day has runs with `attested` of 1 or 2 and `rejected` 0. On 2026-11-20 and 11-21 an item waited in `retry` for about six hours before it was attested; on 2026-11-25 one item has been in `retry` since 07:14 KST. One run exited 1 on 2026-11-09. | required | Production attester |
 | Warm-up scheduled run readback | 8, 23 | W83 | First 07:50 KST execution readback | HOME n8n `50 6 * * *`, the only tracked workflow on that schedule; n8n main and worker logs 2026-11-24 and 11-25 | PASS | Executions 198 and 202 were enqueued at 06:50:00 KST and finished about one second later on the worker with no error line. The execution records' status fields were not read. | required | Warm-up scheduled run |
+| SearXNG route from 192.168.0.22 rerun | 23 | W83 | From that host: name resolution, SSO 302, wrong Basic 401, correct Basic `/search` 200, browser login | 192.168.0.22: owner browser login 2026-11-19; owner-run `curl` on the host's Linux side 2026-11-25 with TLS verified and the AI-011 credential in a mode-0600 netrc | PASS | Name resolution and the SSO login passed in the browser; wrong Basic returned 401 and correct Basic `/search` returned 200. During a second, Windows attempt the credential was printed to the owner's terminal and session, so AI-011 and INFRA-008 need rotation; no running service uses it (Hermes searches through loopback). | required | SearXNG route from 192.168.0.22 |
+| SearXNG Basic API from 192.168.0.22 rerun | 23 | W83 | Wrong Basic 401 and correct Basic `/search` 200 from that host | 192.168.0.22, owner-run `curl` 2026-11-25 | PASS | 401 for the wrong credential, 200 for the correct one on `/search?q=test&format=json`. | required | SearXNG Basic API from 192.168.0.22 |
+| Existing email/workload regression on the direct path | 23 | W83 | Preserve Cron/email and existing n8n/Docker workloads | HOME 2026-11-20 to 2026-11-25 after the direct path went live: Hermes send receipts, `docker ps` health and n8n worker logs, read-only | PASS | All 18 news, devops and business-idea runs completed and each sent its email (three a day); 57 running containers healthy, the exited ones are one-shot init jobs. The 39 n8n worker database errors came from three Postgres interruptions on 2026-11-24 (17:50, 20:17 and 20:35 KST), each followed by reconnection. The Native worker scenario was not deployed. | required | Existing email/workload regression |
 
 ### Resolution Links
 
