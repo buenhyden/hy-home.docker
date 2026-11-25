@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -82,8 +82,8 @@ authority; this record is not.
 ###### Source change
 
 `renderer.hcl` loses the `08-ai/open-webui` and `12-analytics/superset` data
-and metadata read paths; `agent.hcl` loses their four templates and the four
-`.ctmpl` files are deleted; `protected-restore-inputs.py` drops them from its
+and metadata read paths; `agent.hcl` loses their four templates (the four
+`.ctmpl` files were deleted, then re-added; see the health incident below); `protected-restore-inputs.py` drops them from its
 input list; `oidc-client-secrets.sh` and `verify-oidc-client-secret.sh` drop
 both services, which the verifier now refuses with exit 2. The digests of
 `renderer.hcl`, `protected-renderer-roles.py` and `protected-restore-inputs.py`
@@ -94,20 +94,35 @@ catalog rows IAM-011 and IAM-013 and the dated `update-ledger.json` receipts
 are unchanged: the catalog still describes the running Agent, which renders
 both until the window.
 
+###### Agent health incident and template re-add
+
+The HOME checkout was fast-forwarded to `0bc8e76de` at 16:00 KST, before the
+window. The running Agent kept its old 20-template `agent.hcl` while the
+template directory lost four files, so `health-agent.sh` exited 1 from
+16:00:49 to 16:02:26 KST (four checks; the fifth retry was not reached, so the
+container never turned unhealthy). Rendering and consumers were unaffected.
+With the owner's approval the four `.ctmpl` files were restored byte-identical
+from `767449bf5` in the HOME working tree; the check returned exit 0 at
+16:02:58 with a failing streak of 0. A follow-up change re-adds them to `main`.
+They are unused by the new `agent.hcl` and are deleted in step 4 below, after
+the Agent runs the new configuration.
+
 ###### Owner window order
 
-Pull this commit into the HOME checkout only inside a RUN-0105 window:
-`agent.hcl` is a single-file bind and the templates are a directory bind, so
-the running Agent fails its health check from the pull until step 3.
+With the four templates back, a HOME pull no longer breaks the running Agent.
+`agent.hcl` is a single-file bind, so the Agent keeps its old template list
+until it is recreated.
 
-1. Fast-forward the HOME checkout to the merge commit and approve it as the
-   window commit.
-2. Recreate `openbao-agent` so it reads the new `agent.hcl`.
-3. Remove `/openbao/out/open-webui` and `/openbao/out/superset` from the Agent
+1. Approve the current `main` as the RUN-0105 window commit and recreate
+   `openbao-agent` through `owner-window.sh agent-restart` so it reads the new
+   `agent.hcl`.
+2. Remove `/openbao/out/open-webui` and `/openbao/out/superset` from the Agent
    output volume; `health-agent.sh` refuses group-readable files it does not
    consume.
-4. Write the narrowed `renderer` policy through `protected-renderer-roles.py`
+3. Write the narrowed `renderer` policy through `protected-renderer-roles.py`
    with the new pin, and confirm the Agent stays healthy.
+4. Delete the four unused `openwebui_*` and `superset_*` `.ctmpl` files in a
+   follow-up change.
 5. Update IAM-011 and IAM-013 delivery in the catalog to match.
 
 ###### AI-011/INFRA-008 rotation, owner-run
@@ -152,10 +167,12 @@ chat, as listed under Inputs and Authority.
 | E06 | 172 | W188 | method=automated; tool=Python3 venv; command=check-supply-chain-policy.py --check; check-template-security-baseline.sh; check-conftest-policy.sh --mode corpus | Change | PASS | pass; 326 services, 0 findings; 45/45 | required | - |
 | E07 | 172 | W188 | method=automated; tool=bash; command=validate-docker-compose.sh; check-all-hardening.sh; check-script-manifest.py | Change | PASS | exit 0; all hardening checks passed; manifest valid | required | - |
 | E08 | 172 | W188 | method=observation; tool=-; command=- | HOME runtime | NOT_RUN | Window steps and rotation are owner steps above | required | - |
+| E09 | 172 | W188 | method=observation; tool=docker; command=docker inspect openbao-agent health log | HOME `0bc8e76de`, 16:00–16:02 KST | FAIL | `health-agent.sh` exit 1 four times after the early pull; four templates missing from the directory mount | required | - |
+| E10 | 172 | W188 | method=observation; tool=docker; command=docker inspect openbao-agent health log | HOME with the four templates restored from `767449bf5`, 16:02:58 KST | PASS | exit 0, status healthy, failing streak 0 | required | E09 |
 
 ##### Resolution Links
 
-E05 resolves E04.
+E05 resolves E04; E10 resolves E09.
 
 #### Acceptance Decision
 
@@ -163,7 +180,7 @@ E05 resolves E04.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 172 | pending | E01,E02,E03,E05,E06,E07,E08 | Source change and findings are recorded; E01 is blocked and E08 waits for the owner window and rotation | @buenhyden |
+| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10 | Source change and findings are recorded; E01 is blocked and E08 waits for the owner window and rotation | @buenhyden |
 
 ##### Remaining Conditions
 
