@@ -906,7 +906,7 @@ class IntegrationBoundaryTests(unittest.TestCase):
 
     def test_preflight_verifies_exact_images_receipts_and_bundle(self):
         bundle = self.root / "bundle"
-        names = {"scripts/start-agent.sh", "scripts/health-agent.sh", "config/agent.hcl", "config/templates/keycloak_admin_password.ctmpl", "config/templates/grafana_admin_password.ctmpl", "config/templates/grafana_client_secret.ctmpl", "config/templates/oauth2_proxy_client_secret.ctmpl", "config/templates/oauth2_proxy_client_secret_version.ctmpl", "config/templates/kafbat_client_secret.ctmpl", "config/templates/kafbat_client_secret_version.ctmpl", "config/templates/dozzle_client_secret.ctmpl", "config/templates/dozzle_client_secret_version.ctmpl", "config/templates/gatus_oidc_client_secret.ctmpl", "config/templates/gatus_oidc_client_secret_version.ctmpl", "config/templates/airflow_client_secret.ctmpl", "config/templates/airflow_client_secret_version.ctmpl", "config/templates/openwebui_oidc_client_secret.ctmpl", "config/templates/openwebui_oidc_client_secret_version.ctmpl", "config/templates/superset_oidc_client_secret.ctmpl", "config/templates/superset_oidc_client_secret_version.ctmpl", "config/templates/keycloak_admin_password_version.ctmpl", "config/templates/grafana_admin_password_version.ctmpl"}
+        names = {"scripts/start-agent.sh", "scripts/health-agent.sh", "config/agent.hcl", "config/templates/keycloak_admin_password.ctmpl", "config/templates/grafana_admin_password.ctmpl", "config/templates/grafana_client_secret.ctmpl", "config/templates/oauth2_proxy_client_secret.ctmpl", "config/templates/oauth2_proxy_client_secret_version.ctmpl", "config/templates/kafbat_client_secret.ctmpl", "config/templates/kafbat_client_secret_version.ctmpl", "config/templates/dozzle_client_secret.ctmpl", "config/templates/dozzle_client_secret_version.ctmpl", "config/templates/gatus_oidc_client_secret.ctmpl", "config/templates/gatus_oidc_client_secret_version.ctmpl", "config/templates/airflow_client_secret.ctmpl", "config/templates/airflow_client_secret_version.ctmpl", "config/templates/keycloak_admin_password_version.ctmpl", "config/templates/grafana_admin_password_version.ctmpl"}
         digests = {}
         for name in names:
             path = bundle / name
@@ -1085,6 +1085,33 @@ class IntegrationBoundaryTests(unittest.TestCase):
             mock.patch("builtins.print"),
         ):
             self.assertEqual(self.subject.main(args), 1)
+
+
+class BundleParityTests(unittest.TestCase):
+    """The restore accepts exactly the bundle that protected-restore-inputs builds."""
+
+    def test_required_bundle_equals_built_bundle_and_covers_agent_templates(self):
+        import ast
+        import re
+
+        scripts = ROOT / "infra/03-security/openbao/scripts"
+        built = None
+        for node in ast.parse((scripts / "protected-restore-inputs.py").read_text()).body:
+            if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "BUNDLE":
+                built = set(ast.literal_eval(node.value))
+        required = None
+        for function in ast.walk(ast.parse(SOURCE.read_text())):
+            if isinstance(function, ast.FunctionDef) and function.name == "_verify_bundle":
+                for node in ast.walk(function):
+                    if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "required":
+                        required = set(ast.literal_eval(node.value))
+        self.assertIsNotNone(required)
+        self.assertIsNotNone(built)
+        self.assertEqual(built, required)
+        agent = (ROOT / "infra/03-security/openbao/config/agent.hcl").read_text()
+        sources = re.findall(r'source\s*=\s*"/openbao/(config/templates/[^"]+)"', agent)
+        self.assertTrue(sources)
+        self.assertLessEqual(set(sources), built)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -366,8 +366,8 @@ bind합니다(`create_host_path: false`). 각 `<stem>.txt`는 `0640`, `<stem>.ve
 SPEC-0262 이후 Superset은 `labs/superset/docker-compose.yml` LAB이고, ADR-0062 개정(2026-11-10)
 이후 Open WebUI도 `labs/open-webui/docker-compose.yml` LAB이며 둘 다 LAB 전용 secret을 읽습니다.
 root 소비자가 없으므로 2026-11-25 D07에서 renderer 정책의 `08-ai/open-webui`·`12-analytics/superset`
-읽기 권한과 Agent template, 이 스크립트와 verifier의 두 행을 소스에서 제거했습니다. KV 데이터와
-operator 정책은 그대로 둡니다. 같은 날 owner가 남은 `/openbao/out/{open-webui,superset}`를 지우고
+읽기 권한과 Agent template, 이 스크립트와 verifier의 두 행을 소스에서 제거했습니다. KV 데이터는
+그대로 둡니다. 같은 날 owner가 남은 `/openbao/out/{open-webui,superset}`를 지우고
 Agent를 재생성해 Agent는 이 두 경로를 더 render하지 않으며, 두 template 파일도 삭제했습니다.
 `operator.hcl`의 두 경로 쓰기 권한도 소스에서 뺐습니다. HOME에 기록된 `renderer`·`hy-home-operator`
 정책은 root가 필요한 다음 owner window의 `roles-apply`로 좁히고, KV에 남은 두 값은 같은 window에서
