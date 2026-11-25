@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -152,7 +152,25 @@ to read them remains, so the write is left for the next owner window. The two
 KV values under `hy-home/08-ai/open-webui` and `hy-home/12-analytics/superset`
 stay until the owner approves their deletion (D11).
 
-###### AI-011/INFRA-008 rotation, owner-run
+###### AI-011/INFRA-008 rotation run on 2026-11-25
+
+The first procedure was wrong: it relied on `gen-secrets.sh`, which neither
+creates AI-011 (`VERIFY_RUNTIME`) nor rebuilds INFRA-008 (`derived_runtime`).
+The owner's first run moved the old value to tmpfs and recreated Traefik
+without a change (no secret file changed). The next command ran the old/new
+check before a new value existed (old 200, new 401 without a file) and
+shredded the tmpfs copy, so the old value no longer exists on server A. The
+corrected run at 17:12:57 KST wrote a new random value (0600), rebuilt the
+bcrypt htpasswd from stdin (0640) and recreated Traefik (started 08:13:15Z,
+healthy). From server A through 192.168.0.13 with the public CA: the new value
+in a 0600 netrc returns 200 on `/search`, an invalid Basic credential 401, and
+other routes are unchanged. The old-value refusal can only be checked from
+192.168.0.22, whose netrc still holds it. `gen-secrets.sh
+--sync-metadata-check` reports `files_changed=0`; `--sync-metadata-prune-check`
+still rejects its input, as before the rotation (E01). RUN-0110 step 6 now
+carries the manual procedure.
+
+###### AI-011/INFRA-008 rotation procedure as first written (superseded)
 
 1. Replace `secrets/tools/searxng/searxng_api_password.txt` with a new random
    value at mode 0600 without printing it.
@@ -168,7 +186,7 @@ stay until the owner approves their deletion (D11).
 
 | Prompt | Item | Precondition |
 | --- | --- | --- |
-| Owner | T01 `.env` value diagnosis, rotation 1–5, narrowed renderer policy in the next window | Owner access to private files, OpenBao root and 192.168.0.22 |
+| Owner | T01 `.env` value diagnosis, old SearXNG credential refusal and netrc update on 192.168.0.22, narrowed renderer policy in the next window | Owner access to private files, OpenBao root and 192.168.0.22 |
 | D11 | Delete the two retained KV values once approved | Owner approval |
 | D02 | Old SearXNG credential refused; B route acceptance | Rotation done |
 | D06 | Sandbox default selection (REQ-27) | Owner choice against POL-0078 |
@@ -201,6 +219,8 @@ chat, as listed under Inputs and Authority.
 | E12 | 172 | W188 | method=observation; tool=docker; command=docker inspect and exec on openbao-agent and the seven consumers | After E11 | PASS | 16 templates, no stale output directory, all healthy | required | - |
 | E13 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-catalog.py --root "$PWD" check | Template removal and IAM-011/IAM-013 change | PASS | `P02_METADATA_VALID`, 152 entries, 6 aliases | required | - |
 | E14 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest over the 25 OpenBao, secret catalog and secret metadata modules | Template removal and IAM-011/IAM-013 change | PASS | 534 OK, 15 skipped (opt-in integration, NOT_RUN) | required | - |
+| E15 | 172 | W188 | method=observation; tool=curl, stat, docker; command=new-value netrc on `/search`, invalid Basic, file modes, Traefik health | Server A after the corrected rotation, 17:13 KST | PASS | new 200, invalid 401, files 0600/0640, Traefik healthy | required | - |
+| E16 | 172 | W188 | method=observation; tool=curl; command=old-value netrc on `/search` from 192.168.0.22 | Server B | NOT_RUN | Owner check; the old value exists only in that host's netrc | required | - |
 
 ##### Resolution Links
 
@@ -212,13 +232,13 @@ E05 resolves E04; E10 resolves E09.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14 | Source change, Agent restart, template removal and catalog update are done; E01 and the rotation in E08 are open, and the narrowed policy waits for the next window | @buenhyden |
+| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16 | Source change, Agent restart, template removal, catalog update and the server A rotation are done; E01 and E16 are open, and the narrowed policy waits for the next window | @buenhyden |
 
 ##### Remaining Conditions
 
-E01 owner diagnosis of the private `.env` value; the AI-011/INFRA-008
-rotation with old-credential refusal; the narrowed renderer policy in the next
-root window; then owner acceptance.
+E01 owner diagnosis of the private `.env` value; E16, the old-credential
+refusal from 192.168.0.22; the narrowed renderer policy in the next root
+window; then owner acceptance.
 
 #### Handoff
 
