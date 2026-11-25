@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.1.9"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -305,12 +305,13 @@ chat, as listed under Inputs and Authority.
 | E24 | 172 | W188 | method=review; tool=security-auditor; command=- | The fix on top of `edb8283dd` | PASS | Parity holds, README fixed, no other HOME breakage; LOW test-scope note applied | required | E21 |
 | E26 | 172 | W188 | method=observation; tool=owner-window.sh; command=roles-plan; roles-diff; roles-apply | Owner window from `abaec24c6`, 2026-11-25 | PASS | `RENDERER_ROLES_APPLIED`, `prior:same`; only `renderer` and `hy-home-operator` changed, no added grant; Agent healthy | required | - |
 | E27 | 172 | W188 | method=observation; tool=owner-window.sh, bao, docker; command=kv metadata delete of the two paths; revoke-root; cleanup; health of OpenBao, Agent and seven consumers | After E26 | PASS | Both KV paths deleted; `ROOT_REVOKED_OPERATOR_HEALTHY`; custody removed; OpenBao unsealed and healthy; Agent and consumers healthy | required | - |
-| E16 | 172 | W188 | method=observation; tool=curl; command=old-value netrc on `/search` from 192.168.0.22 | Server B | NOT_APPLICABLE | No copy of the old value remains: the server A tmpfs copy was shredded and the owner deleted the server B netrc; E25 shows refusal by construction | required | - |
+| E28 | 172 | W188 | method=observation; tool=-; command=- | HOME runtime after the window and the rotation, 2026-11-25 | PASS | Window steps done (E11, E12, E26, E27) and the rotation done on server A (E15, E25) | required | E08 |
+| E16 | 172 | W188 | method=observation; tool=curl; command=old-value netrc on `/search` from 192.168.0.22 | Server B | NOT_APPLICABLE | No copy of the old value remains: the server A tmpfs copy was shredded and the owner deleted the server B netrc; E25 shows refusal by construction; marked optional on owner acceptance because the check can no longer be run | optional | - |
 | E25 | 172 | W188 | method=observation; tool=wc, stat, docker; command=entry count of the INFRA-008 htpasswd on the host and in Traefik; Traefik start time | HOME, 2026-11-25 18:40 KST | PASS | One `searxng-api` bcrypt entry built from the new value at 17:12:57, Traefik restarted 17:13:15; with E15 (new 200, invalid 401) the old value can only pass if equal to the new random value | required | - |
 
 ##### Resolution Links
 
-E05 resolves E04; E10 resolves E09; E20 resolves E01; E23 resolves E22; E24 resolves E21.
+E05 resolves E04; E10 resolves E09; E20 resolves E01; E23 resolves E22; E24 resolves E21; E28 resolves E08.
 
 #### Acceptance Decision
 
@@ -318,11 +319,12 @@ E05 resolves E04; E10 resolves E09; E20 resolves E01; E23 resolves E22; E24 reso
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16,E17,E18,E19,E20,E21,E23,E24,E25,E26,E27 | Source change, Agent restart, template removal, catalog update, the server A rotation with old-value refusal by construction, the `.env` structure, the narrowed `renderer` and `hy-home-operator` policies and the deletion of the two LAB KV values (E26, E27) are done; owner acceptance remains | @buenhyden |
+| 172 | accepted | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E17,E18,E19,E20,E21,E23,E24,E25,E26,E27,E28 | Owner @buenhyden accepted on 2026-11-25 in this chat after the window, the rotation and the `.env` fix; E16 cannot run because no copy of the old value remains and is marked optional on that basis; E25 shows the refusal by construction | @buenhyden |
 
 ##### Remaining Conditions
 
-Owner acceptance of criterion172.
+None for criterion172. A program on 192.168.0.22 that calls SearXNG `/search`
+needs the new credential through RUN-0110 step 7.
 
 #### Handoff
 

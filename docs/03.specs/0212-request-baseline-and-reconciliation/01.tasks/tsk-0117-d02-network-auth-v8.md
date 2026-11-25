@@ -1,6 +1,6 @@
 ---
 title: "D02 v8 Network and Gateway Authentication Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -157,6 +157,7 @@ firewall evidence stays NOT_RUN rather than inferred from A-side results.
 | E05 | 173 | W189 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_compose_baseline_gates.RouteAuthContractTests | Change after the guide edit | PASS | OK | required | E04 |
 | E06 | 173 | W189 | method=observation; tool=-; command=- | Server B and A firewall | NOT_RUN | Owner items above | required | - |
 | E07 | 173 | W189 | method=observation; tool=ss, curl, systemctl; command=ss -ltn sport 8644; curl LAN and loopback; is-active hermes-gateway | After the owner's config change and restart, 16:44 KST | PASS | `127.0.0.1:8644` only; LAN `000`, loopback 404; gateway active | required | - |
+| E08 | 173 | W189 | method=observation; tool=Windows browser; command=- | 192.168.0.22, owner, 2026-11-25 | PASS | Owner reported successful login to Grafana, Keycloak, n8n, OpenBao and Gatus from server B | required | - |
 
 ##### Resolution Links
 
@@ -168,13 +169,15 @@ E05 resolves E04.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 173 | pending | E01,E02,E03,E05,E06,E07 | Server A census, the route-table fix and the Hermes loopback bind are complete; B-side acceptance stays open | @buenhyden |
+| 173 | pending | E01,E02,E03,E05,E06,E07,E08 | Server A census, the route-table fix, the Hermes loopback bind and the server B browser logins are complete; the server B curl census of all hosts and the program API checks stay open | @buenhyden |
 
 ##### Remaining Conditions
 
-B-side checks for all hosts, OpenClaw and Hermes Agent consumption, the
-post-rotation refusal of the old SearXNG credential, and a B-side refusal
-check of 192.168.0.13:8644; then owner acceptance.
+The server B curl census of all hosts (browser logins are done, E08), OpenClaw
+and Hermes Agent consumption (a server B program calling SearXNG follows
+RUN-0110 step 7), and a B-side refusal check of 192.168.0.13:8644; then owner
+acceptance. The old SearXNG credential's refusal is settled in SPEC-0212
+TSK-0116 E25.
 
 #### Handoff
 
