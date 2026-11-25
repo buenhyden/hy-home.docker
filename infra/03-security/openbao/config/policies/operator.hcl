@@ -60,22 +60,6 @@ path "secret/metadata/hy-home/07-workflow/airflow" {
   capabilities = ["read"]
 }
 
-path "secret/data/hy-home/08-ai/open-webui" {
-  capabilities = ["create", "read", "update"]
-}
-
-path "secret/metadata/hy-home/08-ai/open-webui" {
-  capabilities = ["read"]
-}
-
-path "secret/data/hy-home/12-analytics/superset" {
-  capabilities = ["create", "read", "update"]
-}
-
-path "secret/metadata/hy-home/12-analytics/superset" {
-  capabilities = ["read"]
-}
-
 # Separate short nonrenewable roles; no direct SecretID wrapping bypass.
 path "auth/token/create/renderer-issuer" {
   capabilities = ["update"]

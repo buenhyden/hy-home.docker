@@ -852,10 +852,6 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 "gatus_oidc_client_secret_version.ctmpl",
                 "airflow_client_secret.ctmpl",
                 "airflow_client_secret_version.ctmpl",
-                "openwebui_oidc_client_secret.ctmpl",
-                "openwebui_oidc_client_secret_version.ctmpl",
-                "superset_oidc_client_secret.ctmpl",
-                "superset_oidc_client_secret_version.ctmpl",
                 "keycloak_admin_password_version.ctmpl",
                 "grafana_admin_password_version.ctmpl",
             )
@@ -922,8 +918,6 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 "06-observability/dozzle",
                 "06-observability/gatus",
                 "07-workflow/airflow",
-                "08-ai/open-webui",
-                "12-analytics/superset",
             ):
                 self.put(
                     client,
