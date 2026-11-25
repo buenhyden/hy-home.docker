@@ -1,13 +1,13 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -617,23 +617,57 @@ Missing permission or target defers only the dependent operation.
     criterion 19 notifier. TSK-0013 owns W42-W45. On 2026-10-29 the owner moved
     these obligations out of criterion 19, whose native evidence covers manual
     execution only.
-23. Hermes transport preserves Cron/exporter/email and proves a bounded,
-    lossless Publisher/Outbox with immutable execution identity, reviewed
-    candidate validation, duplicate/conflict handling, restart recovery,
-    bounded retry and durable-receipt reconciliation. TSK-0022 owns W79-W83
-    and reports SOURCE, SYNTHETIC, API_COMPATIBILITY, N8N_NATIVE,
-    SERVER_B_NATIVE and DELIVERY separately. Dispatch additionally requires
-    producer-authenticated collection evidence, reported as PRODUCER_AUTH; a
-    structural evidence check alone never authorizes delivery. The verifier
-    runs only from a hash-locked, root-owned release under a dedicated
-    non-root account with `python3 -I`; server A holds an ingest-only token
-    for `POST /v1/ingestions` and no read permission. Exact Gateway contract/fixtures,
-    native worker networking/authentication and actual durable persistence
-    remain required blocked lanes until supplied and approved. Source-only
-    Publisher or simulated adapter evidence does not close this criterion.
-    Collection receipts, Publisher Ed25519, independent Attester, Gateway
-    durable receipt and Windows ACK are five separate boundaries; a PASS at one
-    boundary neither authenticates nor accepts another.
+23. Hermes transport preserves Cron/exporter/email and delivers each finished
+    report through the deployed path. The Hermes `research-report` plugin posts
+    the Gateway v1 report to the exact-path n8n webhook, authenticated by the
+    `X-Hermes-Ingest-Token` webhook secret held by the Hermes account. n8n
+    screens it and calls the Blog-data Gateway on server A over the internal
+    `n8n_blog_ingest_net` with a separate credential bound to producer
+    `hermes` and scoped to ingest only. The Gateway stores token digests only
+    and returns a durable receipt. A separate host attester, under a dedicated
+    non-root account running a hash-locked, root-owned release's venv
+    interpreter with `-I` and holding the only copy of its signing key,
+    re-fetches each source and signs the stored request bytes. Export to
+    server B is released only by that signature over verified items, with
+    separate `export_read` and `export_ack` tokens. TSK-0022 owns W79-W83 and
+    reports SOURCE, SYNTHETIC, API_COMPATIBILITY, DELIVERY, ATTESTATION and
+    EXPORT separately; N8N_NATIVE is folded into DELIVERY and SERVER_B_NATIVE
+    does not apply because the Gateway runs on server A.
+    - API_COMPATIBILITY is judged against the pinned Blog-data commit
+      `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48`.
+    - DELIVERY needs real Cron submissions with Gateway receipts the plugin
+      ties to its own request bytes, duplicate (200) and conflict (409)
+      handling on the `<job_id>-<execution_id>` idempotency key, and bounded
+      recovery: the plugin outbox re-sends only identical stored bytes with
+      the same key, plus owner-directed manual re-send.
+    - ATTESTATION needs every saved report accounted for as attested (verified
+      or held), retry, skipped or quarantined, with none unaccounted.
+    - Source-only or simulated evidence does not close this criterion.
+
+    Recorded residual risks, accepted with this design rather than closed:
+    - Neither token identifies the report's producer. `producer`, `job_id`,
+      `run_id` and `idempotency_key` are set by the plugin inside the account
+      that also runs the model's tools; anyone holding the webhook secret can
+      submit as any approved job, and the Gateway cannot tell the plugin, the
+      Publisher or another n8n workflow holding the Gateway credential apart.
+      Producer-signed collection (Publisher Ed25519, PRODUCER_AUTH) is not
+      deployed; the Publisher/Outbox cannot send the approved jobs while
+      `producer-keys.json` is empty and is not a recovery route.
+    - The webhook admits only host-local POSTs from server A on the exact
+      path, limited to 6/min and 1 MiB; direct `edge_net` access to n8n and
+      other published workflows holding the Gateway credential remain open.
+    - The attester proves the quoted text and facts were on the source page
+      when it fetched it. It does not prove who produced the report, that a
+      Cron run produced it, or that the summary is faithful; owner review of
+      draft notes covers that. Pages collected through the Crawl4AI fallback
+      cannot be attested.
+    - The attestation binds content, not report ID, so the same content under
+      another report can be attested and exported again.
+
+    Collection receipts, the webhook secret, the Gateway credential, the
+    Gateway durable receipt, the attester signature and the Windows ACK are
+    separate boundaries; a PASS at one neither authenticates nor accepts
+    another.
 <!-- markdownlint-enable MD029 -->
 
 ##### Evidence Requirements
