@@ -140,6 +140,52 @@
               },
               "source_url": {
                 "type": "string"
+              },
+              "matching": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "algorithm": {
+                    "const": "body-nfc-lf-v1"
+                  },
+                  "exact_total": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "exact": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9-]{36}$"
+                        }
+                      },
+                      "required": ["id"]
+                    }
+                  },
+                  "similar": {
+                    "$ref": "#/definitions/candidates/properties/items/items/properties/duplicate_of"
+                  }
+                },
+                "required": ["algorithm", "exact_total", "exact", "similar"]
+              },
+              "review_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "latest_review": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/definitions/review"
+                  }
+                ]
               }
             },
             "required": [
@@ -151,7 +197,10 @@
               "collected_at",
               "duplicate_of",
               "title",
-              "body"
+              "body",
+              "matching",
+              "review_count",
+              "latest_review"
             ]
           }
         },
@@ -278,6 +327,85 @@
         "conflicts",
         "oldest_unreviewed_at"
       ]
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9-]{36}$"
+        },
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9-]{36}$"
+        },
+        "related_candidate_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9-]{36}$"
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "related_content_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "decision": {
+          "enum": ["duplicate", "related", "distinct", "update"]
+        },
+        "reviewer": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "duplicate": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "candidate_id",
+        "related_candidate_id",
+        "content_sha256",
+        "related_content_sha256",
+        "decision",
+        "reviewer",
+        "created_at"
+      ]
+    },
+    "reviewReceipt": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/review"
+        }
+      ],
+      "properties": {
+        "duplicate": {
+          "type": "boolean"
+        }
+      },
+      "required": ["duplicate"]
+    },
+    "reviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/review"
+          }
+        },
+        "next_after": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      },
+      "required": ["items", "next_after"]
     }
   }
 }

@@ -85,10 +85,10 @@ class GatewayAdapterTests(unittest.TestCase):
     def test_upstream_fixture_integrity(self):
         digests = {
             "openapi-v1.json": (
-                "602705cfb4fbf06953776a5e6b19344bdbcd7e1c35771d58cdd612917d46ba67"
+                "c2ee177a1e3540a875eb5518a1046ec44ba084eaef126e8428f63b7b183c42e1"
             ),
             "ingestion-v1.schema.json": "820333eee0d816d1194e6b091e0a221300d755513dda1e75b1e9302e3de65271",
-            "responses-v1.schema.json": "b1d918b3accacc85f260f34d2e9156d44e7d51fcf39c0da7886419d1498322b6",
+            "responses-v1.schema.json": "fb701d7122366dfc7e06ffedcf56526ee047d8c87dbf50d0e1ed2b3b9945057f",
             "synthetic-report.json": "2971ac9ae77612ca16334fe7b22de07ebfb7d367df21fa947b09d08305d50fbc",
         }
         for name, expected in digests.items():
