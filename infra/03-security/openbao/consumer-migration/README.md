@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "1.0.4"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -369,9 +369,9 @@ root 소비자가 없으므로 2026-11-25 D07에서 renderer 정책의 `08-ai/op
 읽기 권한과 Agent template, 이 스크립트와 verifier의 두 행을 소스에서 제거했습니다. KV 데이터는
 그대로 둡니다. 같은 날 owner가 남은 `/openbao/out/{open-webui,superset}`를 지우고
 Agent를 재생성해 Agent는 이 두 경로를 더 render하지 않으며, 두 template 파일도 삭제했습니다.
-`operator.hcl`의 두 경로 쓰기 권한도 소스에서 뺐습니다. HOME에 기록된 `renderer`·`hy-home-operator`
-정책은 root가 필요한 다음 owner window의 `roles-apply`로 좁히고, KV에 남은 두 값은 같은 window에서
-owner가 승인하면 root로 지웁니다.
+`operator.hcl`의 두 경로 쓰기 권한도 소스에서 뺐고, 같은 날 owner window의 `roles-apply`로
+HOME의 `renderer`·`hy-home-operator` 정책도 좁혔습니다. 같은 window에서 owner가 root로 두 KV 경로를
+삭제했습니다.
 
 모든 KV field 이름은 `client_secret`입니다. `health-agent.sh`는 이제 `agent.hcl`에서 template
 목록을 읽어 각 `.txt`의 bytes와 mode, 각 `.version`과 KV `current_version`을 비교하고, `out` 아래에
