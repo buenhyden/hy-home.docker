@@ -1,6 +1,6 @@
 ---
 title: "SearXNG Recovery Runbook"
-version: "2.3.0"
+version: "2.3.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -173,7 +173,9 @@ n8n 재생성이 함께 필요하다.
       그 host의 `127.0.0.1`에만 listen하는 작은 프록시가 비밀번호 파일에서 header를 붙여
       `GET /search`만 HOME으로 전달하고, 다른 경로는 404로 거부한다. 프록시는 요청마다 파일을
       읽어 회전 뒤 재시작이 필요 없고, 응답 코드만 기록한다. client의 base URL은
-      `http://127.0.0.1:<port>`이다. HOME·Traefik route는 바꾸지 않는다.
+      `http://127.0.0.1:<port>`이다. HOME·Traefik route는 바꾸지 않는다. Windows에서는 로그인 시
+      작업 스케줄러로 `conhost.exe --headless <node> <script>`를 실행해 창 없이 띄운다. 콘솔 창으로
+      띄운 프록시는 창을 닫으면 멈춘다.
 
 ##### Stop Conditions
 
