@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -219,10 +219,12 @@ roles and AppRole unchanged; `roles-diff` showed only the two LAB paths
 leaving each policy and no added grant. `roles-apply` returned `prior:same`,
 `RENDERER_ROLES_APPLIED` and a healthy Agent. The first KV deletion attempt
 sent an empty token (the shell had not reloaded the window record after W1)
-and was refused with 403, so nothing was deleted; whether the reloaded retry
-ran was not reported, so the two KV values are treated as retained. W7
-revoked root (`cleanup` refuses to proceed while root custody remains
-unrevoked, and it removed the custody), `cleanup` revoked the w1 operator
+and was refused with 403, so nothing was deleted. After reloading the record,
+the owner deleted both paths with root (`Success! Data deleted` for
+`secret/metadata/hy-home/08-ai/open-webui` and
+`secret/metadata/hy-home/12-analytics/superset`). W7 `check-token w7` showed
+`hy-home-operator` and no generate-root attempt, `revoke-root` returned
+`ROOT_REVOKED_OPERATOR_HEALTHY`, `cleanup` revoked the w1 operator
 token, and the owner removed the two helper copies. Afterwards OpenBao 2.7.3
 is unsealed and healthy, and the Agent and its seven consumers are healthy.
 
@@ -259,7 +261,7 @@ should read `required` only inside `_verify_bundle`, is applied.
 
 | Prompt | Item | Precondition |
 | --- | --- | --- |
-| Owner | New SearXNG netrc on 192.168.0.22 only if a program there needs `/search`; confirm or later delete the two retained KV values | Owner access to private files, OpenBao root and 192.168.0.22 |
+| Owner | New SearXNG netrc on 192.168.0.22 only if a program there needs `/search`; acceptance of criterion172 | Owner access to private files, OpenBao root and 192.168.0.22 |
 | D11 | Delete the two retained KV values once approved | Owner approval |
 | D02 | Old SearXNG credential refused; B route acceptance | Rotation done |
 | D06 | Sandbox default selection (REQ-27) | Owner choice against POL-0078 |
@@ -302,7 +304,7 @@ chat, as listed under Inputs and Authority.
 | E23 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_openbao_protected_semantic_restore | After the fix | PASS | OK; with the 26 OpenBao and secret modules 588 OK, 15 skipped; 20/20 pins match | required | E22 |
 | E24 | 172 | W188 | method=review; tool=security-auditor; command=- | The fix on top of `edb8283dd` | PASS | Parity holds, README fixed, no other HOME breakage; LOW test-scope note applied | required | E21 |
 | E26 | 172 | W188 | method=observation; tool=owner-window.sh; command=roles-plan; roles-diff; roles-apply | Owner window from `abaec24c6`, 2026-11-25 | PASS | `RENDERER_ROLES_APPLIED`, `prior:same`; only `renderer` and `hy-home-operator` changed, no added grant; Agent healthy | required | - |
-| E27 | 172 | W188 | method=observation; tool=owner-window.sh, docker; command=revoke-root; cleanup; health of OpenBao, Agent and seven consumers | After E26 | PASS | Root custody revoked and removed; OpenBao unsealed and healthy; Agent and consumers healthy | required | - |
+| E27 | 172 | W188 | method=observation; tool=owner-window.sh, bao, docker; command=kv metadata delete of the two paths; revoke-root; cleanup; health of OpenBao, Agent and seven consumers | After E26 | PASS | Both KV paths deleted; `ROOT_REVOKED_OPERATOR_HEALTHY`; custody removed; OpenBao unsealed and healthy; Agent and consumers healthy | required | - |
 | E16 | 172 | W188 | method=observation; tool=curl; command=old-value netrc on `/search` from 192.168.0.22 | Server B | NOT_APPLICABLE | No copy of the old value remains: the server A tmpfs copy was shredded and the owner deleted the server B netrc; E25 shows refusal by construction | required | - |
 | E25 | 172 | W188 | method=observation; tool=wc, stat, docker; command=entry count of the INFRA-008 htpasswd on the host and in Traefik; Traefik start time | HOME, 2026-11-25 18:40 KST | PASS | One `searxng-api` bcrypt entry built from the new value at 17:12:57, Traefik restarted 17:13:15; with E15 (new 200, invalid 401) the old value can only pass if equal to the new random value | required | - |
 
@@ -316,15 +318,11 @@ E05 resolves E04; E10 resolves E09; E20 resolves E01; E23 resolves E22; E24 reso
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16,E17,E18,E19,E20,E21,E23,E24,E25,E26,E27 | Source change, Agent restart, template removal, catalog update, the server A rotation with old-value refusal by construction, the `.env` structure and the narrowed `renderer` and `hy-home-operator` policies (E26, E27) are done; owner acceptance remains, and the two retained KV values stay until their deletion is confirmed or approved again | @buenhyden |
+| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16,E17,E18,E19,E20,E21,E23,E24,E25,E26,E27 | Source change, Agent restart, template removal, catalog update, the server A rotation with old-value refusal by construction, the `.env` structure, the narrowed `renderer` and `hy-home-operator` policies and the deletion of the two LAB KV values (E26, E27) are done; owner acceptance remains | @buenhyden |
 
 ##### Remaining Conditions
 
-Owner acceptance of criterion172. The two KV values under
-`hy-home/08-ai/open-webui` and `hy-home/12-analytics/superset` are treated as
-retained: no agent, renderer or operator policy can read them now, and their
-deletion needs root in a later window, or the owner's confirmation that the
-retry already deleted them.
+Owner acceptance of criterion172.
 
 #### Handoff
 
