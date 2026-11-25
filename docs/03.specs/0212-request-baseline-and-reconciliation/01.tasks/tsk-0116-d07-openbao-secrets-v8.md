@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -157,7 +157,8 @@ stay until the owner approves their deletion (D11).
 The first procedure was wrong: it relied on `gen-secrets.sh`, which neither
 creates AI-011 (`VERIFY_RUNTIME`) nor rebuilds INFRA-008 (`derived_runtime`).
 The owner's first run moved the old value to tmpfs and recreated Traefik
-without a change (no secret file changed). The next command ran the old/new
+without a new value; that default run did rewrite the private registry
+(17:10:58 KST), and a later `--sync-metadata-check` reported no drift. The next command ran the old/new
 check before a new value existed (old 200, new 401 without a file) and
 shredded the tmpfs copy, so the old value no longer exists on server A. The
 corrected run at 17:12:57 KST wrote a new random value (0600), rebuilt the
@@ -189,6 +190,22 @@ The owner asked to review the remaining items and finish what can be done.
 - Deleting the two KV values needs root: `operator.hcl` never granted delete
   on them. It belongs in the same window, after the owner approves it.
 
+###### Private `.env` structure fixed on 2026-11-25 (E01)
+
+The owner ran value-free diagnostics that print only line numbers, key names
+and problem types. The first named `OPSFLOW_SECRET_DIR` (line 406, an
+unbalanced value); after the owner's edit, a second named a duplicated
+`SEARXNG_API_USERNAME` (lines 407 and 409, identical values), which the owner
+removed. `gen-secrets.sh` keeps existing `.env` lines rather than reordering
+them, so the owner then ran a value-preserving alignment: it parsed both files
+with `secret_structure`, refused on any key-set difference, duplicate or
+ambiguous line, wrote the public layout and comments with each private value
+unchanged, kept a 0600 backup outside the repository and replaced `.env`
+atomically (201 keys). Afterwards the structure check returns `MATCH` for env
+and registry, the sync checks report `files_changed=0`, `.env` is 0600 with
+one link, Compose renders 89 services, and the Opsflow worker mount Compose
+renders equals the running `airflow-worker` mount, so no recreate is needed.
+
 ###### AI-011/INFRA-008 rotation procedure as first written (superseded)
 
 1. Replace `secrets/tools/searxng/searxng_api_password.txt` with a new random
@@ -205,7 +222,7 @@ The owner asked to review the remaining items and finish what can be done.
 
 | Prompt | Item | Precondition |
 | --- | --- | --- |
-| Owner | T01 `.env` value diagnosis, old SearXNG credential refusal and netrc update on 192.168.0.22, narrowed renderer policy in the next window | Owner access to private files, OpenBao root and 192.168.0.22 |
+| Owner | Old SearXNG credential refusal and netrc update on 192.168.0.22, narrowed renderer policy in the next window | Owner access to private files, OpenBao root and 192.168.0.22 |
 | D11 | Delete the two retained KV values once approved | Owner approval |
 | D02 | Old SearXNG credential refused; B route acceptance | Rotation done |
 | D06 | Sandbox default selection (REQ-27) | Owner choice against POL-0078 |
@@ -225,6 +242,7 @@ chat, as listed under Inputs and Authority.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | E01 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-structure.py --root "$PWD" check --read-private | `main` 767449bf5, private `.env` | ERROR | exit 2, `{"result": "BLOCKED"}`; `_comment` rejects one private value | required | - |
+| E20 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-structure.py --root "$PWD" check --read-private | Private `.env` after the owner's fix and alignment, 18:01 KST | PASS | `{"env": "MATCH", "registry": "MATCH", "result": "MATCH"}` | required | E01 |
 | E02 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-structure.py --root "$PWD" smtp-equality --read-private | `main` 767449bf5 | PASS | `OLD_ABSENT`, no comparison performed | required | - |
 | E03 | 172 | W188 | method=automated; tool=Python3 venv; command=secret-catalog.py --root "$PWD" check | Change | PASS | `P02_METADATA_VALID`, 152 entries, 6 aliases | required | - |
 | E04 | 172 | W188 | method=automated; tool=Python3 venv; command=python -m unittest over the 25 OpenBao, secret catalog and secret metadata modules | Change before test updates, system python3 on PATH | FAIL | 22 failures: 15 `referencing` missing, 7 from the removal | required | - |
@@ -246,7 +264,7 @@ chat, as listed under Inputs and Authority.
 
 ##### Resolution Links
 
-E05 resolves E04; E10 resolves E09.
+E05 resolves E04; E10 resolves E09; E20 resolves E01.
 
 #### Acceptance Decision
 
@@ -254,11 +272,11 @@ E05 resolves E04; E10 resolves E09.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16,E17,E18,E19 | Source change, Agent restart, template removal, catalog update and the server A rotation are done; E01 and E16 are open, and the narrowed policy waits for the next window | @buenhyden |
+| 172 | pending | E01,E02,E03,E05,E06,E07,E08,E10,E11,E12,E13,E14,E15,E16,E17,E18,E19,E20 | Source change, Agent restart, template removal, catalog update, the server A rotation and the `.env` structure (E20) are done; E16 is open, and the narrowed policy waits for the next window | @buenhyden |
 
 ##### Remaining Conditions
 
-E01 owner diagnosis of the private `.env` value; E16, the old-credential
+E16, the old-credential
 refusal from 192.168.0.22; in the next root window, `roles-apply` for the
 narrowed `renderer` and `hy-home-operator` policies and, if approved, deletion
 of the two retained KV values; then owner acceptance.
