@@ -1,6 +1,6 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -42,7 +42,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 ##### Objective and Parent
 
-Own criterion174/W190 in the [Spec](../spec.md) and [Plan](../plan.md).
+Own criterion174/W190 and criterion175/W191 in the [Spec](../spec.md) and [Plan](../plan.md).
 Apply D06 of the lifecycle v8 task prompts: add the n8n Assistant sandbox API
 and runner to the HOME selection (D06-T04 item 4), keep the certs job
 one-shot, update the privileged exception, and record the D06 items left
@@ -97,10 +97,47 @@ started or recreated.
 
 | Item | State | Owner |
 | --- | --- | --- |
-| D06-T01 local Ollama consumption by server A/B agents | Not run in this pass | D06 follow-up |
-| D06-T03/T04 negative tests inside the sandbox (forbidden IP, metadata, other DB, cancel and cleanup) | Not run | D06 follow-up with owner approval |
 | Stale "opt-in" comment on the n8n Compose sandbox section | Kept; changes with the next reviewed n8n Compose update | n8n Compose owner |
-| D06-T05 Wiki preparation and D06-T06 tool comparison | Not run | D06 follow-up |
+| Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | NOT_RUN (E11) | Owner on server B |
+| A real n8n Code node run with its actor, broker and job ID | NOT_RUN (E12) | Owner in the n8n UI |
+| Inner probe on `runner-no-egress` | NOT_RUN (E13): container creation on vfs exceeded 300 s | D06 follow-up |
+| Hermes user config keeps an `ollama-cloud` provider entry (`https://ollama.com/v1`) and `--provider custom -m lfm2.5:8b` answered without reaching local Ollama (E08) | User-global config; not changed under repository authority | Owner |
+| D06-T06 tool comparison | Not started: no dataset, owner, rights, time field or goal exists, so no experiment is created (T06 item 2) | Owner names a dataset |
+
+###### D06 runtime checks (criterion175)
+
+On 2026-11-25 the owner accepted criterion174, approved the D06-T03/T04
+tests, asked to run D06-T01 and to review D06-T05/T06.
+
+- D06-T01: Ollama 0.40.16, `OLLAMA_NO_CLOUD=1`, loopback port only,
+  `MAX_LOADED_MODELS=1`, `NUM_PARALLEL=2`, `MAX_QUEUE=16`. From the n8n
+  worker network, `lfm2.5:8b` chat cold-loaded in 29.4 s and answered warm
+  in 1.1 s; `embeddinggemma-2:740m` returned 768 dimensions. The Hermes
+  Agent v0.23.4 process on server A answered through the `lfm` alias, and
+  the Ollama log shows its `/v1/chat/completions` request with 200. A stream
+  aborted during load logged 499 and "aborting load"; the next request
+  loaded and finished with `stop`.
+- D06-T03: the task runner runs as 1000:1000 with a read-only root, all
+  capabilities dropped, no-new-privileges, 256 MiB, 256 pids, a 300 s task
+  timeout and concurrency 1, on the internal network
+  `n8n_worker_runner_net` whose only other member is `n8n-worker`. From the
+  runner container only the broker answers; Ollama and `mng-pg` time out,
+  and the internet, metadata and host LAN are unreachable. The JS runner
+  disallows code generation from strings and allows no builtin or external
+  module; the Python runner allows no stdlib or external module and blocks
+  environment access. The broker token file is readable by the runner uid,
+  but neither runner can load a file module to read it.
+- D06-T04: the inner dockerd uses `vfs`; one 920 MB sandbox image occupies
+  10.3 GB. An inner container on `runner-bridge` reaches the internet, while
+  metadata, the host LAN address and the router time out and HOME service
+  names do not resolve. The exception's recorded impact is kept as is.
+  Timed-out CLI runs left four of this pass's probe containers in Created
+  state and grew the volume to 17.8 GB; they were removed by exact ID,
+  restoring zero containers and 10.3 GB with the runner and API healthy.
+- D06-T05: SPEC-0204 TSK-0008 (completed) records provenance, rights, ACL,
+  deletion and revocation, reindexing and restore for the Wiki preparation
+  contract, and its valid and invalid fixtures still pass. No Wiki product
+  is built.
 
 ##### Blockers and Decisions
 
@@ -119,6 +156,14 @@ the security impact stays recorded in the exception.
 | E05 | 174 | W190 | method=automated; tool=Python3 venv; command=python -m unittest tests.lib.supply_chain.test_update_gates | PR #1213 head f26032a58 (hosted candidate-core) | FAIL | The comment edit changed the n8n Compose hash pinned by the update ledger and the advisory review; the Compose file and ledger were restored to main | required | - |
 | E06 | 174 | W190 | method=automated; tool=Python3 venv; command=python -m unittest tests.lib.supply_chain.test_update_gates | Compose file and ledger identical to main | PASS | update-gates suite OK | required | E05 |
 | E04 | 174 | W190 | method=observation; tool=docker; command=docker inspect n8n-sandbox-runner-1 and n8n-sandbox-api | HOME, 2026-11-25 | PASS | Privileged runner without host port or host socket, two sandbox networks, 4 GiB/3 CPU/4096 pids, healthy; API without host port, healthy | required | - |
+| E07 | 175 | W191 | method=automated; tool=docker, wget; command=/api/chat and /api/embed from n8n-worker to ollama:11434 | HOME, 2026-11-25 | PASS | lfm2.5:8b cold load 29.4 s, warm 1.1 s; embedding 768 dimensions | required | - |
+| E08 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes chat -q with -m lfm | Server A, 2026-11-25 | PASS | Reply OK; Ollama log shows its /v1/chat/completions 200; an earlier run with --provider custom -m lfm2.5:8b answered without reaching Ollama | required | - |
+| E09 | 175 | W191 | method=automated; tool=curl; command=stream aborted during load, then a new request | Server A loopback, 2026-11-25 | PASS | 499 and aborting load, then 200 with stop | required | - |
+| E10 | 175 | W191 | method=automated; tool=docker, node, python inner containers; command=runner reachability and file probes, inner runner-bridge probe, removal of four probe containers | HOME, 2026-11-25 | PASS | Code Runner reaches only the broker; inner container reaches only the internet; cleanup back to zero containers and 10.3 GB | required | - |
+| E11 | 175 | W191 | method=observation; tool=OpenClaw; command=- | Server B | NOT_RUN | Native Ollama provider run on server B needs the owner | required | - |
+| E12 | 175 | W191 | method=observation; tool=n8n UI; command=- | HOME n8n | NOT_RUN | A real Code node execution with actor, broker and job ID needs the owner | required | - |
+| E13 | 175 | W191 | method=automated; tool=docker inner container; command=probe on runner-no-egress | HOME, 2026-11-25 | NOT_RUN | Container creation on vfs exceeded 300 s | required | - |
+| E14 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_wiki_preparation_contracts | main 20b188aab+ | PASS | 17 OK | required | - |
 
 ##### Resolution Links
 
@@ -130,12 +175,13 @@ E06 resolves E05.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 174 | pending | E01,E02,E03,E04,E06 | The HOME selection change and its checks are complete; owner acceptance is not given | @buenhyden |
+| 174 | accepted | E01,E02,E03,E04,E06 | Owner @buenhyden accepted on 2026-11-25 in this chat after the HOME selection change and its checks | @buenhyden |
+| 175 | pending | E07,E08,E09,E10,E11,E12,E13,E14 | Server A runtime checks pass; the server B OpenClaw run, a real Code node run and the no-egress inner probe are not run | @buenhyden |
 
 ##### Remaining Conditions
 
-Owner acceptance of criterion174. The items under Left open stay with their
-owner.
+None for criterion174. Criterion175 needs E11, E12 and E13 resolved and owner
+acceptance; the items under Left open stay with their owner.
 
 #### Handoff
 

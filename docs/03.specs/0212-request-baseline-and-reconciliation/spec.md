@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.16.0"
+version: "2.17.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1634,6 +1634,13 @@ target, backup, recovery boundary, and action-specific authorization.
      are HOME services and the certs job stays one-shot; update the runner's
      privileged exception; verify the selector plan and the running
      boundaries; and record the D06 items left open.
+
+175. TSK-0118 runs the D06 runtime checks the owner approved: local Ollama
+     use from the n8n worker and the server A Hermes process (D06-T01), the
+     n8n Code Runner boundary (D06-T03), the Assistant sandbox boundary from
+     inner containers with cleanup (D06-T04), and a review of the Wiki
+     preparation and tool comparison preconditions (D06-T05/T06), naming
+     every step left to the owner.
 
 ##### Evidence Requirements
 
