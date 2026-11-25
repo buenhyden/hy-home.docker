@@ -1,10 +1,10 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.12.0"
+version: "0.13.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-19"
+updated: "2026-11-25"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0022"
 parent_ids:
@@ -1911,6 +1911,10 @@ None: nothing was recorded here before this Task moved to the common form.
 | SearXNG route from 192.168.0.22 | 23 | W83 | From that host: name resolution, SSO 302, wrong Basic 401, correct Basic `/search` 200, browser login | 192.168.0.22 | NOT_RUN | Hermes runs only on the HOME host and already searches through `127.0.0.1:8890` (plugin call success, 3 results, 2026-11-18); the other host uses the route without Hermes | required | - |
 | SearXNG engine spread | 23 | W83 | `python3 -m unittest tests.validation.test_p02_service_contracts` (RED `KeyError: 'engines'`, then GREEN); settings loaded in the pinned image show bing, qwant, yahoo enabled and timeouts 6/10 s | `fix/searxng-engines` | PASS | 2026-11-19 07:00: 71 of ~80 Hermes searches returned 0 raw results; DuckDuckGo CAPTCHA, Brave and Google CSE too many requests | required | - |
 | SearXNG engine spread live | 23 | W83 | Recreate `searxng`; next 07:00 Hermes run's SearXNG raw-result counts | HOME | NOT_RUN | Needs the merged change | required | - |
+| Hermes SearXNG search live | 23 | W83 | Next scheduled Hermes run uses `web.search_backend: searxng` at `127.0.0.1:8890` | Hermes 07:00 KST runs 2026-11-20 to 2026-11-25; read-only count of `web_search` tool results in the Hermes session store | PASS | 2026-11-20: 22 searches, all with results; 2026-11-21 to 11-25: 181 searches, none empty. On 2026-11-19 most searches were empty before the engine spread. | required | Hermes SearXNG search |
+| SearXNG engine spread live result | 23 | W83 | Recreate `searxng`; next 07:00 Hermes run's SearXNG raw-result counts | HOME `searxng` recreated 2026-11-19 about 08:55 KST with `up -d --force-recreate`; engine-error lines of the 2026-11-20 07:00–07:35 KST container log | PASS | Results came from bing, yahoo and brave; DuckDuckGo CAPTCHA 22, Bing 6 and Google CSE 3 engine errors did not empty any search. | required | SearXNG engine spread live |
+| SearXNG browser route from 192.168.0.22 | 23 | W83 | Owner browser login to `https://searxng.${DEFAULT_URL}` from that host | 192.168.0.22, 2026-11-19 | PASS | Owner-reported observation, not reproduced by the agent; covers name resolution and the SSO login only. | required | - |
+| SearXNG Basic API from 192.168.0.22 | 23 | W83 | Wrong Basic 401 and correct Basic `/search` 200 from that host | 192.168.0.22 | NOT_RUN | No consumer on that host uses the API; the same route checks passed from HOME in "SearXNG Traefik route live". | required | - |
 
 ### Resolution Links
 
