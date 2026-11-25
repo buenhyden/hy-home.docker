@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.13.0"
+version: "0.14.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1915,6 +1915,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | SearXNG engine spread live result | 23 | W83 | Recreate `searxng`; next 07:00 Hermes run's SearXNG raw-result counts | HOME `searxng` recreated 2026-11-19 about 08:55 KST with `up -d --force-recreate`; engine-error lines of the 2026-11-20 07:00–07:35 KST container log | PASS | Results came from bing, yahoo and brave; DuckDuckGo CAPTCHA 22, Bing 6 and Google CSE 3 engine errors did not empty any search. | required | SearXNG engine spread live |
 | SearXNG browser route from 192.168.0.22 | 23 | W83 | Owner browser login to `https://searxng.${DEFAULT_URL}` from that host | 192.168.0.22, 2026-11-19 | PASS | Owner-reported observation, not reproduced by the agent; covers name resolution and the SSO login only. | required | - |
 | SearXNG Basic API from 192.168.0.22 | 23 | W83 | Wrong Basic 401 and correct Basic `/search` 200 from that host | 192.168.0.22 | NOT_RUN | No consumer on that host uses the API; the same route checks passed from HOME in "SearXNG Traefik route live". | required | - |
+| Direct path operational live | 23 | W83 | Live Gateway, credentials, publication, Traefik route, Hermes plugin | Hermes 07:00 KST Cron runs 2026-11-20 to 2026-11-25: `submit_research_report` results in the Hermes session store | PASS | 18 real submissions (news, devops and business ideas, three a day) returned HTTP 201 with `persisted: true` and `duplicate: false`. Ten earlier attempts stopped at Hermes's own pre-submission checks (`source_quality` 9, `report_path_not_allowed` 1) and were resubmitted. | required | Direct path operational |
+| Production attester live | 23 | W83 | Real `hermes-attester` account, key, `attest`+`read` token, `export` block, timer and a real item verification | `hermes-attester.service` journal 2026-11-18 to 2026-11-25 | PASS | Every day has runs with `attested` of 1 or 2 and `rejected` 0. On 2026-11-20 and 11-21 an item waited in `retry` for about six hours before it was attested; on 2026-11-25 one item has been in `retry` since 07:14 KST. One run exited 1 on 2026-11-09. | required | Production attester |
+| Warm-up scheduled run readback | 8, 23 | W83 | First 07:50 KST execution readback | HOME n8n `50 6 * * *`, the only tracked workflow on that schedule; n8n main and worker logs 2026-11-24 and 11-25 | PASS | Executions 198 and 202 were enqueued at 06:50:00 KST and finished about one second later on the worker with no error line. The execution records' status fields were not read. | required | Warm-up scheduled run |
 
 ### Resolution Links
 
