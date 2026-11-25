@@ -1,13 +1,13 @@
 ---
 title: "Ollama Inference Engine"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-11-12"
 ---
 
@@ -76,6 +76,7 @@ ollama/
 | --- | --- | --- | --- | --- |
 | Ollama API `127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` (`ai_net`, `ollama_ingress_net`, `n8n_ollama_net`) | `ollama` | 이 README는 소비자를 기록하지 않는다. | `/api/tags`, `/api/generate` 등 추론 API를 제공하며 `OLLAMA_NO_CLOUD=1`이다. | API 오류 시 `docker logs --tail=200 ollama`와 포트 바인딩을 확인한다. |
 | Traefik 라우터 `ollama` | `ollama` | 이 README는 소비자를 기록하지 않는다. | `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거친다. | Compose 헬스체크가 선언되어 있다. |
+| Traefik 라우터 `ollama-api` | `ollama` | 다른 host의 프로그램(OpenClaw 등) | `Authorization: Basic` header가 있는 추론·조회 경로만 `gateway-standard-chain`·`ollama-api-auth`로 받는다(POL-0056-R24). | 같은 서비스 헬스체크 |
 | exporter 지표 `${OLLAMA_EXPORTER_PORT:-8000}` (`ai_net`, `obs_net`) | `ollama-exporter` | 이 README는 소비자를 기록하지 않는다. | 지표 수집 포트로 노출한다. | Compose 헬스체크가 선언되어 있다. |
 
 ###### Inputs and Outputs
@@ -96,7 +97,7 @@ ollama/
 ###### Security Boundary
 <!-- core-payload-level:4 -->
 
-API는 `127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`로만 호스트에 게시되고 Traefik 라우터는 `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거칩니다. Docker Secret은 선언되지 않으며 `OLLAMA_NO_CLOUD=1`로 ollama.com 클라우드 모델과 로그인을 끕니다.
+API는 `127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`로만 호스트에 게시되고 Traefik 라우터 `ollama`는 `gateway-standard-chain`·`sso-errors`·`sso-auth`를, `ollama-api`는 Basic header가 있는 추론·조회 경로만 `ollama-api-auth`를 거칩니다. Docker Secret은 선언되지 않으며 `OLLAMA_NO_CLOUD=1`로 ollama.com 클라우드 모델과 로그인을 끕니다.
 
 #### Usage
 
@@ -176,7 +177,7 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 | Networks | `ai_net`, `ollama_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266), `obs_net` |
 | Volumes | `ollama-data:/root/.ollama:rw`, `ollama-data` |
 | Ports | Ollama API용 `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`; exporter는 `ai_net` 내부에서 `${OLLAMA_EXPORTER_PORT:-8000}`을 노출 |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.ollama.rule`, `traefik.http.routers.ollama.entrypoints`, `traefik.http.routers.ollama.tls`, `traefik.http.services.ollama.loadbalancer.server.port`, `traefik.http.routers.ollama.middlewares` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.ollama.rule`, `traefik.http.routers.ollama.entrypoints`, `traefik.http.routers.ollama.tls`, `traefik.http.services.ollama.loadbalancer.server.port`, `traefik.http.routers.ollama.middlewares`, `traefik.http.routers.ollama-api.{rule,entrypoints,tls,middlewares,service}` |
 | Secret refs | 선언되지 않음 |
 | Healthcheck | `ollama`, `ollama-exporter`에 Compose 헬스체크가 선언되어 있음 |
 | Operations | Guide (`docs/05.operations/01.guides/09.ai-and-search/0056-ollama.md`), Policy (`docs/05.operations/02.policies/09.ai-and-search/0056-ollama.md`), Runbook (`docs/05.operations/03.runbooks/09.ai-and-search/0056-ollama.md`) |

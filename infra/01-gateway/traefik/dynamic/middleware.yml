@@ -72,6 +72,11 @@ http:
       basicAuth:
         usersFile: "/run/secrets/traefik_searxng_api_htpasswd"
 
+    # 6. Ollama 추론 API용 Basic Auth (다른 host의 OpenClaw 등 비대화형 client)
+    ollama-api-auth:
+      basicAuth:
+        usersFile: "/run/secrets/traefik_ollama_api_htpasswd"
+
     large-body:
       buffering:
         maxRequestBodyBytes: 104857600  # 100MB

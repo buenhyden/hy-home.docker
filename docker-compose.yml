@@ -390,6 +390,9 @@ secrets:
   # SearXNG /search API Basic Auth for programs on other hosts (OPS-0110).
   traefik_searxng_api_htpasswd:
     file: ./secrets/auth/traefik/traefik_searxng_api_htpasswd.txt
+  # Ollama inference API Basic Auth for programs on other hosts (OPS-0056).
+  traefik_ollama_api_htpasswd:
+    file: ./secrets/auth/traefik/traefik_ollama_api_htpasswd.txt
 
   # ── Auth ────────────────────────────────────────────────
   keycloak_admin_password:

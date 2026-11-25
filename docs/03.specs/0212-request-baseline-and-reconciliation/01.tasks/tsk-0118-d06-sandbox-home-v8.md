@@ -1,6 +1,6 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0118"
 parent_ids:
@@ -98,10 +98,10 @@ started or recreated.
 | Item | State | Owner |
 | --- | --- | --- |
 | Stale "opt-in" comment on the n8n Compose sandbox section | Kept; changes with the next reviewed n8n Compose update | n8n Compose owner |
-| Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | NOT_RUN (E11) | Owner on server B |
-| A real n8n Code node run with its actor, broker and job ID | NOT_RUN (E12) | Owner in the n8n UI |
-| Inner probe on `runner-no-egress` | NOT_RUN (E13): container creation on vfs exceeded 300 s | D06 follow-up |
-| Hermes user config keeps an `ollama-cloud` provider entry (`https://ollama.com/v1`) and `--provider custom -m lfm2.5:8b` answered without reaching local Ollama (E08) | User-global config; not changed under repository authority | Owner |
+| Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | NOT_RUN (E11); the `ollama-api` route is added (E18), template rows added (E21); the credential and B proxy remain | Owner on server B |
+| JS Code node can generate code from strings (E17) | FAIL: upstream n8n 2.46.6 runner creates its `vm` context without `codeGeneration: {strings: false}` | Owner decides: accept as upstream limitation or carry a patched runner |
+| Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database for a rerun | Owner may delete it |
+| Hermes user config keeps an `ollama-cloud` provider entry (`https://ollama.com/v1`) and `--provider custom -m lfm2.5:8b` answered without reaching local Ollama (E08) | Owner decision 2026-11-26: local and cloud Ollama run as separate providers; the `ollama-cloud` entry stays and HOME Ollama keeps `OLLAMA_NO_CLOUD=1`. The bypass finding stays recorded; user-global config is not changed under repository authority | Owner |
 | D06-T06 tool comparison | Not started: no dataset, owner, rights, time field or goal exists, so no experiment is created (T06 item 2) | Owner names a dataset |
 
 ###### D06 runtime checks (criterion175)
@@ -123,9 +123,10 @@ tests, asked to run D06-T01 and to review D06-T05/T06.
   `n8n_worker_runner_net` whose only other member is `n8n-worker`. From the
   runner container only the broker answers; Ollama and `mng-pg` time out,
   and the internet, metadata and host LAN are unreachable. The JS runner
-  disallows code generation from strings and allows no builtin or external
-  module; the Python runner allows no stdlib or external module and blocks
-  environment access. The broker token file is readable by the runner uid,
+  starts with `--disallow-code-generation-from-strings` and allows no
+  builtin or external module, but a Code node can still generate code from
+  strings (E17, corrected 2026-11-26); the Python runner allows no stdlib or
+  external module and blocks environment access. The broker token file is readable by the runner uid,
   but neither runner can load a file module to read it.
 - D06-T04: the inner dockerd uses `vfs`; one 920 MB sandbox image occupies
   10.3 GB. An inner container on `runner-bridge` reaches the internet, while
@@ -138,6 +139,51 @@ tests, asked to run D06-T01 and to review D06-T05/T06.
   deletion and revocation, reindexing and restore for the Wiki preparation
   contract, and its valid and invalid fixtures still pass. No Wiki product
   is built.
+
+###### Follow-up on 2026-11-26
+
+The owner decided that Hermes runs local and cloud Ollama as separate
+providers, asked to rerun E13, to build and run a probe workflow for E12,
+and reported that OpenClaw on server B fails with base URL
+`https://ollama.hy.home.arpa` (E11). The owner then approved two n8n
+restarts for E12 and chose a Basic-auth route with a new credential and a
+server B loopback proxy for E11. Work ran on branch `feat/ollama-api-route`
+in `.claude/worktrees/ollama-api` from `main` `d9a96ebe9`; brief
+`d06-ollama-api-e11` bound the paths before the first edit.
+
+- E13 rerun: an inner container on `runner-no-egress` reached neither
+  metadata, the host LAN, the router nor the internet, and `n8n-worker` and
+  `mng-pg` did not resolve; it finished in 54 s and cleanup left zero
+  containers and 10.3 GB. The earlier 300 s timeout did not recur.
+- E12: the probe workflow (Webhook, a JS and a Python Code node) was
+  imported with the n8n CLI, published, n8n restarted, and its webhook was
+  called from inside the container. Execution 207 was queued as job 207 and
+  run by `n8n-worker` through the external runners. JS: `require('fs')`
+  blocked, the broker URI not visible, `new Function` allowed. Python: the
+  static check rejected `import os` ("Import of standard library module 'os'
+  is disallowed"), so the run ended in error and the webhook returned 500.
+  The workflow was unpublished and n8n restarted to zero published
+  workflows. A first import attempt never received its input and waited
+  7 h 22 min; it was stopped and its empty temporary file is gone.
+- E17 root cause: the runner's `runCode` and `buildContext` call
+  `vm.createContext` without `codeGeneration`, and Node then allows string
+  code generation in that context whatever the process flag says. The same
+  node binary in the runner image shows the main context blocked, a default
+  context allowed and a `codeGeneration: {strings: false}` context blocked.
+  `fs` and module loading stay blocked, so the Code node's boundary is the
+  module allowlist, not the flag.
+- E11 root cause: `https://ollama.hy.home.arpa` sits behind `sso-auth`, so
+  an unattended client gets a 302 to Keycloak. The new `ollama-api` router
+  accepts only requests with `Authorization: Basic` on inference and lookup
+  paths (`/api/chat`, `generate`, `embed`, `embeddings`, `tags`, `show`,
+  `version`, `ps`, `/v1/`) through `ollama-api-auth` (htpasswd `INFRA-009`
+  from `AI-012` and `AI-013`); model management stays behind SSO
+  (POL-0056-R24). The update ledger and the 2026-11-11 reviews were
+  re-bound for the three changed Compose files with declared images
+  unchanged. The agent cannot read or edit
+  `secrets/SENSITIVE_ENV_VARS.md.example`, so the owner adds the three
+  template rows, creates the password and hash, recreates Traefik and
+  Ollama, and connects server B (runbook OPS-0056 Remote Program Access).
 
 ##### Blockers and Decisions
 
@@ -161,13 +207,22 @@ the security impact stays recorded in the exception.
 | E09 | 175 | W191 | method=automated; tool=curl; command=stream aborted during load, then a new request | Server A loopback, 2026-11-25 | PASS | 499 and aborting load, then 200 with stop | required | - |
 | E10 | 175 | W191 | method=automated; tool=docker, node, python inner containers; command=runner reachability and file probes, inner runner-bridge probe, removal of four probe containers | HOME, 2026-11-25 | PASS | Code Runner reaches only the broker; inner container reaches only the internet; cleanup back to zero containers and 10.3 GB | required | - |
 | E11 | 175 | W191 | method=observation; tool=OpenClaw; command=- | Server B | NOT_RUN | Native Ollama provider run on server B needs the owner | required | - |
-| E12 | 175 | W191 | method=observation; tool=n8n UI; command=- | HOME n8n | NOT_RUN | A real Code node execution with actor, broker and job ID needs the owner | required | - |
+| E12 | 175 | W191 | method=observation; tool=n8n UI; command=- | HOME n8n | NOT_RUN | A real Code node execution with actor, broker and job ID needs the owner; superseded by E16 (webhook run on the same path, owner-approved restarts) | optional | - |
 | E13 | 175 | W191 | method=automated; tool=docker inner container; command=probe on runner-no-egress | HOME, 2026-11-25 | NOT_RUN | Container creation on vfs exceeded 300 s | required | - |
 | E14 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_wiki_preparation_contracts | main 20b188aab+ | PASS | 17 OK | required | - |
+| E15 | 175 | W191 | method=automated; tool=docker inner container; command=probe on runner-no-egress | HOME, 2026-11-26 | PASS | Metadata, host LAN, router and internet unreachable; n8n-worker and mng-pg do not resolve; 54 s; zero containers and 10.3 GB after cleanup | required | E13 |
+| E16 | 175 | W191 | method=automated; tool=n8n CLI, wget, psql; command=import and publish d06e12CodeRunner01, restart n8n, GET /webhook/d06e12-probe inside n8n, read execution 207 status and probe fields | HOME, 2026-11-26 | PASS | Execution 207 queued as job 207 and run by n8n-worker through the external runners; JS fs blocked and broker URI hidden; Python import os rejected by the static check; unpublished and restarted to zero published workflows | required | - |
+| E17 | 175 | W191 | method=automated; tool=node in n8n-task-runner-worker; command=new Function in a Code node and in main, default and codeGeneration strings false vm contexts | HOME, 2026-11-26 | FAIL | Code node and default vm context allow code generation from strings; only main and strings false contexts block it | required | - |
+| E18 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_compose_baseline_gates.OllamaPortContractTests tests.validation.test_compose_baseline_gates.RouteAuthContractTests tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_ledger_rebind | Change on d9a96ebe9 | PASS | Ollama route test errors on main (KeyError ollama-api.rule) and passes with the change; route-auth and 57 supply-chain tests OK | required | - |
+| E19 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_metadata_sync | Change on d9a96ebe9 | FAIL | 2 failures: INFRA-009 htpasswd path has no row in secrets/SENSITIVE_ENV_VARS.md.example, which the owner adds | required | - |
+| E20 | 175 | W191 | method=automated; tool=Python3 venv, bash; command=check-document-metadata.py --mode check-changed and check-active; check-document-links.py --mode all --changed; check-document-corpus-lifecycle.py; check-operations-catalog.py; check-supply-chain-policy.py --check; check-template-security-baseline.sh; check-conftest-policy.sh --mode corpus | Change on d9a96ebe9 | PASS | 0 metadata violations; links pass; lifecycle 0 violations; catalog pass after re-rendering the ollama and traefik inventory rows; supply chain pass; 0 template findings; 45/45 | required | - |
+| E21 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_metadata_sync | Change plus owner template rows for INFRA-009, AI-012 and AI-013 | PASS | 107 OK together with the Ollama route, route-auth and update-gate suites | required | E19 |
+| E22 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_catalog_contract | PR #1215 head 4bb792e4b (hosted candidate-core) | FAIL | 2 failures: the new entries pointed evidence_ref at TSK-0118 while the catalog contract requires the SPEC-0204 catalog Task, and AI-012 sat before AI-011 so the rendered view order differed from the template | required | - |
+| E23 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_catalog_contract | Entries ordered AI-010 to AI-013, evidence_ref on SPEC-0204 TSK-0010 | PASS | 106 OK together with the secret metadata and catalog library suites | required | E22 |
 
 ##### Resolution Links
 
-E06 resolves E05.
+E06 resolves E05; E15 resolves E13; E21 resolves E19; E23 resolves E22.
 
 #### Acceptance Decision
 
@@ -176,12 +231,12 @@ E06 resolves E05.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 174 | accepted | E01,E02,E03,E04,E06 | Owner @buenhyden accepted on 2026-11-25 in this chat after the HOME selection change and its checks | @buenhyden |
-| 175 | pending | E07,E08,E09,E10,E11,E12,E13,E14 | Server A runtime checks pass; the server B OpenClaw run, a real Code node run and the no-egress inner probe are not run | @buenhyden |
+| 175 | pending | E07,E08,E09,E10,E11,E14,E15,E16,E17,E18,E19,E20,E21,E22,E23 | Server A runtime checks, the no-egress probe and a real Code node run pass; JS code generation from strings is allowed (E17); the owner added the template rows (E21); the server B run is open | @buenhyden |
 
 ##### Remaining Conditions
 
-None for criterion174. Criterion175 needs E11, E12 and E13 resolved and owner
-acceptance; the items under Left open stay with their owner.
+None for criterion174. Criterion175 needs the owner's credential and
+server B run (E11), a decision on E17 and owner acceptance; the items under Left open stay with their owner.
 
 #### Handoff
 

@@ -1,13 +1,13 @@
 ---
 title: "Ollama Operations Policy"
-version: "3.0.0"
+version: "3.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0056"
 parent_ids:
@@ -96,6 +96,7 @@ Ollama 추론 엔진 운영 전반:
 | POL-0056-R21 | 제거 시 | 필수: 모델 보존 결정, 출처 export, client 중지, route 제거와 model volume 삭제 승인을 갖춘다 | 수동 | none |
 | POL-0056-R22 | 항상 | 필수: 병렬·loaded-model·queue 설정을 context 크기와 공유 GPU 메모리와 함께 평가한다 | none | none |
 | POL-0056-R23 | 모델 삭제·download·driver 변경 | 필수: 기존 승인·출처 및 GPU 복구 경계를 따른다 | 수동 | none |
+| POL-0056-R24 | 다른 host의 프로그램 접근 | 필수: 브라우저는 `ollama` router의 SSO로, 프로그램은 Basic `Authorization` header가 있는 추론·조회 경로(`/api/chat`·`generate`·`embed`·`embeddings`·`tags`·`show`·`version`·`ps`, `/v1/`) 요청만 `ollama-api` router(`INFRA-009`)로 받고, 모델 관리 경로(`pull`·`push`·`delete`·`create`·`copy`)는 SSO에 둔다 | 자동 | `tests.validation.test_compose_baseline_gates.OllamaPortContractTests` |
 
 - **Required**:
   - 호스트 직접 API 포트는 loopback에만 바인딩한다. 컨테이너 소비자는 서비스 DNS를, 원격 소비자는 인증된 gateway 경로를 사용한다.

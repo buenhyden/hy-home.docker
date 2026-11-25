@@ -1,13 +1,13 @@
 ---
 title: "Traefik Edge Router"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-11-12"
 ---
 
@@ -131,7 +131,7 @@ Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OA
 ###### Security Boundary
 <!-- core-payload-level:4 -->
 
-Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}`이다. (출처: `infra/01-gateway/traefik/docker-compose.yml`, `infra/01-gateway/traefik/compose.window-ca.override.yml`의 `traefik` 서비스)
+Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`, `traefik_ollama_api_htpasswd`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}`이다. (출처: `infra/01-gateway/traefik/docker-compose.yml`, `infra/01-gateway/traefik/compose.window-ca.override.yml`의 `traefik` 서비스)
 
 2026-11-09에 Compose 고정을 GHSA-xv5x-242w-7hf7(인증 없는 NTLM/Negotiate 헤더가 연결마다 backend transport를 남기는 High 결함)이 고쳐진 Traefik 패치 릴리스로 올렸습니다. 해당 릴리스 migration guide의 Go 1.27 항목(GODEBUG TLS 설정 제거, 요청 header 값 500개 제한, Ingress-NGINX 생성 이름)은 이 설정에 해당하지 않습니다. 서명, 스캔, config 부팅과 HOME 재생성은 `NOT_RUN`이며 실행 중인 컨테이너는 바뀌지 않았습니다. 기록은 `infra/09-platform-ops/security-updates/`와 SPEC-0212-TSK-0041이 소유합니다.
 
@@ -210,7 +210,7 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `${DEFAULT_CERT_DIR}/{cert.pem,key.pem,rootCA.pem}`을 각각 `/certs/{cert.pem,key.pem,rootCA.pem}`에 읽기 전용 mount, `./dynamic:/dynamic:ro`, `./config/traefik.yml:/etc/traefik/traefik.yml:ro` |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |
-| Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password`, `/run/secrets/traefik_prometheus_api_htpasswd`, `/run/secrets/traefik_searxng_api_htpasswd` |
+| Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`, `traefik_ollama_api_htpasswd`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password`, `/run/secrets/traefik_prometheus_api_htpasswd`, `/run/secrets/traefik_searxng_api_htpasswd`, `/run/secrets/traefik_ollama_api_htpasswd` |
 | Healthcheck | `traefik`에 Compose healthcheck 선언됨 |
 | Operations | Guide (`docs/05.operations/01.guides/02.gateway-and-networking/0013-traefik.md`), Policy (`docs/05.operations/02.policies/02.gateway-and-networking/0013-traefik.md`), Runbook (`docs/05.operations/03.runbooks/02.gateway-and-networking/0013-traefik.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
