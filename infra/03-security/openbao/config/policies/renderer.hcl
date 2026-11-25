@@ -28,14 +28,6 @@ path "secret/data/hy-home/07-workflow/airflow" {
   capabilities = ["read"]
 }
 
-path "secret/data/hy-home/08-ai/open-webui" {
-  capabilities = ["read"]
-}
-
-path "secret/data/hy-home/12-analytics/superset" {
-  capabilities = ["read"]
-}
-
 path "secret/metadata/hy-home/02-auth/keycloak" {
   capabilities = ["read"]
 }
@@ -61,13 +53,5 @@ path "secret/metadata/hy-home/06-observability/gatus" {
 }
 
 path "secret/metadata/hy-home/07-workflow/airflow" {
-  capabilities = ["read"]
-}
-
-path "secret/metadata/hy-home/08-ai/open-webui" {
-  capabilities = ["read"]
-}
-
-path "secret/metadata/hy-home/12-analytics/superset" {
   capabilities = ["read"]
 }

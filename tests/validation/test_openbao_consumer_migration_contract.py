@@ -802,10 +802,6 @@ OIDC_SERVICES = {
               "GATUS_OIDC_CLIENT_SECRET_FILE"),
     "airflow-apiserver": ("airflow", "airflow_client_secret", "airflow_keycloak_client_secret",
                           "AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD"),
-    "open-webui": ("open-webui", "openwebui_oidc_client_secret", "openwebui_oidc_client_secret",
-                   "OPENWEBUI_OIDC_CLIENT_SECRET_FILE"),
-    "superset": ("superset", "superset_oidc_client_secret", "superset_oidc_client_secret",
-                 "SUPERSET_OIDC_CLIENT_SECRET_FILE"),
 }  # fmt: skip
 # Keycloak clientId per service, kept apart from the secret names.
 KEYCLOAK_CLIENTS = {
@@ -815,16 +811,12 @@ KEYCLOAK_CLIENTS = {
     "dozzle": "home-dozzle",
     "gatus": "home-gatus",
     "airflow-apiserver": "home-airflow",
-    "open-webui": "home-openwebui",
-    "superset": "home-superset",
 }
 OIDC_CLIENT_ENV = {
     "oauth2-proxy": "OAUTH2_PROXY_CLIENT_ID",
     "kafbat-ui": "KAFBAT_OAUTH_CLIENT_ID",
     "dozzle": "DOZZLE_AUTH_OIDC_CLIENT_ID",
     "airflow-apiserver": "AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID",
-    "open-webui": "OAUTH_CLIENT_ID",
-    "superset": "SUPERSET_OIDC_CLIENT_ID",
 }
 
 
@@ -940,15 +932,22 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
         )
         self.assertIn(b"FAIL client_id\n", result.stdout)
         result, _ = self.run_verifier(
-            "superset", rendered=b"", mounted=b"", keycloak=b""
+            "kafbat-ui", rendered=b"", mounted=b"", keycloak=b""
         )
         self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
         self.assertIn(b"kcadm=empty\n", result.stdout)
-        result, _ = self.run_verifier("open-webui", health="unhealthy")
+        result, _ = self.run_verifier("gatus", health="unhealthy")
         self.assertEqual(b"WAIT healthy\nFAIL healthy state=unhealthy\n", result.stdout)
-        result, _ = self.run_verifier("superset", health="running")
+        result, _ = self.run_verifier("dozzle", health="running")
         self.assertEqual(0, result.returncode, result.stdout)
-        for args in ([], ["grafana"], ["oauth2-proxy", "extra"]):
+        # Open WebUI and Superset are LABs; the verifier refuses them.
+        for args in (
+            [],
+            ["grafana"],
+            ["oauth2-proxy", "extra"],
+            ["open-webui"],
+            ["superset"],
+        ):
             result, traces = self.run_verifier("oauth2-proxy", args=args)
             self.assertEqual(2, result.returncode)
             self.assertEqual(b"", result.stdout)

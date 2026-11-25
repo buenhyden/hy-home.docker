@@ -19,9 +19,7 @@ SECRETS='02-auth/oauth2-proxy auth/oauth2-proxy/oauth2_proxy_client_secret.txt o
 05-messaging/kafbat auth/kafbat/kafbat_client_secret.txt kafbat/kafbat_client_secret.txt
 06-observability/dozzle auth/dozzle/dozzle_client_secret.txt dozzle/dozzle_client_secret.txt
 06-observability/gatus auth/gatus/gatus_oidc_client_secret.txt gatus/gatus_oidc_client_secret.txt
-07-workflow/airflow auth/airflow/airflow_client_secret.txt airflow/airflow_client_secret.txt
-08-ai/open-webui auth/open-webui/openwebui_oidc_client_secret.txt open-webui/openwebui_oidc_client_secret.txt
-12-analytics/superset auth/superset/superset_oidc_client_secret.txt superset/superset_oidc_client_secret.txt'
+07-workflow/airflow auth/airflow/airflow_client_secret.txt airflow/airflow_client_secret.txt'
 # Compose service -> .env path variable and Agent file.
 service_row() {
   case "$1" in
@@ -31,8 +29,6 @@ service_row() {
     dozzle) echo "DOZZLE_CLIENT_SECRET_FILE dozzle/dozzle_client_secret.txt" ;;
     gatus) echo "GATUS_CLIENT_SECRET_FILE gatus/gatus_oidc_client_secret.txt" ;;
     airflow-apiserver) echo "AIRFLOW_CLIENT_SECRET_FILE airflow/airflow_client_secret.txt" ;;
-    open-webui) echo "OPENWEBUI_OIDC_CLIENT_SECRET_FILE open-webui/openwebui_oidc_client_secret.txt" ;;
-    superset) echo "SUPERSET_OIDC_CLIENT_SECRET_FILE superset/superset_oidc_client_secret.txt" ;;
     *) usage ;;
   esac
 }

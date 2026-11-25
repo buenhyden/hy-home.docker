@@ -1,13 +1,13 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-25"
 created: "2026-10-11"
 ---
 
@@ -362,13 +362,13 @@ bind합니다(`create_host_path: false`). 각 `<stem>.txt`는 `0640`, `<stem>.ve
 | `dozzle` | `06-observability/dozzle` | `dozzle/dozzle_client_secret.txt` | `DOZZLE_CLIENT_SECRET_FILE` |
 | `gatus` | `06-observability/gatus` | `gatus/gatus_oidc_client_secret.txt` | `GATUS_CLIENT_SECRET_FILE` |
 | `airflow-apiserver` | `07-workflow/airflow` | `airflow/airflow_client_secret.txt` | `AIRFLOW_CLIENT_SECRET_FILE` |
-| `open-webui` | `08-ai/open-webui` | `open-webui/openwebui_oidc_client_secret.txt` | `OPENWEBUI_OIDC_CLIENT_SECRET_FILE` |
-| `superset` | `12-analytics/superset` | `superset/superset_oidc_client_secret.txt` | `SUPERSET_OIDC_CLIENT_SECRET_FILE` |
 
-SPEC-0262 이후 Superset은 `labs/superset/docker-compose.yml` LAB이며 LAB 전용 secret을 읽습니다. Agent는
-`12-analytics/superset` 출력을 계속 render하지만 이를 bind하는 root 소비자는 없습니다.
-ADR-0062 개정(2026-11-10) 이후 Open WebUI도 `labs/open-webui/docker-compose.yml` LAB이며 같은
-방식으로 LAB 전용 secret을 읽고, `08-ai/open-webui` 출력을 bind하는 root 소비자는 없습니다.
+SPEC-0262 이후 Superset은 `labs/superset/docker-compose.yml` LAB이고, ADR-0062 개정(2026-11-10)
+이후 Open WebUI도 `labs/open-webui/docker-compose.yml` LAB이며 둘 다 LAB 전용 secret을 읽습니다.
+root 소비자가 없으므로 2026-11-25 D07에서 renderer 정책의 `08-ai/open-webui`·`12-analytics/superset`
+읽기 권한과 Agent template, 이 스크립트와 verifier의 두 행을 소스에서 제거했습니다. KV 데이터와
+operator 정책은 그대로 둡니다. 실행 중인 Agent에는 owner window(Agent 재생성, 남은
+`/openbao/out/{open-webui,superset}` 제거, 좁힌 정책 기록)가 끝나야 반영됩니다.
 
 모든 KV field 이름은 `client_secret`입니다. `health-agent.sh`는 이제 `agent.hcl`에서 template
 목록을 읽어 각 `.txt`의 bytes와 mode, 각 `.version`과 KV `current_version`을 비교하고, `out` 아래에

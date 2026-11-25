@@ -30,7 +30,7 @@ POLICIES = (
     (
         "renderer",
         "policies/renderer.hcl",
-        "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e",
+        "62d6c50034e680a3dfc8a269386c9f579f30f1e5dd0c59c7cda1855b4966088f",
     ),
     (
         "renderer-issuer",

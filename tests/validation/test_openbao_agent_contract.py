@@ -421,7 +421,7 @@ sys.exit(result.returncode)
                     ["read", "-field=current_version", "secret/metadata/" + path]
                 )
         self.assertEqual(calls[2:], expected)
-        self.assertEqual(19, len(expected))
+        self.assertEqual(15, len(expected))
 
     def test_sink_presence_does_not_accept_sealed_expired_or_forbidden(self):
         for failure in (
@@ -542,7 +542,7 @@ sys.exit(result.returncode)
     def test_only_consumed_values_are_group_readable_one_directory_each(self):
         hcl = (SCRIPTS.parent / "config/agent.hcl").read_text()
         stanzas = TEMPLATE_STANZA.findall(hcl)
-        self.assertEqual(19, len(stanzas))
+        self.assertEqual(15, len(stanzas))
         directories = {}
         for source, destination, perms in stanzas:
             self.assertEqual("0640" if destination.endswith(".txt") else "0600", perms)
@@ -557,7 +557,7 @@ sys.exit(result.returncode)
         # secret has a directory of its own that only its consumer binds.
         self.assertEqual(
             {"auth", "observability", "oauth2-proxy", "kafbat", "dozzle",
-             "gatus", "airflow", "open-webui", "superset"},
+             "gatus", "airflow"},
             set(directories),
         )  # fmt: skip
         for directory, paths in directories.items():
