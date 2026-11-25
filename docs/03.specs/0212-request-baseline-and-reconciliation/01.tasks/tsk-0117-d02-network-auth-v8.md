@@ -1,6 +1,6 @@
 ---
 title: "D02 v8 Network and Gateway Authentication Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -162,10 +162,11 @@ firewall evidence stays NOT_RUN rather than inferred from A-side results.
 | E10 | 173 | W189 | method=observation; tool=PowerShell 7 Invoke-WebRequest; command=GET per host without redirect following; `GET http://192.168.0.13:8644/` | 192.168.0.22 Windows, owner, 2026-11-25 | FAIL | Codes 200, 401 and 404 match server A; hosts that redirect on server A raise the PowerShell 3xx exception, with no TLS error; 8644 closed; the same seven names fail with "no such host", so the Windows hosts list (which WSL copies) lacks them | required | - |
 | E11 | 173 | W189 | method=observation; tool=curl in WSL; command=unauthenticated GET per host with the public CA; `curl http://192.168.0.13:8644/` | 192.168.0.22 WSL after the owner added the seven names to the Windows hosts list, 2026-11-25 | PASS | All 38 hosts return the same codes as server A with `tls=0` (opensearch and terrakube 404, pyroscope 302, s3 403); `8644 000` | required | E09 |
 | E12 | 173 | W189 | method=observation; tool=curl in WSL; command=SearXNG `/search?format=json` with the new credential from a 0600 file | 192.168.0.22 WSL, owner, 2026-11-25 | PASS | 200 with a JSON `results` list (RUN-0110 step 7) | required | - |
+| E13 | 173 | W189 | method=observation; tool=PowerShell 7 Invoke-WebRequest; command=GET per host without redirect following; `GET http://192.168.0.13:8644/` | 192.168.0.22 Windows after the hosts change, owner, 2026-11-25 | PASS | All 38 hosts connect with no TLS or name error: 200, 401, 403 and 404 match server A and the hosts that redirect on server A raise the PowerShell 3xx exception; the port 8644 probe was not repeated (closed in E10 and E11) | required | E10 |
 
 ##### Resolution Links
 
-E05 resolves E04; E11 resolves E09.
+E05 resolves E04; E11 resolves E09; E13 resolves E10.
 
 #### Acceptance Decision
 
@@ -173,15 +174,16 @@ E05 resolves E04; E11 resolves E09.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 173 | pending | E01,E02,E03,E05,E06,E07,E08,E11,E12 | Server A census, the route-table fix, the Hermes loopback bind, the server B browser logins, the server B WSL census of all hosts and the SearXNG API from server B are complete; the Windows census rerun (E10) and the OpenClaw and Hermes Agent API consumption stay open | @buenhyden |
+| 173 | pending | E01,E02,E03,E05,E06,E07,E08,E11,E12,E13 | Server A census, the route-table fix, the Hermes loopback bind and every server B check (browser logins, WSL and Windows census, SearXNG API) are complete; agent API consumption stays open: Hermes Agent v0.23.4 on server A uses SearXNG over loopback, and the OpenClaw 2026.11.309.0 SearXNG plugin documents no authentication for the Basic-only API route | @buenhyden |
 
 ##### Remaining Conditions
 
-A rerun of the Windows census after the hosts change (resolves E10; the WSL
-census is done, E11, and the browser logins, E08), OpenClaw
-and Hermes Agent consumption (a server B program calling SearXNG follows
-RUN-0110 step 7), and a B-side refusal check of 192.168.0.13:8644; then owner
-acceptance. The old SearXNG credential's refusal is settled in SPEC-0212
+Agent API consumption: Hermes Agent v0.23.4 on server A searches over
+loopback and needs no Traefik route; the OpenClaw 2026.11.309.0 SearXNG plugin
+takes only `baseUrl`, `categories` and `language`, documents no
+authentication, and so cannot call the Basic-only `searxng-api` route as is.
+The owner chooses the OpenClaw path; then owner acceptance. Every server B
+route, TLS, port 8644 and API check is done (E08, E11, E12, E13). The old SearXNG credential's refusal is settled in SPEC-0212
 TSK-0116 E25.
 
 #### Handoff
