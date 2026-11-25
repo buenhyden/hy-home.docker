@@ -1,6 +1,6 @@
 ---
 title: "D02 v8 Network and Gateway Authentication Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -117,6 +117,14 @@ requests with that header.
   192.168.0.22: `curl -sS -o /dev/null -w '%{http_code}' http://192.168.0.13:8644/`.
   Fixes: bind the platform to `127.0.0.1` if nothing on the LAN posts to it,
   or allow only the Home Assistant address in the host firewall.
+- Follow-up on 2026-11-25: the owner set the rule that the listener binds to
+  loopback if nothing on the LAN posts to it. No webhook route is configured,
+  the gateway logs hold no inbound request, no Home Assistant runs on this
+  host, and `homeassistant` is only the platform's toolset. The owner set
+  `platforms.webhook.extra.host: 127.0.0.1` in `~/.hermes/config.yaml`
+  (backup `~/.hermes/backups/config.yaml.pre-webhook-loopback`) and restarted
+  `hermes-gateway`. It now listens on `127.0.0.1:8644` only; `192.168.0.13:8644`
+  refuses the connection and loopback answers 404.
 - 192.168.0.22 answers ICMP; no B process, resolver, CA store or OpenClaw
   configuration was observable from this session.
 
@@ -127,7 +135,7 @@ requests with that header.
 | B resolver, TCP, TLS, browser login and API calls for all 38 hosts | NOT_RUN | Owner on 192.168.0.22 (Windows and WSL accounts) |
 | B OpenClaw and A Hermes Agent consuming supported services through Traefik | NOT_RUN | Owner; installed versions and credentials on each host |
 | Old SearXNG credential refused after rotation | NOT_RUN | Owner rotation of AI-011/INFRA-008 (TSK-0116) first |
-| Hermes webhook listener on 0.0.0.0:8644 | open | Owner decision above |
+| Hermes webhook listener on 0.0.0.0:8644 | closed | Bound to 127.0.0.1 (E07); B-side refusal check stays with the owner |
 | Webhook and gateway integrity (D02-T04) | REUSE | SPEC-0204 TSK-0022 records the exact routes, IP allow-lists and live deliveries; no new defect observed |
 | Minimal network design (D02-T03) | REUSE | No new caller or reachability defect observed; no network change |
 
@@ -148,6 +156,7 @@ firewall evidence stays NOT_RUN rather than inferred from A-side results.
 | E04 | 173 | W189 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_compose_baseline_gates.RouteAuthContractTests | Change before the guide edit | FAIL | Guide table lacks `searxng-api` | required | - |
 | E05 | 173 | W189 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_compose_baseline_gates.RouteAuthContractTests | Change after the guide edit | PASS | OK | required | E04 |
 | E06 | 173 | W189 | method=observation; tool=-; command=- | Server B and A firewall | NOT_RUN | Owner items above | required | - |
+| E07 | 173 | W189 | method=observation; tool=ss, curl, systemctl; command=ss -ltn sport 8644; curl LAN and loopback; is-active hermes-gateway | After the owner's config change and restart, 16:44 KST | PASS | `127.0.0.1:8644` only; LAN `000`, loopback 404; gateway active | required | - |
 
 ##### Resolution Links
 
@@ -159,13 +168,13 @@ E05 resolves E04.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 173 | pending | E01,E02,E03,E05,E06 | Server A census and the route-table fix are complete; B-side acceptance and the Hermes listener stay open | @buenhyden |
+| 173 | pending | E01,E02,E03,E05,E06,E07 | Server A census, the route-table fix and the Hermes loopback bind are complete; B-side acceptance stays open | @buenhyden |
 
 ##### Remaining Conditions
 
 B-side checks for all hosts, OpenClaw and Hermes Agent consumption, the
-post-rotation refusal of the old SearXNG credential, and the Hermes 8644
-decision; then owner acceptance.
+post-rotation refusal of the old SearXNG credential, and a B-side refusal
+check of 192.168.0.13:8644; then owner acceptance.
 
 #### Handoff
 
