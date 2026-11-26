@@ -1,6 +1,6 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "2.0.1"
+version: "2.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -101,7 +101,7 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 `SHARE_NAMED_USER`는 MNG의 typed ACL overlay와 `N8N_VALKEY_USERNAME=n8n`,
 `N8N_VALKEY_SECRET=mng_valkey_n8n_password`, 기존 host·DB0를 함께 선택합니다.
 두 entrypoint는 Host/User/Secret/DB와 실제 Queue 변수가 같은지 검사하고 혼합 입력을
-거부합니다. 전용 Valkey의 username 없는 기존 pair도 유지합니다. 설정이 준비됐다는
+거부합니다. 앱별 전용 Valkey pair는 ADR-0062 결정 10으로 제거되어 지원하지 않습니다. 설정이 준비됐다는
 사실은 실제 Bull queue의 인증·Retry·복원 인수가 아닙니다.
 
 `docker-compose.yml`은 실제 실행자인
@@ -285,7 +285,7 @@ Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfil
 | Config values | env 키: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE` 외 다수; 프로필: `workflow`, `workflow-n8n`, Blog-data 수집 Gateway 전용 `blog-ingestion` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 무조건 루트 include되며 프로필(`workflow`, `workflow-n8n`)로 선택됨 |
 | Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net`; `n8n-worker`도 Alloy OTLP 전송을 위해 `obs_net`에 붙고, `n8n-worker`와 `blog-ingestion`만 내부·격리 `n8n_blog_ingest_net`을, Traefik과 `blog-ingestion`만 내부·격리 `blog_export_net`을 공유함. runner는 `n8n_net`에 없고 `n8n-worker`와 `n8n-task-runner-worker`만 내부·격리 `n8n_worker_runner_net`을 공유함. worker의 task broker는 그 망 주소 `10.250.23.2`에만 bind하고 worker healthcheck도 그 주소를 씀(SPEC-0267). main은 queue mode에서 수동 실행을 worker로 넘기므로(`OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`) task runner를 시작하지 않고 runner도 두지 않음(SPEC-0269) |
-| Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:ro`; 두 runner는 `./n8n-task-runners.json:/etc/n8n-task-runners.json:ro`, JS runner가 `--require`로 읽는 `./n8n-runner-vm-hardening.cjs:/etc/n8n-runner-vm-hardening.cjs:ro`(Code node vm context에서 문자열 코드 생성 차단, TSK-0118 E17)와 `/tmp` tmpfs만 마운트함. `n8n-task-runner-data`, `n8n-task-runner-worker-data`는 rollback·기존 호스트 데이터 보존용으로 선언만 남고 마운트되지 않음 |
+| Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:ro`; worker 쪽 runner(`n8n-task-runner-worker`)는 `./n8n-task-runners.json:/etc/n8n-task-runners.json:ro`, JS runner가 `--require`로 읽는 `./n8n-runner-vm-hardening.cjs:/etc/n8n-runner-vm-hardening.cjs:ro`(Code node vm context에서 문자열 코드 생성 차단, TSK-0118 E17)와 `/tmp` tmpfs만 마운트함. `n8n-task-runner-data`, `n8n-task-runner-worker-data`는 rollback·기존 호스트 데이터 보존용으로 선언만 남고 마운트되지 않음 |
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`(공유 `mng-valkey`). `N8N_BROKER_PORT`는 main·worker의 `N8N_RUNNERS_BROKER_PORT`로, `N8N_TASK_RUNNER_PORT`는 두 runner의 `N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT`로 전달됩니다. |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
 | Secret refs | main/worker는 선택된 `mng_valkey_password` 또는 `mng_valkey_n8n_password` 하나와 `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`을 마운트함. runner 둘은 `n8n_runner_auth_token`만 마운트함 |
