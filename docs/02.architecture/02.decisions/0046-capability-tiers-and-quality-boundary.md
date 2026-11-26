@@ -1,13 +1,13 @@
 ---
 title: "Capability Tiers and Quality Boundary"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "architecture"
 artifact_id: "ADR-0046"
 parent_ids:
@@ -86,7 +86,7 @@ Option A leaves the mixed capability ownership in place and only clarifies navig
 ##### Chosen Option
 
 Adopt C. `11-quality` owns k6, Locust, WireMock, Pact Broker, SonarQube, Conftest
-and Mailpit. `09-platform-ops` retains OpenTofu, Terrakube, Registry, Renovate and
+and Mailpit. `09-platform-ops` retains OpenTofu, Registry, Renovate and
 Restic. `10-communication` retains Stalwart and its configuration helper.
 Move Dozzle to Observability, RedisInsight to Data, Open Notebook with nested
 SurrealDB and MLflow with its provisioner to AI, and JupyterLab to Analytics.

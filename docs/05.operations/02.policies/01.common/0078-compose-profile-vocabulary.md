@@ -1,13 +1,13 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "2.1.0"
+version: "2.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -99,7 +99,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `dev-data` | capability | 단일 개발 PG·Valkey와 그 지표 exporter를 명시적으로 선택 | `dev-pg`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dev-valkey`, `dev-valkey-exporter` | No | 새 개발 저장소 기동; 관리 DB·Valkey와 상태 분리; initialization: dev-pg-monitor-provision | current |
 | `experience` | capability | 관리자 전용 공유 Storybook 정적 UI 검토와 원격 문서 MCP | `storybook`, `storybook-mcp` | No | 정적 origin startup; `unless-stopped` 재시작 정책은 명시적 중지 전 reboot에도 유지 | current |
 | `graph` | role | 그래프 데이터 저장 | `neo4j` | No | normal service startup | current |
-| `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인; Terrakube state는 `storage`와 함께 선택 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
+| `iac` | automation | OpenTofu IaC 작업; apply는 별도 승인; Terrakube는 LAB `lab-terrakube`(ADR-0062 개정 2026-11-26) | `opentofu` | No | operator IaC execution | current |
 | `jupyterlab` | topology | 독립 LAB `labs/jupyterlab/docker-compose.yml`의 token 보호 단일 사용자 notebook(SPEC-0262) | `jupyterlab` | No | `${LAB_DATA_DIR}/jupyterlab/work` bind; host port는 `LAB_HOST_BIND_IP`에만; MLflow endpoint는 선택 입력 | current |
 | `lab-dbt` | topology | 독립 LAB `labs/dbt/docker-compose.yml`의 dbt 변환 작업(SPEC-0262) | `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기; `LAB_DBT_DB_HOST` 승인 전 렌더링 전용 | current |
 | `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화와 Schema Registry·Debezium plugin Connect(ADR-0062 개정 2026-11-10) | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init`, `lab-schema-registry`, `lab-kafka-connect` | No | initialization: lab-kafka-init; connector·원천 DB·credential은 선언하지 않으며 운영자 승인 대상 | current |
@@ -107,6 +107,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `lab-locust` | topology | root에서 분리된 Locust master/worker headless 부하 LAB | `lab-locust-master`, `lab-locust-worker` | No | `labs/locust/docker-compose.yml`의 별도 project/network/volume; target 승인 후에만 트래픽 생성 | current |
 | `lab-open-webui` | topology | 독립 LAB `labs/open-webui/docker-compose.yml`의 채팅·RAG 웹; Keycloak native OIDC(ADR-0062 개정 2026-11-10) | `open-webui` | No | `${LAB_DATA_DIR}/open-webui/data` bind; host port는 `LAB_HOST_BIND_IP`에만; `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` 승인 전 렌더링 전용 | current |
 | `lab-superset` | topology | 독립 LAB `labs/superset/docker-compose.yml`의 Superset BI 웹; Keycloak native OIDC(SPEC-0262) | `superset-db-provision`, `superset-init`, `superset` | No | initialization: superset-db-provision (role·database), superset-init (migration·role 동기화·`lakehouse` DB 등록); `LAB_SUPERSET_DB_HOST` 승인 전 렌더링 전용 | current |
+| `lab-terrakube` | topology | 독립 LAB `labs/terrakube/docker-compose.yml`의 IaC 협업 플랫폼; 자체 PostgreSQL·Valkey·로컬 state, Keycloak native OIDC(ADR-0062 개정 2026-11-26) | `terrakube-api`, `terrakube-ui`, `terrakube-executor`, `terrakube-pg`, `terrakube-valkey` | No | `${LAB_DATA_DIR}/terrakube/{pg,valkey,state}` bind; host port는 `LAB_HOST_BIND_IP`에만; Docker socket 없음 | current |
 | `lakehouse` | capability | SeaweedFS S3·Iceberg REST catalog 저장소; 엔진은 LAB `lab-lakehouse`(SPEC-0262) | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `mailpit` | No | initialization: mng-pg-init; monitoring initialization: mng-pg-monitor-provision | current |
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
@@ -240,7 +241,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | POL-0078-R78 | opensearch-cluster LAB | 필수: 별도 network/state/credential을 쓴다 | none | none |
 | POL-0078-R79 | dependency-update | 금지: tooling/HOME의 암묵적 기동 대상에 넣는다 | none | none |
 | POL-0078-R80 | testing의 부하/샘플 데이터 생성 | 필수: 대상과 실행량을 별도 승인한다 | 수동 | none |
-| POL-0078-R81 | iac | 필수: OpenTofu/Terrakube 명령/대상/credential/apply 승인을 확인한다 | 수동 | none |
+| POL-0078-R81 | iac | 필수: OpenTofu 명령/대상/credential/apply 승인을 확인한다 | 수동 | none |
 | POL-0078-R82 | tooling | 필수: root는 registry만 선택한다 | none | none |
 | POL-0078-R83 | tooling의 SonarQube | 필수: LAB `sast` profile로 `labs/sonarqube/docker-compose.yml`에서만 선택한다 | none | none |
 | POL-0078-R84 | tooling | 금지: update/IaC/load 작업을 포함한다 | none | none |
@@ -453,7 +454,7 @@ Grafana query와 선택 profile의 예상 상태는 별도로 확인한다.
 | opensearch with opensearch-cluster | 서로 다른 Compose project의 대체 토폴로지; LAB은 별도 network·state·credential을 사용 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
 | testing | root는 k6 버전만 확인; 격리 runner의 부하·샘플 데이터 생성은 대상과 실행량을 별도 승인 |
-| iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
+| iac | OpenTofu 명령·대상·credential·apply 승인 확인 |
 | tooling | root는 registry만 선택; SonarQube는 LAB `sast` profile로 `labs/sonarqube/docker-compose.yml`에서만 선택; update/IaC/load 작업 제외 |
 | mlops / data-science / analytics-engineering / contract-testing / bi | 도구 metadata는 `mng-pg`·`mng-pg-init`을 사용한다. dbt 업무 원천은 `dev-pg`·`dev-platform-provision`을 요구한다. dbt·Superset LAB은 HOME network에 합류하지 않으므로 같은 profile 이름의 root 선택은 그 DB를 LAB에 도달 가능하게 만들지 않는다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
@@ -513,7 +514,8 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 
 [ADR-0062](../../../02.architecture/02.decisions/0062-home-lab-membership.md#follow-up)가 결정한
 독립 LAB 이동과 단일 OpenSearch 퇴역은 후속 변경이다. ComfyUI, Neo4j, Open Notebook과
-SurrealDB, Pact Broker, WireMock, Terrakube는 이동 전까지 각 루트 profile에 남는다.
+SurrealDB, Pact Broker, WireMock은 이동 전까지 각 루트 profile에 남는다. Terrakube는 2026-11-26에
+LAB `lab-terrakube`로 이전했다.
 현재 선언과 목표를 읽을 때 2026-10-08 관찰과 구분한다.
 
 | Service group | Role | Consumer | 비용(CPU / MiB) | 보존 데이터 | Decision | 퇴역 조건 | Host 2026-10-08 |
@@ -532,7 +534,7 @@ SurrealDB, Pact Broker, WireMock, Terrakube는 이동 전까지 각 루트 profi
 | Open WebUI | 채팅·RAG UI | 사용자 1명, 마지막 활동 2026-10-26 | 2 / 2048 | `open-webui`(이전 후 `${LAB_DATA_DIR}/open-webui/data`) | 2026-11-10 LAB `labs/open-webui/docker-compose.yml`로 이전; HOME 컨테이너·volume 퇴역은 별도 승인 | 채팅 실험 수요가 없을 때 | 실행 |
 | Neo4j | graph | 이름 있는 소비자 없음 | 1 / 512 | `neo4j-data` | 현재 루트의 선택형 `graph`; 독립 LAB 이동 예정 | 별도 이동 작업에서 상태와 소비자를 확인 | 미실행 |
 | RedisInsight | Valkey UI | 운영자 | 1 / 512 | `redisinsight-data`(연결 정의) | OPTIONAL `admin` | Valkey 조회 수요가 없을 때 | 실행 |
-| Terrakube | IaC server | 운영자 | 4 / 3072 | MNG PostgreSQL DB | 현재 루트의 선택형 `iac`; 독립 LAB 이동 예정 | 별도 이동 작업에서 상태와 소비자를 확인 | 미실행 |
+| Terrakube | IaC server | 운영자 | 5 / 3584 | LAB `terrakube-pg`와 `${LAB_DATA_DIR}/terrakube/state`(이전 전 HOME DB는 빈 상태) | 2026-11-26 LAB `labs/terrakube/docker-compose.yml`로 이전; HOME role·DB·bucket 런타임 정리는 별도 승인 단계 | IaC 협업 실험 수요가 없을 때 | 미실행 |
 | JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | 3.5 / 3328 | MNG PostgreSQL DB, object store artifact | MLflow OPTIONAL; JupyterLab은 2026-11-04 LAB `labs/jupyterlab/docker-compose.yml`로 이전 | 실험 추적 수요가 없을 때 | 미실행 |
 | Open Notebook, SurrealDB | notebook | 이름 있는 소비자 없음 | 1.5 / 768 | `open-notebook-data`, `surrealdb-data` | 현재 루트의 선택형 `notebook`; 독립 LAB 이동 예정 | 별도 이동 작업에서 상태와 소비자를 확인 | 미실행 |
 | Crawl4AI | crawling API | 없음 | 2 / 4096 | 없음 | OPTIONAL; 소비자가 생기지 않으면 퇴역 검토 | 다음 검토까지 소비자가 없을 때 | 미실행 |

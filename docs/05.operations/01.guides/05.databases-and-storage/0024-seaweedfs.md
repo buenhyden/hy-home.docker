@@ -1,13 +1,13 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -147,7 +147,6 @@ master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leve
 | Loki | `loki-bucket` | `loki` | STRG-011 |
 | Tempo | `tempo-bucket` | `tempo` | STRG-012 |
 | MLflow | `mlflow-artifacts` | `mlflow` | STRG-013 |
-| Terrakube | `tfstate` | `terrakube` | STRG-014 |
 | Spark (Iceberg) | `lakehouse` table bucket | `lakehouse` | STRG-015 |
 | Opsflow worker (Airflow) | `opsflow-dev` (`manifest-*` prefix 한정, delete 거부 정책 별도) | `opsflow-worker` | STRG-016 |
 

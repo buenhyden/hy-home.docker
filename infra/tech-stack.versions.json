@@ -83,7 +83,8 @@
         "infra/11-quality/pact-broker/docker-compose.yml",
         "labs/dbt/docker-compose.yml",
         "labs/postgresql-ha/docker-compose.yml",
-        "labs/superset/docker-compose.yml"
+        "labs/superset/docker-compose.yml",
+        "labs/terrakube/docker-compose.yml"
       ],
       "sources": [
         {
@@ -133,6 +134,12 @@
           "images": [
             "postgres:18.6-alpine"
           ]
+        },
+        {
+          "compose_file": "labs/terrakube/docker-compose.yml",
+          "images": [
+            "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
+          ]
         }
       ]
     },
@@ -150,6 +157,7 @@
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml",
         "infra/04-data/mng-db/docker-compose.yml",
+        "labs/terrakube/docker-compose.yml",
         "labs/valkey-cluster/docker-compose.yml"
       ],
       "sources": [
@@ -161,6 +169,12 @@
         },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
+          "images": [
+            "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b"
+          ]
+        },
+        {
+          "compose_file": "labs/terrakube/docker-compose.yml",
           "images": [
             "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b"
           ]
@@ -765,11 +779,11 @@
         "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8"
       ],
       "compose_files": [
-        "infra/09-platform-ops/terrakube/docker-compose.yml"
+        "labs/terrakube/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "compose_file": "labs/terrakube/docker-compose.yml",
           "images": [
             "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8"
           ]
@@ -787,11 +801,11 @@
         "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8"
       ],
       "compose_files": [
-        "infra/09-platform-ops/terrakube/docker-compose.yml"
+        "labs/terrakube/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "compose_file": "labs/terrakube/docker-compose.yml",
           "images": [
             "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8"
           ]
@@ -809,11 +823,11 @@
         "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d"
       ],
       "compose_files": [
-        "infra/09-platform-ops/terrakube/docker-compose.yml"
+        "labs/terrakube/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "compose_file": "labs/terrakube/docker-compose.yml",
           "images": [
             "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d"
           ]

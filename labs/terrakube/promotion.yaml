@@ -1,0 +1,60 @@
+# SPEC-0263 promotion manifest for the terrakube LAB.
+# resources.services copies the rendered per-container limits and
+# reservations; disk_gib is an estimate.
+# Secret destinations are a plan only and are never created here.
+# kind undecided: the owner has not named a promotion target yet.
+kind: undecided
+integrations:
+- kind: oidc-client
+  owner: infra/02-auth/keycloak/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-038
+  destination: secrets/tools/terrakube/db_password.txt
+- row: LAB-039
+  destination: secrets/tools/terrakube/valkey_password.txt
+- row: LAB-040
+  destination: secrets/tools/terrakube/terrakube_pat_secret.txt
+- row: LAB-041
+  destination: secrets/tools/terrakube/terrakube_internal_secret.txt
+documents:
+  guide: docs/05.operations/01.guides/15.labs/0069-terrakube.md
+  runbook: docs/05.operations/03.runbooks/15.labs/0069-terrakube.md
+  guide_target: docs/05.operations/01.guides/10.platform-and-backup/
+  runbook_target: docs/05.operations/03.runbooks/10.platform-and-backup/
+resources:
+  services:
+    terrakube-api:
+      cpus: 1.0
+      memory_mib: 512
+      reservations:
+        cpus: 0.05
+        memory_mib: 192
+    terrakube-executor:
+      cpus: 2.0
+      memory_mib: 2048
+      reservations:
+        cpus: 0.1
+        memory_mib: 864
+    terrakube-pg:
+      cpus: 0.5
+      memory_mib: 256
+      reservations:
+        cpus: 0.05
+        memory_mib: 128
+    terrakube-ui:
+      cpus: 1.0
+      memory_mib: 512
+      reservations:
+        cpus: 0.05
+        memory_mib: 192
+    terrakube-valkey:
+      cpus: 0.5
+      memory_mib: 256
+      reservations:
+        cpus: 0.05
+        memory_mib: 128
+  disk_gib:
+    data: 2
+    images: 2

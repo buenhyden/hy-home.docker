@@ -1,13 +1,13 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Architecture Description"
-version: "3.0.0"
+version: "3.1.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -65,7 +65,7 @@ itself is in [AD-0009](0009-tooling-architecture.md).
 ###### Context
 <!-- core-payload-level:4 -->
 
-The Description consumes the `01-gateway` middleware chain, the `02-auth` SSO middleware, and `04-data` management PostgreSQL, Valkey and SeaweedFS. Traefik `websecure` routes the Terrakube and Mailpit UIs, and Keycloak serves them through the SSO middleware.
+The Description consumes the `01-gateway` middleware chain, the `02-auth` SSO middleware, and `04-data` management PostgreSQL, Valkey and SeaweedFS. Traefik `websecure` routes the Mailpit UI, and Keycloak serves it through the SSO middleware.
 
 ##### Constraints
 
@@ -75,17 +75,16 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
 
 ##### Building Blocks
 
-- **Platform operations** (`infra/09-platform-ops/`): OpenTofu and Terrakube
+- **Platform operations** (`infra/09-platform-ops/`): OpenTofu
   (`iac` profile), the image registry (`tooling` profile), Renovate
   (`dependency-update`), restic backup (`backup`), and the project-registration,
   resource-optimization, security-updates and service-integration packages.
 - **Quality** (`infra/11-quality/`): k6 (`testing`), Pact Broker
   (`contract-testing`), WireMock (`api-mock`), Conftest (`policy-check`) and
   Mailpit (`dev`).
-- **Ingress**: Traefik `websecure` routes the Terrakube API, UI and executor
-  and the Mailpit UI through `gateway-standard-chain`, `sso-errors` and
-  `sso-auth` (`infra/09-platform-ops/terrakube/docker-compose.yml:65,101,183`,
-  `infra/11-quality/mailpit/docker-compose.yml:53`). The registry has no
+- **Ingress**: Traefik `websecure` routes the Mailpit UI through
+  `gateway-standard-chain`, `sso-errors` and `sso-auth`
+  (`infra/11-quality/mailpit/docker-compose.yml:53`). The registry has no
   Traefik route; it publishes only on loopback
   (`infra/09-platform-ops/registry/docker-compose.yml:29`).
 - **Shared dependencies**: management PostgreSQL and Valkey on `mng_data_net`,
@@ -95,14 +94,12 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Terrakube API, UI and executor routes (Traefik `websecure`) | Terrakube | The description names no consumer for this interface. | `gateway-standard-chain`, `sso-errors` and `sso-auth` (`infra/09-platform-ops/terrakube/docker-compose.yml:65,101,183`) | The description records no failure handling for this interface. |
 | Mailpit UI route (Traefik `websecure`) | Mailpit | The description names no consumer for this interface. | `gateway-standard-chain`, `sso-errors` and `sso-auth` (`infra/11-quality/mailpit/docker-compose.yml:53`) | The description records no failure handling for this interface. |
 | Registry loopback publication | Image registry | The description names no consumer for this interface. | `infra/09-platform-ops/registry/docker-compose.yml:29` | The description records no failure handling for this interface. |
-| Management PostgreSQL and Valkey on `mng_data_net` | `04-data` management PostgreSQL and Valkey | The `09-platform-ops` and `11-quality` tooling; Terrakube keeps metadata in management PostgreSQL | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| SeaweedFS on `object_net` | `04-data` SeaweedFS | Terrakube | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Management PostgreSQL and Valkey on `mng_data_net` | `04-data` management PostgreSQL and Valkey | The `09-platform-ops` and `11-quality` tooling | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | SSO middleware | `02-auth` SSO middleware and Keycloak | Routed tooling UIs | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
-- Traefik `websecure` routes the Terrakube API, UI and executor and the Mailpit UI through `gateway-standard-chain`, `sso-errors` and `sso-auth`, per the Ingress item in Building Blocks.
+- Traefik `websecure` routes the Mailpit UI through `gateway-standard-chain`, `sso-errors` and `sso-auth`, per the Ingress item in Building Blocks.
 - The registry has no Traefik route and publishes only on loopback.
 - Management PostgreSQL and Valkey are reached on `mng_data_net`, SeaweedFS on `object_net`.
 
@@ -113,10 +110,9 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
 ###### Runtime View
 <!-- core-payload-level:4 -->
 
-- **Entities**: OpenTofu state and Terrakube workspace metadata, contract and
+- **Entities**: OpenTofu state, contract and
   test results, performance metrics and image artifacts.
-- **Storage**: Terrakube keeps metadata in management PostgreSQL and objects in
-  SeaweedFS; the registry keeps images in its own volume.
+- **Storage**: the registry keeps images in its own volume.
 - **Boundary**: the tooling tiers own operational tool metadata and execution
   policy, not application data.
 
@@ -194,7 +190,6 @@ Healthchecks and the Compose contract order startup. Job-style tools without a p
 
 - **OpenTofu**: a plan/apply approval gate, state locking and backup, drift
   detection.
-- **Terrakube**: workspace separation, execution permissions and audit logs.
 - **Registry**: cosign signing and verification, blocking on scan failure.
 - **k6**: storing and comparing performance baselines, standard scenario tags.
 

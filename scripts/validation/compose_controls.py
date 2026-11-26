@@ -50,6 +50,8 @@ LAB_INPUTS = {
     "LAB_OPEN_WEBUI_OLLAMA_BASE_URL": "http://lab-endpoint.invalid:11434",
     "LAB_OPEN_WEBUI_DEFAULT_URL": "lab.invalid",
     "LAB_OPEN_WEBUI_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
+    "LAB_TERRAKUBE_DEFAULT_URL": "lab.invalid",
+    "LAB_TERRAKUBE_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
 }
 SECRETS_GID = "1000"
 DAEMON_RESTART = {"unless-stopped", "always"}

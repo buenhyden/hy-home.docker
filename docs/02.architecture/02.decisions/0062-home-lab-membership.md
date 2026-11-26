@@ -1,13 +1,13 @@
 ---
 title: "HOME Membership and Planned LABs"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "architecture"
 artifact_id: "ADR-0062"
 parent_ids:
@@ -78,13 +78,13 @@ Target HOME members by tier, after the follow-up moves:
 | `13-experience` | storybook |
 
 Planned LABs, pending until each move lands under `labs/<name>/`: comfyui,
-neo4j, open-notebook (with its surrealdb), pact-broker, wiremock and terrakube.
+neo4j, open-notebook (with its surrealdb), pact-broker and wiremock.
 Until its move merges, each still runs from its root include.
 
 Existing LABs: cassandra, couchdb, dbt, jupyterlab, kafka-cluster (with Schema
 Registry and Kafka Connect), lakehouse (Flink,
 Spark, Trino, Great Expectations), locust, mongodb, open-webui, opensearch-cluster,
-postgresql-ha, sonarqube, stalwart, superset and valkey-cluster.
+postgresql-ha, sonarqube, stalwart, superset, terrakube and valkey-cluster.
 
 Drivers:
 
@@ -194,9 +194,9 @@ steps.
    Communication owns no HOME member; Stalwart is a LAB
    ([ADR-0054](0054-mailpit-home-stalwart-lab.md)).
 7. Admin UIs are reached only through Traefik, never by direct host ports, and
-   keep these boundaries: Terrakube and RedisInsight behind
-   `gateway-standard-chain` with `sso-errors` and `sso-auth` (RedisInsight also
-   with an admin `ipAllowList`); Dozzle behind the chain and an admin
+   keep these boundaries: RedisInsight behind
+   `gateway-standard-chain` with `sso-errors`, `sso-auth` and an admin
+   `ipAllowList`; Dozzle behind the chain and an admin
    allowlist with its own Keycloak OIDC and a read-only Docker socket; Open
    Notebook behind the chain, an admin allowlist and `large-body`, with its
    application password and database credentials as Docker Secrets.
@@ -229,6 +229,10 @@ steps.
 14. schema-registry and kafka-connect (05-messaging) leave HOME and run in the LAB
     `labs/kafka-cluster/` (amendment of 2026-11-10). `debezium-db-provision` and its
     Debezium assets are removed; the Kafka broker stays the only broker (ADR-0052).
+15. terrakube (09-platform-ops) leaves HOME and is the LAB `labs/terrakube/`
+    (amendment of 2026-11-26), with its own PostgreSQL, Valkey and local
+    Terraform state, no Docker socket, no gateway route, a LAB-only OIDC client
+    and its hardening checks against the `labs/` source.
 
 ##### Authority and Effect
 
@@ -336,7 +340,9 @@ docs, dashboards and scrapes, and pinning tests. Requirement and description tex
 The open-webui move (decision 13) landed with its amendment on 2026-11-10;
 stopping and removing the HOME container, handling its volume, and the
 Keycloak client and DNS cleanup are separate approved runtime steps owned by
-RUN-0057.
+RUN-0057. The terrakube move (decision 15) landed with its amendment on
+2026-11-26; dropping the HOME role, database and bucket and any Keycloak or DNS
+entry are separate approved runtime steps owned by RUN-0069.
 
 ###### Amendment of 2026-11-10: open-webui
 <!-- core-payload-level:4 -->
@@ -406,6 +412,19 @@ stays; the Prometheus job `flower` carries `expected_state: "off"` so
 `PrometheusInfraTargetsMissing` stays silent until Flower is started and the label is set to
 `on`. The HOME `07-workflow` members (airflow, n8n) do not change. The running `flower`
 container is left for a separately approved retirement step.
+
+###### Amendment of 2026-11-26: terrakube
+<!-- core-payload-level:4 -->
+
+The owner amended this record on 2026-11-26 to land the terrakube move of
+decision 9 (SPEC-0263 TSK-0004). The evidence: no Terrakube container had run
+in HOME, its HOME database held no data (the size of an unused one), and its
+mng-valkey login had no ACL user. The owner chose a self-contained LAB with its
+own PostgreSQL, Valkey and local Terraform state, no Docker socket on the
+executor, loopback ports with a LAB-only Keycloak client and no gateway route,
+and the retirement of the HOME role, database, `tfstate` bucket, S3 identity
+and secrets from source. Decision 7 no longer lists Terrakube behind the
+gateway chain, because the LAB has no route.
 
 ###### Compliance
 <!-- core-payload-level:4 -->

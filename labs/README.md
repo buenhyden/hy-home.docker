@@ -1,13 +1,13 @@
 ---
 title: "독립 LAB source"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-23"
+updated: "2026-11-26"
 created: "2026-10-12"
 ---
 
@@ -79,6 +79,7 @@ build source·설정·helper·Grafana 대시보드가 함께 있습니다. `labs
 | SonarQube | [Compose](sonarqube/docker-compose.yml), [안내](sonarqube/README.md) | [promotion.yaml](sonarqube/promotion.yaml) | 독립 Compose source |
 | Stalwart | [Compose](stalwart/docker-compose.yml), [안내](stalwart/README.md) | [promotion.yaml](stalwart/promotion.yaml) | 설정 helper |
 | Open WebUI | [Compose](open-webui/docker-compose.yml), [안내](open-webui/README.md) | [promotion.yaml](open-webui/promotion.yaml) | OIDC entrypoint |
+| Terrakube | [Compose](terrakube/docker-compose.yml), [안내](terrakube/README.md) | [promotion.yaml](terrakube/promotion.yaml) | CA binding |
 
 [공개 환경 예시](.env.example)는 정적 구성 입력이며 실제 비밀값을 저장하지 않습니다.
 
@@ -117,6 +118,7 @@ Secret은 다른 데이터 LAB처럼 `LAB_SECRET_DIR` 아래 LAB 전용 파일�
 | SonarQube | 정적 분석 서버 | `sast` / `labs/sonarqube/docker-compose.yml` | `LAB_SONARQUBE_DB_HOST` |
 | Stalwart | 메일 서버 실험 | `mail-server` / `labs/stalwart/docker-compose.yml` | 없음(자체 완결) |
 | Open WebUI | 로컬 LLM 채팅·RAG, native Keycloak OIDC(ADR-0062 개정 2026-11-10) | `lab-open-webui` / `labs/open-webui/docker-compose.yml` | `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`, `LAB_OPEN_WEBUI_DEFAULT_URL`, `LAB_OPEN_WEBUI_CA_FILE` |
+| Terrakube | IaC 협업 플랫폼, 자체 PostgreSQL·Valkey·로컬 state, native Keycloak OIDC(ADR-0062 개정 2026-11-26) | `lab-terrakube` / `labs/terrakube/docker-compose.yml` | `LAB_TERRAKUBE_DEFAULT_URL`, `LAB_TERRAKUBE_CA_FILE` |
 
 Locust 전용 공개 입력은 [.env.example](.env.example)의 `LAB_LOCUST_*`를
 사용합니다. Locust source는 이 독립 entrypoint용이며 root profile에 추가하지

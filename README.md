@@ -1,13 +1,13 @@
 ---
 title: "hy-home.docker"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-11-12"
 ---
 
@@ -177,7 +177,7 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 [문서 인덱스](./docs/README.md)의 Compose Profile Vocabulary Policy
 (POL-0078)가 소유합니다. Canonical path는
 `docs/05.operations/02.policies/01.common/0078-compose-profile-vocabulary.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
-`iac`은 OpenTofu와 Terrakube의 명시적 운영 작업에만 사용합니다. Renovate는
+`iac`은 OpenTofu의 명시적 운영 작업에만 사용합니다. Terrakube는 독립 LAB(`labs/terrakube/`, profile `lab-terrakube`)입니다. Renovate는
 `dependency-update` 전용 job이며 `tooling`이나 HOME 선택에 포함되지 않습니다.
 
 ###### 7. 주요 진입 문서 확인

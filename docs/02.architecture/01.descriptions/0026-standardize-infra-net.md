@@ -1,13 +1,13 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -85,13 +85,13 @@ networks beside it, then it left the services and the root.
 | --- | --- | --- | --- |
 | `edge_net` | 10.250.1.0/24, dynamic from .128/25 | Traefik (fixed .2, aliases `keycloak.`/`auth.${DEFAULT_URL}`), OAuth2 Proxy, every routed backend that has its own authentication | gateway → backend; backend → Traefik alias for OIDC discovery |
 | `mng_data_net` | 10.250.2.0/24 | `mng-pg`, `mng-valkey`, OAuth2 Proxy Valkey, their exporters and clients (including Pact Broker) | client → PostgreSQL/Valkey |
-| `object_net` | 10.250.3.0/24 | `seaweedfs-s3`, Loki, Tempo, MLflow, Terrakube, bucket jobs | S3 client → object store; Iceberg client → REST catalog 8181 |
+| `object_net` | 10.250.3.0/24 | `seaweedfs-s3`, Loki, Tempo, MLflow, bucket jobs | S3 client → object store; Iceberg client → REST catalog 8181 |
 | `seaweed_internal` | 10.250.4.0/24, internal | SeaweedFS master, volume, filer, S3 | storage-internal only |
 | `obs_net` | 10.250.5.0/24 | Prometheus, Alloy, Loki, Tempo, Pyroscope, Grafana, Alertmanager, Pushgateway, exporters, every scrape target, k6 | scrape, push, datasource queries |
 | `kafka_net` | 10.250.6.0/24 | `kafka-1`, `kafka-init`, `kafka-exporter`, `kafbat-ui` | broker clients |
 | `secrets_net` | 10.250.7.0/24 | OpenBao and its agent | agent → secret store |
 | `ai_net` | 10.250.8.0/24 | Ollama, its exporter, Qdrant, Open Notebook, SurrealDB, MLflow | AI clients → model, vector and tracking backends |
-| `airflow_net`, `n8n_net`, `terrakube_net` | 10.250.10.0/24, 10.250.11.0/24, 10.250.13.0/24 | the application's own services and private stores | application-internal |
+| `airflow_net`, `n8n_net` | 10.250.10.0/24, 10.250.11.0/24 | the application's own services and private stores | application-internal |
 | `mail_net` | 10.250.14.0/24 | Mailpit; no other root service joins it | SMTP capture on Mailpit 1025 |
 | `quality_otlp_net` | 10.250.17.0/24, internal | Alloy and the per-run k6 metrics relays that `metrics_relay.py` attaches | relay → authenticated Alloy OTLP receiver 4319 (SPEC-0214) |
 | `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, RedisInsight | development client → dev PostgreSQL/Valkey |

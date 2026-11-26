@@ -1358,7 +1358,6 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             "n8n_db_password": "a",
             "keycloak_db_password": "b",
             "airflow_db_password": "c",
-            "terrakube_db_password": "d",
             "sonarqube_db_password": "e",
             "dev_pg_platform_migrator_password": "platform-migrator-synthetic",
             "dev_pg_platform_runtime_password": "platform-runtime-synthetic",
@@ -1388,7 +1387,6 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             "N8N_DB_PASSWORD": "a",
             "KEYCLOAK_DB_PASSWORD": "b",
             "AIRFLOW_DB_PASSWORD": "c",
-            "TERRAKUBE_DB_PASSWORD": "d",
             "SONARQUBE_DB_PASSWORD": "e",
         }
         command = [
@@ -4265,12 +4263,12 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "seaweedfs_s3_admin_secret_key": cls.secret_key,
             **{
                 f"seaweedfs_s3_{name}_secret_key": name.title() + os.urandom(6).hex()
-                for name in ("loki", "tempo", "mlflow", "terrakube", "lakehouse")
+                for name in ("loki", "tempo", "mlflow", "lakehouse")
             },
         }
         cls.consumer_secret = {
             name: secrets[f"seaweedfs_s3_{name}_secret_key"]
-            for name in ("loki", "tempo", "mlflow", "terrakube", "lakehouse")
+            for name in ("loki", "tempo", "mlflow", "lakehouse")
         }
         for name, value in secrets.items():
             path = cls.dir / f"{name}.txt"

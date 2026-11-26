@@ -1,13 +1,13 @@
 ---
 title: "Infrastructure Surface"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-11-24"
 ---
 
@@ -133,7 +133,7 @@ AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와
 | `registry` | HOME 개발용 컨테이너 레지스트리 |
 | `tooling` | Registry와 SonarQube; HOME에서 제외됨(registry만 `registry`를 통해 HOME에 합류) |
 | `testing` | k6의 1회성 작업; HOME에서 제외됨 |
-| `iac` | OpenTofu와 Terrakube API/UI/executor; HOME에서 제외됨 |
+| `iac` | OpenTofu만 포함; HOME에서 제외됨 |
 | `dependency-update` | Renovate 업데이트 작업만; `tooling`과 HOME에서 제외됨 |
 | `experience` | 공유 Storybook 정적 origin; HOME에서 제외되고 관리자 로그인 필요 |
 
@@ -178,7 +178,7 @@ AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼
 | **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo), [Dozzle](./06-observability/dozzle) | HOME / 선택적; disposition 참고 |
 | **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / 선택적; disposition 참고 |
 | **08** | **AI** | [Ollama](./08-ai/ollama), [ComfyUI](./08-ai/comfyui), [Open Notebook](./08-ai/open-notebook), [MLflow](./08-ai/mlflow); Open WebUI는 [LAB](../labs/README.md)으로 이동(ADR-0062 개정) | HOME / 선택적 |
-| **09** | **Platform Operations** | [OpenTofu](./09-platform-ops/opentofu), [Terrakube](./09-platform-ops/terrakube), [Registry](./09-platform-ops/registry), [Renovate](./09-platform-ops/renovate), [Restic](./09-platform-ops/restic) | HOME / 명시적 작업 |
+| **09** | **Platform Operations** | [OpenTofu](./09-platform-ops/opentofu), [Registry](./09-platform-ops/registry), [Renovate](./09-platform-ops/renovate), [Restic](./09-platform-ops/restic) | HOME / 명시적 작업 |
 | **10** | **Communication** | 없음; Stalwart는 [LAB](../labs/README.md)으로 이동(SPEC-0262) | root 패키지 없음 |
 | **11** | **Quality** | [k6](./11-quality/k6), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |
 | **12** | **Analytics** | 없음; Lakehouse·dbt·Superset·JupyterLab은 [LAB](../labs/README.md)으로 이동(SPEC-0262) | root 패키지 없음 |

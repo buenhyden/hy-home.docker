@@ -3860,7 +3860,8 @@
         "labs/jupyterlab/README.md",
         "labs/sonarqube/README.md",
         "labs/stalwart/README.md",
-        "labs/open-webui/README.md"
+        "labs/open-webui/README.md",
+        "labs/terrakube/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",

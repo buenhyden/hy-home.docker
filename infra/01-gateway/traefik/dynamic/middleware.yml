@@ -28,7 +28,8 @@ http:
         trustForwardHeader: false
         # Identity only. Forwarding Authorization/access/ID tokens to every
         # upstream replayed the user's Keycloak token and collided with
-        # upstream bearer schemes (SonarQube, Terrakube). A consumer that needs
+        # upstream bearer schemes (SonarQube and Terrakube before they became LABs).
+        # A consumer that needs
         # a token gets its own middleware.
         authResponseHeaders:
           - "X-Auth-Request-User"

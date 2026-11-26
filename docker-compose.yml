@@ -89,11 +89,6 @@ networks:
       config:
         - subnet: 10.250.23.0/24
           ip_range: 10.250.23.128/25
-  terrakube_net:
-    name: terrakube_net
-    ipam:
-      config:
-        - subnet: 10.250.13.0/24
   mail_net:
     name: mail_net
     ipam:
@@ -261,15 +256,6 @@ networks:
       config:
         - subnet: 10.250.39.0/24
           ip_range: 10.250.39.128/25
-  terrakube_ui_ingress_net:
-    name: terrakube_ui_ingress_net
-    internal: true
-    driver_opts:
-      com.docker.network.bridge.gateway_mode_ipv4: isolated
-    ipam:
-      config:
-        - subnet: 10.250.40.0/24
-          ip_range: 10.250.40.128/25
   # Prometheus and Alloy scrape the seaweedfs-s3 metrics port here; unlike
   # seaweedfs_metrics_net it reaches no master/volume/filer API.
   # SPEC-0267: OAuth2 Proxy metrics, bound to .2, for Prometheus only.
@@ -460,8 +446,6 @@ secrets:
     file: ./secrets/db/mng-pg/n8n_password.txt
   sonarqube_db_password:
     file: ./secrets/db/mng-pg/sonarqube_password.txt
-  terrakube_db_password:
-    file: ./secrets/db/mng-pg/terrakube_password.txt
 
   # ── PostgreSQL (Patroni / Spilo) ───────────────────────
   # ── Cassandra ───────────────────────────────────────────
@@ -490,8 +474,6 @@ secrets:
     file: ./secrets/db/dev-valkey/inspector_password.txt
   redisinsight_encryption_key:
     file: ./secrets/data/redisinsight/encryption_key.txt
-  terrakube_valkey_password:
-    file: ./secrets/db/mng-valkey/terrakube_password.txt
   # ── SeaweedFS ───────────────────────────────────────────
   seaweedfs_jwt_volume_key:
     file: ./secrets/storage/seaweedfs/seaweedfs_jwt_volume_key.txt
@@ -505,8 +487,6 @@ secrets:
     file: ./secrets/storage/seaweedfs/seaweedfs_s3_tempo_secret_key.txt
   seaweedfs_s3_mlflow_secret_key:
     file: ./secrets/storage/seaweedfs/seaweedfs_s3_mlflow_secret_key.txt
-  seaweedfs_s3_terrakube_secret_key:
-    file: ./secrets/storage/seaweedfs/seaweedfs_s3_terrakube_secret_key.txt
   seaweedfs_s3_lakehouse_secret_key:
     file: ./secrets/storage/seaweedfs/seaweedfs_s3_lakehouse_secret_key.txt
   seaweedfs_s3_opsflow_worker_secret_key:
@@ -541,12 +521,6 @@ secrets:
     file: ./secrets/automation/n8n/n8n_sandbox_runner_api_key.txt
 
   # ── Tooling: SonarQube ──────────────────────────────────
-
-  # ── Tooling: Terrakube ──────────────────────────────────
-  terrakube_pat_secret:
-    file: ./secrets/tools/terrakube/terrakube_pat_secret.txt
-  terrakube_internal_secret:
-    file: ./secrets/tools/terrakube/terrakube_internal_secret.txt
 
   # ── Data: SURREAL DB ──────────────────────────────────────
   surreal_db_password:
@@ -641,7 +615,6 @@ include:
   - infra/09-platform-ops/registry/docker-compose.yml
   - infra/09-platform-ops/renovate/docker-compose.yml
   - infra/09-platform-ops/restic/docker-compose.yml
-  - infra/09-platform-ops/terrakube/docker-compose.yml
   # 11-quality
   - infra/11-quality/conftest/docker-compose.yml
   - infra/11-quality/k6/docker-compose.yml

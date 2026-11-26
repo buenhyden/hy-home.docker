@@ -1,13 +1,13 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "3.0.0"
+version: "3.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -306,8 +306,6 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 
 - [opentofu](../../../../infra/09-platform-ops/opentofu/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
   ([OPER](../../01.guides/10.platform-and-backup/0082-opentofu.md), [RUN](../../03.runbooks/10.platform-and-backup/0082-opentofu.md)); 기존 Terraform workspace는 [Terraform 이관](../../01.guides/10.platform-and-backup/0082-opentofu.md)를 따른다.
-- [terrakube](../../../../infra/09-platform-ops/terrakube/README.md): 워크스페이스 분리 전략, 실행 권한과 감사로그 연동 강화
-  ([OPER](../../01.guides/10.platform-and-backup/0069-terrakube.md), [RUN](../../03.runbooks/10.platform-and-backup/0069-terrakube.md))
 - [registry](../../../../infra/09-platform-ops/registry/README.md): 이미지 서명/검증(cosign) 도입, 취약점 스캔 실패 차단 정책 적용
   ([OPER](../../01.guides/10.platform-and-backup/0065-registry.md), [RUN](../../03.runbooks/10.platform-and-backup/0065-registry.md))
 

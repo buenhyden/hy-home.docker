@@ -1,13 +1,13 @@
 ---
 title: "Terrakube Operations Policy"
-version: "2.0.0"
+version: "3.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0069"
 parent_ids:
@@ -42,21 +42,21 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 ##### Objective
 
-Terrakube는 명시적인 `iac` 컨트롤 플레인이다. Apache-2.0 프로젝트 라이선스가
-이 단일 호스트 배포의 지원, SLA, 엔터프라이즈 기능, HA를 보장하지는
-않는다.
+Terrakube는 독립 LAB(`labs/terrakube`, `lab-terrakube` profile)인 IaC 협업 플랫폼이다(ADR-0062 item 9,
+SPEC-0263 TSK-0004). Apache-2.0 프로젝트 라이선스가 이 단일 호스트 배포의 지원, SLA, 엔터프라이즈
+기능, HA를 보장하지는 않는다.
 
 ###### Authority
 <!-- core-payload-level:4 -->
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/01.descriptions/0009-tooling-architecture.md)
 
-- [Terrakube Compose 소스](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
+- [Terrakube LAB Compose 소스](../../../../labs/terrakube/docker-compose.yml)
 
 ##### Applies To
 
-API/UI/executor 활성화, 네이티브/gateway 인증, Docker 소켓 및 provider 권한,
-PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거.
+LAB 기동, 네이티브 OIDC, provider 권한, LAB 전용 PostgreSQL·Valkey·state 데이터, 협조된 복구,
+업그레이드, 제거.
 
 ###### Exclusions
 <!-- core-payload-level:4 -->
@@ -69,16 +69,16 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0069-R1 | `iac` 활성화 시 | 필수: 이름이 지정된 세 Terrakube 서비스만 시작한다 | none | none |
-| POL-0069-R2 | 항상 | 금지: HOME/tooling에서 Terrakube 시작 | none | none |
-| POL-0069-R3 | 항상 | 필수: 추적 중인 gateway 미들웨어와 애플리케이션 OIDC 동작을 모두 검증한다 | 수동 | none |
+| POL-0069-R1 | LAB 기동 시 | 필수: `lab.py` lease로 `lab-terrakube`의 다섯 서비스만 시작한다 | `lab.py check` | none |
+| POL-0069-R2 | 항상 | 금지: root Compose 포함이나 HOME network 연결 | `check-all-hardening.sh` 09-platform-ops | none |
+| POL-0069-R3 | 항상 | 필수: LAB 전용 client `lab-terrakube`로 애플리케이션 OIDC 동작을 검증한다 | 수동 | none |
 | POL-0069-R4 | 항상 | 금지: 환경 변수 레이블만으로 네이티브 OIDC나 그룹 권한 부여를 주장 | none | none |
 | POL-0069-R5 | plan과 apply 시 | 필수: 리포지토리/ref, workspace, 계정, 예상 리소스, 승인자를 명시한다 | none | none |
 | POL-0069-R6 | apply/destroy 시 | 필수: 별도 승인을 받는다 | 수동 | none |
 | POL-0069-R7 | 항상 | 필수: 선언된 시크릿 파일만 사용한다 | 수동 | none |
 | POL-0069-R8 | 항상 | 금지: 로그, 스크린샷, Task, 지원 번들에 시크릿/상태/plan 출력 포함 | 수동 | none |
 | POL-0069-R9 | 항상 | 필수: 보존 정책에 일관된 복구 지점을 포함한다 | none | none |
-| POL-0069-R10 | 백업/복구 시 | 필수: 스케줄링/실행을 정지하고 PostgreSQL과 SeaweedFS를 일관되게 캡처한다 | 수동 | none |
+| POL-0069-R10 | 백업/복구 시 | 필수: 스케줄링/실행을 정지하고 PostgreSQL과 state 디렉터리를 일관되게 캡처한다 | 수동 | none |
 | POL-0069-R11 | 백업/복구 시 | 필수: config/client/custody 메타데이터를 보존한다 | 수동 | none |
 | POL-0069-R12 | 복구 시 | 필수: 외부 실행을 비활성화한 상태로 리허설한다 | 수동 | none |
 | POL-0069-R13 | 항상 | 금지: 컨테이너 재시작을 HA나 재해 복구로 묘사 | none | none |
@@ -86,22 +86,22 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 | POL-0069-R15 | 업그레이드 시 | 필수: API/UI/executor를 호환 세트로 함께 이동한다 | none | none |
 | POL-0069-R16 | 호환되지 않는 다운그레이드 시 | 필수: 데이터베이스/상태 롤백을 동반한다 | none | none |
 | POL-0069-R17 | 제거 시 | 필수: 승인된 후속 시스템이 소유하기 전까지 workspace, run, 상태, 출력, VCS 매핑, 복구 보관을 유지한다 | none | none |
-| POL-0069-R18 | 항상 | 필수: 현재 gateway 통제를 유지한다 | none | none |
+| POL-0069-R18 | 항상 | 필수: gateway route 없이 loopback bind에만 게시하고 Docker socket을 마운트하지 않는다 | `check-all-hardening.sh` 09-platform-ops | none |
 | POL-0069-R19 | 항상 | 금지: 로그인·health 성공을 실행 가능 증거로 기록 | none | none |
 
-- **Activation:** `iac`에서는 이름이 지정된 세 가지 Terrakube 서비스만 시작하고
-  정확한 의존성은 별도로 선택한다. HOME/tooling에서는 제외한다.
-- **Authentication:** 추적 중인 gateway 미들웨어와 애플리케이션 OIDC 동작을 모두
+- **Activation:** `lab.py` lease로 `lab-terrakube`의 다섯 서비스만 시작한다. root Compose와 HOME
+  network에는 포함하지 않는다.
+- **Authentication:** LAB 전용 client `lab-terrakube`의 애플리케이션 OIDC 동작을
   검증한다. 환경 변수 레이블만으로 네이티브 OIDC나 그룹 권한 부여를 주장하지
   않는다.
-- **Execution:** executor의 Docker 소켓 접근과 provider 자격 증명은 특권이다.
+- **Execution:** executor에는 Docker socket이 없고 provider 자격 증명은 특권이다.
   plan과 apply는 리포지토리/ref, workspace, 계정, 예상 리소스, 승인자를
   명시한다. apply/destroy는 별도 승인을 받아야 한다.
 - **Secrets:** 선언된 시크릿 파일만 사용한다. 로그, 스크린샷, Task, 지원 번들에
   시크릿/상태/plan 출력이 포함되어서는 안 된다.
-- **Data:** PostgreSQL 메타데이터와 SeaweedFS `tfstate`는 공동으로 권위를
+- **Data:** LAB PostgreSQL 메타데이터와 state 디렉터리는 공동으로 권위를
   갖는다. Valkey는 조정 상태다. 보존 정책은 일관된 복구 지점을 포함해야 한다.
-- **Backup/recovery:** 스케줄링/실행을 정지하고, PostgreSQL과 SeaweedFS를
+- **Backup/recovery:** 스케줄링/실행을 정지하고, PostgreSQL과 state 디렉터리를
   일관되게 캡처하며, config/client/custody 메타데이터를 보존하고, 외부 실행을
   비활성화한 상태로 리허설한다. 단일 저장소 복구는 불완전하다.
 - **Resources/availability:** 단일 호스트, 단일 replica DEV 배포로
@@ -115,7 +115,7 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 ###### 현재 실행 경로의 제한
 <!-- core-payload-level:4 -->
 
-현재 gateway 통제를 유지하고 로그인·health 성공을 실행 가능 증거로 기록하지 않는다. 인증 경로 제한의 세부 내용은 [Guide](../../01.guides/10.platform-and-backup/0069-terrakube.md#현재-실행-경로의-제한)를 따른다.
+gateway route를 두지 않고 로그인·health 성공을 실행 가능 증거로 기록하지 않는다. 인증 경로 제한의 세부 내용은 [Guide](../../01.guides/15.labs/0069-terrakube.md#구현과-데이터-흐름)를 따른다.
 
 ##### Exceptions
 
@@ -167,8 +167,8 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 
 ##### Review Triggers
 
-- [가이드](../../01.guides/10.platform-and-backup/0069-terrakube.md) (`GDE-0069`)
-- [런북](../../03.runbooks/10.platform-and-backup/0069-terrakube.md) (`RUN-0069`)
+- [가이드](../../01.guides/15.labs/0069-terrakube.md) (`GDE-0069`)
+- [런북](../../03.runbooks/15.labs/0069-terrakube.md) (`RUN-0069`)
 
 - [Terrakube 문서](https://docs.terrakube.io/)
 - [Terrakube 라이선스](https://github.com/terrakube-io/terrakube/blob/main/LICENSE)

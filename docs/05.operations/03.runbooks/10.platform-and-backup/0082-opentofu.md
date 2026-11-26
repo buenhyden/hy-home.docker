@@ -1,13 +1,13 @@
 ---
 title: "OpenTofu Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
@@ -87,7 +87,7 @@ configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, back
 | 11 | Lock과 업그레이드 복구: state backup 후 이미지를 재빌드하고 backend 변경 없이 초기화한 뒤 적용하지 않은 plan을 비교한다 | 문서에 기록 없음 | 호환성 실패 시 이미지/빌드를 롤백하고, state가 변경된 경우에만 검증된 backup으로 state를 롤백 |
 | 12 | Terraform 이관: state backend, lock 소유자, provider lock file, module source를 메타데이터로 식별한다 | 문서에 기록 없음 | 동시 lock 또는 미검증 provider면 @buenhyden에게 보고하고 중단 |
 | 13 | Terraform 이관: 승인된 절차로 암호화된 state 복구본을 확보하고 복제 workspace를 준비한다 | 문서에 기록 없음 | 복구본 부재면 @buenhyden에게 보고하고 중단 |
-| 14 | Terraform 이관: 복제본을 검증하고 Terrakube workspace의 엔진, provider, state 호환성을 확인한다 | 문서에 기록 없음 | 미검증 provider면 @buenhyden에게 보고하고 중단 |
+| 14 | Terraform 이관: 복제본을 검증하고 Terraform workspace의 엔진, provider, state 호환성을 확인한다 | 문서에 기록 없음 | 미검증 provider면 @buenhyden에게 보고하고 중단 |
 | 15 | Terraform 이관: 예상하지 않은 resource replacement, backend 이동, schema 변경이 있으면 멈춘다 | 문서에 기록 없음 | 멈추고 @buenhyden에게 보고 |
 | 16 | Terraform 이관: 검토된 plan과 복구 증거를 확인한 뒤 실제 이관 대상을 별도로 승인받는다 | 문서에 기록 없음 | 승인 전에는 원본 state를 덮어쓰지 않고 중단 |
 
@@ -140,7 +140,7 @@ configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, back
 
 1. state backend와 lock 소유자, provider lock file, module source를 메타데이터로 식별한다.
 2. 승인된 절차로 암호화된 state 복구본을 확보하고 복제 workspace를 준비한다.
-3. 위 승인 경계에 따라 복제본을 검증하고 Terrakube workspace의 실제 엔진, provider 및 state 호환성을 확인한다.
+3. 위 승인 경계에 따라 복제본을 검증하고 Terraform workspace의 실제 엔진, provider 및 state 호환성을 확인한다.
 4. 예상하지 않은 resource replacement, backend 이동 또는 schema 변경이 있으면 멈춘다.
 5. 검토된 plan과 복구 증거를 확인한 뒤 실제 이관 대상을 별도로 승인받는다.
 
