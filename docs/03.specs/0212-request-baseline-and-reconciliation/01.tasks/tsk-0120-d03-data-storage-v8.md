@@ -1,6 +1,6 @@
 ---
 title: "D03 v8 Data Storage and Shared Valkey Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -113,8 +113,7 @@ removed.
 | --- | --- | --- |
 | Empty Qdrant collection `open-webui_knowledge` left by the retired Open WebUI consumer | D11 | Owner decision to delete it |
 | Old file `secrets/db/mng-valkey/airflow_password.txt` of the retired dedicated identity | D11 | Owner deletes it after confirming no consumer |
-| A single OAuth2 Proxy session key TTL read back | @buenhyden | Needs a role password; the configured cookie_expire is 12h |
-| Terrakube Valkey login without an ACL user | LAB move owner | Terrakube leaves HOME or gets its own role |
+| Terrakube Valkey login without an ACL user | LAB move owner | Planned in SPEC-0263 TSK-0004 (W9); owner choice 3 there decides the role, drop or LAB-local store |
 
 ##### Blockers and Decisions
 
@@ -154,6 +153,7 @@ for D11 cleanup.
 | E15 | 177 | W193 | method=automated; tool=Airflow CLI, redis-py in airflow-worker; command=trigger example_simplest_dag, then refuse matrix with the broker URL built in process, then restart mng-valkey and trigger again | HOME, 2026-11-26 | PASS | SI-12: the task went scheduler to broker to worker and succeeded; own keys allowed; the oauth2 session key, n8n keys and channel, KEYS, SCAN, FLUSHDB, CONFIG and SELECT 1 refused NOPERM; after the restart the worker reconnected as airflow and the second run succeeded; the DAG is paused again; n8n and oauth2-proxy logged 0 NOPERM or WRONGPASS | required | - |
 | E16 | 177 | W193 | method=observation; tool=browser (owner), oauth2-proxy log, Prometheus; command=SSO login on qdrant, sign_out, reopen | HOME, 2026-11-26 06:33 UTC | PASS | SI-05: AuthSuccess through /oauth2/callback, sign_out, then redirect to login; no NOPERM or WRONGPASS in the oauth2-proxy log. A single key's TTL was not read because that needs a role password; the configured cookie_expire is 12h | required | - |
 | E17 | 177 | W193 | method=automated; tool=Python3.12.3 project .venv; command=python -m unittest tests.validation.test_secret_metadata_sync tests.validation.test_secret_catalog_contract tests.lib.ops.test_secret_catalog tests.validation.test_smtp_generator tests.validation.test_root_resource_contract tests.validation.test_wiki_preparation_contracts tests.lib.ops.test_openbao_consumer_migration | main `9f549a64e`, 2026-11-26 | PASS | 171 tests OK; the earlier local failures were the system interpreter without `referencing`, not this change | required | - |
+| E18 | 177 | W193 | method=observation; tool=valkey-cli as mnginspector, run by the owner; command=SCAN __Secure-sso-cookie-* without .lock, TTL of each | HOME mng-valkey after a fresh SSO login, 2026-11-26 | PASS | One session key with TTL 42961 s (about 11 h 56 min), within the configured cookie_expire of 12h and not unbounded; key names and values were not printed | optional | - |
 
 ##### Resolution Links
 
@@ -165,13 +165,13 @@ E12 resolves E08.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 177 | accepted | E01,E02,E03,E04,E05,E06,E07,E09,E10,E11,E12,E13,E14,E15,E16,E17 | Owner @buenhyden accepted on 2026-11-26 in this chat after the HOME switch and the live SI-05 and SI-12 checks; a single session key TTL was not read back (configured 12h) | @buenhyden |
+| 177 | accepted | E01,E02,E03,E04,E05,E06,E07,E09,E10,E11,E12,E13,E14,E15,E16,E17 | Owner @buenhyden accepted on 2026-11-26 in this chat after the HOME switch and the live SI-05 and SI-12 checks; the owner later read back one session key TTL of 42961 s (E18) | @buenhyden |
 
 ##### Remaining Conditions
 
 None for criterion 177. The items under Left open stay with their owners:
 D11 holds the empty Qdrant collection and the retired secret file, the LAB
-move owner holds Terrakube, and @buenhyden holds the TTL readback.
+move owner holds Terrakube (SPEC-0263 TSK-0004).
 
 #### Handoff
 
