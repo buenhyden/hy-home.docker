@@ -398,6 +398,13 @@ check_02_auth() {
   check_contains "$oauth_dev_dockerfile" "USER oauth2proxy:oauth2proxy" "oauth2-proxy dev non-root user missing"
   check_contains "$oauth_entrypoint" "oauth2proxy:mng_valkey_oauth2_proxy_password|:mng_valkey_password" "oauth2-proxy alternative image valkey secret selection mismatch"
   check_contains "$oauth_dev_entrypoint" "oauth2proxy:mng_valkey_oauth2_proxy_password|:mng_valkey_password" "oauth2-proxy root-active valkey secret selection mismatch"
+  check_contains "$oauth_full_compose" 'OAUTH2_PROXY_VALKEY_USERNAME=${OAUTH2_PROXY_VALKEY_USERNAME-oauth2proxy}' "root-active oauth2-proxy must default to the named valkey role"
+  check_not_contains "$oauth_full_compose" "- mng_valkey_password" "root-active oauth2-proxy must not mount the shared valkey admin secret by default"
+  local oauth_script
+  for oauth_script in "$oauth_entrypoint" "$oauth_dev_entrypoint"; do
+    check_contains "$oauth_script" 'read_secret "/run/secrets/$valkey_secret"' "oauth2-proxy valkey secret must be read from the selected secret file"
+    check_contains "$oauth_script" 'export OAUTH2_PROXY_REDIS_USERNAME="$valkey_user"' "oauth2-proxy must pass the named valkey username"
+  done
   check_contains "$oauth_entrypoint" "set -- --config /etc/oauth2-proxy.cfg" "oauth2-proxy default config argument missing"
   check_contains "$oauth_dev_entrypoint" "set -- --config /etc/oauth2-proxy.cfg" "oauth2-proxy dev default config argument missing"
 
@@ -561,6 +568,14 @@ check_07_workflow() {
   check_contains "$airflow_compose" "airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager" "airflow keycloak auth manager missing"
   check_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file" "airflow native oidc gateway chain mismatch"
   check_not_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "airflow double-auth middleware must not be enabled"
+  local mng_valkey_acl="infra/04-data/mng-db/valkey/scripts/render-acl.sh"
+  check_file "$mng_valkey_acl"
+  check_contains "$airflow_compose" "AIRFLOW_VALKEY_SECRET: '\${AIRFLOW_VALKEY_SECRET:-mng_valkey_airflow_password}'" "airflow broker must default to the named valkey role"
+  check_contains "$airflow_compose" "- \${AIRFLOW_VALKEY_SECRET:-mng_valkey_airflow_password}" "airflow must mount only the selected broker secret"
+  check_contains "$airflow_compose" "AIRFLOW__CELERY_BROKER_TRANSPORT_OPTIONS__GLOBAL_KEYPREFIX: 'airflow:'" "airflow broker keys must carry the airflow: prefix the ACL role allows"
+  check_contains "$mng_valkey_acl" "role_line airflow" "mng-valkey must render the airflow broker role"
+  check_contains "$mng_valkey_acl" "role_line oauth2proxy" "mng-valkey must render the oauth2-proxy session role"
+  check_contains "$n8n_compose" 'N8N_VALKEY_SECRET: ${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}' "n8n broker must default to the named valkey role"
   check_contains "$n8n_compose" "traefik.http.routers.n8n.middlewares: gateway-standard-chain@file" "n8n gateway chain mismatch"
   check_not_contains "$n8n_compose" "sso-auth@file" "n8n keeps its own login; gateway SSO must not return"
   check_contains "$n8n_compose" "!PathRegexp(\`(?i)^/metrics\`)" "n8n router must not publish /metrics in any letter case"

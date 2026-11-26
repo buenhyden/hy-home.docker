@@ -146,6 +146,8 @@ for D11 cleanup.
 | E07 | 177 | W193 | method=observation; tool=docker; command=inspect comfyui mounts and image volumes; system df | HOME host, 2026-11-26 | PASS | Image `VOLUME /root`; anonymous volume 365.4 MB under seven named volumes; runbook records the upgrade step | optional | - |
 | E08 | 177 | W193 | method=observation; tool=Qdrant API; command=list collection names and point counts with the read-only key | HOME qdrant | NOT_RUN | Exporter `collections_total` 1; the agent's key read was denied, so the owner runs it | optional | - |
 | E09 | 177 | W193 | method=automated; tool=Python3.12.3; command=python3 -m unittest tests.validation.test_secret_catalog_contract tests.validation.test_secret_metadata_sync | Branch with the owner's rows, 2026-11-26 | PASS | 70 tests; the 15 failures and 1 error left are the missing local `referencing` module, the same set as on main | required | - |
+| E10 | 177 | W193 | method=automated; tool=bash; command=bash scripts/hardening/check-all-hardening.sh, then the same run with the Airflow key prefix changed and restored | Branch, 2026-11-26 | PASS | All checks passed; the changed prefix failed the new airflow prefix check. The oauth2-proxy checks follow the named secret and username, and the Airflow, n8n and ACL role wiring is now checked | required | - |
+| E11 | 177 | W193 | method=automated; tool=Python3.12.3; command=python3 -m scripts.lib.supply_chain.ledger_rebind --write --source-revision 2b7bc69f3; python3 -m unittest tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_ledger_rebind tests.validation.test_workflow_version_bundle | Branch, 2026-11-26 | PASS | 22 ledger rows and the n8n source binding re-bound hash-only, the old binding kept in history; the 2026-11-11 review hashes re-bound in release-lookups and the ledger rows; with hashes mapped back, no other value changed; 57 and the bundle tests OK | required | - |
 
 ##### Resolution Links
 
@@ -157,7 +159,7 @@ None: no row resolves another.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 177 | pending | E01,E02,E03,E04,E05,E06,E07,E09 | Source and isolated evidence recorded; the HOME switch and its checks remain | @buenhyden |
+| 177 | pending | E01,E02,E03,E04,E05,E06,E07,E09,E10,E11 | Source and isolated evidence recorded; the HOME switch and its checks remain | @buenhyden |
 
 ##### Remaining Conditions
 
