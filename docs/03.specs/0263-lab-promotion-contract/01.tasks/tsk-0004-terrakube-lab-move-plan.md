@@ -1,6 +1,6 @@
 ---
 title: "Terrakube LAB Move Plan Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -149,6 +149,7 @@ gate three times, so the owner runs it.
 | E02 | 1, 3 | W9 | method=automated; tool=Python3.12.3 project .venv, docker compose 5.6.1; command=lab.py --env-file labs/.env.example --root-env-file .env.example check terrakube | Branch, synthetic required inputs and the host budget, 2026-11-26 | PASS | No collision, socket, HOME network or resource problem; only the CA file and four LAB secrets are reported missing, as before LAB provisioning | required | - |
 | E03 | 1, 3 | W9 | method=automated; tool=bash; command=bash scripts/hardening/check-all-hardening.sh, then tier 09 with a Docker socket added and restored | Branch, 2026-11-26 | PASS | All checks passed; the added socket failed the new no-socket check | required | - |
 | E04 | 1, 3 | W9 | method=automated; tool=Python3.12.3 project .venv; command=python -m unittest tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_ledger_rebind tests.validation.test_lab_layout tests.validation.test_lab_isolation tests.validation.test_p02_service_contracts tests.validation.test_mng_pg_init_sql | Branch, 2026-11-26 | PASS | All OK; the tier layout and catalog suites wait for the owner's deletion and registry rows | required | - |
+| E05 | 1, 3 | W9 | method=runtime; tool=docker compose, psql, weed shell; command=recreate seaweedfs-s3, DROP DATABASE and DROP ROLE terrakube, s3.bucket.delete tfstate; the owner deleted the five HOME secret files | HOME after #1227 merged, owner request 2026-11-26 | PASS | The live S3 configuration has no terrakube identity, the database and role count 0, the six other buckets remain and the five files are absent; the database had 0 tables and the bucket 0 bytes before removal | required | - |
 
 ### Resolution Links
 

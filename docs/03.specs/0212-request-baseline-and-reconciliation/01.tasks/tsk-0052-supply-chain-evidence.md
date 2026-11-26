@@ -1,10 +1,10 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-24"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0052"
 parent_ids:
@@ -328,6 +328,11 @@ artifact verification and the current gate results.
 | PostgreSQL 18.7 provisioning jobs | 104 | W109 | Compose pin and image pull | Owner request 2026-11-24: move the provisioning jobs to 18.7, update pgBackRest and update openbao; mlflow-db-provision, mng-pg-init, mng-pg-monitor-provision, pact-broker-db-provision | PASS | PR1176 pins postgres:18.7-alpine@0115267a and the image is pulled; the one-shot jobs were not re-run and take 18.7 at their next start | required | - |
 | OpenBao 2.7.3 r4 owned build | 104 | W109 | `prepare-openbao-materials.py --allow-go-proxy`, `build-owned-image.py --phase plan` and `--phase build`, Syft and Grype | Owner request 2026-11-24: move the provisioning jobs to 18.7, update pgBackRest and update openbao; cosign-verified v2.7.3 source 0439ef58, Go 1.27.4 builder, go-jose v4 4.1.9 patch | PASS | Materials PASS (materials.json db042d0f), plan PASS, two-pass build PASS with binary 2e883560 and OCI identity matching, manifest 240e4a88; `bao version` v2.7.3+hyhome.go1.27.4.net0.62.0.r1. Syft 321 packages; Grype (DB 2026-11-24) High 11 and Medium 11: five OpenSSL 3.5.9-r1 CVEs without an Alpine fix and go-jose v3 3.0.5. PR1178 pins r4 | required | - |
 | OpenBao r4 HOME window | 104 | W109 | RUN-0105 W3 snapshot, W4 server upgrade with manual unseal, W5 Agent reissue | HOME openbao and openbao-agent on 2.7.1 | NOT_RUN | The SEC01 gate needs the owner's acceptance of the r4 residuals, and W4 needs two unseal shares and a root token in owner custody; the agent cannot run the window. HOME still runs 2.7.1, which three High advisories affect | required | - |
+| SEC01 review refresh of the 2026-11-26 Renovate images | 104 | W109 | Supplier GitHub repository advisories per image (`patched_versions` applied), vendor pages for Neo4j and Confluent, registry index and platform manifest reads for OpenSearch 3.10.0 | PRs #1244, #1242, #1249 (squash of #1248), #1243, #1246 | PASS | Qdrant, Open Notebook and Keycloak leave their patch rows (patch_resolved); Traefik leaves defer (new defer_resolved); SeaweedFS 4.54 stays AFFECTED no-fix (four 2026-11-09 advisories without a fixed version); OpenSearch stays UNKNOWN until its custom image has an SBOM and scan; the rest keep their class. Gate tests count four open patch and 41 defer rows | required | - |
+| Missed sandbox image pin | 104 | W109 | p02 sandbox release test | #1249 head before the fix | PASS | Renovate left SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE at 1.8.1 while the api and runner moved to 1.15.0; it moved to the 1.15.0 index digest and the runner reported `sandbox image ready` for it | required | - |
+| HOME apply of the 2026-11-26 images | 104 | W109 | Runtime apply: `docker compose -p hy-home-infra up -d --no-deps <service>` after a dry run that named only the target, one service at a time | Owner request 2026-11-26: update every infra service to its latest release and apply it; qdrant 1.20.2, dev/mng valkey exporters 1.97.0, kafka-exporter 1.11.0, mailpit 1.34.0, ollama 0.40.18, n8n and n8n-worker (rebuilt), n8n sandbox 1.15.0, oauth2-proxy (rebuilt), traefik v3.8.0, keycloak 26.8.2, kafka-1 8.4.1, seaweedfs 4.54 | PASS | Each target healthy before the next started. Data checks matched the pre-update baseline: Qdrant 0 collections; Keycloak 2 realms, 24 clients, 7 users and migration_model 26.8.2; Kafka 7 topics and quorum leader 1; SeaweedFS six buckets, Loki and Tempo writes resumed; the three probe routes kept their codes. Backups in `/home/hyunyoun/storage/volumes/backups/upgrade-20261126/`; previous images kept for rollback | required | - |
+| Ollama GPU check | 104 | W109 | `ollama run` of minicpm-v4.6:1b, `ollama ps`, load log | GTX 1060 6GB (compute 6.1), driver 580.178.04, before and after 0.40.18 | PASS | Both versions 100% GPU with 25/25 layers on the cuda_v12 backend; 0.40.17 and 0.40.18 notes carry no NVIDIA change | required | - |
+| HOME apply of TimescaleDB 2.32.1 | 104 | W109 | `pg_dumpall` backup, dev-pg recreate, `ALTER EXTENSION timescaledb UPDATE` in `postgres` | Owner request 2026-11-26; dev-pg on 18.7-ts2.30.3-pgbackrest2.60.1-r2 | PASS | Extension 2.32.1 on PostgreSQL 18.7 and pgBackRest 2.60.1; opsflow_dev 9 tables and 0 hypertables as before; dev-pg-exporter pg_up 1 | required | - |
 
 ### Resolution Links
 
