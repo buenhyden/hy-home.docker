@@ -1,6 +1,6 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -102,7 +102,7 @@ started or recreated.
 | JS Code node can generate code from strings (E17) | Fixed (E25) and verified live (E26) | Done |
 | Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database: it is the only check that runs on the current n8n 2.46.6, because the P03 native rehearsal is pinned to the reviewed 2.43.6 images (E28) | n8n owner; retire it when the native rehearsal is re-pinned to the running version |
 | Hermes `--provider custom` without an endpoint (E29) | Fixed by the owner on 2026-11-26 (E30); every cloud chain now leaves local Ollama out and the `local` profile has no fallback (E31, E32) | Done |
-| Hermes work-profile credentials (E33) | The owner copied the working Anthropic and OpenAI keys into the eight work profiles on 2026-11-26 (E34); the OpenRouter key still fails in every profile, so free-research answers from nous free | Owner: reissue the OpenRouter key |
+| Hermes work-profile credentials (E33) | The owner copied the working Anthropic and OpenAI keys into the eight work profiles on 2026-11-26 (E34). OpenRouter answered `401: User not found`, so the owner dropped it: free-research runs nous free with no fallback and video generation is unset (E35) | Owner may delete the unused `OPENROUTER_API_KEY` lines |
 | D06-T06 tool comparison | Owner chose on 2026-11-26 to reopen criterion70 with a retrieval evaluation on this repository's own documents (owner rights, git versions, commit dates as the time field for a time-ordered split; Qdrant with embeddinggemma against a SearXNG baseline, tracked in MLflow). Not started | New Task under SPEC-0212 that reopens criterion70 |
 
 ###### D06 runtime checks (criterion175)
@@ -215,6 +215,14 @@ once. Hermes has no spend cap, so the monthly limits stay on the provider
 consoles. Codex stays suppressed and Ollama Cloud `beam:cloud` needs a paid
 plan, so neither is in a chain.
 
+The owner kept `OLLAMA_MAX_LOADED_MODELS=1` on 2026-11-26 after the
+measurement (E36): the chat model fills the 6 GB GPU, so a second loaded model
+would be evicted for memory anyway, and forcing embeddings to the CPU makes
+bulk indexing about 30 times slower; bulk indexing runs at quiet times. The
+owner also moved both server B loopback proxies to background tasks that
+start at boot without a logon, restart themselves and log to a file (E37);
+the SearXNG and Ollama runbooks carry the procedure.
+
 ##### Blockers and Decisions
 
 The owner chose the HOME selection over keeping the privileged runner opt-in;
@@ -260,6 +268,9 @@ the security impact stays recorded in the exception.
 | E32 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes profile create local, hermes -p local chat -q ping, fallback check | Server A, 2026-11-26 | PASS | Profile local runs custom lfm2.5:8b at 127.0.0.1:11434 with an empty fallback chain and answered with finish_reason stop; wrapper renamed hermes-local because local is a shell builtin | optional | - |
 | E33 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes -p devops fallback check --live, hermes -p devops chat -q ping, hermes chat --provider openrouter | Server A, 2026-11-26 | FAIL | devops: anthropic live_auth, openai-api not configured, so the turn fell to nous free; the default OpenRouter key also fails and fell back to claude-haiku-5-5 | optional | - |
 | E34 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes -p PROFILE fallback check --live for the eight work profiles and hermes -p devops chat -q ping | Server A, 2026-11-26 after the owner copied the keys | PASS | All 24 fallback entries (claude-haiku-5-5, gpt-6-luna, nous free) live ready; devops answered with claude-sonnet-5-5 from anthropic on the first call without fallback | optional | - |
+| E35 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes -p free-research config set, hermes config unset video_gen.provider, hermes -p free-research chat -q ping | Server A, 2026-11-26, configs backed up first | PASS | free-research primary nous upstage/solar-mini4:free with an empty fallback chain answered; video_gen.provider unset in default, devops, documenter, ops-console and researcher, where it pointed at the revoked OpenRouter key and had never run | optional | - |
+| E36 | 175 | W191 | method=automated; tool=curl, nvidia-smi, ollama ps; command=load lfm2.5:8b and embeddinggemma-2:740m in turn, time cold, warm and swap requests and a 32-chunk embed batch on GPU and with num_gpu 0 | HOME, 2026-11-26, GTX 1060 6 GB | PASS | lfm2.5:8b 5.3 GB at 97% GPU leaves 1060 MiB free; embeddinggemma alone 486 MB on GPU; swap costs 4.8 s for the embed load and 6.8 s for the lfm reload; the batch takes 0.98 s on GPU and 29.8 s on CPU | optional | - |
+| E37 | 175 | W191 | method=observation; tool=Task Scheduler, curl, Traefik logs; command=Set-LoopbackProxyTask for both server B proxies, then task state, listener owner, loopback requests and A-side access log | Server B and A, 2026-11-26 11:18 KST | PASS | Both tasks BootTrigger, S4U, Running (267009); ports 8889 and 11435 owned by new node processes whose parent is cmd.exe; loopback requests 200; A logged searxng-api and ollama-api 200 from 192.168.0.22 at 02:18 UTC. The first registration failed with EADDRINUSE until the old processes were stopped | optional | - |
 
 ##### Resolution Links
 
