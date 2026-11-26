@@ -18462,17 +18462,17 @@
         "context": ".",
         "dockerfile": "Dockerfile",
         "args": {
-          "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
-          "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
+          "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0",
+          "OPENSEARCH_EXPORTER_VERSION": "3.10.0.0"
         }
       },
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "3.9.0",
-      "target_version": "3.9.0",
+      "latest_version": "3.10.0",
+      "target_version": "3.10.0",
       "channel": "stable",
       "checked_at": "2026-11-10T21:00:18Z",
-      "release_url": "https://github.com/opensearch-project/OpenSearch/releases/tag/3.9.0",
+      "release_url": "https://github.com/opensearch-project/OpenSearch/releases/tag/3.10.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
@@ -18508,7 +18508,7 @@
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "3.9.0",
+      "upstream_reported_tag": "3.10.0",
       "next_fact_command": "gh release view --repo opensearch-project/OpenSearch --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T14:31:47.914916+00:00",
       "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
@@ -18536,14 +18536,14 @@
         "source_implementation": "SOURCE_APPLIED; reviewed source preparation only",
         "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
         "rollback": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
-        "candidate": "3.9.0",
+        "candidate": "3.10.0",
         "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
         "reason": "Mature engine/exporter and Dashboard source preparation applies to ROOT only via explicit Compose build arguments. Shared Dockerfile defaults and excluded LAB Dashboard retain the exact baseline pair. Five plugins, UID1000 and secret hashing/TLS/network/storage controls preserved. Custom image build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
         "exit_condition": "Execute reviewed isolated image build/plugin/TLS/auth/query and fresh-install snapshot restore checks before service acceptance; never downgrade an upgraded node.",
         "evidence_refs": [
           "/tmp/hyhome-v30-r27-public/github-observations-retry.json",
           "current selected source files",
-          "https://github.com/opensearch-project/OpenSearch/releases/tag/3.9.0"
+          "https://github.com/opensearch-project/OpenSearch/releases/tag/3.10.0"
         ],
         "fact_checked_at": "2026-10-26T09:43:13.400683+00:00",
         "service": "opensearch",
@@ -18555,8 +18555,8 @@
             "context": ".",
             "dockerfile": "Dockerfile",
             "args": {
-              "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
-              "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
+              "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0",
+              "OPENSEARCH_EXPORTER_VERSION": "3.10.0.0"
             }
           },
           "chain": [
@@ -18564,7 +18564,7 @@
             "infra/common-optimizations.yml#template-infra-high"
           ]
         },
-        "existing_target_version": "3.9.0",
+        "existing_target_version": "3.10.0",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00",
         "eligible_after_7_days": "2026-10-12T18:20:23+00:00",
         "scope_corrected_at": "2026-10-26T14:31:47.914916+00:00"
@@ -18584,31 +18584,31 @@
       "target_build_materials": [
         {
           "role": "official upstream base",
-          "image": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+          "image": "opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0",
           "source_path": "infra/04-data/opensearch/Dockerfile",
-          "source_sha256": "6ea197cccc0f735199efc82469431790fbf70762a7f4733c249f49364ed408d4",
+          "source_sha256": "384a597401a7ce552e79f97e2db2ea2c9b7b2d383d221040c39409a954ae3b84",
           "public_metadata": {
             "repository": "opensearchproject/opensearch",
-            "tag": "3.9.0",
-            "checked_at": "2026-10-26T10:47:40.789412+00:00",
+            "tag": "3.10.0",
+            "checked_at": "2026-11-26T13:03:49.725070+00:00",
             "scope": "Public index and platform manifest JSON only; no config/layers, signatures, imagepull, Docker or runtime",
             "result": "PASS",
-            "index_digest": "sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+            "index_digest": "sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0",
             "platform": "linux/amd64",
-            "platform_manifest_digest": "sha256:13487e0953520edf6cc866dfc672fd67a70ab122aa7d84d4a6c97106f84d3f84",
-            "config_digest": "sha256:903c4fa852a67838269696e031077c6d726ca0a369f8b709a311083e514f1dad",
+            "platform_manifest_digest": "sha256:ffa260e43be96b49144fb7ececbb135c3fd7081567adc781c49ec9232ce1e47f",
+            "config_digest": "sha256:5aaea29f67a40c1dada19f00f2477fd24184334d474a29fc4cc70c50166a8adc",
             "config_content": "NOT_FETCHED",
             "index_bytes": 647,
             "manifest_bytes": 1622,
-            "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch/manifests/3.9.0"
+            "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch/manifests/3.10.0"
           },
-          "meaning": "ROOT-selected upstream base only; raw shared Dockerfile default remains baseline3.8 for excluded LAB. Custom image not built or accepted.",
+          "meaning": "ROOT-selected upstream base only; the Compose build args select 3.10.0 and exporter 3.10.0.0. Custom image not accepted.",
           "selected_by": {
             "path": "infra/04-data/opensearch/docker-compose.yml",
-            "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068",
+            "sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a",
             "args": {
-              "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
-              "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
+              "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0",
+              "OPENSEARCH_EXPORTER_VERSION": "3.10.0.0"
             }
           }
         }
@@ -18620,18 +18620,18 @@
         "status": "UPSTREAM_BASE_VERIFIED_CUSTOM_IMAGE_NOT_BUILT",
         "record": {
           "repository": "opensearchproject/opensearch",
-          "tag": "3.9.0",
-          "checked_at": "2026-10-26T10:47:40.789412+00:00",
+          "tag": "3.10.0",
+          "checked_at": "2026-11-26T13:03:49.725070+00:00",
           "scope": "Public index and platform manifest JSON only; no config/layers, signatures, imagepull, Docker or runtime",
           "result": "PASS",
-          "index_digest": "sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+          "index_digest": "sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0",
           "platform": "linux/amd64",
-          "platform_manifest_digest": "sha256:13487e0953520edf6cc866dfc672fd67a70ab122aa7d84d4a6c97106f84d3f84",
-          "config_digest": "sha256:903c4fa852a67838269696e031077c6d726ca0a369f8b709a311083e514f1dad",
+          "platform_manifest_digest": "sha256:ffa260e43be96b49144fb7ececbb135c3fd7081567adc781c49ec9232ce1e47f",
+          "config_digest": "sha256:5aaea29f67a40c1dada19f00f2477fd24184334d474a29fc4cc70c50166a8adc",
           "config_content": "NOT_FETCHED",
           "index_bytes": 647,
           "manifest_bytes": 1622,
-          "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch/manifests/3.9.0"
+          "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch/manifests/3.10.0"
         }
       },
       "intermediate_source_fact_history": [
