@@ -605,18 +605,22 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         )
         by_name = {row["service"]: row for row in ledger["entries"]}
         groups = (
+            # Valkey moved to 9.1.4 on 2026-11-26 for GHSA-3885-pq5f-788j; the
+            # 2026-11-11 refresh keeps the 9.1.3 it retained then.
             (
                 ["dev-valkey", "mng-valkey"],
+                "9.1.4",
                 "9.1.3",
                 "GHSA-f4q9-j22m-xqq9",
             ),
             (
                 ["n8n", "n8n-worker", "n8n-task-runner-worker"],
                 "2.46.6",
+                "2.46.6",
                 "GHSA-prmc-fg87-r4gh",
             ),
         )
-        for names, version, advisory in groups:
+        for names, version, retained, advisory in groups:
             for name in names:
                 with self.subTest(service=name):
                     row = by_name[name]
@@ -632,7 +636,7 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     self.assertIn("p08_previous_release_assessment", row)
                     self.assertIn("p08_candidate_assessment", row)
                     refresh = row["master_20261111_public_refresh"]
-                    self.assertEqual(version, refresh["target_version_retained"])
+                    self.assertEqual(retained, refresh["target_version_retained"])
                     self.assertTrue(refresh["declared_source_retained"])
                     self.assertTrue(
                         refresh["security_applicability_review"].startswith("NOT_RUN")

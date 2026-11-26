@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.29@sha256:572cebbc2b15e6f84c077742952674889cb63cd5e9b80abdffcbe587b6f19183
 # Community (TSL + Apache components), PostgreSQL 18.7, Alpine 3.24.4,
 # linux/amd64 manifest verified 2026-11-24 (18.7 fixes CVEs affecting 18.6).
 # r2 (2026-10-08): retention, archive-push-queue-max and repository-root ownership.
