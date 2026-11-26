@@ -134,7 +134,7 @@
     },
     {
       "path": "infra/04-data/redisinsight/docker-compose.yml",
-      "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+      "sha256": "51a5398438dfc67f14f92c9ce69d960ac3fbbac1c981f1f66cea83dbcdc2f11c"
     },
     {
       "path": "infra/04-data/seaweedfs/docker-compose.yml",
@@ -21092,7 +21092,7 @@
       "service": "redisinsight",
       "scope": "root",
       "compose_file": "infra/04-data/redisinsight/docker-compose.yml",
-      "current_declared": "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84",
+      "current_declared": "redis/redisinsight:3.10.1@sha256:7aea9c96ee8e34518d7d692c02a081f6e46ff9230e7779212aa10a65c423c18a",
       "profiles_declared": [
         "admin",
         "admin-data"
@@ -21115,7 +21115,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.8.0",
-      "target_version": "3.8.0",
+      "target_version": "3.10.1",
       "channel": "UNKNOWN",
       "checked_at": "2026-11-10T22:26:50.885748+00:00",
       "release_url": "https://github.com/redis/RedisInsight/releases/tag/3.8.0",
@@ -21139,8 +21139,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-27T00:00:25+09:00",
+        "next_validation_due": "2026-12-04T00:00:25+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -21156,8 +21156,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo RedisInsight/RedisInsight --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013",
+      "source_refreshed_at": "2026-11-27T00:00:25+09:00",
+      "source_input_sha256": "51a5398438dfc67f14f92c9ce69d960ac3fbbac1c981f1f66cea83dbcdc2f11c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -21218,14 +21218,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84",
+      "target_source_image": "redis/redisinsight:3.10.1@sha256:7aea9c96ee8e34518d7d692c02a081f6e46ff9230e7779212aa10a65c423c18a",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "3.8.0",
-        "source_image": "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84",
+        "source_version": "3.10.1",
+        "source_image": "redis/redisinsight:3.10.1@sha256:7aea9c96ee8e34518d7d692c02a081f6e46ff9230e7779212aa10a65c423c18a",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -56640,6 +56640,198 @@
         }
       ],
       "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 7 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "c518b72565c6de9061dbec69711a8759b4e9112c",
+      "refreshed_at": "2026-11-27T00:00:25+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "c18c54a5afeb2ef96309fdb7a598cf40c1ec7fe82952b84116bbe0320ad8fd5d",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7df3bcd149809bfa66f55745a5201cde10249cdb4bcd535c76933e14d832275c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "bea4ad9fad9dea27178d6996fc9aeb3c68fe5641252d41f0d7c92c9aa57aec43"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "73d5754c0a0d6419bb8399a35104a2e06b59965a18256e1dcbf0ec2b6d00654a"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "631ef6f6cc9e1d2fa0a053da97dec1cb0c6ade00dd133d8bcf74730b283cea78"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "f7cf17b4fa054c88a792d2a07e1315a5dd62b0e3b7046cfb71a8acd955ba71ec"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "0777773f66d293e9bb8fb58cb0a1c5c677f817a94db4cfe917fb0de3e82bbcc8"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e37265d81dfed6307e484fd2189365401cc4317e0e78ebeba26a98144379915"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "b2df25b3a29ede02669549e4333f345a49a7563445c2f253ec6e1737d0aa7c64"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "62c62ea7449684d1e44934eff93a22bf580856c077cb06d168f8d59467193c86"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "96e2771d3cf9346ffb43520f3592e6cb81b7e2310c536168d18d3f4579fc70da"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "e38ccef6635098207c9b1aca745811b2282807c39ac085921f30b8973d6ba3c9"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02"
+        }
+      ],
+      "changed_inputs": [
+        "infra/04-data/redisinsight/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "redisinsight",
+          "source_input_sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        }
+      ],
+      "meaning": "1 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 1 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "redisinsight"
+      ],
+      "previous_service_images": [
+        {
+          "service": "redisinsight",
+          "current_declared": "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84",
+          "proposed_declared": "redis/redisinsight:3.10.1@sha256:7aea9c96ee8e34518d7d692c02a081f6e46ff9230e7779212aa10a65c423c18a",
+          "previous_fields": {
+            "target_version": "3.8.0",
+            "target_source_image": "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
     }
   ],
   "delivery_preconditions": {
