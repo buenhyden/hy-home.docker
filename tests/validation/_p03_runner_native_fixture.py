@@ -86,6 +86,15 @@ RUNNER_SCENARIOS = (
         None,
     ),
     (
+        # TSK-0118 E17: the Code node vm context allowed this until the
+        # runner preloaded n8n-runner-vm-hardening.cjs.
+        "javascript_code_generation_denied",
+        "javaScript",
+        "new Function('return 1')(); return [{json:{unexpected:true}}];",
+        "error",
+        None,
+    ),
+    (
         "python_module_denied",
         "pythonNative",
         "import os\nreturn [{'json': {'unexpected': True}}]",
@@ -145,6 +154,7 @@ ANCESTOR_ALLOWED_CATEGORIES = PYTHON_FILE_DENIAL_CATEGORIES
 SCENARIO_ALLOWED_CATEGORIES = {
     "javascript_module_denied": frozenset({"module_access_denied"}),
     "javascript_environment_denied": frozenset({"environment_access_denied"}),
+    "javascript_code_generation_denied": frozenset({"code_generation_blocked"}),
     "python_module_denied": frozenset({"module_access_denied"}),
     "python_fixture_secret_file_denied": PYTHON_FILE_DENIAL_CATEGORIES,
     "python_candidate_secret_file_denied": PYTHON_FILE_DENIAL_CATEGORIES,
