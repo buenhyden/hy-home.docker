@@ -2,7 +2,7 @@
 title: "Hermes Blog Ingestion Transport Task"
 version: "0.19.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-26"
 layer: "specs"
@@ -1851,6 +1851,7 @@ work it records; no criterion changes.
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0022 | draft | ready | #inputs-and-authority |
 | SPEC-0204-TSK-0022 | ready | in-progress | #source-admission |
+| SPEC-0204-TSK-0022 | in-progress | completed | #remaining-conditions |
 
 ### Blockers and Decisions
 

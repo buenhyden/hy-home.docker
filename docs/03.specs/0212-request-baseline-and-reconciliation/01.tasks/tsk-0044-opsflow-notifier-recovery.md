@@ -1,8 +1,8 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-26"
 layer: "specs"
@@ -1008,6 +1008,7 @@ change any evidence row or acceptance decision.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0044 | draft | ready | #state-currency-2026-11-13 |
 | SPEC-0212-TSK-0044 | ready | in-progress | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0044 | in-progress | completed | #remaining-conditions |
 
 ### Blockers and Decisions
 
@@ -1108,7 +1109,7 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 72 | pending | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | REUSE_ACCEPTED only for original C19/C22 scope; current source/image/runtime equivalence separate. | SPEC-0212 TSK-0044 |
+| 72 | not-required | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | Owner @buenhyden set not-required on 2026-11-26 (D05 lifecycle v8): this historical C19/C22 queue and schedule acceptance at n8n 2.43.6 is superseded by the live n8n 2.46.6 queue acceptance in SPEC-0204 criterion 23 and SPEC-0212 criterion 175; the 2026-11-02 P03 global CI admission FAIL stays a residual handed to the CI owner (D10). | SPEC-0212 TSK-0044 |
 | 73 | accepted | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review, n8n stall-recovery guards GREEN, Post-restore capture-order guard GREEN, Native stall-recovery restore rehearsal, Independent stall-recovery code re-review, Main-restart and retry guards GREEN, Native main-restart and retry rehearsal, HOME n8n recovery target inspection | TEST_RESIDUAL accepted: the recovery and no-send reprocess source and native rehearsals pass. The owner handed the absent pip-audit capability to P08 supply-chain work on 2026-11-10, so the Python audit row is optional and stays NOT_RUN; no Python audit PASS is claimed. | SPEC-0212 TSK-0044 |
 | 74 | accepted | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0044 |
 | 75 | accepted | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | Owner @buenhyden accepted on 2026-11-26 in this chat (D05 lifecycle v8) at the optional isolated profile's scope; the actual P06 producer and operating credential rotation are not covered. | SPEC-0212 TSK-0044 |
@@ -1132,7 +1133,9 @@ later HOME activation (2026-11-11) installed the notifier, delivered one claim
 and passed a worker restart drill, and the DEV draft workflow stays inactive
 outside drills. P03 global CI admission remains an explicit residual: a
 2026-11-26 local rerun selected no gate and did not exercise it. Criterion 75
-is accepted at its optional profile scope; criterion 72 stays pending.
+is accepted at its optional profile scope; criterion 72 is not-required as
+superseded, and the CI admission residual is handed to D10. All four criteria
+are decided, so the Task is completed.
 All future outcomes must bind exact source, actor, environment, time and receipt
 without cancelling accepted history or promoting a lower evidence axis.
 
