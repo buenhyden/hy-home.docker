@@ -1,13 +1,13 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0263-PLAN-0001"
 parent_ids:
@@ -109,6 +109,7 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
 | W6 | 7 | Record local and hosted CI results | W1-W5 | TSK-0001 | the checks in the Verification Plan |
 | W7 | 5, 8 | Amend the resource rule to reservations plus an external-workload allowance; declare reservations in the shared templates from measurements; make the section 5 owner check items non-blocking in readiness and `lab.py check` | W1-W6 | TSK-0002 | `test_lab_controller`; readiness and check on HOME; full suite; hardening |
 | W8 | 3 | Retire the supabase LAB: delete `labs/supabase/`, its Guide, Runbook and Policy and its catalog rows; move the SMTP01 retirement sections into RUN-0106; remove the `vector` socket allowance so no LAB binds the Docker socket | W1-W7 | TSK-0003 | LAB suites; secret suites; catalog check; hardening; root render; document checks; full suite |
+| W9 | 1, 3, 7 | Move Terrakube from HOME to `labs/terrakube/` per ADR-0062 item 9; TSK-0004 holds the inventory, file set and owner choices, and the move waits for them | W8 | TSK-0004 | LAB suites; secret suites; catalog check; hardening; root render; document checks; full suite |
 
 ###### Global Constraints
 <!-- core-payload-level:4 -->
