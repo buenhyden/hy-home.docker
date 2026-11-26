@@ -196,7 +196,7 @@
       },
       "images": [
         "confluentinc/cp-kafka:8.3.2",
-        "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48"
+        "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml",
@@ -206,7 +206,7 @@
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
-            "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48"
+            "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5"
           ]
         },
         {
