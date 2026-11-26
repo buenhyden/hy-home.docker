@@ -25,7 +25,7 @@ TAGS = {
 TOKEN_PATH = "/run/secrets/quality_otlp_token"
 # The k6 stage runs the real executor, relay controller and path guard.
 STAGE_TAGS = {
-    "k6": "grafana/k6:2.3.0",
+    "k6": "grafana/k6:2.4.0",
     "guard": "traefik:v3.7.13",
     "mock": "wiremock/wiremock:3.13.2-alpine",
 }
