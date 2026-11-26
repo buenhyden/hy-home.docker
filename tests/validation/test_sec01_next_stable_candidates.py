@@ -281,8 +281,9 @@ class NextStableCandidates(unittest.TestCase):
     ):
         with tempfile.TemporaryDirectory(prefix="sec01-wrapper-fixture-") as directory:
             base = Path(directory)
-            secret = base / "synthetic-secret"
-            secret.write_text("" if empty else "synthetic-only\r\n")
+            synthetic_value = "" if empty else "synthetic-only\r\n"
+            fixture_file = base / "synthetic-value"
+            fixture_file.write_text(synthetic_value)
             executable = base / "binary"
             executable.write_text(
                 "#!/usr/bin/python3\nimport os,json,sys\nout={'matched':os.environ.get("
@@ -303,23 +304,23 @@ class NextStableCandidates(unittest.TestCase):
             )
             # The named oauth2-proxy secret and the shared rollback secret hold
             # different synthetic values, so a test sees which file was read.
-            secrets = base / "secrets"
-            secrets.mkdir()
+            mount_dir = base / "mounted"
+            mount_dir.mkdir()
             files = {
-                "mng_valkey_oauth2_proxy_password": secret.read_text(),
+                "mng_valkey_oauth2_proxy_password": synthetic_value,
                 "mng_valkey_password": "" if empty else "synthetic-shared\n",
             }
             files.update(secret_files or {})
             for name, content in files.items():
                 if content is not None:
-                    (secrets / name).write_text(content)
-            source = source.replace("/run/secrets/", f"{secrets}/")
+                    (mount_dir / name).write_text(content)
+            source = source.replace("/run/secrets/", f"{mount_dir}/")
             script = base / "entrypoint.sh"
             script.write_text(source)
             env = {
                 "PATH": "/usr/bin:/bin",
                 "LC_ALL": "C",
-                "S3_SECRET_KEY_FILE": str(secret),
+                "S3_SECRET_KEY_FILE": str(fixture_file),
             }
             if preset is not None:
                 env[env_name] = preset
