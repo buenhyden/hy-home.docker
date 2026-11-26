@@ -2788,7 +2788,7 @@
       "input_files": [
         {
           "path": "infra/07-workflow/n8n/Dockerfile",
-          "sha256": "f0ec9f34e38e1692fe13dbf7eefcd3d6c6e8d35998713185f0c08310ee5aa9ce"
+          "sha256": "685fd2a71b2cca0147d252edc92fcaa3ed3ae18c022335699b62cb70320870ba"
         },
         {
           "path": "infra/07-workflow/n8n/custom/.gitkeep",
@@ -2796,7 +2796,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/dev.Dockerfile",
-          "sha256": "425dcc27f1830ab0d45a2145dd14b95c9b25196409b7d4ae0ab500b3aed15151"
+          "sha256": "c1d4ff8c789c6e09e08c8c0b71372219e3b9f3a3f434a13dedc9b28319f3eba0"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",

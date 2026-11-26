@@ -20,7 +20,7 @@
       },
       "images": [
         "traefik:v3.7.13@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259",
-        "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a"
+        "traefik:v3.8.0@sha256:00c9734983e74ae35a1fc18eaee9e9da13f3dde95c4e45b3b8c3b60e0dbd2d17"
       ],
       "compose_files": [
         "infra/01-gateway/traefik/compose.window-ca.override.yml",
@@ -36,7 +36,7 @@
         {
           "compose_file": "infra/01-gateway/traefik/docker-compose.yml",
           "images": [
-            "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a"
+            "traefik:v3.8.0@sha256:00c9734983e74ae35a1fc18eaee9e9da13f3dde95c4e45b3b8c3b60e0dbd2d17"
           ]
         }
       ]
@@ -409,7 +409,7 @@
         "ollama/ollama": "external"
       },
       "images": [
-        "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592"
+        "ollama/ollama:0.40.18@sha256:1cabd20e1762a7a8444bf4a7110b346d923cd77ab6c97c984434140638c913ec"
       ],
       "compose_files": [
         "infra/08-ai/ollama/docker-compose.yml"
@@ -418,7 +418,7 @@
         {
           "compose_file": "infra/08-ai/ollama/docker-compose.yml",
           "images": [
-            "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592"
+            "ollama/ollama:0.40.18@sha256:1cabd20e1762a7a8444bf4a7110b346d923cd77ab6c97c984434140638c913ec"
           ]
         }
       ]
@@ -497,7 +497,7 @@
         "lfnovo/open_notebook": "external"
       },
       "images": [
-        "lfnovo/open_notebook:1.15.0-single@sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3"
+        "lfnovo/open_notebook:1.15.1-single@sha256:0763d151f90ca5ddf5ac12a729b5f9ea472ff9e79dbba600840ed8f4349e9b5c"
       ],
       "compose_files": [
         "infra/08-ai/open-notebook/docker-compose.yml"
@@ -506,7 +506,7 @@
         {
           "compose_file": "infra/08-ai/open-notebook/docker-compose.yml",
           "images": [
-            "lfnovo/open_notebook:1.15.0-single@sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3"
+            "lfnovo/open_notebook:1.15.1-single@sha256:0763d151f90ca5ddf5ac12a729b5f9ea472ff9e79dbba600840ed8f4349e9b5c"
           ]
         }
       ]
@@ -563,7 +563,7 @@
         "renovate/renovate": "external"
       },
       "images": [
-        "renovate/renovate:44.225.1-full@sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de"
+        "renovate/renovate:44.252.9-full@sha256:81c647e96d18c7574d2f95a9d73982bc9161abf4a1a2805dc72f1c3cce3ed661"
       ],
       "compose_files": [
         "infra/09-platform-ops/renovate/docker-compose.yml"
@@ -572,7 +572,7 @@
         {
           "compose_file": "infra/09-platform-ops/renovate/docker-compose.yml",
           "images": [
-            "renovate/renovate:44.225.1-full@sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de"
+            "renovate/renovate:44.252.9-full@sha256:81c647e96d18c7574d2f95a9d73982bc9161abf4a1a2805dc72f1c3cce3ed661"
           ]
         }
       ]
@@ -607,7 +607,7 @@
         "axllent/mailpit": "external"
       },
       "images": [
-        "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231"
+        "axllent/mailpit:v1.34.0@sha256:23a2ef85bc50853ab3093645d1d64679afd8887e89da5e48a88940c172591a4e"
       ],
       "compose_files": [
         "infra/11-quality/mailpit/docker-compose.yml"
@@ -616,7 +616,7 @@
         {
           "compose_file": "infra/11-quality/mailpit/docker-compose.yml",
           "images": [
-            "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231"
+            "axllent/mailpit:v1.34.0@sha256:23a2ef85bc50853ab3093645d1d64679afd8887e89da5e48a88940c172591a4e"
           ]
         }
       ]
@@ -1526,7 +1526,7 @@
         "pactfoundation/pact-broker": "external"
       },
       "images": [
-        "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2@sha256:420341d4fbfb00a621c313f47e530ad75703f969bbc7520d0d72bc71bb53cef9"
+        "pactfoundation/pact-broker:3.1.0-pactbroker2.124.0@sha256:51b7de8316507fdc1d322bb397fd4d4c1ce41bdfabf6a9fd9c85eb65c03a89c0"
       ],
       "compose_files": [
         "infra/11-quality/pact-broker/docker-compose.yml"
@@ -1535,7 +1535,7 @@
         {
           "compose_file": "infra/11-quality/pact-broker/docker-compose.yml",
           "images": [
-            "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2@sha256:420341d4fbfb00a621c313f47e530ad75703f969bbc7520d0d72bc71bb53cef9"
+            "pactfoundation/pact-broker:3.1.0-pactbroker2.124.0@sha256:51b7de8316507fdc1d322bb397fd4d4c1ce41bdfabf6a9fd9c85eb65c03a89c0"
           ]
         }
       ]
