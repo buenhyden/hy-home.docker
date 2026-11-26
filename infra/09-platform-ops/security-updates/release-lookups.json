@@ -58681,7 +58681,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58950,7 +58950,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "n8nio/runners:2.46.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59017,7 +59017,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62649,7 +62649,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62751,29 +62751,29 @@
       },
       "n8n-sandbox-certs": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:13:02.626628+00:00",
         "reviewed_subject": {
-          "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
-          "assessment_version": "API image 1.8.1 exact digest used one-shot",
+          "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
         "bounded_research_applicability": "UNKNOWN",
-        "source_action": "blocked",
+        "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "n8n-io/n8n-sandbox-service",
-            "url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -62781,19 +62781,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The repository endpoint is empty but transitive/image status and the 1.8.1-to-1.14.0 delta are unreviewed; the service's one-shot certificate role differs from API runtime.",
-        "next_action": "Review exact image SBOM and certificate-bootstrap behavior before version-set upgrade planning.",
+        "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "1.8.1",
+          "action": "retain-current-version",
+          "target_retained": "1.15.0",
           "observed_latest": "1.14.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Review exact image SBOM and certificate-bootstrap behavior before version-set upgrade planning."
+          "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -62809,29 +62809,29 @@
       },
       "n8n-sandbox-api": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:13:03.123056+00:00",
         "reviewed_subject": {
-          "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
-          "assessment_version": "API image 1.8.1 exact digest",
+          "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
         "bounded_research_applicability": "UNKNOWN",
-        "source_action": "blocked",
+        "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "n8n-io/n8n-sandbox-service",
-            "url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -62839,19 +62839,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "No published repository advisory is not absence proof; API key, tenant authorization, runner routing, storage and metrics boundaries require version-specific evidence.",
-        "next_action": "Review release delta/SBOM and validate the official security-model controls before preparing 1.14.0.",
+        "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "1.8.1",
+          "action": "retain-current-version",
+          "target_retained": "1.15.0",
           "observed_latest": "1.14.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Review release delta/SBOM and validate the official security-model controls before preparing 1.14.0."
+          "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -62870,7 +62870,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "runner-dind 1.8.1 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
