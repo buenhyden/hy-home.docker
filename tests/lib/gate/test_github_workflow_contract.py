@@ -1212,7 +1212,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual({"python-version": "3.14.8"}, candidate_python["with"])
         self.assertEqual(expected_uv_inputs, candidate_uv["with"])
         self.assertEqual(
-            {"node-version": "24.22.0", "package-manager-cache": False},
+            {"node-version": "26.13.1", "package-manager-cache": False},
             candidate_node["with"],
         )
         security_runs = {
@@ -1260,7 +1260,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (ROOT / "scripts/requirements-pre-commit.txt").read_text(encoding="utf-8"),
         )
         self.assertIn(
-            "zizmor==1.28.0\n",
+            "zizmor==1.32.0\n",
             (ROOT / "scripts/requirements.txt").read_text(encoding="utf-8"),
         )
 

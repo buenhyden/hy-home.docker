@@ -1,7 +1,7 @@
 # Python dependencies for repository validation scripts.
 PyYAML>=6.0,<7.0
-markdown-it-py>=4.2,<4.3
+markdown-it-py>=4.3,<4.4
 html5lib>=1.1,<2.0
 jsonschema>=4.23,<5.0
 typing-extensions==4.16.0; python_version < "3.13"
-zizmor==1.28.0
+zizmor==1.32.0

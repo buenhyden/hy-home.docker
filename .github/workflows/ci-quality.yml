@@ -127,7 +127,7 @@ jobs:
         if: steps.prerequisites.outputs.node == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: '24.22.0'
+          node-version: '26.13.1'
           package-manager-cache: false
       - name: Capture selected Node context
         if: steps.prerequisites.outputs.node == 'true'
@@ -334,7 +334,7 @@ jobs:
         if: steps.prerequisites.outputs.node == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: '24.22.0'
+          node-version: '26.13.1'
           package-manager-cache: false
       - name: Capture selected Node context
         if: steps.prerequisites.outputs.node == 'true'
@@ -520,7 +520,7 @@ jobs:
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
         run: '"$TRUSTED_PYTHON_PATH" scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif'
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           sarif_file: results.sarif
           category: zizmor

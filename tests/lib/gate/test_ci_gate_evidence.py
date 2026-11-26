@@ -244,7 +244,7 @@ class EvidenceStoreTests(unittest.TestCase):
             },
             "node": {
                 "status": "SELECTED_NOT_YET_OBSERVED",
-                "version": "24.22.0",
+                "version": "26.13.1",
                 "sha256": None,
             },
         }
@@ -267,7 +267,7 @@ class EvidenceStoreTests(unittest.TestCase):
             runtime_observation={
                 "node": {
                     "status": "CAPTURED",
-                    "version": "v24.22.0",
+                    "version": "v26.13.1",
                     "sha256": "d" * 64,
                 }
             }
@@ -276,7 +276,7 @@ class EvidenceStoreTests(unittest.TestCase):
         plan = json.loads((self.output / "plan.json").read_bytes())
         result = json.loads((self.output / "result.json").read_bytes())
         self.assertEqual("CAPTURED", plan["toolchain"]["status"])
-        self.assertEqual("v24.22.0", result["runtime_observation"]["node"]["version"])
+        self.assertEqual("v26.13.1", result["runtime_observation"]["node"]["version"])
 
     def test_controller_toolchain_captures_allowlisted_identity_and_rejects_drift(
         self,

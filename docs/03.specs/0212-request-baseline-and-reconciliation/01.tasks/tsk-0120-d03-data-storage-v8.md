@@ -1,6 +1,6 @@
 ---
 title: "D03 v8 Data Storage and Shared Valkey Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -109,11 +109,13 @@ removed.
 
 ###### Left open
 
-| Item | Owner | Resume condition |
-| --- | --- | --- |
-| Empty Qdrant collection `open-webui_knowledge` left by the retired Open WebUI consumer | D11 | Owner decision to delete it |
-| Old file `secrets/db/mng-valkey/airflow_password.txt` of the retired dedicated identity | D11 | Owner deletes it after confirming no consumer |
-| Terrakube Valkey login without an ACL user | LAB move owner | Planned in SPEC-0263 TSK-0004 (W9); owner choice 3 there decides the role, drop or LAB-local store |
+None.
+
+###### Closed on 2026-11-26
+
+- The owner deleted the empty Qdrant collection `open-webui_knowledge`; Qdrant 1.20.2 later started with no collection.
+- The owner deleted `secrets/db/mng-valkey/airflow_password.txt`.
+- The Terrakube Valkey login left HOME with the LAB move (#1227); the LAB runs its own Valkey.
 
 ##### Blockers and Decisions
 
