@@ -1,6 +1,6 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -102,7 +102,7 @@ started or recreated.
 | JS Code node can generate code from strings (E17) | Fixed (E25) and verified live (E26) | Done |
 | Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database: it is the only check that runs on the current n8n 2.46.6, because the P03 native rehearsal is pinned to the reviewed 2.43.6 images (E28) | n8n owner; retire it when the native rehearsal is re-pinned to the running version |
 | Hermes `--provider custom` without an endpoint (E29) | Fixed by the owner on 2026-11-26 (E30); every cloud chain now leaves local Ollama out and the `local` profile has no fallback (E31, E32) | Done |
-| Hermes work-profile credentials (E33) | The eight work profiles and free-research hold no valid Anthropic or OpenAI key, and the OpenRouter key fails in every profile; until fixed they answer from nous free | Owner: copy the working keys into each profile and reissue the OpenRouter key |
+| Hermes work-profile credentials (E33) | The owner copied the working Anthropic and OpenAI keys into the eight work profiles on 2026-11-26 (E34); the OpenRouter key still fails in every profile, so free-research answers from nous free | Owner: reissue the OpenRouter key |
 | D06-T06 tool comparison | Owner chose on 2026-11-26 to reopen criterion70 with a retrieval evaluation on this repository's own documents (owner rights, git versions, commit dates as the time field for a time-ordered split; Qdrant with embeddinggemma against a SearXNG baseline, tracked in MLflow). Not started | New Task under SPEC-0212 that reopens criterion70 |
 
 ###### D06 runtime checks (criterion175)
@@ -259,6 +259,7 @@ the security impact stays recorded in the exception.
 | E31 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes config set and hermes fallback check --live for default and devops | Server A, 2026-11-26, configs backed up first | PASS | default: openai-api gpt-6-luna primary, fallback claude-haiku-5-5 then nous free, both live ready; eight work profiles: anthropic claude-sonnet-5-5 primary, fallback claude-haiku-5-5, openai-api gpt-6-luna, nous free; free-research drops ollama-cloud and local; no cloud chain contains local Ollama | optional | - |
 | E32 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes profile create local, hermes -p local chat -q ping, fallback check | Server A, 2026-11-26 | PASS | Profile local runs custom lfm2.5:8b at 127.0.0.1:11434 with an empty fallback chain and answered with finish_reason stop; wrapper renamed hermes-local because local is a shell builtin | optional | - |
 | E33 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes -p devops fallback check --live, hermes -p devops chat -q ping, hermes chat --provider openrouter | Server A, 2026-11-26 | FAIL | devops: anthropic live_auth, openai-api not configured, so the turn fell to nous free; the default OpenRouter key also fails and fell back to claude-haiku-5-5 | optional | - |
+| E34 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes -p PROFILE fallback check --live for the eight work profiles and hermes -p devops chat -q ping | Server A, 2026-11-26 after the owner copied the keys | PASS | All 24 fallback entries (claude-haiku-5-5, gpt-6-luna, nous free) live ready; devops answered with claude-sonnet-5-5 from anthropic on the first call without fallback | optional | - |
 
 ##### Resolution Links
 
