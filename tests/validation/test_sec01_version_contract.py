@@ -159,7 +159,7 @@ class CandidateContract(unittest.TestCase):
 
     def test_opensearch_root_selection_does_not_override_lab_builds(self):
         package = ROOT / "infra/04-data/opensearch"
-        dashboards = "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc"
+        dashboards = "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1"
         root = yaml.safe_load((package / "docker-compose.yml").read_text())
         lab = yaml.safe_load(
             (ROOT / "labs/opensearch-cluster/docker-compose.yml").read_text()
@@ -167,8 +167,8 @@ class CandidateContract(unittest.TestCase):
         self.assertEqual(dashboards, root["services"]["opensearch-dashboards"]["image"])
         self.assertEqual(
             {
-                "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
-                "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0",
+                "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0",
+                "OPENSEARCH_EXPORTER_VERSION": "3.10.0.0",
             },
             root["services"]["opensearch"]["build"]["args"],
         )

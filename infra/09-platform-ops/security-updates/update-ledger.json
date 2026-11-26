@@ -126,7 +126,7 @@
     },
     {
       "path": "infra/04-data/opensearch/docker-compose.yml",
-      "sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c"
+      "sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a"
     },
     {
       "path": "infra/04-data/qdrant/docker-compose.yml",
@@ -18511,7 +18511,7 @@
       "upstream_reported_tag": "3.10.0",
       "next_fact_command": "gh release view --repo opensearch-project/OpenSearch --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T14:31:47.914916+00:00",
-      "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
+      "source_input_sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -18586,7 +18586,7 @@
           "role": "official upstream base",
           "image": "opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0",
           "source_path": "infra/04-data/opensearch/Dockerfile",
-          "source_sha256": "384a597401a7ce552e79f97e2db2ea2c9b7b2d383d221040c39409a954ae3b84",
+          "source_sha256": "a7655f9d113799cb4fbae0867a49a59b3a94616636444646985218af8f50242a",
           "public_metadata": {
             "repository": "opensearchproject/opensearch",
             "tag": "3.10.0",
@@ -18602,7 +18602,7 @@
             "manifest_bytes": 1622,
             "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch/manifests/3.10.0"
           },
-          "meaning": "ROOT-selected upstream base only; the Compose build args select 3.10.0 and exporter 3.10.0.0. Custom image not accepted.",
+          "meaning": "ROOT-selected upstream base only; the Compose build args select 3.10.0 and exporter 3.10.0.0, while the raw Dockerfile default stays the 3.8.0 pair for the LAB. Custom image not accepted.",
           "selected_by": {
             "path": "infra/04-data/opensearch/docker-compose.yml",
             "sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a",
@@ -18787,14 +18787,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The official OpenSearch 3.9.0 base and security plugin are outside observed affected ranges, but the service builds an unbuilt custom image that adds opensearch-prometheus-exporter 3.9.0.0.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The official OpenSearch 3.10.0 base is outside every published opensearch-project/OpenSearch and security-plugin advisory range (re-checked on 2026-11-26; the open ones end at 2.4.0 or 3.3.0.0), and opensearch-prometheus-exporter lists no advisory, but the service builds a custom image with exporter 3.10.0.0 that has no SBOM or scan.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T13:04:47.472673+00:00",
         "reviewed_subject": {
           "declaration": "UNKNOWN",
-          "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
-          "assessment_version": "custom UNKNOWN; upstream base opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c; exporter 3.9.0.0",
+          "source_input_sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a",
+          "assessment_version": "custom UNKNOWN; upstream base opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0; exporter 3.10.0.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -18830,16 +18830,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The official OpenSearch 3.9.0 base and security plugin are outside observed affected ranges, but the service builds an unbuilt custom image that adds opensearch-prometheus-exporter 3.9.0.0.",
-        "next_action": "Retain the 3.9.0 base but block custom-image acceptance until exporter advisories, build identity, SBOM, and scan evidence exist.",
+        "reason": "The official OpenSearch 3.10.0 base is outside every published opensearch-project/OpenSearch and security-plugin advisory range (re-checked on 2026-11-26; the open ones end at 2.4.0 or 3.3.0.0), and opensearch-prometheus-exporter lists no advisory, but the service builds a custom image with exporter 3.10.0.0 that has no SBOM or scan.",
+        "next_action": "Retain the 3.10.0 base but block custom-image acceptance until build identity, SBOM, and scan evidence exist.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "3.9.0",
-          "observed_latest": "3.9.0",
+          "target_retained": "3.10.0",
+          "observed_latest": "3.10.0",
           "previous_gate_missing": [],
           "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain the 3.9.0 base but block custom-image acceptance until exporter advisories, build identity, SBOM, and scan evidence exist."
+          "next_action": "Retain the 3.10.0 base but block custom-image acceptance until build identity, SBOM, and scan evidence exist."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -18861,7 +18861,7 @@
       "service": "opensearch-dashboards",
       "scope": "root",
       "compose_file": "infra/04-data/opensearch/docker-compose.yml",
-      "current_declared": "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc",
+      "current_declared": "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1",
       "profiles_declared": [
         "opensearch"
       ],
@@ -18869,7 +18869,7 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "3.9.0",
-      "target_version": "3.9.0",
+      "target_version": "3.10.0",
       "channel": "stable",
       "checked_at": "2026-11-10T21:00:18Z",
       "release_url": "https://github.com/opensearch-project/OpenSearch-Dashboards/releases/tag/3.9.0",
@@ -18879,11 +18879,11 @@
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100&page=1",
+        "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100",
+        "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2",
         "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-6qp6-3675-ffr3",
-        "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5",
         "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-wjg9-wg2q-394h",
-        "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2"
+        "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -18897,8 +18897,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-24T16:42:44+09:00",
-        "next_validation_due": "2026-12-01T16:42:44+09:00",
+        "discovered_at": "2026-11-26T22:03:49+09:00",
+        "next_validation_due": "2026-12-03T22:03:49+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
@@ -18910,8 +18910,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo opensearch-project/OpenSearch-Dashboards --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-24T16:42:44+09:00",
-      "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
+      "source_refreshed_at": "2026-11-26T22:03:49+09:00",
+      "source_input_sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -18973,14 +18973,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc",
+      "target_source_image": "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "3.9.0",
-        "source_image": "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc",
+        "source_version": "3.10.0",
+        "source_image": "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -19108,14 +19108,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 3.9.0 is newer than the highest direct Dashboards patched floor 3.8.0 in the complete public endpoint.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 3.10.0 is outside the vulnerable range of every one of the 4 published opensearch-project/OpenSearch-Dashboards repository advisories, re-checked on 2026-11-26 for the Renovate update from 3.9.0.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T13:04:04.960464+00:00",
         "reviewed_subject": {
-          "declaration": "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc",
-          "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
-          "assessment_version": "opensearchproject/opensearch-dashboards:3.9.0@sha256:256d4cea5928868ac09bca642a0ac8285a2b7e4b7fdd45c4ec06e75a5cf3184c",
+          "declaration": "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1",
+          "source_input_sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a",
+          "assessment_version": "3.10.0",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -19123,27 +19123,26 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100&page=1",
+          "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100",
+          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2",
           "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-6qp6-3675-ffr3",
-          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5",
           "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-wjg9-wg2q-394h",
-          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2"
+          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5"
         ],
         "concrete_advisory_refs": [
-          "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100&page=1",
+          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2",
           "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-6qp6-3675-ffr3",
-          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5",
           "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-wjg9-wg2q-394h",
-          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2"
+          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5"
         ],
         "advisory_discovery": [
           {
             "supplier": "opensearch-project/OpenSearch-Dashboards",
-            "url": "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100",
             "unique_advisories": 4,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -19151,16 +19150,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "3.9.0 is newer than the highest direct Dashboards patched floor 3.8.0 in the complete public endpoint.",
-        "next_action": "Retain 3.9.0; verify exact-image npm/OS SBOM before a full-image claim.",
+        "reason": "Selected 3.10.0 is outside the vulnerable range of every one of the 4 published opensearch-project/OpenSearch-Dashboards repository advisories, re-checked on 2026-11-26 for the Renovate update from 3.9.0.",
+        "next_action": "Keep 3.10.0; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "3.9.0",
+          "target_retained": "3.10.0",
           "observed_latest": "3.9.0",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain 3.9.0; verify exact-image npm/OS SBOM before a full-image claim."
+          "reason": "Selected 3.10.0 is outside the vulnerable range of every one of the 4 published opensearch-project/OpenSearch-Dashboards repository advisories, re-checked on 2026-11-26 for the Renovate update from 3.9.0.",
+          "next_action": "Keep 3.10.0; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -56251,6 +56250,203 @@
         }
       ],
       "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 7 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "068d6a613e1d80aeb37cf2bda19295cd4370c8a7",
+      "refreshed_at": "2026-11-26T22:03:49+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "f778e8761202e97f044f805f14332697ccc5aa164e3a8043c4b9da05f5b11138",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7df3bcd149809bfa66f55745a5201cde10249cdb4bcd535c76933e14d832275c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "bea4ad9fad9dea27178d6996fc9aeb3c68fe5641252d41f0d7c92c9aa57aec43"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "73d5754c0a0d6419bb8399a35104a2e06b59965a18256e1dcbf0ec2b6d00654a"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "f7cf17b4fa054c88a792d2a07e1315a5dd62b0e3b7046cfb71a8acd955ba71ec"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "0777773f66d293e9bb8fb58cb0a1c5c677f817a94db4cfe917fb0de3e82bbcc8"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e37265d81dfed6307e484fd2189365401cc4317e0e78ebeba26a98144379915"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "b2df25b3a29ede02669549e4333f345a49a7563445c2f253ec6e1737d0aa7c64"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "62c62ea7449684d1e44934eff93a22bf580856c077cb06d168f8d59467193c86"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "96e2771d3cf9346ffb43520f3592e6cb81b7e2310c536168d18d3f4579fc70da"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "e38ccef6635098207c9b1aca745811b2282807c39ac085921f30b8973d6ba3c9"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02"
+        }
+      ],
+      "changed_inputs": [
+        "infra/04-data/opensearch/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "opensearch",
+          "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
+          "source_refreshed_at": "2026-10-26T14:31:47.914916+00:00"
+        },
+        {
+          "service": "opensearch-dashboards",
+          "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
+          "source_refreshed_at": "2026-11-24T16:42:44+09:00"
+        }
+      ],
+      "meaning": "1 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 2 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "opensearch-dashboards"
+      ],
+      "previous_service_images": [
+        {
+          "service": "opensearch-dashboards",
+          "current_declared": "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc",
+          "proposed_declared": "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1",
+          "previous_fields": {
+            "target_version": "3.9.0",
+            "target_source_image": "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-24T16:42:44+09:00",
+              "next_validation_due": "2026-12-01T16:42:44+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-24T16:42:44+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
     }
   ],
   "delivery_preconditions": {

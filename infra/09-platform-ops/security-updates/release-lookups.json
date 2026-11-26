@@ -60036,11 +60036,11 @@
       },
       "opensearch": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T13:04:47.472673+00:00",
         "reviewed_subject": {
           "declaration": "UNKNOWN",
-          "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
-          "assessment_version": "custom UNKNOWN; upstream base opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c; exporter 3.9.0.0",
+          "source_input_sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a",
+          "assessment_version": "custom UNKNOWN; upstream base opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0; exporter 3.10.0.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -60076,16 +60076,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The official OpenSearch 3.9.0 base and security plugin are outside observed affected ranges, but the service builds an unbuilt custom image that adds opensearch-prometheus-exporter 3.9.0.0.",
-        "next_action": "Retain the 3.9.0 base but block custom-image acceptance until exporter advisories, build identity, SBOM, and scan evidence exist.",
+        "reason": "The official OpenSearch 3.10.0 base is outside every published opensearch-project/OpenSearch and security-plugin advisory range (re-checked on 2026-11-26; the open ones end at 2.4.0 or 3.3.0.0), and opensearch-prometheus-exporter lists no advisory, but the service builds a custom image with exporter 3.10.0.0 that has no SBOM or scan.",
+        "next_action": "Retain the 3.10.0 base but block custom-image acceptance until build identity, SBOM, and scan evidence exist.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "3.9.0",
-          "observed_latest": "3.9.0",
+          "target_retained": "3.10.0",
+          "observed_latest": "3.10.0",
           "previous_gate_missing": [],
           "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain the 3.9.0 base but block custom-image acceptance until exporter advisories, build identity, SBOM, and scan evidence exist."
+          "next_action": "Retain the 3.10.0 base but block custom-image acceptance until build identity, SBOM, and scan evidence exist."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -60101,11 +60101,11 @@
       },
       "opensearch-dashboards": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T13:04:04.960464+00:00",
         "reviewed_subject": {
-          "declaration": "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc",
-          "source_input_sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c",
-          "assessment_version": "opensearchproject/opensearch-dashboards:3.9.0@sha256:256d4cea5928868ac09bca642a0ac8285a2b7e4b7fdd45c4ec06e75a5cf3184c",
+          "declaration": "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1",
+          "source_input_sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a",
+          "assessment_version": "3.10.0",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -60113,27 +60113,26 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100&page=1",
+          "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100",
+          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2",
           "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-6qp6-3675-ffr3",
-          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5",
           "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-wjg9-wg2q-394h",
-          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2"
+          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5"
         ],
         "concrete_advisory_refs": [
-          "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100&page=1",
+          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2",
           "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-6qp6-3675-ffr3",
-          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5",
           "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-wjg9-wg2q-394h",
-          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-xmqx-xq2p-8jq2"
+          "https://github.com/opensearch-project/OpenSearch-Dashboards/security/advisories/GHSA-jj2x-h4rq-g8c5"
         ],
         "advisory_discovery": [
           {
             "supplier": "opensearch-project/OpenSearch-Dashboards",
-            "url": "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/security-advisories?per_page=100",
             "unique_advisories": 4,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -60141,16 +60140,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "3.9.0 is newer than the highest direct Dashboards patched floor 3.8.0 in the complete public endpoint.",
-        "next_action": "Retain 3.9.0; verify exact-image npm/OS SBOM before a full-image claim.",
+        "reason": "Selected 3.10.0 is outside the vulnerable range of every one of the 4 published opensearch-project/OpenSearch-Dashboards repository advisories, re-checked on 2026-11-26 for the Renovate update from 3.9.0.",
+        "next_action": "Keep 3.10.0; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "3.9.0",
+          "target_retained": "3.10.0",
           "observed_latest": "3.9.0",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Retain 3.9.0; verify exact-image npm/OS SBOM before a full-image claim."
+          "reason": "Selected 3.10.0 is outside the vulnerable range of every one of the 4 published opensearch-project/OpenSearch-Dashboards repository advisories, re-checked on 2026-11-26 for the Renovate update from 3.9.0.",
+          "next_action": "Keep 3.10.0; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
