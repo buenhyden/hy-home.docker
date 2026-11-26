@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.29@sha256:572cebbc2b15e6f84c077742952674889cb63cd5e9b80abdffcbe587b6f19183
 # The management PostgreSQL server with pgBackRest installed in the same image,
 # so archive_command runs the real binary, config and repository as the server's
 # own postgres user (UID/GID 70). Keep the base identical to the plain image.
