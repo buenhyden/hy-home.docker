@@ -60572,36 +60572,36 @@
       },
       "qdrant": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T09:40:58.078452+00:00",
         "reviewed_subject": {
-          "declaration": "qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
-          "source_input_sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf",
-          "assessment_version": "qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
+          "declaration": "qdrant/qdrant:v1.20.2-unprivileged@sha256:f60765106f26981dabc593d88fe4d0c8138893442c7c59d62257390891b65277",
+          "source_input_sha256": "0777773f66d293e9bb8fb58cb0a1c5c677f817a94db4cfe917fb0de3e82bbcc8",
+          "assessment_version": "qdrant/qdrant:v1.20.2-unprivileged@sha256:f60765106f26981dabc593d88fe4d0c8138893442c7c59d62257390891b65277",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED",
-        "source_action": "patch",
-        "security_decision": "patch",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/qdrant/qdrant/security-advisories?per_page=100&page=1",
+          "https://api.github.com/repos/qdrant/qdrant/security-advisories?per_page=100",
+          "https://github.com/qdrant/qdrant/security/advisories/GHSA-frc7-44gm-99qq",
           "https://github.com/qdrant/qdrant/security/advisories/GHSA-3gph-6c29-p29v",
-          "https://github.com/qdrant/qdrant/security/advisories/GHSA-f632-vm87-2m2f",
-          "https://github.com/qdrant/qdrant/security/advisories/GHSA-frc7-44gm-99qq"
+          "https://github.com/qdrant/qdrant/security/advisories/GHSA-f632-vm87-2m2f"
         ],
         "concrete_advisory_refs": [
+          "https://github.com/qdrant/qdrant/security/advisories/GHSA-frc7-44gm-99qq",
           "https://github.com/qdrant/qdrant/security/advisories/GHSA-3gph-6c29-p29v",
-          "https://github.com/qdrant/qdrant/security/advisories/GHSA-f632-vm87-2m2f",
-          "https://github.com/qdrant/qdrant/security/advisories/GHSA-frc7-44gm-99qq"
+          "https://github.com/qdrant/qdrant/security/advisories/GHSA-f632-vm87-2m2f"
         ],
         "advisory_discovery": [
           {
             "supplier": "qdrant/qdrant",
-            "url": "https://api.github.com/repos/qdrant/qdrant/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/qdrant/qdrant/security-advisories?per_page=100",
             "unique_advisories": 3,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -60609,18 +60609,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 1.19.2 is within GHSA-frc7-44gm-99qq's version range below 1.20.0. The tracked Compose is statically single-node, does not enable clustering, and does not expose port 6335, so the described internal-gRPC path is not active in the declared topology; this lowers current exposure but does not change version applicability.",
-        "next_action": "Prepare 1.20.0-unprivileged; approve backup/restore and internal-auth acceptance separately before deployment.",
+        "reason": "Selected 1.20.2 is outside the vulnerable range of every one of the 3 published qdrant/qdrant repository advisories, re-checked on 2026-11-26 for the Renovate update from v1.19.2-unprivileged.",
+        "next_action": "Keep 1.20.2; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "1.19.2",
+          "action": "retain-current-version",
+          "target_retained": "1.20.2",
           "observed_latest": "1.20.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Prepare 1.20.0-unprivileged; approve backup/restore and internal-auth acceptance separately before deployment."
+          "reason": "Selected 1.20.2 is outside the vulnerable range of every one of the 3 published qdrant/qdrant repository advisories, re-checked on 2026-11-26 for the Renovate update from v1.19.2-unprivileged.",
+          "next_action": "Keep 1.20.2; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -60635,8 +60635,8 @@
         },
         "patch_component": {
           "name": "Qdrant",
-          "current_version": "1.19.2",
-          "candidate_version": "1.20.0",
+          "current_version": "1.20.2",
+          "candidate_version": "1.20.2",
           "evidence_refs": [
             "https://api.github.com/repos/qdrant/qdrant/security-advisories?per_page=100&page=1",
             "https://github.com/qdrant/qdrant/security/advisories/GHSA-3gph-6c29-p29v",
@@ -65828,26 +65828,6 @@
         "component_advisory_ids": [
           "GO-2026-6612"
         ]
-      },
-      "qdrant": {
-        "decision": "patch",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/qdrant",
-        "declared_subject": "qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
-        "source_input_sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf",
-        "operational_execution": "NOT_RUN",
-        "component": "Qdrant",
-        "fixed_candidate_version": "1.20.0",
-        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/qdrant/patch_component/evidence_refs",
-        "final_image": "docker.io/qdrant/qdrant@sha256:9ae17b1c0af34c07c4ebebbb43168fffb584b56304874e70a522b0cad6cb137d",
-        "candidate_scope": "published-final",
-        "artifact_disposition": "Retain as a blocked patch candidate pending publisher evidence where missing, residual adjudication, compatibility and recovery.",
-        "registry_observation": "docker.io/qdrant/qdrant:v1.20.0-unprivileged",
-        "scan_ref": "qdrant",
-        "publisher_signature_status": "VERIFIED_INDEX",
-        "published_predicates_ref": "qdrant",
-        "publisher_index_digest": "sha256:8c215051dc7bc15221b5f89c100a84a4b04d0dd8497fb73e6fa86fc948d1a41d",
-        "component_in_sbom": "Publisher workflow and signed index bind the v1.20.0 variant; the local catalog did not enumerate the Qdrant binary as a package.",
-        "next_action": "Review the high-severity package matches, verify application coverage, and test the unprivileged storage path and recovery before a separate deployment decision."
       },
       "storybook-mcp": {
         "decision": "patch",
@@ -73128,6 +73108,27 @@
         ],
         "next_action": "Select a supported package source at or above the vendor fixed floor 2.59.3, build the exact custom image, and verify encrypted backup/restore and stanza migration planning before operational acceptance.",
         "resolution": "2026-11-24: pgBackRest 2.60.1 built from its checksum-pinned release tarball and PostgreSQL 18.7 replace the 2.57/2.58 builds this entry proposed to patch; the current advisory review is NOT_AFFECTED."
+      },
+      "qdrant": {
+        "decision": "patch",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/qdrant",
+        "declared_subject": "qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
+        "source_input_sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf",
+        "operational_execution": "NOT_RUN",
+        "component": "Qdrant",
+        "fixed_candidate_version": "1.20.0",
+        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/qdrant/patch_component/evidence_refs",
+        "final_image": "docker.io/qdrant/qdrant@sha256:9ae17b1c0af34c07c4ebebbb43168fffb584b56304874e70a522b0cad6cb137d",
+        "candidate_scope": "published-final",
+        "artifact_disposition": "Retain as a blocked patch candidate pending publisher evidence where missing, residual adjudication, compatibility and recovery.",
+        "registry_observation": "docker.io/qdrant/qdrant:v1.20.0-unprivileged",
+        "scan_ref": "qdrant",
+        "publisher_signature_status": "VERIFIED_INDEX",
+        "published_predicates_ref": "qdrant",
+        "publisher_index_digest": "sha256:8c215051dc7bc15221b5f89c100a84a4b04d0dd8497fb73e6fa86fc948d1a41d",
+        "component_in_sbom": "Publisher workflow and signed index bind the v1.20.0 variant; the local catalog did not enumerate the Qdrant binary as a package.",
+        "next_action": "Review the high-severity package matches, verify application coverage, and test the unprivileged storage path and recovery before a separate deployment decision.",
+        "resolution": "2026-11-26: Qdrant 1.20.2-unprivileged (Renovate) replaces 1.19.2, which this entry proposed to patch for GHSA-frc7-44gm-99qq (fixed in 1.20.0); the current advisory review is NOT_AFFECTED."
       }
     }
   }
