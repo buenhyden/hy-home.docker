@@ -154,7 +154,7 @@
     },
     {
       "path": "infra/07-workflow/airflow/docker-compose.yml",
-      "sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f"
+      "sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2"
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -297,7 +297,7 @@
       "service": "airflow-apiserver",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "hy-home/airflow:3.3.2-keycloak",
+      "current_declared": "hy-home/airflow:3.4.0-keycloak",
       "profiles_declared": [
         "workflow",
         "workflow-airflow"
@@ -306,11 +306,11 @@
         "context": "../../..",
         "dockerfile": "infra/07-workflow/airflow/Dockerfile",
         "args": {
-          "AIRFLOW_VERSION": "3.3.2",
+          "AIRFLOW_VERSION": "3.4.0",
           "PYTHON_VERSION": "3.13",
-          "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
-          "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
-          "CELERY_PROVIDER_VERSION": "3.24.1"
+          "KEYCLOAK_PROVIDER_VERSION": "0.13.0",
+          "COMMON_COMPAT_PROVIDER_VERSION": "1.23.1",
+          "CELERY_PROVIDER_VERSION": "3.26.0"
         }
       },
       "current_running": [
@@ -330,17 +330,21 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.4.0",
-      "target_version": "3.3.2",
+      "target_version": "3.4.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
-      "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
-      "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
-      "target_config_digest": "sha256:4644ae58fef15a94f8c82d3b27a5e7c60942262a43ec1640757a5f5dcbf39b04",
+      "target_index_digest": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
+      "target_manifest_digest": "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7",
+      "target_config_digest": "sha256:e4f0f56c3c2c31d4a5f67ada9f2a50830122ce7ec437ee7580771c2cea1b92c0",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-17T11:10:15Z",
       "advisory_urls": [
-        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -369,38 +373,45 @@
         "sha256:0388863fe9964d7f2d0d8bacc26dcae0ad5888eadd275c10086a7683bfe46c56"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "3.3.2",
+      "upstream_reported_tag": "3.4.0",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+      "source_refreshed_at": "2026-11-26T21:48:25.505602+00:00",
+      "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/airflow:3.3.2-keycloak",
+      "target_source_image": "hy-home/airflow:3.4.0-keycloak",
       "candidate_evidence_scope": "SEC01 parent established vendor stable/source pin and selected metadata. Signature, SBOM, advisory applicability, native readiness and HOME rollout remain separate.",
       "target_declared_digest": "UNKNOWN: custom image is a source tag pending final build receipt",
-      "target_digest_evidence": "Final workflow worker receipt: immutable local OCI index selects linux/amd64 manifest/config; parent freshly verified source binding and bounded candidate tests.",
+      "target_digest_evidence": "Local build receipt: the immutable local OCI index selects the linux/amd64 manifest and config recorded here; Dockerfile pip check and version asserts passed in the build.",
       "target_build_materials": [
         {
           "role": "upstream base",
-          "image": "apache/airflow:3.3.2-python3.13",
-          "source_declared_digest": "sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
+          "image": "apache/airflow:3.4.0-python3.13",
+          "source_declared_digest": "sha256:a8d9d19c563c768b2bc605ef26440f28a9164ea886064e99c599b057432ff572",
           "digest_type": "index according to SEC01 parent source receipt",
           "source_path": "infra/07-workflow/airflow/Dockerfile",
-          "source_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1"
+          "source_sha256": "4c921c4a0e8e54bdce4d0b780cc15523d3aea0ecc5e8982343abb14093dd2527"
         }
       ],
       "candidate_workflow_receipt": {
-        "reported_by": "SEC01 workflow worker via root",
-        "reported_at": "2026-10-10T11:20:08.192963+00:00",
+        "reported_by": "SPEC-0212-TSK-0052 W109 update session",
+        "reported_at": "2026-11-26T21:48:25.505602+00:00",
         "command": "HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle",
-        "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+        "input_sha256": "cf21dba73aa2829248c577af0b8fa23edbbc1a60ef697099c94da5268244bf2d",
         "exit_code": 0,
-        "unit_tests_pass": 5,
-        "isolated_tests_pass": 3,
+        "unit_tests_pass": 8,
+        "isolated_tests_pass": 2,
         "scope": "Core/interpreter/direct providers pip check/import and client grant denials using mocked token exchange/crypto, plus n8n candidate version/fonts checks; NOT full auth/service workflow acceptance.",
         "home_native_features": "NOT_RUN",
         "scan_signature_sbom": "NOT_RUN",
-        "source_binding_independent_hash": "MATCH: evidence worker recomputed exact seven-file input SHA"
+        "source_binding_independent_hash": "NOT_RUN: recomputed by the same session, not an independent worker",
+        "input_files": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/connection_uri.py",
+          "infra/07-workflow/airflow/constraints-upstream-3.4.0-python3.13.txt",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "tests/validation/test_workflow_version_bundle.py"
+        ]
       },
       "official_supplier_lookup_refs": [
         "apache/airflow"
@@ -520,14 +531,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Network-facing API uses the shared custom image; core has the 3.3.2 backfill enumeration fix, but provider/OS status is incomplete and 3.4.0 adds access-control hardening.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -535,7 +546,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -553,18 +568,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Network-facing API uses the shared custom image; core has the 3.3.2 backfill enumeration fix, but provider/OS status is incomplete and 3.4.0 adds access-control hardening.",
-        "next_action": "Evaluate a 3.4.0 custom candidate and full provider/OS advisory binding without deploying.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Evaluate a 3.4.0 custom candidate and full provider/OS advisory binding without deploying."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -587,7 +602,7 @@
       "service": "airflow-dag-processor",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "hy-home/airflow:3.3.2-keycloak",
+      "current_declared": "hy-home/airflow:3.4.0-keycloak",
       "profiles_declared": [
         "workflow",
         "workflow-airflow"
@@ -596,11 +611,11 @@
         "context": "../../..",
         "dockerfile": "infra/07-workflow/airflow/Dockerfile",
         "args": {
-          "AIRFLOW_VERSION": "3.3.2",
+          "AIRFLOW_VERSION": "3.4.0",
           "PYTHON_VERSION": "3.13",
-          "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
-          "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
-          "CELERY_PROVIDER_VERSION": "3.24.1"
+          "KEYCLOAK_PROVIDER_VERSION": "0.13.0",
+          "COMMON_COMPAT_PROVIDER_VERSION": "1.23.1",
+          "CELERY_PROVIDER_VERSION": "3.26.0"
         }
       },
       "current_running": [
@@ -620,17 +635,21 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.4.0",
-      "target_version": "3.3.2",
+      "target_version": "3.4.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
-      "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
-      "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
-      "target_config_digest": "sha256:4644ae58fef15a94f8c82d3b27a5e7c60942262a43ec1640757a5f5dcbf39b04",
+      "target_index_digest": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
+      "target_manifest_digest": "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7",
+      "target_config_digest": "sha256:e4f0f56c3c2c31d4a5f67ada9f2a50830122ce7ec437ee7580771c2cea1b92c0",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-17T11:10:15Z",
       "advisory_urls": [
-        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -659,38 +678,45 @@
         "sha256:0388863fe9964d7f2d0d8bacc26dcae0ad5888eadd275c10086a7683bfe46c56"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "3.3.2",
+      "upstream_reported_tag": "3.4.0",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+      "source_refreshed_at": "2026-11-26T21:48:25.505602+00:00",
+      "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/airflow:3.3.2-keycloak",
+      "target_source_image": "hy-home/airflow:3.4.0-keycloak",
       "candidate_evidence_scope": "SEC01 parent established vendor stable/source pin and selected metadata. Signature, SBOM, advisory applicability, native readiness and HOME rollout remain separate.",
       "target_declared_digest": "UNKNOWN: custom image is a source tag pending final build receipt",
-      "target_digest_evidence": "Final workflow worker receipt: immutable local OCI index selects linux/amd64 manifest/config; parent freshly verified source binding and bounded candidate tests.",
+      "target_digest_evidence": "Local build receipt: the immutable local OCI index selects the linux/amd64 manifest and config recorded here; Dockerfile pip check and version asserts passed in the build.",
       "target_build_materials": [
         {
           "role": "upstream base",
-          "image": "apache/airflow:3.3.2-python3.13",
-          "source_declared_digest": "sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
+          "image": "apache/airflow:3.4.0-python3.13",
+          "source_declared_digest": "sha256:a8d9d19c563c768b2bc605ef26440f28a9164ea886064e99c599b057432ff572",
           "digest_type": "index according to SEC01 parent source receipt",
           "source_path": "infra/07-workflow/airflow/Dockerfile",
-          "source_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1"
+          "source_sha256": "4c921c4a0e8e54bdce4d0b780cc15523d3aea0ecc5e8982343abb14093dd2527"
         }
       ],
       "candidate_workflow_receipt": {
-        "reported_by": "SEC01 workflow worker via root",
-        "reported_at": "2026-10-10T11:20:08.192963+00:00",
+        "reported_by": "SPEC-0212-TSK-0052 W109 update session",
+        "reported_at": "2026-11-26T21:48:25.505602+00:00",
         "command": "HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle",
-        "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+        "input_sha256": "cf21dba73aa2829248c577af0b8fa23edbbc1a60ef697099c94da5268244bf2d",
         "exit_code": 0,
-        "unit_tests_pass": 5,
-        "isolated_tests_pass": 3,
+        "unit_tests_pass": 8,
+        "isolated_tests_pass": 2,
         "scope": "Core/interpreter/direct providers pip check/import and client grant denials using mocked token exchange/crypto, plus n8n candidate version/fonts checks; NOT full auth/service workflow acceptance.",
         "home_native_features": "NOT_RUN",
         "scan_signature_sbom": "NOT_RUN",
-        "source_binding_independent_hash": "MATCH: evidence worker recomputed exact seven-file input SHA"
+        "source_binding_independent_hash": "NOT_RUN: recomputed by the same session, not an independent worker",
+        "input_files": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/connection_uri.py",
+          "infra/07-workflow/airflow/constraints-upstream-3.4.0-python3.13.txt",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "tests/validation/test_workflow_version_bundle.py"
+        ]
       },
       "official_supplier_lookup_refs": [
         "apache/airflow"
@@ -810,14 +836,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. It executes DAG-author code under the documented soft same-UID boundary; empty core advisory listing does not resolve provider or image risk.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -825,7 +851,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -843,18 +873,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "It executes DAG-author code under the documented soft same-UID boundary; empty core advisory listing does not resolve provider or image risk.",
-        "next_action": "Bind provider/SBOM advisories and review DAG-author isolation when testing 3.4.0.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Bind provider/SBOM advisories and review DAG-author isolation when testing 3.4.0."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -877,7 +907,7 @@
       "service": "airflow-init",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "hy-home/airflow:3.3.2-keycloak",
+      "current_declared": "hy-home/airflow:3.4.0-keycloak",
       "profiles_declared": [
         "workflow",
         "workflow-airflow"
@@ -886,27 +916,31 @@
         "context": "../../..",
         "dockerfile": "infra/07-workflow/airflow/Dockerfile",
         "args": {
-          "AIRFLOW_VERSION": "3.3.2",
+          "AIRFLOW_VERSION": "3.4.0",
           "PYTHON_VERSION": "3.13",
-          "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
-          "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
-          "CELERY_PROVIDER_VERSION": "3.24.1"
+          "KEYCLOAK_PROVIDER_VERSION": "0.13.0",
+          "COMMON_COMPAT_PROVIDER_VERSION": "1.23.1",
+          "CELERY_PROVIDER_VERSION": "3.26.0"
         }
       },
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "3.4.0",
-      "target_version": "3.3.2",
+      "target_version": "3.4.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
-      "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
-      "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
-      "target_config_digest": "sha256:4644ae58fef15a94f8c82d3b27a5e7c60942262a43ec1640757a5f5dcbf39b04",
+      "target_index_digest": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
+      "target_manifest_digest": "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7",
+      "target_config_digest": "sha256:e4f0f56c3c2c31d4a5f67ada9f2a50830122ce7ec437ee7580771c2cea1b92c0",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-17T11:10:15Z",
       "advisory_urls": [
-        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -931,38 +965,45 @@
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "3.3.2",
+      "upstream_reported_tag": "3.4.0",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+      "source_refreshed_at": "2026-11-26T21:48:25.505602+00:00",
+      "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/airflow:3.3.2-keycloak",
+      "target_source_image": "hy-home/airflow:3.4.0-keycloak",
       "candidate_evidence_scope": "SEC01 parent established vendor stable/source pin and selected metadata. Signature, SBOM, advisory applicability, native readiness and HOME rollout remain separate.",
       "target_declared_digest": "UNKNOWN: custom image is a source tag pending final build receipt",
-      "target_digest_evidence": "Final workflow worker receipt: immutable local OCI index selects linux/amd64 manifest/config; parent freshly verified source binding and bounded candidate tests.",
+      "target_digest_evidence": "Local build receipt: the immutable local OCI index selects the linux/amd64 manifest and config recorded here; Dockerfile pip check and version asserts passed in the build.",
       "target_build_materials": [
         {
           "role": "upstream base",
-          "image": "apache/airflow:3.3.2-python3.13",
-          "source_declared_digest": "sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
+          "image": "apache/airflow:3.4.0-python3.13",
+          "source_declared_digest": "sha256:a8d9d19c563c768b2bc605ef26440f28a9164ea886064e99c599b057432ff572",
           "digest_type": "index according to SEC01 parent source receipt",
           "source_path": "infra/07-workflow/airflow/Dockerfile",
-          "source_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1"
+          "source_sha256": "4c921c4a0e8e54bdce4d0b780cc15523d3aea0ecc5e8982343abb14093dd2527"
         }
       ],
       "candidate_workflow_receipt": {
-        "reported_by": "SEC01 workflow worker via root",
-        "reported_at": "2026-10-10T11:20:08.192963+00:00",
+        "reported_by": "SPEC-0212-TSK-0052 W109 update session",
+        "reported_at": "2026-11-26T21:48:25.505602+00:00",
         "command": "HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle",
-        "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+        "input_sha256": "cf21dba73aa2829248c577af0b8fa23edbbc1a60ef697099c94da5268244bf2d",
         "exit_code": 0,
-        "unit_tests_pass": 5,
-        "isolated_tests_pass": 3,
+        "unit_tests_pass": 8,
+        "isolated_tests_pass": 2,
         "scope": "Core/interpreter/direct providers pip check/import and client grant denials using mocked token exchange/crypto, plus n8n candidate version/fonts checks; NOT full auth/service workflow acceptance.",
         "home_native_features": "NOT_RUN",
         "scan_signature_sbom": "NOT_RUN",
-        "source_binding_independent_hash": "MATCH: evidence worker recomputed exact seven-file input SHA"
+        "source_binding_independent_hash": "NOT_RUN: recomputed by the same session, not an independent worker",
+        "input_files": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/connection_uri.py",
+          "infra/07-workflow/airflow/constraints-upstream-3.4.0-python3.13.txt",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "tests/validation/test_workflow_version_bundle.py"
+        ]
       },
       "official_supplier_lookup_refs": [
         "apache/airflow"
@@ -1082,14 +1123,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. One-shot initialization uses the same unresolved custom image and privileged database migration surface.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -1097,7 +1138,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -1115,18 +1160,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "One-shot initialization uses the same unresolved custom image and privileged database migration surface.",
-        "next_action": "Include migration, backup and rollback evidence in the non-operational 3.4.0 candidate review.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Include migration, backup and rollback evidence in the non-operational 3.4.0 candidate review."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -1149,7 +1194,7 @@
       "service": "airflow-scheduler",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "hy-home/airflow:3.3.2-keycloak",
+      "current_declared": "hy-home/airflow:3.4.0-keycloak",
       "profiles_declared": [
         "workflow",
         "workflow-airflow"
@@ -1158,11 +1203,11 @@
         "context": "../../..",
         "dockerfile": "infra/07-workflow/airflow/Dockerfile",
         "args": {
-          "AIRFLOW_VERSION": "3.3.2",
+          "AIRFLOW_VERSION": "3.4.0",
           "PYTHON_VERSION": "3.13",
-          "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
-          "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
-          "CELERY_PROVIDER_VERSION": "3.24.1"
+          "KEYCLOAK_PROVIDER_VERSION": "0.13.0",
+          "COMMON_COMPAT_PROVIDER_VERSION": "1.23.1",
+          "CELERY_PROVIDER_VERSION": "3.26.0"
         }
       },
       "current_running": [
@@ -1182,17 +1227,21 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.4.0",
-      "target_version": "3.3.2",
+      "target_version": "3.4.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
-      "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
-      "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
-      "target_config_digest": "sha256:4644ae58fef15a94f8c82d3b27a5e7c60942262a43ec1640757a5f5dcbf39b04",
+      "target_index_digest": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
+      "target_manifest_digest": "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7",
+      "target_config_digest": "sha256:e4f0f56c3c2c31d4a5f67ada9f2a50830122ce7ec437ee7580771c2cea1b92c0",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-17T11:10:15Z",
       "advisory_urls": [
-        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -1221,38 +1270,45 @@
         "sha256:0388863fe9964d7f2d0d8bacc26dcae0ad5888eadd275c10086a7683bfe46c56"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "3.3.2",
+      "upstream_reported_tag": "3.4.0",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+      "source_refreshed_at": "2026-11-26T21:48:25.505602+00:00",
+      "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/airflow:3.3.2-keycloak",
+      "target_source_image": "hy-home/airflow:3.4.0-keycloak",
       "candidate_evidence_scope": "SEC01 parent established vendor stable/source pin and selected metadata. Signature, SBOM, advisory applicability, native readiness and HOME rollout remain separate.",
       "target_declared_digest": "UNKNOWN: custom image is a source tag pending final build receipt",
-      "target_digest_evidence": "Final workflow worker receipt: immutable local OCI index selects linux/amd64 manifest/config; parent freshly verified source binding and bounded candidate tests.",
+      "target_digest_evidence": "Local build receipt: the immutable local OCI index selects the linux/amd64 manifest and config recorded here; Dockerfile pip check and version asserts passed in the build.",
       "target_build_materials": [
         {
           "role": "upstream base",
-          "image": "apache/airflow:3.3.2-python3.13",
-          "source_declared_digest": "sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
+          "image": "apache/airflow:3.4.0-python3.13",
+          "source_declared_digest": "sha256:a8d9d19c563c768b2bc605ef26440f28a9164ea886064e99c599b057432ff572",
           "digest_type": "index according to SEC01 parent source receipt",
           "source_path": "infra/07-workflow/airflow/Dockerfile",
-          "source_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1"
+          "source_sha256": "4c921c4a0e8e54bdce4d0b780cc15523d3aea0ecc5e8982343abb14093dd2527"
         }
       ],
       "candidate_workflow_receipt": {
-        "reported_by": "SEC01 workflow worker via root",
-        "reported_at": "2026-10-10T11:20:08.192963+00:00",
+        "reported_by": "SPEC-0212-TSK-0052 W109 update session",
+        "reported_at": "2026-11-26T21:48:25.505602+00:00",
         "command": "HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle",
-        "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+        "input_sha256": "cf21dba73aa2829248c577af0b8fa23edbbc1a60ef697099c94da5268244bf2d",
         "exit_code": 0,
-        "unit_tests_pass": 5,
-        "isolated_tests_pass": 3,
+        "unit_tests_pass": 8,
+        "isolated_tests_pass": 2,
         "scope": "Core/interpreter/direct providers pip check/import and client grant denials using mocked token exchange/crypto, plus n8n candidate version/fonts checks; NOT full auth/service workflow acceptance.",
         "home_native_features": "NOT_RUN",
         "scan_signature_sbom": "NOT_RUN",
-        "source_binding_independent_hash": "MATCH: evidence worker recomputed exact seven-file input SHA"
+        "source_binding_independent_hash": "NOT_RUN: recomputed by the same session, not an independent worker",
+        "input_files": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/connection_uri.py",
+          "infra/07-workflow/airflow/constraints-upstream-3.4.0-python3.13.txt",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "tests/validation/test_workflow_version_bundle.py"
+        ]
       },
       "official_supplier_lookup_refs": [
         "apache/airflow"
@@ -1372,14 +1428,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Scheduler has metadata-database and scheduling authority; provider and image advisory evidence is incomplete.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -1387,7 +1443,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -1405,18 +1465,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Scheduler has metadata-database and scheduling authority; provider and image advisory evidence is incomplete.",
-        "next_action": "Review component-scoped secrets and official provider advisories before any upgrade decision.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Review component-scoped secrets and official provider advisories before any upgrade decision."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -1511,7 +1571,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+      "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1646,7 +1706,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/statsd-exporter:v0.31.0@sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
           "assessment_version": "0.31.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -1704,7 +1764,7 @@
       "service": "airflow-triggerer",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "hy-home/airflow:3.3.2-keycloak",
+      "current_declared": "hy-home/airflow:3.4.0-keycloak",
       "profiles_declared": [
         "workflow",
         "workflow-airflow"
@@ -1713,11 +1773,11 @@
         "context": "../../..",
         "dockerfile": "infra/07-workflow/airflow/Dockerfile",
         "args": {
-          "AIRFLOW_VERSION": "3.3.2",
+          "AIRFLOW_VERSION": "3.4.0",
           "PYTHON_VERSION": "3.13",
-          "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
-          "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
-          "CELERY_PROVIDER_VERSION": "3.24.1"
+          "KEYCLOAK_PROVIDER_VERSION": "0.13.0",
+          "COMMON_COMPAT_PROVIDER_VERSION": "1.23.1",
+          "CELERY_PROVIDER_VERSION": "3.26.0"
         }
       },
       "current_running": [
@@ -1737,17 +1797,21 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.4.0",
-      "target_version": "3.3.2",
+      "target_version": "3.4.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
-      "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
-      "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
-      "target_config_digest": "sha256:4644ae58fef15a94f8c82d3b27a5e7c60942262a43ec1640757a5f5dcbf39b04",
+      "target_index_digest": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
+      "target_manifest_digest": "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7",
+      "target_config_digest": "sha256:e4f0f56c3c2c31d4a5f67ada9f2a50830122ce7ec437ee7580771c2cea1b92c0",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-17T11:10:15Z",
       "advisory_urls": [
-        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -1776,38 +1840,45 @@
         "sha256:0388863fe9964d7f2d0d8bacc26dcae0ad5888eadd275c10086a7683bfe46c56"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "3.3.2",
+      "upstream_reported_tag": "3.4.0",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+      "source_refreshed_at": "2026-11-26T21:48:25.505602+00:00",
+      "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/airflow:3.3.2-keycloak",
+      "target_source_image": "hy-home/airflow:3.4.0-keycloak",
       "candidate_evidence_scope": "SEC01 parent established vendor stable/source pin and selected metadata. Signature, SBOM, advisory applicability, native readiness and HOME rollout remain separate.",
       "target_declared_digest": "UNKNOWN: custom image is a source tag pending final build receipt",
-      "target_digest_evidence": "Final workflow worker receipt: immutable local OCI index selects linux/amd64 manifest/config; parent freshly verified source binding and bounded candidate tests.",
+      "target_digest_evidence": "Local build receipt: the immutable local OCI index selects the linux/amd64 manifest and config recorded here; Dockerfile pip check and version asserts passed in the build.",
       "target_build_materials": [
         {
           "role": "upstream base",
-          "image": "apache/airflow:3.3.2-python3.13",
-          "source_declared_digest": "sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
+          "image": "apache/airflow:3.4.0-python3.13",
+          "source_declared_digest": "sha256:a8d9d19c563c768b2bc605ef26440f28a9164ea886064e99c599b057432ff572",
           "digest_type": "index according to SEC01 parent source receipt",
           "source_path": "infra/07-workflow/airflow/Dockerfile",
-          "source_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1"
+          "source_sha256": "4c921c4a0e8e54bdce4d0b780cc15523d3aea0ecc5e8982343abb14093dd2527"
         }
       ],
       "candidate_workflow_receipt": {
-        "reported_by": "SEC01 workflow worker via root",
-        "reported_at": "2026-10-10T11:20:08.192963+00:00",
+        "reported_by": "SPEC-0212-TSK-0052 W109 update session",
+        "reported_at": "2026-11-26T21:48:25.505602+00:00",
         "command": "HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle",
-        "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+        "input_sha256": "cf21dba73aa2829248c577af0b8fa23edbbc1a60ef697099c94da5268244bf2d",
         "exit_code": 0,
-        "unit_tests_pass": 5,
-        "isolated_tests_pass": 3,
+        "unit_tests_pass": 8,
+        "isolated_tests_pass": 2,
         "scope": "Core/interpreter/direct providers pip check/import and client grant denials using mocked token exchange/crypto, plus n8n candidate version/fonts checks; NOT full auth/service workflow acceptance.",
         "home_native_features": "NOT_RUN",
         "scan_signature_sbom": "NOT_RUN",
-        "source_binding_independent_hash": "MATCH: evidence worker recomputed exact seven-file input SHA"
+        "source_binding_independent_hash": "NOT_RUN: recomputed by the same session, not an independent worker",
+        "input_files": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/connection_uri.py",
+          "infra/07-workflow/airflow/constraints-upstream-3.4.0-python3.13.txt",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "tests/validation/test_workflow_version_bundle.py"
+        ]
       },
       "official_supplier_lookup_refs": [
         "apache/airflow"
@@ -1927,14 +1998,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The official model documents execution of DAG-author trigger code and soft in-process API protection; provider/OS evidence is incomplete.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -1942,7 +2013,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -1960,18 +2035,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The official model documents execution of DAG-author trigger code and soft in-process API protection; provider/OS evidence is incomplete.",
-        "next_action": "Review triggerer isolation and provider advisories in a 3.4.0 compatibility plan.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Review triggerer isolation and provider advisories in a 3.4.0 compatibility plan."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -1994,7 +2069,7 @@
       "service": "airflow-worker",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "hy-home/airflow:3.3.2-keycloak",
+      "current_declared": "hy-home/airflow:3.4.0-keycloak",
       "profiles_declared": [
         "workflow",
         "workflow-airflow"
@@ -2003,11 +2078,11 @@
         "context": "../../..",
         "dockerfile": "infra/07-workflow/airflow/Dockerfile",
         "args": {
-          "AIRFLOW_VERSION": "3.3.2",
+          "AIRFLOW_VERSION": "3.4.0",
           "PYTHON_VERSION": "3.13",
-          "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
-          "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
-          "CELERY_PROVIDER_VERSION": "3.24.1"
+          "KEYCLOAK_PROVIDER_VERSION": "0.13.0",
+          "COMMON_COMPAT_PROVIDER_VERSION": "1.23.1",
+          "CELERY_PROVIDER_VERSION": "3.26.0"
         }
       },
       "current_running": [
@@ -2027,17 +2102,21 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.4.0",
-      "target_version": "3.3.2",
+      "target_version": "3.4.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
-      "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
-      "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
-      "target_config_digest": "sha256:4644ae58fef15a94f8c82d3b27a5e7c60942262a43ec1640757a5f5dcbf39b04",
+      "target_index_digest": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
+      "target_manifest_digest": "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7",
+      "target_config_digest": "sha256:e4f0f56c3c2c31d4a5f67ada9f2a50830122ce7ec437ee7580771c2cea1b92c0",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-17T11:10:15Z",
       "advisory_urls": [
-        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -2066,38 +2145,45 @@
         "sha256:0388863fe9964d7f2d0d8bacc26dcae0ad5888eadd275c10086a7683bfe46c56"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "3.3.2",
+      "upstream_reported_tag": "3.4.0",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+      "source_refreshed_at": "2026-11-26T21:48:25.505602+00:00",
+      "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/airflow:3.3.2-keycloak",
+      "target_source_image": "hy-home/airflow:3.4.0-keycloak",
       "candidate_evidence_scope": "SEC01 parent established vendor stable/source pin and selected metadata. Signature, SBOM, advisory applicability, native readiness and HOME rollout remain separate.",
       "target_declared_digest": "UNKNOWN: custom image is a source tag pending final build receipt",
-      "target_digest_evidence": "Final workflow worker receipt: immutable local OCI index selects linux/amd64 manifest/config; parent freshly verified source binding and bounded candidate tests.",
+      "target_digest_evidence": "Local build receipt: the immutable local OCI index selects the linux/amd64 manifest and config recorded here; Dockerfile pip check and version asserts passed in the build.",
       "target_build_materials": [
         {
           "role": "upstream base",
-          "image": "apache/airflow:3.3.2-python3.13",
-          "source_declared_digest": "sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
+          "image": "apache/airflow:3.4.0-python3.13",
+          "source_declared_digest": "sha256:a8d9d19c563c768b2bc605ef26440f28a9164ea886064e99c599b057432ff572",
           "digest_type": "index according to SEC01 parent source receipt",
           "source_path": "infra/07-workflow/airflow/Dockerfile",
-          "source_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1"
+          "source_sha256": "4c921c4a0e8e54bdce4d0b780cc15523d3aea0ecc5e8982343abb14093dd2527"
         }
       ],
       "candidate_workflow_receipt": {
-        "reported_by": "SEC01 workflow worker via root",
-        "reported_at": "2026-10-10T11:20:08.192963+00:00",
+        "reported_by": "SPEC-0212-TSK-0052 W109 update session",
+        "reported_at": "2026-11-26T21:48:25.505602+00:00",
         "command": "HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle",
-        "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+        "input_sha256": "cf21dba73aa2829248c577af0b8fa23edbbc1a60ef697099c94da5268244bf2d",
         "exit_code": 0,
-        "unit_tests_pass": 5,
-        "isolated_tests_pass": 3,
+        "unit_tests_pass": 8,
+        "isolated_tests_pass": 2,
         "scope": "Core/interpreter/direct providers pip check/import and client grant denials using mocked token exchange/crypto, plus n8n candidate version/fonts checks; NOT full auth/service workflow acceptance.",
         "home_native_features": "NOT_RUN",
         "scan_signature_sbom": "NOT_RUN",
-        "source_binding_independent_hash": "MATCH: evidence worker recomputed exact seven-file input SHA"
+        "source_binding_independent_hash": "NOT_RUN: recomputed by the same session, not an independent worker",
+        "input_files": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/connection_uri.py",
+          "infra/07-workflow/airflow/constraints-upstream-3.4.0-python3.13.txt",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "tests/validation/test_workflow_version_bundle.py"
+        ]
       },
       "official_supplier_lookup_refs": [
         "apache/airflow"
@@ -2217,14 +2303,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Workers execute DAG code; exact core is known but the custom image and provider set are not fully advisory-bound.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -2232,7 +2318,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -2250,18 +2340,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Workers execute DAG code; exact core is known but the custom image and provider set are not fully advisory-bound.",
-        "next_action": "Use an exact candidate SBOM and ensure workers do not receive metadata DB/JWT-signing credentials.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Use an exact candidate SBOM and ensure workers do not receive metadata DB/JWT-signing credentials."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -7327,7 +7417,7 @@
       "service": "flower",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "hy-home/airflow:3.3.2-keycloak",
+      "current_declared": "hy-home/airflow:3.4.0-keycloak",
       "profiles_declared": [
         "workflow",
         "workflow-airflow"
@@ -7336,11 +7426,11 @@
         "context": "../../..",
         "dockerfile": "infra/07-workflow/airflow/Dockerfile",
         "args": {
-          "AIRFLOW_VERSION": "3.3.2",
+          "AIRFLOW_VERSION": "3.4.0",
           "PYTHON_VERSION": "3.13",
-          "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
-          "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
-          "CELERY_PROVIDER_VERSION": "3.24.1"
+          "KEYCLOAK_PROVIDER_VERSION": "0.13.0",
+          "COMMON_COMPAT_PROVIDER_VERSION": "1.23.1",
+          "CELERY_PROVIDER_VERSION": "3.26.0"
         }
       },
       "current_running": [
@@ -7360,17 +7450,21 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.4.0",
-      "target_version": "3.3.2",
+      "target_version": "3.4.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
-      "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
-      "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
-      "target_config_digest": "sha256:4644ae58fef15a94f8c82d3b27a5e7c60942262a43ec1640757a5f5dcbf39b04",
+      "target_index_digest": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
+      "target_manifest_digest": "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7",
+      "target_config_digest": "sha256:e4f0f56c3c2c31d4a5f67ada9f2a50830122ce7ec437ee7580771c2cea1b92c0",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-17T11:10:15Z",
       "advisory_urls": [
-        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+        "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -7399,38 +7493,45 @@
         "sha256:0388863fe9964d7f2d0d8bacc26dcae0ad5888eadd275c10086a7683bfe46c56"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "3.3.2",
+      "upstream_reported_tag": "3.4.0",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+      "source_refreshed_at": "2026-11-26T21:48:25.505602+00:00",
+      "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/airflow:3.3.2-keycloak",
+      "target_source_image": "hy-home/airflow:3.4.0-keycloak",
       "candidate_evidence_scope": "SEC01 parent established vendor stable/source pin and selected metadata. Signature, SBOM, advisory applicability, native readiness and HOME rollout remain separate.",
       "target_declared_digest": "UNKNOWN: custom image is a source tag pending final build receipt",
-      "target_digest_evidence": "Final workflow worker receipt: immutable local OCI index selects linux/amd64 manifest/config; parent freshly verified source binding and bounded candidate tests.",
+      "target_digest_evidence": "Local build receipt: the immutable local OCI index selects the linux/amd64 manifest and config recorded here; Dockerfile pip check and version asserts passed in the build.",
       "target_build_materials": [
         {
           "role": "upstream base",
-          "image": "apache/airflow:3.3.2-python3.13",
-          "source_declared_digest": "sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
+          "image": "apache/airflow:3.4.0-python3.13",
+          "source_declared_digest": "sha256:a8d9d19c563c768b2bc605ef26440f28a9164ea886064e99c599b057432ff572",
           "digest_type": "index according to SEC01 parent source receipt",
           "source_path": "infra/07-workflow/airflow/Dockerfile",
-          "source_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1"
+          "source_sha256": "4c921c4a0e8e54bdce4d0b780cc15523d3aea0ecc5e8982343abb14093dd2527"
         }
       ],
       "candidate_workflow_receipt": {
-        "reported_by": "SEC01 workflow worker via root",
-        "reported_at": "2026-10-10T11:20:08.192963+00:00",
+        "reported_by": "SPEC-0212-TSK-0052 W109 update session",
+        "reported_at": "2026-11-26T21:48:25.505602+00:00",
         "command": "HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle",
-        "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+        "input_sha256": "cf21dba73aa2829248c577af0b8fa23edbbc1a60ef697099c94da5268244bf2d",
         "exit_code": 0,
-        "unit_tests_pass": 5,
-        "isolated_tests_pass": 3,
+        "unit_tests_pass": 8,
+        "isolated_tests_pass": 2,
         "scope": "Core/interpreter/direct providers pip check/import and client grant denials using mocked token exchange/crypto, plus n8n candidate version/fonts checks; NOT full auth/service workflow acceptance.",
         "home_native_features": "NOT_RUN",
         "scan_signature_sbom": "NOT_RUN",
-        "source_binding_independent_hash": "MATCH: evidence worker recomputed exact seven-file input SHA"
+        "source_binding_independent_hash": "NOT_RUN: recomputed by the same session, not an independent worker",
+        "input_files": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/connection_uri.py",
+          "infra/07-workflow/airflow/constraints-upstream-3.4.0-python3.13.txt",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "tests/validation/test_workflow_version_bundle.py"
+        ]
       },
       "official_supplier_lookup_refs": [
         "apache/airflow"
@@ -7550,14 +7651,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Flower shares the custom Airflow image but exposes a different monitoring UI and Celery-provider surface; core advisories alone cannot decide it.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -7565,7 +7666,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -7583,18 +7688,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Flower shares the custom Airflow image but exposes a different monitoring UI and Celery-provider surface; core advisories alone cannot decide it.",
-        "next_action": "Bind the Celery provider and Flower dependencies to official advisories and verify access controls in a source-only review.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Bind the Celery provider and Flower dependencies to official advisories and verify access controls in a source-only review."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -57776,6 +57881,192 @@
         }
       ],
       "meaning": "2 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 13 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "6be7454b9431f935b61e49794874edfd49da118c",
+      "refreshed_at": "2026-11-26T21:47:32.791635+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "6a4ca5e0826798c7851e4df22759435022c23180437ff6d1886084d2e5e22412",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7df3bcd149809bfa66f55745a5201cde10249cdb4bcd535c76933e14d832275c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "bea4ad9fad9dea27178d6996fc9aeb3c68fe5641252d41f0d7c92c9aa57aec43"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "73d5754c0a0d6419bb8399a35104a2e06b59965a18256e1dcbf0ec2b6d00654a"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "b494ff5970dd0a293709ed4ac07f5a1a538e146095bc4f0b66b40245a3679041"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "c95dc25d4977e28ef281fce2651e17ea15bf96db14494a27eeaa1b987e865e07"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "f7cf17b4fa054c88a792d2a07e1315a5dd62b0e3b7046cfb71a8acd955ba71ec"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "0777773f66d293e9bb8fb58cb0a1c5c677f817a94db4cfe917fb0de3e82bbcc8"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "51a5398438dfc67f14f92c9ce69d960ac3fbbac1c981f1f66cea83dbcdc2f11c"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "4e28ed5fc0e39a71ce8d78220b52b2618aa9abc330edd19cddea1d0f09d649e2"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e37265d81dfed6307e484fd2189365401cc4317e0e78ebeba26a98144379915"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "b2df25b3a29ede02669549e4333f345a49a7563445c2f253ec6e1737d0aa7c64"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "62c62ea7449684d1e44934eff93a22bf580856c077cb06d168f8d59467193c86"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "96e2771d3cf9346ffb43520f3592e6cb81b7e2310c536168d18d3f4579fc70da"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "e38ccef6635098207c9b1aca745811b2282807c39ac085921f30b8973d6ba3c9"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02"
+        }
+      ],
+      "changed_inputs": [
+        "infra/07-workflow/airflow/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "airflow-apiserver",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_refreshed_at": "2026-11-26T21:47:32.341904+00:00"
+        },
+        {
+          "service": "airflow-dag-processor",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_refreshed_at": "2026-11-26T21:47:32.341904+00:00"
+        },
+        {
+          "service": "airflow-init",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_refreshed_at": "2026-11-26T21:47:32.341904+00:00"
+        },
+        {
+          "service": "airflow-scheduler",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_refreshed_at": "2026-11-26T21:47:32.341904+00:00"
+        },
+        {
+          "service": "airflow-statsd-exporter",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "airflow-triggerer",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_refreshed_at": "2026-11-26T21:47:32.341904+00:00"
+        },
+        {
+          "service": "airflow-worker",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_refreshed_at": "2026-11-26T21:47:32.341904+00:00"
+        },
+        {
+          "service": "flower",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_refreshed_at": "2026-11-26T21:47:32.341904+00:00"
+        }
+      ],
+      "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 8 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {
@@ -63780,10 +64071,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-27T00:00:25+09:00",
-      "source_revision": "c518b72565c6de9061dbec69711a8759b4e9112c",
+      "checked_at": "2026-11-26T21:47:32.791635+00:00",
+      "source_revision": "6be7454b9431f935b61e49794874edfd49da118c",
       "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
-      "input_sha256": "4f7015296956ffccf7fada3ee8d4d9e09680752bcbff30b807f82304009abeb5",
+      "input_sha256": "26a426fe4c2c4742a61f1e50725780a78f899b91430ae0050b8c351d6d4dc18a",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -63852,7 +64143,7 @@
         },
         {
           "path": "tests/validation/test_workflow_version_bundle.py",
-          "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          "sha256": "43cc0957078533778d3282f512f469f67104f9514dec0191b6131e083c40f203"
         }
       ],
       "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
@@ -67386,6 +67677,90 @@
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
         "archived_at": "2026-11-27T00:00:25+09:00"
+      },
+      {
+        "checked_at": "2026-11-27T00:00:25+09:00",
+        "source_revision": "c518b72565c6de9061dbec69711a8759b4e9112c",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "4f7015296956ffccf7fada3ee8d4d9e09680752bcbff30b807f82304009abeb5",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "685fd2a71b2cca0147d252edc92fcaa3ed3ae18c022335699b62cb70320870ba"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "c1d4ff8c789c6e09e08c8c0b71372219e3b9f3a3f434a13dedc9b28319f3eba0"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "31c1536d21c1da3de445c1efb77ac7514a30ee72c3370da5e4cdf7e69ab1c19f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "31c1536d21c1da3de445c1efb77ac7514a30ee72c3370da5e4cdf7e69ab1c19f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "6b1e33a2822efe1fe48c4234398745cb938dcf9c438baaea69af2d34f3c6f013"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "dc155252e60ec6734670a84c1b045e621d81f5abdcdf8aedb35d9fd1cf2dc786"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-26T21:47:32.791635+00:00"
       }
     ],
     "current_source_acceptance_limit": {

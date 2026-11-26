@@ -55610,11 +55610,11 @@
     "reviews": {
       "airflow-apiserver": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -55622,7 +55622,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -55640,18 +55644,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Network-facing API uses the shared custom image; core has the 3.3.2 backfill enumeration fix, but provider/OS status is incomplete and 3.4.0 adds access-control hardening.",
-        "next_action": "Evaluate a 3.4.0 custom candidate and full provider/OS advisory binding without deploying.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Evaluate a 3.4.0 custom candidate and full provider/OS advisory binding without deploying."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -55667,11 +55671,11 @@
       },
       "airflow-dag-processor": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -55679,7 +55683,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -55697,18 +55705,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "It executes DAG-author code under the documented soft same-UID boundary; empty core advisory listing does not resolve provider or image risk.",
-        "next_action": "Bind provider/SBOM advisories and review DAG-author isolation when testing 3.4.0.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Bind provider/SBOM advisories and review DAG-author isolation when testing 3.4.0."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -55724,11 +55732,11 @@
       },
       "airflow-init": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -55736,7 +55744,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -55754,18 +55766,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "One-shot initialization uses the same unresolved custom image and privileged database migration surface.",
-        "next_action": "Include migration, backup and rollback evidence in the non-operational 3.4.0 candidate review.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Include migration, backup and rollback evidence in the non-operational 3.4.0 candidate review."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -55781,11 +55793,11 @@
       },
       "airflow-scheduler": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -55793,7 +55805,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -55811,18 +55827,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Scheduler has metadata-database and scheduling authority; provider and image advisory evidence is incomplete.",
-        "next_action": "Review component-scoped secrets and official provider advisories before any upgrade decision.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Review component-scoped secrets and official provider advisories before any upgrade decision."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -55841,7 +55857,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/statsd-exporter:v0.31.0@sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
           "assessment_version": "0.31.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -55893,11 +55909,11 @@
       },
       "airflow-triggerer": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -55905,7 +55921,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -55923,18 +55943,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The official model documents execution of DAG-author trigger code and soft in-process API protection; provider/OS evidence is incomplete.",
-        "next_action": "Review triggerer isolation and provider advisories in a 3.4.0 compatibility plan.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Review triggerer isolation and provider advisories in a 3.4.0 compatibility plan."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -55950,11 +55970,11 @@
       },
       "airflow-worker": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -55962,7 +55982,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -55980,18 +56004,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Workers execute DAG code; exact core is known but the custom image and provider set are not fully advisory-bound.",
-        "next_action": "Use an exact candidate SBOM and ensure workers do not receive metadata DB/JWT-signing credentials.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Use an exact candidate SBOM and ensure workers do not receive metadata DB/JWT-signing credentials."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -57194,11 +57218,11 @@
       },
       "flower": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T21:48:25.505602+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
-          "assessment_version": "3.3.2 custom",
+          "declaration": "hy-home/airflow:3.4.0-keycloak",
+          "source_input_sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2",
+          "assessment_version": "3.4.0 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -57206,7 +57230,11 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/apache/airflow/security-advisories?per_page=100&page=1",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow 3.4.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-keycloak 0.13.0)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-common-compat 1.23.1)",
+          "https://api.osv.dev/v1/query (PyPI apache-airflow-providers-celery 3.26.0)"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -57224,18 +57252,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Flower shares the custom Airflow image but exposes a different monitoring UI and Celery-provider surface; core advisories alone cannot decide it.",
-        "next_action": "Bind the Celery provider and Flower dependencies to official advisories and verify access controls in a source-only review.",
+        "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "3.3.2",
+          "action": "retain-current-version",
+          "target_retained": "3.4.0",
           "observed_latest": "3.4.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Bind the Celery provider and Flower dependencies to official advisories and verify access controls in a source-only review."
+          "reason": "Airflow 3.4.0 with the Keycloak 0.13.0, common-compat 1.23.1 and Celery 3.26.0 providers: OSV lists no advisory for any of the four PyPI versions and apache/airflow publishes no repository advisory, re-checked on 2026-11-26; the custom image still has no SBOM or scan, so image-level applicability stays UNKNOWN. Workers execute DAG code.",
+          "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -64690,7 +64718,7 @@
         "previous_gate_missing": [
           "latest_mismatch"
         ],
-        "target_retained": "3.3.2",
+        "target_retained": "3.4.0",
         "prior_observed_version": "3.4.0",
         "current_observed_version": "3.4.0",
         "current_release_ref": "https://github.com/apache/airflow/releases/tag/3.4.0",
@@ -64703,13 +64731,13 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Evaluate a 3.4.0 custom candidate and full provider/OS advisory binding without deploying."
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
       },
       "airflow-dag-processor": {
         "previous_gate_missing": [
           "latest_mismatch"
         ],
-        "target_retained": "3.3.2",
+        "target_retained": "3.4.0",
         "prior_observed_version": "3.4.0",
         "current_observed_version": "3.4.0",
         "current_release_ref": "https://github.com/apache/airflow/releases/tag/3.4.0",
@@ -64722,13 +64750,13 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Bind provider/SBOM advisories and review DAG-author isolation when testing 3.4.0."
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
       },
       "airflow-init": {
         "previous_gate_missing": [
           "latest_mismatch"
         ],
-        "target_retained": "3.3.2",
+        "target_retained": "3.4.0",
         "prior_observed_version": "3.4.0",
         "current_observed_version": "3.4.0",
         "current_release_ref": "https://github.com/apache/airflow/releases/tag/3.4.0",
@@ -64741,13 +64769,13 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Include migration, backup and rollback evidence in the non-operational 3.4.0 candidate review."
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
       },
       "airflow-scheduler": {
         "previous_gate_missing": [
           "latest_mismatch"
         ],
-        "target_retained": "3.3.2",
+        "target_retained": "3.4.0",
         "prior_observed_version": "3.4.0",
         "current_observed_version": "3.4.0",
         "current_release_ref": "https://github.com/apache/airflow/releases/tag/3.4.0",
@@ -64760,13 +64788,13 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Review component-scoped secrets and official provider advisories before any upgrade decision."
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
       },
       "airflow-triggerer": {
         "previous_gate_missing": [
           "latest_mismatch"
         ],
-        "target_retained": "3.3.2",
+        "target_retained": "3.4.0",
         "prior_observed_version": "3.4.0",
         "current_observed_version": "3.4.0",
         "current_release_ref": "https://github.com/apache/airflow/releases/tag/3.4.0",
@@ -64779,13 +64807,13 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Review triggerer isolation and provider advisories in a 3.4.0 compatibility plan."
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
       },
       "airflow-worker": {
         "previous_gate_missing": [
           "latest_mismatch"
         ],
-        "target_retained": "3.3.2",
+        "target_retained": "3.4.0",
         "prior_observed_version": "3.4.0",
         "current_observed_version": "3.4.0",
         "current_release_ref": "https://github.com/apache/airflow/releases/tag/3.4.0",
@@ -64798,7 +64826,7 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Use an exact candidate SBOM and ensure workers do not receive metadata DB/JWT-signing credentials."
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
       },
       "alertmanager": {
         "previous_gate_missing": [
@@ -64899,7 +64927,7 @@
         "previous_gate_missing": [
           "latest_mismatch"
         ],
-        "target_retained": "3.3.2",
+        "target_retained": "3.4.0",
         "prior_observed_version": "3.4.0",
         "current_observed_version": "3.4.0",
         "current_release_ref": "https://github.com/apache/airflow/releases/tag/3.4.0",
@@ -64912,7 +64940,7 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Bind the Celery provider and Flower dependencies to official advisories and verify access controls in a source-only review."
+        "next_action": "Keep 3.4.0; run airflow db migrate after a database backup at the owner-approved recreate, then use an exact candidate SBOM and keep metadata DB/JWT-signing credentials away from workers."
       },
       "gatus": {
         "previous_gate_missing": [

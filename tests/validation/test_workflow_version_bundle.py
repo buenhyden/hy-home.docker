@@ -15,11 +15,11 @@ ROOT = Path(__file__).resolve().parents[2]
 AIRFLOW = ROOT / "infra/07-workflow/airflow"
 N8N = ROOT / "infra/07-workflow/n8n"
 CANDIDATE_MANIFESTS = {
-    "hy-home/sec01-airflow:3.3.2-keycloak-candidate": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
+    "hy-home/sec01-airflow:3.4.0-keycloak-candidate": "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7",
 }
 
 CANDIDATE_INDEXES = {
-    "hy-home/sec01-airflow:3.3.2-keycloak-candidate": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
+    "hy-home/sec01-airflow:3.4.0-keycloak-candidate": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
 }
 
 
@@ -42,10 +42,10 @@ class WorkflowVersionBundleTests(unittest.TestCase):
             source,
             r"FROM apache/airflow:\$\{AIRFLOW_VERSION\}-python\$\{PYTHON_VERSION\}@sha256:[0-9a-f]{64}",
         )
-        self.assertEqual("3.3.2", args["AIRFLOW_VERSION"])
-        self.assertEqual("0.11.0", args["KEYCLOAK_PROVIDER_VERSION"])
-        self.assertEqual("1.20.0", args["COMMON_COMPAT_PROVIDER_VERSION"])
-        self.assertEqual("3.24.1", args["CELERY_PROVIDER_VERSION"])
+        self.assertEqual("3.4.0", args["AIRFLOW_VERSION"])
+        self.assertEqual("0.13.0", args["KEYCLOAK_PROVIDER_VERSION"])
+        self.assertEqual("1.23.1", args["COMMON_COMPAT_PROVIDER_VERSION"])
+        self.assertEqual("3.26.0", args["CELERY_PROVIDER_VERSION"])
 
     def test_airflow_resolution_cannot_silently_drift(self):
         source = (AIRFLOW / "Dockerfile").read_text()
@@ -80,9 +80,9 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         )
         self.assertIn("assert sys.version_info[:2]", source)
         self.assertIn('assert version("apache-airflow")', source)
-        upstream = AIRFLOW / "constraints-upstream-3.3.2-python3.13.txt"
+        upstream = AIRFLOW / "constraints-upstream-3.4.0-python3.13.txt"
         self.assertTrue(upstream.is_file())
-        self.assertIn("apache-airflow-providers-keycloak==0.10.0", upstream.read_text())
+        self.assertIn("apache-airflow-providers-keycloak==0.11.2", upstream.read_text())
         self.assertIn(hashlib.sha256(upstream.read_bytes()).hexdigest(), source)
         self.assertIn("constraints-reviewed.txt", source)
 
@@ -197,9 +197,9 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         )
 
     def test_candidate_mismatch_blocks_before_container_creation(self):
-        image = "hy-home/sec01-airflow:3.3.2-keycloak-candidate"
+        image = "hy-home/sec01-airflow:3.4.0-keycloak-candidate"
         digest = (
-            "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e"
+            "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7"
         )
         for descriptor in (
             {
@@ -224,9 +224,9 @@ class WorkflowVersionBundleTests(unittest.TestCase):
                 )
 
     def test_matching_receipt_runs_immutable_index_with_checked_manifest(self):
-        image = "hy-home/sec01-airflow:3.3.2-keycloak-candidate"
+        image = "hy-home/sec01-airflow:3.4.0-keycloak-candidate"
         digest = (
-            "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e"
+            "sha256:b793527ec830cc83dfd19e5a89bf95fb23a6d9ee026191ed7638c75178e018e7"
         )
         descriptor = {
             "digest": digest,
@@ -246,7 +246,7 @@ class WorkflowVersionBundleTests(unittest.TestCase):
             self.assertEqual(2, run.call_count)
             command = run.call_args_list[1].args[0]
             self.assertIn(
-                "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
+                "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
                 command,
             )
             self.assertNotIn(image, command)
@@ -328,7 +328,7 @@ class WorkflowCandidateRehearsalTests(unittest.TestCase):
 
     def test_airflow_actual_versions_dependency_and_imports(self):
         output = self.run_candidate(
-            "hy-home/sec01-airflow:3.3.2-keycloak-candidate",
+            "hy-home/sec01-airflow:3.4.0-keycloak-candidate",
             "python",
             "-",
             script="""
@@ -337,10 +337,10 @@ from importlib.metadata import version
 from airflow.providers.keycloak.auth_manager.keycloak_auth_manager import KeycloakAuthManager
 from airflow.providers.celery.executors.celery_executor import CeleryExecutor
 assert sys.version_info[:2] == (3, 13)
-assert version('apache-airflow') == '3.3.2'
-assert version('apache-airflow-providers-keycloak') == '0.11.0'
-assert version('apache-airflow-providers-common-compat') == '1.20.0'
-assert version('apache-airflow-providers-celery') == '3.24.1'
+assert version('apache-airflow') == '3.4.0'
+assert version('apache-airflow-providers-keycloak') == '0.13.0'
+assert version('apache-airflow-providers-common-compat') == '1.23.1'
+assert version('apache-airflow-providers-celery') == '3.26.0'
 subprocess.run(['pip', 'check'], check=True)
 print('installed bundle PASS')
 """,
@@ -349,7 +349,7 @@ print('installed bundle PASS')
 
     def test_installed_provider_rejects_other_client_before_exchange(self):
         output = self.run_candidate(
-            "hy-home/sec01-airflow:3.3.2-keycloak-candidate",
+            "hy-home/sec01-airflow:3.4.0-keycloak-candidate",
             "python",
             "-",
             script="""

@@ -408,7 +408,7 @@ class AirflowContractTests(unittest.TestCase):
                 role,
             )
             if role in coded:
-                self.assertEqual(model["image"], "hy-home/airflow:3.3.2-keycloak")
+                self.assertEqual(model["image"], "hy-home/airflow:3.4.0-keycloak")
         worker = [
             m
             for m in compose["airflow-worker"]["volumes"]

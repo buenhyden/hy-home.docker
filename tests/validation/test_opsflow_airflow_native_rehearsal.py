@@ -111,12 +111,12 @@ class AirflowNativeBoundaryTests(unittest.TestCase):
             )
 
     def test_probe_requires_actual_runtime_versions_and_nonroot_uid(self):
-        observed = json.loads("""{"uid":50000,"gid":0,"airflow":"3.3.2","celery":"3.24.1",
+        observed = json.loads("""{"uid":50000,"gid":0,"airflow":"3.4.0","celery":"3.26.0",
 "boto3":true,"psycopg2":true,"sdk":true,"forbidden_env":[]}""")
         self.assertEqual((50000, 0), fixture.validate_probe(observed))
         safe = fixture.probe_observations({**observed, "token": "must-not-print"})
         self.assertNotIn("must-not-print", json.dumps(safe))
-        self.assertEqual("3.3.2", safe["airflow"])
+        self.assertEqual("3.4.0", safe["airflow"])
         for key, value in (
             ("uid", 0),
             ("uid", True),

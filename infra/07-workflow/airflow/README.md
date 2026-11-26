@@ -1,13 +1,13 @@
 ---
 title: "Airflow (07-workflow)"
-version: "2.1.0"
+version: "2.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-27"
 created: "2025-11-12"
 ---
 
@@ -248,13 +248,13 @@ broker는 ADR-0062로 제거되어 지원하지 않습니다.
 ###### SEC01 업데이트 검증 경계
 <!-- core-payload-level:5 -->
 
-2026-10-10 공식 [Airflow release](https://github.com/apache/airflow/releases/tag/3.3.2)와 <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
-[Keycloak provider PyPI](https://pypi.org/project/apache-airflow-providers-keycloak/0.11.0/)를 조회했습니다. <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+2026-11-27 공식 [Airflow release](https://github.com/apache/airflow/releases/tag/3.4.0)와 <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+[Keycloak provider PyPI](https://pypi.org/project/apache-airflow-providers-keycloak/0.13.0/)를 조회했습니다. <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
 Compose의 모든 Airflow role은 같은 core·Python·provider build args와 로컬 이미지 태그를 사용합니다.
 base의 OCI index digest는 Dockerfile이 소유하며 실제 배포 digest와 구별합니다.
 
-[보존된 upstream constraints](constraints-upstream-3.3.2-python3.13.txt)는 <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
-[공식 Python constraints](https://raw.githubusercontent.com/apache/airflow/constraints-3.3.2/constraints-3.13.txt)의 <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+[보존된 upstream constraints](constraints-upstream-3.4.0-python3.13.txt)는 <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+[공식 Python constraints](https://raw.githubusercontent.com/apache/airflow/constraints-3.4.0/constraints-3.13.txt)의 <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
 원문입니다. upstream Keycloak·common-compat·Celery pin과 최신 직접 provider의 차이는 Dockerfile에 명시한 overlay로 해결합니다.
 다른 pin은 보존하며 의존성을 정상 해석합니다. resolver나 `pip check` 실패는 업데이트 장애입니다.
 런타임 `_PIP_ADDITIONAL_REQUIREMENTS`를 Compose에서 전달하지 않습니다. 추가 의존성은 이미지에서 검증해야 합니다.
