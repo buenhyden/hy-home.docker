@@ -788,7 +788,13 @@ class ManagementDataPortContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="p04-rendered-uri-") as temporary:
             secrets = Path(temporary)
             password = " p04-synthetic @:/?#%40+ 한글 "  # gitleaks:allow -- synthetic fixture; never deployed
-            for name in ("airflow_db_password", "mng_valkey_password"):
+            # The broker defaults to the named airflow role; the shared secret
+            # stays present so a wrong default would read it and be caught below.
+            for name in (
+                "airflow_db_password",
+                "mng_valkey_airflow_password",
+                "mng_valkey_password",
+            ):
                 path = secrets / name
                 path.write_text(password, encoding="utf-8")
                 path.chmod(0o600)
@@ -797,24 +803,30 @@ class ManagementDataPortContractTests(unittest.TestCase):
                     {"POSTGRES_PORT": str(pg_port), "VALKEY_PORT": str(valkey_port)}
                 )
                 environment = rendered["airflow-worker"]["environment"]
-                for key, mode, host, port in (
+                self.assertEqual(
+                    "mng_valkey_airflow_password", environment["AIRFLOW_VALKEY_SECRET"]
+                )
+                for key, mode, host, port, user in (
                     (
                         "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD",
                         "metadata",
                         "mng-pg",
                         pg_port,
+                        "airflow",
                     ),
                     (
                         "AIRFLOW__CELERY__RESULT_BACKEND_CMD",
                         "result",
                         "mng-pg",
                         pg_port,
+                        "airflow",
                     ),
                     (
                         "AIRFLOW__CELERY__BROKER_URL_CMD",
                         "broker",
                         "mng-valkey",
                         valkey_port,
+                        "airflow",
                     ),
                 ):
                     command = shlex.split(environment[key])
@@ -833,7 +845,10 @@ class ManagementDataPortContractTests(unittest.TestCase):
                         ),
                     )
                     parsed = urlsplit(output.getvalue())
-                    self.assertEqual((host, port), (parsed.hostname, parsed.port))
+                    self.assertEqual(
+                        (host, port, user),
+                        (parsed.hostname, parsed.port, parsed.username),
+                    )
                     self.assertEqual(password, unquote(parsed.password))
                     self.assertEqual("", errors.getvalue())
 
