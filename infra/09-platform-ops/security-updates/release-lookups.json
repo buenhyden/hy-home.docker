@@ -56624,11 +56624,11 @@
       },
       "dev-perf-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
+        "reviewed_at": "2026-11-26T13:12:11.698275+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
-          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
-          "assessment_version": "18.7; pgBackRest 2.60.1",
+          "declaration": "hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1",
+          "source_input_sha256": "631ef6f6cc9e1d2fa0a053da97dec1cb0c6ade00dd133d8bcf74730b283cea78",
+          "assessment_version": "18.7; TimescaleDB 2.32.1; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -56648,7 +56648,10 @@
         ],
         "concrete_advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
           "https://pgbackrest.org/news.html",
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
@@ -56677,16 +56680,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
-        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.32.1 is outside all four published timescale/timescaledb ranges, which end at 2.29.0 (re-checked on 2026-11-26 for the Renovate update from 2.30.3); pgBackRest 2.60.1 is at or above 2.59.3, the fix for the weak encryption subkey and salt notice.",
+        "next_action": "Keep 18.7, TimescaleDB 2.32.1 and pgBackRest 2.60.1; run ALTER EXTENSION timescaledb UPDATE at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
-          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.32.1 is outside all four published timescale/timescaledb ranges, which end at 2.29.0 (re-checked on 2026-11-26 for the Renovate update from 2.30.3); pgBackRest 2.60.1 is at or above 2.59.3, the fix for the weak encryption subkey and salt notice.",
+          "next_action": "Keep 18.7, TimescaleDB 2.32.1 and pgBackRest 2.60.1; run ALTER EXTENSION timescaledb UPDATE at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -56702,11 +56705,11 @@
       },
       "dev-pg": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
+        "reviewed_at": "2026-11-26T13:12:12.912939+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
-          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
-          "assessment_version": "18.7; pgBackRest 2.60.1",
+          "declaration": "hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1",
+          "source_input_sha256": "631ef6f6cc9e1d2fa0a053da97dec1cb0c6ade00dd133d8bcf74730b283cea78",
+          "assessment_version": "18.7; TimescaleDB 2.32.1; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -56726,7 +56729,10 @@
         ],
         "concrete_advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
           "https://pgbackrest.org/news.html",
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
@@ -56755,16 +56761,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
-        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.32.1 is outside all four published timescale/timescaledb ranges, which end at 2.29.0 (re-checked on 2026-11-26 for the Renovate update from 2.30.3); pgBackRest 2.60.1 is at or above 2.59.3, the fix for the weak encryption subkey and salt notice.",
+        "next_action": "Keep 18.7, TimescaleDB 2.32.1 and pgBackRest 2.60.1; run ALTER EXTENSION timescaledb UPDATE at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
-          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.32.1 is outside all four published timescale/timescaledb ranges, which end at 2.29.0 (re-checked on 2026-11-26 for the Renovate update from 2.30.3); pgBackRest 2.60.1 is at or above 2.59.3, the fix for the weak encryption subkey and salt notice.",
+          "next_action": "Keep 18.7, TimescaleDB 2.32.1 and pgBackRest 2.60.1; run ALTER EXTENSION timescaledb UPDATE at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -56783,7 +56789,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
+          "source_input_sha256": "631ef6f6cc9e1d2fa0a053da97dec1cb0c6ade00dd133d8bcf74730b283cea78",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56837,11 +56843,11 @@
       },
       "dev-pg-monitor-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
+        "reviewed_at": "2026-11-26T13:12:14.854621+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
-          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
-          "assessment_version": "18.7; pgBackRest 2.60.1",
+          "declaration": "hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1",
+          "source_input_sha256": "631ef6f6cc9e1d2fa0a053da97dec1cb0c6ade00dd133d8bcf74730b283cea78",
+          "assessment_version": "18.7; TimescaleDB 2.32.1; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -56861,7 +56867,10 @@
         ],
         "concrete_advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
           "https://pgbackrest.org/news.html",
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
@@ -56890,16 +56899,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
-        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.32.1 is outside all four published timescale/timescaledb ranges, which end at 2.29.0 (re-checked on 2026-11-26 for the Renovate update from 2.30.3); pgBackRest 2.60.1 is at or above 2.59.3, the fix for the weak encryption subkey and salt notice.",
+        "next_action": "Keep 18.7, TimescaleDB 2.32.1 and pgBackRest 2.60.1; run ALTER EXTENSION timescaledb UPDATE at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
-          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.32.1 is outside all four published timescale/timescaledb ranges, which end at 2.29.0 (re-checked on 2026-11-26 for the Renovate update from 2.30.3); pgBackRest 2.60.1 is at or above 2.59.3, the fix for the weak encryption subkey and salt notice.",
+          "next_action": "Keep 18.7, TimescaleDB 2.32.1 and pgBackRest 2.60.1; run ALTER EXTENSION timescaledb UPDATE at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -56915,11 +56924,11 @@
       },
       "dev-platform-provision": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
+        "reviewed_at": "2026-11-26T13:12:16.112429+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
-          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
-          "assessment_version": "18.7; pgBackRest 2.60.1",
+          "declaration": "hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1",
+          "source_input_sha256": "631ef6f6cc9e1d2fa0a053da97dec1cb0c6ade00dd133d8bcf74730b283cea78",
+          "assessment_version": "18.7; TimescaleDB 2.32.1; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -56939,7 +56948,10 @@
         ],
         "concrete_advisory_refs": [
           "https://www.postgresql.org/docs/18/release-18-7.html",
+          "https://www.postgresql.org/support/security/",
           "https://pgbackrest.org/news.html",
+          "https://api.github.com/repos/pgbackrest/pgbackrest/security-advisories?per_page=100",
+          "https://api.github.com/repos/timescale/timescaledb/security-advisories?per_page=100",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-44jh-j22r-33wq",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-fh8v-663w-79w9",
           "https://github.com/timescale/timescaledb/security/advisories/GHSA-hcfx-29v5-2rcw",
@@ -56968,16 +56980,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
-        "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed.",
+        "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.32.1 is outside all four published timescale/timescaledb ranges, which end at 2.29.0 (re-checked on 2026-11-26 for the Renovate update from 2.30.3); pgBackRest 2.60.1 is at or above 2.59.3, the fix for the weak encryption subkey and salt notice.",
+        "next_action": "Keep 18.7, TimescaleDB 2.32.1 and pgBackRest 2.60.1; run ALTER EXTENSION timescaledb UPDATE at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-current-version",
           "target_retained": "18.7",
           "observed_latest": "18.6",
           "previous_gate_missing": [],
-          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.30.3 is later than the highest patched floor 2.29.1. pgBackRest 2.60.1 is at or above 2.59.3, which fixes the weak encryption subkey and salt notice; subkeys that stanza-create generated earlier are kept by an upgrade, and they are weak only if OpenSSL could not read random data, which the default container seccomp policy does not block.",
-          "next_action": "Keep this build; rotate a repository subkey only if a getrandom failure is ever observed."
+          "reason": "PostgreSQL 18.7 is the fixed release for the current PostgreSQL 18 advisories (official security page, 2026-11-24); TimescaleDB 2.32.1 is outside all four published timescale/timescaledb ranges, which end at 2.29.0 (re-checked on 2026-11-26 for the Renovate update from 2.30.3); pgBackRest 2.60.1 is at or above 2.59.3, the fix for the weak encryption subkey and salt notice.",
+          "next_action": "Keep 18.7, TimescaleDB 2.32.1 and pgBackRest 2.60.1; run ALTER EXTENSION timescaledb UPDATE at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -56996,7 +57008,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
+          "source_input_sha256": "631ef6f6cc9e1d2fa0a053da97dec1cb0c6ade00dd133d8bcf74730b283cea78",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57080,7 +57092,7 @@
         "reviewed_at": "2026-11-26T10:07:17.027132+00:00",
         "reviewed_subject": {
           "declaration": "oliver006/redis_exporter:v1.97.0-alpine@sha256:ae30be386ab25600a8b222538a868d1b156b7e411073f7d2d5208fe79cc98d81",
-          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
+          "source_input_sha256": "631ef6f6cc9e1d2fa0a053da97dec1cb0c6ade00dd133d8bcf74730b283cea78",
           "assessment_version": "1.97.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },

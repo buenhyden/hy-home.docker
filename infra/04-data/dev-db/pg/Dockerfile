@@ -2,7 +2,7 @@
 # Community (TSL + Apache components), PostgreSQL 18.7, Alpine 3.24.4,
 # linux/amd64 manifest verified 2026-11-24 (18.7 fixes CVEs affecting 18.6).
 # r2 (2026-10-08): retention, archive-push-queue-max and repository-root ownership.
-ARG PG_BASE=timescale/timescaledb:2.30.3-pg18@sha256:b98cd6bed74fb090de6158c9367ea31545390e7140a43fa6aad3334181fce4e2
+ARG PG_BASE=timescale/timescaledb:2.32.1-pg18@sha256:70e6526ad8e31e3f4833f2c5863b50b92d7a6bee4d432ad1f660e2c6dd956d94
 
 # Alpine 3.24 only packages pgBackRest 2.58, below the 2.59.3 fix for weak
 # encryption subkeys, so 2.60.1 is built from its checksum-pinned release
