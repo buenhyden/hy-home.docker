@@ -947,11 +947,8 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     self.assertFalse(
                         {"candidate_image", "scan_at", "scan_digest"} & set(row)
                     )
-        for service in ("qdrant", "open_notebook"):
-            with self.subTest(known_fixed_patch=service):
-                row = by_service[service]
-                self.assertEqual("AFFECTED", row[review_key]["security_applicability"])
-                self.assertEqual("patch", row["decision"])
+        # The known-fixed patch rows, Qdrant and Open Notebook, were resolved by
+        # their 2026-11-26 Renovate updates (artifact review patch_resolved).
 
     def test_artifact_review_binds_only_final_candidate_scans_to_gate_fields(self):
         package = (
@@ -983,10 +980,12 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 rows[name][key]["latest_ref"],
             )
         for decision, group, count in (
-            # Five 2026-11-11 patch rows were resolved on 2026-11-24 (patch_resolved).
-            ("patch", "patch", 7),
+            # Five 2026-11-11 patch rows were resolved on 2026-11-24, and Qdrant,
+            # Open Notebook and Keycloak on 2026-11-26 (patch_resolved).
+            ("patch", "patch", 4),
             ("no-fix", "no_fix", 6),
-            ("defer", "defer", 42),
+            # Traefik's deferred row was resolved on 2026-11-26 (defer_resolved).
+            ("defer", "defer", 41),
         ):
             expected = {
                 name for name, row in rows.items() if row["decision"] == decision
@@ -999,14 +998,14 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     rows[name][key]["security_ref"],
                 )
                 self.assertTrue(lookups[group][name]["next_action"])
-        resolved = set(lookups.get("patch_resolved", {}))
-        for name in resolved:
-            self.assertEqual("not-affected", rows[name]["decision"])
-            self.assertEqual(
-                f"release-lookups.json#/{key}/patch_resolved/{name}",
-                rows[name][key]["security_ref"],
-            )
-            self.assertTrue(lookups["patch_resolved"][name]["resolution"])
+        for group in ("patch_resolved", "defer_resolved"):
+            for name in lookups.get(group, {}):
+                self.assertEqual("not-affected", rows[name]["decision"])
+                self.assertEqual(
+                    f"release-lookups.json#/{key}/{group}/{name}",
+                    rows[name][key]["security_ref"],
+                )
+                self.assertTrue(lookups[group][name]["resolution"])
         final = {name for name, row in rows.items() if "candidate_image" in row}
         self.assertEqual({"keycloak", "open_notebook", "qdrant"}, final)
         for name, evidence in lookups["patch"].items():
@@ -1027,7 +1026,7 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         self.assertTrue(qdrant_signature["subject_matches"])
         self.assertTrue(
             qdrant_signature["index_ref"].endswith(
-                "@" + lookups["patch"]["qdrant"]["publisher_index_digest"]
+                "@" + lookups["patch_resolved"]["qdrant"]["publisher_index_digest"]
             )
         )
         exporter = lookups["defer"]["ollama-exporter"]
