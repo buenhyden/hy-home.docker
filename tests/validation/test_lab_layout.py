@@ -34,6 +34,7 @@ LABS = (
     "sonarqube",
     "stalwart",
     "superset",
+    "terrakube",
     "valkey-cluster",
 )
 ENV_FILE = ROOT / "labs/.env.example"
@@ -55,6 +56,8 @@ OPERATOR_INPUTS = {
     "LAB_OPEN_WEBUI_OLLAMA_BASE_URL": "http://lab-endpoint.invalid:11434",
     "LAB_OPEN_WEBUI_DEFAULT_URL": "lab.invalid",
     "LAB_OPEN_WEBUI_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
+    "LAB_TERRAKUBE_DEFAULT_URL": "lab.invalid",
+    "LAB_TERRAKUBE_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
 }
 DATA_DIR = tempfile.mkdtemp(prefix="lab-layout-data-")
 

@@ -1,0 +1,270 @@
+# Independent Terrakube LAB entrypoint (ADR-0062 item 9, SPEC-0263 TSK-0004);
+# never included by the root. It joins no HOME network and has no gateway
+# route. PostgreSQL, Valkey and the Terraform state directory are LAB-local;
+# Keycloak is reached through its public gateway name with the HOME root CA.
+name: hy-home-lab-terrakube
+
+x-tier-label: &tier-label
+  hy-home.tier: lab
+  traefik.enable: 'false'
+
+# Terrakube 2.33 resolves its settings as Spring placeholders and reads no
+# _FILE variable (infra/secret-file-support.json). Spring's configtree import
+# maps each file under /run/secrets to the property named after the file, so
+# every secret mounts with the placeholder name as its target.
+x-terrakube-java: &terrakube-java
+  SPRING_CONFIG_IMPORT: optional:configtree:/run/secrets/
+  # The API and executor share Terraform state, plans and output under
+  # <user.home>/.terraform-spring-boot/local (LocalStorageTypeServiceImpl and
+  # LocalTerraformStateImpl); a fixed user.home makes that one shared volume.
+  JAVA_TOOL_OPTIONS: -Duser.home=/terrakube-home
+  # Paketo images trust a CA from a ca-certificates binding at start.
+  SERVICE_BINDING_ROOT: /bindings
+
+volumes:
+  terrakube-pg-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/terrakube/pg
+  terrakube-valkey-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/terrakube/valkey
+  # Terraform state, plan files and run output (StorageType LOCAL).
+  terrakube-state:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/terrakube/state
+
+networks:
+  lab_terrakube_net:
+    name: hy-home-lab-terrakube
+
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared.
+secrets:
+  lab_terrakube_db_password:
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/terrakube/db_password.txt
+  lab_terrakube_valkey_password:
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/terrakube/valkey_password.txt
+  lab_terrakube_pat_secret:
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/terrakube/pat_secret.txt
+  lab_terrakube_internal_secret:
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/terrakube/internal_secret.txt
+
+services:
+  terrakube-pg:
+    profiles:
+      - lab-terrakube
+    extends:
+      file: ../../infra/common-optimizations.yml
+      service: template-stateful-low
+    image: postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71
+    container_name: terrakube-pg
+    hostname: terrakube-pg
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    environment:
+      POSTGRES_DB: terrakube
+      POSTGRES_USER: terrakube
+      POSTGRES_PASSWORD_FILE: /run/secrets/terrakube_db_password
+    secrets:
+      - source: lab_terrakube_db_password
+        target: terrakube_db_password
+    volumes:
+      - terrakube-pg-data:/var/lib/postgresql:rw
+    networks:
+      lab_terrakube_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U terrakube -d terrakube || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  terrakube-valkey:
+    profiles:
+      - lab-terrakube
+    extends:
+      file: ../../infra/common-optimizations.yml
+      service: template-stateful-low
+    image: valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b
+    container_name: terrakube-valkey
+    hostname: terrakube-valkey
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    # The password reaches valkey-server on stdin, never on its command line.
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        password="$$(tr -d '\r\n' </run/secrets/terrakube_valkey_password)"
+        [ -n "$$password" ] || { echo 'terrakube_valkey_password is empty' >&2; exit 1; }
+        printf 'requirepass "%s"\nappendonly yes\nmaxmemory 64mb\nmaxmemory-policy noeviction\ndir /data\n' "$$password" | exec valkey-server -
+    secrets:
+      - source: lab_terrakube_valkey_password
+        target: terrakube_valkey_password
+    volumes:
+      - terrakube-valkey-data:/data:rw
+    networks:
+      lab_terrakube_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'REDISCLI_AUTH="$$(tr -d "\r\n" </run/secrets/terrakube_valkey_password)" valkey-cli --no-auth-warning ping | grep -qx PONG']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  terrakube-api:
+    profiles:
+      - lab-terrakube
+    extends:
+      file: ../../infra/common-optimizations.yml
+      service: template-infra-med
+    image: azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8
+    container_name: terrakube-api
+    hostname: terrakube-api
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    secrets:
+      - source: lab_terrakube_db_password
+        target: DatasourcePassword
+      - source: lab_terrakube_valkey_password
+        target: TerrakubeRedisPassword
+      - source: lab_terrakube_pat_secret
+        target: PatSecret
+      - source: lab_terrakube_internal_secret
+        target: InternalSecret
+    environment:
+      <<: *terrakube-java
+      ApiDataSourceType: POSTGRESQL
+      DatasourceHostname: terrakube-pg
+      DatasourcePort: '5432'
+      DatasourceDatabase: terrakube
+      DatasourceUser: terrakube
+      GroupValidationType: 'DEX'
+      UserValidationType: 'DEX'
+      AuthenticationValidationType: 'DEX'
+      TerrakubeHostname: localhost:${LAB_TERRAKUBE_API_HOST_PORT:-18096}
+      AzBuilderExecutorUrl: http://terrakube-executor:8090/api/v1/terraform-rs
+      DexClientId: ${LAB_TERRAKUBE_OIDC_CLIENT_ID:-lab-terrakube}
+      DexIssuerUri: https://keycloak.${LAB_TERRAKUBE_DEFAULT_URL:?set the HOME gateway domain}/realms/hy-home.realm
+      # Any value but AWS, AZURE or GCP selects LocalStorageTypeServiceImpl.
+      StorageType: LOCAL
+      TerrakubeUiURL: http://localhost:${LAB_TERRAKUBE_UI_HOST_PORT:-18097}
+      TerrakubeRedisHostname: terrakube-valkey
+      TerrakubeRedisPort: '6379'
+    volumes:
+      - terrakube-state:/terrakube-home/.terraform-spring-boot:rw
+      - ./bindings/ca-certificates/type:/bindings/ca-certificates/type:ro
+      - ${LAB_TERRAKUBE_CA_FILE:?set the HOME root CA certificate file}:/bindings/ca-certificates/hy-home-rootCA.pem:ro
+    # No gateway route: the API is published on the LAB bind address only.
+    ports:
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_TERRAKUBE_API_HOST_PORT:-18096}:8080'
+    depends_on:
+      terrakube-pg:
+        condition: service_healthy
+      terrakube-valkey:
+        condition: service_healthy
+    networks:
+      lab_terrakube_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:8080/actuator/health || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 1m
+
+  terrakube-ui:
+    profiles:
+      - lab-terrakube
+    extends:
+      file: ../../infra/common-optimizations.yml
+      service: template-infra-med
+    image: azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d
+    container_name: terrakube-ui
+    hostname: terrakube-ui
+    environment:
+      REACT_APP_TERRAKUBE_API_URL: http://localhost:${LAB_TERRAKUBE_API_HOST_PORT:-18096}/api/v1/
+      REACT_APP_AUTHORITY: https://keycloak.${LAB_TERRAKUBE_DEFAULT_URL:?set the HOME gateway domain}/realms/hy-home.realm
+      REACT_APP_CLIENT_ID: ${LAB_TERRAKUBE_OIDC_CLIENT_ID:-lab-terrakube}
+      REACT_APP_REDIRECT_URI: http://localhost:${LAB_TERRAKUBE_UI_HOST_PORT:-18097}
+      REACT_APP_SCOPE: openid profile email offline_access groups
+    # The UI image's nginx listens on 8080 (ui/conf/conf.d/terrakube-ui.conf).
+    ports:
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_TERRAKUBE_UI_HOST_PORT:-18097}:8080'
+    depends_on:
+      terrakube-api:
+        condition: service_healthy
+    networks:
+      lab_terrakube_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:8080 || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 15s
+
+  terrakube-executor:
+    profiles:
+      - lab-terrakube
+    extends:
+      file: ../../infra/common-optimizations.yml
+      service: template-infra-high
+    image: azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8
+    container_name: terrakube-executor
+    hostname: terrakube-executor
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    secrets:
+      - source: lab_terrakube_internal_secret
+        target: InternalSecret
+      - source: lab_terrakube_valkey_password
+        target: TerrakubeRedisPassword
+    environment:
+      <<: *terrakube-java
+      TerrakubeEnableSecurity: 'true'
+      # The state plugin also stores run output; 2.33 has no output type key.
+      TerraformStateType: LocalTerraformStateImpl
+      AzBuilderApiUrl: http://terrakube-api:8080
+      TerrakubeApiUrl: http://terrakube-api:8080
+      TERRAKUBE_API_URL: http://terrakube-api:8080
+      TerrakubeRegistryDomain: localhost:${LAB_TERRAKUBE_API_HOST_PORT:-18096}
+      ExecutorFlagBatch: 'false'
+      ExecutorFlagDisableAcknowledge: 'false'
+      TerrakubeToolsRepository: https://github.com/terrakube-io/terrakube-extensions.git
+      TerrakubeToolsBranch: main
+      CustomTerraformReleasesUrl: 'https://releases.hashicorp.com/terraform/index.json'
+      EXECUTOR_NAME: local-executor
+      TerrakubeRedisHostname: terrakube-valkey
+      TerrakubeRedisPort: '6379'
+    # No Docker socket (owner decision 2026-11-26): the executor runs
+    # Terraform in its own process.
+    volumes:
+      - terrakube-state:/terrakube-home/.terraform-spring-boot:rw
+    depends_on:
+      terrakube-api:
+        condition: service_healthy
+    networks:
+      lab_terrakube_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:8090/actuator/health || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 1m

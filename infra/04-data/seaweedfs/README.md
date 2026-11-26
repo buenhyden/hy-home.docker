@@ -1,13 +1,13 @@
 ---
 title: "SeaweedFS"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-12-06"
 ---
 
@@ -67,7 +67,7 @@ filer에는 route가 없습니다.
 | --- | --- |
 | `docker-compose.yml` | 4개 서비스, 데이터 디스크 bind volume, secret |
 | `config/hyhome-seaweedfs.sh` | 시작 스크립트: secret으로 JWT, gRPC mTLS, S3 identity 설정을 구성함 |
-| `config/s3-identities.conf` | bucket 범위의 소비자 identity(loki, tempo, mlflow, terrakube, lakehouse, prefix 한정 `opsflow-worker`) |
+| `config/s3-identities.conf` | bucket 범위의 소비자 identity(loki, tempo, mlflow, lakehouse, prefix 한정 `opsflow-worker`) |
 | `config/seaweedfs-buckets.sh` | `seaweedfs-buckets` job: admin identity로 수행하는 idempotent bucket 생성 |
 | `bin/gen-grpc-certs.sh` | 호스트 스크립트: SeaweedFS 전용 gRPC CA와 인증서를 발급함 |
 
@@ -81,7 +81,7 @@ Prometheus·Alloy만 함께 붙는 `seaweedfs_s3_metrics_net`에서 scrape하며
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| `seaweedfs-s3` S3 API (`object_net`, `edge_net`) | `seaweedfs-s3` | bucket 범위 identity 소비자 loki, tempo, mlflow, terrakube, lakehouse, prefix 한정 `opsflow-worker` | S3만 제공하며 소비자별 bucket identity를 쓰고 호스트 게시 포트는 없다. | 최초 활성화·백업·복구는 RUN-0024를 따른다. |
+| `seaweedfs-s3` S3 API (`object_net`, `edge_net`) | `seaweedfs-s3` | bucket 범위 identity 소비자 loki, tempo, mlflow, lakehouse, prefix 한정 `opsflow-worker` | S3만 제공하며 소비자별 bucket identity를 쓰고 호스트 게시 포트는 없다. | 최초 활성화·백업·복구는 RUN-0024를 따른다. |
 | S3 메트릭 포트 `9327` (`seaweedfs_s3_metrics_net`) | `seaweedfs-s3` | Prometheus·Alloy | `-metricsIp`로 `10.250.41.2`에만 bind하며 master·volume·filer API에 닿지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
 | master·volume·filer 메트릭 `9324-9326` (`seaweedfs_metrics_net`) | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer` | Prometheus | `seaweed_internal`과 Prometheus만 함께 쓰는 metric 전용 망에서 노출한다. | 이 README는 실패 처리를 기록하지 않는다. |
 
@@ -93,7 +93,7 @@ Prometheus·Alloy만 함께 붙는 `seaweedfs_s3_metrics_net`에서 scrape하며
 ###### Security Boundary
 <!-- core-payload-level:4 -->
 
-Compose가 참조하는 secret은 `seaweedfs_jwt_filer_key`, `seaweedfs_jwt_volume_key`, `seaweedfs_s3_admin_secret_key`, `seaweedfs_s3_lakehouse_secret_key`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_mlflow_secret_key`, `seaweedfs_s3_opsflow_worker_secret_key`, `seaweedfs_s3_tempo_secret_key`, `seaweedfs_s3_terrakube_secret_key`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스)
+Compose가 참조하는 secret은 `seaweedfs_jwt_filer_key`, `seaweedfs_jwt_volume_key`, `seaweedfs_s3_admin_secret_key`, `seaweedfs_s3_lakehouse_secret_key`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_mlflow_secret_key`, `seaweedfs_s3_opsflow_worker_secret_key`, `seaweedfs_s3_tempo_secret_key`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스)
 
 #### Usage
 

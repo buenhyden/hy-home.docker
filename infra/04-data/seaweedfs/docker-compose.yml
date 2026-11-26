@@ -204,7 +204,6 @@ services:
       - seaweedfs_s3_loki_secret_key
       - seaweedfs_s3_tempo_secret_key
       - seaweedfs_s3_mlflow_secret_key
-      - seaweedfs_s3_terrakube_secret_key
       - seaweedfs_s3_lakehouse_secret_key
       - seaweedfs_s3_opsflow_worker_secret_key
     expose:
@@ -269,7 +268,7 @@ services:
       AWS_DEFAULT_REGION: us-east-1
       AWS_EC2_METADATA_DISABLED: 'true'
       S3_ENDPOINT: http://seaweedfs-s3:${SEAWEEDFS_S3_HTTP_PORT:-8333}
-      BUCKETS: loki-bucket tempo-bucket mlflow-artifacts tfstate
+      BUCKETS: loki-bucket tempo-bucket mlflow-artifacts
     volumes:
       - ./config/seaweedfs-buckets.sh:/opt/hyhome/seaweedfs-buckets.sh:ro
     secrets:

@@ -254,7 +254,6 @@ services:
         N8N_DB_PASSWORD="$$(tr -d '\n' </run/secrets/n8n_db_password)"
         KEYCLOAK_DB_PASSWORD="$$(tr -d '\n' </run/secrets/keycloak_db_password)"
         AIRFLOW_DB_PASSWORD="$$(tr -d '\n' </run/secrets/airflow_db_password)"
-        TERRAKUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/terrakube_db_password)"
         SONARQUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/sonarqube_db_password)"
 
         psql \
@@ -266,7 +265,6 @@ services:
           -v n8n_db_password="$$N8N_DB_PASSWORD" \
           -v keycloak_db_password="$$KEYCLOAK_DB_PASSWORD" \
           -v airflow_db_password="$$AIRFLOW_DB_PASSWORD" \
-          -v terrakube_db_password="$$TERRAKUBE_DB_PASSWORD" \
           -v sonarqube_db_password="$$SONARQUBE_DB_PASSWORD" \
           -f /work/init_users_dbs.sql
     volumes:
@@ -279,7 +277,6 @@ services:
       - n8n_db_password
       - keycloak_db_password
       - airflow_db_password
-      - terrakube_db_password
       - sonarqube_db_password
     networks:
       mng_data_net: {}

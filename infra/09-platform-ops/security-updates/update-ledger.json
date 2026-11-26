@@ -88,9 +88,6 @@
     "storybook-mcp",
     "surrealdb",
     "tempo",
-    "terrakube-api",
-    "terrakube-executor",
-    "terrakube-ui",
     "traefik",
     "wiremock"
   ],
@@ -202,10 +199,6 @@
     {
       "path": "infra/09-platform-ops/restic/docker-compose.yml",
       "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
-    },
-    {
-      "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
-      "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
     },
     {
       "path": "infra/11-quality/conftest/docker-compose.yml",
@@ -26072,753 +26065,6 @@
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/tempo",
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/tempo"
-      }
-    },
-    {
-      "service": "terrakube-api",
-      "scope": "root",
-      "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-      "current_declared": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
-      "profiles_declared": [
-        "iac"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "2.34.1",
-      "target_version": "2.33.3",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T22:26:51.246426+00:00",
-      "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "UNKNOWN",
-      "source_release_date": "2026-10-21T22:00:24Z",
-      "advisory_urls": [
-        "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
-      ],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:39:40+09:00",
-        "next_validation_due": "2026-11-17T14:39:40+09:00",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "terrakube-io/terrakube",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "UNKNOWN",
-      "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
-      "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "terrakube-io/terrakube"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/terrakube-io~1terrakube"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and terrakube-api service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "terrakube-io/terrakube",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "2.33.3",
-        "fact_checked_at": "2026-10-26T09:43:15.822659+00:00",
-        "published_at": "2026-10-21T22:00:24Z",
-        "eligible_after_7_days": "2026-10-28T22:00:24+00:00",
-        "evidence_refs": [
-          "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
-          "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
-        ],
-        "decision": "DEFER_SEVEN_DAY_SOAK",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "service": "terrakube-api",
-        "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-        "current_declared": "azbuilder/api-server:2.33.2",
-        "resolved_source": {
-          "image": "azbuilder/api-server:2.33.2",
-          "build": null,
-          "chain": [
-            "infra/09-platform-ops/terrakube/docker-compose.yml#terrakube-api",
-            "infra/common-optimizations.yml#template-infra-med"
-          ]
-        },
-        "existing_target_version": "UNKNOWN",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN",
-          "upstream_reported_tag": "2.33.2"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
-      "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-      "current_target_artifact_binding": {
-        "source_version": "2.33.3",
-        "source_image": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
-      },
-      "master_20261110_public_refresh": {
-        "task": "SPEC-0212-TSK-0052",
-        "retrieved_at": "2026-11-10T13:47:09.345Z",
-        "declared_source_retained": true,
-        "result": "PUBLISHED_FINAL_RELEASE",
-        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
-        "published_final_tag": "2.34.1",
-        "vendor_stable_channel": "NOT_INFERRED",
-        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
-        "artifact_boundary": {
-          "declared_subject": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
-          "declared_digest": "sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
-          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
-          "signature": "NOT_RUN",
-          "provenance": "NOT_RUN",
-          "sbom": "NOT_RUN",
-          "upstream_metadata_proves_custom_image": false,
-          "next_owner": "SPEC-0212-TSK-0052 criterion105"
-        }
-      },
-      "master_20261111_public_refresh": {
-        "task": "SPEC-0212-TSK-0052",
-        "assessed_at": "2026-11-10T21:08:37.550397+00:00",
-        "previously_missing_fresh_lookup": true,
-        "lookup_ref": "release-lookups.json#/master_20261111_public_refresh/github/terrakube-io~1terrakube",
-        "previous_lookup_fields": {
-          "latest_version": "2.33.3",
-          "channel": "stable",
-          "checked_at": "2026-10-26T09:43:15.822659+00:00",
-          "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3"
-        },
-        "channel_rationale": "Fresh published release is 2.34.1; older 2.33.3 permalink and GitHub final metadata do not independently define current stable.",
-        "target_version_retained": "2.33.3",
-        "declared_source_retained": true,
-        "security_applicability_review": "NOT_RUN; release/channel research does not renew reviewed_at or supply an applicability decision.",
-        "artifact_boundary": {
-          "declared_subject": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
-          "declared_digest": "sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
-          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
-          "signature": "NOT_RUN",
-          "provenance": "NOT_RUN",
-          "sbom": "NOT_RUN",
-          "upstream_metadata_proves_custom_image": false,
-          "next_owner": "SPEC-0212-TSK-0052 criterion105"
-        },
-        "latest_gate_missing": [
-          "latest_mismatch",
-          "stable_channel"
-        ],
-        "security_gate_missing": [
-          "fresh_review",
-          "primary_advisory",
-          "reviewed_decision"
-        ],
-        "remaining_latest_actions": [
-          "W109: disposition candidate2.33.3 against observed latest2.34.1; compatibility/recovery and an approved source update remain separate. Candidate retained.",
-          "W109: resolve the supplier channel/binding limitation recorded above; published-final alone is insufficient."
-        ],
-        "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
-      },
-      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
-      "decision": "defer",
-      "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
-      "master_20261111_advisory_review": {
-        "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
-        "reviewed_subject": {
-          "declaration": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
-          "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
-          "assessment_version": "2.33.3",
-          "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
-        },
-        "security_applicability": "UNKNOWN",
-        "bounded_research_applicability": "UNKNOWN",
-        "source_action": "defer",
-        "security_decision": "defer",
-        "advisory_refs": [
-          "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
-        ],
-        "concrete_advisory_refs": [],
-        "advisory_discovery": [
-          {
-            "supplier": "terrakube-io/terrakube",
-            "url": "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1",
-            "unique_advisories": 0,
-            "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
-          }
-        ],
-        "coverage_limits": [
-          "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
-          "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
-          "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
-        ],
-        "reason": "No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
-        "next_action": "Reconcile 2.34.1 to official stable release and SBOM.",
-        "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/terrakube",
-        "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "2.33.3",
-          "observed_latest": "2.34.1",
-          "previous_gate_missing": [
-            "latest_mismatch",
-            "stable_channel"
-          ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Reconcile 2.34.1 to official stable release and SBOM."
-        },
-        "operational_execution": "NOT_RUN",
-        "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
-        "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
-          "affected_confirmed": null,
-          "reason": null,
-          "advisory_urls": [],
-          "current_version": null,
-          "candidate_version": null
-        }
-      },
-      "master_20261111_artifact_review": {
-        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-api",
-        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-api"
-      }
-    },
-    {
-      "service": "terrakube-executor",
-      "scope": "root",
-      "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-      "current_declared": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
-      "profiles_declared": [
-        "iac"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "2.34.1",
-      "target_version": "2.33.3",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T22:26:51.246426+00:00",
-      "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "UNKNOWN",
-      "source_release_date": "2026-10-21T22:00:24Z",
-      "advisory_urls": [
-        "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
-      ],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:39:40+09:00",
-        "next_validation_due": "2026-11-17T14:39:40+09:00",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "terrakube-io/terrakube",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "UNKNOWN",
-      "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
-      "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "terrakube-io/terrakube"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/terrakube-io~1terrakube"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and terrakube-executor service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "terrakube-io/terrakube",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "2.33.3",
-        "fact_checked_at": "2026-10-26T09:43:15.822659+00:00",
-        "published_at": "2026-10-21T22:00:24Z",
-        "eligible_after_7_days": "2026-10-28T22:00:24+00:00",
-        "evidence_refs": [
-          "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
-          "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
-        ],
-        "decision": "DEFER_SEVEN_DAY_SOAK",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "service": "terrakube-executor",
-        "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-        "current_declared": "azbuilder/executor:2.33.2",
-        "resolved_source": {
-          "image": "azbuilder/executor:2.33.2",
-          "build": null,
-          "chain": [
-            "infra/09-platform-ops/terrakube/docker-compose.yml#terrakube-executor",
-            "infra/common-optimizations.yml#template-infra-high"
-          ]
-        },
-        "existing_target_version": "UNKNOWN",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN",
-          "upstream_reported_tag": "2.33.2"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
-      "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-      "current_target_artifact_binding": {
-        "source_version": "2.33.3",
-        "source_image": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
-      },
-      "master_20261110_public_refresh": {
-        "task": "SPEC-0212-TSK-0052",
-        "retrieved_at": "2026-11-10T13:47:09.345Z",
-        "declared_source_retained": true,
-        "result": "PUBLISHED_FINAL_RELEASE",
-        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
-        "published_final_tag": "2.34.1",
-        "vendor_stable_channel": "NOT_INFERRED",
-        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
-        "artifact_boundary": {
-          "declared_subject": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
-          "declared_digest": "sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
-          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
-          "signature": "NOT_RUN",
-          "provenance": "NOT_RUN",
-          "sbom": "NOT_RUN",
-          "upstream_metadata_proves_custom_image": false,
-          "next_owner": "SPEC-0212-TSK-0052 criterion105"
-        }
-      },
-      "master_20261111_public_refresh": {
-        "task": "SPEC-0212-TSK-0052",
-        "assessed_at": "2026-11-10T21:08:37.550397+00:00",
-        "previously_missing_fresh_lookup": true,
-        "lookup_ref": "release-lookups.json#/master_20261111_public_refresh/github/terrakube-io~1terrakube",
-        "previous_lookup_fields": {
-          "latest_version": "2.33.3",
-          "channel": "stable",
-          "checked_at": "2026-10-26T09:43:15.822659+00:00",
-          "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3"
-        },
-        "channel_rationale": "Fresh published release is 2.34.1; older 2.33.3 permalink and GitHub final metadata do not independently define current stable.",
-        "target_version_retained": "2.33.3",
-        "declared_source_retained": true,
-        "security_applicability_review": "NOT_RUN; release/channel research does not renew reviewed_at or supply an applicability decision.",
-        "artifact_boundary": {
-          "declared_subject": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
-          "declared_digest": "sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
-          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
-          "signature": "NOT_RUN",
-          "provenance": "NOT_RUN",
-          "sbom": "NOT_RUN",
-          "upstream_metadata_proves_custom_image": false,
-          "next_owner": "SPEC-0212-TSK-0052 criterion105"
-        },
-        "latest_gate_missing": [
-          "latest_mismatch",
-          "stable_channel"
-        ],
-        "security_gate_missing": [
-          "fresh_review",
-          "primary_advisory",
-          "reviewed_decision"
-        ],
-        "remaining_latest_actions": [
-          "W109: disposition candidate2.33.3 against observed latest2.34.1; compatibility/recovery and an approved source update remain separate. Candidate retained.",
-          "W109: resolve the supplier channel/binding limitation recorded above; published-final alone is insufficient."
-        ],
-        "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
-      },
-      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
-      "decision": "defer",
-      "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
-      "master_20261111_advisory_review": {
-        "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
-        "reviewed_subject": {
-          "declaration": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
-          "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
-          "assessment_version": "2.33.3",
-          "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
-        },
-        "security_applicability": "UNKNOWN",
-        "bounded_research_applicability": "UNKNOWN",
-        "source_action": "defer",
-        "security_decision": "defer",
-        "advisory_refs": [
-          "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
-        ],
-        "concrete_advisory_refs": [],
-        "advisory_discovery": [
-          {
-            "supplier": "terrakube-io/terrakube",
-            "url": "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1",
-            "unique_advisories": 0,
-            "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
-          }
-        ],
-        "coverage_limits": [
-          "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
-          "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
-          "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
-        ],
-        "reason": "No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
-        "next_action": "Reconcile stable provenance and review Docker-socket executor boundary.",
-        "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/terrakube",
-        "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "2.33.3",
-          "observed_latest": "2.34.1",
-          "previous_gate_missing": [
-            "latest_mismatch",
-            "stable_channel"
-          ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Reconcile stable provenance and review Docker-socket executor boundary."
-        },
-        "operational_execution": "NOT_RUN",
-        "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
-        "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
-          "affected_confirmed": null,
-          "reason": null,
-          "advisory_urls": [],
-          "current_version": null,
-          "candidate_version": null
-        }
-      },
-      "master_20261111_artifact_review": {
-        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-executor",
-        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-executor"
-      }
-    },
-    {
-      "service": "terrakube-ui",
-      "scope": "root",
-      "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-      "current_declared": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
-      "profiles_declared": [
-        "iac"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "2.34.1",
-      "target_version": "2.33.3",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T22:26:51.246426+00:00",
-      "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "UNKNOWN",
-      "source_release_date": "2026-10-21T22:00:24Z",
-      "advisory_urls": [
-        "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
-      ],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:39:40+09:00",
-        "next_validation_due": "2026-11-17T14:39:40+09:00",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "terrakube-io/terrakube",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "UNKNOWN",
-      "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
-      "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "terrakube-io/terrakube"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/terrakube-io~1terrakube"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and terrakube-ui service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "terrakube-io/terrakube",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "2.33.3",
-        "fact_checked_at": "2026-10-26T09:43:15.822659+00:00",
-        "published_at": "2026-10-21T22:00:24Z",
-        "eligible_after_7_days": "2026-10-28T22:00:24+00:00",
-        "evidence_refs": [
-          "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
-          "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
-        ],
-        "decision": "DEFER_SEVEN_DAY_SOAK",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "service": "terrakube-ui",
-        "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-        "current_declared": "azbuilder/terrakube-ui:2.33.2",
-        "resolved_source": {
-          "image": "azbuilder/terrakube-ui:2.33.2",
-          "build": null,
-          "chain": [
-            "infra/09-platform-ops/terrakube/docker-compose.yml#terrakube-ui",
-            "infra/common-optimizations.yml#template-infra-med"
-          ]
-        },
-        "existing_target_version": "UNKNOWN",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN",
-          "upstream_reported_tag": "2.33.2"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
-      "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-      "current_target_artifact_binding": {
-        "source_version": "2.33.3",
-        "source_image": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
-      },
-      "master_20261110_public_refresh": {
-        "task": "SPEC-0212-TSK-0052",
-        "retrieved_at": "2026-11-10T13:47:09.345Z",
-        "declared_source_retained": true,
-        "result": "PUBLISHED_FINAL_RELEASE",
-        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
-        "published_final_tag": "2.34.1",
-        "vendor_stable_channel": "NOT_INFERRED",
-        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
-        "artifact_boundary": {
-          "declared_subject": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
-          "declared_digest": "sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
-          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
-          "signature": "NOT_RUN",
-          "provenance": "NOT_RUN",
-          "sbom": "NOT_RUN",
-          "upstream_metadata_proves_custom_image": false,
-          "next_owner": "SPEC-0212-TSK-0052 criterion105"
-        }
-      },
-      "master_20261111_public_refresh": {
-        "task": "SPEC-0212-TSK-0052",
-        "assessed_at": "2026-11-10T21:08:37.550397+00:00",
-        "previously_missing_fresh_lookup": true,
-        "lookup_ref": "release-lookups.json#/master_20261111_public_refresh/github/terrakube-io~1terrakube",
-        "previous_lookup_fields": {
-          "latest_version": "2.33.3",
-          "channel": "stable",
-          "checked_at": "2026-10-26T09:43:15.822659+00:00",
-          "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3"
-        },
-        "channel_rationale": "Fresh published release is 2.34.1; older 2.33.3 permalink and GitHub final metadata do not independently define current stable.",
-        "target_version_retained": "2.33.3",
-        "declared_source_retained": true,
-        "security_applicability_review": "NOT_RUN; release/channel research does not renew reviewed_at or supply an applicability decision.",
-        "artifact_boundary": {
-          "declared_subject": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
-          "declared_digest": "sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
-          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
-          "signature": "NOT_RUN",
-          "provenance": "NOT_RUN",
-          "sbom": "NOT_RUN",
-          "upstream_metadata_proves_custom_image": false,
-          "next_owner": "SPEC-0212-TSK-0052 criterion105"
-        },
-        "latest_gate_missing": [
-          "latest_mismatch",
-          "stable_channel"
-        ],
-        "security_gate_missing": [
-          "fresh_review",
-          "primary_advisory",
-          "reviewed_decision"
-        ],
-        "remaining_latest_actions": [
-          "W109: disposition candidate2.33.3 against observed latest2.34.1; compatibility/recovery and an approved source update remain separate. Candidate retained.",
-          "W109: resolve the supplier channel/binding limitation recorded above; published-final alone is insufficient."
-        ],
-        "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
-      },
-      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
-      "decision": "defer",
-      "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
-      "master_20261111_advisory_review": {
-        "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
-        "reviewed_subject": {
-          "declaration": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
-          "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
-          "assessment_version": "2.33.3",
-          "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
-        },
-        "security_applicability": "UNKNOWN",
-        "bounded_research_applicability": "UNKNOWN",
-        "source_action": "defer",
-        "security_decision": "defer",
-        "advisory_refs": [
-          "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
-        ],
-        "concrete_advisory_refs": [],
-        "advisory_discovery": [
-          {
-            "supplier": "terrakube-io/terrakube",
-            "url": "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1",
-            "unique_advisories": 0,
-            "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
-          }
-        ],
-        "coverage_limits": [
-          "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
-          "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
-          "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
-        ],
-        "reason": "No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
-        "next_action": "Reconcile 2.34.1 to official stable release and UI SBOM.",
-        "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/terrakube",
-        "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "2.33.3",
-          "observed_latest": "2.34.1",
-          "previous_gate_missing": [
-            "latest_mismatch",
-            "stable_channel"
-          ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Reconcile 2.34.1 to official stable release and UI SBOM."
-        },
-        "operational_execution": "NOT_RUN",
-        "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
-        "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
-          "affected_confirmed": null,
-          "reason": null,
-          "advisory_urls": [],
-          "current_version": null,
-          "candidate_version": null
-        }
-      },
-      "master_20261111_artifact_review": {
-        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-ui",
-        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-ui"
       }
     },
     {
@@ -58323,6 +57569,771 @@
           "source_image": "hy-home/superset:6.1.0-local",
           "status": "UNBOUND_CURRENT_TARGET",
           "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        }
+      }
+    },
+    {
+      "service": "terrakube-api",
+      "current_scope": "lab",
+      "current_compose_file": "labs/terrakube/docker-compose.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "terrakube-api",
+        "scope": "root",
+        "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+        "current_declared": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+        "profiles_declared": [
+          "iac"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "2.34.1",
+        "target_version": "2.33.3",
+        "channel": "UNKNOWN",
+        "checked_at": "2026-11-10T22:26:51.246426+00:00",
+        "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "UNKNOWN",
+        "source_release_date": "2026-10-21T22:00:24Z",
+        "advisory_urls": [
+          "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
+        ],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-11-10T14:39:40+09:00",
+          "next_validation_due": "2026-11-17T14:39:40+09:00",
+          "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+          "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "service_owner_role": "Existing service owner named by current_public_assessment"
+        },
+        "source_owner_repository": "terrakube-io/terrakube",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "upstream_reported_tag": "UNKNOWN",
+        "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
+        "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+        "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+        "official_supplier_lookup_refs": [
+          "terrakube-io/terrakube"
+        ],
+        "supplier_lookup_blocker": null,
+        "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+        "official_release_assessment": {
+          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+          "release_fact_refs": [
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/terrakube-io~1terrakube"
+          ],
+          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+          "next_owner": "SEC01 release/artifact evidence owner and terrakube-api service build/migration/recovery owner",
+          "source_target_security_native_deployment": "UNCHANGED"
+        },
+        "current_public_assessment": {
+          "supplier_group": "terrakube-io/terrakube",
+          "owner": "SEC01 and existing service owner",
+          "review_at": "2026-10-27",
+          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "candidate": "2.33.3",
+          "fact_checked_at": "2026-10-26T09:43:15.822659+00:00",
+          "published_at": "2026-10-21T22:00:24Z",
+          "eligible_after_7_days": "2026-10-28T22:00:24+00:00",
+          "evidence_refs": [
+            "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
+            "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
+          ],
+          "decision": "DEFER_SEVEN_DAY_SOAK",
+          "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+          "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+          "service": "terrakube-api",
+          "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "current_declared": "azbuilder/api-server:2.33.2",
+          "resolved_source": {
+            "image": "azbuilder/api-server:2.33.2",
+            "build": null,
+            "chain": [
+              "infra/09-platform-ops/terrakube/docker-compose.yml#terrakube-api",
+              "infra/common-optimizations.yml#template-infra-med"
+            ]
+          },
+          "existing_target_version": "UNKNOWN",
+          "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+        },
+        "historical_target_artifact_binding": {
+          "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+          "fields": {
+            "target_version": "UNKNOWN",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "upstream_reported_tag": "2.33.2"
+          },
+          "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+        },
+        "target_source_image": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+        "target_build_materials": [],
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "current_target_artifact_binding": {
+          "source_version": "2.33.3",
+          "source_image": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+          "status": "UNBOUND_CURRENT_TARGET",
+          "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+        },
+        "master_20261110_public_refresh": {
+          "task": "SPEC-0212-TSK-0052",
+          "retrieved_at": "2026-11-10T13:47:09.345Z",
+          "declared_source_retained": true,
+          "result": "PUBLISHED_FINAL_RELEASE",
+          "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
+          "published_final_tag": "2.34.1",
+          "vendor_stable_channel": "NOT_INFERRED",
+          "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+          "artifact_boundary": {
+            "declared_subject": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+            "declared_digest": "sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+            "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+            "signature": "NOT_RUN",
+            "provenance": "NOT_RUN",
+            "sbom": "NOT_RUN",
+            "upstream_metadata_proves_custom_image": false,
+            "next_owner": "SPEC-0212-TSK-0052 criterion105"
+          }
+        },
+        "master_20261111_public_refresh": {
+          "task": "SPEC-0212-TSK-0052",
+          "assessed_at": "2026-11-10T21:08:37.550397+00:00",
+          "previously_missing_fresh_lookup": true,
+          "lookup_ref": "release-lookups.json#/master_20261111_public_refresh/github/terrakube-io~1terrakube",
+          "previous_lookup_fields": {
+            "latest_version": "2.33.3",
+            "channel": "stable",
+            "checked_at": "2026-10-26T09:43:15.822659+00:00",
+            "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3"
+          },
+          "channel_rationale": "Fresh published release is 2.34.1; older 2.33.3 permalink and GitHub final metadata do not independently define current stable.",
+          "target_version_retained": "2.33.3",
+          "declared_source_retained": true,
+          "security_applicability_review": "NOT_RUN; release/channel research does not renew reviewed_at or supply an applicability decision.",
+          "artifact_boundary": {
+            "declared_subject": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+            "declared_digest": "sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+            "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+            "signature": "NOT_RUN",
+            "provenance": "NOT_RUN",
+            "sbom": "NOT_RUN",
+            "upstream_metadata_proves_custom_image": false,
+            "next_owner": "SPEC-0212-TSK-0052 criterion105"
+          },
+          "latest_gate_missing": [
+            "latest_mismatch",
+            "stable_channel"
+          ],
+          "security_gate_missing": [
+            "fresh_review",
+            "primary_advisory",
+            "reviewed_decision"
+          ],
+          "remaining_latest_actions": [
+            "W109: disposition candidate2.33.3 against observed latest2.34.1; compatibility/recovery and an approved source update remain separate. Candidate retained.",
+            "W109: resolve the supplier channel/binding limitation recorded above; published-final alone is insufficient."
+          ],
+          "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
+        },
+        "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
+        "decision": "defer",
+        "affected_confirmed": null,
+        "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
+        "master_20261111_advisory_review": {
+          "task": "SPEC-0212-TSK-0052",
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "reviewed_subject": {
+            "declaration": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+            "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
+            "assessment_version": "2.33.3",
+            "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
+          },
+          "security_applicability": "UNKNOWN",
+          "bounded_research_applicability": "UNKNOWN",
+          "source_action": "defer",
+          "security_decision": "defer",
+          "advisory_refs": [
+            "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
+          ],
+          "concrete_advisory_refs": [],
+          "advisory_discovery": [
+            {
+              "supplier": "terrakube-io/terrakube",
+              "url": "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1",
+              "unique_advisories": 0,
+              "endpoint_listing_complete": true,
+              "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
+              "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            }
+          ],
+          "coverage_limits": [
+            "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
+            "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
+            "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
+          ],
+          "reason": "No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
+          "next_action": "Reconcile 2.34.1 to official stable release and SBOM.",
+          "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/terrakube",
+          "latest_disposition": {
+            "action": "prepare-upgrade",
+            "target_retained": "2.33.3",
+            "observed_latest": "2.34.1",
+            "previous_gate_missing": [
+              "latest_mismatch",
+              "stable_channel"
+            ],
+            "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
+            "next_action": "Reconcile 2.34.1 to official stable release and SBOM."
+          },
+          "operational_execution": "NOT_RUN",
+          "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
+          "previous_security_fields": {
+            "reviewed_at": null,
+            "decision": null,
+            "affected_confirmed": null,
+            "reason": null,
+            "advisory_urls": [],
+            "current_version": null,
+            "candidate_version": null
+          }
+        },
+        "master_20261111_artifact_review": {
+          "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-api",
+          "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-api"
+        }
+      }
+    },
+    {
+      "service": "terrakube-executor",
+      "current_scope": "lab",
+      "current_compose_file": "labs/terrakube/docker-compose.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "terrakube-executor",
+        "scope": "root",
+        "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+        "current_declared": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+        "profiles_declared": [
+          "iac"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "2.34.1",
+        "target_version": "2.33.3",
+        "channel": "UNKNOWN",
+        "checked_at": "2026-11-10T22:26:51.246426+00:00",
+        "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "UNKNOWN",
+        "source_release_date": "2026-10-21T22:00:24Z",
+        "advisory_urls": [
+          "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
+        ],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-11-10T14:39:40+09:00",
+          "next_validation_due": "2026-11-17T14:39:40+09:00",
+          "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+          "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "service_owner_role": "Existing service owner named by current_public_assessment"
+        },
+        "source_owner_repository": "terrakube-io/terrakube",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "upstream_reported_tag": "UNKNOWN",
+        "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
+        "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+        "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+        "official_supplier_lookup_refs": [
+          "terrakube-io/terrakube"
+        ],
+        "supplier_lookup_blocker": null,
+        "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+        "official_release_assessment": {
+          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+          "release_fact_refs": [
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/terrakube-io~1terrakube"
+          ],
+          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+          "next_owner": "SEC01 release/artifact evidence owner and terrakube-executor service build/migration/recovery owner",
+          "source_target_security_native_deployment": "UNCHANGED"
+        },
+        "current_public_assessment": {
+          "supplier_group": "terrakube-io/terrakube",
+          "owner": "SEC01 and existing service owner",
+          "review_at": "2026-10-27",
+          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "candidate": "2.33.3",
+          "fact_checked_at": "2026-10-26T09:43:15.822659+00:00",
+          "published_at": "2026-10-21T22:00:24Z",
+          "eligible_after_7_days": "2026-10-28T22:00:24+00:00",
+          "evidence_refs": [
+            "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
+            "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
+          ],
+          "decision": "DEFER_SEVEN_DAY_SOAK",
+          "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+          "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+          "service": "terrakube-executor",
+          "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "current_declared": "azbuilder/executor:2.33.2",
+          "resolved_source": {
+            "image": "azbuilder/executor:2.33.2",
+            "build": null,
+            "chain": [
+              "infra/09-platform-ops/terrakube/docker-compose.yml#terrakube-executor",
+              "infra/common-optimizations.yml#template-infra-high"
+            ]
+          },
+          "existing_target_version": "UNKNOWN",
+          "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+        },
+        "historical_target_artifact_binding": {
+          "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+          "fields": {
+            "target_version": "UNKNOWN",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "upstream_reported_tag": "2.33.2"
+          },
+          "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+        },
+        "target_source_image": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+        "target_build_materials": [],
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "current_target_artifact_binding": {
+          "source_version": "2.33.3",
+          "source_image": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+          "status": "UNBOUND_CURRENT_TARGET",
+          "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+        },
+        "master_20261110_public_refresh": {
+          "task": "SPEC-0212-TSK-0052",
+          "retrieved_at": "2026-11-10T13:47:09.345Z",
+          "declared_source_retained": true,
+          "result": "PUBLISHED_FINAL_RELEASE",
+          "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
+          "published_final_tag": "2.34.1",
+          "vendor_stable_channel": "NOT_INFERRED",
+          "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+          "artifact_boundary": {
+            "declared_subject": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+            "declared_digest": "sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+            "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+            "signature": "NOT_RUN",
+            "provenance": "NOT_RUN",
+            "sbom": "NOT_RUN",
+            "upstream_metadata_proves_custom_image": false,
+            "next_owner": "SPEC-0212-TSK-0052 criterion105"
+          }
+        },
+        "master_20261111_public_refresh": {
+          "task": "SPEC-0212-TSK-0052",
+          "assessed_at": "2026-11-10T21:08:37.550397+00:00",
+          "previously_missing_fresh_lookup": true,
+          "lookup_ref": "release-lookups.json#/master_20261111_public_refresh/github/terrakube-io~1terrakube",
+          "previous_lookup_fields": {
+            "latest_version": "2.33.3",
+            "channel": "stable",
+            "checked_at": "2026-10-26T09:43:15.822659+00:00",
+            "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3"
+          },
+          "channel_rationale": "Fresh published release is 2.34.1; older 2.33.3 permalink and GitHub final metadata do not independently define current stable.",
+          "target_version_retained": "2.33.3",
+          "declared_source_retained": true,
+          "security_applicability_review": "NOT_RUN; release/channel research does not renew reviewed_at or supply an applicability decision.",
+          "artifact_boundary": {
+            "declared_subject": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+            "declared_digest": "sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+            "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+            "signature": "NOT_RUN",
+            "provenance": "NOT_RUN",
+            "sbom": "NOT_RUN",
+            "upstream_metadata_proves_custom_image": false,
+            "next_owner": "SPEC-0212-TSK-0052 criterion105"
+          },
+          "latest_gate_missing": [
+            "latest_mismatch",
+            "stable_channel"
+          ],
+          "security_gate_missing": [
+            "fresh_review",
+            "primary_advisory",
+            "reviewed_decision"
+          ],
+          "remaining_latest_actions": [
+            "W109: disposition candidate2.33.3 against observed latest2.34.1; compatibility/recovery and an approved source update remain separate. Candidate retained.",
+            "W109: resolve the supplier channel/binding limitation recorded above; published-final alone is insufficient."
+          ],
+          "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
+        },
+        "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
+        "decision": "defer",
+        "affected_confirmed": null,
+        "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
+        "master_20261111_advisory_review": {
+          "task": "SPEC-0212-TSK-0052",
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "reviewed_subject": {
+            "declaration": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+            "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
+            "assessment_version": "2.33.3",
+            "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
+          },
+          "security_applicability": "UNKNOWN",
+          "bounded_research_applicability": "UNKNOWN",
+          "source_action": "defer",
+          "security_decision": "defer",
+          "advisory_refs": [
+            "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
+          ],
+          "concrete_advisory_refs": [],
+          "advisory_discovery": [
+            {
+              "supplier": "terrakube-io/terrakube",
+              "url": "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1",
+              "unique_advisories": 0,
+              "endpoint_listing_complete": true,
+              "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
+              "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            }
+          ],
+          "coverage_limits": [
+            "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
+            "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
+            "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
+          ],
+          "reason": "No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
+          "next_action": "Reconcile stable provenance and review Docker-socket executor boundary.",
+          "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/terrakube",
+          "latest_disposition": {
+            "action": "prepare-upgrade",
+            "target_retained": "2.33.3",
+            "observed_latest": "2.34.1",
+            "previous_gate_missing": [
+              "latest_mismatch",
+              "stable_channel"
+            ],
+            "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
+            "next_action": "Reconcile stable provenance and review Docker-socket executor boundary."
+          },
+          "operational_execution": "NOT_RUN",
+          "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
+          "previous_security_fields": {
+            "reviewed_at": null,
+            "decision": null,
+            "affected_confirmed": null,
+            "reason": null,
+            "advisory_urls": [],
+            "current_version": null,
+            "candidate_version": null
+          }
+        },
+        "master_20261111_artifact_review": {
+          "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-executor",
+          "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-executor"
+        }
+      }
+    },
+    {
+      "service": "terrakube-ui",
+      "current_scope": "lab",
+      "current_compose_file": "labs/terrakube/docker-compose.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "terrakube-ui",
+        "scope": "root",
+        "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+        "current_declared": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+        "profiles_declared": [
+          "iac"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "2.34.1",
+        "target_version": "2.33.3",
+        "channel": "UNKNOWN",
+        "checked_at": "2026-11-10T22:26:51.246426+00:00",
+        "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "UNKNOWN",
+        "source_release_date": "2026-10-21T22:00:24Z",
+        "advisory_urls": [
+          "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
+        ],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-11-10T14:39:40+09:00",
+          "next_validation_due": "2026-11-17T14:39:40+09:00",
+          "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+          "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "service_owner_role": "Existing service owner named by current_public_assessment"
+        },
+        "source_owner_repository": "terrakube-io/terrakube",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "upstream_reported_tag": "UNKNOWN",
+        "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
+        "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+        "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+        "official_supplier_lookup_refs": [
+          "terrakube-io/terrakube"
+        ],
+        "supplier_lookup_blocker": null,
+        "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+        "official_release_assessment": {
+          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+          "release_fact_refs": [
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/terrakube-io~1terrakube"
+          ],
+          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+          "next_owner": "SEC01 release/artifact evidence owner and terrakube-ui service build/migration/recovery owner",
+          "source_target_security_native_deployment": "UNCHANGED"
+        },
+        "current_public_assessment": {
+          "supplier_group": "terrakube-io/terrakube",
+          "owner": "SEC01 and existing service owner",
+          "review_at": "2026-10-27",
+          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "candidate": "2.33.3",
+          "fact_checked_at": "2026-10-26T09:43:15.822659+00:00",
+          "published_at": "2026-10-21T22:00:24Z",
+          "eligible_after_7_days": "2026-10-28T22:00:24+00:00",
+          "evidence_refs": [
+            "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
+            "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
+          ],
+          "decision": "DEFER_SEVEN_DAY_SOAK",
+          "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+          "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+          "service": "terrakube-ui",
+          "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "current_declared": "azbuilder/terrakube-ui:2.33.2",
+          "resolved_source": {
+            "image": "azbuilder/terrakube-ui:2.33.2",
+            "build": null,
+            "chain": [
+              "infra/09-platform-ops/terrakube/docker-compose.yml#terrakube-ui",
+              "infra/common-optimizations.yml#template-infra-med"
+            ]
+          },
+          "existing_target_version": "UNKNOWN",
+          "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+        },
+        "historical_target_artifact_binding": {
+          "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+          "fields": {
+            "target_version": "UNKNOWN",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "upstream_reported_tag": "2.33.2"
+          },
+          "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+        },
+        "target_source_image": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+        "target_build_materials": [],
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "current_target_artifact_binding": {
+          "source_version": "2.33.3",
+          "source_image": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+          "status": "UNBOUND_CURRENT_TARGET",
+          "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+        },
+        "master_20261110_public_refresh": {
+          "task": "SPEC-0212-TSK-0052",
+          "retrieved_at": "2026-11-10T13:47:09.345Z",
+          "declared_source_retained": true,
+          "result": "PUBLISHED_FINAL_RELEASE",
+          "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
+          "published_final_tag": "2.34.1",
+          "vendor_stable_channel": "NOT_INFERRED",
+          "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+          "artifact_boundary": {
+            "declared_subject": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+            "declared_digest": "sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+            "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+            "signature": "NOT_RUN",
+            "provenance": "NOT_RUN",
+            "sbom": "NOT_RUN",
+            "upstream_metadata_proves_custom_image": false,
+            "next_owner": "SPEC-0212-TSK-0052 criterion105"
+          }
+        },
+        "master_20261111_public_refresh": {
+          "task": "SPEC-0212-TSK-0052",
+          "assessed_at": "2026-11-10T21:08:37.550397+00:00",
+          "previously_missing_fresh_lookup": true,
+          "lookup_ref": "release-lookups.json#/master_20261111_public_refresh/github/terrakube-io~1terrakube",
+          "previous_lookup_fields": {
+            "latest_version": "2.33.3",
+            "channel": "stable",
+            "checked_at": "2026-10-26T09:43:15.822659+00:00",
+            "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3"
+          },
+          "channel_rationale": "Fresh published release is 2.34.1; older 2.33.3 permalink and GitHub final metadata do not independently define current stable.",
+          "target_version_retained": "2.33.3",
+          "declared_source_retained": true,
+          "security_applicability_review": "NOT_RUN; release/channel research does not renew reviewed_at or supply an applicability decision.",
+          "artifact_boundary": {
+            "declared_subject": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+            "declared_digest": "sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+            "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+            "signature": "NOT_RUN",
+            "provenance": "NOT_RUN",
+            "sbom": "NOT_RUN",
+            "upstream_metadata_proves_custom_image": false,
+            "next_owner": "SPEC-0212-TSK-0052 criterion105"
+          },
+          "latest_gate_missing": [
+            "latest_mismatch",
+            "stable_channel"
+          ],
+          "security_gate_missing": [
+            "fresh_review",
+            "primary_advisory",
+            "reviewed_decision"
+          ],
+          "remaining_latest_actions": [
+            "W109: disposition candidate2.33.3 against observed latest2.34.1; compatibility/recovery and an approved source update remain separate. Candidate retained.",
+            "W109: resolve the supplier channel/binding limitation recorded above; published-final alone is insufficient."
+          ],
+          "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
+        },
+        "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
+        "decision": "defer",
+        "affected_confirmed": null,
+        "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
+        "master_20261111_advisory_review": {
+          "task": "SPEC-0212-TSK-0052",
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "reviewed_subject": {
+            "declaration": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+            "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
+            "assessment_version": "2.33.3",
+            "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
+          },
+          "security_applicability": "UNKNOWN",
+          "bounded_research_applicability": "UNKNOWN",
+          "source_action": "defer",
+          "security_decision": "defer",
+          "advisory_refs": [
+            "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1"
+          ],
+          "concrete_advisory_refs": [],
+          "advisory_discovery": [
+            {
+              "supplier": "terrakube-io/terrakube",
+              "url": "https://api.github.com/repos/terrakube-io/terrakube/security-advisories?per_page=100&page=1",
+              "unique_advisories": 0,
+              "endpoint_listing_complete": true,
+              "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
+              "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            }
+          ],
+          "coverage_limits": [
+            "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
+            "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
+            "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
+          ],
+          "reason": "No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
+          "next_action": "Reconcile 2.34.1 to official stable release and UI SBOM.",
+          "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/terrakube",
+          "latest_disposition": {
+            "action": "prepare-upgrade",
+            "target_retained": "2.33.3",
+            "observed_latest": "2.34.1",
+            "previous_gate_missing": [
+              "latest_mismatch",
+              "stable_channel"
+            ],
+            "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
+            "next_action": "Reconcile 2.34.1 to official stable release and UI SBOM."
+          },
+          "operational_execution": "NOT_RUN",
+          "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
+          "previous_security_fields": {
+            "reviewed_at": null,
+            "decision": null,
+            "affected_confirmed": null,
+            "reason": null,
+            "advisory_urls": [],
+            "current_version": null,
+            "candidate_version": null
+          }
+        },
+        "master_20261111_artifact_review": {
+          "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-ui",
+          "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-ui"
         }
       }
     },

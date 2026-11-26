@@ -70,29 +70,6 @@ GRANT ALL ON SCHEMA public TO airflow;
 ALTER SCHEMA public OWNER TO airflow;
 
 ---------------------------------------------------------
--- 4. terrakube 설정
----------------------------------------------------------
-\connect postgres
-SET log_statement = 'none';
-SET log_min_error_statement = 'panic';
-
-SELECT 'CREATE ROLE terrakube LOGIN PASSWORD ' || quote_literal(:'terrakube_db_password')
-WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'terrakube')
-\gexec
-
-ALTER ROLE terrakube WITH LOGIN PASSWORD :'terrakube_db_password';
-
-SELECT 'CREATE DATABASE terrakube OWNER terrakube'
-WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'terrakube')
-\gexec
-
-GRANT ALL PRIVILEGES ON DATABASE terrakube TO terrakube;
-
-\connect terrakube
-GRANT ALL ON SCHEMA public TO terrakube;
-ALTER SCHEMA public OWNER TO terrakube;
-
----------------------------------------------------------
 -- 5. sonarqube 설정
 ---------------------------------------------------------
 \connect postgres
