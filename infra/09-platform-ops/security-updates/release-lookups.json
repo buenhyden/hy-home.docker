@@ -58685,7 +58685,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
+          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58954,7 +58954,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
+          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
           "assessment_version": "n8nio/runners:2.46.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59021,7 +59021,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
+          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62666,7 +62666,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
+          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62771,7 +62771,7 @@
         "reviewed_at": "2026-11-26T10:13:02.626628+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
-          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
+          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
           "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62829,7 +62829,7 @@
         "reviewed_at": "2026-11-26T10:13:03.123056+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
-          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
+          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
           "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62887,7 +62887,7 @@
         "reviewed_at": "2026-11-26T10:19:49.060079+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.15.0@sha256:d6d2cdc163250d749d9442176264a05b65adca44660af541d1f0966b393b0806",
-          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
+          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
           "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
