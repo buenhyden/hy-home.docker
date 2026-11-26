@@ -1114,8 +1114,8 @@
         "opensearchproject/opensearch-dashboards": "external"
       },
       "images": [
-        "opensearchproject/opensearch-dashboards:3.8.0",
-        "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc"
+        "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1",
+        "opensearchproject/opensearch-dashboards:3.8.0"
       ],
       "compose_files": [
         "infra/04-data/opensearch/docker-compose.yml",
@@ -1125,7 +1125,7 @@
         {
           "compose_file": "infra/04-data/opensearch/docker-compose.yml",
           "images": [
-            "opensearchproject/opensearch-dashboards:3.9.0@sha256:46c649e9c4412a56f49bd052c2ca458a2a4933e1706a1843b832b0806e3885dc"
+            "opensearchproject/opensearch-dashboards:3.10.0@sha256:90e839fc7fb3ac80fbe87b0a08fe378ed9b7cb52fcbafa08840915f2b152bcf1"
           ]
         },
         {
