@@ -1702,7 +1702,7 @@
         "hy-home/dev-pg": "local-custom"
       },
       "images": [
-        "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2"
+        "hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1"
       ],
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml"
@@ -1711,7 +1711,7 @@
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
-            "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2"
+            "hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1"
           ]
         }
       ]
