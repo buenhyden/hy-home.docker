@@ -953,7 +953,7 @@
       },
       "images": [
         "danielqsj/kafka-exporter:v1.10.0",
-        "danielqsj/kafka-exporter:v1.10.0@sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42"
+        "danielqsj/kafka-exporter:v1.11.0@sha256:54d4296c5b8ce01232f6762e06cbc3eec25887c0b5c5940ccb9e891ac7fc51d8"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml",
@@ -963,7 +963,7 @@
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
-            "danielqsj/kafka-exporter:v1.10.0@sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42"
+            "danielqsj/kafka-exporter:v1.11.0@sha256:54d4296c5b8ce01232f6762e06cbc3eec25887c0b5c5940ccb9e891ac7fc51d8"
           ]
         },
         {
