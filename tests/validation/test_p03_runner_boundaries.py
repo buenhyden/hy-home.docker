@@ -88,6 +88,8 @@ def unit_workflow_result(workflow_id, _expected, *, wait_seconds):
     category = (
         "environment_access_denied"
         if "environment_denied" in workflow_id
+        else "code_generation_blocked"
+        if "code_generation_denied" in workflow_id
         else "filesystem_not_mounted"
         if any(
             marker in workflow_id
@@ -366,6 +368,12 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
         self.assertEqual(
             {"environment_access_denied"},
             set(fixture.SCENARIO_ALLOWED_CATEGORIES["javascript_environment_denied"]),
+        )
+        self.assertEqual(
+            {"code_generation_blocked"},
+            set(
+                fixture.SCENARIO_ALLOWED_CATEGORIES["javascript_code_generation_denied"]
+            ),
         )
 
     def test_runner_without_process_global_is_attributed_to_environment(self):
