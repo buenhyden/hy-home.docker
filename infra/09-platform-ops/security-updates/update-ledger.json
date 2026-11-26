@@ -222,7 +222,7 @@
     },
     {
       "path": "infra/13-experience/storybook/docker-compose.yml",
-      "sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02"
+      "sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065"
     }
   ],
   "runtime_collection": {
@@ -24480,7 +24480,7 @@
       "service": "storybook",
       "scope": "root",
       "compose_file": "infra/13-experience/storybook/docker-compose.yml",
-      "current_declared": "hy-home/storybook:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+      "current_declared": "hy-home/storybook:494d16feede7aca74dc357f9955c8602d71e60fa",
       "profiles_declared": [
         "experience"
       ],
@@ -24507,7 +24507,7 @@
       "channel": "UNKNOWN",
       "checked_at": null,
       "release_url": null,
-      "target_index_digest": "UNKNOWN",
+      "target_index_digest": "sha256:6685fa70d09559be30fbfdf12028a12975baeac793c945a7b2446d34cd1a549f",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
       "platform": "UNKNOWN",
@@ -24531,9 +24531,9 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-24T09:00:58.396096+00:00",
-        "next_validation_due": "2026-12-01T09:00:58.396096+00:00",
-        "reason": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+        "discovered_at": "2026-11-26T22:56:55.343840+00:00",
+        "next_validation_due": "2026-12-03T22:56:55.343840+00:00",
+        "reason": "Local build from commit 494d16fe (Node 26.13.1 base from PR1257, Storybook 10.6.7, next 16.4.6) through storybook_image.py with SBOM and provenance attestations, pushed to the local registry and verified there by index digest; no publisher signature, scan, compatibility or recovery result.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
@@ -24556,8 +24556,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-24T09:00:58.396096+00:00",
-      "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
+      "source_refreshed_at": "2026-11-26T22:56:55.343840+00:00",
+      "source_input_sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [],
@@ -24670,12 +24670,12 @@
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The reviewed Storybook/Next server issues do not affect the declared static architecture, but NGINX/base packages and selected artifact contents are unverified.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T22:56:55.343840+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/storybook:9a8ccbf31a923156a520043217e5cbd543d88a2f",
-          "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
+          "declaration": "hy-home/storybook:494d16feede7aca74dc357f9955c8602d71e60fa",
+          "source_input_sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065",
           "assessment_version": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-          "version_binding_note": "Rebuilt on 2026-11-24 from commit 9a8ccbf3, which only moves next to 16.4.5 for its security fix; the base images are unchanged, so the version-based assessment carries over and runtime contents were not newly inspected."
+          "version_binding_note": "Rebuilt on 2026-11-26 from commit 494d16fe, which moves the Node base from 24.21.0 to 26.13.1 and Storybook and next to their current releases; the NGINX static stage is unchanged."
         },
         "security_applicability": "UNKNOWN",
         "bounded_research_applicability": "UNKNOWN",
@@ -24734,21 +24734,21 @@
       },
       "target_declared_digest": "UNKNOWN",
       "upstream_reported_tag": "UNKNOWN",
-      "target_source_image": "hy-home/storybook:9a8ccbf31a923156a520043217e5cbd543d88a2f",
-      "target_digest_evidence": "UNKNOWN: Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
-      "candidate_evidence_scope": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+      "target_source_image": "hy-home/storybook:494d16feede7aca74dc357f9955c8602d71e60fa",
+      "target_digest_evidence": "UNKNOWN: Local build from commit 494d16fe (Node 26.13.1 base from PR1257, Storybook 10.6.7, next 16.4.6) through storybook_image.py with SBOM and provenance attestations, pushed to the local registry and verified there by index digest; no publisher signature, scan, compatibility or recovery result.",
+      "candidate_evidence_scope": "Local build from commit 494d16fe (Node 26.13.1 base from PR1257, Storybook 10.6.7, next 16.4.6) through storybook_image.py with SBOM and provenance attestations, pushed to the local registry and verified there by index digest; no publisher signature, scan, compatibility or recovery result.",
       "current_target_artifact_binding": {
         "source_version": "UNKNOWN",
-        "source_image": "hy-home/storybook:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+        "source_image": "hy-home/storybook:494d16feede7aca74dc357f9955c8602d71e60fa",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+        "reason": "Local build from commit 494d16fe (Node 26.13.1 base from PR1257, Storybook 10.6.7, next 16.4.6) through storybook_image.py with SBOM and provenance attestations, pushed to the local registry and verified there by index digest; no publisher signature, scan, compatibility or recovery result; do not reuse historical artifact, build or native results."
       }
     },
     {
       "service": "storybook-mcp",
       "scope": "root",
       "compose_file": "infra/13-experience/storybook/docker-compose.yml",
-      "current_declared": "hy-home/storybook-mcp:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+      "current_declared": "hy-home/storybook-mcp:494d16feede7aca74dc357f9955c8602d71e60fa",
       "profiles_declared": [
         "experience"
       ],
@@ -24775,7 +24775,7 @@
       "channel": "UNKNOWN",
       "checked_at": null,
       "release_url": null,
-      "target_index_digest": "UNKNOWN",
+      "target_index_digest": "sha256:6d8d8b567204033997ff801e6b581d9a68a355a96671ab2b199bf60c3d1539ae",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
       "platform": "UNKNOWN",
@@ -24786,7 +24786,9 @@
         "https://github.com/storybookjs/storybook/security/advisories/GHSA-mjf5-7g4m-gx5w",
         "https://github.com/storybookjs/storybook/security/advisories/GHSA-px85-f4q5-jh77",
         "https://nextjs.org/blog/nextjs-security-update-october-14-2026",
-        "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+        "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+        "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+        "https://nodejs.org/dist/index.json"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -24800,9 +24802,9 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-24T09:00:58.396096+00:00",
-        "next_validation_due": "2026-12-01T09:00:58.396096+00:00",
-        "reason": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+        "discovered_at": "2026-11-26T22:56:55.343840+00:00",
+        "next_validation_due": "2026-12-03T22:56:55.343840+00:00",
+        "reason": "Local build from commit 494d16fe (Node 26.13.1 base from PR1257, Storybook 10.6.7, next 16.4.6) through storybook_image.py with SBOM and provenance attestations, pushed to the local registry and verified there by index digest; no publisher signature, scan, compatibility or recovery result.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
@@ -24825,8 +24827,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-24T09:00:58.396096+00:00",
-      "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
+      "source_refreshed_at": "2026-11-26T22:56:55.343840+00:00",
+      "source_input_sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [],
@@ -24934,50 +24936,49 @@
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
-      "decision": "patch",
-      "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected Node24.21.0 base predates the vendor24.22.1 security release. Concrete source component is in the affected24.x range; actual image/runtime exposure remains unverified.",
+      "decision": "not-affected",
+      "affected_confirmed": false,
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected Node 26.13.1 base is the November 2026 security release, newer than 26.12.1, which the October 2026 batch shipped with the CVE-2026-111497 fix (24.22.1 on the 24.x line), re-checked on 2026-11-26; the image-level Alpine and package status remains unverified without a scan.",
       "current_version": "24.21.0",
       "candidate_version": "24.22.1",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T22:56:55.343840+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/storybook-mcp:9a8ccbf31a923156a520043217e5cbd543d88a2f",
-          "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
+          "declaration": "hy-home/storybook-mcp:494d16feede7aca74dc357f9955c8602d71e60fa",
+          "source_input_sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065",
           "assessment_version": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-          "version_binding_note": "Rebuilt on 2026-11-24 from commit 9a8ccbf3, which only moves next to 16.4.5 for its security fix; the base images are unchanged, so the version-based assessment carries over and runtime contents were not newly inspected."
+          "version_binding_note": "Rebuilt on 2026-11-26 from commit 494d16fe, which moves the Node base from 24.21.0 to 26.13.1 and Storybook and next to their current releases; the NGINX static stage is unchanged."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED_AT_DECLARED_BASE_VERSION",
-        "source_action": "patch",
-        "security_decision": "patch",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://github.com/storybookjs/storybook/security/advisories/GHSA-8452-54wp-rmv6",
           "https://github.com/storybookjs/storybook/security/advisories/GHSA-f2ph-cmg5-wxc8",
           "https://github.com/storybookjs/storybook/security/advisories/GHSA-mjf5-7g4m-gx5w",
           "https://github.com/storybookjs/storybook/security/advisories/GHSA-px85-f4q5-jh77",
           "https://nextjs.org/blog/nextjs-security-update-october-14-2026",
-          "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+          "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+          "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+          "https://nodejs.org/dist/index.json"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/storybookjs/storybook/security/advisories/GHSA-8452-54wp-rmv6",
-          "https://github.com/storybookjs/storybook/security/advisories/GHSA-f2ph-cmg5-wxc8",
-          "https://github.com/storybookjs/storybook/security/advisories/GHSA-mjf5-7g4m-gx5w",
-          "https://github.com/storybookjs/storybook/security/advisories/GHSA-px85-f4q5-jh77",
-          "https://nextjs.org/blog/nextjs-security-update-october-14-2026",
-          "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+          "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+          "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+          "https://nodejs.org/dist/index.json"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "Selected Node24.21.0 base predates the vendor24.22.1 security release. Concrete source component is in the affected24.x range; actual image/runtime exposure remains unverified.",
-        "next_action": "Prepare a producer-owned Node24 security-base update and rebuild the MCP target; check exact image contents, scan, auth/compatibility and recovery before separate activation.",
+        "reason": "Selected Node 26.13.1 base is the November 2026 security release, newer than 26.12.1, which the October 2026 batch shipped with the CVE-2026-111497 fix (24.22.1 on the 24.x line), re-checked on 2026-11-26; the image-level Alpine and package status remains unverified without a scan.",
+        "next_action": "Keep the Node 26.13.1 build; scan the final image and review its Alpine zlib finding.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/local",
         "latest_disposition": {
-          "action": "rebuild-and-bind-internal-source",
+          "action": "retain-current-version",
           "target_retained": "UNKNOWN",
           "observed_latest": "UNKNOWN",
           "previous_gate_missing": [
@@ -24986,8 +24987,8 @@
             "fresh_lookup",
             "primary_release_reference"
           ],
-          "reason": "Selected9cd150b versus latest producer source e35e62e; source currency is not a built-image receipt.",
-          "next_action": "Prepare a producer-owned Node24 security-base update and rebuild the MCP target; check exact image contents, scan, auth/compatibility and recovery before separate activation."
+          "reason": "Selected Node 26.13.1 base is the November 2026 security release, newer than 26.12.1, which the October 2026 batch shipped with the CVE-2026-111497 fix (24.22.1 on the 24.x line), re-checked on 2026-11-26; the image-level Alpine and package status remains unverified without a scan.",
+          "next_action": "Keep the Node 26.13.1 build; scan the final image and review its Alpine zlib finding."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -25002,33 +25003,35 @@
         },
         "patch_component": {
           "name": "Node.js runtime base",
-          "current_version": "24.21.0",
-          "candidate_version": "24.22.1",
+          "current_version": "26.13.1",
+          "candidate_version": "26.13.1",
           "evidence_refs": [
             "https://github.com/storybookjs/storybook/security/advisories/GHSA-8452-54wp-rmv6",
             "https://github.com/storybookjs/storybook/security/advisories/GHSA-f2ph-cmg5-wxc8",
             "https://github.com/storybookjs/storybook/security/advisories/GHSA-mjf5-7g4m-gx5w",
             "https://github.com/storybookjs/storybook/security/advisories/GHSA-px85-f4q5-jh77",
             "https://nextjs.org/blog/nextjs-security-update-october-14-2026",
-            "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+            "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+            "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+            "https://nodejs.org/dist/index.json"
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
       },
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/storybook-mcp",
-        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/storybook-mcp"
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch_resolved/storybook-mcp"
       },
       "target_declared_digest": "UNKNOWN",
       "upstream_reported_tag": "UNKNOWN",
-      "target_source_image": "hy-home/storybook-mcp:9a8ccbf31a923156a520043217e5cbd543d88a2f",
-      "target_digest_evidence": "UNKNOWN: Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
-      "candidate_evidence_scope": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+      "target_source_image": "hy-home/storybook-mcp:494d16feede7aca74dc357f9955c8602d71e60fa",
+      "target_digest_evidence": "UNKNOWN: Local build from commit 494d16fe (Node 26.13.1 base from PR1257, Storybook 10.6.7, next 16.4.6) through storybook_image.py with SBOM and provenance attestations, pushed to the local registry and verified there by index digest; no publisher signature, scan, compatibility or recovery result.",
+      "candidate_evidence_scope": "Local build from commit 494d16fe (Node 26.13.1 base from PR1257, Storybook 10.6.7, next 16.4.6) through storybook_image.py with SBOM and provenance attestations, pushed to the local registry and verified there by index digest; no publisher signature, scan, compatibility or recovery result.",
       "current_target_artifact_binding": {
         "source_version": "UNKNOWN",
-        "source_image": "hy-home/storybook-mcp:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+        "source_image": "hy-home/storybook-mcp:494d16feede7aca74dc357f9955c8602d71e60fa",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+        "reason": "Local build from commit 494d16fe (Node 26.13.1 base from PR1257, Storybook 10.6.7, next 16.4.6) through storybook_image.py with SBOM and provenance attestations, pushed to the local registry and verified there by index digest; no publisher signature, scan, compatibility or recovery result; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -58067,6 +58070,240 @@
         }
       ],
       "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 8 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "0799fac95d7244bd4b2b4fbf919206804511d668",
+      "refreshed_at": "2026-11-26T22:56:55.343840+00:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "cf478e3c8d7d3f5ae92cd94edcb7edbfbd421a442650052f6fd4e36f178289e7",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7df3bcd149809bfa66f55745a5201cde10249cdb4bcd535c76933e14d832275c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "bea4ad9fad9dea27178d6996fc9aeb3c68fe5641252d41f0d7c92c9aa57aec43"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "73d5754c0a0d6419bb8399a35104a2e06b59965a18256e1dcbf0ec2b6d00654a"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "b494ff5970dd0a293709ed4ac07f5a1a538e146095bc4f0b66b40245a3679041"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "c95dc25d4977e28ef281fce2651e17ea15bf96db14494a27eeaa1b987e865e07"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "f7cf17b4fa054c88a792d2a07e1315a5dd62b0e3b7046cfb71a8acd955ba71ec"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "0777773f66d293e9bb8fb58cb0a1c5c677f817a94db4cfe917fb0de3e82bbcc8"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "51a5398438dfc67f14f92c9ce69d960ac3fbbac1c981f1f66cea83dbcdc2f11c"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "4e28ed5fc0e39a71ce8d78220b52b2618aa9abc330edd19cddea1d0f09d649e2"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e37265d81dfed6307e484fd2189365401cc4317e0e78ebeba26a98144379915"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "b2df25b3a29ede02669549e4333f345a49a7563445c2f253ec6e1737d0aa7c64"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "62c62ea7449684d1e44934eff93a22bf580856c077cb06d168f8d59467193c86"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "96e2771d3cf9346ffb43520f3592e6cb81b7e2310c536168d18d3f4579fc70da"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "e38ccef6635098207c9b1aca745811b2282807c39ac085921f30b8973d6ba3c9"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02"
+        }
+      ],
+      "changed_inputs": [
+        "infra/13-experience/storybook/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "storybook",
+          "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
+          "source_refreshed_at": "2026-11-24T09:00:58.396096+00:00"
+        },
+        {
+          "service": "storybook-mcp",
+          "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
+          "source_refreshed_at": "2026-11-24T09:00:58.396096+00:00"
+        }
+      ],
+      "meaning": "2 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 2 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "storybook",
+        "storybook-mcp"
+      ],
+      "previous_service_images": [
+        {
+          "service": "storybook",
+          "current_declared": "hy-home/storybook:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+          "proposed_declared": "hy-home/storybook:494d16feede7aca74dc357f9955c8602d71e60fa",
+          "previous_fields": {
+            "target_version": "UNKNOWN",
+            "target_source_image": "hy-home/storybook:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+            "target_digest_evidence": "UNKNOWN: Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-24T09:00:58.396096+00:00",
+              "next_validation_due": "2026-12-01T09:00:58.396096+00:00",
+              "reason": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-24T09:00:58.396096+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "storybook-mcp",
+          "current_declared": "hy-home/storybook-mcp:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+          "proposed_declared": "hy-home/storybook-mcp:494d16feede7aca74dc357f9955c8602d71e60fa",
+          "previous_fields": {
+            "target_version": "UNKNOWN",
+            "target_source_image": "hy-home/storybook-mcp:9a8ccbf31a923156a520043217e5cbd543d88a2f",
+            "target_digest_evidence": "UNKNOWN: Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-24T09:00:58.396096+00:00",
+              "next_validation_due": "2026-12-01T09:00:58.396096+00:00",
+              "reason": "Local build from commit 9a8ccbf3 (next 16.4.5, PR1140) through storybook_image.py with SBOM and provenance attestations; a local tag without a registry digest, and no publisher signature, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-24T09:00:58.396096+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
     }
   ],
   "delivery_preconditions": {

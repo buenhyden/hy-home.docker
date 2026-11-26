@@ -61750,12 +61750,12 @@
       },
       "storybook": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T22:56:55.343840+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/storybook:9a8ccbf31a923156a520043217e5cbd543d88a2f",
-          "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
+          "declaration": "hy-home/storybook:494d16feede7aca74dc357f9955c8602d71e60fa",
+          "source_input_sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065",
           "assessment_version": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-          "version_binding_note": "Rebuilt on 2026-11-24 from commit 9a8ccbf3, which only moves next to 16.4.5 for its security fix; the base images are unchanged, so the version-based assessment carries over and runtime contents were not newly inspected."
+          "version_binding_note": "Rebuilt on 2026-11-26 from commit 494d16fe, which moves the Node base from 24.21.0 to 26.13.1 and Storybook and next to their current releases; the NGINX static stage is unchanged."
         },
         "security_applicability": "UNKNOWN",
         "bounded_research_applicability": "UNKNOWN",
@@ -61810,43 +61810,42 @@
       },
       "storybook-mcp": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T22:56:55.343840+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/storybook-mcp:9a8ccbf31a923156a520043217e5cbd543d88a2f",
-          "source_input_sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02",
+          "declaration": "hy-home/storybook-mcp:494d16feede7aca74dc357f9955c8602d71e60fa",
+          "source_input_sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065",
           "assessment_version": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-          "version_binding_note": "Rebuilt on 2026-11-24 from commit 9a8ccbf3, which only moves next to 16.4.5 for its security fix; the base images are unchanged, so the version-based assessment carries over and runtime contents were not newly inspected."
+          "version_binding_note": "Rebuilt on 2026-11-26 from commit 494d16fe, which moves the Node base from 24.21.0 to 26.13.1 and Storybook and next to their current releases; the NGINX static stage is unchanged."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED_AT_DECLARED_BASE_VERSION",
-        "source_action": "patch",
-        "security_decision": "patch",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://github.com/storybookjs/storybook/security/advisories/GHSA-8452-54wp-rmv6",
           "https://github.com/storybookjs/storybook/security/advisories/GHSA-f2ph-cmg5-wxc8",
           "https://github.com/storybookjs/storybook/security/advisories/GHSA-mjf5-7g4m-gx5w",
           "https://github.com/storybookjs/storybook/security/advisories/GHSA-px85-f4q5-jh77",
           "https://nextjs.org/blog/nextjs-security-update-october-14-2026",
-          "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+          "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+          "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+          "https://nodejs.org/dist/index.json"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/storybookjs/storybook/security/advisories/GHSA-8452-54wp-rmv6",
-          "https://github.com/storybookjs/storybook/security/advisories/GHSA-f2ph-cmg5-wxc8",
-          "https://github.com/storybookjs/storybook/security/advisories/GHSA-mjf5-7g4m-gx5w",
-          "https://github.com/storybookjs/storybook/security/advisories/GHSA-px85-f4q5-jh77",
-          "https://nextjs.org/blog/nextjs-security-update-october-14-2026",
-          "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+          "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+          "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+          "https://nodejs.org/dist/index.json"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "Selected Node24.21.0 base predates the vendor24.22.1 security release. Concrete source component is in the affected24.x range; actual image/runtime exposure remains unverified.",
-        "next_action": "Prepare a producer-owned Node24 security-base update and rebuild the MCP target; check exact image contents, scan, auth/compatibility and recovery before separate activation.",
+        "reason": "Selected Node 26.13.1 base is the November 2026 security release, newer than 26.12.1, which the October 2026 batch shipped with the CVE-2026-111497 fix (24.22.1 on the 24.x line), re-checked on 2026-11-26; the image-level Alpine and package status remains unverified without a scan.",
+        "next_action": "Keep the Node 26.13.1 build; scan the final image and review its Alpine zlib finding.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/local",
         "latest_disposition": {
-          "action": "rebuild-and-bind-internal-source",
+          "action": "retain-current-version",
           "target_retained": "UNKNOWN",
           "observed_latest": "UNKNOWN",
           "previous_gate_missing": [
@@ -61855,8 +61854,8 @@
             "fresh_lookup",
             "primary_release_reference"
           ],
-          "reason": "Selected9cd150b versus latest producer source e35e62e; source currency is not a built-image receipt.",
-          "next_action": "Prepare a producer-owned Node24 security-base update and rebuild the MCP target; check exact image contents, scan, auth/compatibility and recovery before separate activation."
+          "reason": "Selected Node 26.13.1 base is the November 2026 security release, newer than 26.12.1, which the October 2026 batch shipped with the CVE-2026-111497 fix (24.22.1 on the 24.x line), re-checked on 2026-11-26; the image-level Alpine and package status remains unverified without a scan.",
+          "next_action": "Keep the Node 26.13.1 build; scan the final image and review its Alpine zlib finding."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -61871,15 +61870,17 @@
         },
         "patch_component": {
           "name": "Node.js runtime base",
-          "current_version": "24.21.0",
-          "candidate_version": "24.22.1",
+          "current_version": "26.13.1",
+          "candidate_version": "26.13.1",
           "evidence_refs": [
             "https://github.com/storybookjs/storybook/security/advisories/GHSA-8452-54wp-rmv6",
             "https://github.com/storybookjs/storybook/security/advisories/GHSA-f2ph-cmg5-wxc8",
             "https://github.com/storybookjs/storybook/security/advisories/GHSA-mjf5-7g4m-gx5w",
             "https://github.com/storybookjs/storybook/security/advisories/GHSA-px85-f4q5-jh77",
             "https://nextjs.org/blog/nextjs-security-update-october-14-2026",
-            "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+            "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+            "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+            "https://nodejs.org/dist/index.json"
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
@@ -65797,29 +65798,6 @@
         "next_action": "Bind the signed minimal binary input and pinned Alpine inputs to the final custom artifact, then review the x/net residual.",
         "component_advisory_ids": [
           "GO-2026-6612"
-        ]
-      },
-      "storybook-mcp": {
-        "decision": "patch",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/storybook-mcp",
-        "declared_subject": "hy-home/storybook-mcp:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
-        "source_input_sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7",
-        "operational_execution": "NOT_RUN",
-        "component": "Node.js runtime base",
-        "fixed_candidate_version": "24.22.1",
-        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/storybook-mcp/patch_component/evidence_refs",
-        "final_image": null,
-        "candidate_scope": "custom-image",
-        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
-        "registry_observation": "docker.io/library/node:24.22.1-alpine3.24",
-        "scan_ref": "storybook-mcp",
-        "publisher_signature_status": "NOT_VERIFIED",
-        "published_predicates_ref": null,
-        "producer": "infra/13-experience/storybook/docker-compose.yml",
-        "build_input_image": "docker.io/library/node@sha256:1200d815de24f8dcca745fbf7651d166034a35adbcad8860a8538ffff44f1420",
-        "next_action": "Bind the fixed Node runtime input to the producer source and dependencies, obtain a final image and review its Alpine zlib finding.",
-        "component_advisory_ids": [
-          "CVE-2026-111497"
         ]
       },
       "surrealdb": {
@@ -73135,6 +73113,30 @@
         ],
         "next_action": "Obtain publisher signature and publisher SBOM if available; review Red Hat Java advisories, then test compatibility and recovery before a separate deployment decision.",
         "resolution": "2026-11-26: Keycloak 26.8.2 (Renovate) replaces the release this entry proposed to patch; it is at or above the 26.7.1 fix for GHSA-f8m4-v488-rmrm and outside every published keycloak/keycloak advisory range, so the current advisory review is NOT_AFFECTED."
+      },
+      "storybook-mcp": {
+        "decision": "patch",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/storybook-mcp",
+        "declared_subject": "hy-home/storybook-mcp:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
+        "source_input_sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7",
+        "operational_execution": "NOT_RUN",
+        "component": "Node.js runtime base",
+        "fixed_candidate_version": "24.22.1",
+        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/storybook-mcp/patch_component/evidence_refs",
+        "final_image": null,
+        "candidate_scope": "custom-image",
+        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
+        "registry_observation": "docker.io/library/node:24.22.1-alpine3.24",
+        "scan_ref": "storybook-mcp",
+        "publisher_signature_status": "NOT_VERIFIED",
+        "published_predicates_ref": null,
+        "producer": "infra/13-experience/storybook/docker-compose.yml",
+        "build_input_image": "docker.io/library/node@sha256:1200d815de24f8dcca745fbf7651d166034a35adbcad8860a8538ffff44f1420",
+        "next_action": "Bind the fixed Node runtime input to the producer source and dependencies, obtain a final image and review its Alpine zlib finding.",
+        "component_advisory_ids": [
+          "CVE-2026-111497"
+        ],
+        "resolution": "2026-11-26: the rebuilt image from 494d16fe runs on Node 26.13.1, released after the October 2026 batch that fixed CVE-2026-111497 in 26.12.1; the current advisory review is NOT_AFFECTED."
       }
     },
     "defer_resolved": {

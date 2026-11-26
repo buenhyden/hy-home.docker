@@ -984,9 +984,10 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 rows[name][key]["latest_ref"],
             )
         for decision, group, count in (
-            # Five 2026-11-11 patch rows were resolved on 2026-11-24, and Qdrant,
-            # Open Notebook and Keycloak on 2026-11-26 (patch_resolved).
-            ("patch", "patch", 4),
+            # Five 2026-11-11 patch rows were resolved on 2026-11-24, Qdrant,
+            # Open Notebook and Keycloak on 2026-11-26 and storybook-mcp on
+            # 2026-11-27 (patch_resolved).
+            ("patch", "patch", 3),
             ("no-fix", "no_fix", 6),
             # Traefik's deferred row was resolved on 2026-11-26 (defer_resolved).
             ("defer", "defer", 41),
