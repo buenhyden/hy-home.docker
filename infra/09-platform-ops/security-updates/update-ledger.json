@@ -9229,7 +9229,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "kafbat/kafka-ui:v1.5.0@sha256:7cda86a33344160309fdb65146332e4da65db81a945614f2fe32e210803f6fd1",
-          "source_input_sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb",
+          "source_input_sha256": "67647e5b4d51bccb385a1c7bec7bbb370703c569621ce1067053fa49d460de9e",
           "assessment_version": "1.5.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -9327,8 +9327,8 @@
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://docs.confluent.io/platform/current/installation/versions-interoperability.html",
-        "https://docs.confluent.io/platform/current/release-notes/index.html"
+        "https://docs.confluent.io/platform/current/release-notes/index.html",
+        "https://docs.confluent.io/platform/current/installation/versions-interoperability.html"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -9494,14 +9494,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The 8.4.1 security notice is specific to Kafka Connect admin REST endpoints. The two selected services statically run a KRaft broker/controller and kafka-topics initialization job; neither starts a Connect worker or admin REST listener. 8.3.2 is the latest supported 8.3 patch.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The only security fix in the Confluent Platform 8.4.1 release notes is for Kafka Connect admin REST endpoints; this service runs a KRaft broker/controller with no Connect worker or admin REST listener. Re-checked on 2026-11-26 for the Renovate update from 8.3.2.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:20:20.655112+00:00",
         "reviewed_subject": {
-          "declaration": "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
-          "source_input_sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb",
-          "assessment_version": "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
+          "declaration": "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5",
+          "source_input_sha256": "67647e5b4d51bccb385a1c7bec7bbb370703c569621ce1067053fa49d460de9e",
+          "assessment_version": "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -9509,30 +9509,30 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://docs.confluent.io/platform/current/installation/versions-interoperability.html",
-          "https://docs.confluent.io/platform/current/release-notes/index.html"
+          "https://docs.confluent.io/platform/current/release-notes/index.html",
+          "https://docs.confluent.io/platform/current/installation/versions-interoperability.html"
         ],
         "concrete_advisory_refs": [
-          "https://docs.confluent.io/platform/current/installation/versions-interoperability.html",
-          "https://docs.confluent.io/platform/current/release-notes/index.html"
+          "https://docs.confluent.io/platform/current/release-notes/index.html",
+          "https://docs.confluent.io/platform/current/installation/versions-interoperability.html"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "The 8.4.1 security notice is specific to Kafka Connect admin REST endpoints. The two selected services statically run a KRaft broker/controller and kafka-topics initialization job; neither starts a Connect worker or admin REST listener. 8.3.2 is the latest supported 8.3 patch.",
-        "next_action": "No Connect worker is declared; keep 8.3.2 and evaluate the 8.4/Kafka 4.4 migration separately.",
+        "reason": "The only security fix in the Confluent Platform 8.4.1 release notes is for Kafka Connect admin REST endpoints; this service runs a KRaft broker/controller with no Connect worker or admin REST listener. Re-checked on 2026-11-26 for the Renovate update from 8.3.2.",
+        "next_action": "Keep 8.4.1; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-supported-line",
-          "target_retained": "8.3.2",
+          "target_retained": "8.4.1",
           "observed_latest": "8.4.1",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Keep the selected supported LTS/minor for the reviewed advisory scope. A global latest-line migration remains a separate compatibility/recovery choice; gate mismatch is retained.",
-          "next_action": "No Connect worker is declared; keep 8.3.2 and evaluate the 8.4/Kafka 4.4 migration separately."
+          "reason": "The only security fix in the Confluent Platform 8.4.1 release notes is for Kafka Connect admin REST endpoints; this service runs a KRaft broker/controller with no Connect worker or admin REST listener. Re-checked on 2026-11-26 for the Renovate update from 8.3.2.",
+          "next_action": "Keep 8.4.1; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -9772,7 +9772,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "danielqsj/kafka-exporter:v1.10.0@sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42",
-          "source_input_sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb",
+          "source_input_sha256": "67647e5b4d51bccb385a1c7bec7bbb370703c569621ce1067053fa49d460de9e",
           "assessment_version": "1.10.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -9853,8 +9853,8 @@
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://docs.confluent.io/platform/current/installation/versions-interoperability.html",
-        "https://docs.confluent.io/platform/current/release-notes/index.html"
+        "https://docs.confluent.io/platform/current/release-notes/index.html",
+        "https://docs.confluent.io/platform/current/installation/versions-interoperability.html"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -10016,14 +10016,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The 8.4.1 security notice is specific to Kafka Connect admin REST endpoints. The two selected services statically run a KRaft broker/controller and kafka-topics initialization job; neither starts a Connect worker or admin REST listener. 8.3.2 is the latest supported 8.3 patch.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The only security fix in the Confluent Platform 8.4.1 release notes is for Kafka Connect admin REST endpoints; this job runs kafka-topics initialization with no Connect worker or admin REST listener. Re-checked on 2026-11-26 for the Renovate update from 8.3.2.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:20:20.655170+00:00",
         "reviewed_subject": {
-          "declaration": "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
-          "source_input_sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb",
-          "assessment_version": "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
+          "declaration": "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5",
+          "source_input_sha256": "67647e5b4d51bccb385a1c7bec7bbb370703c569621ce1067053fa49d460de9e",
+          "assessment_version": "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -10031,30 +10031,30 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://docs.confluent.io/platform/current/installation/versions-interoperability.html",
-          "https://docs.confluent.io/platform/current/release-notes/index.html"
+          "https://docs.confluent.io/platform/current/release-notes/index.html",
+          "https://docs.confluent.io/platform/current/installation/versions-interoperability.html"
         ],
         "concrete_advisory_refs": [
-          "https://docs.confluent.io/platform/current/installation/versions-interoperability.html",
-          "https://docs.confluent.io/platform/current/release-notes/index.html"
+          "https://docs.confluent.io/platform/current/release-notes/index.html",
+          "https://docs.confluent.io/platform/current/installation/versions-interoperability.html"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "The 8.4.1 security notice is specific to Kafka Connect admin REST endpoints. The two selected services statically run a KRaft broker/controller and kafka-topics initialization job; neither starts a Connect worker or admin REST listener. 8.3.2 is the latest supported 8.3 patch.",
-        "next_action": "The job only runs kafka-topics; keep 8.3.2 and evaluate the 8.4/Kafka 4.4 migration separately.",
+        "reason": "The only security fix in the Confluent Platform 8.4.1 release notes is for Kafka Connect admin REST endpoints; this job runs kafka-topics initialization with no Connect worker or admin REST listener. Re-checked on 2026-11-26 for the Renovate update from 8.3.2.",
+        "next_action": "Keep 8.4.1; it runs at the next owner-approved Kafka start.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-supported-line",
-          "target_retained": "8.3.2",
+          "target_retained": "8.4.1",
           "observed_latest": "8.4.1",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Keep the selected supported LTS/minor for the reviewed advisory scope. A global latest-line migration remains a separate compatibility/recovery choice; gate mismatch is retained.",
-          "next_action": "The job only runs kafka-topics; keep 8.3.2 and evaluate the 8.4/Kafka 4.4 migration separately."
+          "reason": "The only security fix in the Confluent Platform 8.4.1 release notes is for Kafka Connect admin REST endpoints; this job runs kafka-topics initialization with no Connect worker or admin REST listener. Re-checked on 2026-11-26 for the Renovate update from 8.3.2.",
+          "next_action": "Keep 8.4.1; it runs at the next owner-approved Kafka start."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
