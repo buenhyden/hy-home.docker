@@ -19,7 +19,10 @@ x-airflow-common-env: &airflow-common-env
   POSTGRES_PORT: '${POSTGRES_PORT:-5432}'
   VALKEY_PORT: '${VALKEY_PORT:-6379}'
   AIRFLOW_VALKEY_HOST: '${AIRFLOW_VALKEY_HOST:-mng-valkey}'
-  AIRFLOW_VALKEY_SECRET: '${AIRFLOW_VALKEY_SECRET:-mng_valkey_password}'
+  AIRFLOW_VALKEY_SECRET: '${AIRFLOW_VALKEY_SECRET:-mng_valkey_airflow_password}'
+  # Kombu prefixes every broker key and channel; the airflow ACL role allows
+  # only this prefix. Changing it orphans queued messages, so drain first.
+  AIRFLOW__CELERY_BROKER_TRANSPORT_OPTIONS__GLOBAL_KEYPREFIX: 'airflow:'
   AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
   AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   AIRFLOW__API__BASE_URL: 'https://airflow.${DEFAULT_URL}'
@@ -58,7 +61,7 @@ x-airflow-common: &airflow-common
   secrets:
     - airflow_db_password
     - airflow_fernet_key
-    - mng_valkey_password
+    - ${AIRFLOW_VALKEY_SECRET:-mng_valkey_airflow_password}
     - airflow_api_jwt_secret
     - airflow_keycloak_client_secret
 

@@ -14,16 +14,16 @@ x-n8n-common-env: &n8n-common-env
   # Smaller than n8n's 16 MiB default; bounds Zod array parsing (GHSA-mrhx-c7xc-m3w5).
   N8N_PAYLOAD_SIZE_MAX: ${N8N_PAYLOAD_SIZE_MAX:-4}
   N8N_VALKEY_HOST: ${N8N_VALKEY_HOST:-mng-valkey}
-  N8N_VALKEY_USERNAME: ${N8N_VALKEY_USERNAME:-}
-  N8N_VALKEY_SECRET: ${N8N_VALKEY_SECRET:-mng_valkey_password}
+  N8N_VALKEY_USERNAME: ${N8N_VALKEY_USERNAME-n8n}
+  N8N_VALKEY_SECRET: ${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}
   N8N_VALKEY_DB: ${N8N_VALKEY_DB:-0}
   QUEUE_BULL_REDIS_HOST: ${N8N_VALKEY_HOST:-mng-valkey}
-  QUEUE_BULL_REDIS_USERNAME: ${N8N_VALKEY_USERNAME:-}
+  QUEUE_BULL_REDIS_USERNAME: ${N8N_VALKEY_USERNAME-n8n}
   QUEUE_BULL_REDIS_PORT: ${VALKEY_PORT:-6379}
   QUEUE_BULL_REDIS_DB: ${N8N_VALKEY_DB:-0}
   QUEUE_BULL_PREFIX: n8n
   N8N_REDIS_KEY_PREFIX: n8n
-  QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/${N8N_VALKEY_SECRET:-mng_valkey_password}
+  QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}
 
   N8N_RUNNERS_MODE: external
   # The alias must move the listener, not only the URI, expose and healthcheck.
@@ -125,7 +125,7 @@ services:
       - ${N8N_PORT:-5678}
       - ${N8N_BROKER_PORT:-5679}
     secrets:
-      - ${N8N_VALKEY_SECRET:-mng_valkey_password}
+      - ${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}
       - n8n_db_password
       - n8n_encryption_key
       - n8n_runner_auth_token
@@ -217,7 +217,7 @@ services:
       N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 10.250.23.2
       N8N_OTEL_EXPORTER_SERVICE_NAME: n8n-worker
     secrets:
-      - ${N8N_VALKEY_SECRET:-mng_valkey_password}
+      - ${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}
       - n8n_db_password
       - n8n_encryption_key
       - n8n_runner_auth_token

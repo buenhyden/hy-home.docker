@@ -23,6 +23,9 @@ services:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
       - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:${VALKEY_PORT:-6379}
+      # Named mng-valkey role; rollback is an empty username with mng_valkey_password.
+      - OAUTH2_PROXY_VALKEY_USERNAME=${OAUTH2_PROXY_VALKEY_USERNAME-oauth2proxy}
+      - OAUTH2_PROXY_VALKEY_SECRET=${OAUTH2_PROXY_VALKEY_SECRET:-mng_valkey_oauth2_proxy_password}
       - OAUTH2_PROXY_PORT=${OAUTH2_PROXY_PORT:-4180}
       - OAUTH2_PROXY_HTTP_ADDRESS=0.0.0.0:${OAUTH2_PROXY_PORT:-4180}
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
@@ -45,7 +48,7 @@ services:
         read_only: true
         bind: {create_host_path: false}
     secrets:
-      - mng_valkey_password
+      - ${OAUTH2_PROXY_VALKEY_SECRET:-mng_valkey_oauth2_proxy_password}
       - oauth2_proxy_client_secret
       - oauth2_proxy_cookie_secret
     labels:

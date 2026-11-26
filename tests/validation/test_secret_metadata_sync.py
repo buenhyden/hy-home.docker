@@ -1936,7 +1936,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         n8n = yaml.load(self.compose_texts[n8n_path], Loader=_ComposeLoader)
         n8n["services"]["n8n"]["secrets"] = [
             "grafana_admin_password"
-            if compose_default(grant) == "mng_valkey_password"
+            if compose_default(grant) == "mng_valkey_n8n_password"
             else grant
             for grant in n8n["services"]["n8n"]["secrets"]
         ]
@@ -1945,7 +1945,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
         contract = self.scoped_secret_contract(mutated, self.registry_text)
 
-        self.assertIn(("n8n", "mng_valkey_password"), contract["missing_grants"])
+        self.assertIn(("n8n", "mng_valkey_n8n_password"), contract["missing_grants"])
 
     def test_literal_secret_scanner_ignores_templated_secret_names(self):
         self.assertEqual(

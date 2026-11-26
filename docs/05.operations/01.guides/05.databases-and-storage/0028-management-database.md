@@ -1,13 +1,13 @@
 ---
 title: "Management Database Usage Guide"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -112,7 +112,7 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 승인된 recreate 전까지 이전 설정을 유지한다. recreate하면 management database의
 공유 DB 연결이 중단된다. Compose는 모든 consumer를 자동 재시작하지 않는다. logical WAL은 WAL 볼륨을 소폭 늘리고, slot은
 등록된 CDC connector만 생성한다. Valkey는 `${DEFAULT_MANAGEMENT_DIR}/valkey`의
-`mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`, `mng_valkey_monitor_password`, `mng_valkey_inspector_password`로 ACL을 만든다. n8n 전용 ACL 사용자는 같은 Compose의 `MNG_VALKEY_N8N_ENABLED`와 `mng_valkey_n8n_password`로 추가된다.
+`mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`, `mng_valkey_monitor_password`, `mng_valkey_inspector_password`로 ACL을 만든다. 소비자는 각자 이름 계정으로 접속한다: n8n은 `n8n`(`mng_valkey_n8n_password`, `n8n:*`), OAuth2 Proxy는 `oauth2proxy`(`mng_valkey_oauth2_proxy_password`, `__Secure-sso-cookie-*`), Airflow는 `airflow`(`mng_valkey_airflow_password`, Kombu 접두사 `airflow:`). 모두 DB 0이고, ACL 번호·이름은 소비자별 메모리 quota나 장애 격리가 아니다. 서버 `maxmemory`와 AOF가 모든 소비자의 공동 한도다.
 256 MiB 컨테이너 한도 아래 `maxmemory 128mb`·`noeviction`이라, 가득 차면 OOM kill 대신
 쓰기 오류를 반환하고 기존 큐 key는 축출하지 않는다.
 둘 다 `mng_data_net`을 사용한다. PostgreSQL host port(`POSTGRES_HOST_PORT`,

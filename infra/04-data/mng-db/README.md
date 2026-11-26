@@ -1,13 +1,13 @@
 ---
 title: "Management Database (mng-db)"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-12-03"
 ---
 
@@ -96,7 +96,11 @@ provision job은 실행할 때마다 비밀번호를 비밀 파일에 맞추므�
 `mng_data_net`을 사용합니다.
 
 `docker-compose.yml`의 `MNG_VALKEY_N8N_ENABLED`는 공유 Valkey에
-별도 `n8n` 계정을 선언합니다. 이 stack은 `mng_valkey_n8n_password`를 항상 마운트하며 원본은
+별도 `n8n` 계정을 선언하고, `render-acl.sh`는 OAuth2 Proxy 세션용 `oauth2proxy`
+(`mng_valkey_oauth2_proxy_password`, `CACHE-031`)와 Airflow broker용 `airflow`
+(`mng_valkey_airflow_password`, `CACHE-032`) 계정을 항상 만듭니다. 각 계정은 자기 key
+접두사와 DB 0, 실제 client가 쓰는 명령만 허용하고, default 계정은 관리·health·backup과
+소비자 rollback에만 씁니다. 이 stack은 `mng_valkey_n8n_password`를 항상 마운트하며 원본은
 `secrets/db/mng-valkey/n8n_password.txt` (`CACHE-027`) 하나이며, 실제 UID999와
 추가 secrets group에서 읽을 수 있는 단일 링크 일반 파일(0400/0600 소유자 읽기
 또는 0440/0640 group 읽기)만 허용합니다. 비어 있거나 중복·symlink·잘못된 mode는
@@ -136,7 +140,7 @@ grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 �
 ###### Security Boundary
 <!-- core-payload-level:4 -->
 
-Compose가 참조하는 secret은 `airflow_db_password`, `keycloak_db_password`, `mng_pg_monitor_password`, `mng_postgres_password`, `mng_valkey_inspector_password`, `mng_valkey_monitor_password`, `mng_valkey_n8n_password`, `mng_valkey_password`, `n8n_db_password`, `pgbackrest_cipher_pass`, `sonarqube_db_password`, `terrakube_db_password`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)
+Compose가 참조하는 secret은 `airflow_db_password`, `keycloak_db_password`, `mng_pg_monitor_password`, `mng_postgres_password`, `mng_valkey_inspector_password`, `mng_valkey_airflow_password`, `mng_valkey_monitor_password`, `mng_valkey_n8n_password`, `mng_valkey_oauth2_proxy_password`, `mng_valkey_password`, `n8n_db_password`, `pgbackrest_cipher_pass`, `sonarqube_db_password`, `terrakube_db_password`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)
 
 #### Usage
 

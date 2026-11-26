@@ -1,8 +1,8 @@
 #!/bin/sh
-# MNG Valkey ACL. The shared consumers (OAuth2 Proxy, n8n, Airflow, Gatus)
-# keep authenticating as the default user with mng_valkey_password, exactly
-# as with requirepass before. Named service roles get their own secrets, and
-# no two roles may share one; their rules match the DEV roles.
+# MNG Valkey ACL. n8n, OAuth2 Proxy and Airflow authenticate as their own
+# named roles, each limited to its key prefix and DB 0; the default user keeps
+# mng_valkey_password for administration, health checks, backup and rollback.
+# Named service roles get their own secrets, and no two roles may share one.
 set -eu
 
 default_secret=${MNG_VALKEY_DEFAULT_SECRET_FILE:-/run/secrets/mng_valkey_password}
@@ -11,6 +11,8 @@ inspector_secret=${MNG_VALKEY_INSPECTOR_SECRET_FILE:-/run/secrets/mng_valkey_ins
 acl_file=${MNG_VALKEY_ACL_FILE:-/run/valkey/users.acl}
 n8n_enabled=${MNG_VALKEY_N8N_ENABLED-0}
 n8n_secret=${MNG_VALKEY_N8N_SECRET_FILE:-/run/secrets/mng_valkey_n8n_password}
+oauth2_proxy_secret=${MNG_VALKEY_OAUTH2_PROXY_SECRET_FILE:-/run/secrets/mng_valkey_oauth2_proxy_password}
+airflow_secret=${MNG_VALKEY_AIRFLOW_SECRET_FILE:-/run/secrets/mng_valkey_airflow_password}
 
 fail() {
   printf '%s\n' "mng-valkey ACL: invalid input" >&2
@@ -67,6 +69,15 @@ if [ "$n8n_enabled" = 1 ]; then
   role_line n8n "$n8n_secret" \
     '~n8n:* &n8n:* db=0 -@all +ping +info +auth +select +quit +client|setname +client|setinfo +script|load +eval +evalsha +del +exists +get +hdel +hget +hgetall +hincrby +hmget +hmset +hset +incr +lindex +linsert +llen +lpush +lrange +lrem +lset +ltrim +psetex +pttl +publish +rename +rpoplpush +brpoplpush +rpush +sadd +scard +set +sismember +smembers +srem +type +zadd +zcard +zcount +zrange +zrangebyscore +zrem +zremrangebyrank +zremrangebyscore +zrevrange +zrevrangebyscore +zscore +expire +subscribe +unsubscribe +psubscribe +punsubscribe +multi +exec +mget +mset +getdel +hexists +hkeys +hvals +pexpire +lpop'
 fi
+# OAuth2 Proxy session tickets are "<cookie_name>-<ticket>" plus a ".lock"
+# key that its lock library sets through Lua (oauth2-proxy.cfg cookie_name).
+role_line oauth2proxy "$oauth2_proxy_secret" \
+  '~__Secure-sso-cookie-* resetchannels db=0 -@all +ping +auth +hello +select +quit +client|setname +client|setinfo +script|load +eval +evalsha +get +set +del +exists +expire +pexpire +pttl'
+# Celery with kombu global_keyprefix "airflow:" prefixes keys and channels.
+# PSUBSCRIBE patterns are matched literally, so the pidbox and event patterns
+# the worker and event receivers subscribe to are listed as they are sent.
+role_line airflow "$airflow_secret" \
+  '~airflow:* &airflow:* &airflow:/0.celery.pidbox &airflow:/0.celeryev/* &airflow:/0.celeryev/worker.* db=0 -@all +ping +auth +hello +select +quit +client|setname +client|setinfo +script|load +eval +evalsha +multi +exec +discard +watch +unwatch +get +set +del +exists +expire +pexpire +pttl +llen +lpush +rpush +lpop +brpop +lrange +lrem +sadd +srem +smembers +scard +hset +hget +hdel +hgetall +zadd +zrem +zrangebyscore +zrevrangebyscore +zcard +publish +subscribe +unsubscribe +psubscribe +punsubscribe'
 chmod 600 "$tmp_file"
 mv -f "$tmp_file" "$acl_file"
 trap - 0 1 2 3 15
