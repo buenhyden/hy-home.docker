@@ -22,7 +22,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-db-med
-    image: hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2
+    image: hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1
     platform: linux/amd64
     build:
       context: ./pg
@@ -115,7 +115,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-med
     restart: 'no'
-    image: hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2
+    image: hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1
     container_name: dev-platform-provision
     hostname: dev-platform-provision
     group_add:
@@ -150,7 +150,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2
+    image: hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1
     container_name: dev-perf-provision
     hostname: dev-perf-provision
     group_add:
@@ -179,7 +179,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2
+    image: hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1
     container_name: dev-pg-monitor-provision
     hostname: dev-pg-monitor-provision
     group_add:
@@ -308,7 +308,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957
+    image: oliver006/redis_exporter:v1.97.0-alpine@sha256:ae30be386ab25600a8b222538a868d1b156b7e411073f7d2d5208fe79cc98d81
     container_name: dev-valkey-exporter
     hostname: dev-valkey-exporter
     group_add:
