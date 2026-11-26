@@ -1,6 +1,6 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -101,8 +101,9 @@ started or recreated.
 | Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | PASS (E24) through the B loopback proxy and `ollama-api` | Done |
 | JS Code node can generate code from strings (E17) | Fixed (E25) and verified live (E26) | Done |
 | Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database: it is the only check that runs on the current n8n 2.46.6, because the P03 native rehearsal is pinned to the reviewed 2.43.6 images (E28) | n8n owner; retire it when the native rehearsal is re-pinned to the running version |
-| Hermes `--provider custom` without an endpoint (E29) | Fixed by the owner on 2026-11-26: `CUSTOM_BASE_URL` in the Hermes environment points bare `custom` at local Ollama (E30). The fallback chain (anthropic, local lfm, nous) can still answer a failed local request from the cloud | Owner, if local requests must never fall back to the cloud |
-| D06-T06 tool comparison | Not run: criterion70 stays not-required (TSK-0043) because no dataset, owner, rights, time field or goal exists. Current HOME has SearXNG, Qdrant, Crawl4AI (with loopback and egress) and MLflow running; Hermes on A and OpenClaw on B use SearXNG through `searxng-api` (TSK-0022, TSK-0117) | Owner names a dataset, owner, rights, time field and goal to resume |
+| Hermes `--provider custom` without an endpoint (E29) | Fixed by the owner on 2026-11-26 (E30); every cloud chain now leaves local Ollama out and the `local` profile has no fallback (E31, E32) | Done |
+| Hermes work-profile credentials (E33) | The eight work profiles and free-research hold no valid Anthropic or OpenAI key, and the OpenRouter key fails in every profile; until fixed they answer from nous free | Owner: copy the working keys into each profile and reissue the OpenRouter key |
+| D06-T06 tool comparison | Owner chose on 2026-11-26 to reopen criterion70 with a retrieval evaluation on this repository's own documents (owner rights, git versions, commit dates as the time field for a time-ordered split; Qdrant with embeddinggemma against a SearXNG baseline, tracked in MLflow). Not started | New Task under SPEC-0212 that reopens criterion70 |
 
 ###### D06 runtime checks (criterion175)
 
@@ -203,6 +204,17 @@ but it cannot run until its reviewed images are re-pinned to the running n8n
 `custom` request leaving the host (E29); the fix is in the owner's Hermes
 environment.
 
+The owner then asked to optimize Hermes defaults and fallbacks across Claude,
+Codex, OpenRouter, Ollama Cloud and local Ollama within two monthly budgets:
+OpenAI 100 USD resetting on the 11th (80 left on 2026-11-26) and Anthropic
+100 USD resetting on the 1st (75 left). The default profile keeps the proven
+OpenAI primary (3107 calls, no failures in 14 days); the work profiles move
+to Claude Sonnet 5.5 so the under-used Anthropic budget carries them, each
+provider is the other's fallback, and Hermes rotates on a billing error at
+once. Hermes has no spend cap, so the monthly limits stay on the provider
+consoles. Codex stays suppressed and Ollama Cloud `beam:cloud` needs a paid
+plan, so neither is in a chain.
+
 ##### Blockers and Decisions
 
 The owner chose the HOME selection over keeping the privileged runner opt-in;
@@ -244,6 +256,9 @@ the security impact stays recorded in the exception.
 | E28 | 175 | W191 | method=automated; tool=Python3 venv, docker; command=P03_RUNNER_NATIVE_REHEARSAL=1 python -m unittest tests.validation.test_p03_runner_isolation.P03RunnerNativeRehearsal | Change on 683c65f1e, reviewed images n8n 2.43.6 and runners 2.43.6 | ERROR | Refused before creating anything: the reviewed n8nio/runners 2.43.6 image is not cached; cleanup PASS, containers 67 before and after. The harness pins 2.43.6 while HOME runs 2.46.6 | optional | - |
 | E29 | 175 | W191 | method=observation; tool=Hermes logs, source; command=agent.log and errors.log for 2026-11-25 23:01 to 23:03 UTC, hermes_cli/runtime_provider.py | Server A, Hermes Agent v0.23.4 | FAIL | --provider custom -m lfm2.5:8b resolved base_url `https://openrouter.ai/api/v1`, failed with AuthenticationError and fell back to anthropic/claude-haiku-5-5; -m lfm one minute later used `http://127.0.0.1:11434/v1` | optional | - |
 | E30 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4, logs; command=hermes chat -q ping --provider custom -m lfm2.5:8b after the owner set CUSTOM_BASE_URL in the Hermes environment | Server A, 2026-11-26 00:37 UTC | PASS | agent.log shows base_url `http://127.0.0.1:11434/v1`, one API call, finish_reason stop and no fallback line; Ollama logs the matching /v1/chat/completions 200 | optional | - |
+| E31 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes config set and hermes fallback check --live for default and devops | Server A, 2026-11-26, configs backed up first | PASS | default: openai-api gpt-6-luna primary, fallback claude-haiku-5-5 then nous free, both live ready; eight work profiles: anthropic claude-sonnet-5-5 primary, fallback claude-haiku-5-5, openai-api gpt-6-luna, nous free; free-research drops ollama-cloud and local; no cloud chain contains local Ollama | optional | - |
+| E32 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes profile create local, hermes -p local chat -q ping, fallback check | Server A, 2026-11-26 | PASS | Profile local runs custom lfm2.5:8b at 127.0.0.1:11434 with an empty fallback chain and answered with finish_reason stop; wrapper renamed hermes-local because local is a shell builtin | optional | - |
+| E33 | 175 | W191 | method=automated; tool=Hermes Agent v0.23.4; command=hermes -p devops fallback check --live, hermes -p devops chat -q ping, hermes chat --provider openrouter | Server A, 2026-11-26 | FAIL | devops: anthropic live_auth, openai-api not configured, so the turn fell to nous free; the default OpenRouter key also fails and fell back to claude-haiku-5-5 | optional | - |
 
 ##### Resolution Links
 
