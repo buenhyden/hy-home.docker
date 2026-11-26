@@ -1,6 +1,6 @@
 ---
 title: "Repository Docs Retrieval Evaluation Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -137,11 +137,12 @@ E06 resolves E05.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 176 | pending | E01,E02,E03,E04,E06 | The evaluation ran and is recorded; the owner decides acceptance | @buenhyden |
+| 176 | accepted | E01,E02,E03,E04,E06 | Owner @buenhyden accepted on 2026-11-26 in this chat after the evaluation, its reproduction and the manifest fix | @buenhyden |
 
 ##### Remaining Conditions
 
-Owner acceptance of criterion176.
+None for criterion176. Adopting hybrid retrieval for Wiki preparation search is
+a separate decision.
 
 #### Handoff
 
@@ -151,8 +152,8 @@ The MLflow runbook carries the run procedure.
 
 ##### Next Owner
 
-The owner decides acceptance and whether Wiki preparation search adopts
-hybrid retrieval.
+Criterion176 is accepted. The owner decides whether Wiki preparation search
+adopts hybrid retrieval.
 
 ## 적용과 확인
 
