@@ -1,6 +1,6 @@
 ---
 title: "D03 v8 Data Storage and Shared Valkey Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -111,9 +111,9 @@ removed.
 
 | Item | Owner | Resume condition |
 | --- | --- | --- |
-| HOME switch: create the two secret files, set `.env`, recreate mng-valkey, OAuth2 Proxy and Airflow after a queue drain | @buenhyden with the agent | After merge |
-| Qdrant collection count 1 against the recorded deletion | @buenhyden | The owner lists collection names with the read-only key |
-| `test_secret_metadata_sync` 15 local failures | local environment | The Python `referencing` module is not installed here; main shows the same 15 |
+| Empty Qdrant collection `open-webui_knowledge` left by the retired Open WebUI consumer | D11 | Owner decision to delete it |
+| Old file `secrets/db/mng-valkey/airflow_password.txt` of the retired dedicated identity | D11 | Owner deletes it after confirming no consumer |
+| A single OAuth2 Proxy session key TTL read back | @buenhyden | Needs a role password; the configured cookie_expire is 12h |
 | Terrakube Valkey login without an ACL user | LAB move owner | Terrakube leaves HOME or gets its own role |
 
 ##### Blockers and Decisions
@@ -148,10 +148,16 @@ for D11 cleanup.
 | E09 | 177 | W193 | method=automated; tool=Python3.12.3; command=python3 -m unittest tests.validation.test_secret_catalog_contract tests.validation.test_secret_metadata_sync | Branch with the owner's rows, 2026-11-26 | PASS | 70 tests; the 15 failures and 1 error left are the missing local `referencing` module, the same set as on main | required | - |
 | E10 | 177 | W193 | method=automated; tool=bash; command=bash scripts/hardening/check-all-hardening.sh, then the same run with the Airflow key prefix changed and restored | Branch, 2026-11-26 | PASS | All checks passed; the changed prefix failed the new airflow prefix check. The oauth2-proxy checks follow the named secret and username, and the Airflow, n8n and ACL role wiring is now checked | required | - |
 | E11 | 177 | W193 | method=automated; tool=Python3.12.3; command=python3 -m scripts.lib.supply_chain.ledger_rebind --write --source-revision 2b7bc69f3; python3 -m unittest tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_ledger_rebind tests.validation.test_workflow_version_bundle | Branch, 2026-11-26 | PASS | 22 ledger rows and the n8n source binding re-bound hash-only, the old binding kept in history; the 2026-11-11 review hashes re-bound in release-lookups and the ledger rows; with hashes mapped back, no other value changed; 57 and the bundle tests OK | required | - |
+| E12 | 177 | W193 | method=observation; tool=Qdrant API; command=list collection names and point counts with the read-only key | HOME qdrant, run by the owner, 2026-11-26 | PASS | One collection, `open-webui_knowledge`, 0 points: an empty leftover of Open WebUI, which moved to LAB; no D03 or D06 probe collection remains. Not deleted; handed to D11 | optional | E08 |
+| E13 | 177 | W193 | method=automated; tool=bash, docker compose 5.6.1; command=gen-secrets.sh --dry-run, --sync-metadata-check, --sync-metadata, run; compose up -d --no-deps --force-recreate mng-valkey | HOME, 2026-11-26, owner ran the generator | PASS | Dry run planned exactly CACHE-031 and CACHE-032 (118 protected, 37 kept); both files mode 640, one link. mng-valkey healthy with six ACL users; db0 keys 18 before and after; the Airflow worker reconnected 6 s after the restart | required | - |
+| E14 | 177 | W193 | method=automated; tool=docker compose 5.6.1; command=compose build oauth2-proxy airflow-worker; recreate oauth2-proxy and the five Airflow core services | HOME, 2026-11-26, Airflow queue empty first | PASS | Both images built from cache with no layer download; in-image connection_uri.py and entrypoint equal main; previous images tagged `pre-d03` for rollback. oauth2-proxy mounts only the named secret and its process carries username oauth2proxy; Airflow connects as `redis://airflow:**@mng-valkey` with prefix `airflow:` | required | - |
+| E15 | 177 | W193 | method=automated; tool=Airflow CLI, redis-py in airflow-worker; command=trigger example_simplest_dag, then refuse matrix with the broker URL built in process, then restart mng-valkey and trigger again | HOME, 2026-11-26 | PASS | SI-12: the task went scheduler to broker to worker and succeeded; own keys allowed; the oauth2 session key, n8n keys and channel, KEYS, SCAN, FLUSHDB, CONFIG and SELECT 1 refused NOPERM; after the restart the worker reconnected as airflow and the second run succeeded; the DAG is paused again; n8n and oauth2-proxy logged 0 NOPERM or WRONGPASS | required | - |
+| E16 | 177 | W193 | method=observation; tool=browser (owner), oauth2-proxy log, Prometheus; command=SSO login on qdrant, sign_out, reopen | HOME, 2026-11-26 06:33 UTC | PASS | SI-05: AuthSuccess through /oauth2/callback, sign_out, then redirect to login; no NOPERM or WRONGPASS in the oauth2-proxy log. A single key's TTL was not read because that needs a role password; the configured cookie_expire is 12h | required | - |
+| E17 | 177 | W193 | method=automated; tool=Python3.12.3 project .venv; command=python -m unittest tests.validation.test_secret_metadata_sync tests.validation.test_secret_catalog_contract tests.lib.ops.test_secret_catalog tests.validation.test_smtp_generator tests.validation.test_root_resource_contract tests.validation.test_wiki_preparation_contracts tests.lib.ops.test_openbao_consumer_migration | main `9f549a64e`, 2026-11-26 | PASS | 171 tests OK; the earlier local failures were the system interpreter without `referencing`, not this change | required | - |
 
 ##### Resolution Links
 
-None: no row resolves another.
+E12 resolves E08.
 
 #### Acceptance Decision
 
@@ -159,12 +165,13 @@ None: no row resolves another.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 177 | pending | E01,E02,E03,E04,E05,E06,E07,E09,E10,E11 | Source and isolated evidence recorded; the HOME switch and its checks remain | @buenhyden |
+| 177 | accepted | E01,E02,E03,E04,E05,E06,E07,E09,E10,E11,E12,E13,E14,E15,E16,E17 | Owner @buenhyden accepted on 2026-11-26 in this chat after the HOME switch and the live SI-05 and SI-12 checks; a single session key TTL was not read back (configured 12h) | @buenhyden |
 
 ##### Remaining Conditions
 
-The HOME switch and the Qdrant collection check listed
-under Left open.
+None for criterion 177. The items under Left open stay with their owners:
+D11 holds the empty Qdrant collection and the retired secret file, the LAB
+move owner holds Terrakube, and @buenhyden holds the TTL readback.
 
 #### Handoff
 
@@ -175,8 +182,8 @@ and OAuth2 Proxy READMEs carry the change.
 
 ##### Next Owner
 
-@buenhyden runs the owner steps under Left open; the agent then runs the HOME
-switch checks and records them here.
+Criterion 177 is accepted. D11 holds the Qdrant collection and the retired
+secret file; the LAB move owner holds Terrakube.
 
 ## 적용과 확인
 
