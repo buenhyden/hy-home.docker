@@ -1476,7 +1476,7 @@
       },
       "images": [
         "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
-        "amazon/aws-cli:2.40.4@sha256:eaf444b45380050f920ab07492754aa76223dd90234e51c1f92c2e9391b5ee6b"
+        "amazon/aws-cli:2.41.2@sha256:7a77ccb39e3272191adbf905c50db8c127db88fd79454911a41a6b1c0e419e9b"
       ],
       "compose_files": [
         "infra/04-data/seaweedfs/docker-compose.yml",
@@ -1486,7 +1486,7 @@
         {
           "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
           "images": [
-            "amazon/aws-cli:2.40.4@sha256:eaf444b45380050f920ab07492754aa76223dd90234e51c1f92c2e9391b5ee6b"
+            "amazon/aws-cli:2.41.2@sha256:7a77ccb39e3272191adbf905c50db8c127db88fd79454911a41a6b1c0e419e9b"
           ]
         },
         {
