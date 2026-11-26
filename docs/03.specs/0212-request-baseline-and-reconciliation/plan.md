@@ -1,13 +1,13 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.17.0"
+version: "2.18.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -459,11 +459,17 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W189 | 173 | Census and probe every route from server A, align the GDE-0079 no-SSO table with the route contract under a regression, and record the B-side checks and open host items | W188 | TSK-0117 | Route census, TLS-verified unauthenticated probes and negatives, RED/GREEN route-table test, route contract tests, document checks; normal hosted delivery |
 | W190 | 174 | Add the sandbox API and runner to the HOME selection, update the privileged exception, verify the plan and running boundaries, and record the open D06 items | W189 | TSK-0118 | HOME plan, selector and contract tests, conftest, hardening, catalog and document checks; normal hosted delivery |
 | W191 | 175 | Run the approved D06 runtime checks for local Ollama, the Code Runner and the Assistant sandbox, review the Wiki and tool comparison preconditions, and name the owner steps | W190 | TSK-0118 | Worker and Hermes inference, cancel and recovery, runner and inner-container probes with cleanup, Wiki contract tests, document checks; normal hosted delivery |
+| W192 | 176 | Build the repository-docs corpus, run BM25, Qdrant dense and hybrid retrieval with a time-ordered split, log to MLflow and delete the collection | W75 | TSK-0119 | Unit tests, script manifest, the evaluation run and its MLflow record |
 
 ###### Current D06 v8 sandbox boundary
 <!-- core-payload-level:4 -->
 
 [TSK-0118](01.tasks/tsk-0118-d06-sandbox-home-v8.md) owns criterion174/W190 and criterion175/W191.
+
+###### Current docs retrieval evaluation boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0119](01.tasks/tsk-0119-docs-retrieval-eval.md) owns criterion176/W192.
 
 ###### Current D02 v8 route boundary
 <!-- core-payload-level:4 -->
