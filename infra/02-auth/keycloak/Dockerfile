@@ -1,5 +1,5 @@
 # Reference: https://www.keycloak.org/server/containers
-FROM quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c AS builder
+FROM quay.io/keycloak/keycloak:26.8.2-0@sha256:3879c623248408de29a5303178b5816c77e8dfef3890c361f8c0bbeaa979ba3b AS builder
 
 # Enable health and metrics support
 ENV KC_HEALTH_ENABLED=true
@@ -16,7 +16,7 @@ WORKDIR /opt/keycloak
 RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore && \
     /opt/keycloak/bin/kc.sh build
 
-FROM quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c
+FROM quay.io/keycloak/keycloak:26.8.2-0@sha256:3879c623248408de29a5303178b5816c77e8dfef3890c361f8c0bbeaa979ba3b
 LABEL maintainer="Custom Keycloak Build"
 
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
