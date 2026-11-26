@@ -24,7 +24,7 @@ RUN /usr/share/opensearch/bin/opensearch-plugin install --batch \
 
 # The exporter release must equal the OpenSearch base version, or the
 # install fails; update both together.
-ARG OPENSEARCH_EXPORTER_VERSION=3.8.0.0
+ARG OPENSEARCH_EXPORTER_VERSION=3.10.0.0
 RUN /usr/share/opensearch/bin/opensearch-plugin install \
   "https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/${OPENSEARCH_EXPORTER_VERSION}/prometheus-exporter-${OPENSEARCH_EXPORTER_VERSION}.zip"
 
