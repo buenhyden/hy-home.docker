@@ -314,7 +314,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
-    image: n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e
+    image: n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504
     container_name: n8n-sandbox-certs
     hostname: n8n-sandbox-certs
     user: '0:0'
@@ -343,7 +343,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e
+    image: n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504
     container_name: n8n-sandbox-api
     hostname: n8n-sandbox-api
     group_add:
@@ -409,7 +409,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117
+    image: n8nio/n8n-sandbox-service-runner-dind:1.15.0@sha256:d6d2cdc163250d749d9442176264a05b65adca44660af541d1f0966b393b0806
     container_name: n8n-sandbox-runner-1
     hostname: n8n-sandbox-runner-1
     # Exception: infra/common-optimizations.exceptions.json (owner, 2026-11-09).
