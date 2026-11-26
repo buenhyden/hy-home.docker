@@ -2122,7 +2122,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
     ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             bin_path = pathlib.Path(directory)
-            for name, version in (("uv", "uv 0.12.18"), ("node", "v24.22.0")):
+            for name, version in (("uv", "uv 0.12.18"), ("node", "v26.13.1")):
                 executable = bin_path / name
                 executable.write_text(
                     f"#!/bin/sh\nprintf '%s\\n' '{version}'\n",
@@ -2138,7 +2138,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             self.assertRegex(captured[f"TRUSTED_{name}_SHA256"], r"^[0-9a-f]{64}$")
             self.assertTrue(captured[f"TRUSTED_{name}_VERSION"])
         self.assertEqual("uv 0.12.18", captured["TRUSTED_UV_VERSION"])
-        self.assertEqual("v24.22.0", captured["TRUSTED_NODE_VERSION"])
+        self.assertEqual("v26.13.1", captured["TRUSTED_NODE_VERSION"])
         self.assertTrue(captured["TRUSTED_IMAGE_OS"].startswith("LOCAL-"))
 
     def test_trusted_git_rejects_unsafe_executable_metadata(self) -> None:
