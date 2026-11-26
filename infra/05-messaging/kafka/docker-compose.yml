@@ -11,7 +11,7 @@ volumes:
 
 services:
   kafka-1:
-    image: confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48
+    image: confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5
     profiles:
       - messaging
       - messaging-broker
@@ -179,7 +179,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: danielqsj/kafka-exporter:v1.10.0@sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42
+    image: danielqsj/kafka-exporter:v1.11.0@sha256:54d4296c5b8ce01232f6762e06cbc3eec25887c0b5c5940ccb9e891ac7fc51d8
     container_name: kafka-exporter
     hostname: kafka-exporter
     read_only: true
@@ -209,7 +209,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48
+    image: confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5
     container_name: kafka-init
     hostname: kafka-init
     read_only: true
