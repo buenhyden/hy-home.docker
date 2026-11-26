@@ -947,7 +947,8 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     self.assertFalse(
                         {"candidate_image", "scan_at", "scan_digest"} & set(row)
                     )
-        for service in ("qdrant", "open_notebook"):
+        # Qdrant left this set on 2026-11-26 when 1.20.2 resolved its patch row.
+        for service in ("open_notebook",):
             with self.subTest(known_fixed_patch=service):
                 row = by_service[service]
                 self.assertEqual("AFFECTED", row[review_key]["security_applicability"])
@@ -983,8 +984,9 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 rows[name][key]["latest_ref"],
             )
         for decision, group, count in (
-            # Five 2026-11-11 patch rows were resolved on 2026-11-24 (patch_resolved).
-            ("patch", "patch", 7),
+            # Five 2026-11-11 patch rows were resolved on 2026-11-24 and Qdrant on
+            # 2026-11-26 (patch_resolved).
+            ("patch", "patch", 6),
             ("no-fix", "no_fix", 6),
             ("defer", "defer", 42),
         ):
@@ -1027,7 +1029,7 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         self.assertTrue(qdrant_signature["subject_matches"])
         self.assertTrue(
             qdrant_signature["index_ref"].endswith(
-                "@" + lookups["patch"]["qdrant"]["publisher_index_digest"]
+                "@" + lookups["patch_resolved"]["qdrant"]["publisher_index_digest"]
             )
         )
         exporter = lookups["defer"]["ollama-exporter"]
