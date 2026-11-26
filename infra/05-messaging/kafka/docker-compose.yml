@@ -11,7 +11,7 @@ volumes:
 
 services:
   kafka-1:
-    image: confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48
+    image: confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5
     profiles:
       - messaging
       - messaging-broker
@@ -209,7 +209,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48
+    image: confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5
     container_name: kafka-init
     hostname: kafka-init
     read_only: true
