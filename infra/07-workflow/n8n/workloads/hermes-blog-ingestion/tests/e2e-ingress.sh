@@ -397,12 +397,14 @@ ok "a second attester run sends nothing new"
 [ "$(harness resend "$ready_id")" = 200 ] || fail "stored body resend"
 ok "resending the stored attestation body is a 200 duplicate"
 call 200 "all exports listed" -H "$read" "$xb/v1/exports"
-body 'sorted((e["state"], e.get("hold_reason")) for e in b["items"]) == [("held", "SOURCE_UNVERIFIED"), ("held", "UNKNOWN_JOB"), ("held", "UNKNOWN_JOB"), ("ready", None)]'
+# Gateway schema 5 also exports each attested report itself (candidate_id null,
+# blog-data-report-record/1): the unapproved-job report is held, the devops one ready.
+body 'sorted((e["state"], e.get("hold_reason")) for e in b["items"]) == [("held", "SOURCE_UNVERIFIED"), ("held", "UNKNOWN_JOB"), ("held", "UNKNOWN_JOB"), ("held", "UNKNOWN_JOB"), ("ready", None), ("ready", None)] and sum(e["candidate_id"] is None for e in b["items"]) == 2'
 held_export=$(field "$work/body" '[e for e in b["items"] if e.get("hold_reason") == "SOURCE_UNVERIFIED"][0]["export_id"]')
 call 409 "SOURCE_UNVERIFIED export serves no file" -H "$read" "$xb/v1/exports/$held_export/files/0"
-call 200 "only the verified item is ready for Windows" -H "$read" "$xb/v1/exports?state=ready"
-body 'len(b["items"]) == 1'
-export_id=$(field "$work/body" 'b["items"][0]["export_id"]')
+call 200 "only the verified item and its report are ready for Windows" -H "$read" "$xb/v1/exports?state=ready"
+body 'len(b["items"]) == 2 and sum(e["candidate_id"] is None for e in b["items"]) == 1'
+export_id=$(field "$work/body" '[e for e in b["items"] if e["candidate_id"] is not None][0]["export_id"]')
 call 200 "manifest readable" -H "$read" "$xb/v1/exports/$export_id"
 cp "$work/body" "$work/manifest"
 # Export 2.0 (Blog-data ADR-0087): one JSON record the receiver renders itself.
