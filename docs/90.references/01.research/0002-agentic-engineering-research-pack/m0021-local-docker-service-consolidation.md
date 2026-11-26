@@ -1,6 +1,6 @@
 ---
 title: "Reference: Local Docker Service Consolidation"
-version: "0.14.2"
+version: "0.14.3"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
