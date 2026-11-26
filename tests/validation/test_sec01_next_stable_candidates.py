@@ -393,20 +393,23 @@ class NextStableCandidates(unittest.TestCase):
             ({}, "synthetic-only", "oauth2proxy"),
             (rollback, "synthetic-shared", None),
         )
+        selection = "unsupported oauth2-proxy session store selection"
+        missing = "missing required secret: "
         refused = (
-            ({"OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_password"}, None),
+            ({"OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_password"}, None, selection),
             (
                 {
                     "OAUTH2_PROXY_VALKEY_USERNAME": "",
                     "OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_oauth2_proxy_password",
                 },
                 None,
+                selection,
             ),
-            ({"OAUTH2_PROXY_VALKEY_USERNAME": "default"}, None),
-            ({"OAUTH2_PROXY_VALKEY_SECRET": "../../private"}, None),
-            ({}, {"mng_valkey_oauth2_proxy_password": ""}),
-            ({}, {"mng_valkey_oauth2_proxy_password": None}),
-            (rollback, {"mng_valkey_password": None}),
+            ({"OAUTH2_PROXY_VALKEY_USERNAME": "default"}, None, selection),
+            ({"OAUTH2_PROXY_VALKEY_SECRET": "../../private"}, None, selection),
+            ({}, {"mng_valkey_oauth2_proxy_password": ""}, missing),
+            ({}, {"mng_valkey_oauth2_proxy_password": None}, missing),
+            (rollback, {"mng_valkey_password": None}, missing),
         )
         for entrypoint in ("docker-entrypoint.sh", "docker-entrypoint.dev.sh"):
             for extra, password, user in accepted:
@@ -429,7 +432,7 @@ class NextStableCandidates(unittest.TestCase):
                         },
                         json.loads(result.stdout),
                     )
-            for extra, files in refused:
+            for extra, files, reason in refused:
                 with self.subTest(entrypoint=entrypoint, extra=extra, files=files):
                     result = self.run_fixture(
                         "infra/02-auth/oauth2-proxy",
@@ -439,8 +442,10 @@ class NextStableCandidates(unittest.TestCase):
                         extra_env=extra,
                         secret_files=files,
                     )
-                    self.assertNotEqual(0, result.returncode)
+                    self.assertEqual(1, result.returncode)
                     self.assertEqual("", result.stdout)
+                    self.assertEqual(1, len(result.stderr.splitlines()))
+                    self.assertTrue(result.stderr.startswith(reason), result.stderr)
                     self.assertNotIn("synthetic-", result.stdout + result.stderr)
 
 
