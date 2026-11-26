@@ -451,7 +451,7 @@ services:
       # The host kernel has overlay.redirect_dir off, so npm cannot rename image-layer
       # directories (EXDEV) and the workspace install times out; vfs has no such layer.
       SANDBOX_RUNNER_DOCKER_STORAGE_DRIVER: vfs
-      SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE: n8nio/n8n-sandbox-service-sandbox:1.8.1@sha256:b397f4b51c75faf83cdd9f7aaf8a415a96e6462478cd7694a2b795f664ba1233
+      SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE: n8nio/n8n-sandbox-service-sandbox:1.15.0@sha256:d5084349964e4fc68071482e771ed361e34536144e2b9a9fb42298fed0dcd489
       SANDBOX_RUNNER_REGISTRATION_GRPC_CA_FILE: /tls/runner/ca.crt
       SANDBOX_RUNNER_REGISTRATION_GRPC_CERT_FILE: /tls/runner/grpc-client.crt
       SANDBOX_RUNNER_REGISTRATION_GRPC_KEY_FILE: /tls/runner/grpc-client.key
