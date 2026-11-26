@@ -124,10 +124,12 @@ experiment under criterion176.
 | E02 | 176 | W192 | method=automated; tool=Python3 venv; command=check-script-manifest.py | Change on c01fe08eb | PASS | Manifest valid; the module is governed by the MLflow runbook | required | - |
 | E03 | 176 | W192 | method=automated; tool=docker, mlflow image, Ollama, Qdrant, MLflow; command=docs_retrieval_eval build then run on ai_net | HOME, 2026-11-26, corpus c01fe08eb | PASS | 591 documents, MLflow run 0b373755ce9f4bf5803757c7342a69f6 in experiment docs-retrieval-eval; test MRR@10 BM25 0.472, dense 0.566, hybrid 0.616; no docs_eval_ collection left | required | - |
 | E04 | 176 | W192 | method=automated; tool=docker, mlflow image, Ollama, Qdrant, MLflow; command=docs_retrieval_eval run again on the same corpus and compare result.json | HOME, 2026-11-26, corpus c01fe08eb | PASS | MLflow run 71b587506f0a42bfad37b99adbcebf6b; every tune and test metric and the chosen k are identical to E03 | required | - |
+| E05 | 176 | W192 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_script_manifest | PR #1220 head fe30681ad (hosted candidate-core) | FAIL | test_mutation_classes_follow_observed_script_behavior: the module was declared runtime but missing from MUTATION_OVERRIDES, so the observed class was none | required | - |
+| E06 | 176 | W192 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_script_manifest | Change plus the runtime override | PASS | Script manifest suite OK | required | E05 |
 
 ##### Resolution Links
 
-None.
+E06 resolves E05.
 
 #### Acceptance Decision
 
@@ -135,7 +137,7 @@ None.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 176 | pending | E01,E02,E03,E04 | The evaluation ran and is recorded; the owner decides acceptance | @buenhyden |
+| 176 | pending | E01,E02,E03,E04,E06 | The evaluation ran and is recorded; the owner decides acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
