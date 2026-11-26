@@ -409,7 +409,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117
+    image: n8nio/n8n-sandbox-service-runner-dind:1.15.0@sha256:d6d2cdc163250d749d9442176264a05b65adca44660af541d1f0966b393b0806
     container_name: n8n-sandbox-runner-1
     hostname: n8n-sandbox-runner-1
     # Exception: infra/common-optimizations.exceptions.json (owner, 2026-11-09).
