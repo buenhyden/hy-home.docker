@@ -1,13 +1,13 @@
 ---
 title: "OAuth2 Proxy"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-11-29"
 ---
 
@@ -103,7 +103,7 @@ oauth2-proxy/
 ###### Security Boundary
 <!-- core-payload-level:4 -->
 
-Compose가 참조하는 secret은 `mng_valkey_password`, `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)
+Compose가 참조하는 secret은 선택된 Valkey secret(기본 `mng_valkey_oauth2_proxy_password`), `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)
 
 #### Usage
 
@@ -169,7 +169,7 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 
 - `oauth2_proxy_cookie_secret`
 - `oauth2_proxy_client_secret`
-- 공유 Valkey secret (`mng_valkey_password`, 기본·대안 이미지 공통)
+- Valkey 세션 secret: 기본 `mng_valkey_oauth2_proxy_password`(`oauth2proxy` 이름 계정), rollback `mng_valkey_password`(default 사용자). 두 entrypoint가 다른 조합을 거부한다.
 
 #### Checks
 
@@ -205,7 +205,7 @@ docker compose --profile auth exec oauth2-proxy sh -c 'wget -qO- "http://127.0.0
 | Field | Evidence |
 | --- | --- |
 | Service | `oauth2-proxy` |
-| Session | 기본값은 공유 `mng-valkey` |
+| Session | 공유 `mng-valkey`의 `oauth2proxy` 계정. ACL은 `__Secure-sso-cookie-*` 세션 ticket과 `.lock` key, DB 0만 허용 |
 | Health | `/ping` |
 | Listener | `0.0.0.0:${OAUTH2_PROXY_PORT:-4180}`; health, Traefik, ForwardAuth가 같은 포트를 사용 |
 | OIDC client | `home-proxy-client` |

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.18.0"
+version: "2.19.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -404,6 +404,11 @@ the remaining D06 items to their owners.
 On 2026-11-26 the owner chose to run the experiment criterion 70 deferred as
 a retrieval evaluation on this repository's documents; criterion176/W192 in
 TSK-0119 owns it, and criterion 70 keeps its recorded not-required decision.
+
+On 2026-11-26 the owner requested D03 of the lifecycle v8 prompts and chose
+named mng-valkey roles for OAuth2 Proxy and Airflow, the named n8n account as
+the public default, and a recorded risk for the ComfyUI anonymous `/root`
+volume; criterion177/W193 in TSK-0120 owns it.
 
 #### Scope
 
@@ -1655,6 +1660,15 @@ target, backup, recovery boundary, and action-specific authorization.
      model, and their reciprocal rank fusion are compared and logged to
      MLflow; the throwaway collection is deleted and the result is read as a
      structural proxy, not human relevance.
+
+177. TSK-0120 records the D03 data-store census (DEV/MNG separation, Valkey
+     consumers, S3 and Qdrant endpoints, storage placement, store set) and
+     gives OAuth2 Proxy and Airflow their own mng-valkey roles limited to their
+     key prefix, DB 0 and the commands their clients send, with the shared
+     default user kept only for administration and rollback. Isolated tests
+     show normal use, redelivery and refusals; the HOME switch shows SSO
+     login, logout and session TTL for OAuth2 Proxy and broker send, consume
+     and recovery for Airflow.
 
 ##### Evidence Requirements
 

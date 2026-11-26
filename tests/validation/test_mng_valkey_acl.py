@@ -32,6 +32,8 @@ class MngValkeyAclTests(unittest.TestCase):
         (self.root / "default").write_text("synthetic-default\n", encoding="utf-8")
         (self.root / "monitor").write_text("synthetic-monitor\n", encoding="utf-8")
         (self.root / "inspector").write_text("synthetic-inspector\n", encoding="utf-8")
+        for role in ("oauth2proxy", "airflow"):
+            (self.root / role).write_text(f"synthetic-{role}\n", encoding="utf-8")
 
     def render(self, **overrides: str) -> subprocess.CompletedProcess[str]:
         env = {
@@ -41,6 +43,8 @@ class MngValkeyAclTests(unittest.TestCase):
             "MNG_VALKEY_INSPECTOR_SECRET_FILE": str(self.root / "inspector"),
             "MNG_VALKEY_ACL_FILE": str(self.root / "users.acl"),
             "MNG_VALKEY_N8N_SECRET_FILE": str(self.root / "n8n"),
+            "MNG_VALKEY_OAUTH2_PROXY_SECRET_FILE": str(self.root / "oauth2proxy"),
+            "MNG_VALKEY_AIRFLOW_SECRET_FILE": str(self.root / "airflow"),
             **overrides,
         }
         return subprocess.run(
@@ -118,6 +122,80 @@ require(process.argv[1]).selfCheckWrongPassword().catch(error=>{console.error(er
             timeout=10,
         )
         self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_session_and_broker_roles_are_scoped_to_their_prefix(self):
+        result = self.render()
+        self.assertEqual(0, result.returncode, result.stderr)
+        lines = {
+            line.split()[1]: line.split()
+            for line in (self.root / "users.acl").read_text().splitlines()
+        }
+        allowed = {
+            "oauth2proxy": (
+                "~__Secure-sso-cookie-*",
+                "resetchannels",
+                "db=0",
+                "-@all",
+                "+get",
+                "+set",
+                "+del",
+                "+evalsha",
+                "+pexpire",
+            ),
+            "airflow": (
+                "~airflow:*",
+                "&airflow:*",
+                "&airflow:/0.celery.pidbox",
+                "&airflow:/0.celeryev/*",
+                "&airflow:/0.celeryev/worker.*",
+                "db=0",
+                "-@all",
+                "+brpop",
+                "+lpush",
+                "+psubscribe",
+                "+publish",
+                "+zadd",
+                "+evalsha",
+            ),
+        }
+        for role, rules in allowed.items():
+            line = lines[role]
+            for rule in rules:
+                self.assertIn(rule, line, (role, rule))
+            for rule in (
+                "~*",
+                "&*",
+                "allchannels",
+                "+@all",
+                "+@write",
+                "+flushdb",
+                "+keys",
+                "+scan",
+                "+config",
+                "+acl",
+                "+select|1",
+            ):
+                self.assertNotIn(rule, line, (role, rule))
+        self.assertNotIn("synthetic-", result.stdout + result.stderr)
+
+    def test_session_and_broker_roles_refuse_missing_or_shared_secrets(self):
+        self.assertEqual(0, self.render().returncode)
+        previous = (self.root / "users.acl").read_bytes()
+        for role in ("oauth2proxy", "airflow"):
+            secret = self.root / role
+            for content in (None, "synthetic-default\n", "synthetic-n8n-x\n"):
+                with self.subTest(role=role, content=content):
+                    secret.unlink(missing_ok=True)
+                    if content is not None:
+                        secret.write_text(content)
+                    other = "airflow" if role == "oauth2proxy" else "oauth2proxy"
+                    if content == "synthetic-n8n-x\n":
+                        (self.root / other).write_text(content)
+                    result = self.render()
+                    self.assertNotEqual(0, result.returncode)
+                    self.assertEqual(previous, (self.root / "users.acl").read_bytes())
+                    (self.root / other).write_text(f"synthetic-{other}\n")
+            secret.write_text(f"synthetic-{role}\n")
 
     def test_named_queue_user_is_opt_in_and_scoped_to_existing_db_and_prefix(self):
         self.assertEqual(0, self.render().returncode)
@@ -213,13 +291,18 @@ require(process.argv[1]).selfCheckWrongPassword().catch(error=>{console.error(er
         default = hashlib.sha256(b"synthetic-default").hexdigest()
         monitor = hashlib.sha256(b"synthetic-monitor").hexdigest()
         inspector = hashlib.sha256(b"synthetic-inspector").hexdigest()
+        # The named session and broker roles follow; their scope has its own test.
         self.assertEqual(
-            acl,
+            "".join(acl.splitlines(keepends=True)[:3]),
             f"user default on #{default} ~* &* +@all\n"
             f"user mngmonitor on #{monitor} -@all +ping +info +command|info "
             "+slowlog|len +commandlog|len\n"
             f"user mnginspector on #{inspector} ~* resetchannels -@all +@read "
             "+@connection -@dangerous +info\n",
+        )
+        self.assertEqual(
+            ["oauth2proxy", "airflow"],
+            [line.split()[1] for line in acl.splitlines()[3:]],
         )
         self.assertNotIn("synthetic-", acl)
         self.assertEqual((self.root / "users.acl").stat().st_mode & 0o777, 0o600)

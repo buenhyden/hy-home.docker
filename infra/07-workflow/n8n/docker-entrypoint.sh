@@ -10,8 +10,8 @@ require_secret() {
 
 require_secret /run/secrets/n8n_db_password
 broker_host=${N8N_VALKEY_HOST:-mng-valkey}
-broker_user=${N8N_VALKEY_USERNAME-}
-broker_secret=${N8N_VALKEY_SECRET:-mng_valkey_password}
+broker_user=${N8N_VALKEY_USERNAME-n8n}
+broker_secret=${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}
 broker_db=${N8N_VALKEY_DB-0}
 case "$broker_host:$broker_user:$broker_secret:$broker_db" in
   mng-valkey::mng_valkey_password:0|mng-valkey:n8n:mng_valkey_n8n_password:0) ;;

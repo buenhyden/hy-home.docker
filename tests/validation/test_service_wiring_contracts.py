@@ -126,7 +126,15 @@ class OptionalIntegrationContractTests(unittest.TestCase):
             root["secrets"]["mng_valkey_n8n_password"]["file"],
         )
         valkey = _service("infra/04-data/mng-db/docker-compose.yml", "mng-valkey")
-        self.assertIn("mng_valkey_n8n_password", valkey["secrets"])
+        for secret, file in (
+            ("mng_valkey_n8n_password", "n8n_password.txt"),
+            ("mng_valkey_oauth2_proxy_password", "oauth2_proxy_password.txt"),
+            ("mng_valkey_airflow_password", "airflow_broker_password.txt"),
+        ):
+            self.assertIn(secret, valkey["secrets"])
+            self.assertEqual(
+                f"./secrets/db/mng-valkey/{file}", root["secrets"][secret]["file"]
+            )
         self.assertEqual("1", str(valkey["environment"]["MNG_VALKEY_N8N_ENABLED"]))
         self.assertEqual(
             {"internal": True, "ipam": {"config": [{"subnet": "10.250.47.0/24"}]}},
@@ -147,18 +155,18 @@ class OptionalIntegrationContractTests(unittest.TestCase):
                 self.assertNotIn("n8n_ollama_net", service["networks"])
 
     @unittest.skipUnless(shutil.which("docker"), "docker CLI not available")
-    def test_public_render_keeps_defaults_and_opts_in_the_named_account(self):
-        def render(named: bool = False):
+    def test_public_render_defaults_to_the_named_account_and_keeps_rollback(self):
+        def render(rollback: bool = False):
             with tempfile.TemporaryDirectory() as directory:
                 env = {
                     "PATH": os.environ["PATH"],
                     "COMPOSE_DISABLE_ENV_FILE": "1",
                     "DOCKER_CONFIG": directory,
                 }
-                if named:
+                if rollback:
                     env |= {
-                        "N8N_VALKEY_USERNAME": "n8n",
-                        "N8N_VALKEY_SECRET": "mng_valkey_n8n_password",
+                        "N8N_VALKEY_USERNAME": "",
+                        "N8N_VALKEY_SECRET": "mng_valkey_password",
                     }
                 result = subprocess.run(
                     [
@@ -186,19 +194,23 @@ class OptionalIntegrationContractTests(unittest.TestCase):
                 return json.loads(result.stdout)
 
         base = render()
-        optional = render(named=True)
-        self.assertEqual(set(base["services"]), set(optional["services"]))
+        shared = render(rollback=True)
+        self.assertEqual(set(base["services"]), set(shared["services"]))
         for name in ("n8n", "n8n-worker"):
-            normal = base["services"][name]["environment"]
-            named = optional["services"][name]["environment"]
-            self.assertEqual("mng-valkey", normal["QUEUE_BULL_REDIS_HOST"])
-            self.assertEqual("", normal["QUEUE_BULL_REDIS_USERNAME"])
-            self.assertEqual("0", normal["QUEUE_BULL_REDIS_DB"])
+            named = base["services"][name]["environment"]
+            fallback = shared["services"][name]["environment"]
+            self.assertEqual("mng-valkey", named["QUEUE_BULL_REDIS_HOST"])
             self.assertEqual("n8n", named["QUEUE_BULL_REDIS_USERNAME"])
             self.assertEqual("0", named["QUEUE_BULL_REDIS_DB"])
             self.assertEqual(
                 "/run/secrets/mng_valkey_n8n_password",
                 named["QUEUE_BULL_REDIS_PASSWORD_FILE"],
+            )
+            self.assertEqual("", fallback["QUEUE_BULL_REDIS_USERNAME"])
+            self.assertEqual("0", fallback["QUEUE_BULL_REDIS_DB"])
+            self.assertEqual(
+                "/run/secrets/mng_valkey_password",
+                fallback["QUEUE_BULL_REDIS_PASSWORD_FILE"],
             )
         for name, service in base["services"].items():
             has = "n8n_ollama_net" in service.get("networks", {})

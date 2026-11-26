@@ -1,13 +1,13 @@
 ---
 title: "Airflow (07-workflow)"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-11-12"
 ---
 
@@ -43,7 +43,7 @@ created: "2025-11-12"
 <!-- core-payload-level:4 -->
 
 Airflow는 `hy-home.docker`의 code-first 워크플로우 오케스트레이션 엔진입니다.
-Compose 파일 하나에서 핵심 서비스와 선택적인 전용 Valkey를 구성합니다.
+Compose 파일 하나에서 핵심 서비스를 구성하고, broker는 공유 `mng-valkey`의 `airflow` 이름 계정을 씁니다.
 
 UI/API 인증은 OAuth2 Proxy ForwardAuth가 아니라
 `KeycloakAuthManager`를 통해 Keycloak에 직접 연결합니다.
@@ -133,7 +133,7 @@ Airflow internal JWT:
 | 헬스 `/api/v2/monitor/health` | `airflow-apiserver` | 이 README는 소비자를 기록하지 않는다. | API listener와 같은 `${AIRFLOW_PORT:-8080}`을 쓴다. | RUN-0050 런북을 따른다. |
 | Keycloak OIDC login·Authorization Services | Keycloak | Airflow | realm role `Viewer`~`SuperAdmin`이 필요하며 Keycloak token과 Airflow 내부 JWT는 별개다. | `invalid_scope`는 Authorization bootstrap, role 404는 필수 realm role을 확인한다. |
 | MNG DB `mng-pg`(`${POSTGRES_PORT:-5432}`) | `mng-pg` | Airflow role 서비스 | Airflow 메타데이터 DB로 쓰인다. | DB migration 문제는 동일 이미지에서 `airflow db migrate`를 실행한다. |
-| broker `mng-valkey`(`${VALKEY_PORT:-6379}`) | `mng-valkey` | Airflow CeleryExecutor | `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET` 기본값(`mng-valkey`, `mng_valkey_password`)만 허용한다. | `connection_uri.py`가 다른 조합을 거부한다. |
+| broker `mng-valkey`(`${VALKEY_PORT:-6379}`) | `mng-valkey` | Airflow CeleryExecutor | `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET`의 기본 `mng-valkey`·`mng_valkey_airflow_password`(사용자 `airflow`)와 rollback `mng_valkey_password`(default 사용자)만 허용한다. | `connection_uri.py`가 다른 조합을 거부한다. |
 
 ###### Inputs and Outputs
 <!-- core-payload-level:4 -->
@@ -175,7 +175,7 @@ docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-per
 | Airflow | Apache Airflow | declared version |
 | Keycloak Provider | apache-airflow-providers-keycloak | declared version |
 | Executor | CeleryExecutor | 분산 실행 |
-| Broker | Valkey | 공유/전용 |
+| Broker | Valkey | 공유 `mng-valkey`, `airflow` 이름 계정 |
 | DB | PostgreSQL | 관리용 DB |
 
 ##### Selected Start
@@ -239,10 +239,11 @@ docker compose exec airflow-apiserver airflow dags list
 | Health | `/api/v2/monitor/health` |
 | Port contract | API listener·execution API URL·health·Traefik은 `${AIRFLOW_PORT:-8080}`; MNG DB는 `${POSTGRES_PORT:-5432}`; 공유 broker는 `${VALKEY_PORT:-6379}` |
 
-선택형 전용 broker는 보호된 tmpfs ACL을 원자적으로 렌더한 뒤 한 listener
-포트로 시작합니다. health는 `REDISCLI_AUTH`, exporter는 `REDIS_PASSWORD`를
-사용해 비밀번호를 프로세스 argv에 포함하지 않습니다. monitor ACL overlay는
-동일 시작 wrapper에 최소 관측 계정만 추가합니다.
+Broker 계정은 `mng-valkey`의 `airflow` ACL 역할입니다. Kombu
+`global_keyprefix`(`AIRFLOW__CELERY_BROKER_TRANSPORT_OPTIONS__GLOBAL_KEYPREFIX=airflow:`)가
+모든 key와 channel에 `airflow:`를 붙이고, 역할은 그 접두사와 DB 0, Celery가 쓰는 명령만
+허용합니다. 접두사를 바꾸면 대기 중인 메시지가 남으므로 queue를 비운 뒤 바꿉니다. 전용
+broker는 ADR-0062로 제거되어 지원하지 않습니다.
 
 ###### SEC01 업데이트 검증 경계
 <!-- core-payload-level:5 -->
@@ -333,7 +334,7 @@ Seaweed 내부 원인은 UNKNOWN이며 게시 수용·복원 성공 증거는 �
 
 - Airflow core/StatsD 서비스는 `workflow`/`workflow-airflow`에서 **HOME**입니다. Flower는 2026-11-10 owner 결정(7일간 요청 0건)으로 opt-in `airflow-flower` profile로 옮겼고 HOME이 시작하지 않습니다. Prometheus job `flower`는 `expected_state: "off"`이며 Flower를 시작하면 `on`으로 바꿉니다. 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer airflow-statsd-exporter`.
-- Broker는 `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET`의 기본값(`mng-valkey`, `mng_valkey_password`)뿐이며 `connection_uri.py`가 다른 조합을 거부합니다.
+- Broker는 `mng-valkey`의 `airflow` 이름 계정(`mng_valkey_airflow_password`)이 기본이고 `mng_valkey_password`는 rollback 전용이며, `connection_uri.py`가 다른 조합을 거부합니다.
 - 운영 문서는 Runbook Links의 탐색점의 `GDE-0050`, `POL-0050`, `RUN-0050`을 사용합니다. HOME 격리 복구는 미실행입니다.
 
 ## 적용과 확인

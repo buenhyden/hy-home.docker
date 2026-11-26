@@ -274,18 +274,27 @@ class NextStableCandidates(unittest.TestCase):
         empty=False,
         preset=None,
         entrypoint="docker-entrypoint.sh",
+        extra_env=None,
+        expected=None,
+        report=(),
+        secret_files=None,
     ):
         with tempfile.TemporaryDirectory(prefix="sec01-wrapper-fixture-") as directory:
             base = Path(directory)
-            secret = base / "synthetic-secret"
-            secret.write_text("" if empty else "synthetic-only\r\n")
+            synthetic_value = "" if empty else "synthetic-only\r\n"
+            fixture_file = base / "synthetic-value"
+            fixture_file.write_text(synthetic_value)
             executable = base / "binary"
             executable.write_text(
-                "#!/usr/bin/python3\nimport os,json,sys\nprint(json.dumps({'matched':os.environ.get("
+                "#!/usr/bin/python3\nimport os,json,sys\nout={'matched':os.environ.get("
                 + repr(env_name)
                 + ")=="
-                + repr(preset or "synthetic-only")
-                + ", 'args':sys.argv[1:]}))\n"
+                + repr(expected or preset or "synthetic-only")
+                + ", 'args':sys.argv[1:]}\n"
+                + "".join(
+                    f"out[{name!r}]=os.environ.get({name!r})\n" for name in report
+                )
+                + "print(json.dumps(out))\n"
             )
             executable.chmod(0o700)
             source = (
@@ -293,16 +302,29 @@ class NextStableCandidates(unittest.TestCase):
                 .read_text()
                 .replace(binary, str(executable))
             )
-            source = source.replace("/run/secrets/mng_valkey_password", str(secret))
+            # The named oauth2-proxy secret and the shared rollback secret hold
+            # different synthetic values, so a test sees which file was read.
+            mount_dir = base / "mounted"
+            mount_dir.mkdir()
+            files = {
+                "mng_valkey_oauth2_proxy_password": synthetic_value,
+                "mng_valkey_password": "" if empty else "synthetic-shared\n",
+            }
+            files.update(secret_files or {})
+            for name, content in files.items():
+                if content is not None:
+                    (mount_dir / name).write_text(content)
+            source = source.replace("/run/secrets/", f"{mount_dir}/")
             script = base / "entrypoint.sh"
             script.write_text(source)
             env = {
                 "PATH": "/usr/bin:/bin",
                 "LC_ALL": "C",
-                "S3_SECRET_KEY_FILE": str(secret),
+                "S3_SECRET_KEY_FILE": str(fixture_file),
             }
             if preset is not None:
                 env[env_name] = preset
+            env.update(extra_env or {})
             return subprocess.run(
                 ["/bin/sh", str(script)],
                 env=env,
@@ -346,7 +368,7 @@ class NextStableCandidates(unittest.TestCase):
             )
             self.assertEqual(result.stderr, "")
 
-    def test_effective_dev_wrapper_reads_mng_secret_and_preserves_override(self):
+    def test_effective_dev_wrapper_reads_named_secret_and_preserves_override(self):
         for preset in (None, "synthetic-existing"):
             result = self.run_fixture(
                 "infra/02-auth/oauth2-proxy",
@@ -361,6 +383,70 @@ class NextStableCandidates(unittest.TestCase):
                 {"matched": True, "args": ["--config", "/etc/oauth2-proxy.cfg"]},
             )
             self.assertEqual(result.stderr, "")
+
+    def test_oauth_wrapper_selects_named_role_rollback_and_refuses_others(self):
+        rollback = {
+            "OAUTH2_PROXY_VALKEY_USERNAME": "",
+            "OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_password",
+        }
+        accepted = (
+            ({}, "synthetic-only", "oauth2proxy"),
+            (rollback, "synthetic-shared", None),
+        )
+        selection = "unsupported oauth2-proxy session store selection"
+        missing = "missing required secret: "
+        refused = (
+            ({"OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_password"}, None, selection),
+            (
+                {
+                    "OAUTH2_PROXY_VALKEY_USERNAME": "",
+                    "OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_oauth2_proxy_password",
+                },
+                None,
+                selection,
+            ),
+            ({"OAUTH2_PROXY_VALKEY_USERNAME": "default"}, None, selection),
+            ({"OAUTH2_PROXY_VALKEY_SECRET": "../../private"}, None, selection),
+            ({}, {"mng_valkey_oauth2_proxy_password": ""}, missing),
+            ({}, {"mng_valkey_oauth2_proxy_password": None}, missing),
+            (rollback, {"mng_valkey_password": None}, missing),
+        )
+        for entrypoint in ("docker-entrypoint.sh", "docker-entrypoint.dev.sh"):
+            for extra, password, user in accepted:
+                with self.subTest(entrypoint=entrypoint, extra=extra):
+                    result = self.run_fixture(
+                        "infra/02-auth/oauth2-proxy",
+                        "/bin/oauth2-proxy",
+                        "OAUTH2_PROXY_REDIS_PASSWORD",
+                        entrypoint=entrypoint,
+                        extra_env=extra,
+                        expected=password,
+                        report=("OAUTH2_PROXY_REDIS_USERNAME",),
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    self.assertEqual(
+                        {
+                            "matched": True,
+                            "args": ["--config", "/etc/oauth2-proxy.cfg"],
+                            "OAUTH2_PROXY_REDIS_USERNAME": user,
+                        },
+                        json.loads(result.stdout),
+                    )
+            for extra, files, reason in refused:
+                with self.subTest(entrypoint=entrypoint, extra=extra, files=files):
+                    result = self.run_fixture(
+                        "infra/02-auth/oauth2-proxy",
+                        "/bin/oauth2-proxy",
+                        "OAUTH2_PROXY_REDIS_PASSWORD",
+                        entrypoint=entrypoint,
+                        extra_env=extra,
+                        secret_files=files,
+                    )
+                    self.assertEqual(1, result.returncode)
+                    self.assertEqual("", result.stdout)
+                    self.assertEqual(1, len(result.stderr.splitlines()))
+                    self.assertTrue(result.stderr.startswith(reason), result.stderr)
+                    self.assertNotIn("synthetic-", result.stdout + result.stderr)
 
 
 if __name__ == "__main__":

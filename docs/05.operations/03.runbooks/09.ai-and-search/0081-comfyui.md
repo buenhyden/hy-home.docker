@@ -1,13 +1,13 @@
 ---
 title: "ComfyUI Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "RUN-0081"
 parent_ids:
@@ -79,6 +79,15 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 <!-- core-payload-level:4 -->
 
 image upgrade 전에 새 image가 `/root/ComfyUI`에서 시작하고 `models`, `custom_nodes`, `input`, `output`, `user` mount가 그 아래에 대응하는지 확인한다. 2026-11-08에 이 다섯 volume을 `/root/ComfyUI/<dir>`로 다시 mount했으므로 이전의 `/opt` 불일치는 해소되었다. 대응이 어긋나면 image 교체나 volume 정리를 중단한다.
+
+image는 `VOLUME /root`를 선언하므로 Compose에 없는 익명 volume이 `/root`(ComfyUI 코드와 그 아래
+패키지)를 담고, 위 다섯 named volume과 두 cache volume은 그 안에 겹쳐 mount된다. Compose는
+container를 다시 만들 때 익명 volume을 이어받으므로 image만 바꾸면 옛 코드가 남을 수 있다
+(2026-11-26 확인: 365.4 MB, container `comfyui` 정지 상태). upgrade에서 새 코드를 쓰려면 먼저
+custom node 의존성이 named volume(`custom_nodes`, `user`) 안에만 있는지 확인하고, 그 container의
+익명 volume ID를 기록한 뒤 `docker compose up -d --renew-anon-volumes comfyui`로 다시 만든다. 이전
+익명 volume은 dangling으로 남으며 새 container가 정상인 것을 확인하기 전에는 지우지 않는다.
+dangling 익명 volume 일괄 삭제나 prune은 쓰지 않는다.
 
 #### Procedure
 

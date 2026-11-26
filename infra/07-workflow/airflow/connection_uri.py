@@ -19,7 +19,12 @@ from urllib.parse import quote
 MAX_SECRET_BYTES = 4096
 SECRETS_DIRECTORY = Path("/run/secrets")
 ERROR = "Airflow connection: invalid input"
-BROKERS = frozenset({("mng-valkey", "mng_valkey_password")})
+# Supported broker logins: the named airflow role (default) and the shared
+# default user kept for rollback. The value is the ACL username ("" = default).
+BROKERS = {
+    ("mng-valkey", "mng_valkey_airflow_password"): "airflow",
+    ("mng-valkey", "mng_valkey_password"): "",
+}
 
 
 class ConnectionError(ValueError):
@@ -160,12 +165,13 @@ def render(
         if mode != "broker":
             raise ConnectionError(ERROR)
         host = environment.get("AIRFLOW_VALKEY_HOST", "mng-valkey")
-        secret = environment.get("AIRFLOW_VALKEY_SECRET", "mng_valkey_password")
+        secret = environment.get("AIRFLOW_VALKEY_SECRET", "mng_valkey_airflow_password")
         if (host, secret) not in BROKERS:
             raise ConnectionError(ERROR)
         port = _port(environment, "VALKEY_PORT", "6379")
         password = _read_secret(secrets_dir, secret, broker=True)
-        return f"redis://:{quote(password, safe='')}@{host}:{port}/0"
+        user = BROKERS[(host, secret)]
+        return f"redis://{user}:{quote(password, safe='')}@{host}:{port}/0"
     except (OSError, UnicodeError, ValueError, TypeError):
         pass
     # Raise outside the handler so even the suppressed exception context cannot

@@ -42,7 +42,8 @@ services:
     entrypoint: [ '/bin/sh', '/usr/local/libexec/mng-valkey/start.sh' ]
     environment:
       MNG_VALKEY_PORT: ${VALKEY_PORT:-6379}
-      # n8n named-user ACL; render-acl.sh requires mng_valkey_n8n_password.
+      # Named-user ACL; render-acl.sh requires the n8n, oauth2-proxy and
+      # airflow role secrets mounted below.
       MNG_VALKEY_N8N_ENABLED: '1'
     volumes:
       - mng-valkey-data:/data:rw
@@ -55,6 +56,8 @@ services:
       - mng_valkey_monitor_password
       - mng_valkey_inspector_password
       - mng_valkey_n8n_password
+      - mng_valkey_oauth2_proxy_password
+      - mng_valkey_airflow_password
     ports:
       - ${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}
     expose:

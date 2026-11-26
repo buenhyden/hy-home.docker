@@ -1,6 +1,6 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "2.0.2"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -97,9 +97,9 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 ###### 선택형 공유 계정과 Ollama 실행 경로
 <!-- core-payload-level:5 -->
 
-기본 broker는 기존 default 계정·DB0이며 신규 비밀 파일을 요구하지 않습니다.
-`SHARE_NAMED_USER`는 MNG의 typed ACL overlay와 `N8N_VALKEY_USERNAME=n8n`,
-`N8N_VALKEY_SECRET=mng_valkey_n8n_password`, 기존 host·DB0를 함께 선택합니다.
+기본 broker는 공유 `mng-valkey`의 `n8n` 이름 계정(`N8N_VALKEY_USERNAME=n8n`,
+`N8N_VALKEY_SECRET=mng_valkey_n8n_password`, DB0)입니다. rollback은 빈 username과
+`mng_valkey_password`(default 계정)이며 host·DB0는 같습니다.
 두 entrypoint는 Host/User/Secret/DB와 실제 Queue 변수가 같은지 검사하고 혼합 입력을
 거부합니다. 앱별 전용 Valkey pair는 ADR-0062 결정 10으로 제거되어 지원하지 않습니다. 설정이 준비됐다는
 사실은 실제 Bull queue의 인증·Retry·복원 인수가 아닙니다.
@@ -134,7 +134,7 @@ n8n Runbook 「선택형 공유 Valkey 계정과 Local Ollama」 절이 소유�
 ###### Security Boundary
 <!-- core-payload-level:4 -->
 
-Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_sandbox_api_key`, `n8n_sandbox_runner_api_key`, `n8n_sandbox_runner_registration_token`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
+Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_sandbox_api_key`, `n8n_sandbox_runner_api_key`, `n8n_sandbox_runner_registration_token`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
 
 #### Usage
 
@@ -147,7 +147,7 @@ Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `
 | :--- | :--- | :--- | :--- |
 | Core Service | n8n | declared version | Node.js 기반 |
 | Metadata DB | PostgreSQL | Management PostgreSQL | `infra/04-data/mng-db`를 통해 관리됨 |
-| Queue Broker | Valkey (Redis 호환) | 선택은 `${N8N_VALKEY_HOST:-mng-valkey}`와 `${N8N_VALKEY_SECRET:-mng_valkey_password}`가 소유하며 공유 `mng-valkey`만 허용함 | Queue 오케스트레이션 |
+| Queue Broker | Valkey (Redis 호환) | 선택은 `${N8N_VALKEY_HOST:-mng-valkey}`와 `${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}`가 소유하며 공유 `mng-valkey`만 허용함 | Queue 오케스트레이션 |
 | Task Runner | n8nio/runners | declared version | 격리된 실행 환경 |
 
 ##### Selected Start
@@ -288,7 +288,7 @@ Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfil
 | Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:ro`; worker 쪽 runner(`n8n-task-runner-worker`)는 `./n8n-task-runners.json:/etc/n8n-task-runners.json:ro`, JS runner가 `--require`로 읽는 `./n8n-runner-vm-hardening.cjs:/etc/n8n-runner-vm-hardening.cjs:ro`(Code node vm context에서 문자열 코드 생성 차단, TSK-0118 E17)와 `/tmp` tmpfs만 마운트함. `n8n-task-runner-data`, `n8n-task-runner-worker-data`는 rollback·기존 호스트 데이터 보존용으로 선언만 남고 마운트되지 않음 |
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`(공유 `mng-valkey`). `N8N_BROKER_PORT`는 main·worker의 `N8N_RUNNERS_BROKER_PORT`로, `N8N_TASK_RUNNER_PORT`는 두 runner의 `N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT`로 전달됩니다. |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
-| Secret refs | main/worker는 선택된 `mng_valkey_password` 또는 `mng_valkey_n8n_password` 하나와 `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`을 마운트함. runner 둘은 `n8n_runner_auth_token`만 마운트함 |
+| Secret refs | main/worker는 선택된 `mng_valkey_n8n_password`(기본) 또는 rollback `mng_valkey_password` 하나와 `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`을 마운트함. runner 둘은 `n8n_runner_auth_token`만 마운트함 |
 | Healthcheck | `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `blog-ingestion`(인증 없는 `/v1/summary`의 401)에 Compose 헬스체크가 선언되어 있음. main은 `/healthz/readiness`, worker·runner는 각 선언된 `/healthz`를 사용하며 같은 신호가 아님; probe 통과가 작업 실행 성공이나 runner 호환성을 입증하지 않음 |
 | Operations | Runbook Links의 Related Documents의 Guide·Policy·Runbook 탐색점에서 `GDE-0053`·`POL-0053`·`RUN-0053`을 선택합니다. |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -305,7 +305,7 @@ Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfil
 
 - n8n core/worker/task runner는 `workflow`/`workflow-n8n`에서 **HOME**입니다. 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d n8n n8n-worker n8n-task-runner-worker`.
-- Broker는 `N8N_VALKEY_HOST`와 `N8N_VALKEY_SECRET`의 지원 쌍(공유 기본값과 선택형 공유 이름 계정)뿐입니다. 두 entrypoint는 선택된 파일의 존재를 확인하고, 두 runner는 마운트된 `n8n_runner_auth_token`을 launcher에 전달합니다. 선언 버전은 모두 일치하지만 Code 노드와 DB upgrade의 격리 실행은 별도로 검증해야 합니다.
+- Broker는 `N8N_VALKEY_HOST`와 `N8N_VALKEY_SECRET`의 지원 쌍(기본 이름 계정과 rollback 공유 default 계정)뿐입니다. 두 entrypoint는 선택된 파일의 존재를 확인하고, 두 runner는 마운트된 `n8n_runner_auth_token`을 launcher에 전달합니다. 선언 버전은 모두 일치하지만 Code 노드와 DB upgrade의 격리 실행은 별도로 검증해야 합니다.
 - 운영 문서는 Runbook Links의 탐색점의 `GDE-0053`, `POL-0053`, `RUN-0053`을 사용합니다. HOME 격리 복구는 미실행입니다.
 
 ## 적용과 확인

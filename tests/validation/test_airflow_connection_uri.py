@@ -32,6 +32,7 @@ class ConnectionUriTests(unittest.TestCase):
         self.password = " p04-synthetic @:/?#%40+ 한글 "  # gitleaks:allow -- synthetic fixture; never deployed
         for name in (
             "airflow_db_password",
+            "mng_valkey_airflow_password",
             "mng_valkey_password",
         ):
             self.write_secret(name, self.password.encode())
@@ -62,6 +63,20 @@ class ConnectionUriTests(unittest.TestCase):
                 self.assertEqual("", parsed.fragment)
         self.assertEqual({"POSTGRES_PORT": "55432", "VALKEY_PORT": "16379"}, original)
 
+    def test_broker_uses_the_named_role_and_keeps_the_shared_rollback(self):
+        module = load_helper()
+        for environment, user in (
+            ({}, "airflow"),
+            ({"AIRFLOW_VALKEY_SECRET": "mng_valkey_airflow_password"}, "airflow"),
+            ({"AIRFLOW_VALKEY_SECRET": "mng_valkey_password"}, ""),
+        ):
+            with self.subTest(environment=environment):
+                parsed = urlsplit(
+                    module.render("broker", environment, secrets_dir=self.secrets)
+                )
+                self.assertEqual(user, parsed.username or "")
+                self.assertEqual("/0", parsed.path)
+
     def test_optional_single_terminal_lf_is_framing_and_spaces_survive(self):
         module = load_helper()
         self.write_secret("airflow_db_password", (self.password + "\n").encode())
@@ -80,7 +95,9 @@ class ConnectionUriTests(unittest.TestCase):
         module = load_helper()
         for character in ("\r", "\t", "\x01", "\x1f", "\x7f"):
             with self.subTest(code=ord(character)):
-                self.write_secret("mng_valkey_password", ("p04" + character).encode())
+                self.write_secret(
+                    "mng_valkey_airflow_password", ("p04" + character).encode()
+                )
                 with self.assertRaises(module.ConnectionError):
                     module.render("broker", {}, secrets_dir=self.secrets)
 

@@ -55613,7 +55613,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
           "assessment_version": "3.3.2 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -55670,7 +55670,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
           "assessment_version": "3.3.2 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -55727,7 +55727,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
           "assessment_version": "3.3.2 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -55784,7 +55784,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
           "assessment_version": "3.3.2 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -55841,7 +55841,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/statsd-exporter:v0.31.0@sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab",
-          "source_input_sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
           "assessment_version": "0.31.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -55896,7 +55896,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
           "assessment_version": "3.3.2 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -55953,7 +55953,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
           "assessment_version": "3.3.2 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57206,7 +57206,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/airflow:3.3.2-keycloak",
-          "source_input_sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504",
+          "source_input_sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f",
           "assessment_version": "3.3.2 custom",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58325,7 +58325,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/mng-pg:18.7-pgbackrest2.60.1",
-          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
           "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58386,7 +58386,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58443,7 +58443,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
           "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -58491,7 +58491,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
           "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -58539,7 +58539,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58623,7 +58623,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
-          "source_input_sha256": "c33799611dc8ac943a319a72de03f4f6ab6c20352b5290c9db459e0f41511abe",
+          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
           "assessment_version": "1.96.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58681,7 +58681,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "6d17aeea03f9d5ff3ce2ad61791c44d9064e1b3d2199f6eb10aaa446b74a3034",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58950,7 +58950,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "6d17aeea03f9d5ff3ce2ad61791c44d9064e1b3d2199f6eb10aaa446b74a3034",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
           "assessment_version": "n8nio/runners:2.46.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59017,7 +59017,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "6d17aeea03f9d5ff3ce2ad61791c44d9064e1b3d2199f6eb10aaa446b74a3034",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59392,7 +59392,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "UNKNOWN",
-          "source_input_sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1",
+          "source_input_sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11",
           "assessment_version": "inventory 7.15.5; tracked Dockerfiles 7.15.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62823,7 +62823,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "6d17aeea03f9d5ff3ce2ad61791c44d9064e1b3d2199f6eb10aaa446b74a3034",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62928,7 +62928,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "6d17aeea03f9d5ff3ce2ad61791c44d9064e1b3d2199f6eb10aaa446b74a3034",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
           "assessment_version": "API image 1.8.1 exact digest used one-shot",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62986,7 +62986,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "6d17aeea03f9d5ff3ce2ad61791c44d9064e1b3d2199f6eb10aaa446b74a3034",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
           "assessment_version": "API image 1.8.1 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -63044,7 +63044,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
-          "source_input_sha256": "6d17aeea03f9d5ff3ce2ad61791c44d9064e1b3d2199f6eb10aaa446b74a3034",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
           "assessment_version": "runner-dind 1.8.1 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -63903,7 +63903,7 @@
               },
               {
                 "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-                "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+                "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
               },
               {
                 "path": "infra/03-security/openbao/docker-compose.yml",
@@ -63951,7 +63951,7 @@
               },
               {
                 "path": "infra/07-workflow/airflow/docker-compose.yml",
-                "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+                "sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f"
               },
               {
                 "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -64691,7 +64691,7 @@
               },
               {
                 "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-                "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+                "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
               },
               {
                 "path": "infra/03-security/openbao/docker-compose.yml",
@@ -64739,7 +64739,7 @@
               },
               {
                 "path": "infra/07-workflow/airflow/docker-compose.yml",
-                "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+                "sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f"
               },
               {
                 "path": "infra/07-workflow/n8n/docker-compose.yml",

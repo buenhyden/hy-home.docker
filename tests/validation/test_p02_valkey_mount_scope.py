@@ -46,15 +46,22 @@ class DedicatedValkeyRemovalTests(unittest.TestCase):
         self.assertEqual(set(), REMOVED_SECRETS & set(root["secrets"]))
 
     def test_apps_keep_the_shared_management_valkey(self) -> None:
-        for relative_path in (
-            "infra/07-workflow/airflow/docker-compose.yml",
-            "infra/07-workflow/n8n/docker-compose.yml",
-            "infra/02-auth/oauth2-proxy/docker-compose.yml",
+        # Each app reaches the shared mng-valkey with its own named-role secret.
+        for relative_path, secret in (
+            (
+                "infra/07-workflow/airflow/docker-compose.yml",
+                "mng_valkey_airflow_password",
+            ),
+            ("infra/07-workflow/n8n/docker-compose.yml", "mng_valkey_n8n_password"),
+            (
+                "infra/02-auth/oauth2-proxy/docker-compose.yml",
+                "mng_valkey_oauth2_proxy_password",
+            ),
         ):
             with self.subTest(path=relative_path):
                 text = (ROOT / relative_path).read_text()
                 self.assertIn("mng-valkey", text)
-                self.assertIn("mng_valkey_password", text)
+                self.assertIn(secret, text)
 
 
 if __name__ == "__main__":

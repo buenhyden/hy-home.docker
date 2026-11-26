@@ -412,12 +412,12 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         for name in ("n8n", "n8n-worker"):
             environment = services[name]["environment"]
             self.assertIn(
-                "${N8N_VALKEY_SECRET:-mng_valkey_password}",
+                "${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}",
                 environment["QUEUE_BULL_REDIS_PASSWORD_FILE"],
             )
             self.assertIn("N8N_VALKEY_SECRET", environment)
             self.assertEqual(
-                "${N8N_VALKEY_SECRET:-mng_valkey_password}",
+                "${N8N_VALKEY_SECRET:-mng_valkey_n8n_password}",
                 services[name]["secrets"][0],
             )
             self.assertNotIn("n8n_valkey_password", services[name]["secrets"])
@@ -496,7 +496,12 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                     if value is not None:
                         (mount / selected).write_text(value, encoding="utf-8")
                     environment = os.environ.copy()
-                    environment.update(N8N_VALKEY_HOST=host, N8N_VALKEY_SECRET=selected)
+                    # The shared pairing is the rollback, so it names an empty user.
+                    environment.update(
+                        N8N_VALKEY_HOST=host,
+                        N8N_VALKEY_SECRET=selected,
+                        N8N_VALKEY_USERNAME="",
+                    )
                     result = subprocess.run(
                         ["sh", "-c", guard],
                         env=environment,
