@@ -49,7 +49,7 @@
         "quay.io/keycloak/keycloak": "external"
       },
       "images": [
-        "quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c"
+        "quay.io/keycloak/keycloak:26.8.2-0@sha256:3879c623248408de29a5303178b5816c77e8dfef3890c361f8c0bbeaa979ba3b"
       ],
       "compose_files": [
         "infra/02-auth/keycloak/docker-compose.yml"
@@ -58,7 +58,7 @@
         {
           "compose_file": "infra/02-auth/keycloak/docker-compose.yml",
           "images": [
-            "quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c"
+            "quay.io/keycloak/keycloak:26.8.2-0@sha256:3879c623248408de29a5303178b5816c77e8dfef3890c361f8c0bbeaa979ba3b"
           ]
         }
       ]
