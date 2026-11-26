@@ -1,13 +1,13 @@
 ---
 title: "Terrakube Recovery Runbook"
-version: "2.0.0"
+version: "3.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "RUN-0069"
 parent_ids:
@@ -42,7 +42,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 ##### Trigger
 
-Terrakube(`terrakube-api`, `terrakube-ui`, `terrakube-executor`)의 장애 진단, 조정된 백업·격리 복원,
+Terrakube LAB(`terrakube-api`, `terrakube-ui`, `terrakube-executor`, `terrakube-pg`, `terrakube-valkey`)의 장애 진단, 조정된 백업·격리 복원,
 업그레이드 절차다.
 
 API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
@@ -50,9 +50,9 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 
 ##### Targets
 
-- [Guide](../../01.guides/10.platform-and-backup/0069-terrakube.md) (`GDE-0069`)
-- [Policy](../../02.policies/10.platform-and-backup/0069-terrakube.md) (`POL-0069`)
-- [Terrakube Compose](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
+- [Guide](../../01.guides/15.labs/0069-terrakube.md) (`GDE-0069`)
+- [Policy](../../02.policies/15.labs/0069-terrakube.md) (`POL-0069`)
+- [Terrakube LAB Compose](../../../../labs/terrakube/docker-compose.yml)
 
 - [Terrakube documentation](https://docs.terrakube.io/)
 - [Operations index](../../README.md)
@@ -70,7 +70,7 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 ###### 작업 선택과 복구 전제
 <!-- core-payload-level:4 -->
 
-변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](0021-backup-and-restore.md)를
+변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](../10.platform-and-backup/0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
 승격 승인 중 하나라도 불명확하면 중단한다. config·secret 교체는
 [공통 수명주기 정책](../../02.policies/01.common/0006-infrastructure-optimization-governance.md)의
@@ -84,11 +84,11 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
 | 1 | 새 Terrakube run을 동결하고 workspace/run ID, VCS ref, state key, component status, apply 진행 여부를 기록한다 | 문서에 기록 없음 | remote effect와 recovery owner를 파악하기 전에는 active apply를 중지하지 않고 중단 조건이면 @buenhyden에게 escalation |
-| 2 | `iac` profile을 validate하고 `terrakube-api/ui/executor`의 상태와 로그를 점검한다 | `ps` 상태가 확인되고 `docker compose --profile iac config --quiet`가 통과한다 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 2 | `lab.py check terrakube`로 render를 검사하고 다섯 container의 상태와 로그를 점검한다 | `ps` 상태가 확인되고 `lab.py check terrakube`가 통과한다 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
 | 3 | 재시작 전에 UI, API DB, state/output, stuck execution 증상을 분류한다 | 문서에 기록 없음 | migration을 반복 재시도하거나 state를 로그로 다운로드하지 않고 취소/replay 전에 remote provider action을 확인한다 |
 | 4 | dependency와 active-run check 후 실패한 component만 재시작한다 | 문서에 기록 없음 | job이나 apply replay는 별도 authorization 없이 하지 않는다 |
 | 5 | Coordinated backup and isolated restore: scheduling을 차단하고 active run을 해결한 뒤 API/UI와 executor를 중지한다 | 문서에 기록 없음 | active/unknown apply가 있으면 중단한다 |
-| 6 | Coordinated backup and isolated restore: DB, SeaweedFS `tfstate`, Keycloak 설정, Compose, secret 메타데이터의 복구 세트를 캡처하고 recovery-point receipt를 기록한다 | DB backup ID, object inventory, source commit, Keycloak/client configuration을 연결한 receipt 하나가 기록된다 | DB-object 불일치나 backup 불가면 중단한다 |
+| 6 | Coordinated backup and isolated restore: DB, state 디렉터리, Keycloak 설정, Compose, secret 메타데이터의 복구 세트를 캡처하고 recovery-point receipt를 기록한다 | DB backup ID, object inventory, source commit, Keycloak/client configuration을 연결한 receipt 하나가 기록된다 | DB-object 불일치나 backup 불가면 중단한다 |
 | 7 | Coordinated backup and isolated restore: 두 store를 isolated target으로 복원하고 provider, VCS webhook, executor egress를 비활성화한다 | 문서에 기록 없음 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
 | 8 | Coordinated backup and isolated restore: 격리 store에서만 component set을 시작하고 organization/workspace/run count, state/output key, OIDC role mapping, non-applying plan을 확인한다 | count, 참조된 state/output key, OIDC role mapping, non-applying plan이 확인된다 | 복원된 executor를 live account로 향하게 하지 않고 중단한다 |
 | 9 | Coordinated backup and isolated restore: 검토 후에만 승격하고 아니면 원본을 유지하며 격리 사본을 진단용으로 보존한다 | 문서에 기록 없음 | 사본 삭제는 보존 의무와 승인 확인 뒤 따로 처리한다 |
@@ -99,17 +99,17 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 2. bounded state를 validate하고 점검한다.
 
    ```bash
-   docker compose --profile iac config --quiet
-   docker compose --profile iac ps terrakube-api terrakube-ui terrakube-executor
-   docker compose --profile iac logs --tail=200 terrakube-api terrakube-ui terrakube-executor
+   python3 scripts/operations/lab.py check terrakube
+   docker compose --env-file labs/.env -f labs/terrakube/docker-compose.yml --profile lab-terrakube ps
+   docker compose --env-file labs/.env -f labs/terrakube/docker-compose.yml --profile lab-terrakube logs --tail=200 terrakube-api terrakube-ui terrakube-executor
    ```
 
 3. 재시작 전에 분류한다.
-   - UI만: gateway와 OIDC redirect/claim을 점검한다.
-   - API DB error: `mng-pg`를 점검한다. migration을 반복적으로 재시도하지 않는다.
-   - missing state/output: state를 로그로 다운로드하지 않고 SeaweedFS bucket/key와
-     DB reference를 점검한다.
-   - stuck execution: Valkey coordination과 executor/Docker access를 점검하고,
+   - UI만: Keycloak client `lab-terrakube`의 redirect와 claim을 점검한다.
+   - API DB error: `terrakube-pg`를 점검한다. migration을 반복적으로 재시도하지 않는다.
+   - missing state/output: state를 로그로 출력하지 않고 `${LAB_DATA_DIR}/terrakube/state`의
+     경로와 DB reference를 점검한다.
+   - stuck execution: `terrakube-valkey` coordination과 executor를 점검하고,
      취소나 replay 전에 remote provider action을 확인한다.
 4. dependency와 active-run check 후 실패한 component만 재시작한다. job이나 apply를
    replay하려면 별도 authorization이 필요하다.
@@ -119,14 +119,12 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 
 1. scheduling을 차단하고, active run을 대기하거나 안전하게 해결한 뒤, Terrakube
    writer가 남지 않도록 API/UI와 executor를 중지한다.
-2. 복구 세트는 Terrakube PostgreSQL 데이터베이스, SeaweedFS `tfstate` object/버전, 관련
+2. 복구 세트는 LAB PostgreSQL 데이터베이스, `${LAB_DATA_DIR}/terrakube/state` 디렉터리, 관련
    Keycloak client/role 설정, 추적되는 Compose, secret 메타데이터/보관 정보다. Valkey는 조정
-   상태이므로 정지된 제어 플레인과 일관되면 된다. PostgreSQL에는 owner의 online
-   logical/physical backup 절차를, `tfstate`에는
-   [일일 백업](../05.databases-and-storage/0024-seaweedfs.md)에 포함되는 SeaweedFS 세트를 사용한다.
-   일일 스케줄 자체가 DB와 object의 같은 복구 시점을 보장하지 않으므로 작성자 정지
-   구간과 두 캡처의 일관성을 별도로 확인한다. DB backup ID, object
-   snapshot/version inventory, source commit, Keycloak/client configuration을
+   상태이므로 정지된 제어 플레인과 일관되면 된다. PostgreSQL은 `pg_dump`로, state 디렉터리는
+   작성자를 정지한 뒤 파일 사본으로 캡처한다. 두 캡처는 같은 정지 구간 안에서 해야 같은
+   복구 시점이 된다. DB backup ID, state 디렉터리
+   파일 목록과 checksum, source commit, Keycloak/client configuration을
    연결하는 recovery-point receipt 하나를 기록한다. secret/state 내용은 캡처하지 않는다.
 3. 두 store를 모두 isolated target으로 복원한다. replacement secret을 사용하고
    provider, VCS webhook, executor egress를 비활성화한다.
@@ -141,18 +139,18 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 
 coordinated backup을 완료하고 모든 migration/release note를 검토하고 복원된
 store에서 새 API/UI/executor를 테스트한 뒤, 호환되는 set을 upgrade한다. 실패
-시에는 새 set을 중지하고 DB와 object를 이전 image로 함께 복원한다. migration 이후
-DB/state 롤백 없이 image만 되돌리는 것은 안전하지 않다. SeaweedFS 사본 하나나 DB 덤프
+시에는 새 set을 중지하고 DB와 state 디렉터리를 이전 image로 함께 복원한다. migration 이후
+DB/state 롤백 없이 image만 되돌리는 것은 안전하지 않다. state 사본 하나나 DB 덤프
 하나만으로 복구 가능성을 추정하지 않는다.
 
 ###### 현재 실행 경로의 제한
 <!-- core-payload-level:4 -->
 
-인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다. 제한의 배경은 [Guide](../../01.guides/10.platform-and-backup/0069-terrakube.md#현재-실행-경로의-제한)를 따른다.
+인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다. 제한의 배경은 [Guide](../../01.guides/15.labs/0069-terrakube.md#구현과-데이터-흐름)를 따른다.
 
 ##### Stop Conditions
 
-active/unknown apply, DB-object 불일치, Docker-socket 예기치 않은 access, auth
+active/unknown apply, DB-state 불일치, Docker socket이 마운트된 compose, auth
 모호성, backup 불가, destructive migration이 있으면 중단한다.
 
 #### Verification
@@ -162,7 +160,7 @@ active/unknown apply, DB-object 불일치, Docker-socket 예기치 않은 access
 ###### Service Checks
 <!-- core-payload-level:4 -->
 
-`terrakube-api`, `terrakube-ui`, `terrakube-executor`의 `ps` 상태와 `docker compose --profile iac config --quiet` 통과를 확인한다.
+다섯 container의 `ps` 상태와 `python3 scripts/operations/lab.py check terrakube` 통과를 확인한다.
 
 ###### Evidence
 <!-- core-payload-level:4 -->

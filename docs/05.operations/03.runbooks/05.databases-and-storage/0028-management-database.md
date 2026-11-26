@@ -1,13 +1,13 @@
 ---
 title: "Management Database Health and Init Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "RUN-0028"
 parent_ids:
@@ -108,7 +108,7 @@ docker compose --env-file .env.example --profile mng config --services
 <!-- core-payload-level:4 -->
 
 1. consumer를 고려한 시간대를 확보하고 role과 `postgres`, `n8n`,
-   `keycloak`, `airflow`, `terrakube`, `sonarqube`, 그리고 설정된 애플리케이션
+   `keycloak`, `airflow`, `sonarqube`, 그리고 설정된 애플리케이션
    database를 조사한다. 이 목록이 전부라고 가정하지 말고 추가 항목을 찾는다.
 2. 호환되는 PostgreSQL client를 사용해 cluster globals와 각 database를 복원
    가능한 logical format으로 dump한다. 실행 중인 `PGDATA`를 raw로 복사하지 않는다.
@@ -125,7 +125,7 @@ docker compose --env-file .env.example --profile mng config --services
    source를 신뢰할 수 있는지 검사한다. globals/role을 먼저 복원한 뒤 의존성
    순서에 맞춰 각 database를 생성하고 복원한다.
 3. role과 grant, schema object, extension 가용성, table/row 개수, 선택한
-   애플리케이션 읽기를 검증한다. Keycloak, Airflow, n8n, Terrakube, SonarQube의
+   애플리케이션 읽기를 검증한다. Keycloak, Airflow, n8n, SonarQube의
    disposable 확인은 해당 owner가 승인한 경우에만 연결한다.
 4. recovery point와 소요 시간을 기록한다. 별도 cutover에서 writer를 일시
    중지하고 최종 dump를 뜬 뒤 consumer를 전환하며, rollback을 위해 이전

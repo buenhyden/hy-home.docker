@@ -35,7 +35,7 @@ BOOTSTRAP_DB = "postgres"
 # throwaway container gets the same visible placeholder.
 PLACEHOLDER = "placeholder-not-a-credential"
 
-FEATURE_ROLES = ("n8n", "keycloak", "airflow", "terrakube", "sonarqube")
+FEATURE_ROLES = ("n8n", "keycloak", "airflow", "sonarqube")
 
 
 def repository_root() -> Path:

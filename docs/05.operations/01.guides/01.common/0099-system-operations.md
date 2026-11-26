@@ -1,13 +1,13 @@
 ---
 title: "System Operations Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-24"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -209,7 +209,7 @@ object 저장 경로와 [lakehouse LAB](../15.labs/0094-lakehouse.md)의 기반�
 | 06 Observability | [LGTM](../07.observability/0042-lgtm-stack.md), [Dozzle](../07.observability/0072-dozzle.md) | 공유 객체 저장소·host/GPU 가시성; Dozzle leaf는 기존 admin 선택 유지 |
 | 07 Workflow | [Airflow](../08.workflows-and-automation/0050-airflow.md), [n8n](../08.workflows-and-automation/0053-n8n.md): 스케줄·작업 실행 | 관리 DB·broker·초기화·worker·runner; 화면 성공은 작업 성공이 아님 |
 | 08 AI | [Ollama](../09.ai-and-search/0056-ollama.md), [ComfyUI](../09.ai-and-search/0081-comfyui.md), [Open Notebook](../09.ai-and-search/0073-open-notebook.md), [Crawl4AI](../09.ai-and-search/0091-crawl4ai.md), [MLflow](../13.analytics-and-data-quality/0088-mlflow.md) | 추론·이미지·지식 앱·실험 상태; SurrealDB·관리 DB·객체 저장소·GPU 경계 |
-| 09 Platform Operations | [Terrakube](../10.platform-and-backup/0069-terrakube.md), [OpenTofu](../10.platform-and-backup/0082-opentofu.md), [Registry](../10.platform-and-backup/0065-registry.md), [Renovate](../10.platform-and-backup/0083-renovate.md), [백업](../10.platform-and-backup/0021-backup-and-restore.md) | IaC·아티팩트·의존성·공통 복구 작업; 공유 데이터 의존성 |
+| 09 Platform Operations | [Terrakube LAB](../15.labs/0069-terrakube.md), [OpenTofu](../10.platform-and-backup/0082-opentofu.md), [Registry](../10.platform-and-backup/0065-registry.md), [Renovate](../10.platform-and-backup/0083-renovate.md), [백업](../10.platform-and-backup/0021-backup-and-restore.md) | IaC·아티팩트·의존성·공통 복구 작업; 공유 데이터 의존성 |
 | 10 Communication | `infra/10-communication`에는 Compose 서비스가 없다. [Stalwart LAB](../15.labs/0070-mail.md)은 `labs/stalwart` | 독립 LAB 메일 서버와 설정 helper; HOME network 밖이며 외부 배달은 별도 범위 |
 | 11 Quality | [k6](../12.testing-and-quality/0061-k6.md), [성능 검사](../12.testing-and-quality/0064-performance-testing.md), [SonarQube LAB](../15.labs/0066-sonarqube.md), [WireMock](../12.testing-and-quality/0092-wiremock.md), [Pact](../12.testing-and-quality/0093-pact-broker.md), [Conftest](../12.testing-and-quality/0095-conftest.md), [Mailpit](../11.mail-and-notifications/0084-mailpit.md) | 승인된 대상·합성 데이터·계약·정책 검사; 개발 캡처와 운영 메일 구분 |
 | 12 Analytics | `infra/12-analytics`에는 Compose 서비스가 없다. [Lakehouse](../15.labs/0094-lakehouse.md), [Superset](../15.labs/0097-superset.md), [dbt](../15.labs/0090-dbt.md), [JupyterLab](../15.labs/0089-jupyterlab.md)(모두 `labs/`의 독립 LAB) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |

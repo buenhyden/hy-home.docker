@@ -1,13 +1,13 @@
 ---
 title: "플랫폼과 백업 가이드"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 ---
 
@@ -63,7 +63,6 @@ layer: "operations"
 | `0021-backup-and-restore.md` | HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackRest, Restic, R2 오프사이트 사본, SQLite export, host orchestrator가 각각 무엇을 보호하고 무엇을 보호하지 않는지 설명한다. |
 | `0063-tooling-optimization-hardening.md` | 이 가이드는 `09-platform-ops`와 `11-quality`의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. 공개 경계 보안, 네트워크 경계 표준화, 테스트 도구 안정성 계약, 검증 절차를 다룬다. |
 | `0065-registry.md` | Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하는 HOME OCI 이미지 저장소다. `registry` 또는 `tooling` profile에서 선택된다. |
-| `0069-terrakube.md` | Terrakube는 `infra/09-platform-ops/terrakube/`의 `terrakube-api`, `terrakube-ui`, `terrakube-executor`로 구성한 온디맨드 DEV IaC 자동화·제어 플레인이다. 세 servi |
 | `0074-laboratory-optimization-hardening.md` | 이 가이드는 Data·Observability·AI·Analytics tier에 흩어진 관리·실험 기능(dozzle, redisinsight, open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 |
 | `0082-opentofu.md` | OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 시 실행하는 DEV IaC CLI 작업이다. `iac` profile에서만 선택된다. |
 | `0083-renovate.md` | Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하는 의존성 갱신 작업이다. `dependency-update` profile에서만 선택된다. |
@@ -81,7 +80,6 @@ layer: "operations"
 | [Backup and Restore Guide](0021-backup-and-restore.md) | `GDE-0021` | HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackRest, Restic, R2 오프사이트 사본, SQLite export, host orchestrator가 각각 무엇을 보호하고 무엇을 보호하지 않는지 설명한다. |
 | [Platform Operations and Quality Optimization Hardening Usage Guide](0063-tooling-optimization-hardening.md) | `GDE-0063` | 이 가이드는 `09-platform-ops`와 `11-quality`의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. 공개 경계 보안, 네트워크 경계 표준화, 테스트 도구 안정성 계약, 검증 절차를 다룬다. `system-guide \| ho |
 | [Docker Registry Usage Guide](0065-registry.md) | `GDE-0065` | Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하는 HOME OCI 이미지 저장소다. `registry` 또는 `tooling` profile에서 선택된다. |
-| [Terrakube Usage Guide](0069-terrakube.md) | `GDE-0069` | Terrakube는 `infra/09-platform-ops/terrakube/`의 `terrakube-api`, `terrakube-ui`, `terrakube-executor`로 구성한 온디맨드 DEV IaC 자동화·제어 플레인이다. 세 servi |
 | [Admin and Experiment Tools Hardening Usage Guide](0074-laboratory-optimization-hardening.md) | `GDE-0074` | 이 가이드는 Data·Observability·AI·Analytics tier에 흩어진 관리·실험 기능(dozzle, redisinsight, open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 |
 | [OpenTofu Guide](0082-opentofu.md) | `GDE-0082` | OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 시 실행하는 DEV IaC CLI 작업이다. `iac` profile에서만 선택된다. |
 | [Renovate Guide](0083-renovate.md) | `GDE-0083` | Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하는 의존성 갱신 작업이다. `dependency-update` profile에서만 선택된다. |

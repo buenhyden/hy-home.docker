@@ -1,13 +1,13 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -52,7 +52,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 다음 중 하나일 때 사용한다.
 
 - `09-platform-ops`·`11-quality`의 CI 또는 로컬 하드닝 검사가 실패한다.
-- Terrakube middleware 체인이 승인된 설정과 달라지거나 SonarQube LAB에 gateway route가 생긴다.
+- SonarQube LAB에 gateway route가 생긴다.
 - 독립 Locust LAB worker의 healthcheck 또는 명령 계약이 바뀐다.
 - k6 volume 또는 서비스명 문서가 구현과 달라진다.
 - 활성 문서가 profile 선택 leaf를 root 문맥 없이 단독 실행할 수 있다고 설명한다.
@@ -114,7 +114,6 @@ runtime 재시작은 이 런북 범위 밖이며 대상 service runbook과 사�
    ```
 
 3. 증상별로 복구한다.
-   - Middleware drift: Terrakube 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 복원한다.
    - Network drift: tooling 서비스의 선언된 network 연결과 root Compose network 정의를 복원한다.
    - Locust LAB drift: `labs/locust/docker-compose.yml`의 `lab-locust-worker` command와 worker process healthcheck를 복원한다. root profile에는 다시 추가하지 않는다.
    - k6 drift: `k6` service name과 `k6-data:/scripts:ro` volume 계약을 복원한다.
@@ -129,7 +128,7 @@ runtime 재시작은 이 런북 범위 밖이며 대상 service runbook과 사�
    python3 scripts/validation/run-ci-gate.py --profile changed --explain
    ```
 
-5. 도구별 카탈로그 확장 항목(opentofu/terrakube/registry/k6/renovate, LAB의 sonarqube/locust)은
+5. 도구별 카탈로그 확장 항목(opentofu/registry/k6/renovate, LAB의 sonarqube/locust)은
    [Policy](../../02.policies/10.platform-and-backup/0063-tooling-optimization-hardening.md)의 확장 게이트에 따라 Task로 넘긴다.
 
 ##### Stop Conditions

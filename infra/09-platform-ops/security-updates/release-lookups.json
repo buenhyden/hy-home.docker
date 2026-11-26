@@ -58325,7 +58325,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/mng-pg:18.7-pgbackrest2.60.1",
-          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
+          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
           "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58386,7 +58386,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
+          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58443,7 +58443,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
+          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
           "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -58491,7 +58491,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
+          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
           "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -58539,7 +58539,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
+          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58623,7 +58623,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
-          "source_input_sha256": "ac208dedc535d2c85c9d2701914a22e72173fb61cc4f572b73b4782ffd97373a",
+          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
           "assessment_version": "1.96.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60996,7 +60996,7 @@
         "reviewed_at": "2026-11-24T07:07:36.310383+00:00",
         "reviewed_subject": {
           "declaration": "amazon/aws-cli:2.40.4@sha256:eaf444b45380050f920ab07492754aa76223dd90234e51c1f92c2e9391b5ee6b",
-          "source_input_sha256": "c9e94c9c7ded44186708e48b34570733fde24ac244051291fd313644d815706c",
+          "source_input_sha256": "5684a173c4650bcb4b7c74a3e0522923966b87902a73aa96e3334b9bf1c1f0cf",
           "assessment_version": "2.40.4",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61059,7 +61059,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
-          "source_input_sha256": "c9e94c9c7ded44186708e48b34570733fde24ac244051291fd313644d815706c",
+          "source_input_sha256": "5684a173c4650bcb4b7c74a3e0522923966b87902a73aa96e3334b9bf1c1f0cf",
           "assessment_version": "4.48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61231,7 +61231,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
-          "source_input_sha256": "c9e94c9c7ded44186708e48b34570733fde24ac244051291fd313644d815706c",
+          "source_input_sha256": "5684a173c4650bcb4b7c74a3e0522923966b87902a73aa96e3334b9bf1c1f0cf",
           "assessment_version": "4.48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61403,7 +61403,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
-          "source_input_sha256": "c9e94c9c7ded44186708e48b34570733fde24ac244051291fd313644d815706c",
+          "source_input_sha256": "5684a173c4650bcb4b7c74a3e0522923966b87902a73aa96e3334b9bf1c1f0cf",
           "assessment_version": "4.48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61575,7 +61575,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
-          "source_input_sha256": "c9e94c9c7ded44186708e48b34570733fde24ac244051291fd313644d815706c",
+          "source_input_sha256": "5684a173c4650bcb4b7c74a3e0522923966b87902a73aa96e3334b9bf1c1f0cf",
           "assessment_version": "4.48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62338,7 +62338,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
-          "source_input_sha256": "a41fa7adad1e81077b86f948c5f13bffb63d0fef9974199a6452d7a558d333c6",
+          "source_input_sha256": "b2dc7d2f4947e80c435c4abd1126e7716ee0bcddfc33f4db0ba847115274cac6",
           "assessment_version": "3.7.17",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },

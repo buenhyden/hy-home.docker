@@ -1,13 +1,13 @@
 ---
 title: "Platform Operations and Software Verification Architecture Description"
-version: "3.0.0"
+version: "3.1.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -41,7 +41,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 ##### System Boundary
 
-- **Owns:** OpenTofu (IaC CLI helper) and Terrakube (API, UI, executor);
+- **Owns:** OpenTofu (IaC CLI helper);
   Registry (private images); Renovate (manual dependency updates); Restic,
   `restic-offsite` and the SQLite export job (cross-platform backup); k6 (the
   default load tool); Pact Broker, WireMock, Conftest and Mailpit.
@@ -74,7 +74,7 @@ Only services that need it use the data tier, and each tool uses its own databas
 
 ##### Building Blocks
 
-- **Profile-selected services:** the Terrakube API, UI and executor, Pact
+- **Profile-selected services:** Pact
   Broker, Registry, WireMock and Mailpit. WireMock serves requests while its
   profile is active.
 - **Job tools:** OpenTofu, Renovate, Restic, k6 and Conftest run for named
@@ -88,14 +88,12 @@ Directories under `infra/09-platform-ops/` without a Compose file
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Terrakube API, UI and executor routes | Terrakube | The description names no consumer for this interface. | ForwardAuth chain with Keycloak (`02-auth`) | The description records no failure handling for this interface. |
 | Mailpit UI route | Mailpit | The description names no consumer for this interface. | ForwardAuth chain with Keycloak (`02-auth`) | The description records no failure handling for this interface. |
 | Registry loopback publication | Registry | The description names no consumer for this interface. | `127.0.0.1:${REGISTRY_PORT:-5000}` with no gateway route | The description records no failure handling for this interface. |
 | k6 per-run OTLP | k6 | Authenticated Alloy receiver, then Prometheus (`06-observability`) | OTLP | The description records no failure handling for this interface. |
-| Terrakube state S3 backend | SeaweedFS (`04-data`) | Terrakube | The description links no contract for this interface. | A host failure breaks continuity because SeaweedFS and PostgreSQL share one host. |
-| `mng-pg` databases | `mng-pg` (`04-data`) | Terrakube metadata and Pact Broker | The description links no contract for this interface. | A host failure breaks continuity because SeaweedFS and PostgreSQL share one host. |
+| `mng-pg` databases | `mng-pg` (`04-data`) | Pact Broker | The description links no contract for this interface. | A host failure breaks continuity because SeaweedFS and PostgreSQL share one host. |
 
-The Terrakube API, UI and executor routes and the Mailpit UI use the ForwardAuth chain; Registry has no gateway route and publishes only on `127.0.0.1:${REGISTRY_PORT:-5000}`. k6 sends per-run OTLP to an authenticated Alloy receiver, and Terrakube state uses the SeaweedFS S3 backend.
+The Mailpit UI uses the ForwardAuth chain; Registry has no gateway route and publishes only on `127.0.0.1:${REGISTRY_PORT:-5000}`. k6 sends per-run OTLP to an authenticated Alloy receiver. Terrakube is the standalone LAB `labs/terrakube/` (ADR-0062 item 9) with its own PostgreSQL, Valkey and local state, no Traefik route and no HOME network.
 
 #### Runtime Behavior
 
@@ -105,13 +103,12 @@ The Terrakube API, UI and executor routes and the Mailpit UI use the ForwardAuth
 <!-- core-payload-level:4 -->
 
 ```text
-IaC configuration -> OpenTofu or Terrakube plan -> approved apply
+IaC configuration -> OpenTofu plan -> approved apply
 k6 run -> per-run OTLP ingress -> authenticated Alloy receiver -> Prometheus
 contract test -> Pact Broker (mng-pg)
 ```
 
-Terrakube state and objects use the SeaweedFS S3 backend and its metadata
-`mng-pg`; Pact Broker provisions its own `mng-pg` database. Registry and the
+Pact Broker provisions its own `mng-pg` database. Registry and the
 OpenTofu workspace use local persistence. Each tool uses its own database or
 schema.
 
@@ -120,13 +117,12 @@ schema.
 
 The root `docker-compose.yml` includes every leaf; a profile selects the
 service. `tooling` and `registry` select Registry, published only on
-`127.0.0.1:${REGISTRY_PORT:-5000}`; `iac` selects OpenTofu and the Terrakube
-API, UI and executor; `dependency-update` selects Renovate; `backup` selects
+`127.0.0.1:${REGISTRY_PORT:-5000}`; `iac` selects OpenTofu; `dependency-update` selects Renovate; `backup` selects
 Restic, `restic-offsite` and the SQLite export job; `testing` selects k6;
 `contract-testing` selects Pact Broker and its provisioning job; `api-mock`
 selects WireMock; `policy-check` selects Conftest; `dev`, `local` and
-`mail-dev` select Mailpit. Terrakube, Pact Broker and WireMock are optional root
-packages. Their standalone LAB moves are planned in ADR-0062. Registry and
+`mail-dev` select Mailpit. Pact Broker and WireMock are optional root
+packages. Their standalone LAB moves are planned in ADR-0062; Terrakube has already moved to `labs/terrakube/`. Registry and
 Mailpit remain in root Compose. Membership in the root project does not
 indicate which profiles are active.
 
@@ -141,13 +137,12 @@ SeaweedFS and PostgreSQL on one host are not independent failure domains, so a h
 ###### Quality Attributes
 <!-- core-payload-level:4 -->
 
-- **Security:** the Terrakube API, UI and executor routes and the Mailpit UI
-  use the ForwardAuth chain. Registry has no gateway route.
+- **Security:** the Mailpit UI
+  uses the ForwardAuth chain. Registry has no gateway route.
 - **Reliability:** IaC state stays in the declared backend. SeaweedFS and
   PostgreSQL on one host are not independent failure domains, so a host failure
   breaks continuity; backup and isolated recovery need separate evidence.
-- **Scalability:** Terrakube execution capacity changes only through approved
-  configuration; no auto-scaling is implemented.
+- **Scalability:** no auto-scaling is implemented.
 
 ###### Risks
 <!-- core-payload-level:4 -->
@@ -162,8 +157,7 @@ selected; Compose declares no schedule for it.
   need separate evidence (Quality Attributes).
 - Restic, the only cross-platform backup path, runs only when `backup` is
   selected and Compose declares no schedule for it (Risks).
-- Terrakube execution capacity changes only through approved configuration;
-  no auto-scaling is implemented (Quality Attributes).
+- No auto-scaling is implemented (Quality Attributes).
 - Capabilities other than Registry are not activated implicitly, and
   SonarQube, Locust and dbt stay standalone LABs (Constraints).
 

@@ -1,6 +1,6 @@
 ---
 title: "Terrakube LAB Move Plan Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -104,6 +104,41 @@ database.
 | 5 | Retire the HOME `terrakube` role and database, the `tfstate` bucket and `terrakube` S3 identity and the five secrets from source in the move; runtime removal waits for the owner to confirm the `tfstate` bucket is empty |
 | 6 | No container to remove; dropping the role and database and any Keycloak or DNS entry is a separate runtime step the owner approves |
 
+#### Move change
+
+On 2026-11-26 the owner asked to carry out the move; branch
+`chore/terrakube-lab-move`. The 2.33.3 sources at the pinned tag decided the
+LAB settings: `StorageType` other than AWS, AZURE or GCP selects
+`LocalStorageTypeServiceImpl`, the executor uses `LocalTerraformStateImpl`, both
+keep files under `<user.home>/.terraform-spring-boot/local`, no
+`TerraformOutputType` key exists, the UI nginx listens on 8080, and the API and
+executor read Redis credentials. HOME Compose had used port 3000 for the UI and
+output keys 2.33.3 does not read.
+
+- `labs/terrakube/`: API, UI, executor, LAB PostgreSQL and Valkey on one LAB
+  network; secrets through Spring `configtree`; one shared state volume with a
+  fixed `user.home`; the HOME CA through a Paketo `ca-certificates` binding;
+  loopback ports 18096 and 18097; no Docker socket; `promotion.yaml` with the
+  rendered resources and LAB-038 to LAB-041.
+- HOME: the root include, two networks, five secrets and three env keys, the
+  Traefik UI network, the mng-pg role and database, the mng-pg-init secret, and
+  the SeaweedFS `tfstate` bucket, `terrakube` identity and secret mount leave
+  source. Runtime data is untouched.
+- Catalog: PG-010, CACHE-010, AUTO-008 and AUTO-007 become aliases of LAB-038
+  to LAB-041; PG-009 and STRG-014 have no successor and are removed; IAM-003
+  loses the Terrakube consumer. The owner applies the matching public registry
+  rows.
+- Ledger: the three rows move to `historical_lab_entries`; hashes rebound with
+  `ledger_rebind` to `8fb733101`; the 2026-11-11 review loses the three
+  per-service reviews and keeps its other records; snapshot tests read the
+  moved services' preserved rows.
+- Hardening, tests, ADR-0062 (decision 15 and its amendment), POL-0078,
+  REQ-0010-FR-0001, GDE, POL and RUN 0069 (moved to `15.labs`) and the
+  cross-references follow.
+
+The deletion of `infra/09-platform-ops/terrakube/` was refused by the command
+gate three times, so the owner runs it.
+
 ## Verification Evidence
 
 ### Results
@@ -111,6 +146,9 @@ database.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | E01 | 1, 3 | W9 | method=review; tool=git grep, graphify; command=read-only census of Terrakube sources, references and HOME dependencies | `main` `350d52d1f`, 2026-11-26 | PASS | Inventory and file set above; the Docker socket bind and the `_FILE` support records were read at their sources | required | - |
+| E02 | 1, 3 | W9 | method=automated; tool=Python3.12.3 project .venv, docker compose 5.6.1; command=lab.py --env-file labs/.env.example --root-env-file .env.example check terrakube | Branch, synthetic required inputs and the host budget, 2026-11-26 | PASS | No collision, socket, HOME network or resource problem; only the CA file and four LAB secrets are reported missing, as before LAB provisioning | required | - |
+| E03 | 1, 3 | W9 | method=automated; tool=bash; command=bash scripts/hardening/check-all-hardening.sh, then tier 09 with a Docker socket added and restored | Branch, 2026-11-26 | PASS | All checks passed; the added socket failed the new no-socket check | required | - |
+| E04 | 1, 3 | W9 | method=automated; tool=Python3.12.3 project .venv; command=python -m unittest tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_ledger_rebind tests.validation.test_lab_layout tests.validation.test_lab_isolation tests.validation.test_p02_service_contracts tests.validation.test_mng_pg_init_sql | Branch, 2026-11-26 | PASS | All OK; the tier layout and catalog suites wait for the owner's deletion and registry rows | required | - |
 
 ### Resolution Links
 

@@ -170,12 +170,15 @@ class TierLayoutTests(unittest.TestCase):
         self.assertTrue((locust / "Dockerfile").is_file())
         self.assertTrue((locust / "README.md").is_file())
         self.assertTrue((ROOT / "labs/locust/docker-compose.yml").is_file())
-        for package in ("opentofu", "terrakube", "registry", "renovate", "restic"):
+        for package in ("opentofu", "registry", "renovate", "restic"):
             self.assertTrue(
                 (
                     ROOT / "infra/09-platform-ops" / package / "docker-compose.yml"
                 ).is_file()
             )
+        # Terrakube is a standalone LAB (ADR-0062 decision 15).
+        self.assertFalse((ROOT / "infra/09-platform-ops/terrakube").exists())
+        self.assertTrue((ROOT / "labs/terrakube/docker-compose.yml").is_file())
         self.assertTrue((ROOT / "labs/stalwart/docker-compose.yml").is_file())
         self.assertFalse((ROOT / "infra/10-communication/mailpit").exists())
 
@@ -288,7 +291,7 @@ class TierLayoutTests(unittest.TestCase):
                 self.assertIn("Unknown hardening tier", result.stderr)
 
     def test_platform_ops_layout_and_backup_unit(self):
-        packages = ("opentofu", "terrakube", "registry", "renovate", "restic")
+        packages = ("opentofu", "registry", "renovate", "restic")
         names = set()
         for package in packages:
             path = ROOT / "infra/09-platform-ops" / package / "docker-compose.yml"
@@ -299,9 +302,6 @@ class TierLayoutTests(unittest.TestCase):
         self.assertEqual(
             {
                 "opentofu",
-                "terrakube-api",
-                "terrakube-ui",
-                "terrakube-executor",
                 "registry",
                 "renovate",
                 "restic",
@@ -335,7 +335,12 @@ class TierLayoutTests(unittest.TestCase):
         ]
         paths += [
             f"infra/09-platform-ops/{package}/docker-compose.yml"
-            for package in ("opentofu", "terrakube", "registry", "renovate", "restic")
+            for package in ("opentofu", "registry", "renovate", "restic")
+        ]
+        # Tier 09 also checks the Terrakube LAB from its labs/ source.
+        paths += [
+            "labs/terrakube/docker-compose.yml",
+            "labs/terrakube/bindings/ca-certificates/type",
         ]
         env = {k: v for k, v in os.environ.items() if k != "HYHOME_CI_GATE_ROOT"}
         with tempfile.TemporaryDirectory() as directory:

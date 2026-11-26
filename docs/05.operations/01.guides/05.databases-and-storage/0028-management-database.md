@@ -1,6 +1,6 @@
 ---
 title: "Management Database Usage Guide"
-version: "2.1.0"
+version: "2.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -55,7 +55,7 @@ management database를 사용하는 서비스 소유자와 운영자. 서비스 
 ##### Outcome
 
 management database는 인증, 워크플로, 도구를 위한 6개 서비스(PG 엔진·init·monitor provision·exporter, Valkey 엔진·exporter)로 구성된 HOME
-의존성이다. `mng-pg`는 `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`,
+의존성이다. `mng-pg`는 `n8n`, `keycloak`, `airflow`, `sonarqube`,
 `postgres`를 저장한다. 기존 `app_db`는 소유자 진술상 자료·앱 소비자가 없는
 기술적 이관 대상으로 보존하며 새 업무 앱의 공용 DB로 사용하지 않는다. `mng-valkey`는
 Airflow/n8n이 공유하는 broker/cache다. Grafana는 현재 Compose에서 management

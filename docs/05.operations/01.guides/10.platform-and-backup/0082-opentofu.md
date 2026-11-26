@@ -1,13 +1,13 @@
 ---
 title: "OpenTofu Guide"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "GDE-0082"
 parent_ids:
@@ -140,7 +140,7 @@ state 변경 작업과 IaC apply는 정확한 별도 승인이 필요하며, 실
 ###### Terraform 이관
 <!-- core-payload-level:4 -->
 
-기존 Terraform workspace를 옮기기 전에 state와 lock 정보를 보호한다. 독립 Terraform Compose 서비스가 없다는 사실은 Terrakube workspace의 엔진까지 OpenTofu로 고정되었다는 뜻이 아니다. Terrakube executor는 외부 도구·엔진 목록을 참조하므로 이관 대상별 실제 엔진, provider 및 state 호환성을 확인하고, Terraform configuration과 state가 자동으로 호환된다고 가정하지 않는다. 민감한 state와 plan payload는 문서나 로그에 넣지 않는다.
+기존 Terraform workspace를 옮기기 전에 state와 lock 정보를 보호한다. 독립 Terraform Compose 서비스가 없다는 사실은 기존 Terraform workspace의 엔진까지 OpenTofu로 고정되었다는 뜻이 아니다. 이관 대상별 실제 엔진, provider 및 state 호환성을 확인하고, Terraform configuration과 state가 자동으로 호환된다고 가정하지 않는다. 민감한 state와 plan payload는 문서나 로그에 넣지 않는다.
 
 ###### Exceptions
 <!-- core-payload-level:4 -->

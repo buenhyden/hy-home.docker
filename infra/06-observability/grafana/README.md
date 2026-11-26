@@ -1,13 +1,13 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2026-01-12"
 ---
 
@@ -220,9 +220,6 @@ grafana/
 | 09-platform-ops | `renovate` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `restic` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `restic-offsite` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-platform-ops | `terrakube-api` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-platform-ops | `terrakube-executor` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-platform-ops | `terrakube-ui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `wiremock` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `mailpit` | none | `Infrastructure/containers` | container metrics and logs only |
 | 06-observability | `dozzle` | none | `Infrastructure/containers` | container metrics and logs only |

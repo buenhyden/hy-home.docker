@@ -501,6 +501,17 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         report = ledger["p08_public_release_observations"]
         rows = report["observations"]
         names = {row["service"] for row in ledger["entries"]}
+        # A service moved to a LAB after the snapshot keeps its observation as
+        # history, so the snapshot is checked against the names it was taken on.
+        names |= {
+            row["service"]
+            for row in ledger["historical_lab_entries"]
+            if row["current_scope"] == "lab"
+            and (
+                row["service"] in report["services_without_related_source"]
+                or any(row["service"] in o["related_root_services"] for o in rows)
+            )
+        }
         assert_public_observation_consistency(self, report, names)
         for key, value in (
             ("observed_source_count", -1),
@@ -541,7 +552,7 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 assert_public_observation_consistency(self, corrupted, names)
         self.assertTrue(rows)
         self.assertEqual(len(rows), len({row["query_url"] for row in rows}))
-        self.assertEqual(len(ledger["entries"]), report["root_service_denominator"])
+        self.assertEqual(len(names), report["root_service_denominator"])
         self.assertEqual(len(rows), report["source_query_denominator"])
         self.assertFalse(report["verified_external_facts"])
         self.assertFalse(report["deployed"])
@@ -952,6 +963,10 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         releases = json.loads((package / "release-lookups.json").read_text())
         lookups = releases[key]
         rows = {row["service"]: row for row in ledger["entries"]}
+        # A service moved to a LAB after the review keeps its reviewed root row.
+        for row in ledger["historical_lab_entries"]:
+            if key in row["original_root_row"]:
+                rows.setdefault(row["service"], row["original_root_row"])
         prior_gate = releases["master_20261111_advisory_review"]["gate_revalidation"][
             "latest_version_gate"
         ]["output"]

@@ -96,12 +96,12 @@ labs/terrakube/
 | Data | `${LAB_DATA_DIR}/terrakube/{pg,valkey,state}` |
 | 필수 입력 | `LAB_TERRAKUBE_DEFAULT_URL`, `LAB_TERRAKUBE_CA_FILE` ([.env.example](../.env.example)) |
 | Secret | `${LAB_SECRET_DIR}/terrakube/`의 `db_password.txt`(`LAB-038`), `valkey_password.txt`(`LAB-039`), `pat_secret.txt`(`LAB-040`), `internal_secret.txt`(`LAB-041`) |
-| Image | Terrakube 2.33.3과 PostgreSQL·Valkey를 digest로 고정; `labs/**`는 Renovate와 SEC01 ledger 밖 |
+| Image | [Compose](docker-compose.yml)가 Terrakube·PostgreSQL·Valkey 이미지를 digest로 고정; `labs/**`는 Renovate와 SEC01 ledger 밖 |
 
-Terrakube 2.33은 `_FILE` 변수를 읽지 않습니다. Spring `configtree` import가 `/run/secrets`의 각 파일을
+고정한 Terrakube 이미지는 `_FILE` 변수를 읽지 않습니다. Spring `configtree` import가 `/run/secrets`의 각 파일을
 같은 이름의 설정으로 읽으므로 secret은 설정 이름(`DatasourcePassword`, `TerrakubeRedisPassword`,
 `PatSecret`, `InternalSecret`)을 target으로 마운트합니다. API와 executor는 `-Duser.home=/terrakube-home`로
-같은 state volume을 씁니다. HOME Compose의 UI 포트 3000과 output 설정 키는 2.33.3 이미지와 맞지 않아
+같은 state volume을 씁니다. HOME Compose의 UI 포트 3000과 output 설정 키는 고정한 이미지와 맞지 않아
 이 LAB에서 바로잡았습니다(UI nginx는 8080, output은 state plugin이 저장).
 
 ###### Security Boundary
@@ -130,7 +130,7 @@ Docker socket이 없습니다. Valkey 비밀번호는 명령행이 아닌 stdin�
 ##### Readiness
 
 `python3 scripts/operations/lab.py check terrakube`로 render와 충돌을 검사하고
-`bash scripts/hardening/check-all-hardening.sh 15-labs`로 no-route·bind·no-socket 계약을 확인합니다.
+`bash scripts/hardening/check-all-hardening.sh 09-platform-ops`로 no-route·bind·no-socket 계약을 확인합니다.
 통과는 실제 기동의 증거가 아닙니다.
 
 ##### Failure Handling

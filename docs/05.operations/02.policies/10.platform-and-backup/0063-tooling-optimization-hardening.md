@@ -1,13 +1,13 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -58,7 +58,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 - `infra/09-platform-ops/*/docker-compose.yml` 및 `infra/11-quality/*/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 
-- **Systems**: opentofu, terrakube, registry, SonarQube LAB, k6, Locust LAB, renovate
+- **Systems**: opentofu, registry, SonarQube LAB, k6, Locust LAB, renovate
 - **Environments**: 단일 HOME/DEV 호스트(별도 stage·production 환경은 없다)
 
 ###### Exclusions
@@ -72,7 +72,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0063-R1 | 항상 | 필수: Terrakube 공개 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다 | none | none |
+| POL-0063-R1 | 항상 | 필수: Terrakube는 독립 LAB(`labs/terrakube/`)이며 Traefik route 없이 loopback port만 게시한다 | none | none |
 | POL-0063-R2 | 항상 | 필수: SonarQube LAB(`labs/sonarqube/docker-compose.yml`)은 gateway route 없이 `LAB_HOST_BIND_IP` bind의 loopback port만 게시한다 | none | none |
 | POL-0063-R3 | 항상 | 필수: tooling 서비스는 root Compose가 정의한 선언된 network bridge에 연결한다 | 루트 Compose 네트워크 문맥 검증 | none |
 | POL-0063-R4 | 항상 | 필수: `labs/locust/docker-compose.yml`의 Locust LAB worker healthcheck를 유지한다 | none | none |
@@ -85,16 +85,14 @@ Actual inputs and preconditions are those declared by the role payload below.
 | POL-0063-R11 | 항상 | 금지: 검증 게이트 우회 배포 | 수동 | none |
 | POL-0063-R12 | 항상 | 금지: 감사/보존 정책 없이 확장 항목 운영 전환 | 수동 | none |
 | POL-0063-R13 | opentofu 카탈로그 항목 도입 시 | 필수: plan/apply 승인 게이트 문서화, state 잠금/백업 정책 및 drift 자동 탐지 절차 정의 | none | none |
-| POL-0063-R14 | terrakube 카탈로그 항목 도입 시 | 필수: workspace 분리 전략 문서화, 실행 권한 모델/RBAC 및 감사로그 연계 정의 | none | none |
 | POL-0063-R15 | registry 카탈로그 항목 도입 시 | 필수: cosign 서명/검증 정책 정의, 취약점 스캔 실패 차단 정책 및 예외 절차 정의 | none | none |
 | POL-0063-R16 | sonarqube 카탈로그 항목 도입 시 | 필수: 품질게이트 임계값 재정의, 브랜치 정책과 보안 룰셋 분리 운영 | none | none |
 | POL-0063-R17 | k6/Locust LAB 카탈로그 항목 도입 시 | 필수: 회귀 baseline 저장/비교 및 시나리오 태그 표준화, 분산 실행 토폴로지와 데이터 초기화/정리 루틴 문서화 | none | none |
 | POL-0063-R18 | renovate 카탈로그 항목 도입 시 | 필수: `dependency-update` 작업 범위(`hyhome-renovate.timer` 주간 기본 실행과 온디맨드 실행)와 최소 token 권한을 유지하고 self-host `allowedCommands` 허용 목록과 변경 PR 검증을 확인한다 | 수동 | none |
 | POL-0063-R19 | 항상 | 필수: 일반 변경·예외 절차는 공통 운영 정책(`0006-infrastructure-optimization-governance.md`)을 따른다 | none | none |
-| POL-0063-R20 | Terrakube cookie ForwardAuth와 CLI/executor 비호환이 남아 있는 동안 | 필수: gateway 통제를 유지하면서 실행 활성화를 차단하고 `@buenhyden`에게 보고한다 | none | none |
 
 - **Required**:
-  - Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+  - Terrakube는 독립 LAB이며 gateway route를 두지 않는다.
   - SonarQube LAB(`labs/sonarqube/docker-compose.yml`, SPEC-0262)은 gateway route를 두지 않고 `LAB_HOST_BIND_IP` bind의 loopback port만 게시한다.
   - tooling 서비스는 root Compose가 정의한 선언된 network bridge에 연결한다.
   - `labs/locust/docker-compose.yml`의 Locust LAB worker healthcheck를 유지한다.
@@ -115,9 +113,6 @@ Actual inputs and preconditions are those declared by the role payload below.
 - **opentofu 승인 조건**:
   - plan/apply 승인 게이트 문서화
   - state 잠금/백업 정책 및 drift 자동 탐지 절차 정의
-- **terrakube 승인 조건**:
-  - workspace 분리 전략 문서화
-  - 실행 권한 모델/RBAC 및 감사로그 연계 정의
 - **registry 승인 조건**:
   - cosign 서명/검증 정책 정의
   - 취약점 스캔 실패 차단 정책 및 예외 절차 정의
@@ -136,8 +131,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 위 카탈로그 항목은 추가 운영 전환의 승인 조건이며 구현 완료 목록이 아니다.
 일반 변경·예외 절차는 [공통 운영 정책](../01.common/0006-infrastructure-optimization-governance.md)을
-따른다. Terrakube의 cookie ForwardAuth와 CLI/executor 비호환은 별도 구현 검토
-대상이다. gateway 통제를 유지하면서 실행 활성화를 차단하고 `@buenhyden`에게 보고한다.
+따른다.
 
 ##### Exceptions
 
@@ -171,8 +165,8 @@ Actual inputs and preconditions are those declared by the role payload below.
 - 부하 도구: 지정된 검사 없음: `POL-0063-R4`, `POL-0063-R5`
 - 문서 링크: 지정된 검사 없음: `POL-0063-R7`
 - 허용/금지: 수동 검토/승인에 의존: `POL-0063-R8`, `POL-0063-R9`, `POL-0063-R10`, `POL-0063-R11`, `POL-0063-R12`
-- 확장 승인 조건: 수동 검토/승인에 의존: `POL-0063-R18` / 지정된 검사 없음: `POL-0063-R13`, `POL-0063-R14`, `POL-0063-R15`, `POL-0063-R16`, `POL-0063-R17`
-- 변경 절차: 지정된 검사 없음: `POL-0063-R19`, `POL-0063-R20`
+- 확장 승인 조건: 수동 검토/승인에 의존: `POL-0063-R18` / 지정된 검사 없음: `POL-0063-R13`, `POL-0063-R15`, `POL-0063-R16`, `POL-0063-R17`
+- 변경 절차: 지정된 검사 없음: `POL-0063-R19`
 - Catalog Expansion Approval Gates는 추가 운영 전환의 승인 조건이며 이를 점검하는 검사가 지정되어 있지 않다.
 - 정책은 hardening 검사, template baseline, traceability, PR 검사를 나열하지만 개별 규칙에 연결하지 않는다.
 - 개별 서비스 파일만으로는 실행 구성을 판정할 수 없다.

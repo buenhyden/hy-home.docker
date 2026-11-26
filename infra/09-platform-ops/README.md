@@ -1,13 +1,13 @@
 ---
 title: "09-platform-ops: Platform Operations Tier"
-version: "2.0.0"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 created: "2025-11-12"
 ---
 
@@ -45,7 +45,7 @@ IaC·아티팩트 배포·의존성 유지보수·플랫폼 공통 백업을 소
 | --- | --- | --- |
 | `tooling` | `registry`, Quality의 `sonarqube` | 여러 tier에 걸친 기존 선택 조합 |
 | `registry` | `registry` | OCI 저장소 |
-| `iac` | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | 명시적 인프라 도구 |
+| `iac` | `opentofu` | 명시적 인프라 도구 |
 | `dependency-update` | `renovate` | 1회성 원격 저장소 유지보수 |
 | `backup` | `restic`, `restic-offsite`, `backup-sqlite-export` | 호스트 타이머로 구동되는 1회성 백업 작업 |
 
@@ -72,9 +72,8 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 - [OpenTofu](opentofu/README.md)는 워크스페이스 상태와 읽기 전용 provider
   자격 증명 마운트를 사용하는 로컬 CLI 작업입니다. Plan과 apply는 별도로
   승인됩니다.
-- [Terrakube](terrakube/README.md)는 메타데이터를 management PostgreSQL에,
-  상태 오브젝트를 SeaweedFS에, 일시적 조정 정보를 Valkey에 저장합니다. 한
-  호스트의 세 고정 서비스는 HA 배포가 아닙니다.
+- Terrakube는 독립 LAB([labs/terrakube](../../labs/terrakube/README.md))으로 이동했으며
+  자체 PostgreSQL·Valkey와 로컬 state 디렉터리를 사용합니다.
 - [Registry](registry/README.md)는 `${DEFAULT_REGISTRY_DIR}` 아래에 OCI
   오브젝트를 영속화합니다. 현재 Compose는 포트 5000을 `127.0.0.1`에만
   게시하며 TLS/인증을 추적하지 않으므로 사용 전에 노출 범위를 제한해야
@@ -99,7 +98,6 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 ```text
 09-platform-ops/
 ├── opentofu/    # IaC CLI job
-├── terrakube/   # IaC automation API/UI/executor
 ├── registry/    # OCI Distribution storage
 ├── renovate/    # dependency-update job
 ├── restic/      # backup jobs, exclude lists, host orchestrator and timer
@@ -118,7 +116,7 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 ###### Inputs and Outputs
 <!-- core-payload-level:4 -->
 
-이 tier 자체는 API·포트가 없고 입력은 위 Purpose 표의 프로필 선택입니다. Registry는 `127.0.0.1`의 5000 포트를 게시하고 Terrakube는 management PostgreSQL·SeaweedFS·Valkey에 의존합니다(Scope 참조).
+이 tier 자체는 API·포트가 없고 입력은 위 Purpose 표의 프로필 선택입니다. Registry는 `127.0.0.1`의 5000 포트를 게시합니다.
 
 ###### Security Boundary
 <!-- core-payload-level:4 -->
@@ -162,14 +160,14 @@ Selected Start의 `check-all-hardening.sh 09-platform-ops`와 `HYHOME_COMPOSE_PR
 - Stage 05 Platform Operations 문서: `docs/05.operations/README.md`
 - 백업·복구 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0021-backup-and-restore.md`)
 - Registry 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0065-registry.md`)
-- Terrakube 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0069-terrakube.md`)
+- Terrakube 런북 (`docs/05.operations/03.runbooks/15.labs/0069-terrakube.md`)
 - OpenTofu 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0082-opentofu.md`)
 - Renovate 런북 (`docs/05.operations/03.runbooks/10.platform-and-backup/0083-renovate.md`)
 
 ###### Observability and Recovery
 <!-- core-payload-level:4 -->
 
-백업·복구, Registry, Terrakube, OpenTofu, Renovate 복구는 Runbook Links의 런북을 따릅니다. 이 tier README 자체에는 헬스체크·지표가 없습니다.
+백업·복구, Registry, OpenTofu, Renovate 복구는 Runbook Links의 런북을 따릅니다. 이 tier README 자체에는 헬스체크·지표가 없습니다.
 
 ## 적용과 확인
 

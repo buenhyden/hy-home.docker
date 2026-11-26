@@ -1,13 +1,13 @@
 ---
 title: "독립 LAB 문서 가이드"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 ---
 
@@ -65,6 +65,7 @@ layer: "operations"
 | `0057-open-webui.md` | 독립 LAB `labs/open-webui/docker-compose.yml`의 채팅·RAG 웹 애플리케이션이다. gateway route 없이 loopback port로 게시하며 Ollama와 Keycloak은 LAB 입력으로만 찾는다. |
 | `0062-locust.md` | Locust는 `labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다. HOME root Compose와 `testing` profile에는 포함되지 않는다. |
 | `0066-sonarqube.md` | SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(project `hy-home-lab-sonarqube`)의 `sonarqube` service로 운영하는 코드 품질·SAST 도구다. |
+| `0069-terrakube.md` | 독립 LAB `labs/terrakube/docker-compose.yml`의 IaC 협업 플랫폼이다. 자체 PostgreSQL·Valkey·로컬 state를 쓰고 gateway route 없이 loopback port로 게시한다. |
 | `0070-mail.md` | 이 가이드는 독립 LAB `labs/stalwart/docker-compose.yml`(project `hy-home-lab-stalwart`)의 메일 서버 Stalwart 구성, 네트워크 경계, 일반 사용 방법을 설명한다. |
 | `0089-jupyterlab.md` | 독립 LAB `labs/jupyterlab/docker-compose.yml`의 token 보호 single-user notebook server이며 LAB profile `jupyterlab`으로 선택한다. gateway route가 없고 MLflow endpoint는 선택 입력이다. |
 | `0090-dbt.md` | 독립 LAB `labs/dbt/docker-compose.yml`의 command-line 변환 작업이다. HOME dev-pg는 필수 LAB 입력 endpoint로만 지정하며 승인 전에는 렌더링 전용이다. |
@@ -86,6 +87,7 @@ layer: "operations"
 | [Open WebUI Usage Guide](0057-open-webui.md) | `GDE-0057` | 독립 LAB `labs/open-webui/docker-compose.yml`의 채팅·RAG 웹 애플리케이션이다. gateway route 없이 loopback port로 게시하며 Ollama와 Keycloak은 LAB 입력으로만 찾는다. |
 | [Locust Usage Guide](0062-locust.md) | `GDE-0062` | Locust는 `labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다. HOME root Compose와 `testing` profile에는 포함되지 않는다. |
 | [SonarQube Usage Guide](0066-sonarqube.md) | `GDE-0066` | SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(project `hy-home-lab-sonarqube`)의 `sonarqube` service로 운영하는 코드 품질·SAST 도구다. |
+| [Terrakube Usage Guide](0069-terrakube.md) | `GDE-0069` | 독립 LAB `labs/terrakube/docker-compose.yml`의 IaC 협업 플랫폼이다. 자체 PostgreSQL·Valkey·로컬 state를 쓰고 gateway route 없이 loopback port로 게시한다. |
 | [Stalwart Mail Server Guide](0070-mail.md) | `GDE-0070` | 이 가이드는 독립 LAB `labs/stalwart/docker-compose.yml`(project `hy-home-lab-stalwart`)의 메일 서버 Stalwart 구성, 네트워크 경계, 일반 사용 방법을 설명한다. |
 | [JupyterLab Usage Guide](0089-jupyterlab.md) | `GDE-0089` | 독립 LAB `labs/jupyterlab/docker-compose.yml`의 token 보호 single-user notebook server이며 LAB profile `jupyterlab`으로 선택한다. gateway route가 없고 MLflow endpoint는 선택 입력이다. |
 | [dbt Usage Guide](0090-dbt.md) | `GDE-0090` | 독립 LAB `labs/dbt/docker-compose.yml`의 command-line 변환 작업이다. HOME dev-pg는 필수 LAB 입력 endpoint로만 지정하며 승인 전에는 렌더링 전용이다. |

@@ -637,8 +637,25 @@ check_09_platform_ops() {
   local tier="09-platform-ops"
   start_tier "$tier"
   local package
-  for package in opentofu terrakube registry renovate restic; do
+  for package in opentofu registry renovate restic; do
     check_file "infra/09-platform-ops/$package/docker-compose.yml"
+  done
+
+  # Terrakube is a standalone LAB (ADR-0062 item 9, SPEC-0263 TSK-0004),
+  # checked here from its labs/ folder.
+  local terrakube_compose="labs/terrakube/docker-compose.yml"
+  check_file "$terrakube_compose"
+  check_file "labs/terrakube/bindings/ca-certificates/type"
+  check_not_contains "$terrakube_compose" "docker.sock" "terrakube LAB executor must not bind the Docker socket"
+  check_not_contains "$terrakube_compose" "traefik.enable: 'true'" "terrakube LAB must have no gateway route"
+  check_contains "$terrakube_compose" '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_TERRAKUBE_API_HOST_PORT:-18096}:8080' "terrakube LAB API must use the LAB bind address"
+  check_contains "$terrakube_compose" '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_TERRAKUBE_UI_HOST_PORT:-18097}:8080' "terrakube LAB UI must use the LAB bind address"
+  check_contains "$terrakube_compose" "SPRING_CONFIG_IMPORT: optional:configtree:/run/secrets/" "terrakube LAB secrets must load through configtree"
+  check_not_contains "$terrakube_compose" "_FILE: /run/secrets/Datasource" "terrakube LAB must not rely on unsupported _FILE keys"
+  check_contains "$terrakube_compose" "StorageType: LOCAL" "terrakube LAB state must stay LAB-local"
+  local home_net
+  for home_net in edge_net mng_data_net object_net terrakube_net; do
+    check_not_contains "$terrakube_compose" "  $home_net:" "terrakube LAB must not join HOME network $home_net"
   done
 }
 

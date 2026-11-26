@@ -1,13 +1,13 @@
 ---
 title: "OpenTofu Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0082"
 parent_ids:
@@ -88,7 +88,7 @@ lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 | POL-0082-R17 | 버전 조회·format/validate 시 | 필수: 선언된 마운트와 실행 영향을 확인한다 | 수동 | none |
 | POL-0082-R18 | 복구 시 | 필수: 사용한 이미지·provider lock 식별자를 보존한다 | 수동 | none |
 | POL-0082-R19 | Terraform workspace 이관 시 | 필수: 기존 state와 lock 정보를 보존하고 암호화된 복구본을 먼저 준비한다 | 수동 | none |
-| POL-0082-R20 | Terraform workspace 이관 시 | 필수: 복제 workspace에서 provider 및 backend 호환성을 검증하고 이관 대상별 Terrakube 실제 엔진을 확인한다 | 수동 | none |
+| POL-0082-R20 | Terraform workspace 이관 시 | 필수: 복제 workspace에서 provider 및 backend 호환성을 검증하고 이관 대상별 실제 엔진을 확인한다 | 수동 | none |
 | POL-0082-R21 | Terraform workspace 이관 시 | 필수: CLI 교체와 실제 remote resource 변경을 별도 검토한다 | 수동 | none |
 | POL-0082-R22 | `apply`, `destroy`, state rewrite, force-unlock 시 | 필수: 정확한 대상 승인을 받는다 | 수동 | none |
 | POL-0082-R23 | 항상 | 금지: 새로운 Terraform 서비스나 병렬 updater 생성 | 수동 | none |
@@ -127,7 +127,7 @@ lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 <!-- core-payload-level:4 -->
 
 - 기존 state와 lock 정보를 보존하고 암호화된 복구본을 먼저 준비한다.
-- 복제 workspace에서 provider 및 backend 호환성을 검증하고, 이관 대상별 Terrakube 실제 엔진을 확인한다.
+- 복제 workspace에서 provider 및 backend 호환성을 검증하고, 이관 대상별 실제 엔진을 확인한다.
 - CLI 교체와 실제 remote resource 변경을 별도 검토한다. `apply`, `destroy`, state rewrite와 force-unlock은 정확한 대상 승인을 요구한다.
 - 새로운 Terraform 서비스나 병렬 updater를 만들지 않는다. 호환성 때문에 기존 CLI가 필요하면 담당자, 대상 workspace, 지원 종료 조건과 검증 계획을 기록하며 private state 공개는 허용하지 않는다.
 

@@ -1,13 +1,13 @@
 ---
 title: "02-Auth Architecture Description"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -107,7 +107,7 @@ graph TD
 - **ForwardAuth** (`gateway-standard-chain@file,sso-errors@file,sso-auth@file`):
   Flower, Prometheus, Loki, Tempo, Alloy, Alertmanager, Pushgateway,
   Pyroscope, cAdvisor, Qdrant, RedisInsight, ComfyUI, Ollama, MLflow,
-  Terrakube and the Mailpit UI. Some routes add an allowlist.
+  and the Mailpit UI. Some routes add an allowlist.
 - **HOME native OIDC** (`gateway-standard-chain@file` only, application performs
   OIDC with Keycloak): Airflow (`KeycloakAuthManager` with Authorization
   Services), Kafbat UI, Grafana, Gatus and OpenBao. Dozzle also uses

@@ -1,13 +1,13 @@
 ---
 title: "독립 LAB 문서 런북"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 ---
 
@@ -65,6 +65,7 @@ layer: "operations"
 | `0057-open-webui.md` | Open WebUI LAB의 준비·기동·장애 대응과 HOME 컨테이너·volume 퇴역 단계를 다루는 런북이다. |
 | `0062-locust.md` | Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다. 시나리오 파일 복구와 승인된 upgrade canary도 다룬다. |
 | `0066-sonarqube.md` | SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다. |
+| `0069-terrakube.md` | Terrakube LAB(API·UI·executor·PostgreSQL·Valkey)의 장애 진단, 백업·격리 복원, 업그레이드 절차다. |
 | `0070-mail.md` | 이 런북은 Stalwart의 listener, 인증, TLS, DNS, queue 장애 진단과 메일박스·설정 복구, 승인된 최초 기동과 업그레이드 절차를 정의한다. |
 | `0089-jupyterlab.md` | JupyterLab LAB의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실, 이미지 업그레이드를 다루는 복구 런북이다. |
 | `0090-dbt.md` | dbt LAB의 프로비저닝 실패, 연결·권한 오류, 잘못된 모델 실행, 크리덴셜 교체를 다루는 런북이다. |
@@ -87,6 +88,7 @@ layer: "operations"
 | [Open WebUI Runbook](0057-open-webui.md) | `RUN-0057` | Open WebUI LAB의 준비·기동·장애 대응과 HOME 컨테이너·volume 퇴역 단계를 다루는 런북이다. |
 | [Locust Recovery Runbook](0062-locust.md) | `RUN-0062` | Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다. 시나리오 파일 복구와 승인된 upgrade canary도 다룬다. |
 | [SonarQube Runbook](0066-sonarqube.md) | `RUN-0066` | SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다. |
+| [Terrakube Recovery Runbook](0069-terrakube.md) | `RUN-0069` | Terrakube LAB(API·UI·executor·PostgreSQL·Valkey)의 장애 진단, 백업·격리 복원, 업그레이드 절차다. |
 | [Stalwart Mail Runbook](0070-mail.md) | `RUN-0070` | 이 런북은 Stalwart의 listener, 인증, TLS, DNS, queue 장애 진단과 메일박스·설정 복구, 승인된 최초 기동과 업그레이드 절차를 정의한다. |
 | [JupyterLab Recovery Runbook](0089-jupyterlab.md) | `RUN-0089` | JupyterLab LAB의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실, 이미지 업그레이드를 다루는 복구 런북이다. |
 | [dbt Recovery Runbook](0090-dbt.md) | `RUN-0090` | dbt LAB의 프로비저닝 실패, 연결·권한 오류, 잘못된 모델 실행, 크리덴셜 교체를 다루는 런북이다. |

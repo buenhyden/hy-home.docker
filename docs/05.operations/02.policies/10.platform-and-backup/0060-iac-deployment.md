@@ -1,13 +1,13 @@
 ---
 title: "IaC Deployment Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0060"
 parent_ids:
@@ -42,7 +42,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 ##### Objective
 
-이 정책은 `09-platform-ops`의 OpenTofu CLI helper와 Terrakube API/UI/executor를 이용한 IaC 변경의 승인, state, secret, evidence 기준을 정의한다.
+이 정책은 `09-platform-ops`의 OpenTofu CLI helper를 이용한 IaC 변경의 승인, state, secret, evidence 기준을 정의한다.
 
 ###### Authority
 <!-- core-payload-level:4 -->
@@ -53,7 +53,7 @@ Actual inputs and preconditions are those declared by the role payload below.
 
 ##### Applies To
 
-- **Systems**: `infra/09-platform-ops/opentofu/docker-compose.yml`, `infra/09-platform-ops/terrakube/docker-compose.yml`
+- **Systems**: `infra/09-platform-ops/opentofu/docker-compose.yml`
 - **Environments**: 단일 HOME/DEV 호스트의 `iac` profile(온디맨드 DEV)
 
 Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [Terraform 이관](../../01.guides/10.platform-and-backup/0082-opentofu.md#terraform-이관)을 따른다.
@@ -71,27 +71,21 @@ Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [Terraf
 | --- | --- | --- | --- | --- |
 | POL-0060-R1 | IaC 변경 시 | 필수: PR review, plan evidence, apply approval, state backend boundary 기록을 거친다 | 수동 | none |
 | POL-0060-R2 | 항상 | 필수: OpenTofu helper는 `$HOME/.aws`, `$HOME/.azure` read-only mount와 `workspace/` scope 안에 머문다 | 수동 | none |
-| POL-0060-R3 | 항상 | 필수: Terrakube secret material은 Docker Secret names만 문서화한다 | 수동 | none |
-| POL-0060-R4 | 항상 | 금지: Terrakube secret 값 노출 | 수동 | none |
 | POL-0060-R5 | 항상 | 허용: 문서/검증 절차의 in-place 보강, state/backend 정책의 보수적 강화, approval gate 추가 | none | none |
 | POL-0060-R6 | 항상 | 금지: 승인 없는 apply | 수동 | none |
 | POL-0060-R7 | 항상 | 금지: Docker socket 권한 확대 | none | none |
 | POL-0060-R8 | 항상 | 금지: 정책과 절차의 중복 SSoT 생성 | 수동 | none |
-| POL-0060-R9 | Terrakube 실행 경로 제한이 해소되기 전 | 금지: 브라우저 로그인이나 정적 검증으로 IaC 실행이 가능하다고 승인 | none | none |
 
 - **Required**: IaC 변경은 PR review, plan evidence, apply approval, state backend boundary 기록을 거친다.
 - **Required**: OpenTofu helper는 `$HOME/.aws`, `$HOME/.azure` read-only mount와 `workspace/` scope를 벗어나지 않는다.
-- **Required**: Terrakube secret material은 Docker Secret names만 문서화하고 값은 노출하지 않는다.
 - **Allowed**: 문서/검증 절차의 in-place 보강, state/backend 정책의 보수적 강화, approval gate 추가.
 - **Disallowed**: secret 값 노출, 승인 없는 apply, Docker socket 권한 확대, 정책과 절차의 중복 SSoT 생성.
 
 ###### 책임과 구현 제한
 <!-- core-payload-level:4 -->
 
-승인·예외 및 복구 판단 책임자는 `@buenhyden`이다. Terrakube executor의 Docker
-socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credential mount와
-다르다. [Terrakube 정책](0069-terrakube.md)의 실행 경로 제한을 해소하기 전에는
-브라우저 로그인이나 정적 검증으로 IaC 실행이 가능하다고 승인하지 않는다.
+승인·예외 및 복구 판단 책임자는 `@buenhyden`이다. HOME의 IaC 실행은 OpenTofu이며,
+Terrakube는 독립 LAB이다([Terrakube LAB 정책](../15.labs/0069-terrakube.md)).
 
 ##### Exceptions
 
@@ -113,14 +107,14 @@ socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credent
 
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 - 원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/04.quality/quality-standards.md#canonical-delivery-phase-matrix))
-- OpenTofu/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
+- OpenTofu guide/runbook과 compose service names가 일치하는지 검토한다.
 
 ##### Limits
 
 아래 규칙은 지정된 검사 없이 승인과 수동 검토에 의존한다.
 
-- 변경 절차: 수동 검토/승인에 의존: `POL-0060-R1`, `POL-0060-R6` / 지정된 검사 없음: `POL-0060-R9`
-- 마운트와 secret: 수동 검토/승인에 의존: `POL-0060-R2`, `POL-0060-R3`, `POL-0060-R4`, `POL-0060-R8` / 지정된 검사 없음: `POL-0060-R7`
+- 변경 절차: 수동 검토/승인에 의존: `POL-0060-R1`, `POL-0060-R6`
+- 마운트와 secret: 수동 검토/승인에 의존: `POL-0060-R2`, `POL-0060-R8` / 지정된 검사 없음: `POL-0060-R7`
 - 허용 작업: 지정된 검사 없음: `POL-0060-R5`
 - 정책이 지정한 hardening 검사와 원격 PR `changed` 검사를 특정 규칙에 연결하는 문장은 없다.
 - guide/runbook과 compose service names 일치는 검토로만 확인한다.
@@ -137,9 +131,9 @@ socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credent
 
 - [Operations index](../../README.md)
 - [OpenTofu guide](../../01.guides/10.platform-and-backup/0082-opentofu.md)
-- [Terrakube guide](../../01.guides/10.platform-and-backup/0069-terrakube.md)
+- [Terrakube LAB guide](../../01.guides/15.labs/0069-terrakube.md)
 - [OpenTofu runbook](../../03.runbooks/10.platform-and-backup/0082-opentofu.md)
-- [Terrakube runbook](../../03.runbooks/10.platform-and-backup/0069-terrakube.md)
+- [Terrakube LAB runbook](../../03.runbooks/15.labs/0069-terrakube.md)
 
 ## 적용과 확인
 

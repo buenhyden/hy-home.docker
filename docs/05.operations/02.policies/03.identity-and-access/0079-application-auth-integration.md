@@ -1,13 +1,13 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -60,7 +60,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Apache Airflow
 - OpenBao
 - 신규 OIDC-capable internal applications
-- Open WebUI/Gatus native 연동과 Task 0004에서 보류한 Terrakube 후보
+- Open WebUI/Gatus native 연동과 Task 0004에서 보류했던 Terrakube(독립 LAB `lab-terrakube` client로 이동)
 
 ###### Exclusions
 <!-- core-payload-level:4 -->
@@ -86,7 +86,7 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 | POL-0079-R11 | 모든 Traefik HTTP router | 필수: SSO chain을 쓰거나 guide의 Route Authentication Matrix에 대체 인증을 명시한다 | `RouteAuthContractTests` | none |
 | POL-0079-R12 | 모든 route | 금지: 인증 없는 route와 TCP route를 둔다 | `RouteAuthContractTests` | none |
 | POL-0079-R13 | Exception Conditions에 기록한 Grafana 정적 예외 | 허용: 이 예외만 위 규칙의 범위를 제한한다 | none | none |
-| POL-0079-R14 | Terrakube ForwardAuth 제거 | 필수: 서비스별 acceptance evidence가 기록된 뒤에만 한다 | none | none |
+| POL-0079-R14 | Terrakube | 필수: 독립 LAB(`labs/terrakube/`)이며 Traefik route와 ForwardAuth 없이 Keycloak native OIDC(`lab-terrakube` public client)를 쓴다 | none | none |
 | POL-0079-R15 | 이미 승인된 단계별 전환 | 허용: 같은 범위의 재승인 없이 진행한다 | none | none |
 | POL-0079-R16 | Compose 기반 OIDC client secret | 필수: Docker Secret 또는 소비자 Compose가 선언한 OpenBao Agent 출력 파일(`/run/openbao/...`)로 주입한다 | 수동 | none |
 | POL-0079-R17 | OpenBao native OIDC secret | 필수: 승인된 절차로 auth backend에 저장한다 | [OpenBao runbook](../../03.runbooks/04.security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차 | none |
@@ -98,7 +98,7 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 | POL-0079-R23 | Open WebUI | 필수: 가입을 비활성화하고 OAuth role/group 자동 관리를 끈다 | none | none |
 | POL-0079-R24 | Open WebUI 이메일 병합 | 필수: 검증된 단일 기존 관리자 연결에 한정한다 | none | none |
 | POL-0079-R25 | Open WebUI 수용 검증 후 | 필수: 비활성화 상태를 유지한다 | none | none |
-| POL-0079-R26 | 미기동 Terrakube | 금지: 명시적 API audience 검증과 실행 검증 전에 완료로 본다 | none | none |
+| POL-0079-R26 | Terrakube LAB | 금지: HOME 인증 소비자로 취급한다 | none | none |
 | POL-0079-R27 | Native OIDC 서비스 | 금지: OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용한다 | none | none |
 | POL-0079-R28 | 항상 | 금지: `rootCA-key.pem` 배포/공유 | none | none |
 | POL-0079-R29 | 항상 | 금지: secret/token 원문 기록 | none | none |
@@ -126,7 +126,7 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
   Matrix에 대체 인증을 명시한다. 인증 없는 route와 TCP route는 두지 않는다
   (`RouteAuthContractTests`). Exception Conditions에 기록한 Grafana 정적 예외만 이 규칙의 범위를
   제한한다.
-- Open WebUI와 Gatus의 ForwardAuth 제거는 Task 0004 acceptance evidence 뒤에 완료됐다. Terrakube의 ForwardAuth 제거는 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
+- Open WebUI와 Gatus의 ForwardAuth 제거는 Task 0004 acceptance evidence 뒤에 완료됐다. Terrakube는 독립 LAB(`labs/terrakube/`)으로 이동했고 ForwardAuth 없이 native OIDC를 쓴다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
 - Compose 기반 OIDC client secret은 Docker Secret 또는 소비자 Compose가 선언한 OpenBao Agent
   출력 파일(`/run/openbao/...`)로 주입한다. OpenBao native
   OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.
@@ -137,7 +137,7 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 
 - Open WebUI는 가입을 비활성화하고 OAuth role/group 자동 관리를 끈다. 이메일 병합은
   검증된 단일 기존 관리자 연결에 한정했으며 수용 검증 후 비활성화 상태를 유지한다.
-- 미기동 Terrakube는 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않는다.
+- Terrakube는 독립 LAB이며 HOME 인증 소비자가 아니다.
 
 ###### Disallowed
 <!-- core-payload-level:4 -->

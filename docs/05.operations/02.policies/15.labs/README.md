@@ -1,13 +1,13 @@
 ---
 title: "독립 LAB 문서 정책"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 ---
 
@@ -65,6 +65,7 @@ layer: "operations"
 | `0057-open-webui.md` | Open WebUI LAB의 native OIDC, LAB 경계, data·secret 취급과 HOME 잔여 상태 퇴역 승인을 통제한다. |
 | `0062-locust.md` | Locust는 독립 LAB capability이며, 이 정책은 test target 보호와 검토되지 않은 load·credential 수집·오해를 부르는 성능 증거를 막는다. |
 | `0066-sonarqube.md` | 이 정책은 독립 LAB `labs/sonarqube/docker-compose.yml`의 SonarQube Community Build 배포를 다룬다. |
+| `0069-terrakube.md` | Terrakube LAB의 기동, native OIDC, provider 권한, LAB 전용 데이터, 복구, 업그레이드, 제거를 통제한다. |
 | `0070-mail.md` | Stalwart는 독립 LAB `labs/stalwart/docker-compose.yml`의 메일 서비스다. |
 | `0089-jupyterlab.md` | JupyterLab LAB은 임의의 코드를 실행한다. mandatory token, loopback 게시, 단일 사용자와 work directory 보존을 통제한다. |
 | `0090-dbt.md` | dbt LAB의 권한은 source 읽기와 target schema 소유로 제한하며 HOME dev-pg endpoint는 별도 승인으로만 연다. |
@@ -87,6 +88,7 @@ layer: "operations"
 | [Open WebUI Operations Policy](0057-open-webui.md) | `POL-0057` | Open WebUI LAB의 native OIDC, LAB 경계, data·secret 취급과 HOME 잔여 상태 퇴역 승인을 통제한다. |
 | [Locust Operations Policy](0062-locust.md) | `POL-0062` | Locust는 독립 LAB capability이며, 이 정책은 test target 보호와 검토되지 않은 load·credential 수집·오해를 부르는 성능 증거를 막는다. |
 | [SonarQube Operations Policy](0066-sonarqube.md) | `POL-0066` | 이 정책은 독립 LAB `labs/sonarqube/docker-compose.yml`의 SonarQube Community Build 배포를 다룬다. |
+| [Terrakube Operations Policy](0069-terrakube.md) | `POL-0069` | Terrakube LAB의 기동, native OIDC, provider 권한, LAB 전용 데이터, 복구, 업그레이드, 제거를 통제한다. |
 | [Stalwart Mail Operations Policy](0070-mail.md) | `POL-0070` | Stalwart는 독립 LAB `labs/stalwart/docker-compose.yml`의 메일 서비스다. |
 | [JupyterLab Operations Policy](0089-jupyterlab.md) | `POL-0089` | JupyterLab LAB은 임의의 코드를 실행한다. mandatory token, loopback 게시, 단일 사용자와 work directory 보존을 통제한다. |
 | [dbt Operations Policy](0090-dbt.md) | `POL-0090` | dbt LAB의 권한은 source 읽기와 target schema 소유로 제한하며 HOME dev-pg endpoint는 별도 승인으로만 연다. |

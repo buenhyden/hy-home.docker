@@ -1,13 +1,13 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -58,8 +58,7 @@ SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다. HO
 S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`,
 `mlops`, `data-science`, `lakehouse`)은 4개 서비스와 `seaweedfs-buckets`도 함께
 선택하며, `seaweedfs`와 `storage-seaweedfs` profile도 마찬가지다. root `lakehouse`는 SeaweedFS만
-선택하고, `seaweedfs-table-bucket`은 SPEC-0262에서 독립 LAB `labs/lakehouse/docker-compose.yml`로 옮겨졌다. Terrakube(`iac`, HOME이 제외하는 자동화
-profile)는 `storage`와 함께 동작한다.
+선택하고, `seaweedfs-table-bucket`은 SPEC-0262에서 독립 LAB `labs/lakehouse/docker-compose.yml`로 옮겨졌다. Terrakube는 독립 LAB(`labs/terrakube/`)으로 이동했고 HOME SeaweedFS를 쓰지 않는다.
 
 ###### Exclusions
 <!-- core-payload-level:4 -->
@@ -76,7 +75,7 @@ profile)는 `storage`와 함께 동작한다.
 | POL-0024-R2 | 영속 경로 확인 | 필수: rehearsal이 파일이 실제로 그 위치에 있는지 확인한다(`/data` mount만으로는 경로를 증명하지 못한다) | none | none |
 | POL-0024-R3 | `seaweedfs-s3` 시작 | 필수: secret으로 구성된 명시적 identity(admin: `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`와 STRG-010)로만 시작한다 | none | none |
 | POL-0024-R4 | 항상 | 금지: anonymous 접근 허용 | none | none |
-| POL-0024-R5 | S07에서 consumer 추가 | 필수: `config/s3-identities.conf`에 자신의 bucket(loki/tempo/mlflow/terrakube/lakehouse)으로 범위가 한정된 identity를 둔다 | none | none |
+| POL-0024-R5 | S07에서 consumer 추가 | 필수: `config/s3-identities.conf`에 자신의 bucket(loki/tempo/mlflow/lakehouse)으로 범위가 한정된 identity를 둔다 | none | none |
 | POL-0024-R6 | 항상 | 금지: consumer의 admin 사용 | none | none |
 | POL-0024-R7 | 항상 | 금지: `anonymous` identity 정의 | none | none |
 | POL-0024-R8 | bucket 생성 | 필수: bucket은 consumer가 아니라 `seaweedfs-buckets`가 생성한다 | none | none |
@@ -138,7 +137,7 @@ profile)는 `storage`와 함께 동작한다.
   실제로 그 위치에 있는지 확인한다.
 - **S3 identity.** `seaweedfs-s3`는 secret으로 구성된 명시적 identity(admin:
   `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`와 STRG-010)로만 시작한다. Identity 구성은 scoped 인증을 요구하며 anonymous 접근은 허용하지 않는다. S07에서 추가된 모든 consumer는
-  `config/s3-identities.conf`에 자신의 bucket(loki, tempo, mlflow, terrakube,
+  `config/s3-identities.conf`에 자신의 bucket(loki, tempo, mlflow,
   lakehouse)으로 범위가 한정된 identity를 갖는다. 어떤 consumer도 admin을 쓰지
   않으며, `anonymous` identity는 정의하지 않는다(Nginx `/cdn/`과 `cdn-bucket`은 2026-11-10에 퇴역). Bucket은 consumer가
   아니라 `seaweedfs-buckets`가 생성한다.

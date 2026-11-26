@@ -182,7 +182,6 @@ SSO_ONLY_BACKENDS = (
     "pyroscope",
     "searxng",
     "tempo",
-    "terrakube-ui",
 )
 RETIRED_SUBNETS = {"10.250.9.0/24", "10.250.12.0/24"}
 
@@ -726,14 +725,6 @@ class ListenerPortContractTests(unittest.TestCase):
             "6379",
             str(changed["redisinsight"]["environment"]["RI_REDIS_PORT1"]),
         )
-        self.assertEqual(
-            "15432",
-            str(changed["terrakube-api"]["environment"]["DatasourcePort"]),
-        )
-        self.assertEqual(
-            "16379",
-            str(changed["terrakube-api"]["environment"]["TerrakubeRedisPort"]),
-        )
 
 
 class ManagementDataPortContractTests(unittest.TestCase):
@@ -860,14 +851,6 @@ class ManagementDataPortContractTests(unittest.TestCase):
             "redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:${VALKEY_PORT:-6379}",
             environment["OAUTH2_PROXY_REDIS_CONNECTION_URL"],
         )
-
-    def test_terrakube_uses_declared_management_postgres_and_valkey_ports(self) -> None:
-        service = _service(
-            "infra/09-platform-ops/terrakube/docker-compose.yml", "terrakube-api"
-        )
-        environment = _environment(service)
-        self.assertEqual("${POSTGRES_PORT:-5432}", environment.get("DatasourcePort"))
-        self.assertEqual("${VALKEY_PORT:-6379}", environment.get("TerrakubeRedisPort"))
 
 
 class OpenNotebookPortAndReadinessTests(unittest.TestCase):

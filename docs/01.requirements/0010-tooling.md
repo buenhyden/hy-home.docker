@@ -1,13 +1,13 @@
 ---
 title: "Platform Operations and Software Verification Requirements"
-version: "3.0.0"
+version: "3.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "requirements"
 artifact_id: "REQ-0010"
 created: "2026-03-26"
@@ -97,7 +97,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
-| REQ-0010-FR-0001 | Provide an infrastructure-as-code command-line helper for execution and state management, plus a centralized orchestration service (Terrakube) whose browser and API routes require the shared SSO. | Manual infrastructure changes are hard to track; a DevOps engineer manages infrastructure through IaC and has every plan reviewed before it is applied. | Every tracked infrastructure change is applied through the IaC helper or the orchestration service, and an unauthenticated request to an orchestration route is redirected to SSO. | must |
+| REQ-0010-FR-0001 | Provide an infrastructure-as-code command-line helper for execution and state management, plus a centralized orchestration service (Terrakube) as an optional, isolated experiment capability whose sign-in goes through the shared identity provider. | Manual infrastructure changes are hard to track; a DevOps engineer manages infrastructure through IaC and has every plan reviewed before it is applied. | Every tracked infrastructure change is applied through the IaC helper or the orchestration service, and the orchestration service accepts only users signed in through the shared identity provider. | must |
 | REQ-0010-FR-0002 | Provide multi-language static code analysis with quality gate enforcement (SonarQube) as an optional, isolated experiment capability. It reaches the shared management database only through an endpoint the operator approves, and is reachable only on the LAB host address (loopback by default) until promoted. | Fragmented code quality checks leave stability unverified; a developer sees bugs, vulnerabilities and code smells for each change. | The static analysis capability renders on its own, selects no always-on HOME service, refuses to start without an approved database endpoint and publishes nothing beyond the LAB host address (loopback by default). | must |
 | REQ-0010-FR-0003 | Provide k6 as the default load tool. Locust is an optional, isolated experiment capability for Python or protocol comparisons, not part of the always-on HOME set. | Fragmented performance checks leave stability unverified; a QA or performance engineer runs load scenarios with k6 to find bottlenecks. | The default load tool reports its pinned version from the root composition, and the alternative load tool renders only outside it. | must |
 | REQ-0010-FR-0004 | Provide a single-node private image registry for internal service deployment, reachable only from the local host. | A developer shares images through the internal registry. | The registry accepts a push and pull from the local host and publishes no port on a non-loopback address. | must |
@@ -108,7 +108,8 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 - **REQ-0010-FR-0001**: Provide an infrastructure-as-code command-line helper
   for execution and state management, plus a centralized orchestration service
-  (Terrakube) whose browser and API routes require the shared SSO.
+  (Terrakube) as an optional, isolated experiment capability whose sign-in goes
+  through the shared identity provider.
 - **REQ-0010-FR-0002**: Provide multi-language static code analysis with quality
   gate enforcement (SonarQube) as an optional, isolated experiment capability.
   It reaches the shared management database only through an endpoint the
