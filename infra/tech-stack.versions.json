@@ -1812,7 +1812,7 @@
         "n8nio/n8n-sandbox-service-api": "external"
       },
       "images": [
-        "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e"
+        "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -1821,7 +1821,7 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e"
+            "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504"
           ]
         }
       ]

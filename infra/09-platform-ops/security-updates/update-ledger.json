@@ -158,7 +158,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e"
+      "sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -13791,7 +13791,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -14065,7 +14065,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -14404,7 +14404,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
@@ -14672,7 +14672,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "n8nio/runners:2.46.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -14914,7 +14914,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -15188,7 +15188,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27030,7 +27030,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27107,7 +27107,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27345,7 +27345,7 @@
       "service": "n8n-sandbox-certs",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+      "current_declared": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
       "profiles_declared": [
         "n8n-sandbox"
       ],
@@ -27353,17 +27353,17 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "1.14.0",
-      "target_version": "1.8.1",
+      "target_version": "1.15.0",
       "channel": "UNKNOWN",
       "checked_at": "2026-11-10T22:26:50.121046+00:00",
       "release_url": "https://github.com/n8n-io/n8n-sandbox-service/releases/tag/service/v1.14.0",
-      "target_index_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-      "target_manifest_digest": "sha256:a82705b50707dc2244b1fe8e9cf35f41fd048a037b79dedb3eb24294c63fc136",
-      "target_config_digest": "sha256:7121c04f827b9182058f984c6c3bbf28bd4049c93c4f81277e0e5f9ccf3301e1",
-      "platform": "linux/amd64",
+      "target_index_digest": "UNKNOWN",
+      "target_manifest_digest": "UNKNOWN",
+      "target_config_digest": "UNKNOWN",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -27377,10 +27377,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-09T10:14:15.327330+00:00",
-        "next_validation_due": "2026-11-16T10:14:15.327345+00:00",
-        "reason": "One-shot certificate job of the n8n Assistant code sandbox, added to the public Compose source by owner request on 2026-11-09. Registry descriptors are recorded, but no release notes, advisory applicability, signature, scan, compatibility, runtime or recovery evidence has been reviewed.",
-        "exit_condition": "Review the sandbox service release evidence and image signatures as their own rows; record compatibility with n8n 2.46.6, a scan and recovery before any acceptance.",
+        "discovered_at": "2026-11-26T18:16:52+09:00",
+        "next_validation_due": "2026-12-03T18:16:52+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; the runner volume n8n-sandbox-docker holds only re-pullable sandbox images.",
         "service_owner_role": "Existing n8n service owner"
       },
@@ -27388,18 +27388,18 @@
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "NOT_OBSERVED",
-      "upstream_reported_tag": "1.8.1",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
-      "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+      "source_refreshed_at": "2026-11-26T18:16:52+09:00",
+      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
       "supplier_lookup_blocker": "Only Docker Hub registry descriptors were read; no release notes or advisory lookup was recorded for this service.",
       "official_supplier_observation_scope": "Registry descriptors only; no supplier release, advisory or signature observation.",
-      "target_source_image": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-      "target_declared_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified.",
+      "target_source_image": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+      "target_declared_digest": "UNKNOWN",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "master_20261110_public_refresh": {
         "task": "SPEC-0212-TSK-0052",
         "retrieved_at": "2026-11-10T13:47:09.345Z",
@@ -27463,32 +27463,32 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The repository endpoint is empty but transitive/image status and the 1.8.1-to-1.14.0 delta are unreviewed; the service's one-shot certificate role differs from API runtime.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:13:02.626628+00:00",
         "reviewed_subject": {
-          "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
-          "assessment_version": "API image 1.8.1 exact digest used one-shot",
+          "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
         "bounded_research_applicability": "UNKNOWN",
-        "source_action": "blocked",
+        "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "n8n-io/n8n-sandbox-service",
-            "url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -27496,19 +27496,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The repository endpoint is empty but transitive/image status and the 1.8.1-to-1.14.0 delta are unreviewed; the service's one-shot certificate role differs from API runtime.",
-        "next_action": "Review exact image SBOM and certificate-bootstrap behavior before version-set upgrade planning.",
+        "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "1.8.1",
+          "action": "retain-current-version",
+          "target_retained": "1.15.0",
           "observed_latest": "1.14.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Review exact image SBOM and certificate-bootstrap behavior before version-set upgrade planning."
+          "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -27525,13 +27525,20 @@
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-sandbox-certs",
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-sandbox-certs"
+      },
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "current_target_artifact_binding": {
+        "source_version": "1.15.0",
+        "source_image": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
       "service": "n8n-sandbox-api",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+      "current_declared": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
       "profiles_declared": [
         "n8n-sandbox"
       ],
@@ -27539,17 +27546,17 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "1.14.0",
-      "target_version": "1.8.1",
+      "target_version": "1.15.0",
       "channel": "UNKNOWN",
       "checked_at": "2026-11-10T22:26:50.121046+00:00",
       "release_url": "https://github.com/n8n-io/n8n-sandbox-service/releases/tag/service/v1.14.0",
-      "target_index_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-      "target_manifest_digest": "sha256:a82705b50707dc2244b1fe8e9cf35f41fd048a037b79dedb3eb24294c63fc136",
-      "target_config_digest": "sha256:7121c04f827b9182058f984c6c3bbf28bd4049c93c4f81277e0e5f9ccf3301e1",
-      "platform": "linux/amd64",
+      "target_index_digest": "UNKNOWN",
+      "target_manifest_digest": "UNKNOWN",
+      "target_config_digest": "UNKNOWN",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -27563,10 +27570,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-09T10:14:15.327330+00:00",
-        "next_validation_due": "2026-11-16T10:14:15.327345+00:00",
-        "reason": "Sandbox API of the n8n Assistant code sandbox, added to the public Compose source by owner request on 2026-11-09. Registry descriptors are recorded, but no release notes, advisory applicability, signature, scan, compatibility, runtime or recovery evidence has been reviewed.",
-        "exit_condition": "Review the sandbox service release evidence and image signatures as their own rows; record compatibility with n8n 2.46.6, a scan and recovery before any acceptance.",
+        "discovered_at": "2026-11-26T18:16:52+09:00",
+        "next_validation_due": "2026-12-03T18:16:52+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; the runner volume n8n-sandbox-docker holds only re-pullable sandbox images.",
         "service_owner_role": "Existing n8n service owner"
       },
@@ -27574,18 +27581,18 @@
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "NOT_OBSERVED",
-      "upstream_reported_tag": "1.8.1",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
-      "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+      "source_refreshed_at": "2026-11-26T18:16:52+09:00",
+      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
       "supplier_lookup_blocker": "Only Docker Hub registry descriptors were read; no release notes or advisory lookup was recorded for this service.",
       "official_supplier_observation_scope": "Registry descriptors only; no supplier release, advisory or signature observation.",
-      "target_source_image": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-      "target_declared_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified.",
+      "target_source_image": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+      "target_declared_digest": "UNKNOWN",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "master_20261110_public_refresh": {
         "task": "SPEC-0212-TSK-0052",
         "retrieved_at": "2026-11-10T13:47:09.345Z",
@@ -27649,32 +27656,32 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No published repository advisory is not absence proof; API key, tenant authorization, runner routing, storage and metrics boundaries require version-specific evidence.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:13:03.123056+00:00",
         "reviewed_subject": {
-          "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
-          "assessment_version": "API image 1.8.1 exact digest",
+          "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
         "bounded_research_applicability": "UNKNOWN",
-        "source_action": "blocked",
+        "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "n8n-io/n8n-sandbox-service",
-            "url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -27682,19 +27689,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "No published repository advisory is not absence proof; API key, tenant authorization, runner routing, storage and metrics boundaries require version-specific evidence.",
-        "next_action": "Review release delta/SBOM and validate the official security-model controls before preparing 1.14.0.",
+        "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "1.8.1",
+          "action": "retain-current-version",
+          "target_retained": "1.15.0",
           "observed_latest": "1.14.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Review release delta/SBOM and validate the official security-model controls before preparing 1.14.0."
+          "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -27711,6 +27718,13 @@
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-sandbox-api",
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-sandbox-api"
+      },
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "current_target_artifact_binding": {
+        "source_version": "1.15.0",
+        "source_image": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -27763,7 +27777,7 @@
       "upstream_reported_tag": "1.8.1",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-runner-dind:latest",
       "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27841,7 +27855,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
-          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
           "assessment_version": "runner-dind 1.8.1 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -53257,6 +53271,263 @@
       "source_revision": "5cc8d796fa041c063f239970b3bbad90162c3418",
       "refreshed_at": "2026-11-26T18:16:52+09:00",
       "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "ed3c9d4a5135fd3d23aa1375398cff5f56964c7925edc450669251668cbd78fb",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7df3bcd149809bfa66f55745a5201cde10249cdb4bcd535c76933e14d832275c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "b2dc7d2f4947e80c435c4abd1126e7716ee0bcddfc33f4db0ba847115274cac6"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "8476de753db160fc427b1cfc12351ea2f9ecc6576ea9974d1570c9f5910cf617"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "5684a173c4650bcb4b7c74a3e0522923966b87902a73aa96e3334b9bf1c1f0cf"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "b4e5d35f9dd6ad121947b678b877201bd4257df2d80cb2220e21ee7376baed0b"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "3efa013ae9e02ac613aa55bba7a7a7f9ebed14d637c8b9de94ea77ba94df29c8"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02"
+        }
+      ],
+      "changed_inputs": [
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "blog-ingestion",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-sandbox-api",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-sandbox-certs",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-sandbox-runner-1",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-task-runner-worker",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-worker",
+          "source_input_sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "2 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 7 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "n8n-sandbox-api",
+        "n8n-sandbox-certs"
+      ],
+      "previous_service_images": [
+        {
+          "service": "n8n-sandbox-api",
+          "current_declared": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+          "proposed_declared": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+          "previous_fields": {
+            "target_version": "1.8.1",
+            "target_source_image": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+            "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-09T10:14:15.327330+00:00",
+              "next_validation_due": "2026-11-16T10:14:15.327345+00:00",
+              "reason": "Sandbox API of the n8n Assistant code sandbox, added to the public Compose source by owner request on 2026-11-09. Registry descriptors are recorded, but no release notes, advisory applicability, signature, scan, compatibility, runtime or recovery evidence has been reviewed.",
+              "exit_condition": "Review the sandbox service release evidence and image signatures as their own rows; record compatibility with n8n 2.46.6, a scan and recovery before any acceptance.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; the runner volume n8n-sandbox-docker holds only re-pullable sandbox images.",
+              "service_owner_role": "Existing n8n service owner"
+            },
+            "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
+            "target_index_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+            "target_manifest_digest": "sha256:a82705b50707dc2244b1fe8e9cf35f41fd048a037b79dedb3eb24294c63fc136",
+            "target_config_digest": "sha256:7121c04f827b9182058f984c6c3bbf28bd4049c93c4f81277e0e5f9ccf3301e1",
+            "target_declared_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "1.8.1",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "n8n-sandbox-certs",
+          "current_declared": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+          "proposed_declared": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
+          "previous_fields": {
+            "target_version": "1.8.1",
+            "target_source_image": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+            "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-09T10:14:15.327330+00:00",
+              "next_validation_due": "2026-11-16T10:14:15.327345+00:00",
+              "reason": "One-shot certificate job of the n8n Assistant code sandbox, added to the public Compose source by owner request on 2026-11-09. Registry descriptors are recorded, but no release notes, advisory applicability, signature, scan, compatibility, runtime or recovery evidence has been reviewed.",
+              "exit_condition": "Review the sandbox service release evidence and image signatures as their own rows; record compatibility with n8n 2.46.6, a scan and recovery before any acceptance.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; the runner volume n8n-sandbox-docker holds only re-pullable sandbox images.",
+              "service_owner_role": "Existing n8n service owner"
+            },
+            "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
+            "target_index_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+            "target_manifest_digest": "sha256:a82705b50707dc2244b1fe8e9cf35f41fd048a037b79dedb3eb24294c63fc136",
+            "target_config_digest": "sha256:7121c04f827b9182058f984c6c3bbf28bd4049c93c4f81277e0e5f9ccf3301e1",
+            "target_declared_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "1.8.1",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
+    },
+    {
+      "source_revision": "5cc8d796fa041c063f239970b3bbad90162c3418",
+      "refreshed_at": "2026-11-26T18:16:52+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
       "input_manifest_sha256": "07075bacec246e30aec7b776e91e071407de4e7860a7e9a88ddff06bef0ad8e1",
       "previous_include_inputs": [
         {
@@ -59944,10 +60215,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-26T04:52:04.272732+00:00",
-      "source_revision": "2b7bc69f3976e4db1a49b6fd2d75d3c184d52e6b",
-      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
-      "input_sha256": "d2daecf57892b651a97d773d3a5fe2a14009b638abaade1eca36eda4ad739f0e",
+      "checked_at": "2026-11-26T18:16:52+09:00",
+      "source_revision": "5cc8d796fa041c063f239970b3bbad90162c3418",
+      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
+      "input_sha256": "8b503ed735a9d04fc6e7256e89ed514ad41d0f56e4cb9b8db253453ec9a4d23c",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -59964,7 +60235,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e"
+          "sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -63046,6 +63317,90 @@
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
         "archived_at": "2026-11-26T04:52:04.272732+00:00"
+      },
+      {
+        "checked_at": "2026-11-26T04:52:04.272732+00:00",
+        "source_revision": "2b7bc69f3976e4db1a49b6fd2d75d3c184d52e6b",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "d2daecf57892b651a97d773d3a5fe2a14009b638abaade1eca36eda4ad739f0e",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "f0ec9f34e38e1692fe13dbf7eefcd3d6c6e8d35998713185f0c08310ee5aa9ce"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "425dcc27f1830ab0d45a2145dd14b95c9b25196409b7d4ae0ab500b3aed15151"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "bcd7a50d965b55d213b5dc579f4dd20f10cff8fb1ad110329d88aed1c2d65a4e"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "31c1536d21c1da3de445c1efb77ac7514a30ee72c3370da5e4cdf7e69ab1c19f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "31c1536d21c1da3de445c1efb77ac7514a30ee72c3370da5e4cdf7e69ab1c19f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-26T18:16:52+09:00"
       }
     ],
     "current_source_acceptance_limit": {
