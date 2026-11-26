@@ -274,6 +274,7 @@ class NextStableCandidates(unittest.TestCase):
         empty=False,
         preset=None,
         entrypoint="docker-entrypoint.sh",
+        extra_env=None,
     ):
         with tempfile.TemporaryDirectory(prefix="sec01-wrapper-fixture-") as directory:
             base = Path(directory)
@@ -293,7 +294,13 @@ class NextStableCandidates(unittest.TestCase):
                 .read_text()
                 .replace(binary, str(executable))
             )
-            source = source.replace("/run/secrets/mng_valkey_password", str(secret))
+            # Every selectable secret name reads the same synthetic file, so the
+            # wrapper's default and rollback selections both resolve.
+            secrets = base / "secrets"
+            secrets.mkdir()
+            for name in ("mng_valkey_password", "mng_valkey_oauth2_proxy_password"):
+                (secrets / name).write_text(secret.read_text())
+            source = source.replace("/run/secrets/", f"{secrets}/")
             script = base / "entrypoint.sh"
             script.write_text(source)
             env = {
@@ -303,6 +310,7 @@ class NextStableCandidates(unittest.TestCase):
             }
             if preset is not None:
                 env[env_name] = preset
+            env.update(extra_env or {})
             return subprocess.run(
                 ["/bin/sh", str(script)],
                 env=env,
@@ -361,6 +369,44 @@ class NextStableCandidates(unittest.TestCase):
                 {"matched": True, "args": ["--config", "/etc/oauth2-proxy.cfg"]},
             )
             self.assertEqual(result.stderr, "")
+
+    def test_oauth_wrapper_selects_named_role_rollback_and_refuses_others(self):
+        for entrypoint in ("docker-entrypoint.sh", "docker-entrypoint.dev.sh"):
+            for extra, success in (
+                ({}, True),
+                (
+                    {
+                        "OAUTH2_PROXY_VALKEY_USERNAME": "",
+                        "OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_password",
+                    },
+                    True,
+                ),
+                (
+                    {
+                        "OAUTH2_PROXY_VALKEY_USERNAME": "oauth2proxy",
+                        "OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_password",
+                    },
+                    False,
+                ),
+                (
+                    {
+                        "OAUTH2_PROXY_VALKEY_USERNAME": "",
+                        "OAUTH2_PROXY_VALKEY_SECRET": "mng_valkey_oauth2_proxy_password",
+                    },
+                    False,
+                ),
+                ({"OAUTH2_PROXY_VALKEY_SECRET": "../../private"}, False),
+            ):
+                with self.subTest(entrypoint=entrypoint, extra=extra):
+                    result = self.run_fixture(
+                        "infra/02-auth/oauth2-proxy",
+                        "/bin/oauth2-proxy",
+                        "OAUTH2_PROXY_REDIS_PASSWORD",
+                        entrypoint=entrypoint,
+                        extra_env=extra,
+                    )
+                    self.assertEqual(success, result.returncode == 0, result.stderr)
+                    self.assertNotIn("synthetic-only", result.stdout + result.stderr)
 
 
 if __name__ == "__main__":
