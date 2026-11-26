@@ -1,13 +1,13 @@
 ---
 title: "SearXNG Recovery Runbook"
-version: "2.3.1"
+version: "2.4.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "RUN-0110"
 parent_ids:
@@ -173,9 +173,34 @@ n8n 재생성이 함께 필요하다.
       그 host의 `127.0.0.1`에만 listen하는 작은 프록시가 비밀번호 파일에서 header를 붙여
       `GET /search`만 HOME으로 전달하고, 다른 경로는 404로 거부한다. 프록시는 요청마다 파일을
       읽어 회전 뒤 재시작이 필요 없고, 응답 코드만 기록한다. client의 base URL은
-      `http://127.0.0.1:<port>`이다. HOME·Traefik route는 바꾸지 않는다. Windows에서는 로그인 시
-      작업 스케줄러로 `conhost.exe --headless <node> <script>`를 실행해 창 없이 띄운다. 콘솔 창으로
-      띄운 프록시는 창을 닫으면 멈춘다.
+      `http://127.0.0.1:<port>`이다. HOME·Traefik route는 바꾸지 않는다.
+   8. Windows에서 loopback 프록시를 배경으로 운영한다. 작업 스케줄러 작업은 부팅 시 시작(`BootTrigger`),
+      로그인 없이 창 없이 실행(`S4U`), `cmd` 반복문으로 node가 끝나면 5초 뒤 다시 띄우고, 출력은 프록시 폴더의
+      `proxy.log`에 남긴다. 작업 스케줄러의 실패 재시작은 0이 아닌 종료 코드에서 동작하지 않을 수 있어 반복문에
+      맡긴다. 관리자 PowerShell에서 실행한다.
+
+      ```powershell
+      function Set-LoopbackProxyTask($Name, $Dir, $Script) {
+        $node = (Get-Command node).Source
+        $ca   = [Environment]::GetEnvironmentVariable('NODE_EXTRA_CA_CERTS','User')
+        if (!$ca) { throw "NODE_EXTRA_CA_CERTS (User) is empty" }
+        $run  = "`"$node`" `"$Dir\$Script`" >> `"$Dir\proxy.log`" 2>&1"
+        $cmd  = "set NODE_EXTRA_CA_CERTS=$ca&& for /l %i in (0,0,1) do (echo %date% %time% start>> `"$Dir\proxy.log`" & $run & timeout /t 5 /nobreak >nul)"
+        Unregister-ScheduledTask -TaskName $Name -Confirm:$false -ErrorAction SilentlyContinue
+        $a = New-ScheduledTaskAction -Execute "cmd.exe" -Argument "/c $cmd"
+        $t = New-ScheduledTaskTrigger -AtStartup
+        $p = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType S4U -RunLevel Limited
+        $s = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -MultipleInstances IgnoreNew
+        Register-ScheduledTask -TaskName $Name -Action $a -Trigger $t -Principal $p -Settings $s -Force | Out-Null
+        Start-ScheduledTask $Name
+      }
+      Set-LoopbackProxyTask "SearXNG loopback proxy" "$env:USERPROFILE\.searxng" "searxng-basic-proxy.cjs"
+      ```
+
+      작업을 지워도 이미 실행 중인 node는 남는다. 등록 전에 그 port를 잡은 기존 프로세스를 PID로 확인해 끝내지
+      않으면 새 작업은 `EADDRINUSE`로 끝난다. 확인은 작업이 `BootTrigger`·`S4U`·`Running`(267009)이고, port의
+      소유 프로세스 부모가 `cmd.exe`이며, loopback 요청이 200이고 서버 A Traefik log에 같은 시각의 `searxng-api`
+      200이 있는 것이다. node를 끝내 5초 뒤 새 PID로 다시 듣는지와, 재부팅 뒤 로그인 전 요청도 확인한다.
 
 ##### Stop Conditions
 
