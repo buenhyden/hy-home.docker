@@ -7,6 +7,8 @@
       "args": [
         "--disallow-code-generation-from-strings",
         "--disable-proto=delete",
+        "--require",
+        "/etc/n8n-runner-vm-hardening.cjs",
         "/opt/runners/task-runner-javascript/dist/start.js"
       ],
       "health-check-server-port": "5681",

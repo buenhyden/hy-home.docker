@@ -1,6 +1,6 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -97,10 +97,10 @@ started or recreated.
 
 | Item | State | Owner |
 | --- | --- | --- |
-| Stale "opt-in" comment on the n8n Compose sandbox section | Kept; changes with the next reviewed n8n Compose update | n8n Compose owner |
-| Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | NOT_RUN (E11); the `ollama-api` route is added (E18), template rows added (E21); the credential and B proxy remain | Owner on server B |
-| JS Code node can generate code from strings (E17) | FAIL: upstream n8n 2.46.6 runner creates its `vm` context without `codeGeneration: {strings: false}` | Owner decides: accept as upstream limitation or carry a patched runner |
-| Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database for a rerun | Owner may delete it |
+| Stale "opt-in" comment on the n8n Compose sandbox section | Reworded to "in HOME" with the E25 Compose change; ledger and review hashes re-bound | Done |
+| Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | PASS (E24) through the B loopback proxy and `ollama-api` | Done |
+| JS Code node can generate code from strings (E17) | Fixed in the repository (E25): a read-only `--require` module makes every runner `vm` context refuse code generation from strings; the live runner recreate and the E17 rerun follow the merge | Agent, after merge |
+| Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database for reruns (owner, 2026-11-26) | n8n owner |
 | Hermes user config keeps an `ollama-cloud` provider entry (`https://ollama.com/v1`) and `--provider custom -m lfm2.5:8b` answered without reaching local Ollama (E08) | Owner decision 2026-11-26: local and cloud Ollama run as separate providers; the `ollama-cloud` entry stays and HOME Ollama keeps `OLLAMA_NO_CLOUD=1`. The bypass finding stays recorded; user-global config is not changed under repository authority | Owner |
 | D06-T06 tool comparison | Not started: no dataset, owner, rights, time field or goal exists, so no experiment is created (T06 item 2) | Owner names a dataset |
 
@@ -185,6 +185,16 @@ in `.claude/worktrees/ollama-api` from `main` `d9a96ebe9`; brief
   template rows, creates the password and hash, recreates Traefik and
   Ollama, and connects server B (runbook OPS-0056 Remote Program Access).
 
+On 2026-11-26 the owner set up the `ollama-api` credential and the server B
+proxy; OpenClaw on B answered through `ollama-api` (E24). The owner first
+accepted E17 as an upstream limitation, but a required FAIL stays open until a
+PASS on the same Check, so the owner chose a fix instead:
+`infra/07-workflow/n8n/n8n-runner-vm-hardening.cjs`, loaded by the JS runner
+with `--require` and mounted read-only, wraps `vm.createContext` so every
+context gets `codeGeneration.strings = false`. n8n's expression engine already
+expects code generation to be off in the main context. The probe workflow stays
+for reruns.
+
 ##### Blockers and Decisions
 
 The owner chose the HOME selection over keeping the privileged runner opt-in;
@@ -219,10 +229,12 @@ the security impact stays recorded in the exception.
 | E21 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_metadata_sync | Change plus owner template rows for INFRA-009, AI-012 and AI-013 | PASS | 107 OK together with the Ollama route, route-auth and update-gate suites | required | E19 |
 | E22 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_catalog_contract | PR #1215 head 4bb792e4b (hosted candidate-core) | FAIL | 2 failures: the new entries pointed evidence_ref at TSK-0118 while the catalog contract requires the SPEC-0204 catalog Task, and AI-012 sat before AI-011 so the rendered view order differed from the template | required | - |
 | E23 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_secret_catalog_contract | Entries ordered AI-010 to AI-013, evidence_ref on SPEC-0204 TSK-0010 | PASS | 106 OK together with the secret metadata and catalog library suites | required | E22 |
+| E24 | 175 | W191 | method=observation; tool=OpenClaw; command=- | Server B through the loopback proxy, 2026-11-26 08:17 to 08:20 KST | PASS | Server A route checks: no credential 302, wrong 401, correct 200, /api/pull 302. Traefik logs 192.168.0.22 on router ollama-api@docker: /api/tags, /api/show and /api/chat 200 (chat 8.5 s with load); Ollama logs the same /api/chat 200 at 23:20 UTC | required | E11 |
+| E25 | 175 | W191 | method=automated; tool=Python3 venv, node; command=python -m unittest tests.validation.test_p03_runner_isolation tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_ledger_rebind | Change on 61a39d6cc | PASS | New hardening test sees blocked in default and codeGeneration-only contexts and plain code running; the same probe without the module prints allowed; 11 runner tests (1 opt-in native skip) and 57 supply-chain tests OK | required | - |
 
 ##### Resolution Links
 
-E06 resolves E05; E15 resolves E13; E21 resolves E19; E23 resolves E22.
+E06 resolves E05; E15 resolves E13; E21 resolves E19; E23 resolves E22; E24 resolves E11.
 
 #### Acceptance Decision
 
@@ -231,12 +243,13 @@ E06 resolves E05; E15 resolves E13; E21 resolves E19; E23 resolves E22.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 174 | accepted | E01,E02,E03,E04,E06 | Owner @buenhyden accepted on 2026-11-25 in this chat after the HOME selection change and its checks | @buenhyden |
-| 175 | pending | E07,E08,E09,E10,E11,E14,E15,E16,E17,E18,E19,E20,E21,E22,E23 | Server A runtime checks, the no-egress probe and a real Code node run pass; JS code generation from strings is allowed (E17); the owner added the template rows (E21); the server B run is open | @buenhyden |
+| 175 | pending | E07,E08,E09,E10,E14,E15,E16,E17,E18,E20,E21,E23,E24,E25 | Server B run passes (E24); the owner chose to fix E17 with a preload module (E25) and will accept once the live E17 rerun passes | @buenhyden |
 
 ##### Remaining Conditions
 
-None for criterion174. Criterion175 needs the owner's credential and
-server B run (E11), a decision on E17 and owner acceptance; the items under Left open stay with their owner.
+None for criterion174. Criterion175 needs the runner recreated from `main`
+and an E17 rerun that passes, then owner acceptance (given in advance on
+2026-11-26 for that outcome).
 
 #### Handoff
 
@@ -246,7 +259,8 @@ POL-0078 and the exception register carry the change.
 
 ##### Next Owner
 
-The owner decides acceptance and whether to run the left-open D06 items.
+The agent recreates the runner after merge and reruns E17; the owners named
+under Left open carry the other items.
 
 ## 적용과 확인
 

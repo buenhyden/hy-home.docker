@@ -2242,6 +2242,7 @@
       },
       {
         "prefixes": [
+          "infra/07-workflow/n8n/n8n-runner-vm-hardening.cjs",
           "infra/07-workflow/n8n/n8n-task-runners.json",
           "tests/validation/_p03_worker_model_native.py",
           "tests/validation/_p03_runner_native_fixture.py",
@@ -2761,6 +2762,7 @@
       },
       {
         "prefixes": [
+          "infra/07-workflow/n8n/n8n-runner-vm-hardening.cjs",
           "infra/07-workflow/n8n/n8n-task-runners.json",
           "tests/validation/_p03_worker_model_native.py",
           "tests/validation/_p03_runner_native_fixture.py",

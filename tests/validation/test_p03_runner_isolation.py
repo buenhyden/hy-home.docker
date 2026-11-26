@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -39,6 +40,7 @@ N8N = ROOT / "infra/07-workflow/n8n"
 COMPOSE = N8N / "docker-compose.yml"
 ROOT_COMPOSE = ROOT / "docker-compose.yml"
 RUNNER_CONFIG = N8N / "n8n-task-runners.json"
+VM_HARDENING = N8N / "n8n-runner-vm-hardening.cjs"
 COMMON = ROOT / "infra/common-optimizations.yml"
 
 # Main runs queue mode with manual executions offloaded, so n8n 2.46.6 never
@@ -156,7 +158,10 @@ class RunnerComposeContractTests(unittest.TestCase):
                 self.assertEqual(300, runner["environment"]["N8N_RUNNERS_TASK_TIMEOUT"])
                 self.assertEqual(RUNNER_IMAGE, runner["image"])
                 self.assertEqual(
-                    ["./n8n-task-runners.json:/etc/n8n-task-runners.json:ro"],
+                    [
+                        "./n8n-task-runners.json:/etc/n8n-task-runners.json:ro",
+                        "./n8n-runner-vm-hardening.cjs:/etc/n8n-runner-vm-hardening.cjs:ro",
+                    ],
                     runner.get("volumes"),
                 )
                 self.assertTrue(
@@ -286,13 +291,42 @@ class RunnerComposeContractTests(unittest.TestCase):
                             "source": str(RUNNER_CONFIG),
                             "target": "/etc/n8n-task-runners.json",
                             "type": "bind",
-                        }
+                        },
+                        {
+                            "bind": {"create_host_path": True},
+                            "read_only": True,
+                            "source": str(VM_HARDENING),
+                            "target": "/etc/n8n-runner-vm-hardening.cjs",
+                            "type": "bind",
+                        },
                     ],
                     runner["volumes"],
                 )
 
 
 class RunnerLauncherPolicyTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("node"), "node is not installed")
+    def test_vm_hardening_blocks_code_generation_in_runner_contexts(self):
+        # TSK-0118 E17: the runner builds Code node contexts without
+        # codeGeneration, so the process flag alone left new Function open.
+        probe = (
+            "const vm=require('vm');"
+            "const t=c=>vm.runInContext("
+            "'try{new Function(\\'return 1\\')();\\'allowed\\'}"
+            "catch(e){\\'blocked\\'}',c);"
+            "console.log(t(vm.createContext({})),"
+            "t(vm.createContext({},{codeGeneration:{wasm:false}})),"
+            "vm.runInContext('[1,2].map(x=>x*2).join()',vm.createContext({})))"
+        )
+        result = subprocess.run(
+            [shutil.which("node"), "--require", str(VM_HARDENING), "-e", probe],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=30,
+        )
+        self.assertEqual("blocked blocked 2,4", result.stdout.strip())
+
     def test_launcher_keeps_exact_language_processes_and_health_ports(self):
         rows = runner_by_type()
         self.assertEqual({"javascript", "python"}, set(rows))
@@ -304,6 +338,8 @@ class RunnerLauncherPolicyTests(unittest.TestCase):
             [
                 "--disallow-code-generation-from-strings",
                 "--disable-proto=delete",
+                "--require",
+                "/etc/n8n-runner-vm-hardening.cjs",
                 "/opt/runners/task-runner-javascript/dist/start.js",
             ],
             javascript["args"],
@@ -609,6 +645,7 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
                 bind_mount(token, "/run/secrets/n8n-runner-token"),
                 bind_mount(token, "/run/secrets/n8n_runner_auth_token"),
                 bind_mount(RUNNER_CONFIG, "/etc/n8n-task-runners.json"),
+                bind_mount(VM_HARDENING, "/etc/n8n-runner-vm-hardening.cjs"),
             ),
             entrypoint="/bin/sh",
             command=("-ec", script),
