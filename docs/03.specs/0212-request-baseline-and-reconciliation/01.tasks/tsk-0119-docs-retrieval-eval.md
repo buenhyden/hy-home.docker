@@ -97,8 +97,8 @@ constant k=10 won on tuning. Test results:
 Tuning shows the same order (MRR@10 0.419, 0.567, 0.581). Dense retrieval
 finds the exact document first more often; hybrid fusion keeps that and
 places the answer in the top five or ten most often, so hybrid is the
-candidate mode for Wiki preparation search. The run took 248 s and left no
-`docs_eval_` collection behind.
+candidate mode for Wiki preparation search. The run took 248 s, left no
+`docs_eval_` collection behind, and a second run reproduced every metric.
 
 ###### Limits
 
@@ -123,6 +123,7 @@ experiment under criterion176.
 | E01 | 176 | W192 | method=automated; tool=Python3 venv; command=python -m unittest tests.lib.ops.test_docs_retrieval_eval tests.lib.test_surface_ownership | Change on c01fe08eb | PASS | 8 behavior tests (parsing, boilerplate, ambiguous titles, time split, Korean BM25, fusion, metrics, chunks) and surface ownership OK | required | - |
 | E02 | 176 | W192 | method=automated; tool=Python3 venv; command=check-script-manifest.py | Change on c01fe08eb | PASS | Manifest valid; the module is governed by the MLflow runbook | required | - |
 | E03 | 176 | W192 | method=automated; tool=docker, mlflow image, Ollama, Qdrant, MLflow; command=docs_retrieval_eval build then run on ai_net | HOME, 2026-11-26, corpus c01fe08eb | PASS | 591 documents, MLflow run 0b373755ce9f4bf5803757c7342a69f6 in experiment docs-retrieval-eval; test MRR@10 BM25 0.472, dense 0.566, hybrid 0.616; no docs_eval_ collection left | required | - |
+| E04 | 176 | W192 | method=automated; tool=docker, mlflow image, Ollama, Qdrant, MLflow; command=docs_retrieval_eval run again on the same corpus and compare result.json | HOME, 2026-11-26, corpus c01fe08eb | PASS | MLflow run 71b587506f0a42bfad37b99adbcebf6b; every tune and test metric and the chosen k are identical to E03 | required | - |
 
 ##### Resolution Links
 
@@ -134,7 +135,7 @@ None.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 176 | pending | E01,E02,E03 | The evaluation ran and is recorded; the owner decides acceptance | @buenhyden |
+| 176 | pending | E01,E02,E03,E04 | The evaluation ran and is recorded; the owner decides acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
