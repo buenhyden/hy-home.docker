@@ -142,7 +142,7 @@
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
-      "sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4"
+      "sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78"
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
@@ -158,7 +158,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740"
+      "sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -9094,7 +9094,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+      "source_input_sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -9229,7 +9229,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "kafbat/kafka-ui:v1.5.0@sha256:7cda86a33344160309fdb65146332e4da65db81a945614f2fe32e210803f6fd1",
-          "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+          "source_input_sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78",
           "assessment_version": "1.5.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -9367,7 +9367,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-26T18:16:52+09:00",
-      "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+      "source_input_sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -9500,7 +9500,7 @@
         "reviewed_at": "2026-11-26T10:20:20.655112+00:00",
         "reviewed_subject": {
           "declaration": "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5",
-          "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+          "source_input_sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78",
           "assessment_version": "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -9631,7 +9631,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-26T09:31:40+00:00",
-      "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+      "source_input_sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -9772,7 +9772,7 @@
         "reviewed_at": "2026-11-26T10:07:24.123767+00:00",
         "reviewed_subject": {
           "declaration": "danielqsj/kafka-exporter:v1.11.0@sha256:54d4296c5b8ce01232f6762e06cbc3eec25887c0b5c5940ccb9e891ac7fc51d8",
-          "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+          "source_input_sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78",
           "assessment_version": "1.11.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -9889,7 +9889,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-26T18:16:52+09:00",
-      "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+      "source_input_sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -10022,7 +10022,7 @@
         "reviewed_at": "2026-11-26T10:20:20.655170+00:00",
         "reviewed_subject": {
           "declaration": "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5",
-          "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+          "source_input_sha256": "3613b1619151070c4c2455e9959f344a4b759be55fde0b44f628d48703d6fd78",
           "assessment_version": "confluentinc/cp-kafka:8.4.1@sha256:aacc720b6b59b90ca1e27676dc4524e45e1cf60ae23fe6a149c7958eac2af3f5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -10111,90 +10111,91 @@
       "platform": "UNKNOWN",
       "source_release_date": "2026-10-13T08:58:15Z",
       "advisory_urls": [
-        "https://api.github.com/repos/keycloak/keycloak/security-advisories?per_page=100&page=1",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gc-wj6x-9w55",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gp-8389-hm4w",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-2888-g6qc-w4mj",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-2cww-fgmg-4jqc",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-2p82-5wwr-43cw",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-2qxf-v3g6-73v9",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-32h4-44jj-c5vx",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-3692-rrj9-24qw",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-3p62-6fjh-3p5h",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-3qh5-qqj2-c78f",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-46c8-635v-68r2",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-4f53-xh3v-g8x4",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-4hx9-48xh-5mxr",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-4pc7-vqv5-5r3v",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-4vc8-pg5c-vg4x",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5545-r4hg-rj4m",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5cc8-pgp5-7mpm",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5jfq-x6xp-7rw2",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5q66-v53q-pm35",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5rxp-2rhr-qwqv",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-69fp-7c8p-crjr",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-72vp-xfrc-42xm",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-755v-r4x4-qf7m",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-75p6-52g3-rqc8",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-794g-x443-36f7",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-7fpj-9hr8-28vh",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-83x4-9cwr-5487",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hc5-rmgf-qx6p",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hxp-qmph-w5gq",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-8rmm-gm28-pj8q",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-93ww-43rr-79v3",
+        "https://api.github.com/repos/keycloak/keycloak/security-advisories?per_page=100",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-6qm4-x97f-55fh",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-xpwp-2pcm-8xq3",
         "https://github.com/keycloak/keycloak/security/advisories/GHSA-95cx-vmr5-3cmr",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-95rm-h7g9-rhcf",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-97g8-xfvw-q4hg",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-9g98-5mj6-f9mv",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-9hhc-pj4w-w5rv",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-9jrw-8xf7-xqhq",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-9vm7-v8wj-3fqw",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-c25h-c27q-5qpv",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-c7xw-p58w-h6fj",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-c9h6-v78w-52wj",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-cq42-vhv7-xr7p",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-cvg2-7c3j-g36j",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-f4v7-3mww-9gc2",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5h4-wmp5-xhg6",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5p5-6xmx-p252",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-hmr6-pxx9-552p",
         "https://github.com/keycloak/keycloak/security/advisories/GHSA-f8m4-v488-rmrm",
         "https://github.com/keycloak/keycloak/security/advisories/GHSA-fgq2-hxm5-8xg2",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-g6qq-c9f9-2772",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-g8q8-fggx-9r3q",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-gc7q-jgjv-vjr2",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-gvgg-2r3r-53x7",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-hmr6-pxx9-552p",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-hw58-3793-42gg",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-j4vq-q93m-4683",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-j628-q885-8gr5",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-3692-rrj9-24qw",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-95rm-h7g9-rhcf",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-2888-g6qc-w4mj",
         "https://github.com/keycloak/keycloak/security/advisories/GHSA-j97h-3f8r-mrjr",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-jgwc-jh89-rpgq",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4fv-gm5m-4725",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4j5-5x4r-2xp9",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-m6q9-p373-g5q8",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-m98g-63qj-fp8j",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-mpwq-j3xf-7m5w",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-mrv8-pqfj-7gp5",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-mwm4-5qwr-g9pf",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-q8hq-4h99-fj7x",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-r7rc-c989-86g6",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-rvjg-gxwx-j5gf",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-v3f7-2p4r-mwfw",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-v436-q368-hvgg",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-v7gv-xpgf-6395",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-vjr8-56p3-fmqq",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-w354-2f3c-qvg9",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3g8-r9gw-qrh8",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5p5-6xmx-p252",
         "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3p3-7cjg-vgfw",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-w8gr-xwp4-r9f7",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-w9mf-83w3-fv49",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-wf7g-7h6h-678v",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-wq8x-cg39-8mrr",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-xgfv-xpx8-qhcr",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-32h4-44jj-c5vx",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-r7rc-c989-86g6",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-v3f7-2p4r-mwfw",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-9jrw-8xf7-xqhq",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-2qxf-v3g6-73v9",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-794g-x443-36f7",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-4hx9-48xh-5mxr",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-j4vq-q93m-4683",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-vjr8-56p3-fmqq",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-q8hq-4h99-fj7x",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hxp-qmph-w5gq",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gc-wj6x-9w55",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4j5-5x4r-2xp9",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gp-8389-hm4w",
         "https://github.com/keycloak/keycloak/security/advisories/GHSA-xhpr-465j-7p9q",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5jfq-x6xp-7rw2",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-hw58-3793-42gg",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-gvgg-2r3r-53x7",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-2p82-5wwr-43cw",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-g6qq-c9f9-2772",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-f4v7-3mww-9gc2",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3g8-r9gw-qrh8",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-93ww-43rr-79v3",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-jgwc-jh89-rpgq",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5545-r4hg-rj4m",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-wq8x-cg39-8mrr",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-v7gv-xpgf-6395",
         "https://github.com/keycloak/keycloak/security/advisories/GHSA-xmmm-jw76-q7vg",
-        "https://github.com/keycloak/keycloak/security/advisories/GHSA-xpwp-2pcm-8xq3"
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-xgfv-xpx8-qhcr",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-w8gr-xwp4-r9f7",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5rxp-2rhr-qwqv",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-c25h-c27q-5qpv",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-4vc8-pg5c-vg4x",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-cq42-vhv7-xr7p",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-gc7q-jgjv-vjr2",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-2cww-fgmg-4jqc",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-69fp-7c8p-crjr",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-m6q9-p373-g5q8",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-72vp-xfrc-42xm",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-c9h6-v78w-52wj",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-7fpj-9hr8-28vh",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-8rmm-gm28-pj8q",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-mrv8-pqfj-7gp5",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-46c8-635v-68r2",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-j628-q885-8gr5",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-9vm7-v8wj-3fqw",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-mpwq-j3xf-7m5w",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-cvg2-7c3j-g36j",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5q66-v53q-pm35",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-4f53-xh3v-g8x4",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-c7xw-p58w-h6fj",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5h4-wmp5-xhg6",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-5cc8-pgp5-7mpm",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-3qh5-qqj2-c78f",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-9g98-5mj6-f9mv",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-w354-2f3c-qvg9",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-v436-q368-hvgg",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-97g8-xfvw-q4hg",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-g8q8-fggx-9r3q",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-9hhc-pj4w-w5rv",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-3p62-6fjh-3p5h",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hc5-rmgf-qx6p",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-wf7g-7h6h-678v",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-w9mf-83w3-fv49",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4fv-gm5m-4725",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-75p6-52g3-rqc8",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-mwm4-5qwr-g9pf",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-4pc7-vqv5-5r3v",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-755v-r4x4-qf7m",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-83x4-9cwr-5487",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-rvjg-gxwx-j5gf",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-m98g-63qj-fp8j"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -10373,203 +10374,205 @@
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
-      "decision": "patch",
-      "affected_confirmed": true,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Multiple official issues reproduce on 26.7.x or explicitly include 26.7.4, and the supported security line has moved to 26.8.2.",
+      "decision": "not-affected",
+      "affected_confirmed": false,
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 26.8.2 is outside the vulnerable range of every one of the 84 published keycloak/keycloak repository advisories, re-checked on 2026-11-26 for the Renovate update from 26.7.4-0.",
       "current_version": "26.7.4",
       "candidate_version": "26.8.2",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:24:13.446467+00:00",
         "reviewed_subject": {
-          "declaration": "quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
-          "source_input_sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd",
-          "assessment_version": "26.7.4 exact image digest",
+          "declaration": "quay.io/keycloak/keycloak:26.8.2-0@sha256:3879c623248408de29a5303178b5816c77e8dfef3890c361f8c0bbeaa979ba3b",
+          "source_input_sha256": "73d5754c0a0d6419bb8399a35104a2e06b59965a18256e1dcbf0ec2b6d00654a",
+          "assessment_version": "26.8.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED",
-        "source_action": "patch",
-        "security_decision": "patch",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/keycloak/keycloak/security-advisories?per_page=100&page=1",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gc-wj6x-9w55",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gp-8389-hm4w",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2888-g6qc-w4mj",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2cww-fgmg-4jqc",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2p82-5wwr-43cw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2qxf-v3g6-73v9",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-32h4-44jj-c5vx",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3692-rrj9-24qw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3p62-6fjh-3p5h",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3qh5-qqj2-c78f",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-46c8-635v-68r2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4f53-xh3v-g8x4",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4hx9-48xh-5mxr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4pc7-vqv5-5r3v",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4vc8-pg5c-vg4x",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5545-r4hg-rj4m",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5cc8-pgp5-7mpm",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5jfq-x6xp-7rw2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5q66-v53q-pm35",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5rxp-2rhr-qwqv",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-69fp-7c8p-crjr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-72vp-xfrc-42xm",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-755v-r4x4-qf7m",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-75p6-52g3-rqc8",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-794g-x443-36f7",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-7fpj-9hr8-28vh",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-83x4-9cwr-5487",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hc5-rmgf-qx6p",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hxp-qmph-w5gq",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8rmm-gm28-pj8q",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-93ww-43rr-79v3",
+          "https://api.github.com/repos/keycloak/keycloak/security-advisories?per_page=100",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-6qm4-x97f-55fh",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-xpwp-2pcm-8xq3",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-95cx-vmr5-3cmr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-95rm-h7g9-rhcf",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-97g8-xfvw-q4hg",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9g98-5mj6-f9mv",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9hhc-pj4w-w5rv",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9jrw-8xf7-xqhq",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9vm7-v8wj-3fqw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c25h-c27q-5qpv",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c7xw-p58w-h6fj",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c9h6-v78w-52wj",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-cq42-vhv7-xr7p",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-cvg2-7c3j-g36j",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f4v7-3mww-9gc2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5h4-wmp5-xhg6",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5p5-6xmx-p252",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-hmr6-pxx9-552p",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-f8m4-v488-rmrm",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-fgq2-hxm5-8xg2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-g6qq-c9f9-2772",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-g8q8-fggx-9r3q",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-gc7q-jgjv-vjr2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-gvgg-2r3r-53x7",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-hmr6-pxx9-552p",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-hw58-3793-42gg",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-j4vq-q93m-4683",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-j628-q885-8gr5",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3692-rrj9-24qw",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-95rm-h7g9-rhcf",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2888-g6qc-w4mj",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-j97h-3f8r-mrjr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-jgwc-jh89-rpgq",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4fv-gm5m-4725",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4j5-5x4r-2xp9",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m6q9-p373-g5q8",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m98g-63qj-fp8j",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mpwq-j3xf-7m5w",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mrv8-pqfj-7gp5",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mwm4-5qwr-g9pf",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-q8hq-4h99-fj7x",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-r7rc-c989-86g6",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-rvjg-gxwx-j5gf",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v3f7-2p4r-mwfw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v436-q368-hvgg",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v7gv-xpgf-6395",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-vjr8-56p3-fmqq",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w354-2f3c-qvg9",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3g8-r9gw-qrh8",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5p5-6xmx-p252",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3p3-7cjg-vgfw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w8gr-xwp4-r9f7",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w9mf-83w3-fv49",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-wf7g-7h6h-678v",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-wq8x-cg39-8mrr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-xgfv-xpx8-qhcr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-32h4-44jj-c5vx",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-r7rc-c989-86g6",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v3f7-2p4r-mwfw",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9jrw-8xf7-xqhq",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2qxf-v3g6-73v9",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-794g-x443-36f7",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4hx9-48xh-5mxr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-j4vq-q93m-4683",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-vjr8-56p3-fmqq",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-q8hq-4h99-fj7x",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hxp-qmph-w5gq",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gc-wj6x-9w55",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4j5-5x4r-2xp9",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gp-8389-hm4w",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-xhpr-465j-7p9q",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5jfq-x6xp-7rw2",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-hw58-3793-42gg",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-gvgg-2r3r-53x7",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2p82-5wwr-43cw",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-g6qq-c9f9-2772",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f4v7-3mww-9gc2",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3g8-r9gw-qrh8",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-93ww-43rr-79v3",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-jgwc-jh89-rpgq",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5545-r4hg-rj4m",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-wq8x-cg39-8mrr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v7gv-xpgf-6395",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-xmmm-jw76-q7vg",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-xpwp-2pcm-8xq3"
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-xgfv-xpx8-qhcr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w8gr-xwp4-r9f7",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5rxp-2rhr-qwqv",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c25h-c27q-5qpv",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4vc8-pg5c-vg4x",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-cq42-vhv7-xr7p",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-gc7q-jgjv-vjr2",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2cww-fgmg-4jqc",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-69fp-7c8p-crjr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m6q9-p373-g5q8",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-72vp-xfrc-42xm",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c9h6-v78w-52wj",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-7fpj-9hr8-28vh",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8rmm-gm28-pj8q",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mrv8-pqfj-7gp5",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-46c8-635v-68r2",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-j628-q885-8gr5",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9vm7-v8wj-3fqw",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mpwq-j3xf-7m5w",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-cvg2-7c3j-g36j",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5q66-v53q-pm35",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4f53-xh3v-g8x4",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c7xw-p58w-h6fj",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5h4-wmp5-xhg6",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5cc8-pgp5-7mpm",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3qh5-qqj2-c78f",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9g98-5mj6-f9mv",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w354-2f3c-qvg9",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v436-q368-hvgg",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-97g8-xfvw-q4hg",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-g8q8-fggx-9r3q",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9hhc-pj4w-w5rv",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3p62-6fjh-3p5h",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hc5-rmgf-qx6p",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-wf7g-7h6h-678v",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w9mf-83w3-fv49",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4fv-gm5m-4725",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-75p6-52g3-rqc8",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mwm4-5qwr-g9pf",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4pc7-vqv5-5r3v",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-755v-r4x4-qf7m",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-83x4-9cwr-5487",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-rvjg-gxwx-j5gf",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m98g-63qj-fp8j"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gc-wj6x-9w55",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gp-8389-hm4w",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2888-g6qc-w4mj",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2cww-fgmg-4jqc",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2p82-5wwr-43cw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2qxf-v3g6-73v9",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-32h4-44jj-c5vx",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3692-rrj9-24qw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3p62-6fjh-3p5h",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3qh5-qqj2-c78f",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-46c8-635v-68r2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4f53-xh3v-g8x4",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4hx9-48xh-5mxr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4pc7-vqv5-5r3v",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4vc8-pg5c-vg4x",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5545-r4hg-rj4m",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5cc8-pgp5-7mpm",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5jfq-x6xp-7rw2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5q66-v53q-pm35",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5rxp-2rhr-qwqv",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-69fp-7c8p-crjr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-72vp-xfrc-42xm",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-755v-r4x4-qf7m",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-75p6-52g3-rqc8",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-794g-x443-36f7",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-7fpj-9hr8-28vh",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-83x4-9cwr-5487",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hc5-rmgf-qx6p",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hxp-qmph-w5gq",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8rmm-gm28-pj8q",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-93ww-43rr-79v3",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-6qm4-x97f-55fh",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-xpwp-2pcm-8xq3",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-95cx-vmr5-3cmr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-95rm-h7g9-rhcf",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-97g8-xfvw-q4hg",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9g98-5mj6-f9mv",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9hhc-pj4w-w5rv",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9jrw-8xf7-xqhq",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9vm7-v8wj-3fqw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c25h-c27q-5qpv",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c7xw-p58w-h6fj",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c9h6-v78w-52wj",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-cq42-vhv7-xr7p",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-cvg2-7c3j-g36j",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f4v7-3mww-9gc2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5h4-wmp5-xhg6",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5p5-6xmx-p252",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-hmr6-pxx9-552p",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-f8m4-v488-rmrm",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-fgq2-hxm5-8xg2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-g6qq-c9f9-2772",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-g8q8-fggx-9r3q",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-gc7q-jgjv-vjr2",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-gvgg-2r3r-53x7",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-hmr6-pxx9-552p",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-hw58-3793-42gg",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-j4vq-q93m-4683",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-j628-q885-8gr5",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3692-rrj9-24qw",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-95rm-h7g9-rhcf",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2888-g6qc-w4mj",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-j97h-3f8r-mrjr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-jgwc-jh89-rpgq",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4fv-gm5m-4725",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4j5-5x4r-2xp9",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m6q9-p373-g5q8",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m98g-63qj-fp8j",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mpwq-j3xf-7m5w",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mrv8-pqfj-7gp5",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mwm4-5qwr-g9pf",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-q8hq-4h99-fj7x",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-r7rc-c989-86g6",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-rvjg-gxwx-j5gf",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v3f7-2p4r-mwfw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v436-q368-hvgg",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v7gv-xpgf-6395",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-vjr8-56p3-fmqq",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w354-2f3c-qvg9",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3g8-r9gw-qrh8",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5p5-6xmx-p252",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3p3-7cjg-vgfw",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w8gr-xwp4-r9f7",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w9mf-83w3-fv49",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-wf7g-7h6h-678v",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-wq8x-cg39-8mrr",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-xgfv-xpx8-qhcr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-32h4-44jj-c5vx",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-r7rc-c989-86g6",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v3f7-2p4r-mwfw",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9jrw-8xf7-xqhq",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2qxf-v3g6-73v9",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-794g-x443-36f7",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4hx9-48xh-5mxr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-j4vq-q93m-4683",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-vjr8-56p3-fmqq",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-q8hq-4h99-fj7x",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hxp-qmph-w5gq",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gc-wj6x-9w55",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4j5-5x4r-2xp9",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-27gp-8389-hm4w",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-xhpr-465j-7p9q",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5jfq-x6xp-7rw2",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-hw58-3793-42gg",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-gvgg-2r3r-53x7",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2p82-5wwr-43cw",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-g6qq-c9f9-2772",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f4v7-3mww-9gc2",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w3g8-r9gw-qrh8",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-93ww-43rr-79v3",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-jgwc-jh89-rpgq",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5545-r4hg-rj4m",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-wq8x-cg39-8mrr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v7gv-xpgf-6395",
           "https://github.com/keycloak/keycloak/security/advisories/GHSA-xmmm-jw76-q7vg",
-          "https://github.com/keycloak/keycloak/security/advisories/GHSA-xpwp-2pcm-8xq3"
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-xgfv-xpx8-qhcr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w8gr-xwp4-r9f7",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5rxp-2rhr-qwqv",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c25h-c27q-5qpv",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4vc8-pg5c-vg4x",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-cq42-vhv7-xr7p",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-gc7q-jgjv-vjr2",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-2cww-fgmg-4jqc",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-69fp-7c8p-crjr",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m6q9-p373-g5q8",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-72vp-xfrc-42xm",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c9h6-v78w-52wj",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-7fpj-9hr8-28vh",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8rmm-gm28-pj8q",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mrv8-pqfj-7gp5",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-46c8-635v-68r2",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-j628-q885-8gr5",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9vm7-v8wj-3fqw",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mpwq-j3xf-7m5w",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-cvg2-7c3j-g36j",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5q66-v53q-pm35",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4f53-xh3v-g8x4",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-c7xw-p58w-h6fj",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-f5h4-wmp5-xhg6",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-5cc8-pgp5-7mpm",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3qh5-qqj2-c78f",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9g98-5mj6-f9mv",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w354-2f3c-qvg9",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-v436-q368-hvgg",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-97g8-xfvw-q4hg",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-g8q8-fggx-9r3q",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-9hhc-pj4w-w5rv",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-3p62-6fjh-3p5h",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-8hc5-rmgf-qx6p",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-wf7g-7h6h-678v",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-w9mf-83w3-fv49",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m4fv-gm5m-4725",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-75p6-52g3-rqc8",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-mwm4-5qwr-g9pf",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-4pc7-vqv5-5r3v",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-755v-r4x4-qf7m",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-83x4-9cwr-5487",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-rvjg-gxwx-j5gf",
+          "https://github.com/keycloak/keycloak/security/advisories/GHSA-m98g-63qj-fp8j"
         ],
         "advisory_discovery": [
           {
             "supplier": "keycloak/keycloak",
-            "url": "https://api.github.com/repos/keycloak/keycloak/security-advisories?per_page=100&page=1",
-            "unique_advisories": 83,
+            "url": "https://api.github.com/repos/keycloak/keycloak/security-advisories?per_page=100",
+            "unique_advisories": 84,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -10577,18 +10580,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Multiple official issues reproduce on 26.7.x or explicitly include 26.7.4, and the supported security line has moved to 26.8.2.",
-        "next_action": "Prepare an exact-digest 26.8.2 source change with rebuild, SBOM/provenance and compatibility evidence; deploy only through a separate approved backup/rollback unit.",
+        "reason": "Selected 26.8.2 is outside the vulnerable range of every one of the 84 published keycloak/keycloak repository advisories, re-checked on 2026-11-26 for the Renovate update from 26.7.4-0.",
+        "next_action": "Keep 26.8.2; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "26.7.4",
+          "action": "retain-current-version",
+          "target_retained": "26.8.2",
           "observed_latest": "26.8.2",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Prepare an exact-digest 26.8.2 source change with rebuild, SBOM/provenance and compatibility evidence; deploy only through a separate approved backup/rollback unit."
+          "reason": "Selected 26.8.2 is outside the vulnerable range of every one of the 84 published keycloak/keycloak repository advisories, re-checked on 2026-11-26 for the Renovate update from 26.7.4-0.",
+          "next_action": "Keep 26.8.2; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -10603,7 +10606,7 @@
         },
         "patch_component": {
           "name": "Keycloak",
-          "current_version": "26.7.4",
+          "current_version": "26.8.2",
           "candidate_version": "26.8.2",
           "evidence_refs": [
             "https://api.github.com/repos/keycloak/keycloak/security-advisories?per_page=100&page=1",
@@ -10699,7 +10702,7 @@
       "scan_at": "2026-11-10T22:24:57.089413+00:00",
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/keycloak",
-        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/keycloak"
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch_resolved/keycloak"
       }
     },
     {
@@ -13794,7 +13797,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+      "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -14068,7 +14071,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -14407,7 +14410,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+      "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
@@ -14675,7 +14678,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
           "assessment_version": "n8nio/runners:2.46.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -14917,7 +14920,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+      "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -15191,7 +15194,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27092,7 +27095,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+      "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27169,7 +27172,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27453,7 +27456,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
       "source_refreshed_at": "2026-11-26T18:16:52+09:00",
-      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+      "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27531,7 +27534,7 @@
         "reviewed_at": "2026-11-26T10:13:02.626628+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
-          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
           "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27646,7 +27649,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
       "source_refreshed_at": "2026-11-26T18:16:52+09:00",
-      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+      "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27724,7 +27727,7 @@
         "reviewed_at": "2026-11-26T10:13:03.123056+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
-          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
           "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27839,7 +27842,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-runner-dind:latest",
       "source_refreshed_at": "2026-11-26T18:16:52+09:00",
-      "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+      "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27917,7 +27920,7 @@
         "reviewed_at": "2026-11-26T10:19:49.060079+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.15.0@sha256:d6d2cdc163250d749d9442176264a05b65adca44660af541d1f0966b393b0806",
-          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_input_sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf",
           "assessment_version": "1.15.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -55865,6 +55868,208 @@
           }
         }
       ]
+    },
+    {
+      "source_revision": "3e65e4f3c7a0bff39f1e9a5388b077b22121b9f2",
+      "refreshed_at": "2026-11-26T10:24:09.146476+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "7057ae8669f0b67bd99789fe792ed0762b690d7f7820a5510a36db7645993088",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7df3bcd149809bfa66f55745a5201cde10249cdb4bcd535c76933e14d832275c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "bea4ad9fad9dea27178d6996fc9aeb3c68fe5641252d41f0d7c92c9aa57aec43"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "73d5754c0a0d6419bb8399a35104a2e06b59965a18256e1dcbf0ec2b6d00654a"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "f7cf17b4fa054c88a792d2a07e1315a5dd62b0e3b7046cfb71a8acd955ba71ec"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "721612043f43f61184f20978275ba13b9480f01c6f501625ede5db4e69b0112c"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "0777773f66d293e9bb8fb58cb0a1c5c677f817a94db4cfe917fb0de3e82bbcc8"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "990c5e575106f858cb33d1dc0c8999f73b5f83ea9c301b716807a7df63aec50f"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e37265d81dfed6307e484fd2189365401cc4317e0e78ebeba26a98144379915"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "b2df25b3a29ede02669549e4333f345a49a7563445c2f253ec6e1737d0aa7c64"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "62c62ea7449684d1e44934eff93a22bf580856c077cb06d168f8d59467193c86"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "96e2771d3cf9346ffb43520f3592e6cb81b7e2310c536168d18d3f4579fc70da"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "e38ccef6635098207c9b1aca745811b2282807c39ac085921f30b8973d6ba3c9"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "44f465392a74c7f7e25702ccda6c8afa00a11baaadf5c5c440d795ce0a585c02"
+        }
+      ],
+      "changed_inputs": [
+        "infra/05-messaging/kafka/docker-compose.yml",
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "blog-ingestion",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "kafbat-ui",
+          "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "kafka-1",
+          "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+          "source_refreshed_at": "2026-11-26T18:16:52+09:00"
+        },
+        {
+          "service": "kafka-exporter",
+          "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+          "source_refreshed_at": "2026-11-26T09:31:40+00:00"
+        },
+        {
+          "service": "kafka-init",
+          "source_input_sha256": "6dce8420a28ed2d0f871b4d14648f68b80f164c90117ac283cdeac73d0dc86d4",
+          "source_refreshed_at": "2026-11-26T18:16:52+09:00"
+        },
+        {
+          "service": "n8n",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-sandbox-api",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_refreshed_at": "2026-11-26T18:16:52+09:00"
+        },
+        {
+          "service": "n8n-sandbox-certs",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_refreshed_at": "2026-11-26T18:16:52+09:00"
+        },
+        {
+          "service": "n8n-sandbox-runner-1",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_refreshed_at": "2026-11-26T18:16:52+09:00"
+        },
+        {
+          "service": "n8n-task-runner-worker",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-worker",
+          "source_input_sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "2 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 11 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {
@@ -61869,10 +62074,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-26T18:16:52+09:00",
-      "source_revision": "5cc8d796fa041c063f239970b3bbad90162c3418",
-      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
-      "input_sha256": "8b503ed735a9d04fc6e7256e89ed514ad41d0f56e4cb9b8db253453ec9a4d23c",
+      "checked_at": "2026-11-26T10:24:09.146476+00:00",
+      "source_revision": "3e65e4f3c7a0bff39f1e9a5388b077b22121b9f2",
+      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+      "input_sha256": "3f9bb954f3dde0df6db58fb64084dd9470f5bc8128e207284a205b40ddbb8540",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -61889,7 +62094,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740"
+          "sha256": "d725e5bd7c1d59f8f8a48cf3afd07408dd1c4c1530969db18c4177393e6f56bf"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -65055,6 +65260,90 @@
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
         "archived_at": "2026-11-26T18:16:52+09:00"
+      },
+      {
+        "checked_at": "2026-11-26T18:16:52+09:00",
+        "source_revision": "5cc8d796fa041c063f239970b3bbad90162c3418",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
+        "input_sha256": "8b503ed735a9d04fc6e7256e89ed514ad41d0f56e4cb9b8db253453ec9a4d23c",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "685fd2a71b2cca0147d252edc92fcaa3ed3ae18c022335699b62cb70320870ba"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "c1d4ff8c789c6e09e08c8c0b71372219e3b9f3a3f434a13dedc9b28319f3eba0"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "673eaa3ee6e5b718b75bcd162fad355a7b130ed291f268243e398bda90b74740"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "31c1536d21c1da3de445c1efb77ac7514a30ee72c3370da5e4cdf7e69ab1c19f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "31c1536d21c1da3de445c1efb77ac7514a30ee72c3370da5e4cdf7e69ab1c19f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-26T10:24:09.146476+00:00"
       }
     ],
     "current_source_acceptance_limit": {
