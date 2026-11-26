@@ -740,7 +740,7 @@
       },
       "images": [
         "oliver006/redis_exporter:v1.91.1-alpine",
-        "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957"
+        "oliver006/redis_exporter:v1.97.0-alpine@sha256:ae30be386ab25600a8b222538a868d1b156b7e411073f7d2d5208fe79cc98d81"
       ],
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml",
@@ -751,13 +751,13 @@
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
-            "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957"
+            "oliver006/redis_exporter:v1.97.0-alpine@sha256:ae30be386ab25600a8b222538a868d1b156b7e411073f7d2d5208fe79cc98d81"
           ]
         },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957"
+            "oliver006/redis_exporter:v1.97.0-alpine@sha256:ae30be386ab25600a8b222538a868d1b156b7e411073f7d2d5208fe79cc98d81"
           ]
         },
         {

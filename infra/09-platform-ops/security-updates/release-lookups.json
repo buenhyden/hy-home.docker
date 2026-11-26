@@ -56627,7 +56627,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
-          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
           "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56705,7 +56705,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
-          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
           "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56783,7 +56783,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56840,7 +56840,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
-          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
           "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56918,7 +56918,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/dev-pg:18.7-ts2.30.3-pgbackrest2.60.1-r2",
-          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
           "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56996,7 +56996,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
+          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57077,11 +57077,11 @@
       },
       "dev-valkey-exporter": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:07:17.027132+00:00",
         "reviewed_subject": {
-          "declaration": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
-          "source_input_sha256": "e875563bc6bbfb1ca4af6f3a81c6dabb167a375292480a034da45fd123ce37c7",
-          "assessment_version": "1.96.0",
+          "declaration": "oliver006/redis_exporter:v1.97.0-alpine@sha256:ae30be386ab25600a8b222538a868d1b156b7e411073f7d2d5208fe79cc98d81",
+          "source_input_sha256": "34e0d94b59214b2ecd47c81d2072769f9b15f9a7bc7e5cdfb722f2ed6245a960",
+          "assessment_version": "1.97.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -57089,17 +57089,17 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/oliver006/redis_exporter/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/oliver006/redis_exporter/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "oliver006/redis_exporter",
-            "url": "https://api.github.com/repos/oliver006/redis_exporter/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/oliver006/redis_exporter/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -57107,19 +57107,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The empty direct advisory listing is not a full Alpine image or transitive dependency result. No official security statement makes 1.97.0 a mandatory security update.",
-        "next_action": "Evaluate 1.97.0 in a source-only candidate with digest/SBOM and compatibility checks; keep any operational replacement separately approved.",
+        "reason": "Selected 1.97.0 could not be classified on 2026-11-26 for the Renovate update from v1.96.0-alpine: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.97.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "1.96.0",
+          "action": "retain-current-version",
+          "target_retained": "1.97.0",
           "observed_latest": "1.97.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Evaluate 1.97.0 in a source-only candidate with digest/SBOM and compatibility checks; keep any operational replacement separately approved."
+          "reason": "Selected 1.97.0 could not be classified on 2026-11-26 for the Renovate update from v1.96.0-alpine: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.97.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -58325,7 +58325,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/mng-pg:18.7-pgbackrest2.60.1",
-          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
+          "source_input_sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80",
           "assessment_version": "18.7; pgBackRest 2.60.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58386,7 +58386,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
-          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
+          "source_input_sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80",
           "assessment_version": "0.20.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58443,7 +58443,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
+          "source_input_sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80",
           "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -58491,7 +58491,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
+          "source_input_sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80",
           "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -58539,7 +58539,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
+          "source_input_sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80",
           "assessment_version": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58620,11 +58620,11 @@
       },
       "mng-valkey-exporter": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:07:17.484593+00:00",
         "reviewed_subject": {
-          "declaration": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
-          "source_input_sha256": "071d0e91e2dc68650ce71fc81614454b66211067eef45319537476399bd1c3bc",
-          "assessment_version": "1.96.0",
+          "declaration": "oliver006/redis_exporter:v1.97.0-alpine@sha256:ae30be386ab25600a8b222538a868d1b156b7e411073f7d2d5208fe79cc98d81",
+          "source_input_sha256": "ea1a3d1f7257a4eb96d7bfe409de0543a847fecd582fb64fc8c4eb9bcf43ab80",
+          "assessment_version": "1.97.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -58632,17 +58632,17 @@
         "source_action": "defer",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/oliver006/redis_exporter/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/oliver006/redis_exporter/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "oliver006/redis_exporter",
-            "url": "https://api.github.com/repos/oliver006/redis_exporter/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/oliver006/redis_exporter/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
+            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -58650,19 +58650,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The empty direct advisory listing is not a full Alpine image or transitive dependency result. No official security statement makes 1.97.0 a mandatory security update.",
-        "next_action": "Evaluate 1.97.0 in a source-only candidate with digest/SBOM and compatibility checks; keep any operational replacement separately approved.",
+        "reason": "Selected 1.97.0 could not be classified on 2026-11-26 for the Renovate update from v1.96.0-alpine: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.97.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "1.96.0",
+          "action": "retain-current-version",
+          "target_retained": "1.97.0",
           "observed_latest": "1.97.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Evaluate 1.97.0 in a source-only candidate with digest/SBOM and compatibility checks; keep any operational replacement separately approved."
+          "reason": "Selected 1.97.0 could not be classified on 2026-11-26 for the Renovate update from v1.96.0-alpine: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.97.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
