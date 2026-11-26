@@ -1,6 +1,6 @@
 ---
 title: "Ollama Runbook"
-version: "2.1.0"
+version: "2.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -191,7 +191,9 @@ Open WebUI는 2026-11-10부터 HOME network 밖의 독립 LAB이며 승인된 en
    base URL만 받는 client(OpenClaw `api: ollama` provider 등)는 그 host의 `127.0.0.1`에만 listen하는 프록시가
    비밀번호 파일에서 Basic header를 붙여 허용 경로만 `https://ollama.${DEFAULT_URL}`로 전달하고, 다른 경로는
    404로 거부한다. 요청 body와 streaming 응답을 그대로 흘려야 한다. client base URL은 `/v1` 없이
-   `http://127.0.0.1:<port>`이다.
+   `http://127.0.0.1:<port>`이다. Windows 배경 운영은 [SearXNG runbook](0110-searxng.md) 7단계의 8번
+   `Set-LoopbackProxyTask`를 같은 방식으로 쓴다(예: `Set-LoopbackProxyTask "Ollama loopback proxy"
+   "$env:USERPROFILE\.ollama-api" "ollama-basic-proxy.cjs"`, port 11435). 서버 A 확인 경로는 `ollama-api`다.
 4. 그 host·그 계정에서 프록시를 거쳐 `/api/tags` 200과 짧은 `/api/chat` 응답을 받고, 서버 A Ollama log에 같은
    시각의 200이 있으면 연결된 것이다. 302 HTML이나 Ollama log에 없는 응답은 성공이 아니다.
 
