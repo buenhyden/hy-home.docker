@@ -1,6 +1,6 @@
 ---
 title: "Terrakube LAB Move Plan Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -76,7 +76,8 @@ cross-references, POL-0006, POL-0078, ADR-0062 and the m0021 inventory.
 
 ### Blockers and Decisions
 
-The move waits for these owner choices:
+The move waited for these owner choices; the owner decided them on
+2026-11-26 in this chat (see Owner decisions below):
 
 | No. | Choice | Options | Note |
 | --- | --- | --- | --- |
@@ -86,6 +87,22 @@ The move waits for these owner choices:
 | 4 | OIDC and routes | Own client (`home-terrakube` per the Compose comment) or none; keep or drop gateway routes | ADR-0062 item 7 lists Terrakube behind the chain, but LABs normally have no route; the executor needs an API URL |
 | 5 | HOME leftovers | Keep or retire the `terrakube` role and database, the `tfstate` bucket and identity, and the five secrets | Any existing state needs export or retention first |
 | 6 | Runtime cleanup | Containers, DNS and Keycloak entries | A separately approved runtime step |
+
+#### Owner decisions
+
+Decided by @buenhyden on 2026-11-26 in this chat, each the recommended option,
+after two facts were checked: no Terrakube container exists in HOME, and the
+HOME `terrakube` database is 7.9 MB, the size of the never-used `sonarqube`
+database.
+
+| No. | Decision |
+| --- | --- |
+| 1 | Drop the executor Docker socket; the first LAB run shows whether plain Terraform jobs work without it, and a job that needs Docker reopens this choice |
+| 2 | Self-contained LAB: LAB-local PostgreSQL in `labs/terrakube/`; Terraform state in a LAB-local store or in HOME SeaweedFS through its existing Traefik S3 route; no HOME network or ACL change |
+| 3 | LAB-local Redis or Valkey; HOME mng-valkey gets no terrakube role |
+| 4 | A LAB-only Keycloak client for Terrakube native OIDC, ports bound to `127.0.0.1`, no Traefik route; the move updates the ADR-0062 item 7 Terrakube line |
+| 5 | Retire the HOME `terrakube` role and database, the `tfstate` bucket and `terrakube` S3 identity and the five secrets from source in the move; runtime removal waits for the owner to confirm the `tfstate` bucket is empty |
+| 6 | No container to remove; dropping the role and database and any Keycloak or DNS entry is a separate runtime step the owner approves |
 
 ## Verification Evidence
 
@@ -110,7 +127,7 @@ Terrakube move and decides no criterion.
 
 ### Remaining Conditions
 
-The owner choices under Blockers and Decisions, then the move change itself,
+The move change itself, following the owner decisions above,
 whose LAB, secret, catalog, hardening, render, document and hosted checks
 become this Task's evidence.
 
@@ -122,5 +139,5 @@ None: this Task records a plan and promotes no long-lived rule.
 
 ### Next Owner
 
-@buenhyden makes the choices above and starts the move change, which records
-its work and evidence here.
+@buenhyden starts the move change, which follows the owner decisions and
+records its work and evidence here.
