@@ -83,6 +83,7 @@ MUTATION_OVERRIDES = {
     "scripts/lib/ops/compose_observation.py": "runtime",
     "scripts/lib/ops/compose_start.py": "runtime",
     "scripts/lib/ops/dispatch_process.py": "runtime",
+    "scripts/lib/ops/docs_retrieval_eval.py": "runtime",
     "scripts/lib/ops/environment_admission.py": "runtime",
     "scripts/operations/compose-start.py": "runtime",
     "scripts/lib/ops/_notebook_models_http.py": "runtime",
