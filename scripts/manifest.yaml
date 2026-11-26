@@ -808,6 +808,17 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_dispatch_providers.py
+- path: scripts/lib/ops/docs_retrieval_eval.py
+  kind: library
+  authority: docs/05.operations/03.runbooks/13.analytics-and-data-quality/0088-mlflow.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - tests/lib/ops/test_docs_retrieval_eval.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_docs_retrieval_eval.py
 - path: scripts/lib/ops/environment_admission.py
   kind: library
   authority: docs/00.workspace/06.maintenance/harness-maintenance.md

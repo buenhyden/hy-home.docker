@@ -1039,6 +1039,7 @@
         "tests.validation.test_retirement_cli",
         "tests.validation.test_project_registration",
         "tests.lib.ops.test_wiki_preparation",
+        "tests.lib.ops.test_docs_retrieval_eval",
         "tests.validation.test_wiki_preparation_contracts",
         "tests.validation.test_sec01_ci_routing",
         "tests.lib.ops.test_smtp_proof",
@@ -1869,6 +1870,8 @@
         "prefixes": [
           "scripts/lib/ops/wiki_preparation.py",
           "scripts/lib/ops/wiki_preparation_semantics.py",
+          "scripts/lib/ops/docs_retrieval_eval.py",
+          "tests/lib/ops/test_docs_retrieval_eval.py",
           "tests/lib/ops/test_wiki_preparation.py",
           "tests/validation/test_wiki_preparation_contracts.py"
         ],
@@ -2731,6 +2734,8 @@
         "prefixes": [
           "scripts/lib/ops/wiki_preparation.py",
           "scripts/lib/ops/wiki_preparation_semantics.py",
+          "scripts/lib/ops/docs_retrieval_eval.py",
+          "tests/lib/ops/test_docs_retrieval_eval.py",
           "tests/lib/ops/test_wiki_preparation.py",
           "tests/validation/test_wiki_preparation_contracts.py"
         ],

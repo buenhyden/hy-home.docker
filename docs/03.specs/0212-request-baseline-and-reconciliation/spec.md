@@ -1,13 +1,13 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.17.0"
+version: "2.18.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -400,6 +400,10 @@ The direct D06 lifecycle v8 request adds criterion174/W190 in TSK-0118. By the
 owner's choice it adds the n8n Assistant sandbox API and runner to the HOME
 selection with the certs job, updates the privileged exception, and leaves
 the remaining D06 items to their owners.
+
+On 2026-11-26 the owner chose to run the experiment criterion 70 deferred as
+a retrieval evaluation on this repository's documents; criterion176/W192 in
+TSK-0119 owns it, and criterion 70 keeps its recorded not-required decision.
 
 #### Scope
 
@@ -1641,6 +1645,16 @@ target, backup, recovery boundary, and action-specific authorization.
      inner containers with cleanup (D06-T04), and a review of the Wiki
      preparation and tool comparison preconditions (D06-T05/T06), naming
      every step left to the owner.
+
+176. TSK-0119 runs the reproducibility experiment criterion 70 deferred, on
+     data the owner holds: this repository's `docs/` documents at one commit.
+     Each title queries for its own document, the title line and shared
+     template lines are removed from the index, and documents are split by
+     the commit that first added them (earlier share tunes, later share
+     reports). BM25, dense retrieval through Qdrant with the local embedding
+     model, and their reciprocal rank fusion are compared and logged to
+     MLflow; the throwaway collection is deleted and the result is read as a
+     structural proxy, not human relevance.
 
 ##### Evidence Requirements
 

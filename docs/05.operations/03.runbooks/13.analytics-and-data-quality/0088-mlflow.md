@@ -1,13 +1,13 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-26"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -315,6 +315,28 @@ echo "elapsed_seconds=$(( $(date +%s) - start ))"
 ```
 
 `copy_rc=0`이고 `result=PASS`여야 한다. PASS는 객체가 1개 이상이고 `objects_listed`, `objects_local`, `md5_match`가 모두 같으며 `multipart_unchecked`와 `unsafe_keys`가 0이라는 뜻이다. 2026-09-25 기록은 객체 2개였으므로 다른 값이면 원인을 기록한다. `copy_rc`가 0이 아니면 listing이 비었거나 일부일 수 있으므로 python 결과와 무관하게 FAIL이다. multipart 객체는 ETag가 MD5가 아니어서 이 방식으로는 PASS가 될 수 없다. 8 MB를 넘는 artifact가 생기면 backup 복원본과의 SHA-256 비교 같은 다른 확인이 필요하다. `/` 시작, `/` 끝, `..` 포함 key는 `unsafe_keys`로 세고 FAIL이며, sync 대상은 `objects/` bind뿐이라 그런 key도 `meta/`를 덮어쓸 수 없다. `runs_with_objects`는 artifact가 있는 run 수의 관측값이며 artifact가 없는 run도 정상일 수 있다. 출력에는 key 이름, 객체 내용, 비밀값이 없다. `meta/`와 `objects/`는 scratch(0700)에만 남고 artifact 내용은 민감할 수 있는 data로 취급한다. scratch 삭제는 별도 owner 승인이다.
+
+###### Repository docs retrieval evaluation
+
+SPEC-0212 TSK-0119가 소유하는 평가이며 `scripts/lib/ops/docs_retrieval_eval.py`가 실행한다. 이 저장소의 `docs/` 문서 제목을 질의로, 그 문서를 정답으로 두고
+BM25, Qdrant dense 검색(embeddinggemma), 둘의 RRF hybrid를 비교해 MLflow 실험 `docs-retrieval-eval`에 기록한다.
+문서 최초 추가 commit 시각으로 앞 80%는 RRF 상수 선택, 뒤 20%는 결과 보고에 쓴다. 제목 줄과 20% 이상 문서가 공유하는
+template 줄은 색인에서 뺀다. 이 결과는 구조적 대리 지표이며 사람의 관련성 판정이 아니다.
+
+```bash
+c=$(git rev-parse HEAD); o=$(mktemp -d)
+python3 -m scripts.lib.ops.docs_retrieval_eval build --commit "$c" --out "$o/corpus.jsonl"
+docker run --rm --network ai_net --user "$(id -u):$(id -g)" --group-add "${SECRETS_GID:-1000}" \
+  -e HOME=/tmp -v "$PWD:/repo:ro" -v "$o:/work:ro" \
+  -v "$PWD/secrets/data/qdrant/qdrant_api_key.txt:/run/secrets/qdrant_api_key:ro" \
+  -w /repo --entrypoint python "$(docker inspect -f '{{.Config.Image}}' mlflow)" \
+  -m scripts.lib.ops.docs_retrieval_eval run --corpus /work/corpus.jsonl \
+  --commit "$c" --qdrant-key-file /run/secrets/qdrant_api_key
+```
+
+실행 중인 `mlflow` 이미지를 그대로 쓰므로 새 이미지를 받지 않는다. Qdrant key는 파일로만 읽고 출력하지 않는다.
+평가용 collection `docs_eval_<commit 12자>`는 끝나면 지운다(`--keep-collection`일 때만 남는다). 출력은 지표와
+MLflow run id뿐이다. 실패하면 collection이 남았는지 확인하고 같은 이름으로 지운다.
 
 ##### Stop Conditions
 
