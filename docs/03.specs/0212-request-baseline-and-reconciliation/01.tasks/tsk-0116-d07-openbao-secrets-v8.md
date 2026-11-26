@@ -1,6 +1,6 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0116"
 parent_ids:
@@ -76,7 +76,7 @@ authority; this record is not.
 | T02 P06 scope | The prompt's nine-path versus Keycloak/Grafana two-path premise is stale: TSK-0014 records owner cutovers for Keycloak, Grafana (2026-10-27), dozzle, gatus, open-webui, oauth2-proxy, kafbat-ui and airflow-apiserver (2026-10-28). Seven HOME consumers mount Agent output. Open WebUI and Superset are LAB with LAB-only secrets, yet `renderer.hcl` granted and the Agent rendered their KV paths | CHANGE_REQUIRED, fixed in source |
 | T03 SMTP | `smtp-equality` returns `OLD_ABSENT`; the single SMTP source is in place | REUSE |
 | T04 catalog | `secret-catalog.py check` returns `P02_METADATA_VALID`, 152 entries, 6 aliases | REUSE |
-| T05 AI-011/INFRA-008 | Printed on 2026-11-25 (SPEC-0204 TSK-0022); no rotation record. Only consumers: `gen-secrets.sh`, which derives the INFRA-008 htpasswd, and Traefik `searxng-api-auth` | open, owner |
+| T05 AI-011/INFRA-008 | Printed on 2026-11-25 (SPEC-0204 TSK-0022); no rotation record when this inventory was taken, then rotated by the owner at 17:13 KST (E15; corrected 2026-11-26). Only consumers: `gen-secrets.sh`, which derives the INFRA-008 htpasswd, and Traefik `searxng-api-auth` | open, owner |
 | Test environment | 15 `test_secret_metadata_sync` failures on clean `main` came from the system `python3` lacking `referencing`; with the repository venv on `PATH` all 57 pass | no change |
 
 ###### Source change

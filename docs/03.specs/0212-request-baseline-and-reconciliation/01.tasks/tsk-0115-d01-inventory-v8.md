@@ -1,6 +1,6 @@
 ---
 title: "D01 v8 Inventory Reconciliation Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0115"
 parent_ids:
@@ -118,8 +118,8 @@ owns only this inventory record.
 | --- | --- | --- | --- |
 | Criteria 51–55 | TSK-0040 not-required (owner, 2026-11-10); full-gate FAIL rows kept | REUSE; terminal Task not reopened | none |
 | Criteria 86/89 → 104/105 | TSK-0047 not-required, handed to TSK-0052; 104 and 105 pending | open | D09 |
-| Criterion 23 | TSK-0022 pending; Hermes delivery recorded, not a generic Hermes Agent link | open | D05 |
-| AI-011 / INFRA-008 | TSK-0022 records that a credential was printed on 2026-11-25 and needs rotation; no rotation record found | open, security | D07, then D02 route rejection |
+| Criterion 23 | TSK-0022 accepted on 2026-11-26 (D05 lifecycle v8); Hermes delivery, not a generic Hermes Agent link | closed | D05 |
+| AI-011 / INFRA-008 | Printed on 2026-11-25; the owner rotated both at 17:13 KST the same day (SPEC-0204 TSK-0022 "SearXNG credential rotation", SPEC-0212 TSK-0116 E15), corrected 2026-11-26 | closed | D07 |
 | Criteria 154–170 | TSK-0098 to TSK-0114 keep frontmatter `draft` while several criteria are accepted | lifecycle state mismatch to judge | D10-T03 |
 | Criteria 138, 148, 162, 164, 166 | TSK-0114 open boundaries | open | owner per TSK-0114 |
 
