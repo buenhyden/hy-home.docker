@@ -125,7 +125,7 @@ def capture_controller_toolchain(
         "node": (
             {
                 "status": "SELECTED_NOT_YET_OBSERVED",
-                "version": "24.22.0",
+                "version": "26.13.1",
                 "sha256": None,
             }
             if node_selected
