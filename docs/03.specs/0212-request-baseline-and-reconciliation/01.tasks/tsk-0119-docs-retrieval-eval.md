@@ -1,6 +1,6 @@
 ---
 title: "Repository Docs Retrieval Evaluation Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -126,6 +126,7 @@ experiment under criterion176.
 | E04 | 176 | W192 | method=automated; tool=docker, mlflow image, Ollama, Qdrant, MLflow; command=docs_retrieval_eval run again on the same corpus and compare result.json | HOME, 2026-11-26, corpus c01fe08eb | PASS | MLflow run 71b587506f0a42bfad37b99adbcebf6b; every tune and test metric and the chosen k are identical to E03 | required | - |
 | E05 | 176 | W192 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_script_manifest | PR #1220 head fe30681ad (hosted candidate-core) | FAIL | test_mutation_classes_follow_observed_script_behavior: the module was declared runtime but missing from MUTATION_OVERRIDES, so the observed class was none | required | - |
 | E06 | 176 | W192 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_script_manifest | Change plus the runtime override | PASS | Script manifest suite OK | required | E05 |
+| E07 | 176 | W192 | method=automated; tool=docker, mlflow image, Ollama, Qdrant 1.19.2; command=one-off probe: collection with named dense (embeddinggemma) and sparse (modifier idf) vectors, Query API prefetch with fusion rrf, then delete | HOME, 2026-11-26, three synthetic sentences | PASS | 768-dimension dense and IDF sparse vectors accepted; the Korean query ranked its matching sentence first; the probe collection was deleted | optional | - |
 
 ##### Resolution Links
 
@@ -148,7 +149,10 @@ a separate decision.
 
 ##### Promotion Receipt
 
-The MLflow runbook carries the run procedure.
+The MLflow runbook carries the run procedure. The Wiki preparation
+[future flows](../../../../infra/09-platform-ops/project-registration/wiki-preparation/future-flows/README.md)
+carry the result as the future search acceptance bar, with the Qdrant
+named-vector design the owner asked to consider (E07).
 
 ##### Next Owner
 
