@@ -1101,7 +1101,29 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Resolution Links
 
-None: nothing was recorded here before this Task moved to the common form.
+SQL recovery source GREEN resolves SQL recovery source initial RED.
+Authorized loopback STARTTLS resolves Restricted loopback environment.
+P08 source-binding parity GREEN resolves P08 source-binding parity initial RED.
+P12 offline seam GREEN resolves P12 offline seam initial RED.
+Living-document review corrected resolves Living-document review initial findings.
+SQL-only runtime corrected resolves SQL-only runtime initial refusal.
+Combined SQL QA driver coverage resolves SQL QA driver coverage.
+Final candidate native quiesced rehearsal resolves Full candidate native first attempt, Full candidate native second attempt, Full candidate native third attempt.
+Authorized Node package audit resolves Restricted Node package audit.
+Restore replay and interruption guards GREEN resolves Restore replay and interruption guards initial RED.
+Native replay/interruption rehearsal resolves Native replay/interruption invocation attempt, Native replay/interruption barrier refusal.
+Review-fix guards GREEN resolves Review-fix guards initial RED.
+Independent replay/interruption code re-review resolves Independent replay/interruption code review.
+n8n stall-recovery guards GREEN resolves n8n stall-recovery guards initial RED.
+Post-restore capture-order guard GREEN resolves Post-restore capture-order guard RED.
+Native stall-recovery restore rehearsal resolves Native stall-recovery invocation attempt, Native stall-recovery capture-order refusal.
+Stall-recovery changed metadata corrected resolves Stall-recovery changed metadata initial.
+Independent stall-recovery code re-review resolves Independent stall-recovery code review.
+Main-restart and retry guards GREEN resolves Main-restart and retry guards initial RED.
+Native main-restart and retry rehearsal resolves Native main-restart and retry attempts 1-11.
+Independent main-restart and retry code re-review resolves Independent main-restart and retry code review.
+HOME notifier one-claim delivery 2026-11-11 resolves HOME notifier first activation 2026-11-11.
+Normal staged payload wrapper rerun resolves Normal staged payload wrapper.
 
 ## Acceptance Decision
 
@@ -1143,8 +1165,10 @@ without cancelling accepted history or promoting a lower evidence axis.
 
 ### Promotion Receipt
 
-None: nothing was recorded here before this Task moved to the common form.
+GDE-0053 and the n8n README carry the current runner and broker description (D05 lifecycle v8,
+2026-11-26).
 
 ### Next Owner
 
-None: nothing was recorded here before this Task moved to the common form.
+The CI owner (D10) holds the 2026-11-02 P03 global CI admission residual. The P06 producer and
+operating credential rotation of the notifier stay with @buenhyden.

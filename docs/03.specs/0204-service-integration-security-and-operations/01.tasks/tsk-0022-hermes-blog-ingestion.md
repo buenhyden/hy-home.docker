@@ -1937,7 +1937,17 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Resolution Links
 
-None: nothing was recorded here before this Task moved to the common form.
+Warm-up Code node inventory rerun resolves Warm-up Code node inventory.
+Hermes SearXNG search live resolves Hermes SearXNG search.
+SearXNG engine spread live result resolves SearXNG engine spread live.
+Direct path operational live resolves Direct path operational.
+Production attester live resolves Production attester.
+Warm-up scheduled run readback resolves Warm-up scheduled run.
+SearXNG route from 192.168.0.22 rerun resolves SearXNG route from 192.168.0.22.
+SearXNG Basic API from 192.168.0.22 rerun resolves SearXNG Basic API from 192.168.0.22.
+Existing email/workload regression on the direct path resolves Existing email/workload regression.
+Gateway contract fixtures at pin rerun resolves Gateway contract fixtures at pin.
+Exact Gateway compatibility rerun resolves Exact Gateway compatibility.
 
 ## Acceptance Decision
 
@@ -2037,8 +2047,11 @@ its built images; the Windows receiver's 429 handling is untested.
 
 ### Promotion Receipt
 
-None: nothing was recorded here before this Task moved to the common form.
+The live delivery facts are recorded in this Task's evidence rows; GDE-0053 and the n8n README
+describe the current single worker runner and shared Valkey (D05 lifecycle v8, 2026-11-26).
 
 ### Next Owner
 
-None: nothing was recorded here before this Task moved to the common form.
+None for criterion 23, which is accepted. Residual risks recorded in the Spec (producer identity,
+direct `edge_net` access to n8n, attestation scope) stay with @buenhyden; a live 409 conflict on
+the production Gateway was not provoked.

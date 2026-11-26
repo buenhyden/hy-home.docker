@@ -191,7 +191,13 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Resolution Links
 
-None: nothing was recorded here before this Task moved to the common form.
+Gateway receipt format correction resolves Initial commit-hook formatting result.
+Post-format P11 gate result resolves Post-format P11 gate.
+Independent security baseline rerun resolves Independent security baseline.
+Broad P11 gate baseline rerun resolves Broad P11 gate baseline.
+Actual operation boundary 2026-11-26 resolves Actual operation boundary.
+Same-UID and recovery handoff 2026-11-26 resolves Same-UID and recovery handoff.
+Isolated ingress rerun 2026-11-26 resolves Isolated ingress first attempt.
 
 ## Acceptance Decision
 
@@ -223,12 +229,8 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Next Owner
 
-The Windows B owner consumes Export 2.0 through its external Node receiver
-`scripts/ops/receive-hermes-exports.mjs`; that repository is not modified here.
-Before a real acceptance it must record the Export schema/version, delivery ID,
-ACK ID, scheduled execution, response-loss behavior, restart sequence, backup
-and restore source, and the rule that held/uncertain reports are not silently
-resent. The external Hermes SDK owner separately owns any platform Call-ID
-binding: the local collector records only its own call identifier. The data
-owner must separately accept raw-source retention, access and expiry; no model
-or fetched source text can add an operational privilege.
+The Windows B consumer is live: server B pulls Export 2.0 every 15 minutes and ACKs it (SPEC-0204
+TSK-0022, latest ACK 2026-11-25T22:27Z); @buenhyden owns that receiver, raw-source retention and
+operational acceptance. The external Hermes SDK owner holds platform Call-ID binding and the DNS
+lookup deadline; the Blog-data provider holds the cursor, terminal-ACK and compaction contract that
+Attester fairness needs. Held and uncertain reports are never resent silently.
