@@ -80,7 +80,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957
+    image: oliver006/redis_exporter:v1.97.0-alpine@sha256:ae30be386ab25600a8b222538a868d1b156b7e411073f7d2d5208fe79cc98d81
     container_name: mng-valkey-exporter
     hostname: mng-valkey-exporter
     group_add:
