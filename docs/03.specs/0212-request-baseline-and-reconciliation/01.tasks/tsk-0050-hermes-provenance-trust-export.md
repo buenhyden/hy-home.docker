@@ -1,10 +1,10 @@
 ---
 title: "Hermes Provenance, Trust and Export Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0050"
 parent_ids:
@@ -69,7 +69,9 @@ authority, credential access or Windows B authority.
 `SPEC-0212-TSK-0050` is the P11 acceptance coordinator for this Task's local
 source and isolated evidence only; the P11 documentation writer is only the
 public-file integrator. The actual raw-source data owner, operational service
-acceptor and Windows B receiver/ACK acceptor are **UNASSIGNED**. They
+acceptor and Windows B receiver/ACK acceptor were **UNASSIGNED** until
+2026-11-26, when the owner named @buenhyden for all three (see State currency
+2026-11-26). They
 must be named by the service/data owners before activation; each must confirm
 its own authorization, retention or delivery scope, and rollback/recovery
 conditions. Until then, the documented source rollback procedure is only a
@@ -125,6 +127,19 @@ status follows the work it records: it left `draft` when work started and is
 `in-progress`. The rows below record those observed transitions; they do not
 change any evidence row or acceptance decision.
 
+#### State currency 2026-11-26
+
+The D05 lifecycle v8 review on 2026-11-26 named @buenhyden as raw-source data
+owner, operational service acceptor and Windows B receiver/ACK acceptor. It
+cross-reads SPEC-0204 TSK-0022, whose live rows now show the deployed
+plugin 0.4.5, durable Gateway receipts, the host Attester and server B ACKs
+(criterion 23 accepted). The Export pin in this Task (`c05e5b88`) is
+historical; TSK-0022 now binds Blog-data `bcefdc0c`. The two P11 baseline
+ERROR rows are resolved by a current-main rerun. The external Hermes SDK
+Call-ID binding, the DNS lookup deadline, the Blog-data cursor and fairness
+contract and the cached ingress ERROR stay open, so criteria 98, 99, 101 and
+102 remain pending.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -167,6 +182,8 @@ None: nothing was recorded here before this Task moved to the common form.
 | Same-UID and recovery handoff | 102 | W107 | Residual handoff | Operator/data-owner/external receiver boundaries | NOT_RUN | File guards do not prove resistance to a compromised Hermes UID; raw-source ownership/retention, legacy/mixed Attester recovery and live route reload remain separate. Mixed or uncertain records must not auto-resend. Watched routes are read/fixture-only here. | required | - |
 | DNS lookup deadline | 98 | W103 | Operational residual | Fetch/runtime operator | NOT_RUN | Socket/redirect deadline does not bound stdlib `getaddrinfo`; resume only with a separately accepted operational DNS-timeout observation. | required | - |
 | Attester queue fairness | 101 | W106 | Operational residual | Attester operator and Blog-data provider | NOT_RUN | The terminal-count regression covers 100 terminal then one active report, but the fixed ten-pages/run reader has no Blog-data stable cursor, terminal ACK or compaction contract. Persistent local-terminal records beyond that window can indefinitely delay later reports. Resume only with a versioned provider cursor/terminal-ack/compaction contract and an observed over-window fairness test; do not claim this fixed. | required | - |
+| Independent security baseline rerun | 102 | W107 | `python3 scripts/validation/check-p11-hermes.py` | main `5eea53931`, 2026-11-26 | PASS | 504 tests OK in 54.5 s, no error or failure; cache-only E2E contract 1/1 | required | Independent security baseline |
+| Broad P11 gate baseline rerun | 102 | W107 | Full offline suite | main `5eea53931`, 2026-11-26, the same `check-p11-hermes.py` run | PASS | The full offline P11 suite ran 504 tests with no error, failure or skip; the historical `os.chown` gid 65534 error did not recur | required | Broad P11 gate baseline |
 
 ### Resolution Links
 

@@ -1,10 +1,10 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.18.1"
+version: "0.19.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-25"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0022"
 parent_ids:
@@ -1930,6 +1930,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | Gateway contract fixtures at pin | 23 | W82 | Compare the workload fixtures with the contracts inside image `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48` | `tests/fixtures/` vs `/app/scripts/lib/ingestion/contracts/` | FAIL | `ingestion-v1.schema.json` is identical; `openapi-v1.json` (1.0.0 vs 1.1.0) and `responses-v1.schema.json` lag the image with additions only (review history endpoints, candidate `matching`). The ingestion request the transport sends is unchanged. | required | - |
 | Gateway contract fixtures at pin rerun | 23 | W82 | Compare the workload fixtures with the contracts inside image `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48` | `openapi-v1.json` and `responses-v1.schema.json` copied verbatim from the image, digests updated in `test_upstream_fixture_integrity` | PASS | All three contract fixtures now equal the image's files (`c2ee177a…`, `820333ee…`, `fb701d71…`); the workload suite passes 504 tests, including the 24 adapter and transport tests that load them. | required | Gateway contract fixtures at pin |
 | Exact Gateway compatibility rerun | 23 | W82 | Approved API revision/fixtures and inactive n8n source | Owner-confirmed API revision Blog-data `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48` (2026-11-25), the HOME Gateway image built from it, and the fixtures refreshed to its contracts | PASS | The three contract fixtures equal the image's files ("Gateway contract fixtures at pin rerun"); the workload suite passes 504 tests; 18 real deliveries from 2026-11-20 to 2026-11-25 returned HTTP 201 ("Direct path operational live"). | required | Exact Gateway compatibility |
+| Live delivery tally 2026-11-26 | 23 | W83 | Every saved report since the plugin release accounted for, from the live Gateway database read-only (counts only) | HOME `blog-ingestion`, reports received 2026-11-19T22Z to 2026-11-25T22Z (07:00 KST runs 2026-11-20 to 2026-11-26), read with the container's `node:sqlite` in read-only mode on 2026-11-26 | PASS | 21 reports (three jobs, seven runs) stored, 0 quarantined, 21 attested; the 2026-11-24 news report left attester retry at 2026-11-25T04:16Z after about six hours. Exports of those reports: 127 acknowledged, 17 held `SOURCE_UNVERIFIED`; latest ACK 2026-11-25T22:27Z. Traefik shows server B polling `blog-export-read` every 15 minutes with 200 | required | - |
+| Installed plugin version | 23 | W83 | `hermes plugins list` | Server A Hermes, 2026-11-26 | PASS | `research-report` 0.4.5 enabled, equal to the tracked `hermes-plugin/plugin.yaml` 0.4.5 | optional | - |
+| P11 gate on current main | 23 | W83 | `python3 scripts/validation/check-p11-hermes.py` | main `5eea53931`, 2026-11-26 | PASS | 504 tests OK in 54.5 s; cache-only E2E contract 1/1 | optional | - |
 
 ### Resolution Links
 
@@ -1941,9 +1944,18 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 23 | pending | Bounded design and ownership | Basic source and safe synthetic checks may proceed; exact API and actual worker/Gateway evidence remain required. | SPEC-0204 TSK-0022 |
+| 23 | accepted | Direct path operational live, Production attester live, Attestation tally, Live delivery tally 2026-11-26, Existing email/workload regression on the direct path, Gateway credential scopes, Gateway contract fixtures at pin rerun, Exact Gateway compatibility rerun, Hermes SearXNG search live, SearXNG Basic API from 192.168.0.22 rerun | Owner @buenhyden accepted on 2026-11-26 in this chat (D05 lifecycle v8): live Cron, Gateway receipts, attestation and server B ACK cover SOURCE, API_COMPATIBILITY, DELIVERY, ATTESTATION and EXPORT; the 409 conflict is proven by the isolated E2E only and the live 200 duplicate dates from 2026-11-01; the spec's recorded residual risks stay open. | SPEC-0204 TSK-0022 |
 
 ### Remaining Conditions
+
+On 2026-11-26 the D05 lifecycle v8 review read the live Gateway store and the
+Hermes Cron history read-only: every 07:00 KST run from 2026-11-20 to
+2026-11-26 stored its three reports, all were attested and their exports are
+acknowledged or held (Live delivery tally 2026-11-26), and the installed
+plugin is 0.4.5. The owner accepted criterion 23 on that basis. A live 409
+conflict was not provoked on the production Gateway, Publisher signing stays
+an accepted residual risk, and held exports stay held until their source is
+verified; none of these is closed here.
 
 2026-10-31 dispatch-readiness slice: a follow-up independent code review of the
 fix range confirmed all five prior findings fixed with no Critical or Important

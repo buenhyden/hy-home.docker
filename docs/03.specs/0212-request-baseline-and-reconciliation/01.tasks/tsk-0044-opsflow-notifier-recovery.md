@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-26"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0044"
 parent_ids:
@@ -1094,6 +1094,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | HOME notifier first activation 2026-11-11 | 75 | W80 | One-claim delivery through Mailpit | HOME, 2026-11-11 15:13 KST | FAIL | `OPSFLOW_INVALID_CREDENTIAL` before any SMTP connection; outbox 1 `unknown`, Mailpit 0; reconciled `not_sent` by the owner as `opsflow_migrator`. | optional | - |
 | HOME notifier one-claim delivery 2026-11-11 | 75 | W80 | One-claim delivery through Mailpit | HOME, 2026-11-11 15:32 KST | PASS | Execution 150 success; outbox 1 `accepted_by_smtp` (attempt 2); Mailpit exactly one message; no duplicate after unpublish. | optional | HOME notifier first activation 2026-11-11 |
 | HOME notifier worker restart drill 2026-11-11 | 75 | W80 | `docker compose restart n8n-worker`, 90 s wait, queue and execution readback | HOME, 2026-11-11 15:34–15:36 KST | PASS | Healthy in 22 s; Bull keys `none`; no non-terminal or crashed execution; networks kept. | optional | - |
+| Global CI admission rerun 2026-11-26 | 72 | W77 | Global changed-profile public-execution admission | Throwaway worktree at main `5eea53931` with one committed change to `scripts/validation/check-p03-hermes.py` | NOT_RUN | `run-ci-gate.py --profile changed --explain` exited 0 but selected no gate, so the local run did not exercise the 2026-11-02 admission condition; the FAIL stays an explicit P03/CI residual. The worktree was removed | required | - |
+| D05 n8n document alignment | 72 | W77 | n8n README and GDE-0053 against Compose | main `5eea53931`, `infra/07-workflow/n8n/docker-compose.yml` | PASS | Compose declares one worker-side runner (`n8n-task-runner-worker`) and the shared `mng-valkey`; the README volume row, the broker paragraph and the guide's version paragraph no longer name two runners or a dedicated Valkey pair, and the guide records the 2026-11-26 Code node runs | optional | - |
+| Normal staged payload wrapper rerun | 72 | W77 | Registered normal local-staged validation | D05 lifecycle v8 staged set on main `5eea53931` (five documents), 2026-11-26 | PASS | `scripts/validation/run-ci-precommit.sh --mode local-staged` exit 0; every applicable hook passed and nine had no matching files | required | Normal staged payload wrapper |
 
 ### Resolution Links
 
@@ -1108,7 +1111,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | 72 | pending | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | REUSE_ACCEPTED only for original C19/C22 scope; current source/image/runtime equivalence separate. | SPEC-0212 TSK-0044 |
 | 73 | accepted | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review, n8n stall-recovery guards GREEN, Post-restore capture-order guard GREEN, Native stall-recovery restore rehearsal, Independent stall-recovery code re-review, Main-restart and retry guards GREEN, Native main-restart and retry rehearsal, HOME n8n recovery target inspection | TEST_RESIDUAL accepted: the recovery and no-send reprocess source and native rehearsals pass. The owner handed the absent pip-audit capability to P08 supply-chain work on 2026-11-10, so the Python audit row is optional and stays NOT_RUN; no Python audit PASS is claimed. | SPEC-0212 TSK-0044 |
 | 74 | accepted | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0044 |
-| 75 | pending | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | SOURCE_READY with scoped actual native increment PASS; formal owner acceptance, actual P06 producer and operating rotation remain separate. | SPEC-0212 TSK-0044 |
+| 75 | accepted | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | Owner @buenhyden accepted on 2026-11-26 in this chat (D05 lifecycle v8) at the optional isolated profile's scope; the actual P06 producer and operating credential rotation are not covered. | SPEC-0212 TSK-0044 |
 
 ### Remaining Conditions
 
@@ -1124,9 +1127,12 @@ interrupted broker job now has isolated native PASS through n8n's own stall
 recovery, and the interrupted execution is recorded `crashed`. With main also
 restarted, the leader's startup queue recovery records it `crashed` (isolated
 native PASS). n8n's retry of a crashed execution was measured as a no-op, and
-replay is a new execution. HOME inspection found no target, so the HOME
-restarts are NOT_RUN. P03 global CI
-admission remains an explicit residual.
+replay is a new execution. The 2026-11-05 HOME inspection found no target; the
+later HOME activation (2026-11-11) installed the notifier, delivered one claim
+and passed a worker restart drill, and the DEV draft workflow stays inactive
+outside drills. P03 global CI admission remains an explicit residual: a
+2026-11-26 local rerun selected no gate and did not exercise it. Criterion 75
+is accepted at its optional profile scope; criterion 72 stays pending.
 All future outcomes must bind exact source, actor, environment, time and receipt
 without cancelling accepted history or promoting a lower evidence axis.
 
