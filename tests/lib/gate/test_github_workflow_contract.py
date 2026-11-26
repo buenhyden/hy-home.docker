@@ -1260,7 +1260,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (ROOT / "scripts/requirements-pre-commit.txt").read_text(encoding="utf-8"),
         )
         self.assertIn(
-            "zizmor==1.28.0\n",
+            "zizmor==1.32.0\n",
             (ROOT / "scripts/requirements.txt").read_text(encoding="utf-8"),
         )
 
