@@ -120,8 +120,8 @@ def validate_probe(value):
         or value["uid"] <= 0
         or type(value.get("gid")) is not int
         or value["gid"] < 0
-        or value.get("airflow") != "3.3.2"
-        or value.get("celery") != "3.24.1"
+        or value.get("airflow") != "3.4.0"
+        or value.get("celery") != "3.26.0"
         or any(value.get(k) is not True for k in ("boto3", "psycopg2", "sdk"))
         or value.get("forbidden_env") != []
     ):

@@ -1,12 +1,12 @@
-ARG AIRFLOW_VERSION=3.3.2
+ARG AIRFLOW_VERSION=3.4.0
 ARG PYTHON_VERSION=3.13
-FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371
+FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:a8d9d19c563c768b2bc605ef26440f28a9164ea886064e99c599b057432ff572
 
-ARG AIRFLOW_VERSION=3.3.2
+ARG AIRFLOW_VERSION=3.4.0
 ARG PYTHON_VERSION=3.13
-ARG KEYCLOAK_PROVIDER_VERSION=0.11.0
-ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0
-ARG CELERY_PROVIDER_VERSION=3.24.1
+ARG KEYCLOAK_PROVIDER_VERSION=0.13.0
+ARG COMMON_COMPAT_PROVIDER_VERSION=1.23.1
+ARG CELERY_PROVIDER_VERSION=3.26.0
 
 USER airflow
 
@@ -16,13 +16,13 @@ SHELL ["/bin/bash", "-o", "pipefail", "-o", "errexit", "-o", "nounset", "-o", "n
 # Public upstream constraints are retained byte-for-byte for review/provenance.
 # Three direct providers have an explicit reviewed overlay. Resolve the complete
 # dependency set against the other upstream pins, then fail on incompatibility.
-COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt
-RUN test "${AIRFLOW_VERSION}" = 3.3.2 && test "${PYTHON_VERSION}" = 3.13 && \
-    echo 'afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5  /tmp/constraints-upstream.txt' | sha256sum -c - && \
+COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.4.0-python3.13.txt /tmp/constraints-upstream.txt
+RUN test "${AIRFLOW_VERSION}" = 3.4.0 && test "${PYTHON_VERSION}" = 3.13 && \
+    echo '698d3d1ffc27385c8b69c511bed71123d126bddad66dcad054ef0bcc3398e12c  /tmp/constraints-upstream.txt' | sha256sum -c - && \
     test "$(grep -c '^apache-airflow-providers-keycloak==' /tmp/constraints-upstream.txt)" = 1 && \
-    sed -e "s/^apache-airflow-providers-keycloak==0.10.0$/apache-airflow-providers-keycloak==${KEYCLOAK_PROVIDER_VERSION}/" \
-      -e "s/^apache-airflow-providers-common-compat==1.19.0$/apache-airflow-providers-common-compat==${COMMON_COMPAT_PROVIDER_VERSION}/" \
-      -e "s/^apache-airflow-providers-celery==3.24.0$/apache-airflow-providers-celery==${CELERY_PROVIDER_VERSION}/" \
+    sed -e "s/^apache-airflow-providers-keycloak==0.11.2$/apache-airflow-providers-keycloak==${KEYCLOAK_PROVIDER_VERSION}/" \
+      -e "s/^apache-airflow-providers-common-compat==1.23.0$/apache-airflow-providers-common-compat==${COMMON_COMPAT_PROVIDER_VERSION}/" \
+      -e "s/^apache-airflow-providers-celery==3.26.0$/apache-airflow-providers-celery==${CELERY_PROVIDER_VERSION}/" \
       /tmp/constraints-upstream.txt > /tmp/constraints-reviewed.txt && \
     pip install --no-cache-dir \
       "apache-airflow==${AIRFLOW_VERSION}" \

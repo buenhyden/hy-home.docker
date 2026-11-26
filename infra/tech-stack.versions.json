@@ -358,7 +358,7 @@
         "hy-home/airflow": "local-custom"
       },
       "images": [
-        "hy-home/airflow:3.3.2-keycloak"
+        "hy-home/airflow:3.4.0-keycloak"
       ],
       "compose_files": [
         "infra/07-workflow/airflow/docker-compose.yml"
@@ -367,7 +367,7 @@
         {
           "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
           "images": [
-            "hy-home/airflow:3.3.2-keycloak"
+            "hy-home/airflow:3.4.0-keycloak"
           ]
         }
       ]

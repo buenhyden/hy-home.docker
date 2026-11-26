@@ -44,12 +44,12 @@ x-airflow-common: &airflow-common
     context: ../../..
     dockerfile: infra/07-workflow/airflow/Dockerfile
     args:
-      AIRFLOW_VERSION: '3.3.2'
+      AIRFLOW_VERSION: '3.4.0'
       PYTHON_VERSION: '3.13'
-      KEYCLOAK_PROVIDER_VERSION: '0.11.0'
-      COMMON_COMPAT_PROVIDER_VERSION: '1.20.0'
-      CELERY_PROVIDER_VERSION: '3.24.1'
-  image: hy-home/airflow:3.3.2-keycloak
+      KEYCLOAK_PROVIDER_VERSION: '0.13.0'
+      COMMON_COMPAT_PROVIDER_VERSION: '1.23.1'
+      CELERY_PROVIDER_VERSION: '3.26.0'
+  image: hy-home/airflow:3.4.0-keycloak
   environment: *airflow-common-env
   volumes:
     - airflow-dags:/opt/airflow/dags
