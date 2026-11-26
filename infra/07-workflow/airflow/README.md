@@ -1,13 +1,13 @@
 ---
 title: "Airflow (07-workflow)"
-version: "2.1.0"
+version: "2.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-27"
 created: "2025-11-12"
 ---
 
