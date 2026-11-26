@@ -2,7 +2,7 @@
 # - https://docs.opensearch.org/latest/install-and-configure/plugins/
 # - https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/
 
-ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.8.0@sha256:fafe3fc3587088674669235575aa166228c48bdb940294a8cdbbc1da75236a40
+ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0
 FROM ${OPENSEARCH_BASE_IMAGE}
 
 LABEL version="0.1" description="OpenSearch with custom plugins and secret-based internal users injection"
