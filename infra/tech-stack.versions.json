@@ -564,7 +564,7 @@
         "renovate/renovate": "external"
       },
       "images": [
-        "renovate/renovate:44.252.9-full@sha256:81c647e96d18c7574d2f95a9d73982bc9161abf4a1a2805dc72f1c3cce3ed661"
+        "renovate/renovate:44.255.1-full@sha256:509eb765d8bb82b991f094257e00b1457a97ad1c59261e56b39e5667fa89ba59"
       ],
       "compose_files": [
         "infra/09-platform-ops/renovate/docker-compose.yml"
@@ -573,7 +573,7 @@
         {
           "compose_file": "infra/09-platform-ops/renovate/docker-compose.yml",
           "images": [
-            "renovate/renovate:44.252.9-full@sha256:81c647e96d18c7574d2f95a9d73982bc9161abf4a1a2805dc72f1c3cce3ed661"
+            "renovate/renovate:44.255.1-full@sha256:509eb765d8bb82b991f094257e00b1457a97ad1c59261e56b39e5667fa89ba59"
           ]
         }
       ]
@@ -1453,7 +1453,7 @@
         "restic/restic": "external"
       },
       "images": [
-        "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510"
+        "restic/restic:0.20.0@sha256:93999df80d4ac6cb148e82d2ef1fe6a81996f17ff535e772723538211b31555a"
       ],
       "compose_files": [
         "infra/09-platform-ops/restic/docker-compose.yml"
@@ -1462,7 +1462,7 @@
         {
           "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
           "images": [
-            "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510"
+            "restic/restic:0.20.0@sha256:93999df80d4ac6cb148e82d2ef1fe6a81996f17ff535e772723538211b31555a"
           ]
         }
       ]
@@ -1527,7 +1527,7 @@
         "pactfoundation/pact-broker": "external"
       },
       "images": [
-        "pactfoundation/pact-broker:3.1.0-pactbroker2.124.0@sha256:51b7de8316507fdc1d322bb397fd4d4c1ce41bdfabf6a9fd9c85eb65c03a89c0"
+        "pactfoundation/pact-broker:3.2.0-pactbroker2.124.0@sha256:b5b9af2e571e2f6a2f9e2ebe85f0e09158ae5e707349d5afce66bfc7cb7437a5"
       ],
       "compose_files": [
         "infra/11-quality/pact-broker/docker-compose.yml"
@@ -1536,7 +1536,7 @@
         {
           "compose_file": "infra/11-quality/pact-broker/docker-compose.yml",
           "images": [
-            "pactfoundation/pact-broker:3.1.0-pactbroker2.124.0@sha256:51b7de8316507fdc1d322bb397fd4d4c1ce41bdfabf6a9fd9c85eb65c03a89c0"
+            "pactfoundation/pact-broker:3.2.0-pactbroker2.124.0@sha256:b5b9af2e571e2f6a2f9e2ebe85f0e09158ae5e707349d5afce66bfc7cb7437a5"
           ]
         }
       ]
