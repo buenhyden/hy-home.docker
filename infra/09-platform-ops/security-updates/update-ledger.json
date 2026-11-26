@@ -15479,8 +15479,9 @@
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [
-        "https://neo4j.com/release-notes/database/neo4j-5-26-31/",
-        "https://neo4j.com/security/advisories/"
+        "https://neo4j.com/security/advisories/",
+        "https://neo4j.com/release-notes/database/neo4j-5-26-34/",
+        "https://neo4j.com/release-notes/database/neo4j-5-26-31/"
       ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -15657,14 +15658,14 @@
       "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
       "decision": "not-affected",
       "affected_confirmed": false,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 5.26.33 is newer than every applicable Community database fixed floor, including 5.26.31 for CVE-2026-1337. Global 2026.10.2 is a separate CalVer line, while 5.26.33 is the current 5.26 LTS release.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 5.26.34 is at or above every 5.26 fixed version the Neo4j advisories name for Community (5.26.15, 5.26.21, 5.26.29) and the 5.26.31 floor recorded for CVE-2026-1337; re-checked on 2026-11-26 for the Renovate update from 5.26.33.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-26T10:20:33.945350+00:00",
         "reviewed_subject": {
-          "declaration": "neo4j:5.26.33-community@sha256:51d0314ef86074f519003da8dd4daaa9fff72b8479672b742d7cab7f3064e3ed",
-          "source_input_sha256": "8476de753db160fc427b1cfc12351ea2f9ecc6576ea9974d1570c9f5910cf617",
-          "assessment_version": "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6",
+          "declaration": "neo4j:5.26.34-community@sha256:2c48628bc28c68d7e2787f76262dfc9d7c21a8f7f290e30da901c489aa7fe50d",
+          "source_input_sha256": "f7cf17b4fa054c88a792d2a07e1315a5dd62b0e3b7046cfb71a8acd955ba71ec",
+          "assessment_version": "5.26.34",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -15672,30 +15673,32 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://neo4j.com/release-notes/database/neo4j-5-26-31/",
-          "https://neo4j.com/security/advisories/"
+          "https://neo4j.com/security/advisories/",
+          "https://neo4j.com/release-notes/database/neo4j-5-26-34/",
+          "https://neo4j.com/release-notes/database/neo4j-5-26-31/"
         ],
         "concrete_advisory_refs": [
-          "https://neo4j.com/release-notes/database/neo4j-5-26-31/",
-          "https://neo4j.com/security/advisories/"
+          "https://neo4j.com/security/advisories/",
+          "https://neo4j.com/release-notes/database/neo4j-5-26-34/",
+          "https://neo4j.com/release-notes/database/neo4j-5-26-31/"
         ],
         "advisory_discovery": [],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "5.26.33 is newer than every applicable Community database fixed floor, including 5.26.31 for CVE-2026-1337. Global 2026.10.2 is a separate CalVer line, while 5.26.33 is the current 5.26 LTS release.",
-        "next_action": "Remain on current 5.26 LTS; run exact-image SBOM verification before a full-image claim.",
+        "reason": "5.26.34 is at or above every 5.26 fixed version the Neo4j advisories name for Community (5.26.15, 5.26.21, 5.26.29) and the 5.26.31 floor recorded for CVE-2026-1337; re-checked on 2026-11-26 for the Renovate update from 5.26.33.",
+        "next_action": "Keep 5.26.34; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/data",
         "latest_disposition": {
           "action": "retain-supported-line",
-          "target_retained": "5.26.33",
+          "target_retained": "5.26.34",
           "observed_latest": "2026.10.2",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Keep the selected supported LTS/minor for the reviewed advisory scope. A global latest-line migration remains a separate compatibility/recovery choice; gate mismatch is retained.",
-          "next_action": "Remain on current 5.26 LTS; run exact-image SBOM verification before a full-image claim."
+          "reason": "5.26.34 is at or above every 5.26 fixed version the Neo4j advisories name for Community (5.26.15, 5.26.21, 5.26.29) and the 5.26.31 floor recorded for CVE-2026-1337; re-checked on 2026-11-26 for the Renovate update from 5.26.33.",
+          "next_action": "Keep 5.26.34; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
