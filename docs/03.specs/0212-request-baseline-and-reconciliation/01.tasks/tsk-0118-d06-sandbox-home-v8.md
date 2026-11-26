@@ -1,6 +1,6 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -100,9 +100,9 @@ started or recreated.
 | Stale "opt-in" comment on the n8n Compose sandbox section | Reworded to "in HOME" with the E25 Compose change; ledger and review hashes re-bound | Done |
 | Server B OpenClaw native Ollama provider (`api: ollama`, baseUrl without `/v1`) | PASS (E24) through the B loopback proxy and `ollama-api` | Done |
 | JS Code node can generate code from strings (E17) | Fixed (E25) and verified live (E26) | Done |
-| Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database for reruns (owner, 2026-11-26) | n8n owner |
-| Hermes user config keeps an `ollama-cloud` provider entry (`https://ollama.com/v1`) and `--provider custom -m lfm2.5:8b` answered without reaching local Ollama (E08) | Owner decision 2026-11-26: local and cloud Ollama run as separate providers; the `ollama-cloud` entry stays and HOME Ollama keeps `OLLAMA_NO_CLOUD=1`. The bypass finding stays recorded; user-global config is not changed under repository authority | Owner |
-| D06-T06 tool comparison | Not started: no dataset, owner, rights, time field or goal exists, so no experiment is created (T06 item 2) | Owner names a dataset |
+| Probe workflow `d06e12CodeRunner01` | Kept unpublished in the n8n database: it is the only check that runs on the current n8n 2.46.6, because the P03 native rehearsal is pinned to the reviewed 2.43.6 images (E28) | n8n owner; retire it when the native rehearsal is re-pinned to the running version |
+| Hermes `--provider custom` without an endpoint (E29) | Hermes 0.23.4 exempts the bare name `custom` from its missing-endpoint guard, so the request went to OpenRouter (AuthenticationError) and the fallback chain answered with anthropic/claude-haiku-5-5. Local and cloud run separately by owner decision 2026-11-26; the `-m lfm` alias reaches local Ollama | Owner: set `CUSTOM_BASE_URL` in the Hermes environment or always pass `--base-url`; user-global config is not changed under repository authority |
+| D06-T06 tool comparison | Not run: criterion70 stays not-required (TSK-0043) because no dataset, owner, rights, time field or goal exists. Current HOME has SearXNG, Qdrant, Crawl4AI (with loopback and egress) and MLflow running; Hermes on A and OpenClaw on B use SearXNG through `searxng-api` (TSK-0022, TSK-0117) | Owner names a dataset, owner, rights, time field and goal to resume |
 
 ###### D06 runtime checks (criterion175)
 
@@ -195,6 +195,14 @@ context gets `codeGeneration.strings = false`. n8n's expression engine already
 expects code generation to be off in the main context. The probe workflow stays
 for reruns.
 
+On 2026-11-26 the owner asked to review and proceed with D06-T06, the probe
+workflow and the Hermes bare `custom` run. The P03 native rehearsal had no
+code generation case, which is how E17 went unnoticed; it now has one (E27),
+but it cannot run until its reviewed images are re-pinned to the running n8n
+(E28), so the probe workflow stays. Hermes logs and source show the bare
+`custom` request leaving the host (E29); the fix is in the owner's Hermes
+environment.
+
 ##### Blockers and Decisions
 
 The owner chose the HOME selection over keeping the privileged runner opt-in;
@@ -232,6 +240,9 @@ the security impact stays recorded in the exception.
 | E24 | 175 | W191 | method=observation; tool=OpenClaw; command=- | Server B through the loopback proxy, 2026-11-26 08:17 to 08:20 KST | PASS | Server A route checks: no credential 302, wrong 401, correct 200, /api/pull 302. Traefik logs 192.168.0.22 on router ollama-api@docker: /api/tags, /api/show and /api/chat 200 (chat 8.5 s with load); Ollama logs the same /api/chat 200 at 23:20 UTC | required | E11 |
 | E25 | 175 | W191 | method=automated; tool=Python3 venv, node; command=python -m unittest tests.validation.test_p03_runner_isolation tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_ledger_rebind | Change on 61a39d6cc | PASS | New hardening test sees blocked in default and codeGeneration-only contexts and plain code running; the same probe without the module prints allowed; 11 runner tests (1 opt-in native skip) and 57 supply-chain tests OK | required | - |
 | E26 | 175 | W191 | method=automated; tool=node in n8n-task-runner-worker; command=new Function in a Code node and in main, default and codeGeneration strings false vm contexts | HOME main 84501d8bd, runner recreated with the hardening module, 2026-11-26 | PASS | Probe execution 211 (job 211, n8n-worker): JS node returns codegen blocked, fs blocked, broker URI hidden; with the runner's launch flags main, default and strings false contexts all block; probe unpublished and n8n back to zero published workflows | required | E17 |
+| E27 | 175 | W191 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_p03_runner_boundaries tests.validation.test_p03_runner_isolation tests.validation.test_p03_runner_consumers | Change on 683c65f1e | PASS | The native rehearsal gains a javascript_code_generation_denied scenario expecting code_generation_blocked; 39 OK, 1 opt-in native skip | optional | - |
+| E28 | 175 | W191 | method=automated; tool=Python3 venv, docker; command=P03_RUNNER_NATIVE_REHEARSAL=1 python -m unittest tests.validation.test_p03_runner_isolation.P03RunnerNativeRehearsal | Change on 683c65f1e, reviewed images n8n 2.43.6 and runners 2.43.6 | ERROR | Refused before creating anything: the reviewed n8nio/runners 2.43.6 image is not cached; cleanup PASS, containers 67 before and after. The harness pins 2.43.6 while HOME runs 2.46.6 | optional | - |
+| E29 | 175 | W191 | method=observation; tool=Hermes logs, source; command=agent.log and errors.log for 2026-11-25 23:01 to 23:03 UTC, hermes_cli/runtime_provider.py | Server A, Hermes Agent v0.23.4 | FAIL | --provider custom -m lfm2.5:8b resolved base_url `https://openrouter.ai/api/v1`, failed with AuthenticationError and fell back to anthropic/claude-haiku-5-5; -m lfm one minute later used `http://127.0.0.1:11434/v1` | optional | - |
 
 ##### Resolution Links
 
