@@ -129,7 +129,7 @@ class OptionalIntegrationContractTests(unittest.TestCase):
         for secret, file in (
             ("mng_valkey_n8n_password", "n8n_password.txt"),
             ("mng_valkey_oauth2_proxy_password", "oauth2_proxy_password.txt"),
-            ("mng_valkey_airflow_password", "airflow_password.txt"),
+            ("mng_valkey_airflow_password", "airflow_broker_password.txt"),
         ):
             self.assertIn(secret, valkey["secrets"])
             self.assertEqual(

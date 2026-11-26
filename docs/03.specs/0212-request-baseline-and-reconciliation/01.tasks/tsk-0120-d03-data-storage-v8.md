@@ -124,6 +124,13 @@ owner ran the one-off row script, which added CACHE-031 and CACHE-032 to
 `secrets/SENSITIVE_ENV_VARS.md.example` and updated the CACHE-007 and
 CACHE-027 purposes (E09).
 
+The path `secrets/db/mng-valkey/airflow_password.txt` belonged to the
+retired dedicated identities (`3d0a39084`) and its file still exists. The
+generator keeps existing files, so reusing that path would revive a retired
+credential; CACHE-032 uses the fresh path
+`secrets/db/mng-valkey/airflow_broker_password.txt`, and the old file stays
+for D11 cleanup.
+
 #### Verification Evidence
 
 ##### Results

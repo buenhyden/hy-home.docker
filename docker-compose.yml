@@ -477,7 +477,7 @@ secrets:
   mng_valkey_oauth2_proxy_password:
     file: ./secrets/db/mng-valkey/oauth2_proxy_password.txt
   mng_valkey_airflow_password:
-    file: ./secrets/db/mng-valkey/airflow_password.txt
+    file: ./secrets/db/mng-valkey/airflow_broker_password.txt
   mng_valkey_inspector_password:
     file: ./secrets/db/mng-valkey/inspector_password.txt
   mng_valkey_monitor_password:
