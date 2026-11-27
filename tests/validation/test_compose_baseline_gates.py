@@ -4194,10 +4194,11 @@ class SeaweedfsContractTests(unittest.TestCase):
                 name,
             )
             self.assertEqual("/etc/seaweedfs", services[name]["working_dir"], name)
-        # The Iceberg REST catalog (S12) is on; like S3 it has no host port,
-        # and the only route still targets the S3 port.
+        # The Iceberg REST catalog (S12) is off until a SeaweedFS release fixes
+        # GHSA-25hp-4mw7-9c75 (unauthenticated S3 Tables/Iceberg/Lance admin);
+        # S3 has no host port and the only route targets the S3 port.
         for flag in (
-            "-port.iceberg=${SEAWEEDFS_ICEBERG_PORT:-8181}",
+            "-port.iceberg=0",
             "-port.lance=0",
             "-iam=false",
         ):
@@ -4312,6 +4313,10 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 "LAB_LAKEHOUSE_CATALOG_URI": "http://seaweedfs-s3:8181",
             },
         )  # fmt: skip
+        # HOME keeps the catalog off for GHSA-25hp-4mw7-9c75; this isolated,
+        # synthetic stack turns it on to keep the catalog scoping checked.
+        s3_command = rendered["services"]["seaweedfs-s3"]["command"]
+        s3_command[s3_command.index("-port.iceberg=0")] = "-port.iceberg=8181"
         rendered["services"].update(lab["services"])
         rendered["volumes"].update(lab["volumes"])
         services = {

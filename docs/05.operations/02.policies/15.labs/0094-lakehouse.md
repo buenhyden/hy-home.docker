@@ -1,13 +1,13 @@
 ---
 title: "Lakehouse Operations Policy"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-27"
 layer: "operations"
 artifact_id: "POL-0094"
 parent_ids:
@@ -115,7 +115,7 @@ root `lakehouse` profile은 HOME SeaweedFS만 선택하므로 이 정책의 LAB 
   찾는다. 소유자가 LAB에서 도달 가능한 endpoint를 승인하기 전까지 LAB은 렌더링 전용이며, 이를
   위해 HOME 카탈로그나 S3를 LAB network·host port·route에 임의로 게시하지 않는다(미결정, 별도
   승인). Kafka bootstrap endpoint도 같다.
-- HOME 카탈로그는 `object_net`에서만 접근 가능해야 하고 라우트/host port를 금지한다. 현재 all-interface S3 listener는 edge_net/seaweed_internal에도 8181을 열어 이 통제가 미준수다(POL-0024). route/host port 부재와 authenticated catalog 동작은 더 좁은 통제이며 network 격리를 대신하지 않는다. 별도 구현 수정 전 compliant로 인정하지 않는다. 엔진은
+- HOME 카탈로그는 `object_net`에서만 접근 가능해야 하고 라우트/host port를 금지한다. 현재 all-interface S3 listener는 edge_net/seaweed_internal에도 8181을 열어 이 통제가 미준수다(POL-0024). route/host port 부재와 authenticated catalog 동작은 더 좁은 통제이며 network 격리를 대신하지 않는다. 별도 구현 수정 전 compliant로 인정하지 않는다. 2026-11-28부터 HOME 카탈로그는 GHSA-25hp-4mw7-9c75 때문에 꺼져 있어(`-port.iceberg=0`) LAB 엔진은 수정된 SeaweedFS와 격리 구현 전까지 카탈로그를 쓸 수 없다. 엔진은
   `lakehouse` identity로 서명하며, 이 identity의 S3 액션과 테이블 버킷
   정책은 lakehouse 버킷만 다룬다. 정책은 열 개의 namespace 및 테이블 액션을
   나열하며 정책 변경과 버킷 삭제는 제외한다. 새 엔진은 이 identity를 재사용

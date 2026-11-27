@@ -1,13 +1,13 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-27"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -152,7 +152,7 @@ S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`,
   Prometheus뿐이다. Master의 인증되지 않은 `/dir/assign`과 `/col/delete`에는 이 두
   network의 구성원만 접근할 수 있으므로 Prometheus도 신뢰 경계 안에 둔다.
 - **최소 노출면.** Lance listener와 내장 IAM API는 꺼져 있다. Iceberg REST
-  catalog는 `object_net`에서만 접근 가능해야 하며 route/host port를 두지 않는다. **현재 구현 미준수**: `seaweedfs-s3`의 Iceberg listener는 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net 모두에서 도달 가능하다. host port와 catalog router는 없다. S3 router `s3.${DEFAULT_URL}`는 `gateway-standard-chain@file`만 쓰고 인증은 SigV4 identity가 맡는다. 단순 `expose` 제거로 격리되지 않으며 별도 source 변경과 network별 부정 접근 검증이 필요하다. 예외는 승인되지 않았다. 동일 identity(SigV4)를 사용한다. Table bucket은 `lakehouse`
+  catalog는 `object_net`에서만 접근 가능해야 하며 route/host port를 두지 않는다. **현재 구현 미준수**: `seaweedfs-s3`의 Iceberg listener는 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net 모두에서 도달 가능하다. host port와 catalog router는 없다. S3 router `s3.${DEFAULT_URL}`는 `gateway-standard-chain@file`만 쓰고 인증은 SigV4 identity가 맡는다. 단순 `expose` 제거로 격리되지 않으며 별도 source 변경과 network별 부정 접근 검증이 필요하다. 예외는 승인되지 않았다. 2026-11-28부터 GHSA-25hp-4mw7-9c75(수정 release 없음, 익명 S3 Tables·Iceberg·Lance 관리 접근)로 listener를 껐다(`-port.iceberg=0`). 다시 켜려면 수정된 SeaweedFS와 이 `object_net` 한정 통제를 먼저 충족해야 한다. 동일 identity(SigV4)를 사용한다. Table bucket은 `lakehouse`
   하나뿐이며 admin이 소유한다. 해당 policy는 `lakehouse` identity에 catalog와
   table action만 부여한다(policy 변경이나 bucket 삭제는 불가). Run마다
   lakehouse LAB의 `seaweedfs-table-bucket`이 이를 재작성하므로 수동 편집한 policy는 유지되지
@@ -240,7 +240,7 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 - 변경: 자동 검사 없음(none) `POL-0024-R44`; 수동 검토/승인 `POL-0024-R41`, `POL-0024-R43`
 - 검증: 자동 검사 없음(none) `POL-0024-R46`, `POL-0024-R47`
 - lifecycle: 자동 검사 없음(none) `POL-0024-R48`, `POL-0024-R49`, `POL-0024-R51`, `POL-0024-R52`, `POL-0024-R53`, `POL-0024-R54`, `POL-0024-R55`, `POL-0024-R56`, `POL-0024-R57`; 수동 검토/승인 `POL-0024-R50`
-- 정책이 밝힌 공백: Iceberg REST catalog의 `object_net` 한정은 현재 구현 미준수이며(`seaweedfs-s3`의 Iceberg listener가 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net에서 모두 도달 가능) 예외는 승인되지 않았다.
+- 정책이 밝힌 공백: Iceberg REST catalog의 `object_net` 한정은 구현되지 않았다. 2026-11-28부터 listener가 꺼져(GHSA-25hp-4mw7-9c75) 현재는 도달할 수 없지만, 다시 켜기 전에 격리를 구현해야 하며 예외는 승인되지 않았다.
 - 정책이 밝힌 공백: isolated rehearsal은 HOME 타이밍이 아니라 방법만 증명한다.
 
 #### Ownership
