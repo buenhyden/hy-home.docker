@@ -1,6 +1,6 @@
 ---
 title: "Dependency Version Management Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"

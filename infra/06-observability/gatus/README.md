@@ -122,14 +122,14 @@ Alpine 선택과 Go 버전은 유지했으므로 compiler·base 이미지 보안
 `NOT_RUN`입니다. 기존 custom image tag가 같아도 새 이미지가 빌드되거나
 수용된 증거는 아니며, 상태가 바뀐 뒤 tag만 되돌려 복구할 수 있다고 가정하지 않습니다.
 
-2026-11-27에는 v5.38.0(commit `d255d0cd…`, 아카이브 SHA256 `b0a5cd58…`)으로 올렸습니다.
-upstream이 `security/oidc.go`에 로그를 더해 기존 패치 다섯 hunk 중 셋이 맞지 않았으므로,
-5.37 위 패치 결과를 5.38에 3-way 병합해 하드닝(PKCE, secure·HTTP-only 쿠키, 상수 시간
-state/nonce 비교, 정확한 subject 일치, 콜백 쿠키 정리, 보호 라우트)을 모두 유지하고
-upstream 로그를 받아들였습니다. IdP가 보낸 `error`·`error_description`은 로그 줄 주입을
-막으려고 `%q`로 기록합니다. 독립 보안 검토는 APPROVE였고, 이미지 빌드에서 fuzz 없는
-적용과 `go test ./api ./security`가 통과했습니다. Compose 태그는 Dockerfile의
-`GATUS_VERSION`을 따라 `hy/gatus:5.38.0-local`입니다
+2026-11-27에는 Dockerfile이 고정한 다음 업스트림 릴리스로 올렸습니다(commit과 아카이브
+SHA256은 [Dockerfile](Dockerfile)에 있습니다). upstream이 `security/oidc.go`에 로그를 더해
+기존 패치 다섯 hunk 중 셋이 맞지 않았으므로, 이전 릴리스 위 패치 결과를 새 릴리스에
+3-way 병합해 하드닝(PKCE, secure·HTTP-only 쿠키, 상수 시간 state/nonce 비교, 정확한
+subject 일치, 콜백 쿠키 정리, 보호 라우트)을 모두 유지하고 upstream 로그를 받아들였습니다.
+IdP가 보낸 `error`·`error_description`은 로그 줄 주입을 막으려고 `%q`로 기록합니다. 독립
+보안 검토는 APPROVE였고, 이미지 빌드에서 fuzz 없는 적용과 `go test ./api ./security`가
+통과했습니다. Compose 태그의 버전은 Dockerfile의 `GATUS_VERSION`을 따릅니다
 ([`local_image_tags`](../../../scripts/lib/supply_chain/local_image_tags.py)).
 
 ###### Security Boundary
