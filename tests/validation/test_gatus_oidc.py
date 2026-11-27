@@ -18,8 +18,8 @@ CONFIG = GATUS / "config/config.oidc.yaml"
 DOCKERFILE = GATUS / "Dockerfile"
 ENTRYPOINT = GATUS / "docker-entrypoint.sh"
 PATCH = GATUS / "patches/oidc-hardening.patch"
-UPSTREAM_COMMIT = "ae605f291928ed9b3bdbe60ae5528cc57631433b"
-UPSTREAM_SHA256 = "79145709c1f5328fa01ff472d6c1d083cc8eb1bba90ea2dc6def628e88e3c406"
+UPSTREAM_COMMIT = "d255d0cd4d69ce818574cfdb3a7e82407e6559d7"  # v5.38.0
+UPSTREAM_SHA256 = "b0a5cd58784cf582410310269c8afe5695fbe33102aea8e7c9222a0ec9c3c692"
 
 
 class GatusOidcComposeTests(unittest.TestCase):

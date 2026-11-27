@@ -1005,7 +1005,7 @@
         "hy/gatus": "local-custom"
       },
       "images": [
-        "hy/gatus:local"
+        "hy/gatus:5.38.0-local"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -1014,7 +1014,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "hy/gatus:local"
+            "hy/gatus:5.38.0-local"
           ]
         }
       ]

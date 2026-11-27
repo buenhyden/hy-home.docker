@@ -987,9 +987,9 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             # Tempo on 2026-11-27 (patch_resolved).
             ("patch", "patch", 2),
             ("no-fix", "no_fix", 6),
-            # Traefik's deferred row was resolved on 2026-11-26, Loki's and
-            # MLflow's on 2026-11-27 (defer_resolved).
-            ("defer", "defer", 39),
+            # Traefik's deferred row was resolved on 2026-11-26, Loki's,
+            # MLflow's and Gatus's on 2026-11-27 (defer_resolved).
+            ("defer", "defer", 38),
         ):
             expected = {
                 name for name, row in rows.items() if row["decision"] == decision

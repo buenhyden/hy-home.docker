@@ -1,13 +1,13 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-25"
+updated: "2026-11-27"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -1122,7 +1122,7 @@ Prometheus를 다시 만들지 않는다. 이전 image로 되돌리는 overlay�
 
 Gatus도 W4 뒤 OpenBao를 HTTPS로 보고 내부 CA를 요구하므로 CA mount가 없으면 W4 이후에도
 계속 경보를 낸다. Compose는 이미 Gatus의 CA mount를 선언한다. Gatus image는 digest 고정이 아닌
-local build tag `hy/gatus:local`이므로, 실행 중 컨테이너의 image ID가 지금의 `hy/gatus:local`
+local build tag(Compose에 선언된 `hy/gatus:<version>-local`)이므로, 실행 중 컨테이너의 image ID가 그 태그의
 ID와 같고(2026-10-14 관측에서 같았다) 다른 설정 차이가 없을 때만
 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate gatus`로
 다시 만든다. 다르면 Gatus override는 없으므로 이 부분은 **BLOCKED**이며 그때까지의 Gatus

@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -390,6 +390,16 @@ commit, push, PR and merge. Work ran in the primary checkout on branch
   from the Dockerfile. Rows not covered: tags without a version (`hy/gatus:
   local`), a build file chosen by variable (n8n, oauth2-proxy) and bases with
   another name (mng-pg, dev-pg); each already names its running version.
+- Gatus v5.38.0 of 2026-11-27. Upstream added OIDC logging, so 3 of 5
+  `security/oidc.go` hunks no longer applied. The patch was rebuilt by a
+  3-way merge of the 5.37 patched file onto 5.38, keeping PKCE S256, Secure
+  and HttpOnly cookies, constant-time state and nonce checks, exact subject
+  match, callback cookie clearing and the protected data routes, and taking
+  upstream's logs (the IdP `error` values are logged with `%q`). An
+  independent security review returned APPROVE. `GATUS_VERSION` in the
+  Dockerfile now gives the tag `hy/gatus:5.38.0-local`: `local_image_tags`
+  reads an `ARG <NAME>_VERSION` when no same-named `FROM` exists and prefixes
+  an unversioned tag. The advisory row moved to `defer_resolved`.
 
 ## Verification Evidence
 
@@ -461,6 +471,7 @@ artifact verification and the current gate results.
 | Rehearsal pins on HOME versions | 104 | W109 | `OPSFLOW_AIRFLOW_NATIVE_IMAGE=sha256:7f956efc… python3 -m unittest -v tests.validation.test_opsflow_airflow_native_rehearsal`; static suites of the five repinned modules | Companions PostgreSQL 18.7, Valkey 9.1.4, SeaweedFS 4.54; Mailpit 1.34.0 in the n8n inputs; 2026-11-27 | PASS | 17/17 native tests, publication, retry, replay and restore PASS, cleanup PASS; 107 static tests OK | required | - |
 | Fresh upstream release lookup | 104 | W109 | `gh api repos/<owner>/<repo>/releases/latest` for 39 repositories behind 54 root entries | 2026-11-27 10:00 UTC, read-only | PASS | 28 equal, 21 behind, 5 other; table in Blockers and Decisions | required | - |
 | Local tag cleanup and HOME apply | 104 | W109 | `local_image_tags --check`; `docker compose -p hy-home-infra build loki tempo mlflow`; `up -d --no-deps --no-build --pull never <service>` after a dry run naming only the target, one at a time | Owner request 2026-11-27; branch `fix/local-image-tags-follow-base`; backup `hyhome-backup.service` success 19:51 KST | PASS | Check found exactly the three stale tags. Old and new images report the same binaries (loki 3.7.10 c792f585, tempo v3.1.1 9db7df79d, mlflow 3.18.0), so no data-format or database migration. Each healthy before the next; Loki `/ready` and 2,232 lines in the last 2 minutes; Tempo `/ready` and spans received; MLflow `/health` OK with no migration or error log. The old tagged images remain for rollback. Signature, SBOM and scan of the local images stay NOT_RUN | required | - |
+| Gatus v5.38.0 rebase and HOME apply | 104 | W109 | Image build (`patch --fuzz=0`, `go test ./api ./security`); `up -d --no-deps --no-build --pull never gatus` after a dry run; HTTPS probes through Traefik | Owner request 2026-11-27 (gatus 진행); commit `d255d0cd…`, archive SHA-256 `b0a5cd58…`; `gatus.db` copied to `/home/hyunyoun/storage/volumes/backups/upgrade-20261127/` first | PASS | Patch applied without fuzz; `api` and `security` tests ok; healthy on `hy/gatus:5.38.0-local` (label 5.38.0); OIDC provider discovered and routes registered; `/oidc/login` 302 to Keycloak with `code_challenge_method=S256`; state, nonce and PKCE cookies HttpOnly, Secure, SameSite=Lax; `/api/v1/endpoints/statuses` 401 anonymously; `/api/v1/config` `oidc:true, authenticated:false`, no announcements; monitors resumed. A full browser login was not run | required | - |
 
 ### Resolution Links
 

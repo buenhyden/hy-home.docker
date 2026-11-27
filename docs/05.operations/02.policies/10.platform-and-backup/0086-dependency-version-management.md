@@ -1,6 +1,6 @@
 ---
 title: "Dependency Version Management Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -128,7 +128,7 @@ Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, 현
 | POL-0086-R57 | 머지된 이미지 변경을 HOME에 적용할 때 | 필수: 적용(recreate)에 별도 승인을 받는다 | 수동 | none |
 | POL-0086-R58 | 항상 | 금지: 머지를 적용·검증 증거로 삼기 | 수동 | none |
 | POL-0086-R59 | 수동·에이전트 업데이트 라운드 | 필수: R44의 7일 release age와 R45의 major Dashboard 승인을 Renovate 밖의 갱신에도 똑같이 적용한다 | 수동 | 라운드 Task의 출시일·경과일 기록 |
-| POL-0086-R60 | 로컬 빌드 이미지 태그가 버전을 담을 때 | 필수: 태그 버전은 Dockerfile에서 같은 이름의 `FROM` 기준 이미지 버전과 같아야 하며, 지난 버전을 가리키는 태그를 두지 않는다. Renovate post-upgrade의 `sync-tech-stack-versions.sh --write`가 태그를 바꾸고 ledger는 이를 미검증 행으로 받는다 | `sync-tech-stack-versions.sh --check`(`local_image_tags`) | none |
+| POL-0086-R60 | 로컬 빌드 이미지 태그가 버전을 담을 때 | 필수: 태그 버전은 Dockerfile에서 같은 이름의 `FROM` 기준 이미지 버전(없으면 소스 빌드의 `ARG <이름>_VERSION`)과 같아야 하며, 지난 버전을 가리키는 태그를 두지 않는다. Renovate post-upgrade의 `sync-tech-stack-versions.sh --write`가 태그를 바꾸고 ledger는 이를 미검증 행으로 받는다 | `sync-tech-stack-versions.sh --check`(`local_image_tags`) | none |
 
 | Surface | Update owner | Authority and review |
 | --- | --- | --- |
