@@ -292,7 +292,7 @@
         "hy/loki": "local-custom"
       },
       "images": [
-        "hy/loki:3.7.8-seaweedfs"
+        "hy/loki:3.7.10-seaweedfs"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -301,7 +301,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "hy/loki:3.7.8-seaweedfs"
+            "hy/loki:3.7.10-seaweedfs"
           ]
         }
       ]
@@ -314,7 +314,7 @@
         "hy/tempo": "local-custom"
       },
       "images": [
-        "hy/tempo:3.1.0-seaweedfs"
+        "hy/tempo:3.1.1-seaweedfs"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -323,7 +323,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "hy/tempo:3.1.0-seaweedfs"
+            "hy/tempo:3.1.1-seaweedfs"
           ]
         }
       ]
@@ -1336,7 +1336,7 @@
         "hy-home/mlflow": "local-custom"
       },
       "images": [
-        "hy-home/mlflow:3.17.2-local"
+        "hy-home/mlflow:3.18.0-local"
       ],
       "compose_files": [
         "infra/08-ai/mlflow/docker-compose.yml"
@@ -1345,7 +1345,7 @@
         {
           "compose_file": "infra/08-ai/mlflow/docker-compose.yml",
           "images": [
-            "hy-home/mlflow:3.17.2-local"
+            "hy-home/mlflow:3.18.0-local"
           ]
         }
       ]

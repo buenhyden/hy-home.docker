@@ -75,6 +75,15 @@ if [[ "$MODE" == "write" ]] && ! python3 -c 'import yaml, markdown_it, jsonschem
   export PYTHONPATH="$deps_dir${PYTHONPATH:+:$PYTHONPATH}"
 fi
 
+# A locally built tag names the upstream version it wraps, and Renovate bumps
+# only the Dockerfile FROM: rename a stale tag before projecting it (check and
+# dry-run fail on one).
+if [[ "$MODE" == "write" ]]; then
+  python3 scripts/lib/supply_chain/local_image_tags.py --write --repo-root "$REPO_ROOT"
+else
+  python3 scripts/lib/supply_chain/local_image_tags.py --check --repo-root "$REPO_ROOT"
+fi
+
 SYNC_MODE="$MODE" SYNC_REPOSITORY_ROOT="$REPO_ROOT" python3 - <<'PY'
 from __future__ import annotations
 

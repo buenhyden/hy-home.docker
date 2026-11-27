@@ -56034,7 +56034,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "0.35.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56096,7 +56096,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "1.22.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56201,7 +56201,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "0.61.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56591,7 +56591,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "4.9.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57282,7 +57282,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/gatus:local",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "v5.37.0 exact source; custom image not built",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57348,7 +57348,7 @@
         "reviewed_at": "2026-11-27T00:06:30.614375+00:00",
         "reviewed_subject": {
           "declaration": "grafana/grafana:13.3.2@sha256:81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "13.3.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57415,7 +57415,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58062,17 +58062,17 @@
       },
       "loki": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T12:45:00+00:00",
         "reviewed_subject": {
-          "declaration": "hy/loki:3.7.8-seaweedfs",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
-          "assessment_version": "3.7.8",
+          "declaration": "hy/loki:3.7.10-seaweedfs",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "assessment_version": "3.7.10",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "UNKNOWN",
-        "bounded_research_applicability": "UNKNOWN",
-        "source_action": "patch",
-        "security_decision": "defer",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://api.github.com/repos/grafana/loki/security-advisories?per_page=100&page=1",
           "https://github.com/grafana/loki/pull/24806",
@@ -58099,29 +58099,34 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Direct Loki CVEs are fixed in 3.7.8, but the official 3.7.9 release contains concrete dependency security updates absent from the declared 3.7.8 tag. Vulnerable dependency versions are confirmed; service-path reachability is not. The locally changed Dockerfile is a patched source candidate, not evidence that hy/loki:3.7.8-seaweedfs was rebuilt or accepted.",
-        "next_action": "Finish source identity alignment to a new 3.7.9-derived custom tag, build in the separately approved producer, capture SBOM/signature/provenance, run SeaweedFS/config and rollback checks, then perform separately approved operational replacement. Do not treat the Dockerfile edit as deployment evidence.",
+        "reason": "Loki 3.7.10 (2026-11-13) contains the 3.7.9 dependency security updates the 3.7.8 tag lacked; the direct Loki CVEs were fixed in 3.7.8, and the grafana/loki repository lists no published advisory on 2026-11-27. The local tag now names the 3.7.10 base it wraps, the rebuilt image reports loki 3.7.10 (revision c792f585) and runs healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan.",
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
-          "action": "reconcile-declaration-build-and-candidate",
-          "target_retained": "3.7.8",
+          "action": "retain-current-version",
+          "target_retained": "3.7.10",
           "observed_latest": "3.7.9",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Tracked build input, output label or retained candidate disagree; preserve the real declaration and obtain one exact artifact/subject binding before source adoption.",
-          "next_action": "Finish source identity alignment to a new 3.7.9-derived custom tag, build in the separately approved producer, capture SBOM/signature/provenance, run SeaweedFS/config and rollback checks, then perform separately approved operational replacement. Do not treat the Dockerfile edit as deployment evidence."
+          "reason": "Loki 3.7.10 (2026-11-13) contains the 3.7.9 dependency security updates the 3.7.8 tag lacked; the direct Loki CVEs were fixed in 3.7.8, and the grafana/loki repository lists no published advisory on 2026-11-27. The local tag now names the 3.7.10 base it wraps, the rebuilt image reports loki 3.7.10 (revision c792f585) and runs healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan.",
+          "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
         },
-        "operational_execution": "NOT_RUN",
+        "operational_execution": "PASS: rebuilt and recreated on HOME 2026-11-27, healthy",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
         "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
-          "affected_confirmed": null,
-          "reason": null,
-          "advisory_urls": [],
-          "current_version": null,
-          "candidate_version": null
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "decision": "defer",
+          "affected_confirmed": false,
+          "reason": "Direct Loki CVEs are fixed in 3.7.8, but the official 3.7.9 release contains concrete dependency security updates absent from the declared 3.7.8 tag. Vulnerable dependency versions are confirmed; service-path reachability is not. The locally changed Dockerfile is a patched source candidate, not evidence that hy/loki:3.7.8-seaweedfs was rebuilt or accepted.",
+          "advisory_urls": [
+            "https://api.github.com/repos/grafana/loki/security-advisories?per_page=100&page=1",
+            "https://github.com/grafana/loki/pull/24806",
+            "https://grafana.com/security/security-advisories/cve-2026-21726/",
+            "https://grafana.com/security/security-advisories/cve-2026-21729/"
+          ],
+          "current_version": "3.7.8",
+          "candidate_version": "3.7.10"
         }
       },
       "mailpit": {
@@ -58220,17 +58225,17 @@
       },
       "mlflow": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T12:45:00+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/mlflow:3.17.2-local",
-          "source_input_sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9",
-          "assessment_version": "inventory 3.16.1; Compose 3.17.2-local; Dockerfile 3.18.0",
+          "declaration": "hy-home/mlflow:3.18.0-local",
+          "source_input_sha256": "caed97453a7510cb474b3aaaac60ab9bf53ffc52eaace0acd43e178bcb39d47f",
+          "assessment_version": "3.18.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "UNKNOWN",
-        "bounded_research_applicability": "UNKNOWN",
-        "source_action": "patch",
-        "security_decision": "defer",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://api.github.com/repos/mlflow/mlflow/security-advisories?per_page=100&page=1",
           "https://github.com/mlflow/mlflow/blob/master/CHANGELOG.md",
@@ -58246,7 +58251,8 @@
           "https://github.com/mlflow/mlflow/security/advisories/GHSA-m65p-9j7q-6w33",
           "https://github.com/mlflow/mlflow/security/advisories/GHSA-wp72-7hj9-5265",
           "https://github.com/mlflow/mlflow/security/advisories/GHSA-wqmh-qccw-pqwf",
-          "https://github.com/mlflow/mlflow/security/advisories/GHSA-xg73-94fp-g449"
+          "https://github.com/mlflow/mlflow/security/advisories/GHSA-xg73-94fp-g449",
+          "https://github.com/mlflow/mlflow/security/advisories/GHSA-mr9f-g8qf-4w4j"
         ],
         "concrete_advisory_refs": [
           "https://github.com/mlflow/mlflow/blob/master/CHANGELOG.md",
@@ -58262,7 +58268,8 @@
           "https://github.com/mlflow/mlflow/security/advisories/GHSA-m65p-9j7q-6w33",
           "https://github.com/mlflow/mlflow/security/advisories/GHSA-wp72-7hj9-5265",
           "https://github.com/mlflow/mlflow/security/advisories/GHSA-wqmh-qccw-pqwf",
-          "https://github.com/mlflow/mlflow/security/advisories/GHSA-xg73-94fp-g449"
+          "https://github.com/mlflow/mlflow/security/advisories/GHSA-xg73-94fp-g449",
+          "https://github.com/mlflow/mlflow/security/advisories/GHSA-mr9f-g8qf-4w4j"
         ],
         "advisory_discovery": [
           {
@@ -58279,29 +58286,45 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Current Dockerfile is 3.18.0 and visible advisories are fixed there, but Compose still labels output 3.17.2 and no digest/build receipt proves the artifact. Historical GHSA-wqmh-qccw-pqwf returns 404.",
-        "next_action": "Align source identity to 3.18.0 and build/scan/test locally; plan DB migration and deployment separately.",
+        "reason": "MLflow 3.18.0 (2026-11-04) is at or above the patched version of every published mlflow/mlflow repository advisory on 2026-11-27, including GHSA-mr9f-g8qf-4w4j (< 3.18.0). The local tag now names the 3.18.0 base, the rebuilt image reports mlflow 3.18.0, the same version HOME already ran, so no database migration ran; healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan.",
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "reconcile-declaration-build-and-candidate",
-          "target_retained": "3.16.1",
+          "action": "retain-current-version",
+          "target_retained": "3.18.0",
           "observed_latest": "3.18.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Tracked build input, output label or retained candidate disagree; preserve the real declaration and obtain one exact artifact/subject binding before source adoption.",
-          "next_action": "Align source identity to 3.18.0 and build/scan/test locally; plan DB migration and deployment separately."
+          "reason": "MLflow 3.18.0 (2026-11-04) is at or above the patched version of every published mlflow/mlflow repository advisory on 2026-11-27, including GHSA-mr9f-g8qf-4w4j (< 3.18.0). The local tag now names the 3.18.0 base, the rebuilt image reports mlflow 3.18.0, the same version HOME already ran, so no database migration ran; healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan.",
+          "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
         },
-        "operational_execution": "NOT_RUN",
+        "operational_execution": "PASS: rebuilt and recreated on HOME 2026-11-27, healthy",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
         "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
-          "affected_confirmed": null,
-          "reason": null,
-          "advisory_urls": [],
-          "current_version": null,
-          "candidate_version": null
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "decision": "defer",
+          "affected_confirmed": false,
+          "reason": "Current Dockerfile is 3.18.0 and visible advisories are fixed there, but Compose still labels output 3.17.2 and no digest/build receipt proves the artifact. Historical GHSA-wqmh-qccw-pqwf returns 404.",
+          "advisory_urls": [
+            "https://api.github.com/repos/mlflow/mlflow/security-advisories?per_page=100&page=1",
+            "https://github.com/mlflow/mlflow/blob/master/CHANGELOG.md",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-26p8-2jq9-3vq9",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-2wqp-q3c6-ccj5",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-3p64-6gvh-82v5",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-4449-4cjp-ffp5",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-7gwp-5pfp-969j",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-83fm-w79m-64r5",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-gqch-g4w5-7qcw",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-gqvg-gmmx-x4hm",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-j7qq-vr8c-xvw3",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-m65p-9j7q-6w33",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-wp72-7hj9-5265",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-wqmh-qccw-pqwf",
+            "https://github.com/mlflow/mlflow/security/advisories/GHSA-xg73-94fp-g449"
+          ],
+          "current_version": "inventory 3.16.1; Compose 3.17.2-local; Dockerfile 3.18.0",
+          "candidate_version": "3.18.0"
         }
       },
       "mlflow-db-provision": {
@@ -58309,7 +58332,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "f2dda9de5d62fa8527eab38bbbb60fdb6d08fd7cafc17f1cd5372d12c9fd1ef9",
+          "source_input_sha256": "caed97453a7510cb474b3aaaac60ab9bf53ffc52eaace0acd43e178bcb39d47f",
           "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -59350,7 +59373,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "1.13.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60391,7 +60414,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "3.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60469,7 +60492,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "1.11.5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60526,7 +60549,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
           "assessment_version": "2.4.4",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62265,17 +62288,17 @@
       },
       "tempo": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T12:45:00+00:00",
         "reviewed_subject": {
-          "declaration": "hy/tempo:3.1.0-seaweedfs",
-          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
-          "assessment_version": "3.1.0",
+          "declaration": "hy/tempo:3.1.1-seaweedfs",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "assessment_version": "3.1.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "AFFECTED",
-        "bounded_research_applicability": "AFFECTED",
-        "source_action": "patch",
-        "security_decision": "patch",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://api.github.com/repos/grafana/tempo/security-advisories?per_page=100&page=1",
           "https://github.com/grafana/tempo/security/advisories/GHSA-fx6q-qhch-hxgp",
@@ -62304,43 +62327,36 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The vendor explicitly identifies 3.1.1 as a security release updating Go for the enumerated CVEs. The compose declaration remains a 3.1.0-derived custom tag. The locally changed Dockerfile is a patched source candidate, not evidence that the declared custom image was built, signed, or deployed.",
-        "next_action": "Finish source identity alignment to a new 3.1.1-derived custom tag, build in the separately approved producer, capture SBOM/signature/provenance, validate SeaweedFS/config/rollback, and perform separately approved operational replacement.",
+        "reason": "Tempo 3.1.1 (2026-10-21) is the vendor security release that updates Go for the enumerated CVEs; the only repository advisory, GHSA-fx6q-qhch-hxgp, affects 2.10.x only. The local tag now names the 3.1.1 base it wraps, the rebuilt image reports tempo v3.1.1 (revision 9db7df79d) and runs healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan.",
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
-          "action": "reconcile-declaration-build-and-candidate",
-          "target_retained": "3.1.0",
+          "action": "retain-current-version",
+          "target_retained": "3.1.1",
           "observed_latest": "3.1.1",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Tracked build input, output label or retained candidate disagree; preserve the real declaration and obtain one exact artifact/subject binding before source adoption.",
-          "next_action": "Finish source identity alignment to a new 3.1.1-derived custom tag, build in the separately approved producer, capture SBOM/signature/provenance, validate SeaweedFS/config/rollback, and perform separately approved operational replacement."
+          "reason": "Tempo 3.1.1 (2026-10-21) is the vendor security release that updates Go for the enumerated CVEs; the only repository advisory, GHSA-fx6q-qhch-hxgp, affects 2.10.x only. The local tag now names the 3.1.1 base it wraps, the rebuilt image reports tempo v3.1.1 (revision 9db7df79d) and runs healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan.",
+          "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
         },
-        "operational_execution": "NOT_RUN",
+        "operational_execution": "PASS: rebuilt and recreated on HOME 2026-11-27, healthy",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
         "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
-          "affected_confirmed": null,
-          "reason": null,
-          "advisory_urls": [],
-          "current_version": null,
-          "candidate_version": null
-        },
-        "patch_component": {
-          "name": "Tempo upstream binary build line",
-          "current_version": "3.1.0",
-          "candidate_version": "3.1.1",
-          "evidence_refs": [
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "decision": "patch",
+          "affected_confirmed": true,
+          "reason": "The vendor explicitly identifies 3.1.1 as a security release updating Go for the enumerated CVEs. The compose declaration remains a 3.1.0-derived custom tag. The locally changed Dockerfile is a patched source candidate, not evidence that the declared custom image was built, signed, or deployed.",
+          "advisory_urls": [
             "https://api.github.com/repos/grafana/tempo/security-advisories?per_page=100&page=1",
             "https://github.com/grafana/tempo/security/advisories/GHSA-fx6q-qhch-hxgp",
             "https://grafana.com/security/security-advisories/cve-2026-21728/",
             "https://grafana.com/security/security-advisories/cve-2026-27878/",
             "https://grafana.com/security/security-advisories/cve-2026-28377/"
           ],
-          "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
+          "current_version": "3.1.0",
+          "candidate_version": "3.1.1"
         }
       },
       "traefik": {
@@ -65042,8 +65058,8 @@
         ],
         "target_retained": "3.7.8",
         "prior_observed_version": "3.7.9",
-        "current_observed_version": "3.7.9",
-        "current_release_ref": "https://github.com/grafana/loki/releases/tag/v3.7.9",
+        "current_observed_version": "3.7.10",
+        "current_release_ref": "https://github.com/grafana/loki/releases/tag/v3.7.10",
         "source_queries": [
           "grafana/loki"
         ],
@@ -65053,7 +65069,7 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Finish source identity alignment to a new 3.7.9-derived custom tag, build in the separately approved producer, capture SBOM/signature/provenance, run SeaweedFS/config and rollback checks, then perform separately approved operational replacement. Do not treat the Dockerfile edit as deployment evidence."
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
       },
       "mailpit": {
         "previous_gate_missing": [
@@ -65091,7 +65107,7 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Align source identity to 3.18.0 and build/scan/test locally; plan DB migration and deployment separately."
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
       },
       "mng-pg-exporter": {
         "previous_gate_missing": [
@@ -65599,7 +65615,7 @@
         ],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Finish source identity alignment to a new 3.1.1-derived custom tag, build in the separately approved producer, capture SBOM/signature/provenance, validate SeaweedFS/config/rollback, and perform separately approved operational replacement."
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
       },
       "terrakube-api": {
         "previous_gate_missing": [
@@ -65822,29 +65838,6 @@
         "producer": "infra/08-ai/open-notebook/surrealdb/Dockerfile",
         "build_input_image": "docker.io/surrealdb/surrealdb@sha256:d9501f6da5e1b8f83e81a9f6893899b0a3b84aec16748ac685718c75ce27b9ea",
         "next_action": "Resolve the patched major-version upgrade and verify the custom storage image, migration, and recovery."
-      },
-      "tempo": {
-        "decision": "patch",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/tempo",
-        "declared_subject": "hy/tempo:3.1.0-seaweedfs",
-        "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-        "operational_execution": "NOT_RUN",
-        "component": "Tempo upstream binary build line",
-        "fixed_candidate_version": "3.1.1",
-        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/tempo/patch_component/evidence_refs",
-        "final_image": null,
-        "candidate_scope": "custom-image",
-        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
-        "registry_observation": "docker.io/grafana/tempo:3.1.1",
-        "scan_ref": "tempo",
-        "publisher_signature_status": "NOT_VERIFIED",
-        "published_predicates_ref": "tempo",
-        "producer": "infra/06-observability/tempo/Dockerfile",
-        "build_input_image": "docker.io/grafana/tempo@sha256:24ded48437b982348fdb52d6353d6e0a6ea519e57b0517d6065d419112d4032c",
-        "next_action": "Bind the patched custom build to the SeaweedFS and Tempo configuration tests, then review the reported Brotli residual.",
-        "component_advisory_ids": [
-          "GO-2026-6888"
-        ]
       }
     },
     "no_fix": {
@@ -66206,34 +66199,6 @@
         "declared_registry_observation": "danielqsj/kafka-exporter:v1.10.0@sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42",
         "declared_scan_ref": "kafka-exporter",
         "artifact_gap": "Digest-bound inventory and scan succeeded. Assess package, configuration and reachability for the reported Critical/High matches; publisher evidence and full applicability remain pending."
-      },
-      "loki": {
-        "decision": "defer",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/loki",
-        "declared_subject": "hy/loki:3.7.8-seaweedfs",
-        "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-        "operational_execution": "NOT_RUN",
-        "applicability": "UNKNOWN",
-        "official_advisory_queries": [
-          "grafana/loki"
-        ],
-        "prior_official_source_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/loki/advisory_refs",
-        "next_action": "Finish source identity alignment to a new 3.7.9-derived custom tag, build in the separately approved producer, capture SBOM/signature/provenance, run SeaweedFS/config and rollback checks, then perform separately approved operational replacement. Do not treat the Dockerfile edit as deployment evidence.",
-        "artifact_gap": "Obtain the producer or build output digest and exact package inventory before image-level applicability."
-      },
-      "mlflow": {
-        "decision": "defer",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/mlflow",
-        "declared_subject": "hy-home/mlflow:3.17.2-local",
-        "source_input_sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa",
-        "operational_execution": "NOT_RUN",
-        "applicability": "UNKNOWN",
-        "official_advisory_queries": [
-          "mlflow/mlflow"
-        ],
-        "prior_official_source_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/mlflow/advisory_refs",
-        "next_action": "Align source identity to 3.18.0 and build/scan/test locally; plan DB migration and deployment separately.",
-        "artifact_gap": "Obtain the producer or build output digest and exact package inventory before image-level applicability."
       },
       "mng-pg-exporter": {
         "decision": "defer",
@@ -73140,6 +73105,30 @@
           "CVE-2026-111497"
         ],
         "resolution": "2026-11-26: the rebuilt image from 494d16fe runs on Node 26.13.1, released after the October 2026 batch that fixed CVE-2026-111497 in 26.12.1; the current advisory review is NOT_AFFECTED."
+      },
+      "tempo": {
+        "decision": "patch",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/tempo",
+        "declared_subject": "hy/tempo:3.1.0-seaweedfs",
+        "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+        "operational_execution": "NOT_RUN",
+        "component": "Tempo upstream binary build line",
+        "fixed_candidate_version": "3.1.1",
+        "component_primary_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/tempo/patch_component/evidence_refs",
+        "final_image": null,
+        "candidate_scope": "custom-image",
+        "artifact_disposition": "Blocked pending final image digest, publisher signature, provenance, SBOM, scan, compatibility and recovery.",
+        "registry_observation": "docker.io/grafana/tempo:3.1.1",
+        "scan_ref": "tempo",
+        "publisher_signature_status": "NOT_VERIFIED",
+        "published_predicates_ref": "tempo",
+        "producer": "infra/06-observability/tempo/Dockerfile",
+        "build_input_image": "docker.io/grafana/tempo@sha256:24ded48437b982348fdb52d6353d6e0a6ea519e57b0517d6065d419112d4032c",
+        "next_action": "Bind the patched custom build to the SeaweedFS and Tempo configuration tests, then review the reported Brotli residual.",
+        "component_advisory_ids": [
+          "GO-2026-6888"
+        ],
+        "resolution": "2026-11-27: the local tag now names its 3.1.1 Dockerfile base, rebuilt and recreated healthy on HOME; Tempo 3.1.1 (2026-10-21) is the vendor security release that updates Go for the enumerated CVEs; the only repository advisory, GHSA-fx6q-qhch-hxgp, affects 2.10.x only. The local tag now names the 3.1.1 base it wraps, the rebuilt image reports tempo v3.1.1 (revision 9db7df79d) and runs healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan."
       }
     },
     "defer_resolved": {
@@ -73159,6 +73148,36 @@
         "registry_retry": "docker.io/library/traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
         "artifact_gap": "Complete inventory and advisory applicability on the declared platform digest; retain registry failures as evidence gaps.",
         "resolution": "2026-11-26: Traefik v3.8.0 (Renovate) is outside every published traefik/traefik repository advisory range, so the deferred classification is resolved and the current advisory review is NOT_AFFECTED."
+      },
+      "loki": {
+        "decision": "defer",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/loki",
+        "declared_subject": "hy/loki:3.7.8-seaweedfs",
+        "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+        "operational_execution": "NOT_RUN",
+        "applicability": "UNKNOWN",
+        "official_advisory_queries": [
+          "grafana/loki"
+        ],
+        "prior_official_source_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/loki/advisory_refs",
+        "next_action": "Finish source identity alignment to a new 3.7.9-derived custom tag, build in the separately approved producer, capture SBOM/signature/provenance, run SeaweedFS/config and rollback checks, then perform separately approved operational replacement. Do not treat the Dockerfile edit as deployment evidence.",
+        "artifact_gap": "Obtain the producer or build output digest and exact package inventory before image-level applicability.",
+        "resolution": "2026-11-27: the local tag now names its 3.7.10 Dockerfile base, rebuilt and recreated healthy on HOME; Loki 3.7.10 (2026-11-13) contains the 3.7.9 dependency security updates the 3.7.8 tag lacked; the direct Loki CVEs were fixed in 3.7.8, and the grafana/loki repository lists no published advisory on 2026-11-27. The local tag now names the 3.7.10 base it wraps, the rebuilt image reports loki 3.7.10 (revision c792f585) and runs healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan."
+      },
+      "mlflow": {
+        "decision": "defer",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/mlflow",
+        "declared_subject": "hy-home/mlflow:3.17.2-local",
+        "source_input_sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa",
+        "operational_execution": "NOT_RUN",
+        "applicability": "UNKNOWN",
+        "official_advisory_queries": [
+          "mlflow/mlflow"
+        ],
+        "prior_official_source_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/mlflow/advisory_refs",
+        "next_action": "Align source identity to 3.18.0 and build/scan/test locally; plan DB migration and deployment separately.",
+        "artifact_gap": "Obtain the producer or build output digest and exact package inventory before image-level applicability.",
+        "resolution": "2026-11-27: the local tag now names its 3.18.0 Dockerfile base, rebuilt and recreated healthy on HOME; MLflow 3.18.0 (2026-11-04) is at or above the patched version of every published mlflow/mlflow repository advisory on 2026-11-27, including GHSA-mr9f-g8qf-4w4j (< 3.18.0). The local tag now names the 3.18.0 base, the rebuilt image reports mlflow 3.18.0, the same version HOME already ran, so no database migration ran; healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan."
       }
     }
   }

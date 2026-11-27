@@ -13,7 +13,8 @@ of the same repository as the existing row. Such a row is marked unverified:
 target digests UNKNOWN, review, scan and acceptance fields NOT_RUN, the
 previous values kept in the source_refreshes record. A new or removed service,
 a repository change, a reference without a digest and a build change still stop
-the run. Nothing here contacts a registry; digests, signatures and provenance
+the run. A locally built row is also accepted when its tag moved only to the
+version its Dockerfile base now names (scripts.lib.supply_chain.local_image_tags). Nothing here contacts a registry; digests, signatures and provenance
 stay unchecked.
 """
 
@@ -29,6 +30,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from scripts.lib.supply_chain.latest_version_gate import expected_from_root
+from scripts.lib.supply_chain.local_image_tags import expected_image
 
 LEDGER = "infra/09-platform-ops/security-updates/update-ledger.json"
 BUILD_INPUTS = "build-inputs.json"
@@ -63,6 +65,11 @@ RENOVATE_NOTE = (
     "Renovate-proposed pin: the digest was not verified against a registry and "
     "no publisher signature, provenance, SBOM, scan, compatibility, native, "
     "deployment or recovery result exists for it"
+)
+LOCAL_NOTE = (
+    "Local tag renamed to its Dockerfile base version: the rebuilt image has no "
+    "registry digest, and no publisher signature, provenance, SBOM, scan, "
+    "compatibility, native, deployment or recovery result exists for it"
 )
 
 
@@ -152,6 +159,8 @@ def plan(root, ledger, accept_images=False):
         refusal = None
         if image != row["current_declared"]:
             refusal = _image_refusal(row["current_declared"], image)
+            if refusal and image == expected_image(root, row):
+                refusal = None
             if not accept_images or refusal:
                 detail = f" ({refusal})" if accept_images else ""
                 blockers.append(f"image changed, needs update evidence: {name}{detail}")
@@ -169,6 +178,7 @@ def plan(root, ledger, accept_images=False):
 
 def _mark_unverified(row, image, stamp):
     """Re-point a row at a Renovate-proposed image; return what it replaced."""
+    note = RENOVATE_NOTE if PINNED.fullmatch(image) else LOCAL_NOTE
     kept = {
         key: copy.deepcopy(row[key])
         for key in (
@@ -203,8 +213,8 @@ def _mark_unverified(row, image, stamp):
         current_declared=image,
         target_version=version,
         target_source_image=image,
-        target_digest_evidence=f"UNKNOWN: {RENOVATE_NOTE}.",
-        candidate_evidence_scope=f"{RENOVATE_NOTE}.",
+        target_digest_evidence=f"UNKNOWN: {note}.",
+        candidate_evidence_scope=f"{note}.",
         disposition="BLOCKED",
         source_refreshed_at=stamp,
         blocker={
@@ -212,7 +222,7 @@ def _mark_unverified(row, image, stamp):
             "owner": "SEC01",
             "discovered_at": stamp,
             "next_validation_due": due.isoformat(),
-            "reason": f"{RENOVATE_NOTE}.",
+            "reason": f"{note}.",
             "exit_condition": (
                 "Verify the registry index, platform and config digests, the "
                 "publisher signature and provenance, a scan, compatibility and "
@@ -224,8 +234,7 @@ def _mark_unverified(row, image, stamp):
             "source_image": image,
             "status": "UNBOUND_CURRENT_TARGET",
             "reason": (
-                f"{RENOVATE_NOTE}; do not reuse historical artifact, build or "
-                "native results."
+                f"{note}; do not reuse historical artifact, build or native results."
             ),
         },
     )
@@ -288,7 +297,8 @@ def apply(
                 previous_service_images=images,
                 meaning=(
                     f"{len(images)} rows now declare a Renovate-proposed image "
-                    "(a full name:tag@sha256 reference of the same repository). "
+                    "(a full name:tag@sha256 reference of the same repository, "
+                    "or a locally built tag renamed to its Dockerfile base version). "
                     "The digest was not verified against a registry and the "
                     "signature and provenance were not verified: their target "
                     "digests are UNKNOWN, review, scan and acceptance fields are "

@@ -153,7 +153,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: hy/loki:3.7.8-seaweedfs
+    image: hy/loki:3.7.10-seaweedfs
     build:
       context: ./loki
       dockerfile: Dockerfile
@@ -206,7 +206,7 @@ services:
     build:
       context: ./tempo
       dockerfile: Dockerfile
-    image: hy/tempo:3.1.0-seaweedfs
+    image: hy/tempo:3.1.1-seaweedfs
     container_name: tempo
     hostname: tempo
     group_add:

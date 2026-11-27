@@ -225,6 +225,7 @@ def updater_contract_findings(
             "bash scripts/operations/sync-update-ledger.sh --write",
         ],
         "fileFilters": [
+            "infra/**/docker-compose.yml",
             "infra/tech-stack.versions.json",
             "infra/09-platform-ops/security-updates/update-ledger.json",
             "infra/09-platform-ops/security-updates/build-inputs.json",
@@ -972,8 +973,18 @@ class TechStackSynchronizationTests(unittest.TestCase):
             ROOT / "scripts/lib/document_governance",
             self.root / "scripts/lib/document_governance",
         )
+        # The script first renames stale local image tags from the SEC01 ledger;
+        # an empty ledger keeps that step a no-op here.
+        supply_chain = self.root / "scripts/lib/supply_chain"
+        supply_chain.mkdir()
+        shutil.copyfile(
+            ROOT / "scripts/lib/supply_chain/local_image_tags.py",
+            supply_chain / "local_image_tags.py",
+        )
+        ledger = self.root / "infra/09-platform-ops/security-updates/update-ledger.json"
+        ledger.parent.mkdir(parents=True)
+        ledger.write_text('{"entries": []}\n')
         self.registry = self.root / "infra/tech-stack.versions.json"
-        self.registry.parent.mkdir()
         self.compose = self.root / "infra/example/docker-compose.yml"
         self.compose.parent.mkdir()
         self.compose.write_text("services:\n  app:\n    image: example/app:2\n")
