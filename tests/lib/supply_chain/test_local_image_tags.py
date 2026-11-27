@@ -78,15 +78,28 @@ class LocalImageTagTests(unittest.TestCase):
             # The lagging ledger row is ledger_rebind's drift, not a stale tag.
             self.assertEqual(0, run(local_image_tags.main, *check)[0])
 
-    def test_unversioned_tag_or_unrelated_base_is_not_covered(self):
+    def test_unversioned_tag_gains_the_version_and_unrelated_base_is_not_covered(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make(root, "hy/loki:local", "grafana/loki:3.7.10")
             row = json.loads(ledger(root, "hy/loki:local").read_text())["entries"][0]
-            self.assertIsNone(local_image_tags.expected_image(root, row))
+            self.assertEqual(
+                "hy/loki:3.7.10-local", local_image_tags.expected_image(root, row)
+            )
             make(root, "hy/loki:3.7.8", "grafana/other:3.9.0")
             row["current_declared"] = "hy/loki:3.7.8"
             self.assertIsNone(local_image_tags.expected_image(root, row))
+
+    def test_source_build_takes_its_version_from_the_named_arg(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make(root, "hy/gatus:local", "golang:1.26.4")
+            dockerfile = root / "infra/svc/loki/Dockerfile"
+            dockerfile.write_text("ARG GATUS_VERSION=5.38.0\n" + dockerfile.read_text())
+            row = json.loads(ledger(root, "hy/gatus:local").read_text())["entries"][0]
+            self.assertEqual(
+                "hy/gatus:5.38.0-local", local_image_tags.expected_image(root, row)
+            )
 
     def test_ledger_accepts_only_the_base_version_rename_as_unverified(self):
         with tempfile.TemporaryDirectory() as directory:

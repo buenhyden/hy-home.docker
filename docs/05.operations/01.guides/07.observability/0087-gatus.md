@@ -1,13 +1,13 @@
 ---
 title: "Gatus Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-27"
 layer: "operations"
 artifact_id: "GDE-0087"
 parent_ids:
@@ -67,7 +67,7 @@ Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availab
 
 root Compose가 포함 여부를 관장하며,
 [observability Compose source](../../../../infra/06-observability/docker-compose.yml)가
-local build(`hy/gatus:local`, `template-stateful-low`이라 root filesystem은 쓰기 가능), UID/GID, `GATUS_PORT`, read-only config bind, healthcheck, network,
+local build(`hy/gatus:<GATUS_VERSION>-local`, 태그 버전은 Dockerfile의 `GATUS_VERSION`을 따름, `template-stateful-low`이라 root filesystem은 쓰기 가능), UID/GID, `GATUS_PORT`, read-only config bind, healthcheck, network,
 `gatus-data` mount, Traefik label을 관장한다.
 
 활성 mount는 `config.oidc.yaml`이다. Gatus는 confidential한 `home-gatus`

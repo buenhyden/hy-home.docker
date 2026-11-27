@@ -146,7 +146,7 @@
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065"
+      "sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
@@ -2441,7 +2441,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-24T16:21:46+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -2580,7 +2580,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "0.35.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -2713,7 +2713,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-24T16:21:46+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
@@ -2837,7 +2837,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "1.22.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -3215,7 +3215,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-24T16:21:46+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
@@ -3335,7 +3335,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "0.61.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -4804,7 +4804,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T07:19:46+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4943,7 +4943,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "4.9.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -7722,7 +7722,7 @@
       "service": "gatus",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "hy/gatus:local",
+      "current_declared": "hy/gatus:5.38.0-local",
       "profiles_declared": [
         "obs",
         "availability",
@@ -7749,14 +7749,14 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "5.38.0",
-      "target_version": "5.37.0",
+      "target_version": "5.38.0",
       "channel": "stable",
       "checked_at": "2026-11-10T22:26:49.713579+00:00",
       "release_url": "https://github.com/TwiN/gatus/releases/tag/v5.38.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-09-24T00:00:21Z",
       "advisory_urls": [
         "https://api.github.com/repos/TwiN/gatus/security-advisories?per_page=100&page=1",
@@ -7774,13 +7774,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Mature v5.37.0 archive/commit/hash and exact zero-fuzz owned OIDC patch compatibility verified; existing Go1.26.4 satisfies declared Go1.26.3 floor. Existing SDK/base debt preserved; no new image built or accepted.",
-        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1→1.59.0 native/recovery acceptance remain separate before deployment.",
+        "discovered_at": "2026-11-27T12:32:48.266573+00:00",
+        "next_validation_due": "2026-12-04T12:32:48.266573+00:00",
+        "reason": "Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -7792,10 +7792,10 @@
         "sha256:c52ad9511a84a5738eda73155807acd5a2fe3842bd6a33f223fc570d308bba91"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "v5.37.0",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_refreshed_at": "2026-11-27T12:32:48.266573+00:00",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8158,7 +8158,7 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "hy/gatus:local",
+      "target_source_image": "hy/gatus:5.38.0-local",
       "target_build_materials": [
         {
           "role": "exact upstream source archive",
@@ -8189,14 +8189,14 @@
           "artifact_binding": "Source archive only; custom image not built"
         }
       ],
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "target_declared_digest": "UNKNOWN: Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "target_digest_evidence": "UNKNOWN: Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "5.37.0",
-        "source_image": "hy/gatus:local",
+        "source_version": "5.38.0",
+        "source_image": "hy/gatus:5.38.0-local",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        "reason": "Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
       "upstream_tag_evidence_kind": "CURRENT_PUBLIC_PUBLISHED_SOURCE_FACT_NOT_RUNNING_COMMAND_OUTPUT",
       "master_20261110_public_refresh": {
@@ -8258,22 +8258,22 @@
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
-      "decision": "defer",
-      "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected source predates v5.38 token-redaction, WebSocket timeout and maintenance fixes. Coordinator: a security-relevant5.38 hardening release is recorded, but no explicit vendor affected-version range or built custom-artifact receipt confirms aggregate affectedness; prepare an update without inventing a formal range.",
+      "decision": "not-affected",
+      "affected_confirmed": false,
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Gatus v5.38.0 (2026-10-28, commit d255d0cd) contains the four reviewed upstream fixes (#1804 maintenance-window validation, #1843 Telegram token redaction, #1845 websocket timeouts, #1862 OIDC diagnostics), and TwiN/gatus lists no published repository advisory on 2026-11-27. The local OIDC hardening patch was rebased onto it with every control kept, independently reviewed (APPROVE), applied without fuzz and its api and security Go tests passed in the image build; the local tag names 5.38.0.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T13:40:00+00:00",
         "reviewed_subject": {
-          "declaration": "hy/gatus:local",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
-          "assessment_version": "v5.37.0 exact source; custom image not built",
+          "declaration": "hy/gatus:5.38.0-local",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
+          "assessment_version": "5.38.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "UNKNOWN",
-        "bounded_research_applicability": "AFFECTED",
-        "source_action": "patch",
-        "security_decision": "defer",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://api.github.com/repos/TwiN/gatus/security-advisories?per_page=100&page=1",
           "https://github.com/TwiN/gatus/pull/1804",
@@ -8302,34 +8302,40 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected source predates v5.38 token-redaction, WebSocket timeout and maintenance fixes. Coordinator: a security-relevant5.38 hardening release is recorded, but no explicit vendor affected-version range or built custom-artifact receipt confirms aggregate affectedness; prepare an update without inventing a formal range.",
-        "next_action": "Rebase the local patch on v5.38, update exact archive binding, test/build/scan, and deploy separately.",
+        "reason": "Gatus v5.38.0 (2026-10-28, commit d255d0cd) contains the four reviewed upstream fixes (#1804 maintenance-window validation, #1843 Telegram token redaction, #1845 websocket timeouts, #1862 OIDC diagnostics), and TwiN/gatus lists no published repository advisory on 2026-11-27. The local OIDC hardening patch was rebased onto it with every control kept, independently reviewed (APPROVE), applied without fuzz and its api and security Go tests passed in the image build; the local tag names 5.38.0.",
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "5.37.0",
+          "action": "retain-current-version",
+          "target_retained": "5.38.0",
           "observed_latest": "5.38.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Rebase the local patch on v5.38, update exact archive binding, test/build/scan, and deploy separately."
+          "reason": "Gatus v5.38.0 (2026-10-28, commit d255d0cd) contains the four reviewed upstream fixes (#1804 maintenance-window validation, #1843 Telegram token redaction, #1845 websocket timeouts, #1862 OIDC diagnostics), and TwiN/gatus lists no published repository advisory on 2026-11-27. The local OIDC hardening patch was rebased onto it with every control kept, independently reviewed (APPROVE), applied without fuzz and its api and security Go tests passed in the image build; the local tag names 5.38.0.",
+          "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
         },
-        "operational_execution": "NOT_RUN",
+        "operational_execution": "PASS: rebuilt and recreated on HOME 2026-11-27, healthy",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
         "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
-          "affected_confirmed": null,
-          "reason": null,
-          "advisory_urls": [],
-          "current_version": null,
-          "candidate_version": null
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "decision": "defer",
+          "affected_confirmed": false,
+          "reason": "Selected source predates v5.38 token-redaction, WebSocket timeout and maintenance fixes. Coordinator: a security-relevant5.38 hardening release is recorded, but no explicit vendor affected-version range or built custom-artifact receipt confirms aggregate affectedness; prepare an update without inventing a formal range.",
+          "advisory_urls": [
+            "https://api.github.com/repos/TwiN/gatus/security-advisories?per_page=100&page=1",
+            "https://github.com/TwiN/gatus/pull/1804",
+            "https://github.com/TwiN/gatus/pull/1843",
+            "https://github.com/TwiN/gatus/pull/1845",
+            "https://github.com/TwiN/gatus/pull/1862"
+          ],
+          "current_version": "v5.37.0 exact source; custom image not built",
+          "candidate_version": "5.38.0"
         }
       },
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/gatus",
-        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/gatus"
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer_resolved/gatus"
       }
     },
     {
@@ -8412,7 +8418,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-27T08:27:55+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/grafana:13.3.2@sha256:81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101",
@@ -8552,7 +8558,7 @@
         "reviewed_at": "2026-11-27T00:06:30.614375+00:00",
         "reviewed_subject": {
           "declaration": "grafana/grafana:13.3.2@sha256:81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "13.3.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -8693,7 +8699,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-24T16:21:46+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8833,7 +8839,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -10878,7 +10884,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-27T20:26:53+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11021,7 +11027,7 @@
         "reviewed_at": "2026-11-27T12:45:00+00:00",
         "reviewed_subject": {
           "declaration": "hy/loki:3.7.10-seaweedfs",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "3.7.10",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -15882,7 +15888,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-24T16:21:46+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -16017,7 +16023,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "1.13.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -20153,7 +20159,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run the owner steps in SPEC-0204-TSK-0021: approved pull, offline scan, promtool checks, HOME recreation.",
       "source_refreshed_at": "2026-11-24T16:21:46+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
@@ -20285,7 +20291,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "3.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -20437,7 +20443,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
@@ -20565,7 +20571,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "1.11.5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -20692,7 +20698,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-24T16:21:46+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
@@ -20816,7 +20822,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "2.4.4",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -25998,7 +26004,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-27T20:26:53+09:00",
-      "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+      "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.1-seaweedfs",
@@ -26127,7 +26133,7 @@
         "reviewed_at": "2026-11-27T12:45:00+00:00",
         "reviewed_subject": {
           "declaration": "hy/tempo:3.1.1-seaweedfs",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "3.1.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60295,6 +60301,258 @@
             "platform": "linux/amd64",
             "applicability": "UNKNOWN",
             "upstream_reported_tag": "v3.1.0",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
+    },
+    {
+      "source_revision": "ef1ba239bcaed4ff101bdefd4ec65e9b31a62a7e",
+      "refreshed_at": "2026-11-27T12:32:48.266573+00:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "17880ed7f48410d33d38a86801a9b3637aa3e172e970a4a24111989eee0d6db3",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7df3bcd149809bfa66f55745a5201cde10249cdb4bcd535c76933e14d832275c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "bea4ad9fad9dea27178d6996fc9aeb3c68fe5641252d41f0d7c92c9aa57aec43"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "73d5754c0a0d6419bb8399a35104a2e06b59965a18256e1dcbf0ec2b6d00654a"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "b494ff5970dd0a293709ed4ac07f5a1a538e146095bc4f0b66b40245a3679041"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "c95dc25d4977e28ef281fce2651e17ea15bf96db14494a27eeaa1b987e865e07"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "f7cf17b4fa054c88a792d2a07e1315a5dd62b0e3b7046cfb71a8acd955ba71ec"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "0777773f66d293e9bb8fb58cb0a1c5c677f817a94db4cfe917fb0de3e82bbcc8"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "51a5398438dfc67f14f92c9ce69d960ac3fbbac1c981f1f66cea83dbcdc2f11c"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "4e28ed5fc0e39a71ce8d78220b52b2618aa9abc330edd19cddea1d0f09d649e2"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "caed97453a7510cb474b3aaaac60ab9bf53ffc52eaace0acd43e178bcb39d47f"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e37265d81dfed6307e484fd2189365401cc4317e0e78ebeba26a98144379915"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "b2df25b3a29ede02669549e4333f345a49a7563445c2f253ec6e1737d0aa7c64"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "41ceded697e46a0f3ad69cfdf820f31b2ba0d92f65d221abc858e7f0150fa24d"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "95dc375e672aa157ea54d5d875c635565cb4c766545704c30c54e7fdc3fe8050"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "96e2771d3cf9346ffb43520f3592e6cb81b7e2310c536168d18d3f4579fc70da"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "4b8cbc3dd32d0ec322fff6b08367ce9bed54465e60d9fa02707ec8f01f33023d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065"
+        }
+      ],
+      "changed_inputs": [
+        "infra/06-observability/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "alertmanager",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-24T16:21:46+09:00"
+        },
+        {
+          "service": "alloy",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-24T16:21:46+09:00"
+        },
+        {
+          "service": "cadvisor",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-24T16:21:46+09:00"
+        },
+        {
+          "service": "dcgm-exporter",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-10T07:19:46+09:00"
+        },
+        {
+          "service": "gatus",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "grafana",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-27T08:27:55+09:00"
+        },
+        {
+          "service": "grafana-db-provision",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-24T16:21:46+09:00"
+        },
+        {
+          "service": "loki",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-27T20:26:53+09:00"
+        },
+        {
+          "service": "node-exporter",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-24T16:21:46+09:00"
+        },
+        {
+          "service": "prometheus",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-24T16:21:46+09:00"
+        },
+        {
+          "service": "pushgateway",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "pyroscope",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-24T16:21:46+09:00"
+        },
+        {
+          "service": "tempo",
+          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_refreshed_at": "2026-11-27T20:26:53+09:00"
+        }
+      ],
+      "meaning": "1 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository, or a locally built tag renamed to its Dockerfile base version). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 13 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "gatus"
+      ],
+      "previous_service_images": [
+        {
+          "service": "gatus",
+          "current_declared": "hy/gatus:local",
+          "proposed_declared": "hy/gatus:5.38.0-local",
+          "previous_fields": {
+            "target_version": "5.37.0",
+            "target_source_image": "hy/gatus:local",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "Mature v5.37.0 archive/commit/hash and exact zero-fuzz owned OIDC patch compatibility verified; existing Go1.26.4 satisfies declared Go1.26.3 floor. Existing SDK/base debt preserved; no new image built or accepted.",
+              "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1→1.59.0 native/recovery acceptance remain separate before deployment.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "v5.37.0",
             "signature": "NOT_RUN",
             "sbom_scan": "NOT_RUN",
             "compatibility": "NOT_RUN",

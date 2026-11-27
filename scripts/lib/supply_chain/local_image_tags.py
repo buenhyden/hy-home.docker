@@ -4,9 +4,10 @@ A locally built service such as ``hy/loki:3.7.8-seaweedfs`` names the upstream
 version it wraps, but Renovate only bumps the Dockerfile ``FROM`` line, so the
 tag kept naming a past release. For every SEC01 ledger row with a build source
 whose Compose tag starts with a version, the Dockerfile ``FROM`` image with the
-same name as the tag's repository sets the expected version. Rows without such
-a ``FROM`` (an unversioned tag, an unresolved build variable, a differently
-named base) are not covered.
+same name as the tag's repository sets the expected version; without one, an
+``ARG <NAME>_VERSION=`` default does (a source build such as Gatus). An
+unversioned tag gains the version as a prefix. Rows with neither source, or a
+build file chosen by a variable, are not covered.
 
 --check exits 1 on a stale tag; --write rewrites the Compose ``image:`` lines.
 Standard library only, so the Renovate post-upgrade step can run it as is.
@@ -39,12 +40,20 @@ def expected_image(root, row):
     if "$" in dockerfile or "$" in build.get("context", ""):
         return None
     repo, tag = image.rsplit(":", 1)
-    current = TAG_VERSION.match(tag)
     path = Path(root, row["compose_file"]).parent / build["context"] / dockerfile
-    if not current or not path.is_file():
+    if not path.is_file():
         return None
     text = path.read_text()
     args = dict(ARG.findall(text))
+    version = _base_version(text, args, _name(image))
+    if version is None:
+        return None
+    current = TAG_VERSION.match(tag)
+    rest = tag[current.end() :] if current else f"-{tag}"
+    return f"{repo}:{version}{rest}"
+
+
+def _base_version(text, args, name):
     for line in text.splitlines():
         words = line.split()
         if not words or words[0].upper() != "FROM":
@@ -55,11 +64,14 @@ def expected_image(root, row):
         ref = options[0]
         ref = re.sub(r"\$\{?(\w+)\}?", lambda m: args.get(m[1], m[0]), ref)
         base = ref.split("@", 1)[0]
-        if ":" in base and _name(base) == _name(image):
+        if ":" in base and _name(base) == name:
             version = TAG_VERSION.match(base.rsplit(":", 1)[1])
             if version:
-                return f"{repo}:{version[1]}{tag[current.end() :]}"
-    return None
+                return version[1]
+    declared = TAG_VERSION.fullmatch(
+        args.get(re.sub(r"\W", "_", name).upper() + "_VERSION", "")
+    )
+    return declared[1] if declared else None
 
 
 def _image_line(old):

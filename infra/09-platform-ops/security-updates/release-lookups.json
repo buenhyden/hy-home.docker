@@ -56034,7 +56034,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "0.35.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56096,7 +56096,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "1.22.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56201,7 +56201,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "0.61.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56591,7 +56591,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "4.9.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57279,17 +57279,17 @@
       },
       "gatus": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T13:40:00+00:00",
         "reviewed_subject": {
-          "declaration": "hy/gatus:local",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
-          "assessment_version": "v5.37.0 exact source; custom image not built",
+          "declaration": "hy/gatus:5.38.0-local",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
+          "assessment_version": "5.38.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
-        "security_applicability": "UNKNOWN",
-        "bounded_research_applicability": "AFFECTED",
-        "source_action": "patch",
-        "security_decision": "defer",
+        "security_applicability": "NOT_AFFECTED",
+        "bounded_research_applicability": "NOT_AFFECTED",
+        "source_action": "retain",
+        "security_decision": "not-affected",
         "advisory_refs": [
           "https://api.github.com/repos/TwiN/gatus/security-advisories?per_page=100&page=1",
           "https://github.com/TwiN/gatus/pull/1804",
@@ -57318,29 +57318,35 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected source predates v5.38 token-redaction, WebSocket timeout and maintenance fixes. Coordinator: a security-relevant5.38 hardening release is recorded, but no explicit vendor affected-version range or built custom-artifact receipt confirms aggregate affectedness; prepare an update without inventing a formal range.",
-        "next_action": "Rebase the local patch on v5.38, update exact archive binding, test/build/scan, and deploy separately.",
+        "reason": "Gatus v5.38.0 (2026-10-28, commit d255d0cd) contains the four reviewed upstream fixes (#1804 maintenance-window validation, #1843 Telegram token redaction, #1845 websocket timeouts, #1862 OIDC diagnostics), and TwiN/gatus lists no published repository advisory on 2026-11-27. The local OIDC hardening patch was rebased onto it with every control kept, independently reviewed (APPROVE), applied without fuzz and its api and security Go tests passed in the image build; the local tag names 5.38.0.",
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
-          "action": "prepare-upgrade",
-          "target_retained": "5.37.0",
+          "action": "retain-current-version",
+          "target_retained": "5.38.0",
           "observed_latest": "5.38.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Rebase the local patch on v5.38, update exact archive binding, test/build/scan, and deploy separately."
+          "reason": "Gatus v5.38.0 (2026-10-28, commit d255d0cd) contains the four reviewed upstream fixes (#1804 maintenance-window validation, #1843 Telegram token redaction, #1845 websocket timeouts, #1862 OIDC diagnostics), and TwiN/gatus lists no published repository advisory on 2026-11-27. The local OIDC hardening patch was rebased onto it with every control kept, independently reviewed (APPROVE), applied without fuzz and its api and security Go tests passed in the image build; the local tag names 5.38.0.",
+          "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
         },
-        "operational_execution": "NOT_RUN",
+        "operational_execution": "PASS: rebuilt and recreated on HOME 2026-11-27, healthy",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
         "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
-          "affected_confirmed": null,
-          "reason": null,
-          "advisory_urls": [],
-          "current_version": null,
-          "candidate_version": null
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "decision": "defer",
+          "affected_confirmed": false,
+          "reason": "Selected source predates v5.38 token-redaction, WebSocket timeout and maintenance fixes. Coordinator: a security-relevant5.38 hardening release is recorded, but no explicit vendor affected-version range or built custom-artifact receipt confirms aggregate affectedness; prepare an update without inventing a formal range.",
+          "advisory_urls": [
+            "https://api.github.com/repos/TwiN/gatus/security-advisories?per_page=100&page=1",
+            "https://github.com/TwiN/gatus/pull/1804",
+            "https://github.com/TwiN/gatus/pull/1843",
+            "https://github.com/TwiN/gatus/pull/1845",
+            "https://github.com/TwiN/gatus/pull/1862"
+          ],
+          "current_version": "v5.37.0 exact source; custom image not built",
+          "candidate_version": "5.38.0"
         }
       },
       "grafana": {
@@ -57348,7 +57354,7 @@
         "reviewed_at": "2026-11-27T00:06:30.614375+00:00",
         "reviewed_subject": {
           "declaration": "grafana/grafana:13.3.2@sha256:81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "13.3.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57415,7 +57421,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58065,7 +58071,7 @@
         "reviewed_at": "2026-11-27T12:45:00+00:00",
         "reviewed_subject": {
           "declaration": "hy/loki:3.7.10-seaweedfs",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "3.7.10",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59373,7 +59379,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "1.13.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60414,7 +60420,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "3.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60492,7 +60498,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "1.11.5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60549,7 +60555,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "2.4.4",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62291,7 +62297,7 @@
         "reviewed_at": "2026-11-27T12:45:00+00:00",
         "reviewed_subject": {
           "declaration": "hy/tempo:3.1.1-seaweedfs",
-          "source_input_sha256": "0911116c1a2a90341d05b2e02913902af6f373da34d9be1cad7458a494199065",
+          "source_input_sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba",
           "assessment_version": "3.1.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -64977,7 +64983,7 @@
         "registry_observations": [],
         "channel": "stable",
         "channel_limit": "A published-final release, tag or matching image alone does not establish the stable channel.",
-        "next_action": "Rebase the local patch on v5.38, update exact archive binding, test/build/scan, and deploy separately."
+        "next_action": "Keep this version; signature, provenance, SBOM and scan of the local image stay NOT_RUN."
       },
       "kafka-1": {
         "previous_gate_missing": [
@@ -66154,20 +66160,6 @@
         ],
         "prior_official_source_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/flower/advisory_refs",
         "next_action": "Bind the Celery provider and Flower dependencies to official advisories and verify access controls in a source-only review.",
-        "artifact_gap": "Obtain the producer or build output digest and exact package inventory before image-level applicability."
-      },
-      "gatus": {
-        "decision": "defer",
-        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/gatus",
-        "declared_subject": "hy/gatus:local",
-        "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
-        "operational_execution": "NOT_RUN",
-        "applicability": "UNKNOWN",
-        "official_advisory_queries": [
-          "TwiN/gatus"
-        ],
-        "prior_official_source_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/gatus/advisory_refs",
-        "next_action": "Rebase the local patch on v5.38, update exact archive binding, test/build/scan, and deploy separately.",
         "artifact_gap": "Obtain the producer or build output digest and exact package inventory before image-level applicability."
       },
       "k6": {
@@ -73178,6 +73170,21 @@
         "next_action": "Align source identity to 3.18.0 and build/scan/test locally; plan DB migration and deployment separately.",
         "artifact_gap": "Obtain the producer or build output digest and exact package inventory before image-level applicability.",
         "resolution": "2026-11-27: the local tag now names its 3.18.0 Dockerfile base, rebuilt and recreated healthy on HOME; MLflow 3.18.0 (2026-11-04) is at or above the patched version of every published mlflow/mlflow repository advisory on 2026-11-27, including GHSA-mr9f-g8qf-4w4j (< 3.18.0). The local tag now names the 3.18.0 base, the rebuilt image reports mlflow 3.18.0, the same version HOME already ran, so no database migration ran; healthy on HOME. Bounded to the reviewed official advisories; not a full-image or OS scan."
+      },
+      "gatus": {
+        "decision": "defer",
+        "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/gatus",
+        "declared_subject": "hy/gatus:local",
+        "source_input_sha256": "17b62076202d3fb80e9c7a4f2fd8496db7bb21a8d347e9e1654f4b5cde87ec40",
+        "operational_execution": "NOT_RUN",
+        "applicability": "UNKNOWN",
+        "official_advisory_queries": [
+          "TwiN/gatus"
+        ],
+        "prior_official_source_refs": "release-lookups.json#/master_20261111_advisory_review/reviews/gatus/advisory_refs",
+        "next_action": "Rebase the local patch on v5.38, update exact archive binding, test/build/scan, and deploy separately.",
+        "artifact_gap": "Obtain the producer or build output digest and exact package inventory before image-level applicability.",
+        "resolution": "2026-11-27: Gatus v5.38.0 (2026-10-28, commit d255d0cd) contains the four reviewed upstream fixes (#1804 maintenance-window validation, #1843 Telegram token redaction, #1845 websocket timeouts, #1862 OIDC diagnostics), and TwiN/gatus lists no published repository advisory on 2026-11-27. The local OIDC hardening patch was rebased onto it with every control kept, independently reviewed (APPROVE), applied without fuzz and its api and security Go tests passed in the image build; the local tag names 5.38.0."
       }
     }
   }

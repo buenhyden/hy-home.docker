@@ -673,7 +673,7 @@ services:
     build:
       context: ./gatus
       dockerfile: Dockerfile
-    image: hy/gatus:local
+    image: hy/gatus:5.38.0-local
     container_name: gatus
     hostname: gatus
     group_add:
