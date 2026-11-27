@@ -52,7 +52,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med
-    image: pactfoundation/pact-broker:3.1.0-pactbroker2.124.0@sha256:51b7de8316507fdc1d322bb397fd4d4c1ce41bdfabf6a9fd9c85eb65c03a89c0
+    image: pactfoundation/pact-broker:3.2.0-pactbroker2.124.0@sha256:b5b9af2e571e2f6a2f9e2ebe85f0e09158ae5e707349d5afce66bfc7cb7437a5
     container_name: pact-broker
     hostname: pact-broker
     group_add:

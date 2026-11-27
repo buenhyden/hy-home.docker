@@ -314,7 +314,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
-    image: n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504
+    image: n8nio/n8n-sandbox-service-api:1.16.0@sha256:334724118cbc5235a73a69efa71cde50f85d1ac3b72c16785dd930d500d00a32
     container_name: n8n-sandbox-certs
     hostname: n8n-sandbox-certs
     user: '0:0'
@@ -343,7 +343,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504
+    image: n8nio/n8n-sandbox-service-api:1.16.0@sha256:334724118cbc5235a73a69efa71cde50f85d1ac3b72c16785dd930d500d00a32
     container_name: n8n-sandbox-api
     hostname: n8n-sandbox-api
     group_add:
@@ -409,7 +409,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: n8nio/n8n-sandbox-service-runner-dind:1.15.0@sha256:d6d2cdc163250d749d9442176264a05b65adca44660af541d1f0966b393b0806
+    image: n8nio/n8n-sandbox-service-runner-dind:1.16.0@sha256:e03ae162f9503d8c68180a1dc0539f82ba425a5d79d033e45d90f350cd6ca732
     container_name: n8n-sandbox-runner-1
     hostname: n8n-sandbox-runner-1
     # Exception: infra/common-optimizations.exceptions.json (owner, 2026-11-09).
@@ -451,7 +451,7 @@ services:
       # The host kernel has overlay.redirect_dir off, so npm cannot rename image-layer
       # directories (EXDEV) and the workspace install times out; vfs has no such layer.
       SANDBOX_RUNNER_DOCKER_STORAGE_DRIVER: vfs
-      SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE: n8nio/n8n-sandbox-service-sandbox:1.15.0@sha256:d5084349964e4fc68071482e771ed361e34536144e2b9a9fb42298fed0dcd489
+      SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE: n8nio/n8n-sandbox-service-sandbox:1.16.0@sha256:4b48ced73cc65df87bffcfde7a5a36a8739989d39afe6859eb5a12442ff18535
       SANDBOX_RUNNER_REGISTRATION_GRPC_CA_FILE: /tls/runner/ca.crt
       SANDBOX_RUNNER_REGISTRATION_GRPC_CERT_FILE: /tls/runner/grpc-client.crt
       SANDBOX_RUNNER_REGISTRATION_GRPC_KEY_FILE: /tls/runner/grpc-client.key

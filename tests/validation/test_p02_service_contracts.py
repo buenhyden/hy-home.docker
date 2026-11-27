@@ -1222,7 +1222,7 @@ class N8nCodeSandboxContractTests(unittest.TestCase):
         ]
         for ref in refs:
             self.assertRegex(
-                ref, r"^n8nio/n8n-sandbox-service-[a-z-]+:1\.15\.0@sha256:[0-9a-f]{64}$"
+                ref, r"^n8nio/n8n-sandbox-service-[a-z-]+:1\.16\.0@sha256:[0-9a-f]{64}$"
             )
 
     def test_keys_come_from_secret_files_not_environment_values(self) -> None:
