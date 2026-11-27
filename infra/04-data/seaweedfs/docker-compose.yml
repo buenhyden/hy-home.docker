@@ -212,8 +212,9 @@ services:
     # GHSA-25hp-4mw7-9c75 (SeaweedFS >= 4.34, no fixed release) gives
     # unauthenticated admin access to the S3 Tables, Iceberg and Lance APIs,
     # and an anonymous Iceberg request returned 200 on object_net. Restore
-    # -port.iceberg=${SEAWEEDFS_ICEBERG_PORT:-8181} and its expose entry once a
-    # fixed SeaweedFS is pinned, before the lakehouse LAB needs the catalog.
+    # -port.iceberg=${SEAWEEDFS_ICEBERG_PORT:-8181}, its expose entry and the
+    # .env.example key once a fixed SeaweedFS is pinned, before the lakehouse
+    # LAB needs the catalog.
     # When on, the catalog serves table buckets and signs with the same
     # S3 identities (SigV4); it has no route and stays on object_net. Lance
     # stays off, and the embedded IAM API is off because identities come from

@@ -458,7 +458,9 @@ commit, push, PR and merge. Work ran in the primary checkout on branch
   (critical, no fixed release), whose Iceberg API answered an anonymous
   request with 200 on `object_net`, so the owner had the Iceberg listener
   turned off (`-port.iceberg=0`) until a fixed release, with the policy
-  stating the re-enable condition. The test that pinned every row to the
+  stating the re-enable condition; `SEAWEEDFS_ICEBERG_PORT` left `.env.example`
+  with its consumer, and if the private `.env` still sets it, removing it joins
+  the owner's private cleanup of SPEC-0212 TSK-0124. The test that pinned every row to the
   2026-11-11 review now checks a re-reviewed row against the newer round,
   `ledger_rebind` keeps follow-up commands on the new image, and the
   follow-up commands of dev-pg, mng-pg and OpenTofu no longer name past

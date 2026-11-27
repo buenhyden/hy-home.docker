@@ -337,9 +337,8 @@ class ComposeContractTests(unittest.TestCase):
     def test_crawler_has_no_route_but_the_gateway(self):
         crawler = self.services["crawl4ai"]
         self.assertRegex(
-            crawler["image"], r"^unclecode/crawl4ai:0\.9\.5@sha256:0b05666882bfb67f"
+            crawler["image"], r"^unclecode/crawl4ai:\d+\.\d+\.\d+@sha256:[0-9a-f]{64}$"
         )
-        self.assertEqual(crawler["image"].rsplit("@", 1)[1], IMAGE.rsplit("@", 1)[1])
 
         self.assertEqual(
             {"crawl4ai_net", "crawl4ai_egress_net"}, set(crawler["networks"])
@@ -416,7 +415,13 @@ class ComposeContractTests(unittest.TestCase):
         self.assertEqual(["crawl4ai-egress"], outside)
 
 
-IMAGE = "unclecode/crawl4ai@sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9"
+# The rehearsal runs the declared crawler by digest, so it follows every update.
+IMAGE = (
+    "unclecode/crawl4ai@"
+    + yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))["services"]["crawl4ai"][
+        "image"
+    ].rsplit("@", 1)[1]
+)
 PYTHON = "python:3.13.15-alpine"
 PUBLIC_IP = "11.200.0.10"  # globally routable form, on an internal network only
 FIXTURE = r"""
