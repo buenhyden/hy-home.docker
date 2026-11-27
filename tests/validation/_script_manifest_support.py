@@ -50,6 +50,7 @@ MUTATION_OVERRIDES = {
     "scripts/lib/ops/secret_catalog.py": "check-write",
     "scripts/lib/ops/workspace_inventory.py": "check-write",
     "scripts/lib/supply_chain/ledger_rebind.py": "check-write",
+    "scripts/lib/supply_chain/local_image_tags.py": "check-write",
     "scripts/lib/ops/_workspace_render.py": "check-write",
     "scripts/lib/ops/smtp_contract.py": "runtime",
     "scripts/lib/ops/memory_capacity.py": "runtime",
