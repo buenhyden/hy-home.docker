@@ -117,6 +117,7 @@ class LocalImageTagTests(unittest.TestCase):
             self.assertEqual("BLOCKED", row["disposition"])
             self.assertEqual("NOT_RUN", row["signature"])
             self.assertIn("Local tag renamed", row["blocker"]["reason"])
+            self.assertTrue(row["target_declared_digest"].startswith("UNKNOWN: "))
 
     def test_repository_tags_follow_their_dockerfile_base(self):
         code, output = run(local_image_tags.main, "--check", "--repo-root", str(ROOT))

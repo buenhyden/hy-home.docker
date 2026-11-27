@@ -10945,7 +10945,7 @@
       },
       "target_source_image": "hy/loki:3.7.10-seaweedfs",
       "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
+      "target_declared_digest": "UNKNOWN: Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "target_digest_evidence": "UNKNOWN: Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
@@ -11548,7 +11548,7 @@
       },
       "target_source_image": "hy-home/mlflow:3.18.0-local",
       "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
+      "target_declared_digest": "UNKNOWN: Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "target_digest_evidence": "UNKNOWN: Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
@@ -26003,7 +26003,7 @@
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.1-seaweedfs",
       "candidate_evidence_scope": "Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
-      "target_declared_digest": "UNKNOWN",
+      "target_declared_digest": "UNKNOWN: Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "target_digest_evidence": "UNKNOWN: Local tag renamed to its Dockerfile base version: the rebuilt image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
         "grafana/tempo"

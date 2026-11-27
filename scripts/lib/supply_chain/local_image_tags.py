@@ -22,7 +22,6 @@ from pathlib import Path
 
 LEDGER = "infra/09-platform-ops/security-updates/update-ledger.json"
 TAG_VERSION = re.compile(r"^v?(\d+(?:\.\d+)+)")
-FROM = re.compile(r"^FROM\s+(?:--\S+\s+)*(\S+)", re.M)
 ARG = re.compile(r"^ARG\s+(\w+)=(\S+)", re.M)
 
 
@@ -46,7 +45,14 @@ def expected_image(root, row):
         return None
     text = path.read_text()
     args = dict(ARG.findall(text))
-    for ref in FROM.findall(text):
+    for line in text.splitlines():
+        words = line.split()
+        if not words or words[0].upper() != "FROM":
+            continue
+        options = [word for word in words[1:] if not word.startswith("--")]
+        if not options:
+            continue
+        ref = options[0]
         ref = re.sub(r"\$\{?(\w+)\}?", lambda m: args.get(m[1], m[0]), ref)
         base = ref.split("@", 1)[0]
         if ":" in base and _name(base) == _name(image):

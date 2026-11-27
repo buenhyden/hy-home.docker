@@ -207,6 +207,9 @@ def _mark_unverified(row, image, stamp):
     version = re.search(r"\d+(?:\.\d+)+", tag)
     version = version.group() if version else "UNKNOWN"
     row.update(dict.fromkeys(UNKNOWN_TARGET, "UNKNOWN"))
+    if note is LOCAL_NOTE:
+        # A locally built image has no registry digest to declare.
+        row["target_declared_digest"] = f"UNKNOWN: {note}."
     row.update(dict.fromkeys(NOT_RUN, "NOT_RUN"))
     due = datetime.fromisoformat(stamp) + timedelta(days=7)
     row.update(
