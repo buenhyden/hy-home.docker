@@ -551,6 +551,20 @@ class PostgresAdapter(unittest.TestCase):
                         )
                 self.connect.assert_not_called()
 
+    def test_default_trust_store_ssl_cert_file_is_not_an_override(self):
+        # Airflow 3.4.0's base image sets SSL_CERT_FILE to the system store,
+        # the same file OpenSSL uses by default; that changes no trust.
+        default = ssl.get_default_verify_paths().openssl_cafile
+        publisher = adapters.PgPublisher(pg_config())
+        with patch.dict(os.environ, {"SSL_CERT_FILE": default}):
+            try:
+                publisher.publish(
+                    self.manifest, "a" * 64, "b" * 64, "manifest-validated/a.json"
+                )
+            except adapters.DependencyError:
+                pass
+        self.connect.assert_called_once()
+
     def test_verify_full_connect_failure_closes_sealed_ca(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
