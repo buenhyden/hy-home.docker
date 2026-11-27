@@ -136,7 +136,10 @@ class NativeGuardTests(unittest.TestCase):
             )
             self.assertEqual(env["N8N_VALKEY_HOST"], "mng-valkey")
             self.assertEqual(env["N8N_VALKEY_SECRET"], "mng_valkey_password")
-            self.assertNotIn("N8N_VALKEY_USERNAME", env)
+            # The entrypoint accepts mng_valkey_password only with the default
+            # (empty) user; an absent value defaults to the named n8n user.
+            self.assertEqual("", env["N8N_VALKEY_USERNAME"])
+            self.assertEqual("n8n", env["QUEUE_BULL_PREFIX"])
             self.assertNotIn("N8N_VALKEY_DB", env)
             self.assertEqual(env["QUEUE_BULL_REDIS_HOST"], "mng-valkey")
             self.assertNotIn("N8N_CUSTOM_EXTENSIONS", env)

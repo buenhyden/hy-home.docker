@@ -43,7 +43,7 @@ RUNNER_CONFIG = N8N / "n8n-task-runners.json"
 VM_HARDENING = N8N / "n8n-runner-vm-hardening.cjs"
 COMMON = ROOT / "infra/common-optimizations.yml"
 
-# Main runs queue mode with manual executions offloaded, so n8n 2.46.6 never
+# Main runs queue mode with manual executions offloaded, so n8n never
 # starts a task runner there (commands/start.js); only the worker has one
 # (SPEC-0269).
 RUNNER_PAIRS = {
@@ -52,10 +52,6 @@ RUNNER_PAIRS = {
 NETWORKS = {
     "n8n_worker_runner_net": "10.250.23.0/24",
 }
-RUNNER_IMAGE = (
-    "n8nio/runners:2.46.6@"
-    "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612"
-)
 TMPFS = "/tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777,uid=1000,gid=1000"
 P03_API_JS = p03_api_script(OPSFLOW_API_JS)
 
@@ -156,7 +152,12 @@ class RunnerComposeContractTests(unittest.TestCase):
                     1, runner["environment"]["N8N_RUNNERS_MAX_CONCURRENCY"]
                 )
                 self.assertEqual(300, runner["environment"]["N8N_RUNNERS_TASK_TIMEOUT"])
-                self.assertEqual(RUNNER_IMAGE, runner["image"])
+                # The release moves with n8n (test_workflow_version_bundle);
+                # isolation needs only the official image pinned by digest.
+                self.assertRegex(
+                    runner["image"],
+                    r"^n8nio/runners:\d+\.\d+\.\d+@sha256:[0-9a-f]{64}$",
+                )
                 self.assertEqual(
                     [
                         "./n8n-task-runners.json:/etc/n8n-task-runners.json:ro",
@@ -541,6 +542,8 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             "EXECUTIONS_MODE=queue",
             "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
             "N8N_VALKEY_HOST=mng-valkey",
+            # The entrypoint pairs mng_valkey_password only with the default user.
+            "N8N_VALKEY_USERNAME=",
             "N8N_VALKEY_SECRET=mng_valkey_password",
             "QUEUE_BULL_REDIS_HOST=mng-valkey",
             "QUEUE_BULL_REDIS_PORT=6379",

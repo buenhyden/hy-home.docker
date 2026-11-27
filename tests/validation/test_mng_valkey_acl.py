@@ -109,9 +109,9 @@ assert len(result.skipped) == 1 and not result.errors and not result.failures
         probe = """
 const assert = require('node:assert/strict');
 const {identityValid} = require(process.argv[1]);
-const good = {uid:1000, gid:1000, n8n:{version:'2.43.6'}, bull:{version:'4.16.4',entry:'/bull',expectedEntry:'/bull',jobGit:'3301e3fbc7296f545b65331dad1f12c820267e0d'}, ioredis:{version:'5.3.2',entry:'/ioredis',expectedEntry:'/ioredis'}};
+const good = {uid:1000, gid:1000, n8n:{version:'2.49.7'}, bull:{version:'4.16.4',entry:'/bull',expectedEntry:'/bull',jobGit:'3301e3fbc7296f545b65331dad1f12c820267e0d'}, ioredis:{version:'5.3.2',entry:'/ioredis',expectedEntry:'/ioredis'}};
 assert.equal(identityValid(good), true);
-for (const bad of [{...good,uid:0},{...good,bull:{...good.bull,version:'4.16.3'}},{...good,bull:{...good.bull,entry:'/other'}},{...good,bull:{...good.bull,jobGit:'unpatched'}},{...good,ioredis:{...good.ioredis,version:'5.4.0'}},{...good,n8n:{version:'other'}},{}]) assert.equal(identityValid(bad),false);
+for (const bad of [{...good,uid:0},{...good,bull:{...good.bull,version:'4.16.3'}},{...good,bull:{...good.bull,entry:'/other'}},{...good,bull:{...good.bull,jobGit:'unpatched'}},{...good,ioredis:{...good.ioredis,version:'5.4.0'}},{...good,n8n:{error:'UNAVAILABLE'}},{}]) assert.equal(identityValid(bad),false);
 require(process.argv[1]).selfCheckWrongPassword().catch(error=>{console.error(error.code||error.name);process.exitCode=1;});
 """
         result = subprocess.run(

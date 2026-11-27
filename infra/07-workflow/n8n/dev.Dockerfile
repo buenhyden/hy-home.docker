@@ -1,4 +1,4 @@
-ARG N8N_VERSION=2.46.6
+ARG N8N_VERSION=2.49.7
 
 FROM alpine:3.24.4@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf AS font-builder
 RUN apk add --no-cache \
@@ -28,8 +28,8 @@ WORKDIR /artifact/opsflow
 RUN find package.json dist node_modules -type f -exec sha256sum '{}' ';' > /tmp/opsflow-hashes && \
   sort -k2 /tmp/opsflow-hashes > SHA256SUMS
 
-FROM n8nio/n8n:${N8N_VERSION}@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae
-ARG N8N_VERSION=2.46.6
+FROM n8nio/n8n:${N8N_VERSION}@sha256:17a3e5a8c5e2a7440cc757f5392d57b50eefdfd46eac4532a7dea9bf2735d9ae
+ARG N8N_VERSION=2.49.7
 
 USER root
 
@@ -53,7 +53,7 @@ ENV GENERIC_TIMEZONE=Asia/Seoul
 WORKDIR /home/node
 
 RUN test "$(n8n --version)" = "${N8N_VERSION}" && \
-  node -e "const assert = require('node:assert/strict'); const workflow = require('n8n-workflow'); const { OpsflowSmtp } = require('/opt/hyhome/n8n-custom/opsflow/dist/OpsflowSmtp.node.js'); const node = new OpsflowSmtp(); assert(node.description.name === 'opsflowSmtp'); assert(node.description.inputs[0] === workflow.NodeConnectionTypes.Main);"
+  node -e "const assert = require('node:assert/strict'); const workflow = require('n8n-workflow'); const { OpsflowSmtp } = require('/opt/hyhome/n8n-custom/opsflow/dist/OpsflowSmtp.node.js'); const node = new OpsflowSmtp(); assert(node.description.name === 'opsflowSmtp'); assert(node.description.inputs[0] === workflow.NodeConnectionTypes.Main); assert.equal(require('/opt/hyhome/n8n-custom/opsflow/package.json').peerDependencies['n8n-workflow'], require('n8n-workflow/package.json').version);"
 
 RUN mkdir -p /home/node/.n8n/custom && \
   chown -R node:node /home/node/.n8n

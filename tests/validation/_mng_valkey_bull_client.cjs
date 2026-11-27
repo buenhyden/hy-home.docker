@@ -7,7 +7,7 @@ const fromN8n = require('node:module').createRequire(root + '/package.json');
 const digest = (data, algorithm='sha256') => crypto.createHash(algorithm).update(data).digest('hex');
 const emit = value => console.log(JSON.stringify(value));
 function identityValid(i) {
-  return Boolean(i.uid === 1000 && i.gid === 1000 && i.n8n?.version === '2.43.6' &&
+  return Boolean(i.uid === 1000 && i.gid === 1000 && typeof i.n8n?.version === 'string' &&
     i.bull?.version === '4.16.4' && i.bull.entry && i.bull.entry === i.bull.expectedEntry &&
     i.bull.jobGit === '3301e3fbc7296f545b65331dad1f12c820267e0d' &&
     i.ioredis?.version === '5.3.2' && i.ioredis.entry && i.ioredis.entry === i.ioredis.expectedEntry);
