@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.21.0"
+version: "2.22.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -463,6 +463,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W193 | 177 | Record the D03 census, add the oauth2proxy and airflow mng-valkey roles with consumer wiring, switch the n8n default to its named role, record the ComfyUI volume risk, and switch HOME | W192 | TSK-0120 | ACL, URI, wiring and catalog tests; isolated Valkey and Celery run; HOME login, broker and recovery checks; document checks; normal hosted delivery |
 | W194 | 178 | Fix the Airflow 3.4.0 DB publication guard for the base image's default trust store, repin the native rehearsal to the running image and read the current try, and run the isolated rehearsal | W193 | TSK-0121 | RED/GREEN adapter test, Opsflow contract and rehearsal suites, isolated native rehearsal on the 3.4.0 image, document checks; normal hosted delivery |
 | W195 | 179 | Record the D05 changed inputs, check the rebuilt notifier node on the live worker with a synthetic Mailpit claim, check Hermes delivery health, and route the stale notifier rehearsal pins to D09 | W194 | TSK-0122 | Live node load and send with negatives, Mailpit readback and delete, unit and journal observation, document checks; normal hosted delivery |
+| W196 | 180 | Recheck the D06 inputs changed after criteria 174 to 176: a local model call on Ollama 0.40.18, the local-only settings, and the 1.16.0 sandbox network boundary; route the superseded inner images to D11 | W195 | TSK-0123 | Consumer chat call, setting readback, inner-container probes with cleanup, document checks; normal hosted delivery |
 
 ###### Current D06 v8 sandbox boundary
 <!-- core-payload-level:4 -->
@@ -488,6 +489,11 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 <!-- core-payload-level:4 -->
 
 [TSK-0122](01.tasks/tsk-0122-d05-n8n-hermes-v9.md) owns criterion179/W195.
+
+###### Current D06 v9 model and sandbox boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0123](01.tasks/tsk-0123-d06-ai-sandbox-v9.md) owns criterion180/W196.
 
 ###### Current D02 v8 route boundary
 <!-- core-payload-level:4 -->

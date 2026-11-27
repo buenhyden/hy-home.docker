@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.21.0"
+version: "2.22.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -412,7 +412,8 @@ volume; criterion177/W193 in TSK-0120 owns it.
 
 On 2026-11-27 the user requested D04 of the v9 prompts; criterion178/W194 in
 TSK-0121 owns the Airflow 3.4.0 business path. The same day the user requested
-D05 of the v9 prompts; criterion179/W195 in TSK-0122 owns it.
+D05 of the v9 prompts; criterion179/W195 in TSK-0122 owns it. D06 of the v9
+prompts follows; criterion180/W196 in TSK-0123 owns it.
 
 #### Scope
 
@@ -1687,6 +1688,13 @@ target, backup, recovery boundary, and action-specific authorization.
      too short to finish, and that the Hermes gateway, attester timer and
      dashboard run with the accepted plugin; the isolated notifier rehearsal
      on the current image follows the D09 candidate build.
+
+180. TSK-0123 shows that after the Ollama 0.40.18 and sandbox 1.16.0 updates
+     a container consumer still gets a local model answer, HOME Ollama keeps
+     its no-cloud setting and the Hermes local profile its loopback-only
+     target, and the 1.16.0 sandbox image reaches only the internet on the
+     egress network and nothing on the no-egress network, with no probe
+     container left.
 
 ##### Evidence Requirements
 
