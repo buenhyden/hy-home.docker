@@ -553,7 +553,7 @@
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
       "kind": "compatibility",
       "owner": "@buenhyden",
-      "reviewed": "2026-11-25",
+      "reviewed": "2026-11-27",
       "review_by": "2027-05-09",
       "service": "n8n-sandbox-runner-1",
       "control": "privileged",
@@ -561,7 +561,7 @@
       "reason": "Owner decision of 2026-11-09: the n8n Assistant code sandbox uses the privileged Docker-in-Docker runner of the n8n sandbox service (the Firecracker runner needs near-privileged rights and a possible enterprise license). The inner Docker daemon needs the full device, mount and cgroup set",
       "impact": "Code in a sandbox runs behind an inner container boundary only; a break-out reaches this container with host-level rights. The runner can reach the public internet and, through NAT, the host LAN",
       "mitigation": "Profile n8n-sandbox, in the HOME selection since the owner decision of 2026-11-25; only this service is privileged (Conftest and the p02 contract test enforce that); no host port, no Traefik route, no host Docker socket; own Docker data volume; joins only n8n_sandbox_runner_net (with the API) and n8n_sandbox_outbound_net, never an n8n, data, observability or edge network; 4 GiB, 3 CPU and 4096 pids caps",
-      "verification": "NOT_RUN: not started; render, contract test and compose controls only",
+      "verification": "Observed 2026-11-27 UTC: running on HOME (n8n-sandbox profile since 2026-11-25) with privileged true, 4 GiB, 3 CPU and 4096 pids, no published port and no host Docker socket, on n8n_sandbox_runner_net and n8n_sandbox_outbound_net only; the 1.16.0 inner-network probe (SPEC-0212 TSK-0123 E04) found metadata, host LAN and router unreachable from runner-bridge and no egress from runner-no-egress. This checks the declared confinement, not host isolation from a break-out",
       "release_condition": "Remove when the Assistant code sandbox moves to the unprivileged Firecracker runner or is retired"
     },
     {
@@ -569,7 +569,7 @@
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
       "kind": "compatibility",
       "owner": "@buenhyden",
-      "reviewed": "2026-11-09",
+      "reviewed": "2026-11-27",
       "review_by": "2027-05-09",
       "service": "n8n-sandbox-certs",
       "control": "cap_add",
@@ -579,7 +579,7 @@
       "reason": "The one-shot certificate job hands the API key files to the API user (chown to sandbox-api) after generating them",
       "impact": "Root in this job can change file ownership inside its own volume until the job exits; it has no network",
       "mitigation": "cap_drop ALL first; no-new-privileges; read-only root; network_mode none; the CA key is deleted before the job ends",
-      "verification": "NOT_RUN: not started",
+      "verification": "Observed 2026-11-27 UTC: the one-shot job last ran 2026-11-27 09:31 UTC on n8n-sandbox-service-api 1.16.0 and exited 0 with CapDrop ALL and CapAdd CAP_CHOWN only",
       "release_condition": "Remove when the API image generates its key files with the API user as owner"
     }
   ],
