@@ -1,10 +1,10 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-27"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0046"
 parent_ids:
@@ -581,7 +581,26 @@ change any evidence row or acceptance decision.
 
 ### Blockers and Decisions
 
-None: nothing was recorded here before this Task moved to the common form.
+#### D08 v9 pass (2026-11-27)
+
+On 2026-11-27 the user requested D08 of the v9 prompts
+(`_workspace/workspace_task_prompts_20261127_progress_v9/`, prompt
+`08_observability_exporter.md`), limited to its scope, with commit, push, PR
+and merge. Work ran in the primary checkout on branch
+`docs/d08-v9-observability` from `main` `4567af644`.
+
+| Item | Observation | State |
+| --- | --- | --- |
+| Targets and `expected_state` | 33 active targets: 32 up; `flower` down with `expected_state="off"` (not in the HOME selection, no container) and no missing-target alert for it | Intentional-stop semantics hold live |
+| `ObservationSelectionMissing` | Firing: `hyhome_expected_selection_info` is absent. Prometheus started on 2026-11-24 outside the launcher and mounts `prometheus.dev.yml` directly, so the source-bound selection overlay is not applied; the 2026-11-11 census row shows it cleared once by a launcher start | Criteria 83 and 85 stay pending |
+| Approved HOME apply | The owner approved a launcher apply of the HOME selection with DEV data `on` (51 targets, plan fingerprint `2b24dde297da8d27`) after pulling the pinned `amazon/aws-cli:2.41.2@sha256:7a77ccb3…` that `seaweedfs-buckets` needs. `compose-start.py up` returned BLOCKED before any container changed | Blocked by the launcher |
+| Launcher admission double count | Read-only reproduction: plan load, validation, overlay materialization, render, roles and footprint pass; `admit` refuses with `cpus_budget_exceeded` because the observed running containers (9.0 CPUs, 25.4 GiB) and the full reservation for the same selected services (6.6 CPUs, 18.5 GiB) are added against the 10-CPU limit. `_observed()` returns one aggregate budget, so a running selection can never be re-applied. The owner chose to record this and fix it as separate work | Defect, separate request |
+| `HyhomeBackupStale` (critical) | Firing correctly: the last successful nightly backup is 37.6 h old. `hyhome-backup.service` failed on 2026-11-27 03:34 KST: `pg_dump` cannot load `timescaledb-2.30.3` in dev-pg (`template1`) after the image moved to TimescaleDB 2.32.1, so the dev-pg schema export and the run fail. The extension update in each affected dev-pg database is a data-store change for its owner | Routed to D03 and D09 |
+| Stray container | `agitated_dijkstra` (`prom/prometheus:v3.14.0`), created 2026-11-18 and never started, outside Compose | Routed to D11 |
+
+Nothing in the HOME runtime was changed by this pass; the launcher wrote its
+own overlay directory under `~/.local/share/hy-home/p07/2b24dde2…` and the
+plan file under `_workspace/repo-support/analysis/p07/plans/`.
 
 ## Verification Evidence
 
@@ -640,6 +659,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | Launcher re-review 2026-11-10 | 82 | W87 | Active optional dependency closure and independent review | Source digest prefix `f7ca8f45`, CLI `158400ce`, tests `1e395441` at `main` `5f4160d1a` | PASS | Independent re-review APPROVED: required, companion and active-profile optional closure, cycle detection and the overlay, plan-mismatch and partial-Prometheus refusals hold; `execute_plan` starts only plan targets. Minor follow-ups: implicit `network_mode`/`volumes_from`/`links` service references are not refused, two refusal tests accept any `ValueError`, missing-dependency and optional-cycle cases lack tests, one test needs Docker instead of skipping. | required | - |
 | Authenticated OTLP delivery rerun | 84 | W89 | Pinned isolated Alloy/Prometheus test | `examples/operations/quality-metrics/acceptance.py` at `main` `5f4160d1a`; cached Alloy v1.20.1 `2aa2099a`, Prometheus v3.15.1 `fa330227`, probe `79e7a9b9` | PASS | Exit 0 on 2026-11-10: 22 PASS lines covering delta and cumulative counters and histograms, the unauthenticated producer rejected with 401, a missing identity dropped, retry and epoch reset; owned containers and network removed with no volume deletion. k6 stage not run; live Grafana datasource and prior-state recovery stay NOT_RUN. | required | Authenticated OTLP delivery |
 | D08 HOME alert census 2026-11-11 | 83 | W88 | Read-only Prometheus targets, alerts and Alertmanager counters | HOME, 2026-11-11 14:26 KST | FAIL | 31 of 32 targets up; `flower` is down because it is not in the HOME selection (no container). Firing: `HermesResearchBlocked` (devops, business_ideas), `HermesResearchNoSuccess` (devops, TSK-0054), `ObservationSelectionMissing` (cleared by the HOME selector run after the OpenBao window); `PostgresHighRollbackRate` pending. Alertmanager notifications 30, failed 0. | required | - |
+| D08 v9 target census | 83 | W88 | Read-only Prometheus targets and alerts API | HOME, 2026-11-27 17:10 KST | PASS | 32 of 33 up; `flower` down with `expected_state=off`; firing `ObservationSelectionMissing` and `HyhomeBackupStale` | required | - |
+| D08 v9 HOME selection apply | 85 | W90 | `compose-start.py up --plan` of HOME with DEV data `on` | Plan `2b24dde297da8d27`, `main` 4567af644, owner approval 2026-11-27 | FAIL | BLOCKED by admission `cpus_budget_exceeded` (double-counted running selection); no container changed | required | - |
+| D08 v9 backup failure | 83 | W88 | `systemctl show` and journal of `hyhome-backup.service`; backup timestamp metric | HOME, 2026-11-27 | FAIL | Exit 1 at 03:34 KST; `pg_dump` cannot load `timescaledb-2.30.3`; last success 37.6 h earlier | required | - |
 
 ### Resolution Links
 
@@ -684,6 +706,13 @@ actual workspace. Temporary cleanup or reboot requires regeneration from a
 verified plan before container restart; Compose source group-writer trust and
 the path-to-daemon race remain separate limitations.
 
+D08 v9 (2026-11-27): criteria 83 and 85 stay pending until the selection
+overlay is applied on HOME and the expected-target, missing and recovery
+alerts are read back. That needs the launcher admission to stop counting the
+running selected services twice (separate request). The dev-pg TimescaleDB
+extension update (D03, D09) and the stray `agitated_dijkstra` container
+(D11) are routed to their owners.
+
 ## Handoff
 
 ### Promotion Receipt
@@ -692,4 +721,7 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Next Owner
 
-None: nothing was recorded here before this Task moved to the common form.
+The owner opens the launcher admission fix as a separate request; after it,
+D08 applies the HOME selection and closes criteria 83 and 85. The dev-pg
+TimescaleDB extension update goes to D03 and D09 and is urgent, because the
+nightly backup fails until it is done. D11 removes `agitated_dijkstra`.
