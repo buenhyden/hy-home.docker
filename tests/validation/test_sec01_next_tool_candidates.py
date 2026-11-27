@@ -4,6 +4,7 @@ import contextlib
 import importlib.util
 import io
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -13,7 +14,6 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 GX = ROOT / "labs/lakehouse/great-expectations"
-TOFU = "ghcr.io/opentofu/opentofu:1.13.1-minimal@sha256:dfbc3f0a8bed0adfa2cf49ff418f158afe24080eea6d6e748db8799fc4553db6"
 K6 = "grafana/k6:2.4.0@sha256:d41bb79cd8de5a7ad619b53570e3712633e8bff0937010a5c6c57a4747e7a276"
 
 
@@ -180,11 +180,14 @@ class NextToolCandidates(unittest.TestCase):
         service = services("infra/09-platform-ops/opentofu/docker-compose.yml")[
             "opentofu"
         ]
-        self.assertEqual(
+        # The official minimal image pinned by digest; the local tag names its
+        # version, so neither can name a past release.
+        base = re.fullmatch(
+            r"FROM ghcr\.io/opentofu/opentofu:(\d+\.\d+\.\d+)-minimal@sha256:[0-9a-f]{64} AS tofu",
             service["build"]["dockerfile_inline"].splitlines()[0],
-            "FROM " + TOFU + " AS tofu",
         )
-        self.assertEqual(service["image"], "hy-home/opentofu:1.13.1-local")
+        self.assertIsNotNone(base)
+        self.assertEqual(service["image"], f"hy-home/opentofu:{base[1]}-local")
         self.assertIn(
             "COPY --from=tofu /usr/local/bin/tofu /usr/local/bin/tofu",
             service["build"]["dockerfile_inline"],

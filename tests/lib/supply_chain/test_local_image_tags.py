@@ -38,6 +38,7 @@ def ledger(root: Path, declared: str) -> Path:
         "disposition": "NO_CHANGE_VERSION",
         "source_refreshed_at": "2026-01-01T00:00:00+00:00",
         "source_input_sha256": hashlib.sha256((root / LEAF).read_bytes()).hexdigest(),
+        "next_fact_command": ["docker", "image", "inspect", declared],
     }
     path = root / "infra/09-platform-ops/security-updates/update-ledger.json"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -130,6 +131,10 @@ class LocalImageTagTests(unittest.TestCase):
             self.assertEqual("BLOCKED", row["disposition"])
             self.assertEqual("NOT_RUN", row["signature"])
             self.assertIn("Local tag renamed", row["blocker"]["reason"])
+            self.assertEqual(
+                ["docker", "image", "inspect", "hy/loki:3.7.10-seaweedfs"],
+                row["next_fact_command"],
+            )
             self.assertTrue(row["target_declared_digest"].startswith("UNKNOWN: "))
 
     def test_repository_tags_follow_their_dockerfile_base(self):

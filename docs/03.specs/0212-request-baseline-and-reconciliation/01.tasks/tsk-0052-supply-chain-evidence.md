@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.20"
+version: "0.1.21"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -438,6 +438,39 @@ commit, push, PR and merge. Work ran in the primary checkout on branch
 | T06 Storybook | HOME runs `494d16fe` (no Storybook change since); routes 302, MCP 401, metadata 200. `npm audit` on the current lock: 7 moderate, 0 high, all build-only tooling through `minimatch` GHSA-g3hv-75wg-m249 and `glob` GHSA-3g3m-2fjr-6pw4, which now have fixes (minimatch 11.0.9 of 2026-11-16, glob 14.0.6 of 2026-11-12). In a scratch copy, overrides to those versions give 0 vulnerabilities and clean install, lint, typecheck and `build-storybook` pass | Owner decision: adopting them needs a new Storybook artifact and a HOME redeploy |
 | T07 platform tools | Terrakube has no HOME service, include or container; REQ-0010 already calls it an optional isolated experiment. OpenTofu is a one-off `iac` job with no tracked configuration or state. Renovate runs weekly. The 2026-11-27 backup ran `restic check` with no errors over 12 local snapshots and copied the new snapshots to R2 | Closed without change; a Restic restore drill stays with SPEC-0204 TSK-0003 |
 
+- Criterion 104 official-source round of 2026-11-27 (owner: "Run it now").
+  Every one of the 86 root entries got a fresh lookup and review
+  (`release-lookups.json#/sec01_fresh_review_20261127`): GitHub releases and
+  repository advisories, the GitHub global advisory database per package,
+  and python.org, postgresql.org, nodejs.org, Docker Hub and the Apache
+  Kafka list where a component is not on GitHub. Each advisory range was
+  compared with the running version and every hit read by hand. Decisions:
+  73 not-affected, 6 no-fix (four SeaweedFS rows; OpenBao and its agent
+  for go-jose/v3 GHSA-mgcc-cww5-fp2q and the unfixed Alpine OpenSSL
+  CVEs), 1 patch (SurrealDB 2.7.0, 76 advisories fixed only in 3.x or 4.0.0
+  while open-notebook supports 2.x only) and 6 defer without a comparable
+  version or a public advisory source (ComfyUI's rolling tag, ollama-exporter,
+  blog-ingestion and the three n8n sandbox images). Three findings were
+  acted on: crawl4ai 0.9.5 was affected by eleven advisories and moved to the
+  0.9.6 security release (past the 7-day age); OpenTofu 1.13.1 was affected
+  by the 1.13.2 HTTP/2 fix and moved to 1.13.9, the newest release past the
+  7-day age; and SeaweedFS 4.54 is affected by GHSA-25hp-4mw7-9c75
+  (critical, no fixed release), whose Iceberg API answered an anonymous
+  request with 200 on `object_net`, so the owner had the Iceberg listener
+  turned off (`-port.iceberg=0`) until a fixed release, with the policy
+  stating the re-enable condition; `SEAWEEDFS_ICEBERG_PORT` left `.env.example`
+  with its consumer, and if the private `.env` still sets it, removing it joins
+  the owner's private cleanup of SPEC-0212 TSK-0124. The test that pinned every row to the
+  2026-11-11 review now checks a re-reviewed row against the newer round,
+  `ledger_rebind` keeps follow-up commands on the new image, and the
+  follow-up commands of dev-pg, mng-pg and OpenTofu no longer name past
+  tags. Gates at the round's time: `security_update_gate` 7 of 86 incomplete
+  (6 defer, SurrealDB patch evidence); `latest_version_gate` 26 incomplete
+  (22 newer releases not adopted, most inside the 7-day age or a held major;
+  4 without a resolvable version). The latest gate's 24-hour window makes a
+  committed ledger stale the next day by design. Criterion 105 (signatures,
+  provenance, SBOMs) is unchanged.
+
 ## Verification Evidence
 
 ### Results
@@ -515,6 +548,10 @@ artifact verification and the current gate results.
 | P03 runner boundary on 2.49.7 | 104 | W109 | `P03_RUNNER_NATIVE_REHEARSAL=1 … tests.validation.test_p03_runner_isolation.P03RunnerNativeRehearsal` | Same candidate and runner | PASS | Test OK, cleanup PASS; receipt `native: PARTIAL` (fixture declared NON_EQUIVALENT to HOME, as in TSK-0118 E28); categories builtin_denied 5, module_access_denied 3, environment_access_denied, code_generation_blocked, controlled_workflow_timeout. The first run failed on the same stale broker selection and is resolved by this one | required | - |
 | HOME apply of n8n 2.49.7 | 104 | W109 | `pg_dump -Fc` of `n8n` checked with `pg_restore --list`; `up -d --no-deps --no-build --pull never` of n8n, n8n-worker, n8n-task-runner-worker after dry runs naming only the target | Owner request 2026-11-27; no running execution (2 in `error`) | PASS | `n8n-2.46.6-db.dump` (173 table-data entries) in `/home/hyunyoun/storage/volumes/backups/upgrade-20261127/`; each healthy before the next; `n8n --version` 2.49.7; 39 migrations finished without error; workflows 13, credentials 14, executions 2 as before; the worker registered the JavaScript and Python launchers; route 200. Rollback: restore the dump and recreate on `hyhome/n8n:2.46.6-local`, kept locally | required | - |
 | D09 v9 remaining census | 104 | W109 | `latest_version_gate` and `security_update_gate --input update-ledger.json`; `check-all-hardening.sh`; `validate-docker-compose.sh`; `check-supply-chain-policy.py --check`; effective Compose against container HostConfig and cgroup memory; `npm audit --package-lock-only` on a Storybook lock copy | `main` `a8576cc8a`, HOME 2026-11-28 | FAIL | Both gates exit 2 (83 without fresh lookup, 86 without fresh review); hardening, Compose and policy checks pass; 57 containers match their limits; no OOM or restart; Storybook audit 7 moderate build-only findings with fixes available; details in the census table | required | - |
+| Criterion 104 official-source round | 104 | W109 | `collect.py` (read-only `gh api` releases, repository advisories and global advisories per package) plus python.org, postgresql.org, nodejs.org, Docker Hub and the Apache Kafka list; per-advisory range comparison read by hand; `latest_version_gate` and `security_update_gate --input update-ledger.json` | 86 root entries, 2026-11-27 16:55 UTC; facts and response hashes in `sec01_fresh_review_20261127` | FAIL | Security gate 7/86 incomplete (6 defer, SurrealDB patch evidence), was 86/86; latest gate 26/86 incomplete, was 83/86; decisions 73 not-affected, 6 no-fix, 1 patch, 6 defer | required | - |
+| SeaweedFS Iceberg listener off | 104 | W109 | `up -d --no-deps --no-build --pull never seaweedfs-s3` after a dry run; anonymous probes from `object_net` | Owner choice 2026-11-28 for GHSA-25hp-4mw7-9c75 | PASS | Before: Iceberg `/v1/config` 200 anonymously. After: port 8181 refused, S3 on 8333 answers anonymous 403 as before, the gateway healthy, Loki, Tempo and MLflow log no S3 error and Loki is ready. The LAB lakehouse cannot use the catalog until a fixed SeaweedFS is pinned | required | - |
+| HOME apply of crawl4ai 0.9.6 | 104 | W109 | `up -d --no-deps --no-build --pull never crawl4ai` after a dry run | 0.9.6 security release (2026-11-20, past the 7-day age), `sha256:4603d7c4…` | PASS | Healthy; `/health` reports 0.9.6; no error log; the new default LLM provider has no effect because no provider key is configured and egress goes only through the gateway | required | - |
+| OpenTofu 1.13.9 build | 104 | W109 | `docker compose --profile iac build opentofu`; `tofu version` | Inline build on `ghcr.io/opentofu/opentofu:1.13.9-minimal@sha256:84af0049…` | PASS | `hy-home/opentofu:1.13.9-local` reports OpenTofu v1.13.9; a one-off job, nothing running to recreate | required | - |
 | HOME apply of the Storybook audit fix | 104 | W109 | `npm audit --package-lock-only`; `storybook_image.py build --revision 6c634907 --push` and `verify --registry`; `up -d --no-deps --no-build --pull never` of storybook and storybook-mcp after dry runs | Owner choice 2026-11-28 (apply and redeploy); overrides minimatch ^11.0.9 and glob ^14.0.6 | PASS | Audit 0 vulnerabilities (was 7 moderate build-only findings, GHSA-g3hv-75wg-m249 and GHSA-3g3m-2fjr-6pw4); install, lint, typecheck and `build-storybook` with its artifact tests pass; registry digests `sha256:6711304b…` (storybook, 72 SBOM packages) and `sha256:03df741a…` (storybook-mcp, 165), one attestation each; both healthy on `6c634907`; routes 302 to SSO, MCP 401, metadata 200 as before; in-image `revision.json` names `6c634907`. The static origin keeps no data, so no backup applied; rollback is the `494d16fe` images, kept locally and in the registry | required | - |
 
 ### Resolution Links

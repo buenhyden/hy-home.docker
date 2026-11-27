@@ -644,11 +644,15 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                         refresh["security_applicability_review"].startswith("NOT_RUN")
                     )
                     mismatch = row["latest_version"] != row["target_version"]
-                    self.assertEqual(
-                        mismatch,
-                        "latest_mismatch" in refresh["latest_gate_missing"],
-                    )
-                    if mismatch:
+                    # A later lookup can observe a newer release than the
+                    # 2026-11-11 gate record knew; only an unrefreshed row
+                    # must still match that record.
+                    if "sec01_fresh_review_20261127" not in row:
+                        self.assertEqual(
+                            mismatch,
+                            "latest_mismatch" in refresh["latest_gate_missing"],
+                        )
+                    if mismatch and "sec01_fresh_review_20261127" not in row:
                         self.assertTrue(refresh["remaining_latest_actions"])
 
     def test_current_advisory_review_covers_every_bound_root_subject(self):
@@ -722,10 +726,15 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         ollama_exporter = repositories["lucabecker42/ollama-exporter"]
         self.assertIs(ollama_exporter["listing_complete_for_endpoint"], False)
         self.assertEqual(404, ollama_exporter["pages"][0]["http_status"])
+        # A newer official-source round owns the row fields it rewrote; the
+        # 2026-11-11 review stays as its own history and is checked as such.
+        fresh_key = "sec01_fresh_review_20261127"
+        fresh_round = releases.get(fresh_key, {})
         for row in ledger["entries"]:
             with self.subTest(service=row["service"]):
                 review = row[review_key]
                 self.assertEqual(review, lookup_review["reviews"][row["service"]])
+                fresh = fresh_round.get("services", {}).get(row["service"])
                 self.assertLessEqual(
                     {
                         "reviewed_subject",
@@ -748,10 +757,11 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     },
                     set(subject),
                 )
-                self.assertEqual(row["current_declared"], subject["declaration"])
-                self.assertEqual(
-                    row["source_input_sha256"], subject["source_input_sha256"]
-                )
+                if not fresh:
+                    self.assertEqual(row["current_declared"], subject["declaration"])
+                    self.assertEqual(
+                        row["source_input_sha256"], subject["source_input_sha256"]
+                    )
                 self.assertTrue(subject["assessment_version"])
                 self.assertIn(
                     review["security_applicability"],
@@ -782,6 +792,31 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 )
                 latest = review["latest_disposition"]
                 self.assertTrue(latest["action"])
+                if fresh:
+                    self.assertEqual(
+                        {
+                            "review_ref": f"release-lookups.json#/{fresh_key}/services/{row['service']}"
+                        },
+                        row[fresh_key],
+                    )
+                    if fresh["current_version"] != "UNKNOWN":
+                        self.assertEqual(
+                            fresh["current_version"], row["target_version"]
+                        )
+                    if fresh["latest_version"]:
+                        self.assertEqual(fresh["latest_version"], row["latest_version"])
+                    self.assertEqual(fresh_round["reviewed_at"], row["reviewed_at"])
+                    self.assertEqual(fresh_round["reviewed_at"], row["checked_at"])
+                    self.assertEqual(fresh["decision"], row["decision"])
+                    self.assertIs(
+                        fresh["affected_confirmed"], row["affected_confirmed"]
+                    )
+                    self.assertIn(fresh["reason"], row["reason"])
+                    self.assertLessEqual(
+                        set(fresh["advisory_sources"]), set(row["advisory_urls"])
+                    )
+                    self.assertTrue(fresh["previous_row_fields"])
+                    continue
                 self.assertEqual(row["target_version"], latest["target_retained"])
                 current_evidence = latest_updates.get(row["service"])
                 if current_evidence:
@@ -885,11 +920,49 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             "UNKNOWN",
             by_service["opensearch"][review_key]["security_applicability"],
         )
+        # Rows the 2026-11-27 official-source round re-reviewed keep the same
+        # boundaries against that round, evaluated at its own time: a decision
+        # is promoted only with a stated reason, never inferred from silence.
+        fresh_key = "sec01_fresh_review_20261127"
+        releases = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/release-lookups.json"
+            ).read_text()
+        )
+        fresh_round = releases.get(fresh_key, {"services": {}})
+        if fresh_round["services"]:
+            fresh_gate = {
+                row["service"]: row
+                for row in assess(
+                    ledger["entries"],
+                    datetime.fromisoformat(fresh_round["reviewed_at"]),
+                    expected_services=expected,
+                )["entries"]
+            }
         for row in ledger["entries"]:
             review = row[review_key]
             gate = gate_by_service[row["service"]]
             applicability = review["security_applicability"]
-            with self.subTest(service=row["service"], applicability=applicability):
+            fresh = fresh_round["services"].get(row["service"])
+            with self.subTest(service=row["service"], fresh=bool(fresh)):
+                if fresh:
+                    gate = fresh_gate[row["service"]]
+                    self.assertNotIn("fresh_review", gate["missing"])
+                    self.assertTrue(fresh["reason"].strip())
+                    if fresh["decision"] == "defer":
+                        self.assertIsNone(row["affected_confirmed"])
+                        self.assertIn("reviewed_decision", gate["missing"])
+                    elif fresh["decision"] == "not-affected":
+                        self.assertIs(row["affected_confirmed"], False)
+                        self.assertNotIn("applicability_reason", gate["missing"])
+                    elif fresh["decision"] == "no-fix":
+                        self.assertIs(row["affected_confirmed"], True)
+                        self.assertEqual("blocked-no-fix", gate["status"])
+                    else:
+                        self.assertEqual("patch", fresh["decision"])
+                        self.assertIs(row["affected_confirmed"], True)
+                        self.assertEqual("blocked-evidence", gate["status"])
+                    continue
                 if applicability == "UNKNOWN":
                     self.assertEqual("defer", row["decision"])
                     self.assertIsNone(row["affected_confirmed"])
@@ -985,13 +1058,15 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             )
         for decision, group, count in (
             # Five 2026-11-11 patch rows were resolved on 2026-11-24, Qdrant,
-            # Open Notebook and Keycloak on 2026-11-26 and storybook-mcp and
-            # Tempo on 2026-11-27 (patch_resolved).
-            ("patch", "patch", 2),
+            # Open Notebook and Keycloak on 2026-11-26, storybook-mcp and Tempo
+            # on 2026-11-27, and OpenTofu by the 2026-11-27 official-source
+            # round (patch_resolved).
+            ("patch", "patch", 1),
             ("no-fix", "no_fix", 6),
             # Traefik's deferred row was resolved on 2026-11-26, Loki's,
-            # MLflow's and Gatus's on 2026-11-27 (defer_resolved).
-            ("defer", "defer", 38),
+            # MLflow's and Gatus's on 2026-11-27, and 29 more by the
+            # 2026-11-27 official-source round (defer_resolved).
+            ("defer", "defer", 9),
         ):
             expected = {
                 name for name, row in rows.items() if row["decision"] == decision

@@ -1,13 +1,13 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-27"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -134,7 +134,7 @@ master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leve
 | `seaweedfs-buckets` | admin bucket provisioning job; 기존 bucket 보존 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 | `seaweedfs-filer` | filer metadata/leveldb2 보존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 | `seaweedfs-master` | topology/volume 배정; master metadata 보존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
-| `seaweedfs-s3` | S3·Iceberg·metrics listener; 생성 config, 자체 durable data 없음 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
+| `seaweedfs-s3` | S3·metrics listener(Iceberg listener는 GHSA-25hp-4mw7-9c75로 2026-11-28부터 꺼짐); 생성 config, 자체 durable data 없음 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 | `seaweedfs-volume` | object bytes 보존; 최소 여유 공간에서 write 거부 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.

@@ -203,6 +203,12 @@ def _mark_unverified(row, image, stamp):
     }
     for key in RECEIPTS:
         row.pop(key, None)
+    command = row.get("next_fact_command")
+    if isinstance(command, list) and row["current_declared"] in command:
+        # A follow-up that inspects the replaced image must name the new one.
+        row["next_fact_command"] = [
+            image if part == row["current_declared"] else part for part in command
+        ]
     tag = image.split("@", 1)[0].rsplit(":", 1)[1]
     version = re.search(r"\d+(?:\.\d+)+", tag)
     version = version.group() if version else "UNKNOWN"
