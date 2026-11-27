@@ -63,9 +63,9 @@ from tests.validation.test_datastore_rehearsal_boundary import DockerClientBound
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKLOAD = ROOT / "infra/07-workflow/airflow/workloads/manifest-pipeline"
-PG_ID = "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
-VALKEY_ID = "sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b"
-S3_ID = "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d"
+PG_ID = "sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
+VALKEY_ID = "sha256:56729e68bdda139cbd3f6a2538683dc3523325fc5711ea1a379938f1b37893f0"
+S3_ID = "sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15"
 IMAGES = frozenset((AIRFLOW_ID, PG_ID, VALKEY_ID, S3_ID))
 OWNER_LABEL = "hyhome.opsflow.native-owner"
 ATTEMPT_LABEL = "hyhome.opsflow.native-attempt"

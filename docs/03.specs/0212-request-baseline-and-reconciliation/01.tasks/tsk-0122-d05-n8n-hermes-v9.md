@@ -1,6 +1,6 @@
 ---
 title: "D05 v9 n8n Notifier and Hermes Delivery Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -130,9 +130,10 @@ None: no row resolves another. E05 stays open for D09.
 
 ##### Remaining Conditions
 
-- E05: D09 builds a reviewed SEC01 n8n 2.46.6 candidate with the opsflow node
-  and its source-binding labels, repins `_opsflow_native_inputs.py`, and the
-  isolated notifier rehearsal runs on it.
+- E05: on 2026-11-27 the PostgreSQL, Valkey and Mailpit pins in
+  `_opsflow_native_inputs.py` moved to the HOME 18.7, 9.1.4 and 1.34.0
+  (SPEC-0212 TSK-0052). The n8n base and runner stay at the reviewed 2.43.6
+  candidate until a reviewed, labelled 2.46.6 candidate build exists.
 - External SMTP delivery, live 409, the same-UID limit, the external SDK
   Call-ID and DNS deadline, and Blog-data cursor fairness keep their recorded
   owners in TSK-0022, TSK-0044 and TSK-0050.

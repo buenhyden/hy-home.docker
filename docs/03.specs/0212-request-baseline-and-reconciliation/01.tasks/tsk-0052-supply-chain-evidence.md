@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -304,10 +304,62 @@ commit, push, PR and merge. Work ran in the primary checkout on branch
   `sync-update-ledger.sh` only binds Renovate pin bumps and never contacts
   the network, so a fresh review needs its own official-source round; no
   lookup was invented.
-- Rehearsal pins: the Airflow native rehearsal (SPEC-0212 TSK-0121) keeps
-  PostgreSQL 18.6, Valkey 9.1.2 and SeaweedFS 4.48 companions; the n8n
-  notifier rehearsal (SPEC-0212 TSK-0122) pins the 2.43.6 candidate, runner
-  2.43.6 and Mailpit 1.31.5. Both need reviewed current candidates.
+- Rehearsal pins, aligned on 2026-11-27 at the owner's request: every
+  native rehearsal now pins the companion images HOME runs, PostgreSQL 18.7
+  (`sha256:0115267a…`), Valkey 9.1.4 (`sha256:56729e68…`) and SeaweedFS 4.54
+  (`sha256:4b42c212…`), and the n8n notifier rehearsal Mailpit 1.34.0
+  (`sha256:23a2ef85…`), in `_opsflow_airflow_native_fixture.py`,
+  `_opsflow_native_inputs.py`, `test_opsflow_database_rehearsal.py`,
+  `test_supabase_smtp_rehearsal.py` and `test_mng_valkey_acl.py`. The Airflow
+  native rehearsals pass 17/17 on them. The n8n notifier base and runner stay
+  at the reviewed 2.43.6 SEC01 candidate: its source-binding labels come
+  from a reviewed candidate build that the repository has no builder for,
+  the HOME image `hyhome/n8n:2.46.6-local` carries no such labels, and the
+  runner must match the base, so moving them needs a new reviewed 2.46.6
+  candidate build instead of a weaker binding check.
+- Fresh upstream review for criterion 104, 2026-11-27 10:00 UTC: the ledger's
+  `latest_version` facts are from 2026-11-10, so most `latest_mismatch`
+  results compare a newer target with a stale fact (for example `alloy`
+  target 1.22.0 against recorded 1.21.3). A read-only lookup of the latest
+  release of each of the 54 GitHub-sourced root entries (39 repositories,
+  `gh api repos/<owner>/<repo>/releases/latest`) found 28 equal to
+  upstream, 21 behind and 5 differing for other reasons; the
+  other 32 entries cite non-GitHub sources (for example the PostgreSQL
+  versioning page) and are not yet looked up. The entries not equal to
+  upstream:
+
+| Service | Repository | Target | Upstream latest (release, date) | State |
+| --- | --- | --- | --- | --- |
+| `alertmanager` | prometheus/alertmanager | 0.35.0 | v0.35.1 (2026-11-24) | behind |
+| `crawl4ai` | unclecode/crawl4ai | 0.9.5 | v0.9.6 (2026-11-20) | behind |
+| `dev-valkey` | valkey-io/valkey | 9.1.4 | 9.2.1 (2026-11-26) | behind |
+| `dev-valkey-exporter` | oliver006/redis_exporter | 1.97.0 | v1.99.0 (2026-11-24) | behind |
+| `gatus` | TwiN/gatus | 5.37.0 | v5.38.0 (2026-10-28) | behind |
+| `k6` | grafana/k6 | 2.3.0 | v2.4.0 (2026-11-12) | behind |
+| `loki` | grafana/loki | 3.7.8 | v3.7.10 (2026-11-13) | behind |
+| `mlflow` | mlflow/mlflow | 3.16.1 | v3.18.0 (2026-11-04) | behind |
+| `mng-valkey` | valkey-io/valkey | 9.1.4 | 9.2.1 (2026-11-26) | behind |
+| `mng-valkey-exporter` | oliver006/redis_exporter | 1.97.0 | v1.99.0 (2026-11-24) | behind |
+| `oauth2-proxy` | oauth2-proxy/oauth2-proxy | 7.15.5 | v7.15.6 (2026-11-05) | behind |
+| `opensearch` | opensearch-project/OpenSearch | 3.10.0 | 3.10.1 (2026-11-24) | behind |
+| `opensearch-dashboards` | opensearch-project/OpenSearch-Dashboards | 3.10.0 | 3.9.0 (2026-10-12) | differs |
+| `opentofu` | opentofu/opentofu | 1.13.1 | v1.13.10 (2026-11-23) | behind |
+| `pushgateway` | prometheus/pushgateway | 1.11.5 | v1.11.4 (2026-10-08) | differs |
+| `redisinsight` | RedisInsight/RedisInsight | 3.10.1 | 3.10.2 (2026-11-24) | behind |
+| `renovate` | renovatebot/renovate | 44.255.1 | 45.1.1 (2026-11-27) | behind |
+| `seaweedfs-filer` | seaweedfs/seaweedfs | 4.54 | 4.55 (2026-11-23) | behind |
+| `seaweedfs-master` | seaweedfs/seaweedfs | 4.54 | 4.55 (2026-11-23) | behind |
+| `seaweedfs-s3` | seaweedfs/seaweedfs | 4.54 | 4.55 (2026-11-23) | behind |
+| `seaweedfs-volume` | seaweedfs/seaweedfs | 4.54 | 4.55 (2026-11-23) | behind |
+| `surrealdb` | surrealdb/surrealdb | 2.7.0 | v4.0.1 (2026-11-09) | behind |
+| `tempo` | grafana/tempo | 3.1.0 | v3.1.1 (2026-10-21) | behind |
+| `n8n-sandbox-certs` | n8n-io/n8n-sandbox-service (source not reviewed) | 1.16.0 | no release (404) () | differs |
+| `n8n-sandbox-api` | n8n-io/n8n-sandbox-service (source not reviewed) | 1.16.0 | no release (404) () | differs |
+| `n8n-sandbox-runner-1` | n8n-io/n8n-sandbox-service (source not reviewed) | 1.16.0 | no release (404) () | differs |
+
+  These are explicit residuals: the ledger facts are not rewritten from this
+  read-only lookup, and the behind entries need an update round (Renovate PR,
+  SEC01 review, staged HOME apply) before the latest gate can pass.
 
 ## Verification Evidence
 
@@ -376,6 +428,8 @@ artifact verification and the current gate results.
 | HOME apply of the round 3 images | 104 | W109 | `docker compose -p hy-home-infra up -d --no-deps <service>` after a dry run that named only the target, one service at a time | Owner request 2026-11-27; grafana 13.3.2, n8n-sandbox-api and n8n-sandbox-runner-1 1.16.0 | PASS | Grafana healthy, `/api/health` database ok on 13.3.2, unified storage migrations completed without errors, route 302 to login as before; sandbox api and runner healthy, the runner registered with the api and is configured for sandbox 1.16.0, n8n and n8n-worker stayed healthy. The sandbox image is fetched on the first sandbox execution, which was not run; aws-cli, Renovate, restic and pact-broker take their pins at their next one-off or deployed run | required | - |
 | D09 v9 TimescaleDB template1 update | 104 | W109 | `ALTER EXTENSION timescaledb UPDATE` in `template1`; extension readback in every database; `pg_dumpall --schema-only` | dev-pg on `hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1`, owner approval 2026-11-27 | PASS | `template1` and `postgres` 2.32.1, `opsflow_dev` none; `pg_dumpall --schema-only` exit 0 (catalog warnings only); the full backup run is the owner step | required | - |
 | D09 v9 gate state | 104 | W109 | `python3 -m scripts.lib.supply_chain.latest_version_gate` and `security_update_gate --input infra/09-platform-ops/security-updates/update-ledger.json` | `main` f4375604a | FAIL | Both not ready: 86/86 entries lack a fresh lookup or review; 51 differ from the upstream latest | required | - |
+| Rehearsal pins on HOME versions | 104 | W109 | `OPSFLOW_AIRFLOW_NATIVE_IMAGE=sha256:7f956efc… python3 -m unittest -v tests.validation.test_opsflow_airflow_native_rehearsal`; static suites of the five repinned modules | Companions PostgreSQL 18.7, Valkey 9.1.4, SeaweedFS 4.54; Mailpit 1.34.0 in the n8n inputs; 2026-11-27 | PASS | 17/17 native tests, publication, retry, replay and restore PASS, cleanup PASS; 107 static tests OK | required | - |
+| Fresh upstream release lookup | 104 | W109 | `gh api repos/<owner>/<repo>/releases/latest` for 39 repositories behind 54 root entries | 2026-11-27 10:00 UTC, read-only | PASS | 28 equal, 21 behind, 5 other; table in Blockers and Decisions | required | - |
 
 ### Resolution Links
 
@@ -393,7 +447,7 @@ permission broke archiving. The OpenBao r4 window stays open for the owner.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 104 | pending | Ledger fresh review, D09 v9 gate state | On 2026-11-27 both gates fail for all 86 current entries because the reviews are older than the 7-day window, and 51 entries differ from the upstream latest; a new official-source review round is needed, or each entry recorded as a residual. | SPEC-0212 TSK-0052 |
+| 104 | pending | Ledger fresh review, D09 v9 gate state, Fresh upstream release lookup | On 2026-11-27 both gates fail on stale facts (2026-11-10); a fresh lookup of the 54 GitHub-sourced entries finds 28 at upstream latest and 21 behind, recorded per entry as residuals; the behind entries need an update round and the 32 non-GitHub entries their own lookup. | SPEC-0212 TSK-0052 |
 | 105 | pending | Artifact verification | Three public final candidates scanned. Qdrant index signature verified; other publisher proofs, final custom artifacts and residual decisions remain pending. | SPEC-0212 TSK-0052 |
 
 ### Remaining Conditions

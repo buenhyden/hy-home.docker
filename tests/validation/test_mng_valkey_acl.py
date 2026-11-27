@@ -353,7 +353,7 @@ require(process.argv[1]).selfCheckWrongPassword().catch(error=>{console.error(er
     "opt-in isolated synthetic Valkey ACL rehearsal",
 )
 class MngValkeyAclNativeTests(unittest.TestCase):
-    IMAGE = "sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b"
+    IMAGE = "sha256:56729e68bdda139cbd3f6a2538683dc3523325fc5711ea1a379938f1b37893f0"
     CLIENT_IMAGE = (
         "sha256:222a7fd94f471b0b464f873e001a2ec00fc589158066209f0ee8028e43e11131"
     )
