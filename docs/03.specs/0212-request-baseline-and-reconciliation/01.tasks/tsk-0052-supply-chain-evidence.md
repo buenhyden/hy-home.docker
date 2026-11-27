@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.12"
+version: "0.1.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -281,7 +281,33 @@ registry access failures are recorded alongside their bounded fallbacks.
 
 ### Blockers and Decisions
 
-None: nothing was recorded here before this Task moved to the common form.
+#### D09 v9 pass (2026-11-27)
+
+On 2026-11-27 the user requested D09 of the v9 prompts
+(`_workspace/workspace_task_prompts_20261127_progress_v9/`, prompt
+`09_security_versions_resources_storybook.md`), limited to its scope, with
+commit, push, PR and merge. Work ran in the primary checkout on branch
+`fix/d09-v9-timescale-template1` from `main` `f4375604a`.
+
+- TimescaleDB 2.32.1 regression: the "HOME apply of TimescaleDB 2.32.1" row
+  ran `ALTER EXTENSION timescaledb UPDATE` in `postgres` only. `template1`
+  kept 2.30.3, whose library the new image does not ship, so every
+  `template1` session failed, `pg_dumpall` aborted and the nightly backup
+  exited 1 on 2026-11-27 03:34 KST (SPEC-0212 TSK-0046, D08 v9). With the
+  owner's approval in this chat the update ran in `template1` as the first
+  statement of a fresh session; `opsflow_dev` has no TimescaleDB. The dev-pg
+  README now states the every-database step.
+- Gates on the current ledger: `latest_version_gate` and
+  `security_update_gate` both fail for all 86 entries because no entry has a
+  fresh lookup or review (last `checked_at` 2026-11-10, older than the 7-day
+  window); 51 entries also differ from the upstream latest. The registered
+  `sync-update-ledger.sh` only binds Renovate pin bumps and never contacts
+  the network, so a fresh review needs its own official-source round; no
+  lookup was invented.
+- Rehearsal pins: the Airflow native rehearsal (SPEC-0212 TSK-0121) keeps
+  PostgreSQL 18.6, Valkey 9.1.2 and SeaweedFS 4.48 companions; the n8n
+  notifier rehearsal (SPEC-0212 TSK-0122) pins the 2.43.6 candidate, runner
+  2.43.6 and Mailpit 1.31.5. Both need reviewed current candidates.
 
 ## Verification Evidence
 
@@ -348,6 +374,8 @@ artifact verification and the current gate results.
 | Grafana data backup (first run) | 104 | W109 | `tar` of the grafana-data volume in a read-only, no-network container of the running image | grafana 13.3.1 stopped, running as the Grafana user 472 | FAIL | `tar` could not create the archive in `/home/hyunyoun/storage/volumes/backups/upgrade-20261126/` (permission denied); the `&&` chain stopped, so Grafana stayed stopped and was not recreated | required | - |
 | Grafana data backup | 104 | W109 | `tar` of the grafana-data volume in a read-only, no-network container of the running image | grafana 13.3.1 stopped, running as root with the archive handed to the host user | PASS | `grafana-13.3.1-data.tar.gz` (207 MB, contains `grafana.db`, mode 600) in `/home/hyunyoun/storage/volumes/backups/upgrade-20261126/` | required | Grafana data backup (first run) |
 | HOME apply of the round 3 images | 104 | W109 | `docker compose -p hy-home-infra up -d --no-deps <service>` after a dry run that named only the target, one service at a time | Owner request 2026-11-27; grafana 13.3.2, n8n-sandbox-api and n8n-sandbox-runner-1 1.16.0 | PASS | Grafana healthy, `/api/health` database ok on 13.3.2, unified storage migrations completed without errors, route 302 to login as before; sandbox api and runner healthy, the runner registered with the api and is configured for sandbox 1.16.0, n8n and n8n-worker stayed healthy. The sandbox image is fetched on the first sandbox execution, which was not run; aws-cli, Renovate, restic and pact-broker take their pins at their next one-off or deployed run | required | - |
+| D09 v9 TimescaleDB template1 update | 104 | W109 | `ALTER EXTENSION timescaledb UPDATE` in `template1`; extension readback in every database; `pg_dumpall --schema-only` | dev-pg on `hy-home/dev-pg:18.7-ts2.32.1-pgbackrest2.60.1-r1`, owner approval 2026-11-27 | PASS | `template1` and `postgres` 2.32.1, `opsflow_dev` none; `pg_dumpall --schema-only` exit 0 (catalog warnings only); the full backup run is the owner step | required | - |
+| D09 v9 gate state | 104 | W109 | `python3 -m scripts.lib.supply_chain.latest_version_gate` and `security_update_gate --input infra/09-platform-ops/security-updates/update-ledger.json` | `main` f4375604a | FAIL | Both not ready: 86/86 entries lack a fresh lookup or review; 51 differ from the upstream latest | required | - |
 
 ### Resolution Links
 
@@ -365,7 +393,7 @@ permission broke archiving. The OpenBao r4 window stays open for the owner.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 104 | pending | Ledger fresh review | All89 entries now have an official-advisory applicability classification and reviewed decision, but both gates FAIL:56 latest residuals remain and security rows still require independent artifact/compatibility/recovery evidence or retain an explicit block/defer. | SPEC-0212 TSK-0052 |
+| 104 | pending | Ledger fresh review, D09 v9 gate state | On 2026-11-27 both gates fail for all 86 current entries because the reviews are older than the 7-day window, and 51 entries differ from the upstream latest; a new official-source review round is needed, or each entry recorded as a residual. | SPEC-0212 TSK-0052 |
 | 105 | pending | Artifact verification | Three public final candidates scanned. Qdrant index signature verified; other publisher proofs, final custom artifacts and residual decisions remain pending. | SPEC-0212 TSK-0052 |
 
 ### Remaining Conditions
