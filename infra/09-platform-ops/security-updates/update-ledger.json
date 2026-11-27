@@ -158,7 +158,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91"
+      "sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -13722,7 +13722,7 @@
       "service": "n8n",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "hyhome/n8n:2.46.6-local",
+      "current_declared": "hyhome/n8n:2.49.7-local",
       "profiles_declared": [
         "workflow",
         "workflow-n8n"
@@ -13731,7 +13731,7 @@
         "context": ".",
         "dockerfile": "${N8N_DOCKERFILE:-dev.Dockerfile}",
         "args": {
-          "N8N_VERSION": "2.46.6"
+          "N8N_VERSION": "2.49.7"
         }
       },
       "current_running": [
@@ -13750,15 +13750,15 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "2.47.3",
-      "target_version": "2.46.6",
+      "latest_version": "2.49.8",
+      "target_version": "2.49.7",
       "channel": "stable",
       "checked_at": "2026-11-10T22:28:59.825797+00:00",
       "release_url": "https://docs.n8n.io/release-notes/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-11-04",
       "advisory_urls": [
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh",
@@ -13861,9 +13861,17 @@
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-x5cw-hm7v-q7mj",
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-x8wx-g24x-3549",
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-xhmh-8fgr-xqhj",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x"
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-w6f8-8qh4-h3j4",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-g45f-rmpv-24vc",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-rqx8-m8xf-23ff",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-p3cc-p7wp-f2x7",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-c772-hjfp-gfc2",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-q8rc-7m84-mfvj",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-g333-hr44-g82p",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-h59h-rf6m-7jp5"
       ],
-      "applicability": "UNKNOWN: 2.46.6 is at or above the patched 2.46.1 for GHSA-prmc-fg87-r4gh; private workflows and runtime state not inspected",
+      "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
@@ -13875,10 +13883,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-09T06:43:53.233408+00:00",
-        "next_validation_due": "2026-11-16T00:00:00+00:00",
-        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
-        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
+        "discovered_at": "2026-11-27T14:00:00+00:00",
+        "next_validation_due": "2026-12-04T14:00:00+00:00",
+        "reason": "Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "service_owner_role": "n8n/P03/P05 owners"
       },
@@ -13890,16 +13898,16 @@
         "sha256:1de3d197f8b6bad00af0b6945a2ede5ec321c93ab5344bf09b9919311650d492"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "2.46.6",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+      "source_refreshed_at": "2026-11-27T14:00:00+00:00",
+      "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
-      "target_source_image": "hyhome/n8n:2.46.6-local",
-      "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: local custom image not built; upstream base n8nio/n8n:2.46.6@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae registry metadata is a separate observation",
+      "target_source_image": "hyhome/n8n:2.49.7-local",
+      "candidate_evidence_scope": "Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet.",
+      "target_declared_digest": "UNKNOWN: Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet.",
+      "target_digest_evidence": "UNKNOWN: Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet.",
       "official_supplier_lookup_refs": [
         "n8n-io/n8n"
       ],
@@ -14161,14 +14169,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 2.46.6 is above every 2.x fixed floor in the 100 unique official npm:n8n advisories returned; this verdict is limited to that bounded set and not to transitive image contents. Coordinator: the100 observed core advisories are excluded at2.46.6, but repeated-response pagination is incomplete and custom components are unresolved. The bounded NOT_AFFECTED observation is not an aggregate clearance.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the custom OpsflowSmtp component and transitive image contents are not cleared.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T14:00:00+00:00",
         "reviewed_subject": {
-          "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
-          "assessment_version": "2.46.6 custom over exact upstream digest",
+          "declaration": "hyhome/n8n:2.49.7-local",
+          "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
+          "assessment_version": "2.49.7 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -14276,7 +14284,15 @@
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-x5cw-hm7v-q7mj",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-x8wx-g24x-3549",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-xhmh-8fgr-xqhj",
-          "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x"
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-w6f8-8qh4-h3j4",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-g45f-rmpv-24vc",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-rqx8-m8xf-23ff",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-p3cc-p7wp-f2x7",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-c772-hjfp-gfc2",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-q8rc-7m84-mfvj",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-g333-hr44-g82p",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-h59h-rf6m-7jp5"
         ],
         "concrete_advisory_refs": [
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-233r-fpgw-fx8x",
@@ -14396,31 +14412,131 @@
           "n8n4 requested pages contain the same100 GHSA objects and identical response hashes; pagination is INCOMPLETE.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "2.46.6 is above every 2.x fixed floor in the 100 unique official npm:n8n advisories returned; this verdict is limited to that bounded set and not to transitive image contents. Coordinator: the100 observed core advisories are excluded at2.46.6, but repeated-response pagination is incomplete and custom components are unresolved. The bounded NOT_AFFECTED observation is not an aggregate clearance.",
-        "next_action": "Retain for the bounded advisory scope; reconcile the time-specific stable-channel receipts, then test the accepted current stable target in a custom-image refresh while preserving the pagination caveat.",
+        "reason": "2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the custom OpsflowSmtp component and transitive image contents are not cleared.",
+        "next_action": "Build and review the 2.49.7 candidate, rerun the native rehearsal, back up the n8n database and apply on HOME; signature, SBOM and scan stay NOT_RUN.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "2.46.6",
+          "target_retained": "2.49.7",
           "observed_latest": "2.47.3",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Retain for the bounded advisory scope; reconcile the time-specific stable-channel receipts, then test the accepted current stable target in a custom-image refresh while preserving the pagination caveat."
+          "reason": "2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the custom OpsflowSmtp component and transitive image contents are not cleared.",
+          "next_action": "Build and review the 2.49.7 candidate, rerun the native rehearsal, back up the n8n database and apply on HOME; signature, SBOM and scan stay NOT_RUN."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
         "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "decision": "defer",
           "affected_confirmed": null,
-          "reason": null,
+          "reason": "2.46.6 is above every 2.x fixed floor in the 100 unique official npm:n8n advisories returned; this verdict is limited to that bounded set and not to transitive image contents. Coordinator: the100 observed core advisories are excluded at2.46.6, but repeated-response pagination is incomplete and custom components are unresolved. The bounded NOT_AFFECTED observation is not an aggregate clearance.",
           "advisory_urls": [
-            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+            "https://api.github.com/repos/n8n-io/n8n/security-advisories?per_page=100&page=1",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-233r-fpgw-fx8x",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-29xw-66fq-4xc3",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-2r5r-xgvc-rj4p",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-2x68-96jw-5r6c",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-342v-gmh6-738j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-34ff-336r-5q23",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-35jj-42hp-8gmq",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-3c3p-5959-3ghr",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-3p2g-2wpm-8h3g",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-3qcw-p65v-c7vq",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-426f-xmcv-g8pg",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-43v8-hjhm-chjp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-4c7j-qff5-r9cx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-4r56-g65c-fm83",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-4v22-g448-h4rg",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-4wf3-rgqr-xcp3",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-597w-c3jh-g8fg",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-5jr4-xmvf-frmj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-5m98-cgcr-xx3q",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-5pg9-2vqx-r6jm",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-5qpp-pqww-h7fp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-65mv-v8rp-54wc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-65xw-2v52-jhxc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-679f-58pq-4v2c",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-6h4x-896x-fw5m",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-6xcw-7xm6-48c6",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-728h-pmr2-7cgh",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-7gjv-rcf8-x5qc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-7gvh-q9w3-wqqx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-7hgx-277f-7vmg",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-866p-xg8v-g2q7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-89p4-6h98-c7xm",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-8crx-5h96-q72q",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-8vrr-mgc5-jg55",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-953p-jm2c-8h5j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-95ph-833c-4wrp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9fqj-7wc5-cwhx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9p7v-45m2-wxgj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9qx8-fhxv-w794",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9rhv-fhr8-7q5r",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9x83-43r8-5hwc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-c2wp-6fgc-xjq4",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-c4f6-59xq-95ww",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-c9c6-rq46-h25v",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-cqr2-h44g-v75v",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-crfj-5wv6-8v86",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-cw9w-vv67-hf73",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-cwm2-vhf5-27q9",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-f2cp-m7mv-8jpv",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-f2cw-9483-7vcp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-f4f3-2g67-4vhm",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fg85-4wv2-p98j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fh4c-9rr2-p7qc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fm93-2x43-6676",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fmmv-p585-7c8x",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fvv4-gmv9-xqf5",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-gx3v-3x3v-f8r5",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-gx6g-2hm7-c4xf",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-hh89-3r9w-qj3j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-hvrx-jc5j-pg3w",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-hw8v-xxg5-vvvx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-hwv9-jhc7-f7c4",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-j535-v25q-vx3q",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-jmcg-c7p5-q69g",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-jmmj-93rg-6j39",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-jp9j-jr97-w9pj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-m3hg-p5r9-fg9h",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-m7gv-mpg5-7c9v",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-mgpr-56r4-5c67",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-mp7q-23hg-35cf",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-mwp5-2m32-r54h",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-mx4r-96jx-v278",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-p3pg-xw4f-m72c",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-pcr3-v5vr-qppf",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-pf83-w3f9-8m37",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-pq6c-vh67-xpm3",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-pwj5-wwm6-g83j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-q3fv-295f-qfpf",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-q5wm-mgqx-fv2f",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-qgpw-8g46-w95v",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-qmvv-q3c9-wpp7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-r4j2-j3wm-q689",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-r6g9-5cpp-ppwr",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-rc3w-8jc8-7x3w",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-rmr5-775f-jvm2",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-rqch-9jrh-cr8w",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-rx55-8qhx-4hwx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-v9cx-v88r-42vw",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-vfrj-582q-mvcp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-vrv8-j27g-g7cr",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-w24g-6454-7w7f",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-wcv8-x773-j96r",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-wvjj-qg37-pv73",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-wxwj-8wv6-vpw2",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-x25p-9mr6-cwgp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-x5cw-hm7v-q7mj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-x8wx-g24x-3549",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-xhmh-8fgr-xqhj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x"
           ],
-          "current_version": null,
-          "candidate_version": null
+          "current_version": "2.46.6 custom over exact upstream digest",
+          "candidate_version": "2.49.7"
         },
         "channel_adjudication": {
           "result": "PRESERVE_CANONICAL_VENDOR_PRODUCTION_CHANNEL",
@@ -14434,13 +14550,19 @@
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n",
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n"
+      },
+      "current_target_artifact_binding": {
+        "source_version": "2.49.7",
+        "source_image": "hyhome/n8n:2.49.7-local",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet; do not reuse historical artifact, build or native results."
       }
     },
     {
       "service": "n8n-task-runner-worker",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+      "current_declared": "n8nio/runners:2.49.7@sha256:be8031ab2badedb7af0ceb68ea46ac5317bb941c06f97b3f0e9bc3bc2b67050e",
       "profiles_declared": [
         "workflow",
         "workflow-n8n"
@@ -14462,21 +14584,29 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "2.47.3",
-      "target_version": "2.46.6",
+      "latest_version": "2.49.8",
+      "target_version": "2.49.7",
       "channel": "stable",
       "checked_at": "2026-11-10T22:28:59.825797+00:00",
       "release_url": "https://docs.n8n.io/release-notes/",
-      "target_index_digest": "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-      "target_manifest_digest": "sha256:c4b43bc62c6dcce8053817f492f0bf434547651ad3def4b680bd2ccb44f11257",
-      "target_config_digest": "sha256:97fb470643639c38c09eb896b492cf7471f69dcebdb9cbd1457d8ef75776ccf8",
-      "platform": "linux/amd64",
+      "target_index_digest": "UNKNOWN",
+      "target_manifest_digest": "UNKNOWN",
+      "target_config_digest": "UNKNOWN",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-11-04",
       "advisory_urls": [
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh",
-        "https://api.github.com/repos/n8n-io/n8n/security-advisories?per_page=100&page=1"
+        "https://api.github.com/repos/n8n-io/n8n/security-advisories?per_page=100&page=1",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-w6f8-8qh4-h3j4",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-g45f-rmpv-24vc",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-rqx8-m8xf-23ff",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-p3cc-p7wp-f2x7",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-c772-hjfp-gfc2",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-q8rc-7m84-mfvj",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-g333-hr44-g82p",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-h59h-rf6m-7jp5"
       ],
-      "applicability": "UNKNOWN: 2.46.6 is at or above the patched 2.46.1 for GHSA-prmc-fg87-r4gh; private workflows and runtime state not inspected",
+      "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
@@ -14488,10 +14618,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-09T06:43:53.233408+00:00",
-        "next_validation_due": "2026-11-16T00:00:00+00:00",
-        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
-        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
+        "discovered_at": "2026-11-27T14:00:00+00:00",
+        "next_validation_due": "2026-12-04T14:00:00+00:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "service_owner_role": "n8n/P03/P05 owners"
       },
@@ -14503,16 +14633,16 @@
         "sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "2.46.6",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+      "source_refreshed_at": "2026-11-27T14:00:00+00:00",
+      "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
-      "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-      "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
-      "target_declared_digest": "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest responses (2026-11-09); signatures/provenance NOT_RUN.",
+      "target_source_image": "n8nio/runners:2.49.7@sha256:be8031ab2badedb7af0ceb68ea46ac5317bb941c06f97b3f0e9bc3bc2b67050e",
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "target_declared_digest": "UNKNOWN",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
         "n8n-io/n8n"
       ],
@@ -14768,14 +14898,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The official advisory records name npm:n8n, not the n8nio/runners image. Even task-runner-themed advisories cannot be transferred without a component manifest or vendor statement.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the official n8nio/runners image's transitive contents (Python and JavaScript runtimes) are not cleared.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T14:00:00+00:00",
         "reviewed_subject": {
-          "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
-          "assessment_version": "n8nio/runners:2.46.6 exact digest",
+          "declaration": "n8nio/runners:2.49.7@sha256:be8031ab2badedb7af0ceb68ea46ac5317bb941c06f97b3f0e9bc3bc2b67050e",
+          "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
+          "assessment_version": "n8nio/runners:2.49.7 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -14783,7 +14913,15 @@
         "source_action": "blocked",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/n8n-io/n8n/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/n8n-io/n8n/security-advisories?per_page=100&page=1",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-w6f8-8qh4-h3j4",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-g45f-rmpv-24vc",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-rqx8-m8xf-23ff",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-p3cc-p7wp-f2x7",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-c772-hjfp-gfc2",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-q8rc-7m84-mfvj",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-g333-hr44-g82p",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-h59h-rf6m-7jp5"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
@@ -14801,31 +14939,31 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "The official advisory records name npm:n8n, not the n8nio/runners image. Even task-runner-themed advisories cannot be transferred without a component manifest or vendor statement.",
-        "next_action": "Obtain official runners SBOM/release binding and match its packages/commit to the n8n fixes; do not infer from tag parity alone.",
+        "reason": "2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the official n8nio/runners image's transitive contents (Python and JavaScript runtimes) are not cleared.",
+        "next_action": "Build and review the 2.49.7 candidate, rerun the native rehearsal, back up the n8n database and apply on HOME; signature, SBOM and scan stay NOT_RUN.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "2.46.6",
+          "target_retained": "2.49.7",
           "observed_latest": "2.47.3",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Obtain official runners SBOM/release binding and match its packages/commit to the n8n fixes; do not infer from tag parity alone."
+          "reason": "2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the official n8nio/runners image's transitive contents (Python and JavaScript runtimes) are not cleared.",
+          "next_action": "Build and review the 2.49.7 candidate, rerun the native rehearsal, back up the n8n database and apply on HOME; signature, SBOM and scan stay NOT_RUN."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
         "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "decision": "defer",
           "affected_confirmed": null,
-          "reason": null,
+          "reason": "The official advisory records name npm:n8n, not the n8nio/runners image. Even task-runner-themed advisories cannot be transferred without a component manifest or vendor statement.",
           "advisory_urls": [
-            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+            "https://api.github.com/repos/n8n-io/n8n/security-advisories?per_page=100&page=1"
           ],
-          "current_version": null,
-          "candidate_version": null
+          "current_version": "n8nio/runners:2.46.6 exact digest",
+          "candidate_version": "2.49.7"
         },
         "channel_adjudication": {
           "result": "PRESERVE_CANONICAL_VENDOR_PRODUCTION_CHANNEL",
@@ -14839,13 +14977,19 @@
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-task-runner-worker",
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-task-runner-worker"
+      },
+      "current_target_artifact_binding": {
+        "source_version": "2.49.7",
+        "source_image": "n8nio/runners:2.49.7@sha256:be8031ab2badedb7af0ceb68ea46ac5317bb941c06f97b3f0e9bc3bc2b67050e",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
       "service": "n8n-worker",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "hyhome/n8n:2.46.6-local",
+      "current_declared": "hyhome/n8n:2.49.7-local",
       "profiles_declared": [
         "workflow",
         "workflow-n8n"
@@ -14854,7 +14998,7 @@
         "context": ".",
         "dockerfile": "${N8N_DOCKERFILE:-dev.Dockerfile}",
         "args": {
-          "N8N_VERSION": "2.46.6"
+          "N8N_VERSION": "2.49.7"
         }
       },
       "current_running": [
@@ -14873,15 +15017,15 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "2.47.3",
-      "target_version": "2.46.6",
+      "latest_version": "2.49.8",
+      "target_version": "2.49.7",
       "channel": "stable",
       "checked_at": "2026-11-10T22:28:59.825797+00:00",
       "release_url": "https://docs.n8n.io/release-notes/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-11-04",
       "advisory_urls": [
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh",
@@ -14984,9 +15128,17 @@
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-x5cw-hm7v-q7mj",
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-x8wx-g24x-3549",
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-xhmh-8fgr-xqhj",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x"
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-w6f8-8qh4-h3j4",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-g45f-rmpv-24vc",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-rqx8-m8xf-23ff",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-p3cc-p7wp-f2x7",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-c772-hjfp-gfc2",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-q8rc-7m84-mfvj",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-g333-hr44-g82p",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-h59h-rf6m-7jp5"
       ],
-      "applicability": "UNKNOWN: 2.46.6 is at or above the patched 2.46.1 for GHSA-prmc-fg87-r4gh; private workflows and runtime state not inspected",
+      "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
@@ -14998,10 +15150,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-09T06:43:53.233408+00:00",
-        "next_validation_due": "2026-11-16T00:00:00+00:00",
-        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
-        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
+        "discovered_at": "2026-11-27T14:00:00+00:00",
+        "next_validation_due": "2026-12-04T14:00:00+00:00",
+        "reason": "Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "service_owner_role": "n8n/P03/P05 owners"
       },
@@ -15013,16 +15165,16 @@
         "sha256:1de3d197f8b6bad00af0b6945a2ede5ec321c93ab5344bf09b9919311650d492"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "2.46.6",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+      "source_refreshed_at": "2026-11-27T14:00:00+00:00",
+      "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
-      "target_source_image": "hyhome/n8n:2.46.6-local",
-      "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: local custom image not built; upstream base n8nio/n8n:2.46.6@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae registry metadata is a separate observation",
+      "target_source_image": "hyhome/n8n:2.49.7-local",
+      "candidate_evidence_scope": "Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet.",
+      "target_declared_digest": "UNKNOWN: Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet.",
+      "target_digest_evidence": "UNKNOWN: Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet.",
       "official_supplier_lookup_refs": [
         "n8n-io/n8n"
       ],
@@ -15284,14 +15436,14 @@
       "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
-      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. It uses the identical npm:n8n 2.46.6 custom image; all reviewed official 2.x affected ranges end by fixed 2.46.1 or earlier. Coordinator: the100 observed core advisories are excluded at2.46.6, but repeated-response pagination is incomplete and custom components are unresolved. The bounded NOT_AFFECTED observation is not an aggregate clearance.",
+      "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the custom OpsflowSmtp component and transitive image contents are not cleared.",
       "master_20261111_advisory_review": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T14:00:00+00:00",
         "reviewed_subject": {
-          "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
-          "assessment_version": "2.46.6 custom over exact upstream digest",
+          "declaration": "hyhome/n8n:2.49.7-local",
+          "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
+          "assessment_version": "2.49.7 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -15399,7 +15551,15 @@
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-x5cw-hm7v-q7mj",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-x8wx-g24x-3549",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-xhmh-8fgr-xqhj",
-          "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x"
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-w6f8-8qh4-h3j4",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-g45f-rmpv-24vc",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-rqx8-m8xf-23ff",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-p3cc-p7wp-f2x7",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-c772-hjfp-gfc2",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-q8rc-7m84-mfvj",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-g333-hr44-g82p",
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-h59h-rf6m-7jp5"
         ],
         "concrete_advisory_refs": [
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-233r-fpgw-fx8x",
@@ -15519,31 +15679,131 @@
           "n8n4 requested pages contain the same100 GHSA objects and identical response hashes; pagination is INCOMPLETE.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "It uses the identical npm:n8n 2.46.6 custom image; all reviewed official 2.x affected ranges end by fixed 2.46.1 or earlier. Coordinator: the100 observed core advisories are excluded at2.46.6, but repeated-response pagination is incomplete and custom components are unresolved. The bounded NOT_AFFECTED observation is not an aggregate clearance.",
-        "next_action": "Keep version alignment with main; reconcile the stable-channel receipts and test the accepted target in source/build validation before any deployment.",
+        "reason": "2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the custom OpsflowSmtp component and transitive image contents are not cleared.",
+        "next_action": "Build and review the 2.49.7 candidate, rerun the native rehearsal, back up the n8n database and apply on HOME; signature, SBOM and scan stay NOT_RUN.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "2.46.6",
+          "target_retained": "2.49.7",
           "observed_latest": "2.47.3",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Prepare the observed current release through its existing updater/producer; keep candidate pins unchanged until exact-subject and compatibility/recovery evidence exists.",
-          "next_action": "Keep version alignment with main; reconcile the stable-channel receipts and test the accepted target in source/build validation before any deployment."
+          "reason": "2.49.7 (2026-11-26) is at or above the fixed version of every n8n-io/n8n repository advisory published through 2026-11-27; it fixes the eight that affected 2.46.6 (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high; GHSA-c772-hjfp-gfc2, GHSA-g333-hr44-g82p, GHSA-h59h-rf6m-7jp5, GHSA-g45f-rmpv-24vc, GHSA-rqx8-m8xf-23ff, GHSA-p3cc-p7wp-f2x7 medium). The owner chose it on 2026-11-27 through the POL-0086 security fast path although it is younger than the 7-day release age. The verdict stays UNKNOWN: the earlier catalog pagination was incomplete, and the custom OpsflowSmtp component and transitive image contents are not cleared.",
+          "next_action": "Build and review the 2.49.7 candidate, rerun the native rehearsal, back up the n8n database and apply on HOME; signature, SBOM and scan stay NOT_RUN."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
         "previous_security_fields": {
-          "reviewed_at": null,
-          "decision": null,
+          "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+          "decision": "defer",
           "affected_confirmed": null,
-          "reason": null,
+          "reason": "It uses the identical npm:n8n 2.46.6 custom image; all reviewed official 2.x affected ranges end by fixed 2.46.1 or earlier. Coordinator: the100 observed core advisories are excluded at2.46.6, but repeated-response pagination is incomplete and custom components are unresolved. The bounded NOT_AFFECTED observation is not an aggregate clearance.",
           "advisory_urls": [
-            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+            "https://api.github.com/repos/n8n-io/n8n/security-advisories?per_page=100&page=1",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-233r-fpgw-fx8x",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-29xw-66fq-4xc3",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-2r5r-xgvc-rj4p",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-2x68-96jw-5r6c",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-342v-gmh6-738j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-34ff-336r-5q23",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-35jj-42hp-8gmq",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-3c3p-5959-3ghr",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-3p2g-2wpm-8h3g",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-3qcw-p65v-c7vq",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-426f-xmcv-g8pg",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-43v8-hjhm-chjp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-4c7j-qff5-r9cx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-4r56-g65c-fm83",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-4v22-g448-h4rg",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-4wf3-rgqr-xcp3",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-597w-c3jh-g8fg",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-5jr4-xmvf-frmj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-5m98-cgcr-xx3q",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-5pg9-2vqx-r6jm",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-5qpp-pqww-h7fp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-65mv-v8rp-54wc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-65xw-2v52-jhxc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-679f-58pq-4v2c",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-6h4x-896x-fw5m",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-6xcw-7xm6-48c6",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-728h-pmr2-7cgh",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-7gjv-rcf8-x5qc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-7gvh-q9w3-wqqx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-7hgx-277f-7vmg",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-866p-xg8v-g2q7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-89p4-6h98-c7xm",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-8crx-5h96-q72q",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-8vrr-mgc5-jg55",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-953p-jm2c-8h5j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-95ph-833c-4wrp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9fqj-7wc5-cwhx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9p7v-45m2-wxgj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9qx8-fhxv-w794",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9rhv-fhr8-7q5r",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-9x83-43r8-5hwc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-c2wp-6fgc-xjq4",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-c4f6-59xq-95ww",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-c9c6-rq46-h25v",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-cqr2-h44g-v75v",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-crfj-5wv6-8v86",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-cw9w-vv67-hf73",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-cwm2-vhf5-27q9",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-f2cp-m7mv-8jpv",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-f2cw-9483-7vcp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-f4f3-2g67-4vhm",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fg85-4wv2-p98j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fh4c-9rr2-p7qc",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fm93-2x43-6676",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fmmv-p585-7c8x",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-fvv4-gmv9-xqf5",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-gx3v-3x3v-f8r5",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-gx6g-2hm7-c4xf",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-hh89-3r9w-qj3j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-hvrx-jc5j-pg3w",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-hw8v-xxg5-vvvx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-hwv9-jhc7-f7c4",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-j535-v25q-vx3q",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-jmcg-c7p5-q69g",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-jmmj-93rg-6j39",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-jp9j-jr97-w9pj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-m3hg-p5r9-fg9h",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-m7gv-mpg5-7c9v",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-mgpr-56r4-5c67",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-mp7q-23hg-35cf",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-mwp5-2m32-r54h",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-mx4r-96jx-v278",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-p3pg-xw4f-m72c",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-pcr3-v5vr-qppf",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-pf83-w3f9-8m37",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-pq6c-vh67-xpm3",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-pwj5-wwm6-g83j",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-q3fv-295f-qfpf",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-q5wm-mgqx-fv2f",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-qgpw-8g46-w95v",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-qmvv-q3c9-wpp7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-r4j2-j3wm-q689",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-r6g9-5cpp-ppwr",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-rc3w-8jc8-7x3w",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-rmr5-775f-jvm2",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-rqch-9jrh-cr8w",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-rx55-8qhx-4hwx",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-v9cx-v88r-42vw",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-vfrj-582q-mvcp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-vrv8-j27g-g7cr",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-w24g-6454-7w7f",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-wcv8-x773-j96r",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-wvjj-qg37-pv73",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-wxwj-8wv6-vpw2",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-x25p-9mr6-cwgp",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-x5cw-hm7v-q7mj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-x8wx-g24x-3549",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-xhmh-8fgr-xqhj",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-xrqg-3xcp-h45x"
           ],
-          "current_version": null,
-          "candidate_version": null
+          "current_version": "2.46.6 custom over exact upstream digest",
+          "candidate_version": "2.49.7"
         },
         "channel_adjudication": {
           "result": "PRESERVE_CANONICAL_VENDOR_PRODUCTION_CHANNEL",
@@ -15557,6 +15817,12 @@
       "master_20261111_artifact_review": {
         "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-worker",
         "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-worker"
+      },
+      "current_target_artifact_binding": {
+        "source_version": "2.49.7",
+        "source_image": "hyhome/n8n:2.49.7-local",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Owner-approved n8n 2.49.7 update (security fast path, POL-0086 vulnerability alerts): the locally built image has no registry digest, and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it yet; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -27192,7 +27458,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+      "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27269,7 +27535,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27553,7 +27819,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
       "source_refreshed_at": "2026-11-27T08:27:55+09:00",
-      "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+      "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27631,7 +27897,7 @@
         "reviewed_at": "2026-11-27T00:06:34.395875+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.16.0@sha256:334724118cbc5235a73a69efa71cde50f85d1ac3b72c16785dd930d500d00a32",
-          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
           "assessment_version": "1.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27746,7 +28012,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
       "source_refreshed_at": "2026-11-27T08:27:55+09:00",
-      "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+      "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -27824,7 +28090,7 @@
         "reviewed_at": "2026-11-27T00:06:34.824503+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.16.0@sha256:334724118cbc5235a73a69efa71cde50f85d1ac3b72c16785dd930d500d00a32",
-          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
           "assessment_version": "1.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27939,7 +28205,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-runner-dind:latest",
       "source_refreshed_at": "2026-11-27T08:27:55+09:00",
-      "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+      "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -28017,7 +28283,7 @@
         "reviewed_at": "2026-11-27T00:06:35.261559+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.16.0@sha256:e03ae162f9503d8c68180a1dc0539f82ba425a5d79d033e45d90f350cd6ca732",
-          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_input_sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac",
           "assessment_version": "1.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60563,6 +60829,228 @@
           }
         }
       ]
+    },
+    {
+      "source_revision": "175700bd1aa85c91fd32d94c678bb3b16b571ba6",
+      "refreshed_at": "2026-11-27T14:00:00+00:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "e84ed69d889ab7f93da90803d468d5b74b116fc85354022e693515963a8dbf87",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7df3bcd149809bfa66f55745a5201cde10249cdb4bcd535c76933e14d832275c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "bea4ad9fad9dea27178d6996fc9aeb3c68fe5641252d41f0d7c92c9aa57aec43"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "73d5754c0a0d6419bb8399a35104a2e06b59965a18256e1dcbf0ec2b6d00654a"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "cf8d6630cc62434cdf75bae74eba8523bc4dc294f5083c107918a825fa408b11"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "38315da1ec4221642f71fa715ffd4babfb9b1cabbd5876b8c49cddbe59af9344"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "b494ff5970dd0a293709ed4ac07f5a1a538e146095bc4f0b66b40245a3679041"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "c95dc25d4977e28ef281fce2651e17ea15bf96db14494a27eeaa1b987e865e07"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "f7cf17b4fa054c88a792d2a07e1315a5dd62b0e3b7046cfb71a8acd955ba71ec"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "b76aa5186f7da2f10e1ca72a65e87865057d72c246fc111bc74687cd47c5fd8a"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "0777773f66d293e9bb8fb58cb0a1c5c677f817a94db4cfe917fb0de3e82bbcc8"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "51a5398438dfc67f14f92c9ce69d960ac3fbbac1c981f1f66cea83dbcdc2f11c"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "4e28ed5fc0e39a71ce8d78220b52b2618aa9abc330edd19cddea1d0f09d649e2"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "9c0e2e2a44b5c56d3be7ea3e73f3da34d10cd163e47571245848c9f6899f7eba"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "96a21f2c29f548bd66d460908d7ae4af1af7404b6d71ef6437407b8421047e21"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "7cdccd373a8e6abf6dc689157ad895cdd524bfbdb3ad8187b1cd1795d82782e2"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "61dc48d96d0ad33b6ef213a17bbb7f3fc5fc4616121b76cb25678c73725f69f9"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "caed97453a7510cb474b3aaaac60ab9bf53ffc52eaace0acd43e178bcb39d47f"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e37265d81dfed6307e484fd2189365401cc4317e0e78ebeba26a98144379915"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "b2df25b3a29ede02669549e4333f345a49a7563445c2f253ec6e1737d0aa7c64"
+        },
+        {
+          "path": "infra/08-ai/searxng/docker-compose.yml",
+          "sha256": "0e4bdfc5a9fc54101ee3883146997e35cbafda6ee5612b546379f32cc69e6e64"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "98e681a4eb880c91c53d6bf12aed954f43ae7b581e990a146b11fb9696183f3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "41ceded697e46a0f3ad69cfdf820f31b2ba0d92f65d221abc858e7f0150fa24d"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "95dc375e672aa157ea54d5d875c635565cb4c766545704c30c54e7fdc3fe8050"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "ed78b305f3b3a20a02817c57938aa4b976618175006313ba70d5a3f80e21e455"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "96e2771d3cf9346ffb43520f3592e6cb81b7e2310c536168d18d3f4579fc70da"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "4b8cbc3dd32d0ec322fff6b08367ce9bed54465e60d9fa02707ec8f01f33023d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065"
+        }
+      ],
+      "changed_inputs": [
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "blog-ingestion",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_refreshed_at": "2026-11-27T14:00:00+00:00"
+        },
+        {
+          "service": "n8n-sandbox-api",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_refreshed_at": "2026-11-27T08:27:55+09:00"
+        },
+        {
+          "service": "n8n-sandbox-certs",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_refreshed_at": "2026-11-27T08:27:55+09:00"
+        },
+        {
+          "service": "n8n-sandbox-runner-1",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_refreshed_at": "2026-11-27T08:27:55+09:00"
+        },
+        {
+          "service": "n8n-task-runner-worker",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-worker",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "source_refreshed_at": "2026-11-27T14:00:00+00:00"
+        }
+      ],
+      "meaning": "1 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository, or a locally built tag renamed to its Dockerfile base version). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 7 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "n8n-task-runner-worker"
+      ],
+      "previous_service_images": [
+        {
+          "service": "n8n-task-runner-worker",
+          "current_declared": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+          "proposed_declared": "n8nio/runners:2.49.7@sha256:be8031ab2badedb7af0ceb68ea46ac5317bb941c06f97b3f0e9bc3bc2b67050e",
+          "previous_fields": {
+            "target_version": "2.46.6",
+            "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+            "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest responses (2026-11-09); signatures/provenance NOT_RUN.",
+            "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-09T06:43:53.233408+00:00",
+              "next_validation_due": "2026-11-16T00:00:00+00:00",
+              "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
+              "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
+              "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+              "service_owner_role": "n8n/P03/P05 owners"
+            },
+            "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+            "target_index_digest": "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+            "target_manifest_digest": "sha256:c4b43bc62c6dcce8053817f492f0bf434547651ad3def4b680bd2ccb44f11257",
+            "target_config_digest": "sha256:97fb470643639c38c09eb896b492cf7471f69dcebdb9cbd1457d8ef75776ccf8",
+            "target_declared_digest": "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN: 2.46.6 is at or above the patched 2.46.1 for GHSA-prmc-fg87-r4gh; private workflows and runtime state not inspected",
+            "upstream_reported_tag": "2.46.6",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
     }
   ],
   "delivery_preconditions": {
@@ -66567,15 +67055,15 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-27T00:06:46.346350+00:00",
-      "source_revision": "bf3335ff34fcbfc2207707766532ec7e9f17970c",
-      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
-      "input_sha256": "db3f50ad5e1f977eef035c7e62c7d996b51ae2619e207776e107420f77ffe710",
+      "checked_at": "2026-11-27T14:00:00+00:00",
+      "source_revision": "175700bd1aa85c91fd32d94c678bb3b16b571ba6",
+      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
+      "input_sha256": "a92e6afbd3dd6cddfedaf25cbca032dea6656ec2a0177d9caafcd722859ccb80",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
           "path": "infra/07-workflow/n8n/Dockerfile",
-          "sha256": "685fd2a71b2cca0147d252edc92fcaa3ed3ae18c022335699b62cb70320870ba"
+          "sha256": "26b0b48c15e4c4800b0852a42853419c939657727645aab9af58ff0cea88be0a"
         },
         {
           "path": "infra/07-workflow/n8n/custom/.gitkeep",
@@ -66583,11 +67071,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/dev.Dockerfile",
-          "sha256": "c1d4ff8c789c6e09e08c8c0b71372219e3b9f3a3f434a13dedc9b28319f3eba0"
+          "sha256": "1b8c8674cee53a624952812e9732c615fe1f9d9afda564218dda5969699f9105"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91"
+          "sha256": "2187e76ea752790fe814b74c4b4e73c63d221ed5da70be250a3caf74dbc691ac"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -66603,11 +67091,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
-          "sha256": "6b1e33a2822efe1fe48c4234398745cb938dcf9c438baaea69af2d34f3c6f013"
+          "sha256": "c327cb1251503b7d717be29f36796aefd4a2c6c2f6d1878102d441e1bb5a0e74"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
-          "sha256": "dc155252e60ec6734670a84c1b045e621d81f5abdcdf8aedb35d9fd1cf2dc786"
+          "sha256": "8a88fa339337243b899dcaf00badf6618ef67d0d1720e9f5366aa5bf30ce1e4a"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
@@ -66639,7 +67127,7 @@
         },
         {
           "path": "tests/validation/test_workflow_version_bundle.py",
-          "sha256": "43cc0957078533778d3282f512f469f67104f9514dec0191b6131e083c40f203"
+          "sha256": "6b89d8a45d8f5f0eb45b60078c076d9100c8bc91ebc04420a987ae4a18f2a6af"
         }
       ],
       "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
@@ -70509,6 +70997,90 @@
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
         "archived_at": "2026-11-27T00:06:46.346350+00:00"
+      },
+      {
+        "checked_at": "2026-11-27T00:06:46.346350+00:00",
+        "source_revision": "bf3335ff34fcbfc2207707766532ec7e9f17970c",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "db3f50ad5e1f977eef035c7e62c7d996b51ae2619e207776e107420f77ffe710",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "685fd2a71b2cca0147d252edc92fcaa3ed3ae18c022335699b62cb70320870ba"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "c1d4ff8c789c6e09e08c8c0b71372219e3b9f3a3f434a13dedc9b28319f3eba0"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "31c1536d21c1da3de445c1efb77ac7514a30ee72c3370da5e4cdf7e69ab1c19f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "31c1536d21c1da3de445c1efb77ac7514a30ee72c3370da5e4cdf7e69ab1c19f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "6b1e33a2822efe1fe48c4234398745cb938dcf9c438baaea69af2d34f3c6f013"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "dc155252e60ec6734670a84c1b045e621d81f5abdcdf8aedb35d9fd1cf2dc786"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "43cc0957078533778d3282f512f469f67104f9514dec0191b6131e083c40f203"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-27T14:00:00+00:00"
       }
     ],
     "current_source_acceptance_limit": {

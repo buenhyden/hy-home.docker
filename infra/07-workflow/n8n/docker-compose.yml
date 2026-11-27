@@ -114,8 +114,8 @@ services:
       context: .
       dockerfile: ${N8N_DOCKERFILE:-dev.Dockerfile}
       args:
-        N8N_VERSION: 2.46.6
-    image: hyhome/n8n:2.46.6-local
+        N8N_VERSION: 2.49.7
+    image: hyhome/n8n:2.49.7-local
     container_name: n8n
     hostname: n8n
     group_add:
@@ -196,8 +196,8 @@ services:
       context: .
       dockerfile: ${N8N_DOCKERFILE:-dev.Dockerfile}
       args:
-        N8N_VERSION: 2.46.6
-    image: hyhome/n8n:2.46.6-local
+        N8N_VERSION: 2.49.7
+    image: hyhome/n8n:2.49.7-local
     container_name: n8n-worker
     hostname: n8n-worker
     group_add:
@@ -253,7 +253,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612
+    image: n8nio/runners:2.49.7@sha256:be8031ab2badedb7af0ceb68ea46ac5317bb941c06f97b3f0e9bc3bc2b67050e
     container_name: n8n-task-runner-worker
     hostname: n8n-task-runner-worker
     user: '1000:1000'

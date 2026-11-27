@@ -613,11 +613,13 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 "9.1.3",
                 "GHSA-f4q9-j22m-xqq9",
             ),
+            # n8n moved to 2.49.7 on 2026-11-27 for GHSA-w6f8-8qh4-h3j4 and seven
+            # more (security fast path); the 2026-11-11 refresh kept 2.46.6.
             (
                 ["n8n", "n8n-worker", "n8n-task-runner-worker"],
+                "2.49.7",
                 "2.46.6",
-                "2.46.6",
-                "GHSA-prmc-fg87-r4gh",
+                "GHSA-w6f8-8qh4-h3j4",
             ),
         )
         for names, version, retained, advisory in groups:

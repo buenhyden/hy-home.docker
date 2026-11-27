@@ -87,17 +87,21 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         self.assertIn("constraints-reviewed.txt", source)
 
     def test_n8n_main_worker_runners_and_both_builds_align(self):
+        # One n8n version names every pin; the value itself is free to move.
         compose = yaml.safe_load((N8N / "docker-compose.yml").read_text())
+        version = str(compose["services"]["n8n"]["build"]["args"]["N8N_VERSION"])
+        self.assertRegex(version, r"^\d+\.\d+\.\d+$")
         for name in ("n8n", "n8n-worker"):
             service = compose["services"][name]
-            self.assertEqual("2.46.6", str(service["build"]["args"]["N8N_VERSION"]))
-            self.assertEqual("hyhome/n8n:2.46.6-local", service["image"])
+            self.assertEqual(version, str(service["build"]["args"]["N8N_VERSION"]))
+            self.assertEqual(f"hyhome/n8n:{version}-local", service["image"])
         runners = {compose["services"][n]["image"] for n in ("n8n-task-runner-worker",)}
         self.assertEqual(1, len(runners))
-        self.assertEqual(
-            "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+        self.assertRegex(
             runners.pop(),
+            rf"^n8nio/runners:{re.escape(version)}@sha256:[0-9a-f]{{64}}$",
         )
+        base_digests = set()
         font_builders = {
             re.search(r"^FROM (alpine:\S+) AS font-builder$", text, re.M).group(1)
             for text in (
@@ -108,12 +112,15 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         for name in ("Dockerfile", "dev.Dockerfile"):
             source = (N8N / name).read_text()
             self.assertEqual(
-                {"2.46.6"}, set(re.findall(r"^ARG N8N_VERSION=(\S+)$", source, re.M))
+                {version}, set(re.findall(r"^ARG N8N_VERSION=(\S+)$", source, re.M))
             )
             self.assertIn('RUN test "$(n8n --version)" = "${N8N_VERSION}"', source)
-            self.assertIn(
-                "FROM n8nio/n8n:${N8N_VERSION}@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae",
-                source,
+            base_digests.update(
+                re.findall(
+                    r"^FROM n8nio/n8n:\$\{N8N_VERSION\}@(sha256:[0-9a-f]{64})$",
+                    source,
+                    re.M,
+                )
             )
             # Renovate owns the alpine pin; the digest and the font-builder stage stay.
             self.assertRegex(
@@ -132,6 +139,7 @@ class WorkflowVersionBundleTests(unittest.TestCase):
             self.assertIn(
                 "apk --no-network info -v > /font-builder-packages.txt", source
             )
+        self.assertEqual(1, len(base_digests), "both builds pin one n8n base digest")
 
     def test_pruned_custom_node_uses_pinned_base_framework_and_loads_at_build(self):
         for name in ("Dockerfile", "dev.Dockerfile"):
@@ -156,12 +164,23 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         package_root = N8N / "workloads/manifest-outbox-notifier/nodes/OpsflowSmtp"
         package = json.loads((package_root / "package.json").read_text())
         lock = json.loads((package_root / "package-lock.json").read_text())
+        # The image build asserts the peer equals the n8n-workflow that the
+        # pinned n8n bundles; here the package and lock must agree with it.
+        bundled = package["peerDependencies"]["n8n-workflow"]
+        self.assertRegex(bundled, r"^\d+\.\d+\.\d+$")
         for section in ("peerDependencies", "devDependencies"):
-            self.assertEqual("2.46.5", package[section]["n8n-workflow"])
+            self.assertEqual(bundled, package[section]["n8n-workflow"])
             self.assertEqual(package[section], lock["packages"][""][section])
         self.assertEqual(
-            "2.46.5", lock["packages"]["node_modules/n8n-workflow"]["version"]
+            bundled, lock["packages"]["node_modules/n8n-workflow"]["version"]
         )
+        for name in ("Dockerfile", "dev.Dockerfile"):
+            self.assertIn(
+                "assert.equal(require('/opt/hyhome/n8n-custom/opsflow/package.json')"
+                ".peerDependencies['n8n-workflow'], "
+                "require('n8n-workflow/package.json').version)",
+                (N8N / name).read_text(),
+            )
 
     def test_n8n_source_receipt_does_not_reuse_previous_native_acceptance(self):
         evidence = ROOT / "infra/09-platform-ops/security-updates"

@@ -12,11 +12,11 @@
     "test": "npm run build && node --test tests/*.test.cjs",
     "test:coverage": "npm run build && node --test --experimental-test-coverage --test-coverage-include='dist/*.js' --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80 tests/*.test.cjs"
   },
-  "peerDependencies": { "n8n-workflow": "2.46.5" },
+  "peerDependencies": { "n8n-workflow": "2.49.5" },
   "dependencies": { "nodemailer": "10.6.0" },
   "overrides": { "n8n-workflow": { "axios": "1.21.1" } },
   "devDependencies": {
-    "n8n-workflow": "2.46.5",
+    "n8n-workflow": "2.49.5",
     "typescript": "7.0.2",
     "@types/node": "26.6.6",
     "@types/nodemailer": "8.0.2"
