@@ -5,21 +5,21 @@ ATTEMPT_LABEL = "hyhome.opsflow.native-attempt"
 ROLE_LABEL = "hyhome.opsflow.native-role"
 OWNER = "test_opsflow_native_rehearsal"
 
-N8N_ID = "sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153"
-N8N_REF = "hy-home/sec01-n8n:2.43.6-opsflow-03892eb1a9a4"
+N8N_ID = "sha256:b1e81e340b3947528926e7068bca1ad7930dad6d6bebd2437950d6ceb67692de"
+N8N_REF = "hy-home/sec01-n8n:2.49.7-opsflow-a92e6afbd3dd"
 N8N_LABELS = {
-    "hyhome.source-binding": "03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985",
-    "hyhome.source-tree": "f511528aba724372aa0ed61b7b3c2e271d2d6942",
-    "org.opencontainers.image.revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
+    "hyhome.source-binding": "a92e6afbd3dd6cddfedaf25cbca032dea6656ec2a0177d9caafcd722859ccb80",
+    "hyhome.source-tree": "b7950e727bbb3f9b7cd7b4c1384bcaacd90a9c6e",
+    "org.opencontainers.image.revision": "687a0399510725fc0f34e43de913ee670bb0b9b1",
 }
 PG_ID = "sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
 PG_REF = "postgres:18.7-alpine"
 VALKEY_ID = "sha256:56729e68bdda139cbd3f6a2538683dc3523325fc5711ea1a379938f1b37893f0"
 VALKEY_REF = "valkey/valkey:9.1.4-alpine"
-RUNNER_ID = "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf"
-RUNNER_REF = "n8nio/runners:2.43.6@" + RUNNER_ID
+RUNNER_ID = "sha256:be8031ab2badedb7af0ceb68ea46ac5317bb941c06f97b3f0e9bc3bc2b67050e"
+RUNNER_REF = "n8nio/runners:2.49.7@" + RUNNER_ID
 RUNNER_RUNTIME_CONFIG = (
-    "sha256:28c5a510d7624e5ce079d2204e4d8421bc96ced83ebc2e1717d6ee33a0ccc1bb"
+    "sha256:9aea154e132841c7c3b46efa0a285f8cdc1ac16932017f5a131d31ddb8754a21"
 )
 # A container's Image is the config digest with the classic image store and
 # the pinned index digest with the containerd store (HOME since 2026-10-16,

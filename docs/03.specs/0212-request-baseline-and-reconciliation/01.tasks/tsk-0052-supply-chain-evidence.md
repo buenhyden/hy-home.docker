@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.17"
+version: "0.1.18"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -400,6 +400,32 @@ commit, push, PR and merge. Work ran in the primary checkout on branch
   Dockerfile now gives the tag `hy/gatus:5.38.0-local`: `local_image_tags`
   reads an `ARG <NAME>_VERSION` when no same-named `FROM` exists and prefixes
   an unversioned tag. The advisory row moved to `defer_resolved`.
+- n8n 2.49.7 of 2026-11-27. HOME's 2.46.6 was affected by eight n8n
+  advisories (GHSA-q8rc-7m84-mfvj and GHSA-w6f8-8qh4-h3j4 high); the newest
+  release past the 7-day age, 2.48.7, still carried four, so the owner chose
+  2.49.7 (released 2026-11-26) through the POL-0086 security fast path, a
+  recorded exception to R59. n8n, n8n-worker and the runner moved together;
+  OpsflowSmtp moved to the bundled `n8n-workflow` 2.49.5 and both image builds
+  now assert that equality. The version tests no longer hardcode 2.46.6: they
+  require one version across Compose, both Dockerfiles and the runner tag, a
+  digest-pinned runner, and a package and lock that agree with the build
+  assertion. The reviewed candidate `hy-home/sec01-n8n:2.49.7-opsflow-
+  a92e6afbd3dd` was built from a `git archive` of `687a03995` with the
+  source-binding, source-tree and revision labels, and the native rehearsal
+  inputs were repinned to it and to `n8nio/runners:2.49.7`. The first native
+  runs exposed rehearsal environments that the D03 named mng-valkey
+  credentials change had left stale (no empty `N8N_VALKEY_USERNAME`, a
+  non-`n8n` Bull prefix), so main never became ready; both fixtures now
+  follow the entrypoint. The Bull identity probe no longer pins the n8n
+  release (2.43.6), only the patched Bull 4.16.4 and ioredis 5.3.2, which
+  2.49.7 bundles unchanged. The advisory review stays UNKNOWN for the reasons
+  it gave before (incomplete catalog pagination, custom component and
+  transitive contents). D11 receives the retirement of the unpublished probe
+  workflow `d06e12CodeRunner01` (workflow_entity id), now that the P03 native
+  runner scenario, including `code_generation_blocked`, passes on the running
+  version, plus the superseded `hy-home/sec01-n8n` 2.42.6 and 2.43.6
+  candidate images and the retained failed-attempt directory
+  `/tmp/hyhome-retained-n8n-2.49.7-attempt1-cc76d6c8` (synthetic data).
 
 ## Verification Evidence
 
@@ -472,6 +498,11 @@ artifact verification and the current gate results.
 | Fresh upstream release lookup | 104 | W109 | `gh api repos/<owner>/<repo>/releases/latest` for 39 repositories behind 54 root entries | 2026-11-27 10:00 UTC, read-only | PASS | 28 equal, 21 behind, 5 other; table in Blockers and Decisions | required | - |
 | Local tag cleanup and HOME apply | 104 | W109 | `local_image_tags --check`; `docker compose -p hy-home-infra build loki tempo mlflow`; `up -d --no-deps --no-build --pull never <service>` after a dry run naming only the target, one at a time | Owner request 2026-11-27; branch `fix/local-image-tags-follow-base`; backup `hyhome-backup.service` success 19:51 KST | PASS | Check found exactly the three stale tags. Old and new images report the same binaries (loki 3.7.10 c792f585, tempo v3.1.1 9db7df79d, mlflow 3.18.0), so no data-format or database migration. Each healthy before the next; Loki `/ready` and 2,232 lines in the last 2 minutes; Tempo `/ready` and spans received; MLflow `/health` OK with no migration or error log. The old tagged images remain for rollback. Signature, SBOM and scan of the local images stay NOT_RUN | required | - |
 | Gatus v5.38.0 rebase and HOME apply | 104 | W109 | Image build (`patch --fuzz=0`, `go test ./api ./security`); `up -d --no-deps --no-build --pull never gatus` after a dry run; HTTPS probes through Traefik | Owner request 2026-11-27 (gatus 진행); commit `d255d0cd…`, archive SHA-256 `b0a5cd58…`; `gatus.db` copied to `/home/hyunyoun/storage/volumes/backups/upgrade-20261127/` first | PASS | Patch applied without fuzz; `api` and `security` tests ok; healthy on `hy/gatus:5.38.0-local` (label 5.38.0); OIDC provider discovered and routes registered; `/oidc/login` 302 to Keycloak with `code_challenge_method=S256`; state, nonce and PKCE cookies HttpOnly, Secure, SameSite=Lax; `/api/v1/endpoints/statuses` 401 anonymously; `/api/v1/config` `oidc:true, authenticated:false`, no announcements; monitors resumed. A full browser login was not run | required | - |
+| n8n 2.49.7 candidate build | 104 | W109 | `docker buildx build --load` of `infra/07-workflow/n8n/Dockerfile` from `git archive 687a03995`, labels `hyhome.source-binding`, `hyhome.source-tree`, `org.opencontainers.image.revision` | Owner choice 2026-11-27 (2.49.7, security fast path); binding `a92e6afb…` equal in the ledger and build-inputs | PASS | `hy-home/sec01-n8n:2.49.7-opsflow-a92e6afbd3dd`, `sha256:b1e81e34…`, linux/amd64, user 1000; build-time checks passed (`n8n --version` 2.49.7, OpsflowSmtp loads, peer `n8n-workflow` equals the bundled 2.49.5). OpsflowSmtp unit tests 38/38 with coverage thresholds in `node:26.13.1-alpine3.24` | required | - |
+| n8n 2.49.7 native rehearsal | 104 | W109 | `OPSFLOW_N8N_NATIVE_REHEARSAL=1 OPSFLOW_N8N_NATIVE_IMAGE=sha256:b1e81e34… python3 -m unittest -v tests.validation.test_opsflow_native_rehearsal` | Candidate above, runner `n8nio/runners:2.49.7@sha256:be8031ab…`, companions PostgreSQL 18.7, Valkey 9.1.4, Mailpit 1.34.0 (IDs equal to their pins) | FAIL | Twice `n8n main readiness expired`: the entrypoint refused the stale rehearsal broker selection (`unsupported n8n broker selection`); a third start found the retained evidence directory | required | - |
+| n8n 2.49.7 native rehearsal rerun | 104 | W109 | Same command after the fixture env fix | Same inputs | PASS | native PASS, cleanup PASS; queue runner, retry and dead letter, scheduled execution, credential rotation, concurrent claims, empty queue, SMTP connect failure, restore, paired restore decrypt and wrong-key fail-closed PASS; exactly-once NOT_CLAIMED and response loss after acceptance NOT_RUN by design | required | n8n 2.49.7 native rehearsal |
+| P03 runner boundary on 2.49.7 | 104 | W109 | `P03_RUNNER_NATIVE_REHEARSAL=1 … tests.validation.test_p03_runner_isolation.P03RunnerNativeRehearsal` | Same candidate and runner | PASS | Test OK, cleanup PASS; receipt `native: PARTIAL` (fixture declared NON_EQUIVALENT to HOME, as in TSK-0118 E28); categories builtin_denied 5, module_access_denied 3, environment_access_denied, code_generation_blocked, controlled_workflow_timeout. The first run failed on the same stale broker selection and is resolved by this one | required | - |
+| HOME apply of n8n 2.49.7 | 104 | W109 | `pg_dump -Fc` of `n8n` checked with `pg_restore --list`; `up -d --no-deps --no-build --pull never` of n8n, n8n-worker, n8n-task-runner-worker after dry runs naming only the target | Owner request 2026-11-27; no running execution (2 in `error`) | PASS | `n8n-2.46.6-db.dump` (173 table-data entries) in `/home/hyunyoun/storage/volumes/backups/upgrade-20261127/`; each healthy before the next; `n8n --version` 2.49.7; 39 migrations finished without error; workflows 13, credentials 14, executions 2 as before; the worker registered the JavaScript and Python launchers; route 200. Rollback: restore the dump and recreate on `hyhome/n8n:2.46.6-local`, kept locally | required | - |
 
 ### Resolution Links
 
@@ -481,7 +512,7 @@ restore pin fix. "PostgreSQL 18.6 exposure" is closed by the 18.7 jobs pin;
 mng-pg and dev-pg run 18.7 since the HOME apply. The second Storybook
 ingress rehearsal resolves the first, which failed in the test harness. The
 second pgBackRest 2.60.1 apply resolves the first, whose config directory
-permission broke archiving. The OpenBao r4 window stays open for the owner.
+permission broke archiving. The OpenBao r4 window stays open for the owner. The n8n 2.49.7 native rehearsal rerun resolves the two failed runs whose stale broker environment the fixture fix removed.
 
 ## Acceptance Decision
 

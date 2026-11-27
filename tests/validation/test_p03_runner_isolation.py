@@ -542,6 +542,8 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             "EXECUTIONS_MODE=queue",
             "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
             "N8N_VALKEY_HOST=mng-valkey",
+            # The entrypoint pairs mng_valkey_password only with the default user.
+            "N8N_VALKEY_USERNAME=",
             "N8N_VALKEY_SECRET=mng_valkey_password",
             "QUEUE_BULL_REDIS_HOST=mng-valkey",
             "QUEUE_BULL_REDIS_PORT=6379",
