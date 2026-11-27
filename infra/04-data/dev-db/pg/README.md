@@ -1,6 +1,6 @@
 ---
 title: "개발 PostgreSQL"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -112,6 +112,11 @@ Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_passw
 <!-- core-payload-level:4 -->
 
 [Dockerfile](Dockerfile)이 TimescaleDB Community 기반 PostgreSQL 이미지와 pgBackRest 패키지를 선언합니다. 실제 호환성은 이미지 빌드와 격리 복원으로 확인해야 합니다.
+
+TimescaleDB 이미지를 올린 뒤에는 확장이 설치된 **모든** DB에서, `template1`까지 포함해 새 세션의 첫 명령으로
+`ALTER EXTENSION timescaledb UPDATE`를 실행합니다. 새 이미지에 없는 이전 라이브러리를 가리키는 DB가 남으면
+그 DB의 모든 세션과 `pg_dumpall`이 실패해 야간 백업이 멈춥니다. 실행 뒤 각 DB의 `extversion`과
+`pg_dumpall --schema-only` 성공을 확인합니다.
 
 ##### Selected Start
 
