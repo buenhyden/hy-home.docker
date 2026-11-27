@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.19"
+version: "0.1.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -426,6 +426,17 @@ commit, push, PR and merge. Work ran in the primary checkout on branch
   version, plus the superseded `hy-home/sec01-n8n` 2.42.6 and 2.43.6
   candidate images and the retained failed-attempt directory
   `/tmp/hyhome-retained-n8n-2.49.7-attempt1-cc76d6c8` (synthetic data).
+- D09 v9 remaining census of 2026-11-28 (owner re-request of D09; T01 and
+  T02 above, T03 to T07 here, read-only on `main` `a8576cc8a`):
+
+| Task | Finding | Verdict |
+| --- | --- | --- |
+| T01 ledger | 86 entries and 86 expected services. `latest_version_gate` exit 2: 83 lack a fresh lookup (Loki, Tempo and MLflow have one), 47 differ from the latest, 18 lack a stable channel; `security_update_gate` exit 2: all 86 lack a fresh review, 35 a reviewed decision | Criterion 104 needs a full official-source review round of all 86 entries (owner decision on running it); 105 unchanged |
+| T03 Bitnami | No Bitnami image, build or vendor label in tracked `infra/` or among running containers | Closed without change |
+| T04 common settings | Hardening baseline, Compose validation (62 selections, 287 services, HOME 46) and supply-chain policy pass; all 57 running `hy-home-infra` containers match their effective Compose memory, CPU, PID, read-only, init and cap_drop values; 30 exceptions, none past `review_by`. Two still said "NOT_RUN: not started": the privileged DinD runner and the sandbox certificate job | Verification text of both updated from current observation and D06 v9 (TSK-0123 E04); the DinD exception stays, it proves declared confinement, not host isolation |
+| T05 resources | Highest memory use 56% of its limit (Prometheus 1157/2048 MiB, Ollama 4508/8192 MiB), 0 OOM kills and 0 restarts, GPU 3 MiB of 6 GiB idle, host 19 GiB available, disk 76% | No observed bottleneck, so no limit change and no load comparison; `docker stats` returns "page not found" on this daemon, so memory was read from the cgroups |
+| T06 Storybook | HOME runs `494d16fe` (no Storybook change since); routes 302, MCP 401, metadata 200. `npm audit` on the current lock: 7 moderate, 0 high, all build-only tooling through `minimatch` GHSA-g3hv-75wg-m249 and `glob` GHSA-3g3m-2fjr-6pw4, which now have fixes (minimatch 11.0.9 of 2026-11-16, glob 14.0.6 of 2026-11-12). In a scratch copy, overrides to those versions give 0 vulnerabilities and clean install, lint, typecheck and `build-storybook` pass | Owner decision: adopting them needs a new Storybook artifact and a HOME redeploy |
+| T07 platform tools | Terrakube has no HOME service, include or container; REQ-0010 already calls it an optional isolated experiment. OpenTofu is a one-off `iac` job with no tracked configuration or state. Renovate runs weekly. The 2026-11-27 backup ran `restic check` with no errors over 12 local snapshots and copied the new snapshots to R2 | Closed without change; a Restic restore drill stays with SPEC-0204 TSK-0003 |
 
 ## Verification Evidence
 
@@ -503,6 +514,7 @@ artifact verification and the current gate results.
 | n8n 2.49.7 native rehearsal rerun | 104 | W109 | `OPSFLOW_N8N_NATIVE_REHEARSAL=1 OPSFLOW_N8N_NATIVE_IMAGE=sha256:<candidate> python3 -m unittest -v tests.validation.test_opsflow_native_rehearsal` | After the fixture env fix, candidate `sha256:e4cbed50…` (binding `099418ca…`) | PASS | native PASS, cleanup PASS; queue runner, retry and dead letter, scheduled execution, credential rotation, concurrent claims, empty queue, SMTP connect failure, restore, paired restore decrypt and wrong-key fail-closed PASS; exactly-once NOT_CLAIMED and response loss after acceptance NOT_RUN by design | required | n8n 2.49.7 native rehearsal |
 | P03 runner boundary on 2.49.7 | 104 | W109 | `P03_RUNNER_NATIVE_REHEARSAL=1 … tests.validation.test_p03_runner_isolation.P03RunnerNativeRehearsal` | Same candidate and runner | PASS | Test OK, cleanup PASS; receipt `native: PARTIAL` (fixture declared NON_EQUIVALENT to HOME, as in TSK-0118 E28); categories builtin_denied 5, module_access_denied 3, environment_access_denied, code_generation_blocked, controlled_workflow_timeout. The first run failed on the same stale broker selection and is resolved by this one | required | - |
 | HOME apply of n8n 2.49.7 | 104 | W109 | `pg_dump -Fc` of `n8n` checked with `pg_restore --list`; `up -d --no-deps --no-build --pull never` of n8n, n8n-worker, n8n-task-runner-worker after dry runs naming only the target | Owner request 2026-11-27; no running execution (2 in `error`) | PASS | `n8n-2.46.6-db.dump` (173 table-data entries) in `/home/hyunyoun/storage/volumes/backups/upgrade-20261127/`; each healthy before the next; `n8n --version` 2.49.7; 39 migrations finished without error; workflows 13, credentials 14, executions 2 as before; the worker registered the JavaScript and Python launchers; route 200. Rollback: restore the dump and recreate on `hyhome/n8n:2.46.6-local`, kept locally | required | - |
+| D09 v9 remaining census | 104 | W109 | `latest_version_gate` and `security_update_gate --input update-ledger.json`; `check-all-hardening.sh`; `validate-docker-compose.sh`; `check-supply-chain-policy.py --check`; effective Compose against container HostConfig and cgroup memory; `npm audit --package-lock-only` on a Storybook lock copy | `main` `a8576cc8a`, HOME 2026-11-28 | FAIL | Both gates exit 2 (83 without fresh lookup, 86 without fresh review); hardening, Compose and policy checks pass; 57 containers match their limits; no OOM or restart; Storybook audit 7 moderate build-only findings with fixes available; details in the census table | required | - |
 | HOME apply of the Storybook audit fix | 104 | W109 | `npm audit --package-lock-only`; `storybook_image.py build --revision 6c634907 --push` and `verify --registry`; `up -d --no-deps --no-build --pull never` of storybook and storybook-mcp after dry runs | Owner choice 2026-11-28 (apply and redeploy); overrides minimatch ^11.0.9 and glob ^14.0.6 | PASS | Audit 0 vulnerabilities (was 7 moderate build-only findings, GHSA-g3hv-75wg-m249 and GHSA-3g3m-2fjr-6pw4); install, lint, typecheck and `build-storybook` with its artifact tests pass; registry digests `sha256:6711304b…` (storybook, 72 SBOM packages) and `sha256:03df741a…` (storybook-mcp, 165), one attestation each; both healthy on `6c634907`; routes 302 to SSO, MCP 401, metadata 200 as before; in-image `revision.json` names `6c634907`. The static origin keeps no data, so no backup applied; rollback is the `494d16fe` images, kept locally and in the registry | required | - |
 
 ### Resolution Links
