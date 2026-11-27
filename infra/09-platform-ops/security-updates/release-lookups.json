@@ -56034,7 +56034,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "prom/alertmanager:v0.35.0@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "0.35.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56096,7 +56096,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "1.22.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56154,7 +56154,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
-          "source_input_sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc",
+          "source_input_sha256": "95dc375e672aa157ea54d5d875c635565cb4c766545704c30c54e7fdc3fe8050",
           "assessment_version": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected."
         },
@@ -56201,7 +56201,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "ghcr.io/google/cadvisor:v0.61.1@sha256:4929b70e82079d001d0028b85d6a4dd25ad4666b719455c9542b983489963916",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "0.61.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56591,7 +56591,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "4.9.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57282,7 +57282,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/gatus:local",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "v5.37.0 exact source; custom image not built",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57345,11 +57345,11 @@
       },
       "grafana": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
+        "reviewed_at": "2026-11-27T00:06:30.614375+00:00",
         "reviewed_subject": {
-          "declaration": "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
-          "assessment_version": "13.3.1",
+          "declaration": "grafana/grafana:13.3.2@sha256:81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
+          "assessment_version": "13.3.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -57357,17 +57357,20 @@
         "source_action": "retain",
         "security_decision": "not-affected",
         "advisory_refs": [
-          "https://api.github.com/repos/grafana/grafana/security-advisories?per_page=100",
+          "https://github.com/advisories?query=ecosystem%3Ago+github.com%2Fgrafana%2Fgrafana",
           "https://github.com/advisories/GHSA-3w66-95m3-8jxg",
           "https://github.com/advisories/GHSA-9g84-39mm-q4p3",
           "https://github.com/advisories/GHSA-f74p-cwhp-x2wx",
-          "https://github.com/advisories/GHSA-9493-h4f5-633x"
+          "https://github.com/grafana/grafana/security/advisories/GHSA-8xmm-x63g-f6xv",
+          "https://github.com/grafana/grafana/security/advisories/GHSA-8wjh-59cw-9xh4"
         ],
         "concrete_advisory_refs": [
+          "https://github.com/advisories?query=ecosystem%3Ago+github.com%2Fgrafana%2Fgrafana",
           "https://github.com/advisories/GHSA-3w66-95m3-8jxg",
           "https://github.com/advisories/GHSA-9g84-39mm-q4p3",
           "https://github.com/advisories/GHSA-f74p-cwhp-x2wx",
-          "https://github.com/advisories/GHSA-9493-h4f5-633x"
+          "https://github.com/grafana/grafana/security/advisories/GHSA-8xmm-x63g-f6xv",
+          "https://github.com/grafana/grafana/security/advisories/GHSA-8wjh-59cw-9xh4"
         ],
         "advisory_discovery": [
           {
@@ -57384,16 +57387,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected OSS 13.3.1 is later than every 13.x fixed threshold in the Go advisory database for github.com/grafana/grafana (newest ranges end below 13.0.2, published 2026-06-22) on 2026-11-24. The vendor advisory page was not re-read for this update; Enterprise-only and plugin products are not inherited.",
-        "next_action": "Keep 13.3.1.",
+        "reason": "Selected OSS 13.3.2 is later than every 13.x fixed threshold in the GitHub Go advisory database for github.com/grafana/grafana (no advisory affects 13.3.2; the newest 13.x ranges end below 13.0.2) on 2026-11-27. The two repository advisories GHSA-8xmm-x63g-f6xv (CVE-2022-23552) and GHSA-8wjh-59cw-9xh4 (CVE-2022-21673) carry open ranges without a patched version but were fixed in 2022 releases (9.3.4 and 8.3.4). Enterprise-only and plugin products are not inherited.",
+        "next_action": "Keep 13.3.2; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/observability",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "13.3.1",
+          "target_retained": "13.3.2",
           "observed_latest": "13.3.0",
           "previous_gate_missing": [],
-          "reason": "Selected OSS 13.3.1 is later than every 13.x fixed threshold in the Go advisory database for github.com/grafana/grafana (newest ranges end below 13.0.2, published 2026-06-22) on 2026-11-24. The vendor advisory page was not re-read for this update; Enterprise-only and plugin products are not inherited.",
-          "next_action": "Keep 13.3.1."
+          "reason": "Selected OSS 13.3.2 is later than every 13.x fixed threshold in the GitHub Go advisory database for github.com/grafana/grafana (no advisory affects 13.3.2; the newest 13.x ranges end below 13.0.2) on 2026-11-27. The two repository advisories GHSA-8xmm-x63g-f6xv (CVE-2022-23552) and GHSA-8wjh-59cw-9xh4 (CVE-2022-21673) carry open ranges without a patched version but were fixed in 2022 releases (9.3.4 and 8.3.4). Enterprise-only and plugin products are not inherited.",
+          "next_action": "Keep 13.3.2; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -57412,7 +57415,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "18.7",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58062,7 +58065,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/loki:3.7.8-seaweedfs",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "3.7.8",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58689,7 +58692,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58958,7 +58961,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
           "assessment_version": "n8nio/runners:2.46.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59025,7 +59028,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59347,7 +59350,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "quay.io/prometheus/node-exporter:v1.13.1@sha256:011e2d12c5bff759b90804bda642664775d7b4b127bf5148539bb82d3f590bb7",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "1.13.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60279,11 +60282,11 @@
       },
       "pact-broker": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-26T10:17:38.075325+00:00",
+        "reviewed_at": "2026-11-27T00:06:31.201959+00:00",
         "reviewed_subject": {
-          "declaration": "pactfoundation/pact-broker:3.1.0-pactbroker2.124.0@sha256:51b7de8316507fdc1d322bb397fd4d4c1ce41bdfabf6a9fd9c85eb65c03a89c0",
-          "source_input_sha256": "e38ccef6635098207c9b1aca745811b2282807c39ac085921f30b8973d6ba3c9",
-          "assessment_version": "3.1.0-pactbroker2.124.0",
+          "declaration": "pactfoundation/pact-broker:3.2.0-pactbroker2.124.0@sha256:b5b9af2e571e2f6a2f9e2ebe85f0e09158ae5e707349d5afce66bfc7cb7437a5",
+          "source_input_sha256": "4b8cbc3dd32d0ec322fff6b08367ce9bed54465e60d9fa02707ec8f01f33023d",
+          "assessment_version": "3.2.0-pactbroker2.124.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -60304,7 +60307,7 @@
             "unique_advisories": 1,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-27, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -60312,15 +60315,15 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 2.124.0 is outside the vulnerable range of every one of the 1 published pact-foundation/pact_broker repository advisories, re-checked on 2026-11-26 for the Renovate update from 3.0.0-pactbroker2.121.2.",
+        "reason": "Selected 2.124.0 is outside the vulnerable range of every one of the 1 published pact-foundation/pact_broker repository advisories, re-checked on 2026-11-27 for the Renovate update from 3.1.0-pactbroker2.124.0.",
         "next_action": "Keep 2.124.0; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/pact-broker",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "3.1.0",
+          "target_retained": "3.2.0",
           "observed_latest": "3.0.0",
           "previous_gate_missing": [],
-          "reason": "Selected 2.124.0 is outside the vulnerable range of every one of the 1 published pact-foundation/pact_broker repository advisories, re-checked on 2026-11-26 for the Renovate update from 3.0.0-pactbroker2.121.2.",
+          "reason": "Selected 2.124.0 is outside the vulnerable range of every one of the 1 published pact-foundation/pact_broker repository advisories, re-checked on 2026-11-27 for the Renovate update from 3.1.0-pactbroker2.124.0.",
           "next_action": "Keep 2.124.0; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
@@ -60340,7 +60343,7 @@
         "reviewed_at": "2026-11-24T10:55:17.929628+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.7-alpine@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71",
-          "source_input_sha256": "e38ccef6635098207c9b1aca745811b2282807c39ac085921f30b8973d6ba3c9",
+          "source_input_sha256": "4b8cbc3dd32d0ec322fff6b08367ce9bed54465e60d9fa02707ec8f01f33023d",
           "assessment_version": "18.7",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected. PostgreSQL 18.7 (official security page, checked 2026-11-24) fixes CVEs that affect 18.6, including CVE-2026-120139, -120142, -120144 and -120150; this 2026-11-11 assessment predates them, and the 18.7 update is a separate follow-up."
         },
@@ -60388,7 +60391,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "3.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60466,7 +60469,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "1.11.5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60523,7 +60526,7 @@
         "reviewed_at": "2026-11-24T07:25:23.548124+00:00",
         "reviewed_subject": {
           "declaration": "grafana/pyroscope:2.4.4@sha256:288da0b9b73193b5aee0843b6f1f5d033ee697d4afa280efb95de338d1409870",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "2.4.4",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60781,11 +60784,11 @@
       },
       "renovate": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-26T10:17:38.837091+00:00",
+        "reviewed_at": "2026-11-27T00:06:32.490964+00:00",
         "reviewed_subject": {
-          "declaration": "renovate/renovate:44.252.9-full@sha256:81c647e96d18c7574d2f95a9d73982bc9161abf4a1a2805dc72f1c3cce3ed661",
-          "source_input_sha256": "62c62ea7449684d1e44934eff93a22bf580856c077cb06d168f8d59467193c86",
-          "assessment_version": "44.252.9",
+          "declaration": "renovate/renovate:44.255.1-full@sha256:509eb765d8bb82b991f094257e00b1457a97ad1c59261e56b39e5667fa89ba59",
+          "source_input_sha256": "41ceded697e46a0f3ad69cfdf820f31b2ba0d92f65d221abc858e7f0150fa24d",
+          "assessment_version": "44.255.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -60854,7 +60857,7 @@
             "unique_advisories": 25,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-27, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -60862,18 +60865,18 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 44.252.9 is outside the vulnerable range of every one of the 25 published renovatebot/renovate repository advisories, re-checked on 2026-11-26 for the Renovate update from 44.225.1-full.",
-        "next_action": "Keep 44.252.9; runtime acceptance is recorded at the owner-approved recreate.",
+        "reason": "Selected 44.255.1 is outside the vulnerable range of every one of the 25 published renovatebot/renovate repository advisories, re-checked on 2026-11-27 for the Renovate update from 44.252.9-full.",
+        "next_action": "Keep 44.255.1; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/renovate",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "44.252.9",
+          "target_retained": "44.255.1",
           "observed_latest": "44.227.3",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Selected 44.252.9 is outside the vulnerable range of every one of the 25 published renovatebot/renovate repository advisories, re-checked on 2026-11-26 for the Renovate update from 44.225.1-full.",
-          "next_action": "Keep 44.252.9; runtime acceptance is recorded at the owner-approved recreate."
+          "reason": "Selected 44.255.1 is outside the vulnerable range of every one of the 25 published renovatebot/renovate repository advisories, re-checked on 2026-11-27 for the Renovate update from 44.252.9-full.",
+          "next_action": "Keep 44.255.1; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -60889,11 +60892,11 @@
       },
       "restic": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T00:06:32.921571+00:00",
         "reviewed_subject": {
-          "declaration": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510",
-          "source_input_sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc",
-          "assessment_version": "0.19.1",
+          "declaration": "restic/restic:0.20.0@sha256:93999df80d4ac6cb148e82d2ef1fe6a81996f17ff535e772723538211b31555a",
+          "source_input_sha256": "95dc375e672aa157ea54d5d875c635565cb4c766545704c30c54e7fdc3fe8050",
+          "assessment_version": "0.20.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -60901,17 +60904,17 @@
         "source_action": "retain",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/restic/restic/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/restic/restic/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "restic/restic",
-            "url": "https://api.github.com/repos/restic/restic/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/restic/restic/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
+            "meaning": "A checked source on 2026-11-27, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -60919,16 +60922,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 0.19.1 equals the inventoried stable latest, but the repository publishes no advisory entries and the exact container base/tools were not inspected.",
-        "next_action": "Scan exact image including SSH/TLS/base packages.",
+        "reason": "Selected 0.20.0 could not be classified on 2026-11-27 for the Renovate update from 0.19.1: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 0.20.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/restic",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "0.19.1",
+          "target_retained": "0.20.0",
           "observed_latest": "0.19.1",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Scan exact image including SSH/TLS/base packages."
+          "reason": "Selected 0.20.0 could not be classified on 2026-11-27 for the Renovate update from 0.19.1: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 0.20.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -60944,11 +60947,11 @@
       },
       "restic-offsite": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+        "reviewed_at": "2026-11-27T00:06:33.374199+00:00",
         "reviewed_subject": {
-          "declaration": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510",
-          "source_input_sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc",
-          "assessment_version": "0.19.1",
+          "declaration": "restic/restic:0.20.0@sha256:93999df80d4ac6cb148e82d2ef1fe6a81996f17ff535e772723538211b31555a",
+          "source_input_sha256": "95dc375e672aa157ea54d5d875c635565cb4c766545704c30c54e7fdc3fe8050",
+          "assessment_version": "0.20.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -60956,17 +60959,17 @@
         "source_action": "retain",
         "security_decision": "defer",
         "advisory_refs": [
-          "https://api.github.com/repos/restic/restic/security-advisories?per_page=100&page=1"
+          "https://api.github.com/repos/restic/restic/security-advisories?per_page=100"
         ],
         "concrete_advisory_refs": [],
         "advisory_discovery": [
           {
             "supplier": "restic/restic",
-            "url": "https://api.github.com/repos/restic/restic/security-advisories?per_page=100&page=1",
+            "url": "https://api.github.com/repos/restic/restic/security-advisories?per_page=100",
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
-            "result": "NO_PUBLISHED_REPOSITORY_ADVISORIES_OBSERVED",
-            "meaning": "A checked source, not an absence proof or a product/package applicability transfer."
+            "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
+            "meaning": "A checked source on 2026-11-27, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -60974,16 +60977,16 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 0.19.1 equals the inventoried stable latest, but the repository publishes no advisory entries and the exact container base/tools were not inspected.",
-        "next_action": "Scan exact image and verify offsite transport dependencies.",
+        "reason": "Selected 0.20.0 could not be classified on 2026-11-27 for the Renovate update from 0.19.1: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 0.20.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/restic",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "0.19.1",
+          "target_retained": "0.20.0",
           "observed_latest": "0.19.1",
           "previous_gate_missing": [],
-          "reason": "Current submitted candidate matches the observed selected channel; separate security/artifact residuals remain.",
-          "next_action": "Scan exact image and verify offsite transport dependencies."
+          "reason": "Selected 0.20.0 could not be classified on 2026-11-27 for the Renovate update from 0.19.1: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 0.20.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -60999,11 +61002,11 @@
       },
       "seaweedfs-buckets": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-24T07:07:36.310383+00:00",
+        "reviewed_at": "2026-11-27T00:06:33.965573+00:00",
         "reviewed_subject": {
-          "declaration": "amazon/aws-cli:2.40.4@sha256:eaf444b45380050f920ab07492754aa76223dd90234e51c1f92c2e9391b5ee6b",
-          "source_input_sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4",
-          "assessment_version": "2.40.4",
+          "declaration": "amazon/aws-cli:2.41.2@sha256:7a77ccb39e3272191adbf905c50db8c127db88fd79454911a41a6b1c0e419e9b",
+          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
+          "assessment_version": "2.41.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "NOT_AFFECTED",
@@ -61012,14 +61015,14 @@
         "security_decision": "not-affected",
         "advisory_refs": [
           "https://api.github.com/repos/aws/aws-cli/security-advisories?per_page=100",
-          "https://github.com/aws/aws-cli/security/advisories/GHSA-747p-wmpv-9c78",
+          "https://github.com/aws/aws-cli/security/advisories/GHSA-hqvf-45jj-mccq",
           "https://github.com/aws/aws-cli/security/advisories/GHSA-wfp6-f47h-hxc3",
-          "https://github.com/aws/aws-cli/security/advisories/GHSA-hqvf-45jj-mccq"
+          "https://github.com/aws/aws-cli/security/advisories/GHSA-747p-wmpv-9c78"
         ],
         "concrete_advisory_refs": [
-          "https://github.com/aws/aws-cli/security/advisories/GHSA-747p-wmpv-9c78",
+          "https://github.com/aws/aws-cli/security/advisories/GHSA-hqvf-45jj-mccq",
           "https://github.com/aws/aws-cli/security/advisories/GHSA-wfp6-f47h-hxc3",
-          "https://github.com/aws/aws-cli/security/advisories/GHSA-hqvf-45jj-mccq"
+          "https://github.com/aws/aws-cli/security/advisories/GHSA-747p-wmpv-9c78"
         ],
         "advisory_discovery": [
           {
@@ -61028,25 +61031,25 @@
             "unique_advisories": 3,
             "endpoint_listing_complete": true,
             "result": "PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source on 2026-11-24, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-27, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
           "Scope: explicitly reviewed official advisories and bound direct/named components only; this is not full-image or transitive/OS vulnerability clearance.",
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred."
         ],
-        "reason": "Selected 2.40.4 is newer than every v2 fixed boundary in the three published aws/aws-cli advisories (2.33.20, 2.34.29, 2.35.3), re-checked on 2026-11-24 for the Renovate update from 2.39.3.",
-        "next_action": "Keep 2.40.4; the S3-compatible bucket bootstrap is exercised at the next owner-approved SeaweedFS recreate.",
+        "reason": "Selected 2.41.2 is outside the vulnerable range of every one of the 3 published aws/aws-cli repository advisories, re-checked on 2026-11-27 for the Renovate update from 2.40.4.",
+        "next_action": "Keep 2.41.2; runtime acceptance is recorded at the owner-approved recreate.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/applications/supplier_assessments/aws-cli",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "2.40.4",
+          "target_retained": "2.41.2",
           "observed_latest": "2.40.0",
           "previous_gate_missing": [
             "latest_mismatch"
           ],
-          "reason": "Selected 2.40.4 is newer than every v2 fixed boundary in the three published aws/aws-cli advisories (2.33.20, 2.34.29, 2.35.3), re-checked on 2026-11-24 for the Renovate update from 2.39.3.",
-          "next_action": "Keep 2.40.4; the S3-compatible bucket bootstrap is exercised at the next owner-approved SeaweedFS recreate."
+          "reason": "Selected 2.41.2 is outside the vulnerable range of every one of the 3 published aws/aws-cli repository advisories, re-checked on 2026-11-27 for the Renovate update from 2.40.4.",
+          "next_action": "Keep 2.41.2; runtime acceptance is recorded at the owner-approved recreate."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -61065,7 +61068,7 @@
         "reviewed_at": "2026-11-26T10:20:04.335122+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15",
-          "source_input_sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4",
+          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
           "assessment_version": "4.54",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61237,7 +61240,7 @@
         "reviewed_at": "2026-11-26T10:20:05.141791+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15",
-          "source_input_sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4",
+          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
           "assessment_version": "4.54",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61409,7 +61412,7 @@
         "reviewed_at": "2026-11-26T10:20:06.287713+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15",
-          "source_input_sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4",
+          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
           "assessment_version": "4.54",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61581,7 +61584,7 @@
         "reviewed_at": "2026-11-26T10:20:07.169348+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15",
-          "source_input_sha256": "d9e665fc1b78c95228c17cea9e5d91152adfa009528e69e83b2b9e43ff5a58d4",
+          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
           "assessment_version": "4.54",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62265,7 +62268,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/tempo:3.1.0-seaweedfs",
-          "source_input_sha256": "8c6569a28b20ec3ff6cafb7d4041d352e2a5bb4dd7d886a250ecfd0ba982ac15",
+          "source_input_sha256": "712348f63d1557943c7f1ede35995bd15995e6bac961b65f7ff3dc1406f414e5",
           "assessment_version": "3.1.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62670,7 +62673,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62772,11 +62775,11 @@
       },
       "n8n-sandbox-certs": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-26T10:13:02.626628+00:00",
+        "reviewed_at": "2026-11-27T00:06:34.395875+00:00",
         "reviewed_subject": {
-          "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
-          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
-          "assessment_version": "1.15.0",
+          "declaration": "n8nio/n8n-sandbox-service-api:1.16.0@sha256:334724118cbc5235a73a69efa71cde50f85d1ac3b72c16785dd930d500d00a32",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "assessment_version": "1.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -62794,7 +62797,7 @@
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
             "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-27, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -62802,19 +62805,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
-        "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available.",
+        "reason": "Selected 1.16.0 could not be classified on 2026-11-27 for the Renovate update from 1.15.0: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.16.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "1.15.0",
+          "target_retained": "1.16.0",
           "observed_latest": "1.14.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
-          "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available."
+          "reason": "Selected 1.16.0 could not be classified on 2026-11-27 for the Renovate update from 1.15.0: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.16.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -62830,11 +62833,11 @@
       },
       "n8n-sandbox-api": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-26T10:13:03.123056+00:00",
+        "reviewed_at": "2026-11-27T00:06:34.824503+00:00",
         "reviewed_subject": {
-          "declaration": "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504",
-          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
-          "assessment_version": "1.15.0",
+          "declaration": "n8nio/n8n-sandbox-service-api:1.16.0@sha256:334724118cbc5235a73a69efa71cde50f85d1ac3b72c16785dd930d500d00a32",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "assessment_version": "1.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -62852,7 +62855,7 @@
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
             "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-27, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -62860,19 +62863,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
-        "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available.",
+        "reason": "Selected 1.16.0 could not be classified on 2026-11-27 for the Renovate update from 1.15.0: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.16.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "retain-current-version",
-          "target_retained": "1.15.0",
+          "target_retained": "1.16.0",
           "observed_latest": "1.14.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
-          "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available."
+          "reason": "Selected 1.16.0 could not be classified on 2026-11-27 for the Renovate update from 1.15.0: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.16.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",
@@ -62888,11 +62891,11 @@
       },
       "n8n-sandbox-runner-1": {
         "task": "SPEC-0212-TSK-0052",
-        "reviewed_at": "2026-11-26T10:19:49.060079+00:00",
+        "reviewed_at": "2026-11-27T00:06:35.261559+00:00",
         "reviewed_subject": {
-          "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.15.0@sha256:d6d2cdc163250d749d9442176264a05b65adca44660af541d1f0966b393b0806",
-          "source_input_sha256": "71f051af096cc210763724fef50c9cc228395f13621044f0fc4a93e35ba44b0d",
-          "assessment_version": "1.15.0",
+          "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.16.0@sha256:e03ae162f9503d8c68180a1dc0539f82ba425a5d79d033e45d90f350cd6ca732",
+          "source_input_sha256": "0bd366733ca92177a12d836b79f262ce5870c63fd137ba786ab19f08eceb9a91",
+          "assessment_version": "1.16.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
         "security_applicability": "UNKNOWN",
@@ -62910,7 +62913,7 @@
             "unique_advisories": 0,
             "endpoint_listing_complete": true,
             "result": "NO_PUBLISHED_ADVISORIES_OBSERVED",
-            "meaning": "A checked source on 2026-11-26, not an absence proof or a product/package applicability transfer."
+            "meaning": "A checked source on 2026-11-27, not an absence proof or a product/package applicability transfer."
           }
         ],
         "coverage_limits": [
@@ -62918,19 +62921,19 @@
           "No new image pull/build/scan, signature/provenance/SBOM execution, compatibility/recovery trial, deployment, credential or runtime operation occurred.",
           "Primary references include queried official discovery endpoints; empty/failed listings are explicitly not vulnerability-absence proof. Concrete notices are separately recorded."
         ],
-        "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
-        "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available.",
+        "reason": "Selected 1.16.0 could not be classified on 2026-11-27 for the Renovate update from 1.15.0: no published repository advisory was returned, which is not an absence proof.",
+        "next_action": "Keep 1.16.0; classify it when a supplier advisory source is available.",
         "lookup_ref": "release-lookups.json#/master_20261111_advisory_review/research_packets/workflow",
         "latest_disposition": {
           "action": "prepare-upgrade",
-          "target_retained": "1.15.0",
+          "target_retained": "1.16.0",
           "observed_latest": "1.14.0",
           "previous_gate_missing": [
             "latest_mismatch",
             "stable_channel"
           ],
-          "reason": "Selected 1.15.0 could not be classified on 2026-11-26 for the Renovate update from 1.8.1: no published repository advisory was returned, which is not an absence proof.",
-          "next_action": "Keep 1.15.0; classify it when a supplier advisory source is available."
+          "reason": "Selected 1.16.0 could not be classified on 2026-11-27 for the Renovate update from 1.15.0: no published repository advisory was returned, which is not an absence proof.",
+          "next_action": "Keep 1.16.0; classify it when a supplier advisory source is available."
         },
         "operational_execution": "NOT_RUN",
         "owner": "SPEC-0212-TSK-0052 W109; W110 exact artifacts, n8n full-image criterion60 remains TSK-0041",

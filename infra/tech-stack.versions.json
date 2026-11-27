@@ -270,7 +270,7 @@
         "grafana/grafana": "external"
       },
       "images": [
-        "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf"
+        "grafana/grafana:13.3.2@sha256:81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -279,7 +279,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf"
+            "grafana/grafana:13.3.2@sha256:81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101"
           ]
         }
       ]
@@ -564,7 +564,7 @@
         "renovate/renovate": "external"
       },
       "images": [
-        "renovate/renovate:44.252.9-full@sha256:81c647e96d18c7574d2f95a9d73982bc9161abf4a1a2805dc72f1c3cce3ed661"
+        "renovate/renovate:44.255.1-full@sha256:509eb765d8bb82b991f094257e00b1457a97ad1c59261e56b39e5667fa89ba59"
       ],
       "compose_files": [
         "infra/09-platform-ops/renovate/docker-compose.yml"
@@ -573,7 +573,7 @@
         {
           "compose_file": "infra/09-platform-ops/renovate/docker-compose.yml",
           "images": [
-            "renovate/renovate:44.252.9-full@sha256:81c647e96d18c7574d2f95a9d73982bc9161abf4a1a2805dc72f1c3cce3ed661"
+            "renovate/renovate:44.255.1-full@sha256:509eb765d8bb82b991f094257e00b1457a97ad1c59261e56b39e5667fa89ba59"
           ]
         }
       ]
@@ -1453,7 +1453,7 @@
         "restic/restic": "external"
       },
       "images": [
-        "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510"
+        "restic/restic:0.20.0@sha256:93999df80d4ac6cb148e82d2ef1fe6a81996f17ff535e772723538211b31555a"
       ],
       "compose_files": [
         "infra/09-platform-ops/restic/docker-compose.yml"
@@ -1462,7 +1462,7 @@
         {
           "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
           "images": [
-            "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510"
+            "restic/restic:0.20.0@sha256:93999df80d4ac6cb148e82d2ef1fe6a81996f17ff535e772723538211b31555a"
           ]
         }
       ]
@@ -1476,7 +1476,7 @@
       },
       "images": [
         "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
-        "amazon/aws-cli:2.40.4@sha256:eaf444b45380050f920ab07492754aa76223dd90234e51c1f92c2e9391b5ee6b"
+        "amazon/aws-cli:2.41.2@sha256:7a77ccb39e3272191adbf905c50db8c127db88fd79454911a41a6b1c0e419e9b"
       ],
       "compose_files": [
         "infra/04-data/seaweedfs/docker-compose.yml",
@@ -1486,7 +1486,7 @@
         {
           "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
           "images": [
-            "amazon/aws-cli:2.40.4@sha256:eaf444b45380050f920ab07492754aa76223dd90234e51c1f92c2e9391b5ee6b"
+            "amazon/aws-cli:2.41.2@sha256:7a77ccb39e3272191adbf905c50db8c127db88fd79454911a41a6b1c0e419e9b"
           ]
         },
         {
@@ -1527,7 +1527,7 @@
         "pactfoundation/pact-broker": "external"
       },
       "images": [
-        "pactfoundation/pact-broker:3.1.0-pactbroker2.124.0@sha256:51b7de8316507fdc1d322bb397fd4d4c1ce41bdfabf6a9fd9c85eb65c03a89c0"
+        "pactfoundation/pact-broker:3.2.0-pactbroker2.124.0@sha256:b5b9af2e571e2f6a2f9e2ebe85f0e09158ae5e707349d5afce66bfc7cb7437a5"
       ],
       "compose_files": [
         "infra/11-quality/pact-broker/docker-compose.yml"
@@ -1536,7 +1536,7 @@
         {
           "compose_file": "infra/11-quality/pact-broker/docker-compose.yml",
           "images": [
-            "pactfoundation/pact-broker:3.1.0-pactbroker2.124.0@sha256:51b7de8316507fdc1d322bb397fd4d4c1ce41bdfabf6a9fd9c85eb65c03a89c0"
+            "pactfoundation/pact-broker:3.2.0-pactbroker2.124.0@sha256:b5b9af2e571e2f6a2f9e2ebe85f0e09158ae5e707349d5afce66bfc7cb7437a5"
           ]
         }
       ]
@@ -1813,7 +1813,7 @@
         "n8nio/n8n-sandbox-service-api": "external"
       },
       "images": [
-        "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504"
+        "n8nio/n8n-sandbox-service-api:1.16.0@sha256:334724118cbc5235a73a69efa71cde50f85d1ac3b72c16785dd930d500d00a32"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -1822,7 +1822,7 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "n8nio/n8n-sandbox-service-api:1.15.0@sha256:6c8f4545ef77261ec0351e926b7197b003d330c443c0a7afd46063bdd397f504"
+            "n8nio/n8n-sandbox-service-api:1.16.0@sha256:334724118cbc5235a73a69efa71cde50f85d1ac3b72c16785dd930d500d00a32"
           ]
         }
       ]
@@ -1835,7 +1835,7 @@
         "n8nio/n8n-sandbox-service-runner-dind": "external"
       },
       "images": [
-        "n8nio/n8n-sandbox-service-runner-dind:1.15.0@sha256:d6d2cdc163250d749d9442176264a05b65adca44660af541d1f0966b393b0806"
+        "n8nio/n8n-sandbox-service-runner-dind:1.16.0@sha256:e03ae162f9503d8c68180a1dc0539f82ba425a5d79d033e45d90f350cd6ca732"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -1844,7 +1844,7 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "n8nio/n8n-sandbox-service-runner-dind:1.15.0@sha256:d6d2cdc163250d749d9442176264a05b65adca44660af541d1f0966b393b0806"
+            "n8nio/n8n-sandbox-service-runner-dind:1.16.0@sha256:e03ae162f9503d8c68180a1dc0539f82ba425a5d79d033e45d90f350cd6ca732"
           ]
         }
       ]
