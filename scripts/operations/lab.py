@@ -1705,10 +1705,25 @@ def execution_admission(root=None, *, args=None, env=None, recovery=False):
                 *(f"port:{p}" for p in c.get("ports", ()) if c.get("running", True)),
             )
         }
+        # Per-service share of `summed` for this product, so a compose-start
+        # that recreates running services in place does not count them twice.
+        reserved = known[current["name"]].get("reservations", {})
+        service_budget = {}
+        for c in active:
+            share = (
+                reserved.get(c["service"]) if c["project"] == current["name"] else None
+            )
+            if share:
+                item = service_budget.setdefault(
+                    c["service"], {"cpus": 0.0, "memory_bytes": 0}
+                )
+                item["cpus"] += share["cpus"]
+                item["memory_bytes"] += int(share["memory"])
         return {
             "services": sorted(
                 {c["service"] for c in active if c["project"] == current["name"]}
             ),
+            "service_budget": service_budget,
             "budget": {
                 "cpus": summed["cpus"] + PROMOTION_EXTERNAL_ALLOWANCE["cpus"],
                 "memory_bytes": summed["memory"]

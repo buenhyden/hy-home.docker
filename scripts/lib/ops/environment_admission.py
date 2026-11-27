@@ -437,7 +437,23 @@ class Admission:
             type(v) is not int or v < 0 for v in kinds.values()
         ):
             raise AdmissionError("invalid_kind_observation")
-        return services, budget, resources, kinds
+        # Reservations of running inventory services, already inside `budget`;
+        # a compose-start replaces them in place instead of adding (see admit).
+        raw = observed.get("service_budget", {})
+        if not isinstance(raw, dict) or set(raw) - set(services):
+            raise AdmissionError("invalid_service_budget_observation")
+        in_place = {}
+        for name, value in raw.items():
+            if not isinstance(value, dict) or set(value) - {"cpus", "memory_bytes"}:
+                raise AdmissionError("invalid_service_budget_observation")
+            in_place[name] = {
+                key: _amount(value.get(key, 0), integral=key == "memory_bytes")
+                for key in ("cpus", "memory_bytes")
+            }
+        for key in ("cpus", "memory_bytes"):
+            if sum(item[key] for item in in_place.values()) > budget[key]:
+                raise AdmissionError("invalid_service_budget_observation")
+        return services, budget, resources, kinds, in_place
 
     def admit(
         self,
@@ -469,7 +485,15 @@ class Admission:
         with self._transaction() as connection:
             active = self._active(connection)
             kinds = self._policy(connection, active)
-            observed, used, held, observed_kinds = self._observed()
+            observed, used, held, observed_kinds, in_place = self._observed()
+            if kind == "compose-start":
+                # Compose recreates a running selected service in place, so its
+                # running reservation is replaced by the request, not added.
+                used = dict(used)
+                for key in ("cpus", "memory_bytes"):
+                    used[key] -= sum(
+                        in_place[name][key] for name in selected if name in in_place
+                    )
             if fill_disk:
                 available = (
                     self.limits["disk_bytes"]

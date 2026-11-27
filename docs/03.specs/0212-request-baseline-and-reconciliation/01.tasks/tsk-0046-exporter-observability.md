@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -594,9 +594,19 @@ and merge. Work ran in the primary checkout on branch
 | Targets and `expected_state` | 33 active targets: 32 up; `flower` down with `expected_state="off"` (not in the HOME selection, no container) and no missing-target alert for it | Intentional-stop semantics hold live |
 | `ObservationSelectionMissing` | Firing: `hyhome_expected_selection_info` is absent. Prometheus started on 2026-11-24 outside the launcher and mounts `prometheus.dev.yml` directly, so the source-bound selection overlay is not applied; the 2026-11-11 census row shows it cleared once by a launcher start | Criteria 83 and 85 stay pending |
 | Approved HOME apply | The owner approved a launcher apply of the HOME selection with DEV data `on` (51 targets, plan fingerprint `2b24dde297da8d27`) after pulling the pinned `amazon/aws-cli:2.41.2@sha256:7a77ccb3…` that `seaweedfs-buckets` needs. `compose-start.py up` returned BLOCKED before any container changed | Blocked by the launcher |
-| Launcher admission double count | Read-only reproduction: plan load, validation, overlay materialization, render, roles and footprint pass; `admit` refuses with `cpus_budget_exceeded` because the observed running containers (9.0 CPUs, 25.4 GiB) and the full reservation for the same selected services (6.6 CPUs, 18.5 GiB) are added against the 10-CPU limit. `_observed()` returns one aggregate budget, so a running selection can never be re-applied. The owner chose to record this and fix it as separate work | Defect, separate request |
+| Launcher admission double count | Read-only reproduction: plan load, validation, overlay materialization, render, roles and footprint pass; `admit` refuses with `cpus_budget_exceeded` because the observed running containers (9.0 CPUs, 25.4 GiB) and the full reservation for the same selected services (6.6 CPUs, 18.5 GiB) are added against the 10-CPU limit. `_observed()` returns one aggregate budget, so a running selection can never be re-applied. The owner chose to record this and fix it as separate work. Fixed on 2026-11-27 (below) | Fixed |
 | `HyhomeBackupStale` (critical) | Firing correctly: the last successful nightly backup is 37.6 h old. `hyhome-backup.service` failed on 2026-11-27 03:34 KST: `pg_dump` cannot load `timescaledb-2.30.3` in dev-pg (`template1`) after the image moved to TimescaleDB 2.32.1, so the dev-pg schema export and the run fail. The extension update in each affected dev-pg database is a data-store change for its owner | Routed to D03 and D09 |
 | Stray container | `agitated_dijkstra` (`prom/prometheus:v3.14.0`), created 2026-11-18 and never started, outside Compose | Routed to D11 |
+
+Launcher admission fix (2026-11-27, owner request "launcher admission 이중
+계산 처리하여 수정하고 보완"): the observer in `scripts/operations/lab.py` now
+also reports `service_budget`, each running product service's share of the
+observed reservation. `Admission.admit` validates it (known running services
+only, non-negative, not above the observed total) and, for `compose-start`
+only, deducts the shares of the selected running services, which Compose
+recreates in place. Other kinds, unselected running services and services
+that are not running still count in full. With it the HOME plan predicts
+9.6 of 10 CPUs and 26.8 of 27.3 GiB.
 
 Nothing in the HOME runtime was changed by this pass; the launcher wrote its
 own overlay directory under `~/.local/share/hy-home/p07/2b24dde2…` and the
@@ -662,6 +672,10 @@ plan file under `_workspace/repo-support/analysis/p07/plans/`.
 | D08 v9 target census | 83 | W88 | Read-only Prometheus targets and alerts API | HOME, 2026-11-27 17:10 KST | PASS | 32 of 33 up; `flower` down with `expected_state=off`; firing `ObservationSelectionMissing` and `HyhomeBackupStale` | required | - |
 | D08 v9 HOME selection apply | 85 | W90 | `compose-start.py up --plan` of HOME with DEV data `on` | Plan `2b24dde297da8d27`, `main` 4567af644, owner approval 2026-11-27 | FAIL | BLOCKED by admission `cpus_budget_exceeded` (double-counted running selection); no container changed | required | - |
 | D08 v9 backup failure | 83 | W88 | `systemctl show` and journal of `hyhome-backup.service`; backup timestamp metric | HOME, 2026-11-27 | FAIL | Exit 1 at 03:34 KST; `pg_dump` cannot load `timescaledb-2.30.3`; last success 37.6 h earlier | required | - |
+| D08 v9 admission RED | 85 | W90 | `python3 -m unittest tests.lib.ops.test_environment_admission` (four new cases) | Branch `fix/launcher-admission-reconcile` before the change | FAIL | In-place re-apply refused with `cpus_budget_exceeded`; a negative `service_budget` was not refused | required | - |
+| D08 v9 admission GREEN | 85 | W90 | `python3 -m unittest tests.lib.ops.test_environment_admission` (four new cases) | Same branch after the change | PASS | All four pass; other kinds and non-running services still refused | required | D08 v9 admission RED |
+| D08 v9 admission suites | 85 | W90 | `python3 -m unittest` over the seven modules that import admission or lab; ruff | Same branch | PASS | 380 tests OK, 1 skipped; ruff clean | required | - |
+| D08 v9 admission prediction | 85 | W90 | Read-only `_observed()` with the HOME plan footprint, no claim | HOME, plan `2b24dde297da8d27` | PASS | CPUs 9.0 used, 6.0 in place, 6.6 requested: 9.6 of 10; memory 26.8 of 27.3 GiB | required | - |
 
 ### Resolution Links
 
@@ -708,8 +722,8 @@ the path-to-daemon race remain separate limitations.
 
 D08 v9 (2026-11-27): criteria 83 and 85 stay pending until the selection
 overlay is applied on HOME and the expected-target, missing and recovery
-alerts are read back. That needs the launcher admission to stop counting the
-running selected services twice (separate request). The dev-pg TimescaleDB
+alerts are read back. The launcher admission double count is fixed; the HOME
+selection apply is the next step. The dev-pg TimescaleDB
 extension update (D03, D09) and the stray `agitated_dijkstra` container
 (D11) are routed to their owners.
 
@@ -721,7 +735,7 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Next Owner
 
-The owner opens the launcher admission fix as a separate request; after it,
-D08 applies the HOME selection and closes criteria 83 and 85. The dev-pg
+The launcher admission fix is merged; D08 applies the HOME selection through
+the launcher with the owner's confirmation and closes criteria 83 and 85. The dev-pg
 TimescaleDB extension update goes to D03 and D09 and is urgent, because the
 nightly backup fails until it is done. D11 removes `agitated_dijkstra`.
