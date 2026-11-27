@@ -77,7 +77,9 @@ CID = re.compile(r"[0-9a-f]{64}\Z")
 PROBE = """import json,os
 from importlib.metadata import version
 import boto3,psycopg2,airflow.sdk
-forbidden=[k for k in os.environ if k.startswith('PG') or k in ('SSL_CERT_DIR','SSL_CERT_FILE')]
+import ssl
+default=ssl.get_default_verify_paths().openssl_cafile
+forbidden=[k for k in os.environ if k.startswith('PG') or k=='SSL_CERT_DIR' or (k=='SSL_CERT_FILE' and os.path.realpath(os.environ[k])!=os.path.realpath(default))]
 print(json.dumps(dict(uid=os.getuid(),gid=os.getgid(),airflow=version('apache-airflow'),celery=version('apache-airflow-providers-celery'),boto3=True,psycopg2=True,sdk=True,forbidden_env=[k for k in forbidden if os.environ.get(k)])))
 """
 WRITE_FILES = """import json,os,pathlib,sys

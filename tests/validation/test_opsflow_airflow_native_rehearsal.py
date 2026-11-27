@@ -19,7 +19,7 @@ from tests.validation._opsflow_airflow_native_scenario import PublicationScenari
 class AirflowNativeBoundaryTests(unittest.TestCase):
     def test_exact_image_context_and_no_docker_override(self):
         selected = {
-            "OPSFLOW_AIRFLOW_NATIVE_IMAGE": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
+            "OPSFLOW_AIRFLOW_NATIVE_IMAGE": "sha256:7f956efc6e7bc7c2fcbbe01ce784407ba195ce54b36e8696c97fd8c07f94e8a3",
             "OPSFLOW_AIRFLOW_NATIVE_CONTEXT": "default",
         }
         fixture.validate_target(selected)

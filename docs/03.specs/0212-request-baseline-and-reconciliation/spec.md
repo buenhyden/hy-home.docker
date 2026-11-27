@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.19.0"
+version: "2.20.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -409,6 +409,9 @@ On 2026-11-26 the owner requested D03 of the lifecycle v8 prompts and chose
 named mng-valkey roles for OAuth2 Proxy and Airflow, the named n8n account as
 the public default, and a recorded risk for the ComfyUI anonymous `/root`
 volume; criterion177/W193 in TSK-0120 owns it.
+
+On 2026-11-27 the user requested D04 of the v9 prompts; criterion178/W194 in
+TSK-0121 owns the Airflow 3.4.0 business path.
 
 #### Scope
 
@@ -1669,6 +1672,13 @@ target, backup, recovery boundary, and action-specific authorization.
      show normal use, redelivery and refusals; the HOME switch shows SSO
      login, logout and session TTL for OAuth2 Proxy and broker send, consume
      and recovery for Airflow.
+
+178. TSK-0121 shows the Opsflow manifest workload works on Airflow 3.4.0: the
+     DB publication guard accepts the base image's default trust store and
+     still refuses any other libpq or TLS override, and the isolated native
+     rehearsal on the running image passes publication, Celery retry, replay
+     without a second publication, empty restore and the storage permission
+     matrix. A HOME run with a new synthetic input confirms it live.
 
 ##### Evidence Requirements
 

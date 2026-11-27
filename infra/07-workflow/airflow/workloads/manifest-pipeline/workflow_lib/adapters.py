@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import re
+import ssl
 import stat
 from collections.abc import Mapping
 from copy import deepcopy
@@ -64,6 +65,17 @@ S3_FIELDS = frozenset(
     }
 )
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
+
+
+def _libpq_environment_overrides():
+    names = {name for name in LIBPQ_ENVIRONMENT if name in os.environ}
+    # The Airflow 3.4.0 base image sets SSL_CERT_FILE to the system store; the
+    # same file as OpenSSL's default changes no trust, any other value does.
+    value = os.environ.get("SSL_CERT_FILE")
+    default = ssl.get_default_verify_paths().openssl_cafile
+    if value and default and os.path.realpath(value) == os.path.realpath(default):
+        names.discard("SSL_CERT_FILE")
+    return names
 
 
 class DependencyError(RuntimeError):
@@ -648,7 +660,7 @@ class PgPublisher:
         result = None
         ca = None
         try:
-            if any(name in os.environ for name in LIBPQ_ENVIRONMENT):
+            if _libpq_environment_overrides():
                 raise ValueError("libpq_environment")
             config = self.config
             ca = _pin_ca(config["sslrootcert"]) if config["sslrootcert"] else None

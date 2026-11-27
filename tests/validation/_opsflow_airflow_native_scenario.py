@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import re
 import secrets
 from pathlib import Path
 
@@ -81,7 +82,7 @@ class PublicationScenario:
         self.wait_state("synthetic-retry", "success")
         self.assert_worker("synthetic-retry")
         row = self.metadata(
-            "SELECT try_number FROM task_instance WHERE run_id='synthetic-retry';"
+            "SELECT try_number FROM task_instance WHERE run_id='synthetic-retry' ORDER BY try_number DESC LIMIT 1;"
         ).strip()
         if int(row) < 2:
             raise fixture.RehearsalFailure("Celery retry was not observed")
@@ -398,17 +399,56 @@ class PublicationScenario:
             "source_manifest_ingest",
         )
 
+    def observed_states(self, run):
+        # Only enum-shaped tokens and counters reach the receipt, never row content.
+        observed = {}
+        for name, sql in (
+            (
+                "task_instance",
+                "SELECT coalesce(state,'none')||' '||try_number||' '||max_tries FROM task_instance WHERE dag_id='source_manifest_ingest' AND task_id='validate_store_publish' AND run_id='"
+                + run
+                + "';",
+            ),
+            (
+                "dag_run",
+                "SELECT coalesce(state,'none') FROM dag_run WHERE dag_id='source_manifest_ingest' AND run_id='"
+                + run
+                + "';",
+            ),
+        ):
+            try:
+                lines = self.metadata(sql).strip().splitlines()
+            except Exception:
+                lines = ["unreadable"]
+            observed[name] = [
+                line
+                if re.fullmatch(r"[a-z_]{1,32}( [0-9]{1,4}){0,2}", line)
+                else "other"
+                for line in (line.strip() for line in lines[:3])
+            ] or ["absent"]
+        return observed
+
     def wait_state(self, run, state):
         query = (
             "SELECT state FROM task_instance WHERE dag_id='source_manifest_ingest' AND task_id='validate_store_publish' AND run_id='"
             + run
-            + "';"
+            + "'"
+            # Airflow 3.4 keeps one row per try; the latest is the current attempt.
+            + " ORDER BY try_number DESC LIMIT 1;"
         )
-        self.f.wait(
-            lambda: self.metadata(query).strip() == state,
-            "actual Celery task did not reach " + state,
-            seconds=180,
-        )
+        try:
+            self.f.wait(
+                lambda: self.metadata(query).strip() == state,
+                "actual Celery task did not reach " + state,
+                seconds=180,
+            )
+        except fixture.RehearsalFailure:
+            self.f.receipt["last_state"] = {
+                "run": run,
+                "expected": state,
+                **self.observed_states(run),
+            }
+            raise
         if state == "success":
             self.f.wait(
                 lambda: (
@@ -427,7 +467,7 @@ class PublicationScenario:
         row = self.metadata(
             "SELECT hostname||':'||coalesce(external_executor_id,'') FROM task_instance WHERE run_id='"
             + run
-            + "';"
+            + "' ORDER BY try_number DESC LIMIT 1;"
         ).strip()
         hostname = self.f.containers["worker"].name
         if not row.startswith(hostname + ":") or not row.removeprefix(hostname + ":"):

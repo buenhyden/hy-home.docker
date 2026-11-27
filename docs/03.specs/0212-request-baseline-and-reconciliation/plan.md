@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.19.0"
+version: "2.20.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -461,6 +461,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W191 | 175 | Run the approved D06 runtime checks for local Ollama, the Code Runner and the Assistant sandbox, review the Wiki and tool comparison preconditions, and name the owner steps | W190 | TSK-0118 | Worker and Hermes inference, cancel and recovery, runner and inner-container probes with cleanup, Wiki contract tests, document checks; normal hosted delivery |
 | W192 | 176 | Build the repository-docs corpus, run BM25, Qdrant dense and hybrid retrieval with a time-ordered split, log to MLflow and delete the collection | W75 | TSK-0119 | Unit tests, script manifest, the evaluation run and its MLflow record |
 | W193 | 177 | Record the D03 census, add the oauth2proxy and airflow mng-valkey roles with consumer wiring, switch the n8n default to its named role, record the ComfyUI volume risk, and switch HOME | W192 | TSK-0120 | ACL, URI, wiring and catalog tests; isolated Valkey and Celery run; HOME login, broker and recovery checks; document checks; normal hosted delivery |
+| W194 | 178 | Fix the Airflow 3.4.0 DB publication guard for the base image's default trust store, repin the native rehearsal to the running image and read the current try, and run the isolated rehearsal | W193 | TSK-0121 | RED/GREEN adapter test, Opsflow contract and rehearsal suites, isolated native rehearsal on the 3.4.0 image, document checks; normal hosted delivery |
 
 ###### Current D06 v8 sandbox boundary
 <!-- core-payload-level:4 -->
@@ -476,6 +477,11 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 <!-- core-payload-level:4 -->
 
 [TSK-0120](01.tasks/tsk-0120-d03-data-storage-v8.md) owns criterion177/W193.
+
+###### Current D04 v9 Airflow business boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0121](01.tasks/tsk-0121-d04-airflow-analytics-v9.md) owns criterion178/W194.
 
 ###### Current D02 v8 route boundary
 <!-- core-payload-level:4 -->

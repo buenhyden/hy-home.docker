@@ -1,6 +1,6 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -147,6 +147,12 @@ UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED입니다. Task0018(`docs/03.specs/0
 연결·입력 격리·data_version·객체 메타데이터 복원의 현재 차분과 실제 시험 결과를
 별도로 기록합니다. 정제된 명령·결과만 공개하고 원시 payload·자격·운영 로그는
 남기지 않습니다. 직렬 lock·소유 자원·cleanup HOLD는 기존 fixture 경계를 따릅니다.
+
+현재 Airflow 기본 이미지는 모든 container에 `SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt`를
+설정합니다. 이 값은 OpenSSL 기본 CA 파일과 같은 파일이므로 DB 게시 guard는 실제 경로가
+기본 CA 파일과 같을 때만 이를 override로 보지 않고, 다른 값·`SSL_CERT_DIR`·`PG*` 변수는
+계속 거부합니다. 현재 Airflow는 재시도마다 `task_instance` 행을 새로 만들므로 native 시험은 가장 큰
+`try_number` 행을 현재 시도로 읽습니다. 실행 증거는 SPEC-0212 TSK-0121에 있습니다.
 
 ##### Failure Handling
 
