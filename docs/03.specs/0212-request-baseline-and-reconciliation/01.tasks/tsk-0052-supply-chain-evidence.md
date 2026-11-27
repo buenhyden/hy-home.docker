@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.14"
+version: "0.1.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -357,6 +357,20 @@ commit, push, PR and merge. Work ran in the primary checkout on branch
 | `n8n-sandbox-api` | n8n-io/n8n-sandbox-service (source not reviewed) | 1.16.0 | no release (404) () | differs |
 | `n8n-sandbox-runner-1` | n8n-io/n8n-sandbox-service (source not reviewed) | 1.16.0 | no release (404) () | differs |
 
+- Update round of 2026-11-27, limited by the owner to releases at least 7
+  days old (POL-0086-R59 now applies the R44 release age and R45 major
+  approval to manual and agent rounds). Of the six eligible entries, Loki
+  3.7.10, Tempo 3.1.1, MLflow 3.18.0 and oauth2-proxy 7.15.6 already run on
+  HOME and k6 2.4.0 is declared; their "behind" state is the stale
+  `target_version` fact plus version-carrying Compose tags (`hy/loki:3.7.8-
+  seaweedfs`, `hy/tempo:3.1.0-seaweedfs`, `hy-home/mlflow:3.17.2-local`) that
+  no tool updates. Retagging them is refused by `sync-update-ledger.sh`
+  (R52) and needs a ledger update with evidence, so it is left for its own
+  change. gatus is built from a commit tarball with a SHA-256 that Renovate
+  cannot track; v5.38.0 (`d255d0cd…`, 2026-10-28) fails the build because 3
+  of 5 hunks of the local OIDC hardening patch no longer apply to
+  `security/oidc.go`, so gatus stays on the reviewed build until the patch is
+  rebased and reviewed.
   These are explicit residuals: the ledger facts are not rewritten from this
   read-only lookup, and the behind entries need an update round (Renovate PR,
   SEC01 review, staged HOME apply) before the latest gate can pass.

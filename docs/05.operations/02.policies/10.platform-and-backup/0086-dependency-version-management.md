@@ -1,6 +1,6 @@
 ---
 title: "Dependency Version Management Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -127,6 +127,7 @@ Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, 현
 | POL-0086-R56 | 이미지 변경 머지 후 | 금지: 머지된 이미지 변경을 HOME에 자동 적용 | 수동 | none |
 | POL-0086-R57 | 머지된 이미지 변경을 HOME에 적용할 때 | 필수: 적용(recreate)에 별도 승인을 받는다 | 수동 | none |
 | POL-0086-R58 | 항상 | 금지: 머지를 적용·검증 증거로 삼기 | 수동 | none |
+| POL-0086-R59 | 수동·에이전트 업데이트 라운드 | 필수: R44의 7일 release age와 R45의 major Dashboard 승인을 Renovate 밖의 갱신에도 똑같이 적용한다 | 수동 | 라운드 Task의 출시일·경과일 기록 |
 
 | Surface | Update owner | Authority and review |
 | --- | --- | --- |
