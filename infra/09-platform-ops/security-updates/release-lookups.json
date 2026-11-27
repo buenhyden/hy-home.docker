@@ -56389,7 +56389,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "unclecode/crawl4ai:0.9.5@sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9",
-          "source_input_sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8",
+          "source_input_sha256": "8d9a03443e5e02cdb00a9644de4d97d7d7635c789e3b092b74bc01d538784f02",
           "assessment_version": "0.9.5 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56497,7 +56497,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
-          "source_input_sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8",
+          "source_input_sha256": "8d9a03443e5e02cdb00a9644de4d97d7d7635c789e3b092b74bc01d538784f02",
           "assessment_version": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected."
         },
@@ -56544,7 +56544,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
-          "source_input_sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8",
+          "source_input_sha256": "8d9a03443e5e02cdb00a9644de4d97d7d7635c789e3b092b74bc01d538784f02",
           "assessment_version": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
           "version_binding_note": "Same-tag registry digest refresh on 2026-11-24; the version-based assessment carries over and runtime contents were not newly inspected."
         },
@@ -60428,7 +60428,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/opentofu:1.13.1-local",
-          "source_input_sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540",
+          "source_input_sha256": "1fad76afccf561d2092a7b88c5ac6465f2eb01a61d626fd3397e0de350d7b8a5",
           "assessment_version": "1.13.1 declared custom tag; exact build binding pending",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61258,7 +61258,7 @@
         "reviewed_at": "2026-11-27T00:06:33.965573+00:00",
         "reviewed_subject": {
           "declaration": "amazon/aws-cli:2.41.2@sha256:7a77ccb39e3272191adbf905c50db8c127db88fd79454911a41a6b1c0e419e9b",
-          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
+          "source_input_sha256": "a158461e8ea34cb2dd966b62ab3392e608db0439d0e483687b54f74295c9b69c",
           "assessment_version": "2.41.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61321,7 +61321,7 @@
         "reviewed_at": "2026-11-26T10:20:04.335122+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15",
-          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
+          "source_input_sha256": "a158461e8ea34cb2dd966b62ab3392e608db0439d0e483687b54f74295c9b69c",
           "assessment_version": "4.54",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61493,7 +61493,7 @@
         "reviewed_at": "2026-11-26T10:20:05.141791+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15",
-          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
+          "source_input_sha256": "a158461e8ea34cb2dd966b62ab3392e608db0439d0e483687b54f74295c9b69c",
           "assessment_version": "4.54",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61665,7 +61665,7 @@
         "reviewed_at": "2026-11-26T10:20:06.287713+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15",
-          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
+          "source_input_sha256": "a158461e8ea34cb2dd966b62ab3392e608db0439d0e483687b54f74295c9b69c",
           "assessment_version": "4.54",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -61837,7 +61837,7 @@
         "reviewed_at": "2026-11-26T10:20:07.169348+00:00",
         "reviewed_subject": {
           "declaration": "chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15",
-          "source_input_sha256": "551ded9c8a5ea757d22e44b0dc09e782710c3b16d7bd39cdc2b8f031f7ebca6e",
+          "source_input_sha256": "a158461e8ea34cb2dd966b62ab3392e608db0439d0e483687b54f74295c9b69c",
           "assessment_version": "4.54",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
