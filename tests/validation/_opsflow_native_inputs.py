@@ -5,12 +5,12 @@ ATTEMPT_LABEL = "hyhome.opsflow.native-attempt"
 ROLE_LABEL = "hyhome.opsflow.native-role"
 OWNER = "test_opsflow_native_rehearsal"
 
-N8N_ID = "sha256:b1e81e340b3947528926e7068bca1ad7930dad6d6bebd2437950d6ceb67692de"
-N8N_REF = "hy-home/sec01-n8n:2.49.7-opsflow-a92e6afbd3dd"
+N8N_ID = "sha256:e4cbed5083c5f857ea778d243964e8e2dfe439428bef845e2ad50ee3b5a44b84"
+N8N_REF = "hy-home/sec01-n8n:2.49.7-opsflow-099418ca2fb4"
 N8N_LABELS = {
-    "hyhome.source-binding": "a92e6afbd3dd6cddfedaf25cbca032dea6656ec2a0177d9caafcd722859ccb80",
-    "hyhome.source-tree": "b7950e727bbb3f9b7cd7b4c1384bcaacd90a9c6e",
-    "org.opencontainers.image.revision": "687a0399510725fc0f34e43de913ee670bb0b9b1",
+    "hyhome.source-binding": "099418ca2fb4e57e420b4edb3d2f661b279e3a2b78f9aed9a965a8f0e6417337",
+    "hyhome.source-tree": "6a9867a31be1343f4eedbf289f19598ff105a0be",
+    "org.opencontainers.image.revision": "4a5c7fe8680e55d81cf8d2b26341bc10001efdef",
 }
 PG_ID = "sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
 PG_REF = "postgres:18.7-alpine"
