@@ -128,6 +128,51 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual([True], calls)
         self.assertEqual([], store.records())
 
+    def running(self, **service_budget):
+        # 7 of 8 CPUs used, 3 of them by the running service "a".
+        return self.store(
+            observe=lambda: {
+                "services": sorted(service_budget),
+                "budget": {"cpus": 7, "memory_bytes": 0, "disk_bytes": 0},
+                "service_budget": service_budget,
+            }
+        )
+
+    def test_compose_start_replaces_running_selected_services_in_place(self):
+        store = self.running(a={"cpus": 3, "memory_bytes": 0})
+        claim = self.reserve(
+            store, services=["a"], kind="compose-start", budget=dict(SMALL, cpus=3)
+        )
+        self.assertTrue(claim["token"])
+
+    def test_other_kinds_still_count_running_selected_services(self):
+        store = self.running(a={"cpus": 3, "memory_bytes": 0})
+        with self.assertRaisesRegex(admission.AdmissionError, "cpus_budget"):
+            self.reserve(store, services=["a"], kind="test", budget=dict(SMALL, cpus=3))
+
+    def test_compose_start_counts_services_that_are_not_running(self):
+        store = self.running(a={"cpus": 3, "memory_bytes": 0})
+        with self.assertRaisesRegex(admission.AdmissionError, "cpus_budget"):
+            self.reserve(
+                store, services=["b"], kind="compose-start", budget=dict(SMALL, cpus=3)
+            )
+
+    def test_invalid_service_budget_observation_is_refused(self):
+        for bad in (
+            {"z": {"cpus": 1, "memory_bytes": 0}},
+            {"a": {"cpus": -1, "memory_bytes": 0}},
+            {"a": {"cpus": 9, "memory_bytes": 0}},
+            {"a": {"disk_bytes": 1}},
+        ):
+            with self.subTest(bad=bad):
+                with self.assertRaises(admission.AdmissionError):
+                    self.reserve(
+                        self.running(**bad),
+                        services=["a"],
+                        kind="compose-start",
+                        budget=dict(SMALL, cpus=1),
+                    )
+
     def test_external_usage_is_summed_without_false_shared_deduplication(self):
         store = self.store(observe=lambda: {"budget": {"cpus": 7.5}})
         with self.assertRaisesRegex(admission.AdmissionError, "budget"):
