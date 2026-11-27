@@ -51,6 +51,15 @@ DRIFT_COMPONENTS = (
     "Alloy",
     "Ollama",
 )
+SANDBOX_IMAGE_MANAGER = {
+    "managerFilePatterns": [r"/^infra\/07-workflow\/n8n\/docker-compose\.yml$/"],
+    "matchStrings": [
+        r"SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE:\s+"
+        r"(?<depName>n8nio/n8n-sandbox-service-sandbox):(?<currentValue>[^@\s]+)"
+        r"@(?<currentDigest>sha256:[0-9a-f]{64})"
+    ],
+    "datasourceTemplate": "docker",
+}
 IMAGE_LINE_RE = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
 DEFAULT_IMAGE_RE = re.compile(r"\$\{[^}:]+:-([^}]+)\}")
 
@@ -146,9 +155,17 @@ def updater_contract_findings(
 
     custom_managers = renovate.get("customManagers")
     expected_pattern = r"/^infra\/09-platform-ops\/opentofu\/docker-compose\.yml$/"
-    if not isinstance(custom_managers, list) or len(custom_managers) != 1:
+    if not isinstance(custom_managers, list) or len(custom_managers) != 2:
         findings.append("custom regex manager count drift")
     else:
+        # The n8n sandbox image sits in an environment value that the
+        # docker-compose manager never reads, so exactly this manager owns it.
+        sandbox = custom_managers[1]
+        if {
+            key: sandbox.get(key)
+            for key in ("managerFilePatterns", "matchStrings", "datasourceTemplate")
+        } != SANDBOX_IMAGE_MANAGER:
+            findings.append("n8n sandbox image manager drift")
         custom = custom_managers[0]
         patterns = custom.get("managerFilePatterns")
         match_strings = custom.get("matchStrings")
@@ -357,6 +374,22 @@ class UpdaterOwnershipContractTests(unittest.TestCase):
             "custom regex manager file ownership is broad",
             self.mutated(
                 lambda r: r["customManagers"][0].update(managerFilePatterns=["/.*/"])
+            ),
+        )
+
+    def test_broad_sandbox_image_manager_mutation_is_detected(self) -> None:
+        self.assertIn(
+            "n8n sandbox image manager drift",
+            self.mutated(
+                lambda r: r["customManagers"][1].update(managerFilePatterns=["/.*/"])
+            ),
+        )
+
+    def test_extra_custom_manager_mutation_is_detected(self) -> None:
+        self.assertIn(
+            "custom regex manager count drift",
+            self.mutated(
+                lambda r: r["customManagers"].append(dict(r["customManagers"][1]))
             ),
         )
 
