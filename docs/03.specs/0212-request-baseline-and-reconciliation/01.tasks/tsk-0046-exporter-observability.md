@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -608,7 +608,20 @@ recreates in place. Other kinds, unselected running services and services
 that are not running still count in full. With it the HOME plan predicts
 9.6 of 10 CPUs and 26.8 of 27.3 GiB.
 
-Nothing in the HOME runtime was changed by this pass; the launcher wrote its
+HOME selection apply (2026-11-27 18:30 to 18:33 KST, owner confirmed after the
+fix merged at `f63c8bf8d`): `compose-start.py up` of the HOME plan with DEV
+data `on` (51 targets, fingerprint `2b24dde297da8d27`) returned `STARTED`
+with no recovery or cleanup pending. Prometheus now mounts the source-bound
+`prometheus.yml` and `selection.yml`; `hyhome_expected_selection_info` is 1
+and `hyhome_expected_jobs_total` 33; `ObservationSelectionMissing` cleared.
+All 33 targets carry `expected_state`: 30 up and expected on, 2 optional
+targets up while off, `flower` down while off and silent. The seven one-shot
+jobs exited 0, `airflow-statsd-exporter` and `ollama-exporter` were
+recreated, 57 containers run and none is unhealthy. `HyhomeBackupStale` went
+back to pending only because Prometheus restarted; it clears after the next
+successful backup (SPEC-0212 TSK-0052, D09 v9).
+
+Before the apply, nothing in the HOME runtime was changed by this pass; the launcher wrote its
 own overlay directory under `~/.local/share/hy-home/p07/2b24dde2…` and the
 plan file under `_workspace/repo-support/analysis/p07/plans/`.
 
@@ -676,6 +689,9 @@ plan file under `_workspace/repo-support/analysis/p07/plans/`.
 | D08 v9 admission GREEN | 85 | W90 | `python3 -m unittest tests.lib.ops.test_environment_admission` (four new cases) | Same branch after the change | PASS | All four pass; other kinds and non-running services still refused | required | D08 v9 admission RED |
 | D08 v9 admission suites | 85 | W90 | `python3 -m unittest` over the seven modules that import admission or lab; ruff | Same branch | PASS | 380 tests OK, 1 skipped; ruff clean | required | - |
 | D08 v9 admission prediction | 85 | W90 | Read-only `_observed()` with the HOME plan footprint, no claim | HOME, plan `2b24dde297da8d27` | PASS | CPUs 9.0 used, 6.0 in place, 6.6 requested: 9.6 of 10; memory 26.8 of 27.3 GiB | required | - |
+| D08 v9 HOME selection apply after the fix | 85 | W90 | `compose-start.py up --plan` of HOME with DEV data `on` | Plan `2b24dde297da8d27`, `main` f63c8bf8d, owner confirmation 2026-11-27 | PASS | `STARTED`; seven jobs exit 0; two exporters recreated; 57 running, 0 unhealthy | required | D08 v9 HOME selection apply |
+| D08 v9 selection readback | 83 | W88 | Prometheus mounts, `hyhome_expected_selection_info`, `hyhome_expected_jobs_total`, targets and alerts API | HOME after the apply, 2026-11-27 18:34 KST | PASS | Overlay mounted; selection 1, 33 jobs; every target labelled; `flower` off and silent; `ObservationSelectionMissing` cleared | required | - |
+| D08 v9 selection rule tests | 83 | W88 | `promtool test rules` of `tests/validation/fixtures/p07-observation/rules.test.yml` against `alert_rules.local.selection.yml` | Live image `prom/prometheus:v3.16.0`, no network | PASS | 13 cases SUCCESS, including expected-target-absent and no-selection-marker | required | - |
 
 ### Resolution Links
 
@@ -694,9 +710,9 @@ Actual Grafana, trace and log delivery and durable restore remain NOT_RUN.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 82 | accepted | Companion selection, Launcher candidate, Corrected launcher review, Companion selection rerun, Launcher candidate rerun, Launcher re-review 2026-11-10 | Accepted by owner @buenhyden on 2026-11-10: current target plans and the 25-test suite pass and the independent re-review approves the current source. Four minor follow-ups stay open as recorded in the re-review row. | SPEC-0212 TSK-0046 |
-| 83 | pending | Expected targets and alert semantics | IMPLEMENT_GAP until implemented and verified. | SPEC-0212 TSK-0046 |
+| 83 | pending | Expected targets and alert semantics, D08 v9 selection readback, D08 v9 selection rule tests | Implemented and verified on HOME on 2026-11-27; awaiting owner acceptance. | SPEC-0212 TSK-0046 |
 | 84 | accepted | Authenticated OTLP delivery, Authenticated OTLP delivery rerun | Accepted by owner @buenhyden on 2026-11-10 on the pinned isolated fixture: authenticated OTLP delivery passes and an unauthenticated producer is rejected. Live Grafana datasource and prior-state recovery stay NOT_RUN. | SPEC-0212 TSK-0046 |
-| 85 | pending | Selection and recovery handoff | IMPLEMENT_GAP; HOME/reload/remote acceptance remains NOT_RUN. | SPEC-0212 TSK-0046 |
+| 85 | pending | Selection and recovery handoff, D08 v9 HOME selection apply after the fix, D08 v9 selection readback | The HOME selection with DEV on/off semantics is applied through the launcher with a reboot-safe overlay; awaiting owner acceptance. | SPEC-0212 TSK-0046 |
 
 ### Remaining Conditions
 
@@ -722,8 +738,8 @@ the path-to-daemon race remain separate limitations.
 
 D08 v9 (2026-11-27): criteria 83 and 85 stay pending until the selection
 overlay is applied on HOME and the expected-target, missing and recovery
-alerts are read back. The launcher admission double count is fixed; the HOME
-selection apply is the next step. The dev-pg TimescaleDB
+alerts are read back. The launcher admission double count is fixed and the HOME
+selection is applied; criteria 83 and 85 await owner acceptance. The dev-pg TimescaleDB
 extension update (D03, D09) and the stray `agitated_dijkstra` container
 (D11) are routed to their owners.
 
@@ -735,7 +751,7 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Next Owner
 
-The launcher admission fix is merged; D08 applies the HOME selection through
-the launcher with the owner's confirmation and closes criteria 83 and 85. The dev-pg
+The launcher admission fix is merged and the HOME selection is applied; the
+owner decides criteria 83 and 85. The dev-pg
 TimescaleDB extension update goes to D03 and D09 and is urgent, because the
 nightly backup fails until it is done. D11 removes `agitated_dijkstra`.
