@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.20.0"
+version: "2.21.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -411,7 +411,8 @@ the public default, and a recorded risk for the ComfyUI anonymous `/root`
 volume; criterion177/W193 in TSK-0120 owns it.
 
 On 2026-11-27 the user requested D04 of the v9 prompts; criterion178/W194 in
-TSK-0121 owns the Airflow 3.4.0 business path.
+TSK-0121 owns the Airflow 3.4.0 business path. The same day the user requested
+D05 of the v9 prompts; criterion179/W195 in TSK-0122 owns it.
 
 #### Scope
 
@@ -1679,6 +1680,13 @@ target, backup, recovery boundary, and action-specific authorization.
      rehearsal on the running image passes publication, Celery retry, replay
      without a second publication, empty restore and the storage permission
      matrix. A HOME run with a new synthetic input confirms it live.
+
+179. TSK-0122 shows the Opsflow notifier node, rebuilt with nodemailer
+     10.6.0, loads and sends one synthetic claim to Mailpit on the live n8n
+     2.46.6 worker, refuses a credential for another host and cancels a lease
+     too short to finish, and that the Hermes gateway, attester timer and
+     dashboard run with the accepted plugin; the isolated notifier rehearsal
+     on the current image follows the D09 candidate build.
 
 ##### Evidence Requirements
 
