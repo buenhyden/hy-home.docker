@@ -1,6 +1,6 @@
 ---
 title: "D03 v8 Data Storage and Shared Valkey Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-26"
+updated: "2026-11-27"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0120"
 parent_ids:
@@ -60,6 +60,13 @@ a recorded risk (no data move) for ComfyUI. Work ran on branch
 from `main` `5eea53931`, fast-forwarded to `e4d8011a2`; brief `d03-v8` bound
 the paths before the first edit. Direct user authorization is authority; this
 record is not.
+
+On 2026-11-27 the user directly requested D03 again from
+`_workspace/workspace_task_prompts_20261127_progress_v9/`, limited to that
+prompt's scope: reuse the accepted result, act only on changed inputs, and
+commit, push, PR and merge. Work ran in the primary checkout on branch
+`docs/d03-v9-data` from clean `main` `7554cf0b2`; brief `d03-v9-data`
+revision 1 bound this file only.
 
 #### Execution Log
 
@@ -117,6 +124,28 @@ None.
 - The owner deleted `secrets/db/mng-valkey/airflow_password.txt`.
 - The Terrakube Valkey login left HOME with the LAB move (#1227); the LAB runs its own Valkey.
 
+###### v9 difference pass (2026-11-27)
+
+Criterion177 is reused. Inputs changed after the v8 acceptance by later
+image merges (#1258, #1259, #1269): Valkey 9.1.3 → 9.1.4, Airflow 3.3.2 →
+3.4.0 (Celery provider 3.26.0), Qdrant 1.19.2 → 1.20.2, SeaweedFS 4.48 →
+4.54, PostgreSQL 18.7, RedisInsight 3.10.1, redis_exporter 1.97.0. Because the
+E03 rehearsal and E15 ran on 3.3.2 and 9.1.3, the broker path was rechecked
+live; nothing else was re-run.
+
+| Task | Observed at `7554cf0b2` | State |
+| --- | --- | --- |
+| T01 | No DEV/MNG variable, role or provision change since `e4d8011a2`; mng-pg and dev-pg healthy on 18.7 | REUSE |
+| T02 | Every HOME consumer runs its current image and is healthy. Airflow 3.4.0 builds its broker URL as user `airflow`, DB 0, prefix `airflow:`; Celery ping answers 1 worker; run `d03v9-1795755913` of `example_simplest_dag` succeeded through the broker and the DAG was paused again; the in-process matrix still allows own keys and refuses n8n and SSO keys, KEYS, CONFIG and SELECT 1 with NOPERM; 0 NOPERM or WRONGPASS lines in 24 h of airflow, oauth2-proxy, n8n and n8n-worker logs | REUSE; SI-12 holds on 3.4.0 |
+| T02 persistence | Both Valkeys: AOF on, last AOF write and RDB save OK, 2.4 MB and 1.2 MB used, 0 rejected connections | REUSE |
+| T03 | Qdrant 1.20.2 exports `collections_total` 0 (the dashboard metric name), matching the deletion closed on 2026-11-26; SeaweedFS S3 healthy on 4.54 | REUSE |
+| T04 | SSD 59 GB free, HDD 2.3 TB free; placement unchanged | REUSE |
+| T05 | No store added; Terrakube is LAB | REUSE |
+
+Correction: the Remaining Conditions and Next Owner text below named D11 and
+the LAB move owner for three items that "Closed on 2026-11-26" already
+records as done; that text is replaced.
+
 ##### Blockers and Decisions
 
 Files under `secrets/` are outside the agent's read permission, so the owner
@@ -156,6 +185,11 @@ for D11 cleanup.
 | E16 | 177 | W193 | method=observation; tool=browser (owner), oauth2-proxy log, Prometheus; command=SSO login on qdrant, sign_out, reopen | HOME, 2026-11-26 06:33 UTC | PASS | SI-05: AuthSuccess through /oauth2/callback, sign_out, then redirect to login; no NOPERM or WRONGPASS in the oauth2-proxy log. A single key's TTL was not read because that needs a role password; the configured cookie_expire is 12h | required | - |
 | E17 | 177 | W193 | method=automated; tool=Python3.12.3 project .venv; command=python -m unittest tests.validation.test_secret_metadata_sync tests.validation.test_secret_catalog_contract tests.lib.ops.test_secret_catalog tests.validation.test_smtp_generator tests.validation.test_root_resource_contract tests.validation.test_wiki_preparation_contracts tests.lib.ops.test_openbao_consumer_migration | main `9f549a64e`, 2026-11-26 | PASS | 171 tests OK; the earlier local failures were the system interpreter without `referencing`, not this change | required | - |
 | E18 | 177 | W193 | method=observation; tool=valkey-cli as mnginspector, run by the owner; command=SCAN __Secure-sso-cookie-* without .lock, TTL of each | HOME mng-valkey after a fresh SSO login, 2026-11-26 | PASS | One session key with TTL 42961 s (about 11 h 56 min), within the configured cookie_expire of 12h and not unbounded; key names and values were not printed | optional | - |
+| E19 | 177 | W193 | method=observation; tool=docker; command=inspect image, state and health of the D03 services; grep NOPERM and WRONGPASS in 24 h of consumer logs | HOME, 2026-11-27 | PASS | Current images healthy; 0 auth error lines | optional | - |
+| E20 | 177 | W193 | method=automated; tool=Airflow 3.4.0 CLI and Celery in airflow-worker and airflow-scheduler; command=broker URL username and prefix, inspect ping, unpause, trigger example_simplest_dag run d03v9-1795755913, pause | HOME, 2026-11-27 | PASS | User `airflow`, DB 0, prefix `airflow:`; 1 ping reply; run success; DAG paused | optional | - |
+| E21 | 177 | W193 | method=automated; tool=redis-py in airflow-worker; command=own key set and delete, n8n and SSO key get, KEYS, CONFIG GET, SELECT 1 with the broker URL built in process | HOME mng-valkey 9.1.4, 2026-11-27 | PASS | Own keys allowed; the rest NOPERM; the probe key was deleted | optional | - |
+| E22 | 177 | W193 | method=observation; tool=Prometheus API, df; command=redis AOF, RDB, memory and rejected-connection series; collections_total; free space | HOME, 2026-11-27 | PASS | Values in the v9 table | optional | - |
+| E23 | 177 | W193 | method=automated; tool=Python3.12.3; command=python3 -m unittest tests.validation.test_mng_valkey_acl tests.validation.test_airflow_connection_uri tests.validation.test_service_runtime_compatibility tests.validation.test_service_wiring_contracts tests.validation.test_p02_valkey_mount_scope | `main` 7554cf0b2 | PASS | OK, 3 skipped | optional | - |
 
 ##### Resolution Links
 
@@ -171,9 +205,9 @@ E12 resolves E08.
 
 ##### Remaining Conditions
 
-None for criterion 177. The items under Left open stay with their owners:
-D11 holds the empty Qdrant collection and the retired secret file, the LAB
-move owner holds Terrakube (SPEC-0263 TSK-0004).
+None for criterion 177. The empty Qdrant collection, the retired secret file
+and the Terrakube login were closed on 2026-11-26 (see Closed on 2026-11-26).
+E19 to E23 recheck the v9 versions and do not change the decision.
 
 #### Handoff
 
@@ -184,8 +218,9 @@ and OAuth2 Proxy READMEs carry the change.
 
 ##### Next Owner
 
-Criterion 177 is accepted. D11 holds the Qdrant collection and the retired
-secret file; the LAB move owner holds Terrakube.
+Criterion 177 is accepted and nothing is handed on. D10 reconciles this
+Task's `draft` frontmatter; D03 resumes only if a consumer, ACL pattern,
+version or load change causes a real failure.
 
 ## 적용과 확인
 
