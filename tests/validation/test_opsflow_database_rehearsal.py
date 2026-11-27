@@ -29,7 +29,7 @@ MIGRATION_2 = WORKLOAD / "sql/003_business_date.sql"
 CHECKS = WORKLOAD / "sql/002_checks.sql"
 IMAGE_ENV = "OPSFLOW_PG_REHEARSAL_IMAGE"
 CONTEXT_ENV = "OPSFLOW_PG_REHEARSAL_CONTEXT"
-EXPECTED_IMAGE = "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
+EXPECTED_IMAGE = "sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
 EXPECTED_CONTEXT = "default"
 CONTAINER_ID = re.compile(r"[0-9a-f]{64}\Z")
 OWNER_LABEL = "hyhome.opsflow.rehearsal-owner"
@@ -314,7 +314,7 @@ class OpsflowDatabaseRehearsalBoundaryTests(unittest.TestCase):
     def test_native_selection_is_explicit_and_immutable(self):
         with mock.patch.dict(os.environ, {}, clear=True):
             self.assertIsNone(native_selection())
-        with mock.patch.dict(os.environ, {IMAGE_ENV: "postgres:18.6-alpine", CONTEXT_ENV: "default"}, clear=True):
+        with mock.patch.dict(os.environ, {IMAGE_ENV: "postgres:18.7-alpine", CONTEXT_ENV: "default"}, clear=True):
             with self.assertRaises(RehearsalFailure):
                 native_selection()
         with self.assertRaisesRegex(RehearsalFailure, "local socket"):
@@ -458,7 +458,7 @@ class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
             "SHOW server_version;SELECT string_agg(extname,',' ORDER BY extname) FROM pg_extension;",
             "postgres",
         ).decode().splitlines()
-        self.assertEqual(["18.6", "plpgsql"], inventory)
+        self.assertEqual(["18.7", "plpgsql"], inventory)
         self.receipt["postgres"] = {"version": inventory[0], "extensions": inventory[1]}
         source.psql("p04_audit", "postgres", provision_sql())
         source.psql("opsflow_migrator", "opsflow_dev", migration_sql(MIGRATION_1))

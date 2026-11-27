@@ -1,6 +1,6 @@
 ---
 title: "D04 v9 Airflow Business Path on 3.4.0 Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -154,8 +154,9 @@ fixes; its live confirmation is E10.
 
 - E10: the owner uploads one synthetic input and triggers one HOME run; the
   agent reads back the rows and the object.
-- The rehearsal companions stay at the pinned PostgreSQL 18.6, Valkey 9.1.2
-  and SeaweedFS 4.48; aligning them with HOME belongs to D09.
+- Resolved 2026-11-27 (SPEC-0212 TSK-0052): the rehearsal companions now pin
+  the HOME PostgreSQL 18.7, Valkey 9.1.4 and SeaweedFS 4.54, and the native
+  rehearsals pass 17/17 on them.
 - Timescale, OIDC and a HOME restore are NOT_RUN in the rehearsal scope.
 
 #### Handoff

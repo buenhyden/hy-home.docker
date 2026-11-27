@@ -12,10 +12,10 @@ N8N_LABELS = {
     "hyhome.source-tree": "f511528aba724372aa0ed61b7b3c2e271d2d6942",
     "org.opencontainers.image.revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
 }
-PG_ID = "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
-PG_REF = "postgres:18.6-alpine"
-VALKEY_ID = "sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b"
-VALKEY_REF = "valkey/valkey:9.1.2-alpine"
+PG_ID = "sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71"
+PG_REF = "postgres:18.7-alpine"
+VALKEY_ID = "sha256:56729e68bdda139cbd3f6a2538683dc3523325fc5711ea1a379938f1b37893f0"
+VALKEY_REF = "valkey/valkey:9.1.4-alpine"
 RUNNER_ID = "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf"
 RUNNER_REF = "n8nio/runners:2.43.6@" + RUNNER_ID
 RUNNER_RUNTIME_CONFIG = (
@@ -25,8 +25,8 @@ RUNNER_RUNTIME_CONFIG = (
 # the pinned index digest with the containerd store (HOME since 2026-10-16,
 # SPEC-0246). Both name the same pinned runner.
 RUNNER_RUNTIME_IDS = frozenset({RUNNER_RUNTIME_CONFIG, RUNNER_ID})
-MAILPIT_ID = "sha256:94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea"
-MAILPIT_REF = "axllent/mailpit:v1.31.5@" + MAILPIT_ID
+MAILPIT_ID = "sha256:23a2ef85bc50853ab3093645d1d64679afd8887e89da5e48a88940c172591a4e"
+MAILPIT_REF = "axllent/mailpit:v1.34.0@" + MAILPIT_ID
 IMAGE_IDS = {
     N8N_REF: N8N_ID,
     PG_REF: PG_ID,

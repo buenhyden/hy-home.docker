@@ -496,7 +496,7 @@ class NativeGuardTests(unittest.TestCase):
         self.assertEqual(N8N_ID, IMAGE_IDS[N8N_REF])
         self.assertEqual(
             "sha256:"
-            + "94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea",
+            + "23a2ef85bc50853ab3093645d1d64679afd8887e89da5e48a88940c172591a4e",
             MAILPIT_ID,
         )
 

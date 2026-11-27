@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -692,6 +692,9 @@ plan file under `_workspace/repo-support/analysis/p07/plans/`.
 | D08 v9 HOME selection apply after the fix | 85 | W90 | `compose-start.py up --plan` of HOME with DEV data `on` | Plan `2b24dde297da8d27`, `main` f63c8bf8d, owner confirmation 2026-11-27 | PASS | `STARTED`; seven jobs exit 0; two exporters recreated; 57 running, 0 unhealthy | required | D08 v9 HOME selection apply |
 | D08 v9 selection readback | 83 | W88 | Prometheus mounts, `hyhome_expected_selection_info`, `hyhome_expected_jobs_total`, targets and alerts API | HOME after the apply, 2026-11-27 18:34 KST | PASS | Overlay mounted; selection 1, 33 jobs; every target labelled; `flower` off and silent; `ObservationSelectionMissing` cleared | required | - |
 | D08 v9 selection rule tests | 83 | W88 | `promtool test rules` of `tests/validation/fixtures/p07-observation/rules.test.yml` against `alert_rules.local.selection.yml` | Live image `prom/prometheus:v3.16.0`, no network | PASS | 13 cases SUCCESS, including expected-target-absent and no-selection-marker | required | - |
+| D08 v9 census after apply | 83 | W88 | Read-only Prometheus targets, alerts and Alertmanager counters | HOME, 2026-11-27 19:10 KST | PASS | 33 targets labelled; only `HyhomeBackupStale` firing (true positive, D09) and active in Alertmanager; 0 failed notifications on every integration | required | D08 HOME alert census, D08 HOME alert census 2026-11-11 |
+| D08 v9 expected-target proofs | 83 | W88 | Generated configuration, promtool and selected-target proofs | HOME after the apply, 2026-11-27 | PASS | Overlay `selection.yml` generated from plan `2b24dde297da8d27`; promtool 13 cases SUCCESS; selected targets labelled and read back | required | Expected targets and alert semantics |
+| D08 v9 HOME selector start | 85 | W90 | `compose-start.py up --plan` of `--selection HOME` after a matching dry run | Plan `2b24dde297da8d27` after the dry run that listed the recreations, 2026-11-27 | PASS | `STARTED`, no recovery pending | required | HOME selector start |
 
 ### Resolution Links
 
@@ -710,9 +713,9 @@ Actual Grafana, trace and log delivery and durable restore remain NOT_RUN.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 82 | accepted | Companion selection, Launcher candidate, Corrected launcher review, Companion selection rerun, Launcher candidate rerun, Launcher re-review 2026-11-10 | Accepted by owner @buenhyden on 2026-11-10: current target plans and the 25-test suite pass and the independent re-review approves the current source. Four minor follow-ups stay open as recorded in the re-review row. | SPEC-0212 TSK-0046 |
-| 83 | pending | Expected targets and alert semantics, D08 v9 selection readback, D08 v9 selection rule tests | Implemented and verified on HOME on 2026-11-27; awaiting owner acceptance. | SPEC-0212 TSK-0046 |
+| 83 | pending | D08 v9 census after apply, D08 v9 expected-target proofs, D08 v9 selection readback, D08 v9 selection rule tests | The owner accepted on 2026-11-27 in this chat; recording waits on the required row Hermes scheduled run alert, whose current readback shows no Hermes alert but 16 gateway error lines and 100 Traefik 5xx responses in 24 h that are not yet reviewed. | SPEC-0212 TSK-0046 |
 | 84 | accepted | Authenticated OTLP delivery, Authenticated OTLP delivery rerun | Accepted by owner @buenhyden on 2026-11-10 on the pinned isolated fixture: authenticated OTLP delivery passes and an unauthenticated producer is rejected. Live Grafana datasource and prior-state recovery stay NOT_RUN. | SPEC-0212 TSK-0046 |
-| 85 | pending | Selection and recovery handoff, D08 v9 HOME selection apply after the fix, D08 v9 selection readback | The HOME selection with DEV on/off semantics is applied through the launcher with a reboot-safe overlay; awaiting owner acceptance. | SPEC-0212 TSK-0046 |
+| 85 | pending | D08 v9 HOME selector start, D08 v9 HOME selection apply after the fix, D08 v9 selection readback | The owner accepted on 2026-11-27 in this chat; recording waits on the required rows Selection and recovery handoff and Reboot: Prometheus overlay, which need the overlay observed after a host reboot. | SPEC-0212 TSK-0046 |
 
 ### Remaining Conditions
 
@@ -739,7 +742,9 @@ the path-to-daemon race remain separate limitations.
 D08 v9 (2026-11-27): criteria 83 and 85 stay pending until the selection
 overlay is applied on HOME and the expected-target, missing and recovery
 alerts are read back. The launcher admission double count is fixed and the HOME
-selection is applied; criteria 83 and 85 await owner acceptance. The dev-pg TimescaleDB
+selection is applied. The owner accepted criteria 83 and 85 on 2026-11-27;
+recording them waits on the Hermes log review (83) and a reboot observation
+of the overlay (85). The dev-pg TimescaleDB
 extension update (D03, D09) and the stray `agitated_dijkstra` container
 (D11) are routed to their owners.
 
@@ -751,7 +756,9 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Next Owner
 
-The launcher admission fix is merged and the HOME selection is applied; the
-owner decides criteria 83 and 85. The dev-pg
+The launcher admission fix is merged and the HOME selection is applied. The
+owner accepted criteria 83 and 85 on 2026-11-27; D08 records them once the
+Hermes gateway errors and Traefik 5xx are reviewed (83) and the overlay is
+observed after the next host reboot (85). The dev-pg
 TimescaleDB extension update goes to D03 and D09 and is urgent, because the
 nightly backup fails until it is done. D11 removes `agitated_dijkstra`.
