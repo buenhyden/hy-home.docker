@@ -62008,8 +62008,8 @@
         "task": "SPEC-0212-TSK-0052",
         "reviewed_at": "2026-11-26T22:56:55.343840+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/storybook:494d16feede7aca74dc357f9955c8602d71e60fa",
-          "source_input_sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065",
+          "declaration": "hy-home/storybook:6c63490790d65337847fb0e47eb9a806070783f0",
+          "source_input_sha256": "6527114dd8f9ef2dac5436f2a5828d5ddfb12c88df665ad6d17135c6fedd258f",
           "assessment_version": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
           "version_binding_note": "Rebuilt on 2026-11-26 from commit 494d16fe, which moves the Node base from 24.21.0 to 26.13.1 and Storybook and next to their current releases; the NGINX static stage is unchanged."
         },
@@ -62068,8 +62068,8 @@
         "task": "SPEC-0212-TSK-0052",
         "reviewed_at": "2026-11-26T22:56:55.343840+00:00",
         "reviewed_subject": {
-          "declaration": "hy-home/storybook-mcp:494d16feede7aca74dc357f9955c8602d71e60fa",
-          "source_input_sha256": "2c2482919f326852228b241305d946cf94670511a40aa6a6869639210fcc7065",
+          "declaration": "hy-home/storybook-mcp:6c63490790d65337847fb0e47eb9a806070783f0",
+          "source_input_sha256": "6527114dd8f9ef2dac5436f2a5828d5ddfb12c88df665ad6d17135c6fedd258f",
           "assessment_version": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
           "version_binding_note": "Rebuilt on 2026-11-26 from commit 494d16fe, which moves the Node base from 24.21.0 to 26.13.1 and Storybook and next to their current releases; the NGINX static stage is unchanged."
         },

@@ -8,7 +8,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: hy-home/storybook:494d16feede7aca74dc357f9955c8602d71e60fa
+    image: hy-home/storybook:6c63490790d65337847fb0e47eb9a806070783f0
     container_name: storybook
     hostname: storybook
     pull_policy: never
@@ -43,7 +43,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: hy-home/storybook-mcp:494d16feede7aca74dc357f9955c8602d71e60fa
+    image: hy-home/storybook-mcp:6c63490790d65337847fb0e47eb9a806070783f0
     container_name: storybook-mcp
     hostname: storybook-mcp
     pull_policy: never

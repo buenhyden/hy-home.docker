@@ -61,7 +61,9 @@
     },
     "eslint-plugin-react": {
       "eslint": "$eslint"
-    }
+    },
+    "minimatch": "^11.0.9",
+    "glob": "^14.0.6"
   },
   "workspaces": [
     "packages/*"

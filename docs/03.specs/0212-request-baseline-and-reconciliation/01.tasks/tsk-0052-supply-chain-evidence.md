@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.19"
+version: "0.1.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -515,6 +515,7 @@ artifact verification and the current gate results.
 | P03 runner boundary on 2.49.7 | 104 | W109 | `P03_RUNNER_NATIVE_REHEARSAL=1 … tests.validation.test_p03_runner_isolation.P03RunnerNativeRehearsal` | Same candidate and runner | PASS | Test OK, cleanup PASS; receipt `native: PARTIAL` (fixture declared NON_EQUIVALENT to HOME, as in TSK-0118 E28); categories builtin_denied 5, module_access_denied 3, environment_access_denied, code_generation_blocked, controlled_workflow_timeout. The first run failed on the same stale broker selection and is resolved by this one | required | - |
 | HOME apply of n8n 2.49.7 | 104 | W109 | `pg_dump -Fc` of `n8n` checked with `pg_restore --list`; `up -d --no-deps --no-build --pull never` of n8n, n8n-worker, n8n-task-runner-worker after dry runs naming only the target | Owner request 2026-11-27; no running execution (2 in `error`) | PASS | `n8n-2.46.6-db.dump` (173 table-data entries) in `/home/hyunyoun/storage/volumes/backups/upgrade-20261127/`; each healthy before the next; `n8n --version` 2.49.7; 39 migrations finished without error; workflows 13, credentials 14, executions 2 as before; the worker registered the JavaScript and Python launchers; route 200. Rollback: restore the dump and recreate on `hyhome/n8n:2.46.6-local`, kept locally | required | - |
 | D09 v9 remaining census | 104 | W109 | `latest_version_gate` and `security_update_gate --input update-ledger.json`; `check-all-hardening.sh`; `validate-docker-compose.sh`; `check-supply-chain-policy.py --check`; effective Compose against container HostConfig and cgroup memory; `npm audit --package-lock-only` on a Storybook lock copy | `main` `a8576cc8a`, HOME 2026-11-28 | FAIL | Both gates exit 2 (83 without fresh lookup, 86 without fresh review); hardening, Compose and policy checks pass; 57 containers match their limits; no OOM or restart; Storybook audit 7 moderate build-only findings with fixes available; details in the census table | required | - |
+| HOME apply of the Storybook audit fix | 104 | W109 | `npm audit --package-lock-only`; `storybook_image.py build --revision 6c634907 --push` and `verify --registry`; `up -d --no-deps --no-build --pull never` of storybook and storybook-mcp after dry runs | Owner choice 2026-11-28 (apply and redeploy); overrides minimatch ^11.0.9 and glob ^14.0.6 | PASS | Audit 0 vulnerabilities (was 7 moderate build-only findings, GHSA-g3hv-75wg-m249 and GHSA-3g3m-2fjr-6pw4); install, lint, typecheck and `build-storybook` with its artifact tests pass; registry digests `sha256:6711304b…` (storybook, 72 SBOM packages) and `sha256:03df741a…` (storybook-mcp, 165), one attestation each; both healthy on `6c634907`; routes 302 to SSO, MCP 401, metadata 200 as before; in-image `revision.json` names `6c634907`. The static origin keeps no data, so no backup applied; rollback is the `494d16fe` images, kept locally and in the registry | required | - |
 
 ### Resolution Links
 
