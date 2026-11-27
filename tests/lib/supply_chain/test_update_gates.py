@@ -836,18 +836,16 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                         self.assertFalse(row["advisory_urls"])
                 self.assertIn(review["reason"], row["reason"])
                 self.assertNotIn(row["applicability"], {"AFFECTED", "NOT_AFFECTED"})
-        mlflow = next(row for row in ledger["entries"] if row["service"] == "mlflow")
-        mlflow_review = mlflow[review_key]
-        assessment_version = mlflow_review["reviewed_subject"]["assessment_version"]
-        for version in ("3.16.1", "3.17.2", "3.18.0"):
-            self.assertIn(version, assessment_version)
-        self.assertEqual("UNKNOWN", mlflow_review["security_applicability"])
-        self.assertEqual("defer", mlflow["decision"])
-        self.assertIsNone(mlflow["affected_confirmed"])
-        self.assertTrue(mlflow_review["latest_disposition"]["target_retained"])
-        self.assertEqual(
-            "3.18.0", mlflow_review["latest_disposition"]["observed_latest"]
-        )
+        # A locally built row's review names the version its tag and Dockerfile
+        # base now carry; the 2026-11-11 inventory/Compose/Dockerfile mismatch
+        # of MLflow was resolved on 2026-11-27 (defer_resolved).
+        for row in ledger["entries"]:
+            review = row[review_key]
+            if row["service"] in {"loki", "mlflow", "tempo"}:
+                with self.subTest(local_tag=row["service"]):
+                    version = review["reviewed_subject"]["assessment_version"]
+                    self.assertEqual(row["target_version"], version)
+                    self.assertIn(f":{version}-", row["current_declared"])
 
     def test_advisory_decisions_preserve_unknown_and_unverified_patch_boundaries(self):
         root = Path(__file__).resolve().parents[3]
@@ -985,12 +983,13 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             )
         for decision, group, count in (
             # Five 2026-11-11 patch rows were resolved on 2026-11-24, Qdrant,
-            # Open Notebook and Keycloak on 2026-11-26 and storybook-mcp on
-            # 2026-11-27 (patch_resolved).
-            ("patch", "patch", 3),
+            # Open Notebook and Keycloak on 2026-11-26 and storybook-mcp and
+            # Tempo on 2026-11-27 (patch_resolved).
+            ("patch", "patch", 2),
             ("no-fix", "no_fix", 6),
-            # Traefik's deferred row was resolved on 2026-11-26 (defer_resolved).
-            ("defer", "defer", 41),
+            # Traefik's deferred row was resolved on 2026-11-26, Loki's and
+            # MLflow's on 2026-11-27 (defer_resolved).
+            ("defer", "defer", 39),
         ):
             expected = {
                 name for name, row in rows.items() if row["decision"] == decision

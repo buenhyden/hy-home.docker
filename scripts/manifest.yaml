@@ -1077,6 +1077,19 @@ files:
   successor: null
   tests:
   - tests/lib/supply_chain/test_ledger_rebind.py
+- path: scripts/lib/supply_chain/local_image_tags.py
+  kind: library
+  authority: infra/09-platform-ops/security-updates/README.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/lib/supply_chain/ledger_rebind.py
+  - scripts/operations/sync-tech-stack-versions.sh
+  - tests/lib/supply_chain/test_local_image_tags.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/supply_chain/test_local_image_tags.py
 - path: scripts/lib/supply_chain/security_update_gate.py
   kind: library
   authority: infra/09-platform-ops/security-updates/README.md

@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -374,6 +374,22 @@ commit, push, PR and merge. Work ran in the primary checkout on branch
   These are explicit residuals: the ledger facts are not rewritten from this
   read-only lookup, and the behind entries need an update round (Renovate PR,
   SEC01 review, staged HOME apply) before the latest gate can pass.
+- Tag cleanup of 2026-11-27 (owner: a tag must not name a past version and
+  must reflect the running release). Root cause: Renovate bumps the Dockerfile
+  `FROM`, but nothing renamed the Compose tag of the locally built image.
+  `scripts/lib/supply_chain/local_image_tags.py` now derives the tag version
+  from the same-named `FROM` base; `sync-tech-stack-versions.sh` renames a
+  stale tag in `--write` (the existing Renovate post-upgrade command, so the
+  R23 command allowlist is unchanged; Compose files joined the
+  `fileFilters`) and fails in `--check`; `ledger_rebind` accepts only that
+  exact rename as an unverified row (POL-0086-R60). Loki, Tempo and MLflow
+  moved to `hy/loki:3.7.10-seaweedfs`, `hy/tempo:3.1.1-seaweedfs` and
+  `hy-home/mlflow:3.18.0-local`; their advisory reviews moved to
+  NOT_AFFECTED (Tempo `patch_resolved`, Loki and MLflow `defer_resolved`),
+  and the test that pinned `hy/tempo:3.1.0-seaweedfs` now derives the tag
+  from the Dockerfile. Rows not covered: tags without a version (`hy/gatus:
+  local`), a build file chosen by variable (n8n, oauth2-proxy) and bases with
+  another name (mng-pg, dev-pg); each already names its running version.
 
 ## Verification Evidence
 
@@ -444,6 +460,7 @@ artifact verification and the current gate results.
 | D09 v9 gate state | 104 | W109 | `python3 -m scripts.lib.supply_chain.latest_version_gate` and `security_update_gate --input infra/09-platform-ops/security-updates/update-ledger.json` | `main` f4375604a | FAIL | Both not ready: 86/86 entries lack a fresh lookup or review; 51 differ from the upstream latest | required | - |
 | Rehearsal pins on HOME versions | 104 | W109 | `OPSFLOW_AIRFLOW_NATIVE_IMAGE=sha256:7f956efc… python3 -m unittest -v tests.validation.test_opsflow_airflow_native_rehearsal`; static suites of the five repinned modules | Companions PostgreSQL 18.7, Valkey 9.1.4, SeaweedFS 4.54; Mailpit 1.34.0 in the n8n inputs; 2026-11-27 | PASS | 17/17 native tests, publication, retry, replay and restore PASS, cleanup PASS; 107 static tests OK | required | - |
 | Fresh upstream release lookup | 104 | W109 | `gh api repos/<owner>/<repo>/releases/latest` for 39 repositories behind 54 root entries | 2026-11-27 10:00 UTC, read-only | PASS | 28 equal, 21 behind, 5 other; table in Blockers and Decisions | required | - |
+| Local tag cleanup and HOME apply | 104 | W109 | `local_image_tags --check`; `docker compose -p hy-home-infra build loki tempo mlflow`; `up -d --no-deps --no-build --pull never <service>` after a dry run naming only the target, one at a time | Owner request 2026-11-27; branch `fix/local-image-tags-follow-base`; backup `hyhome-backup.service` success 19:51 KST | PASS | Check found exactly the three stale tags. Old and new images report the same binaries (loki 3.7.10 c792f585, tempo v3.1.1 9db7df79d, mlflow 3.18.0), so no data-format or database migration. Each healthy before the next; Loki `/ready` and 2,232 lines in the last 2 minutes; Tempo `/ready` and spans received; MLflow `/health` OK with no migration or error log. The old tagged images remain for rollback. Signature, SBOM and scan of the local images stay NOT_RUN | required | - |
 
 ### Resolution Links
 

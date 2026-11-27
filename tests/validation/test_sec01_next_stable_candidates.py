@@ -238,7 +238,9 @@ class NextStableCandidates(unittest.TestCase):
         self.assertIn("USER 10001:10001", dockerfile)
         self.assertIn('ENTRYPOINT ["/docker-entrypoint.sh"]', dockerfile)
         service = load("infra/06-observability/docker-compose.yml")["services"]["tempo"]
-        self.assertEqual(service["image"], "hy/tempo:3.1.0-seaweedfs")
+        # The local tag names the version the Dockerfile wraps, never a past one.
+        base = re.search(r"(?m)^FROM grafana/tempo:(\S+)@", dockerfile)[1]
+        self.assertEqual(service["image"], f"hy/tempo:{base}-seaweedfs")
         self.assertEqual(service["user"], "10001:10001")
         self.assertEqual(
             service["environment"]["S3_SECRET_KEY_FILE"],

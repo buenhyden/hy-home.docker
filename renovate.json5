@@ -72,6 +72,7 @@
       "bash scripts/operations/sync-update-ledger.sh --write"
     ],
     "fileFilters": [
+      "infra/**/docker-compose.yml",
       "infra/tech-stack.versions.json",
       "infra/09-platform-ops/security-updates/update-ledger.json",
       "infra/09-platform-ops/security-updates/build-inputs.json"
