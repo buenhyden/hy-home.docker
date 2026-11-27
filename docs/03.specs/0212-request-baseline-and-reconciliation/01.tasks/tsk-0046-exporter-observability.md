@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.2.4"
+version: "0.2.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -695,6 +695,8 @@ plan file under `_workspace/repo-support/analysis/p07/plans/`.
 | D08 v9 census after apply | 83 | W88 | Read-only Prometheus targets, alerts and Alertmanager counters | HOME, 2026-11-27 19:10 KST | PASS | 33 targets labelled; only `HyhomeBackupStale` firing (true positive, D09) and active in Alertmanager; 0 failed notifications on every integration | required | D08 HOME alert census, D08 HOME alert census 2026-11-11 |
 | D08 v9 expected-target proofs | 83 | W88 | Generated configuration, promtool and selected-target proofs | HOME after the apply, 2026-11-27 | PASS | Overlay `selection.yml` generated from plan `2b24dde297da8d27`; promtool 13 cases SUCCESS; selected targets labelled and read back | required | Expected targets and alert semantics |
 | D08 v9 HOME selector start | 85 | W90 | `compose-start.py up --plan` of `--selection HOME` after a matching dry run | Plan `2b24dde297da8d27` after the dry run that listed the recreations, 2026-11-27 | PASS | `STARTED`, no recovery pending | required | HOME selector start |
+| D08 v9 Hermes alert review | 83 | W88 | Hermes log, n8n log, Traefik log and Prometheus alert readback | Server A and HOME, 24 h to 2026-11-27 19:40 KST | PASS | No Hermes alert firing; research last success about 12.7 h ago on all three series (rule threshold 26 h); 0 overdue cron jobs, scheduler heartbeat 12.6 s; 0 Hermes API errors. The 16 gateway lines are handled agent tool warnings (re-emitted calls, an unconfigured kubectl, refused dangerous heredoc commands, `submit_research_report` refused by its source-quality gate). Traefik by status field: 728 2xx, 56 3xx, 39 4xx, 0 5xx | required | Hermes scheduled run alert |
+| D08 v9 backup recovered | 83 | W88 | `systemctl show` and journal of `hyhome-backup.service`; backup timestamp metric | HOME, 2026-11-27 19:51 KST, after the SPEC-0212 TSK-0052 `template1` update | PASS | `hyhome-backup.service` Result=success, deactivated successfully; backup timestamp 0.03 h old; `HyhomeBackupStale` cleared. `seaweedfs-filer` memory alerts went pending at 19:49 KST during the backup write (308 of 512 MiB afterwards) | required | D08 v9 backup failure |
 
 ### Resolution Links
 
@@ -713,7 +715,7 @@ Actual Grafana, trace and log delivery and durable restore remain NOT_RUN.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 82 | accepted | Companion selection, Launcher candidate, Corrected launcher review, Companion selection rerun, Launcher candidate rerun, Launcher re-review 2026-11-10 | Accepted by owner @buenhyden on 2026-11-10: current target plans and the 25-test suite pass and the independent re-review approves the current source. Four minor follow-ups stay open as recorded in the re-review row. | SPEC-0212 TSK-0046 |
-| 83 | pending | D08 v9 census after apply, D08 v9 expected-target proofs, D08 v9 selection readback, D08 v9 selection rule tests | The owner accepted on 2026-11-27 in this chat; recording waits on the required row Hermes scheduled run alert, whose current readback shows no Hermes alert but 16 gateway error lines and 100 Traefik 5xx responses in 24 h that are not yet reviewed. | SPEC-0212 TSK-0046 |
+| 83 | accepted | D08 v9 census after apply, D08 v9 expected-target proofs, D08 v9 selection readback, D08 v9 selection rule tests, D08 v9 Hermes alert review | Accepted by owner @buenhyden on 2026-11-27 in this chat after the HOME selection apply, the live readback, the 13 promtool cases and the Hermes and Traefik log review. | SPEC-0212 TSK-0046 |
 | 84 | accepted | Authenticated OTLP delivery, Authenticated OTLP delivery rerun | Accepted by owner @buenhyden on 2026-11-10 on the pinned isolated fixture: authenticated OTLP delivery passes and an unauthenticated producer is rejected. Live Grafana datasource and prior-state recovery stay NOT_RUN. | SPEC-0212 TSK-0046 |
 | 85 | pending | D08 v9 HOME selector start, D08 v9 HOME selection apply after the fix, D08 v9 selection readback | The owner accepted on 2026-11-27 in this chat; recording waits on the required rows Selection and recovery handoff and Reboot: Prometheus overlay, which need the overlay observed after a host reboot. | SPEC-0212 TSK-0046 |
 
@@ -743,8 +745,10 @@ D08 v9 (2026-11-27): criteria 83 and 85 stay pending until the selection
 overlay is applied on HOME and the expected-target, missing and recovery
 alerts are read back. The launcher admission double count is fixed and the HOME
 selection is applied. The owner accepted criteria 83 and 85 on 2026-11-27;
-recording them waits on the Hermes log review (83) and a reboot observation
-of the overlay (85). The dev-pg TimescaleDB
+criterion 83 is recorded after the Hermes and Traefik log review; criterion
+85 waits on a reboot observation of the overlay. The earlier "100 Traefik
+5xx" figure counted the request-counter field; by the status field there
+were none. The dev-pg TimescaleDB
 extension update (D03, D09) and the stray `agitated_dijkstra` container
 (D11) are routed to their owners.
 
@@ -757,8 +761,8 @@ None: nothing was recorded here before this Task moved to the common form.
 ### Next Owner
 
 The launcher admission fix is merged and the HOME selection is applied. The
-owner accepted criteria 83 and 85 on 2026-11-27; D08 records them once the
-Hermes gateway errors and Traefik 5xx are reviewed (83) and the overlay is
-observed after the next host reboot (85). The dev-pg
+owner accepted criteria 83 and 85 on 2026-11-27; criterion 83 is recorded;
+D08 records criterion 85 once the overlay is observed after the next host
+reboot. The dev-pg
 TimescaleDB extension update goes to D03 and D09 and is urgent, because the
 nightly backup fails until it is done. D11 removes `agitated_dijkstra`.
