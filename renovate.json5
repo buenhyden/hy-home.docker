@@ -95,6 +95,21 @@
 
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "The n8n sandbox runner starts this image by name from an environment value, which the docker-compose manager does not read; without this manager Renovate left it a release behind the api and runner twice (#1249, #1269)",
+
+      "managerFilePatterns": [
+        "/^infra\\/07-workflow\\/n8n\\/docker-compose\\.yml$/"
+      ],
+
+      "matchStrings": [
+        "SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE:\\s+(?<depName>n8nio/n8n-sandbox-service-sandbox):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[0-9a-f]{64})"
+      ],
+
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
     }
   ],
 
@@ -214,6 +229,11 @@
       "matchPackageNames": ["!apache/airflow", "!quay.io/keycloak/keycloak", "!n8nio/**"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "stateless tier container images"
+    },
+    {
+      "description": "The sandbox api, the runner and the sandbox image the runner starts ship together; one PR keeps the three on the same release",
+      "matchPackageNames": ["n8nio/n8n-sandbox-service-*"],
+      "groupName": "n8n sandbox images"
     },
     {
       "description": "Pin every container image to its digest: the SEC01 ledger refuses tag-only targets (#856, #866), so a tag-only pin can never be updated through CI",
