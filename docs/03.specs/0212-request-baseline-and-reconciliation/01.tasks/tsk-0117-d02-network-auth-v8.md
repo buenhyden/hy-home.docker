@@ -1,6 +1,6 @@
 ---
 title: "D02 v8 Network and Gateway Authentication Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-25"
+updated: "2026-11-27"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0117"
 parent_ids:
@@ -60,6 +60,13 @@ on branch `docs/d02-route-auth-matrix` in the linked worktree
 `d02-agent-health-restore` revision 2 bound the paths before the first edit.
 This session has no shell on 192.168.0.22 and no root on server A. Direct
 user authorization is authority; this record is not.
+
+On 2026-11-27 the user directly requested D02 again from
+`_workspace/workspace_task_prompts_20261127_progress_v9/`, limited to that
+prompt's scope: reuse the accepted result, record only the differences, and
+commit, push, PR and merge. Work ran in the primary checkout on branch
+`docs/d02-v9-network` from clean `main` `6284c1222`; brief `d02-v9-network`
+revision 1 bound this file only.
 
 #### Execution Log
 
@@ -139,10 +146,44 @@ requests with that header.
 | Webhook and gateway integrity (D02-T04) | REUSE | SPEC-0204 TSK-0022 records the exact routes, IP allow-lists and live deliveries; no new defect observed |
 | Minimal network design (D02-T03) | REUSE | No new caller or reachability defect observed; no network change |
 
+###### v9 difference pass (2026-11-27)
+
+Criterion173 and the rows above are reused. Only routes and consumers that
+changed after `0bc8e76de` were re-observed, from server A at `6284c1222`.
+
+| Task | Observed | Versus v8 | State |
+| --- | --- | --- | --- |
+| T01 routes | 45 routers (39 Docker label, 6 file provider) and 35 distinct hosts; the file provider spells three hosts as `<name>.{{ env "DEFAULT_URL" }}` | `terrakube-api`, `terrakube-executor`, `terrakube-ui` routers and hosts removed (SPEC-0263 TSK-0004); router `ollama-api` added on the existing `ollama` host | REUSE with the difference |
+| T01 A probes | 35/35 hosts TLS verified with the public CA, same codes as E02 for every remaining host; `terrakube-ui` now 404 (no router) | 38 → 35 hosts | PASS |
+| T01 listeners | `192.168.0.13`: 80, 443 (Traefik), 3100 (Loki), 3200 (Tempo), 4317 and 4318 (Alloy OTLP), 26379 (`mng-valkey`); every other host port on `127.0.0.1`, including 8644 and 11434 | E03 read only 80/443 | REUSE: the five non-gateway LAN ports are the owner-accepted exposure of POL-0096-R22 (SPEC-0267, 2026-11-07), not a new defect |
+| T02 `ollama-api` | No credential 302 (SSO); wrong Basic 401; wrong Basic on `/api/pull` and `DELETE /api/delete` 302 (unlisted paths fall to SSO); Bearer on `/v1/models` 302; forged `X-Forwarded-For: 192.168.0.22` 302 | New router; positive call reused from TSK-0118 E24 | PASS for the negatives; positive REUSE |
+| T02 A Hermes | All Hermes Agent profiles call local Ollama at `http://127.0.0.1:11434/v1` (TSK-0118 E30, E32); the `ops-console` profile starts MCP containers with `docker run --network` on `ai_net` (Qdrant), `obs_net` (Grafana) and `dev_data_net` (DEV Valkey), and reaches MNG Valkey on `192.168.0.13:26379` and the DB loopback ports; its secret fields are environment references and the file is mode 0600 | Not observed in v8 | Owner decision 2026-11-27: loopback Ollama stays as the approved same-host exception; it is local function evidence and is not counted as Traefik evidence |
+| T03 | No new caller or network; the MCP joins above are host-side `docker run` choices outside the repository | - | REUSE for Compose; owner decision 2026-11-27: the MCP joins stay as a recorded residual risk |
+| T04 | Exact routes, allow-lists and rate limits unchanged since SPEC-0204 TSK-0022 | - | REUSE |
+| T05 | GDE-0079 lists `ollama-api` with the Basic-header rule; `RouteAuthContractTests` pass | - | REUSE |
+
+Correction to E16: the server B probes (E09 to E13) covered the 38 hosts and
+port 8644 only. "Only 80 and 443 answer" holds for those probes, not for every
+port; the POL-0096-R22 ports above are published on the LAN by design and were
+not probed from server B.
+
 ##### Blockers and Decisions
 
 Server B and root on server A are unavailable to this session, so B-side and
 firewall evidence stays NOT_RUN rather than inferred from A-side results.
+
+v9: the prompt routes host consumers' supported functions through
+authenticated Traefik, while the owner-accepted A Hermes configuration calls
+Ollama on loopback and joins shared Docker networks for MCP. Changing
+`~/.hermes` is a host change outside this repository, so the owner chose in
+this chat on 2026-11-27:
+
+| Item | Decision | Residual and resume condition |
+| --- | --- | --- |
+| A Hermes local Ollama at `127.0.0.1:11434` | Keep loopback as the approved same-host exception; the `local` profile and its empty fallback chain stay unchanged | None; resume only if Ollama leaves server A or the owner asks for gateway-only access, then route through `ollama-api` with a D07 machine credential |
+| `ops-console` MCP containers on `ai_net`, `obs_net`, `dev_data_net` | Keep; record as residual risk | Each MCP container can reach every peer on its shared network, not only its target; resume on a separate owner request (Grafana can move to the gateway with its service-account token; Qdrant needs a new machine route) |
+
+No host file was changed.
 
 #### Verification Evidence
 
@@ -167,6 +208,11 @@ firewall evidence stays NOT_RUN rather than inferred from A-side results.
 | E15 | 173 | W189 | method=observation; tool=OpenClaw 2026.11.309.0 SearXNG plugin; command=web search with `baseUrl` set to the HOME URL, then to the loopback proxy | 192.168.0.22 Windows, owner, 2026-11-25 | PASS | With `https://searxng.hy.home.arpa` the search fails (no Basic header, SSO redirect); with `http://127.0.0.1:8889` OpenClaw searches through SearXNG successfully | required | - |
 | E16 | 173 | W189 | method=observation; tool=-; command=- | Server B checks E08, E11 to E15 and the server A listener readout, 2026-11-25 | PASS | Server B side done; from server B only 80 and 443 answer on 192.168.0.13 and 8644 is closed; the server A host firewall rules were not read (no root), so exposure is judged from the listeners and the server B probes | required | E06 |
 | E17 | 173 | W189 | method=observation; tool=PowerShell 7 ScheduledTasks; command=task action through `conhost.exe --headless`, listener, search through the proxy, task state | 192.168.0.22 Windows, owner, 2026-11-25 22:02 KST | PASS | No console window; listens on 127.0.0.1 only; 53 results; task `Running` and set to start at logon | optional | - |
+| E18 | 173 | W189 | method=observation; tool=docker compose 5.6.1, PyYAML; command=router rules from rendered labels and dynamic files | `main` 6284c1222 | PASS | 45 routers, 35 hosts | optional | - |
+| E19 | 173 | W189 | method=observation; tool=curl; command=unauthenticated GET per host via 192.168.0.13 with the public CA | Server A, 2026-11-27 | PASS | 35/35 TLS verified; codes equal E02 | optional | - |
+| E20 | 173 | W189 | method=observation; tool=curl, ss; command=ollama-api negatives (none, wrong Basic, unlisted path, Bearer, forged XFF); listeners | Server A, 2026-11-27 | PASS | 302, 401, 302, 302, 302; LAN ports as in the v9 table | optional | - |
+| E21 | 173 | W189 | method=automated; tool=Python3.12.3; command=python3 -m unittest tests.validation.test_compose_baseline_gates.RouteAuthContractTests | `main` 6284c1222 | PASS | OK | optional | - |
+| E22 | 173 | W189 | method=observation; tool=Python3.12.3; command=URL hosts and network arguments from `~/.hermes` profile configs, values redacted | Server A, 2026-11-27 | PASS | Loopback Ollama in every profile; `ops-console` MCP on `ai_net`, `obs_net`, `dev_data_net` | optional | - |
 
 ##### Resolution Links
 
@@ -182,7 +228,9 @@ E05 resolves E04; E11 resolves E09; E13 resolves E10; E16 resolves E06.
 
 ##### Remaining Conditions
 
-None for criterion173.
+None for criterion173. The v9 A Hermes path (E22) was decided by the owner on
+2026-11-27 (Blockers and Decisions); the MCP network joins stay a recorded
+residual risk, not a remaining condition.
 
 #### Handoff
 
@@ -193,8 +241,10 @@ with the route contract.
 
 ##### Next Owner
 
-The owner runs the B-side checks and decides the 8644 listener; no other
-prompt is started automatically.
+The B-side checks and the 8644 listener are done (E07, E16), and the A Hermes
+path is decided. The MCP residual resumes only on a separate owner request;
+D06 owns the Hermes model profile and D07 any new machine credential. No
+other prompt is started automatically.
 
 ## 적용과 확인
 
