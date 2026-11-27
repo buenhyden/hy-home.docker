@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.22.0"
+version: "2.23.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -413,7 +413,8 @@ volume; criterion177/W193 in TSK-0120 owns it.
 On 2026-11-27 the user requested D04 of the v9 prompts; criterion178/W194 in
 TSK-0121 owns the Airflow 3.4.0 business path. The same day the user requested
 D05 of the v9 prompts; criterion179/W195 in TSK-0122 owns it. D06 of the v9
-prompts follows; criterion180/W196 in TSK-0123 owns it.
+prompts follows; criterion180/W196 in TSK-0123 owns it. D07 of the v9 prompts
+follows; criterion181/W197 in TSK-0124 owns it.
 
 #### Scope
 
@@ -1695,6 +1696,11 @@ target, backup, recovery boundary, and action-specific authorization.
      target, and the 1.16.0 sandbox image reaches only the internet on the
      egress network and nothing on the no-egress network, with no probe
      container left.
+
+181. TSK-0124 returns the private environment and registry structure to
+     MATCH after the D03 and Terrakube key changes, using only the registered
+     value-preserving scripts and owner steps, keeps the SMTP single source,
+     and shows OpenBao 2.7.3 unsealed with a healthy Agent.
 
 ##### Evidence Requirements
 
