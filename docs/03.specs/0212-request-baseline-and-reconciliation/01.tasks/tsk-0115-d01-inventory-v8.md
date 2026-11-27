@@ -1,6 +1,6 @@
 ---
 title: "D01 v8 Inventory Reconciliation Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-26"
+updated: "2026-11-27"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0115"
 parent_ids:
@@ -60,6 +60,13 @@ linked worktree `.claude/worktrees/d01-v8-inventory` from clean `main`
 the Plan before the first edit. The package is an ignored input, read only;
 no tracked file depends on it. Direct user authorization is authority; this
 record is not.
+
+On 2026-11-27 the user directly requested D01 again from
+`_workspace/workspace_task_prompts_20261127_progress_v9/`, limited to that
+prompt's scope: reuse the accepted result, record only the differences, and
+commit, push, PR and merge. Work ran in the primary checkout on branch
+`docs/d01-v9-inventory` from clean `main` `180bc0eba`; brief
+`d01-v9-inventory` revision 1 bound this file only.
 
 #### Execution Log
 
@@ -141,6 +148,39 @@ not in root, so no duplicate owner exists; this reuses the TSK-0040
 | D10 | Task lifecycle states of TSK-0098 to TSK-0114 | None |
 | D12 | Final A/B and Git acceptance | Other prompts' results |
 
+###### v9 difference pass (2026-11-27)
+
+Criterion171 and the v8 rows above are reused unchanged. Only inputs that
+changed between `24b8df116` and `180bc0eba` were re-observed.
+
+| Task | Observed at `180bc0eba` | Versus v8 | State |
+| --- | --- | --- | --- |
+| T01 | Branch `main`, clean tree, one worktree; after `git fetch`, HEAD, `origin/main` and the v9 package reference all equal `180bc0eba`; Docker context `default`, Compose 5.6.1; `COMPOSE_FILE` unset | 51 merges since `24b8df116` (PR #1209 to #1271) | REUSE; new input recorded |
+| T02 definitions | 32 root includes, 0 under `labs/`; 86 definitions with every profile (67 `unless-stopped` services, 19 jobs with `restart: "no"`); 0 without a profile; 61 profiles; `config -q` exit 0; names equal the v9 `SERVICE_INVENTORY.json` set | 89 → 86 and 33 → 32: `terrakube-api`, `terrakube-executor`, `terrakube-ui` moved to the LAB (SPEC-0263 TSK-0004, PR #1227) | REUSE with the Terrakube difference |
+| T02 HOME selection | `compose-start.py plan --selection HOME` selects 46 targets (`--dev-data-expected on`: 51) over 16 profiles including `n8n-sandbox`; `n8n-sandbox-api`, `n8n-sandbox-runner-1` and the job `n8n-sandbox-certs` are selected; no Terrakube target | v8 Sandbox row CHANGE_REQUIRED is resolved by PR #1213 (TSK-0118, criteria 174 and 175 accepted) | REUSE; v8 Sandbox row closed |
+| T02 routes | 45 Traefik routers: 39 Docker label, 6 file provider (`hermes.yml`, `blog-export.yml`, `hermes-webhook.yml`) | Terrakube 3 routers gone, `ollama-api` added (PR #1215) | REUSE with the route difference |
+| T02 running | `hy-home-infra`: 57 running, 9 exited (6 provisioning jobs, `n8n-sandbox-certs` exit 0, `comfyui` 143, `pushgateway` 0), 0 unhealthy, 0 outside the root set; every HOME + DEV data service runs; 13 optional services also run (blog-ingestion, crawl4ai with egress and loopback, dozzle, kafbat-ui, kafka-1, kafka-exporter, mailpit, mlflow, redisinsight, storybook, storybook-mcp); no Terrakube container | - | observation only; not a defect or removal claim |
+| T03 | v9 package verifier PASS, 26 check groups, 0 failures; structural only | 1,170 checks (v8) → 26 groups (v9 format) | REUSE; SECOND_REVIEW_NOT_RUN kept |
+| T04 | 8 Specs, 8 Plans `approved`; 151 Tasks: completed 88, in-progress 33, draft 24, blocked 2, cancelled 2, statusless 2. TSK-0115 to TSK-0120 keep frontmatter `draft` with criteria 171 to 177 accepted | +7 Tasks (TSK-0115 to TSK-0120, SPEC-0263 TSK-0004) | lifecycle mismatch routed to D10 |
+| T05 | Criteria 83, 85 (TSK-0046) and 104, 105 (TSK-0052) still `pending` | unchanged | open; D08 and D09 |
+| T06 | No service added; no duplicate data owner; Terrakube left HOME by owner decision and is not reintroduced | Terrakube removal | REUSE |
+
+The 13 optional services running outside the HOME selection are recorded, not
+changed: whether each stays started is an owner choice outside D01.
+
+###### v9 next prompts
+
+| Prompt | Open item | Precondition |
+| --- | --- | --- |
+| D02, D03, D05, D06, D07 | Differences only; no input in their scope changed except the image and Renovate updates already merged | None |
+| D04 | Airflow 3.4.0 business DAG, cancellation and recovery | None |
+| D08 | Criteria 83 and 85 | None |
+| D09 | Criteria 104 and 105; n8n runner constant 2.46.6 against TSK-0118 E28 2.43.6 | None |
+| D10 | `draft` frontmatter of TSK-0098 to TSK-0120 with accepted criteria; stale Next Owner rows | Runs before D11 and D12 on shared Spec files |
+| D11 | Cleanup; keep `d06e12CodeRunner01` until D09 accepts the native replacement | D09 |
+| D12 | Final A/B and Git acceptance | D04, D08, D09, D10 results |
+| D13, D14 | Held; not a precondition for any other prompt | Owner selection |
+
 ##### Blockers and Decisions
 
 The prompt asks to reuse the committed DATA-0096 ledger, which no longer
@@ -161,6 +201,12 @@ the prompt's minimal-record fallback. No other prompt was run.
 | E06 | 171 | W187 | method=automated; tool=Python3.12.3; command=python3 -m unittest tests.lib.ops.test_workspace_inventory tests.validation.test_workspace_inventory tests.lib.ops.test_workspace_connections | `main` 24b8df116 | PASS | 52 tests OK | required | - |
 | E07 | 171 | W187 | method=review; tool=-; command=- | Frontmatter of every docs/03.specs document | PASS | Census above | required | - |
 | E08 | 171 | W187 | method=review; tool=-; command=- | Second independent semantic review of the requirement trace | NOT_RUN | Not run in this pass | optional | - |
+| E09 | 171 | W187 | method=observation; tool=git; command=git fetch; git rev-parse HEAD origin/main; git status --short; git worktree list | `main` 180bc0eba, 2026-11-27 | PASS | Equal SHAs, clean tree, one worktree | optional | - |
+| E10 | 171 | W187 | method=automated; tool=docker compose 5.6.1; command=config -q; --profile '*' config --services; config --profiles; Python3.12.3 counts of rendered restart, hy-home.role and router labels | `main` 180bc0eba | PASS | exit 0; 86 = 67 + 19; 61 profiles; 39 label routers; names equal v9 inventory | optional | - |
+| E11 | 171 | W187 | method=automated; tool=Python3.12.3; command=python3 scripts/operations/compose-start.py plan --selection HOME --dev-data-expected off and on | `main` 180bc0eba | PASS | 46 and 51 targets; Sandbox selected; no Terrakube | optional | - |
+| E12 | 171 | W187 | method=observation; tool=docker; command=docker ps -a by compose project | HOME host, 2026-11-27 | PASS | 57 running, 0 unhealthy, 0 outside root | optional | - |
+| E13 | 171 | W187 | method=automated; tool=Python3.12.3; command=python3 -I dependencies/verify_bundle.py; python3 -m unittest tests.lib.ops.test_workspace_inventory tests.validation.test_workspace_inventory tests.lib.ops.test_workspace_connections | Package v9; `main` 180bc0eba | PASS | 26 groups, 0 failures; 52 tests OK | optional | - |
+| E14 | 171 | W187 | method=review; tool=Python3.12.3; command=frontmatter census of docs/03.specs | `main` 180bc0eba | PASS | Census in the v9 pass | optional | - |
 
 ##### Resolution Links
 
@@ -177,7 +223,8 @@ None: no row resolves another.
 ##### Remaining Conditions
 
 None for criterion171. The routed items stay with the owners listed above;
-this Task does not close them.
+this Task does not close them. E09 to E14 re-observe the v9 input and do not
+change the 2026-11-25 decision.
 
 #### Handoff
 
@@ -188,8 +235,9 @@ long-lived rule.
 
 ##### Next Owner
 
-The owner chooses the next prompt from the table above; no prompt is started
-automatically.
+The owner chooses the next prompt from the v9 table above; no prompt is
+started automatically. The `draft` frontmatter of this Task stays for D10 to
+reconcile.
 
 ## 적용과 확인
 
