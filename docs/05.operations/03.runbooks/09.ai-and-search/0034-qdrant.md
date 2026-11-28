@@ -1,6 +1,6 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -146,45 +146,82 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 <!-- core-payload-level:4 -->
 
 서버 B의 blog-data는 `qdrant-api` router로만 들어온다. Ollama는 기존 `ollama-api` 계정(`AI-012`·`AI-013`, [RUN-0056](0056-ollama.md))을 그대로 쓴다.
+모든 명령은 서버 A의 저장소 root(`~/data/hy-home.docker`)에서 owner가 실행한다. 값은 화면·인자·로그에 내지 않는다.
+아래 code block은 들여쓰기 없이 그대로 붙여 넣는다. heredoc 끝 표시(`PY`)와 Python 줄 앞에 공백이 붙으면 shell이
+`heredoc>`에서 멈추므로 Ctrl+C로 취소하고 다시 붙여 넣는다. 아무 파일도 쓰이지 않는다.
 
-1. 자격(`AI-015`)과 Traefik hash(`INFRA-010`)는 owner가 만든다. 사용자 이름은 `.env`의 `QDRANT_API_USERNAME`(`AI-014`)이다.
-   값은 화면·인자·로그에 내지 않는다. Traefik 재생성으로 모든 route가 몇 초 끊기고, Qdrant 재생성은 JWT RBAC를 켠다.
+**1. 사용자 이름.** `.env`에 `QDRANT_API_USERNAME`(`AI-014`)을 한 번만 추가한다.
 
-   ```bash
-   umask 077
-   mkdir -p secrets/tools/qdrant
-   f=secrets/tools/qdrant/qdrant_api_password.txt
-   h=secrets/auth/traefik/traefik_qdrant_api_htpasswd.txt
-   u=$(sed -n 's/^QDRANT_API_USERNAME="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p' .env)
-   [ -n "$u" ] && openssl rand -hex 24 | tr -d '\n' > "$f" &&
-     htpasswd -iBn "$u" < "$f" | head -1 > "$h.new" && chmod 640 "$h.new" && mv "$h.new" "$h" &&
-     docker compose --profile core up -d --no-deps --force-recreate traefik &&
-     docker compose --profile qdrant up -d --no-deps --force-recreate qdrant
-   ```
+```bash
+grep -q '^QDRANT_API_USERNAME=' .env || echo 'QDRANT_API_USERNAME="qdrant-api"' >> .env
+```
 
-2. 플러그인용 `vault-notes` 읽기 전용 JWT를 만든다. JWT RBAC는 token을 `qdrant_api_key`로 서명해 확인하므로 새로 저장할 secret이 없다.
-   token은 출력하지 않고 0700 임시 디렉터리의 0600 파일로만 쓴 뒤 OpenBao에 넣고 그 디렉터리를 지운다. `qdrant_api_key`를 회전하면 token도 다시 만든다.
+**2. 자격과 hash, 재생성.** 자격(`AI-015`)과 Traefik hash(`INFRA-010`)를 만들고 Traefik과 Qdrant를 다시 만든다. 이미 있는 자격은
+덮어쓰지 않는다(회전은 파일을 먼저 지운 뒤 다시 실행한다). Traefik 재생성으로 모든 route가 몇 초 끊기고, Qdrant 재생성은 JWT RBAC를 켠다.
 
-   ```bash
-   t=$(mktemp -d) && python3 - secrets/data/qdrant/qdrant_api_key.txt "$t/vault-notes-read.jwt" <<'PY'
-   import base64, hashlib, hmac, json, os, sys
-   b = lambda x: base64.urlsafe_b64encode(x).rstrip(b"=")
-   key = open(sys.argv[1], "rb").read().strip()
-   head = b(json.dumps({"alg": "HS256", "typ": "JWT"}, separators=(",", ":")).encode())
-   body = b(json.dumps({"access": [{"collection": "vault-notes", "access": "r"}]}, separators=(",", ":")).encode())
-   sig = b(hmac.new(key, head + b"." + body, hashlib.sha256).digest())
-   fd = os.open(sys.argv[2], os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-   os.write(fd, head + b"." + body + b"." + sig)
-   os.close(fd)
-   PY
-   ```
+```bash
+umask 077
+mkdir -p secrets/tools/qdrant
+f=secrets/tools/qdrant/qdrant_api_password.txt
+h=secrets/auth/traefik/traefik_qdrant_api_htpasswd.txt
+u=$(sed -n 's/^QDRANT_API_USERNAME="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p' .env)
+if [ -z "$u" ]; then echo "QDRANT_API_USERNAME missing in .env"; else
+[ -s "$f" ] || openssl rand -hex 24 | tr -d '\n' > "$f"
+htpasswd -iBn "$u" < "$f" | head -1 > "$h.new" && chmod 640 "$h.new" && mv "$h.new" "$h" &&
+docker compose --profile core up -d --no-deps --force-recreate traefik &&
+docker compose --profile qdrant up -d --no-deps --force-recreate qdrant
+fi
+docker ps --filter name=^traefik$ --filter name=^qdrant$ --format '{{.Names}} {{.Status}}'
+```
 
-3. blog-data에는 OpenBao로만 전달한다. 받는 쪽 환경변수는 `VAULT_SEARCH_OLLAMA_BASIC_AUTH`(`AI-012`:`AI-013`),
-   `VAULT_SEARCH_QDRANT_BASIC_AUTH`(`AI-014`:`AI-015`), `VAULT_SEARCH_QDRANT_API_KEY`(`AI-008`), `VAULT_RELATED_QDRANT_API_KEY`(2번 JWT)다.
-   회신에는 OpenBao 경로와 계정 이름만 남긴다.
-4. 서버 B에서 확인한다. 맞는 Basic과 `api-key`로 `GET /collections/vault-notes`는 404(처음) 또는 200, 틀린 Basic은 401,
-   읽기 전용 JWT로 `PUT /collections/vault-notes/points`는 403, `GET /collections`(목록)는 SSO로 302, 서버 B가 아닌 출발지는 403이다.
-   서버 A에서는 Prometheus의 Qdrant target이 계속 `up`이고 기존 `api-key` 호출이 그대로 되는지도 본다.
+기대: 마지막 줄에 `traefik`과 `qdrant`가 잠시 뒤 `healthy`로 보인다. `docker inspect qdrant --format '{{range .Config.Env}}{{println .}}{{end}}' | grep -c JWT_RBAC=true`는 1이다.
+
+**3. 읽기 전용 JWT.** 플러그인용 `vault-notes` 읽기 전용 token을 만든다. JWT RBAC는 token을 `qdrant_api_key`(`AI-008`)로 서명해
+확인하므로 새로 저장할 secret이 없다. token은 출력하지 않고 0700 임시 디렉터리의 0600 파일로만 쓴다. 출력된 디렉터리 경로는 4·5단계에 쓴다.
+`qdrant_api_key`를 회전하면 token도 다시 만든다. Qdrant가 2단계로 JWT RBAC를 켠 뒤부터 token이 받아들여진다.
+
+```bash
+t=$(mktemp -d)
+python3 - secrets/data/qdrant/qdrant_api_key.txt "$t/vault-notes-read.jwt" <<'PY'
+import base64, hashlib, hmac, json, os, sys
+b = lambda x: base64.urlsafe_b64encode(x).rstrip(b"=")
+key = open(sys.argv[1], "rb").read().strip()
+head = b(json.dumps({"alg": "HS256", "typ": "JWT"}, separators=(",", ":")).encode())
+body = b(json.dumps({"access": [{"collection": "vault-notes", "access": "r"}]}, separators=(",", ":")).encode())
+sig = b(hmac.new(key, head + b"." + body, hashlib.sha256).digest())
+fd = os.open(sys.argv[2], os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+os.write(fd, head + b"." + body + b"." + sig)
+os.close(fd)
+PY
+echo "$t"; ls -l "$t"
+```
+
+기대: `vault-notes-read.jwt`가 `-rw-------`, 약 120~130 byte다.
+
+**4. 전달.** HOME OpenBao에는 서버 B로 보내는 경로가 아직 없으므로([SearXNG runbook](0110-searxng.md) 7단계 3번과 같이)
+서버 B가 SSH로 받아 바로 그 사용자만 읽는 파일에 쓴다. 화면·채팅·명령 인자를 거치지 않는다.
+
+| blog-data 변수 | 값 |
+| --- | --- |
+| `VAULT_SEARCH_OLLAMA_BASIC_AUTH` | `ollama-api:` + `secrets/tools/ollama/ollama_api_password.txt`(`AI-012`:`AI-013`) |
+| `VAULT_SEARCH_QDRANT_BASIC_AUTH` | `qdrant-api:` + `secrets/tools/qdrant/qdrant_api_password.txt`(`AI-014`:`AI-015`) |
+| `VAULT_SEARCH_QDRANT_API_KEY` | `secrets/data/qdrant/qdrant_api_key.txt`(`AI-008`) |
+| `VAULT_RELATED_QDRANT_API_KEY` | 3단계 디렉터리의 `vault-notes-read.jwt` |
+
+Windows PowerShell 7 예(파일마다 경로와 이름만 바꾼다):
+
+```powershell
+$d = "$env:USERPROFILE\.vault-search"; New-Item -ItemType Directory -Force $d | Out-Null
+icacls $d /inheritance:r /grant:r "$($env:USERNAME):(OI)(CI)F" | Out-Null
+ssh hyunyoun@192.168.0.13 "cat ~/data/hy-home.docker/secrets/tools/qdrant/qdrant_api_password.txt" |
+  Set-Content -NoNewline -Encoding utf8NoBOM "$d\qdrant_basic_password"
+```
+
+**5. 정리.** 4단계가 끝나면 서버 A에서 3단계 디렉터리만 지운다: `rm -rf "$t"`.
+
+**6. 확인.** 서버 B에서: 맞는 Basic과 `api-key`로 `GET /collections/vault-notes`는 404(처음) 또는 200, 틀린 Basic은 401,
+읽기 전용 JWT로 `PUT /collections/vault-notes/points`는 403, `GET /collections`(목록)는 SSO로 302, 서버 B가 아닌 출발지는 403이다.
+서버 A에서는 Prometheus의 Qdrant target이 계속 `up`이고 기존 `api-key` 호출이 그대로 되는지도 본다.
 
 Rollback: `qdrant-api` label, `qdrant-api-auth` middleware, `traefik_qdrant_api_htpasswd` secret과 `QDRANT__SERVICE__JWT_RBAC`를 되돌리고
 Traefik과 Qdrant를 다시 만든다. `vault-notes` collection은 blog-data가 다시 만들 수 있다.
