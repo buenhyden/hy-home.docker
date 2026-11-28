@@ -1,6 +1,6 @@
 ---
 title: "Host Logrotate Failure Alert Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -73,9 +73,8 @@ authority; this record is not.
 
 ##### Blockers and Decisions
 
-The alert is source-only until the owner installs the drop-in with sudo and
-Prometheus reloads its rules (RUN-0105, RUN-0045). Install the drop-in first:
-the rules alone raise `HostLogrotateNotRunning` after 15 minutes.
+The owner installed the drop-in and reloaded the Prometheus rules on
+2026-11-28; nothing blocks acceptance.
 
 #### Verification Evidence
 
@@ -87,10 +86,11 @@ the rules alone raise `HostLogrotateNotRunning` after 15 minutes.
 | E02 | 24 | W84 | method=automated; tool=Python3 venv, cached promtool image; command=python -m unittest tests.validation.test_openbao_window_overrides tests.validation.test_compose_baseline_gates.ContainerThrottleAlertNativeTests | With the drop-in and rules | PASS | 14 tests OK; a first fixture sampled every 15 m went stale under the 5 m lookback and was resampled every minute | required | E01 |
 | E03 | 24 | W84 | method=observation; tool=systemd user manager; command=temporary user unit files with ExecStart /bin/true and /bin/false plus the drop-in ExecStopPost line, writing to a job scratch directory | HOME, 2026-11-28 | PASS | Result success wrote 1, exit-code wrote 0, no temporary file left; probe units removed. A `systemd-run -p` attempt does not expand `%%` like a unit file and was not used as evidence | required | - |
 | E04 | 24 | W84 | method=observation; tool=-; command=owner installs the drop-in, Prometheus reloads the rules, the next hourly run writes hyhome_logrotate.prom with success 1 and both alerts read inactive | HOME | NOT_RUN | Owner sudo install and rule reload pending | required | - |
+| E05 | 24 | W84 | method=observation; tool=-; command=owner installs the drop-in, Prometheus reloads the rules, the next hourly run writes hyhome_logrotate.prom with success 1 and both alerts read inactive | HOME, 2026-11-28 after the owner installed the drop-in and reloaded Prometheus (21:02 KST) | PASS | Drop-in root 0644, identical to the source, listed in DropInPaths; the 21:00 run ended success and wrote success 1 with its timestamp (root 0644, no temporary file); Prometheus reads hyhome_logrotate_last_run_success 1, reloadConfigSuccess true, and `host_logrotate_alerts` evaluates HostLogrotateFailed and HostLogrotateNotRunning as inactive with health ok | required | E04 |
 
 ##### Resolution Links
 
-E02 resolves E01. E04 runs after the owner install.
+E02 resolves E01. E05 resolves E04.
 
 #### Acceptance Decision
 
@@ -98,11 +98,11 @@ E02 resolves E01. E04 runs after the owner install.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 24 | pending | E01,E02,E03,E04 | Awaiting the owner install (E04) and acceptance | @buenhyden |
+| 24 | pending | E01,E02,E03,E04,E05 | Awaiting owner acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- E04 after the owner install.
+None; owner acceptance only.
 
 #### Handoff
 
@@ -112,7 +112,7 @@ The procedure is promoted to RUN-0105 and the file to the OpenBao README.
 
 ##### Next Owner
 
-@buenhyden installs the drop-in and approves the Prometheus rule reload.
+@buenhyden decides acceptance of criterion 24.
 
 ## 적용과 확인
 
