@@ -1,8 +1,8 @@
 ---
 title: "D12 v9 Runtime and Restore Acceptance Task"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
@@ -124,6 +124,14 @@ endpoint; the next attempt sets path-style addressing (Remaining Conditions).
   04:00 KST runs finished, with the R2 copy, its 73 snapshots and the size
   line.
 
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0128 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0128 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0128 | in-progress | completed | #criterion-decisions |
+
 ##### Blockers and Decisions
 
 - The SI-18 run needs an input that reaches `opsflow-dev`; only the owner holds
@@ -169,15 +177,14 @@ registered SeaweedFS restore executor.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 185 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E18,E19,E20,E21,E22,E23 | Awaiting owner acceptance | @buenhyden |
+| 185 | accepted | E01,E02,E03,E04,E05,E06,E07,E08,E09,E11,E18,E19,E20,E21,E22,E23 | Owner @buenhyden accepted on 2026-11-28 in this chat after the SI-18 HOME run (E18, E19) and the SeaweedFS isolated restore (E23) | @buenhyden |
 
 ##### Remaining Conditions
 
-- The R2 scratch `/home/hyunyoun/storage/backups/r2-restore-scratch/r2-restore-zVJXUy`
-  (holds restored secrets) is removed by the owner; the agent's removal was
-  refused by a safety check.
-- Criterion 85 reboot regression and the OpenBao postrotate failure alert.
-- The restore scratch copies are all removed (E11, E20).
+None for criterion185. The owner removed both R2 scratch copies and the restore
+scratch. Real SMTP delivery (E10, optional) waits for an approved target. The
+criterion 85 reboot regression stays with SPEC-0212 TSK-0046 and the OpenBao
+postrotate failure alert with SPEC-0204 TSK-0006.
 
 #### Handoff
 
@@ -187,7 +194,7 @@ None: this Task records runtime and restore evidence only.
 
 ##### Next Owner
 
-The owner reruns the SI-18 upload and decides criterion185. D13 and D14 are
+None; criterion185 is accepted and this Task is completed. D13 and D14 are
 not started automatically.
 
 ## 적용과 확인
