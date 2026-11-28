@@ -1,8 +1,8 @@
 ---
 title: "blog-data Qdrant vault-notes Route Task"
-version: "0.1.7"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
@@ -76,6 +76,14 @@ or printed. Direct user authorization is authority; this record is not.
 | Indexer token | blog-data plugin 0.3.0 keeps the indexer key in Obsidian and runs the CLI from its menu, so the master `qdrant_api_key` would sit in a desktop app. RUN-0034 step 3 now mints a `vault-notes` `rw` token for the CLI next to the `r` token, and step 4 delivers both; the master key stays on server A. A server B that already holds the key gets it rotated and both tokens re-minted |
 | Runbook fix | The owner's first token run stopped at `heredoc>` because the indented list code block carried spaces before `PY`; the blocks are now top-level and unindented, step 1 adds the `.env` username, step 2 keeps an existing password and reports a missing username, and delivery follows the RUN-0110 SSH-to-file pattern because HOME OpenBao has no delivery path to server B |
 
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0129 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0129 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0129 | in-progress | completed | #criterion-decisions |
+
 ##### Blockers and Decisions
 
 The route is source-only until the owner sets `QDRANT_API_USERNAME`, creates
@@ -95,6 +103,7 @@ needs the owner to create the collection and its index once.
 | E03 | 186 | W202 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_compose_baseline_gates | Branch | PASS | 148 tests, 29 skipped | required | - |
 | E04 | 186 | W202 | method=automated; tool=Python3; command=python3 -m unittest tests.validation.test_secret_metadata_sync.PublicSecretSchemaTests | Branch with the owner template rows | PASS | OK; the generator tests need the `referencing` module absent locally and run in hosted CI | required | - |
 | E05 | 186 | W202 | method=automated; tool=bash; command=validate-docker-compose.sh; ledger_rebind --write | Branch | PASS | Compose valid; 2 rows re-bound | required | - |
+| E06 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | After owner provisioning | NOT_RUN | Owner provisioning pending | required | - |
 | E07 | 186 | W202 | method=automated; tool=bash, zsh; command=bash -n and zsh -n of each RUN-0034 Remote Program Access block | Runbook after the paste-safety fix | PASS | 3 blocks parse, no indented line | required | - |
 | E08 | 186 | W202 | method=observation; tool=stat, docker, curl, Prometheus API; command=file modes; traefik secret mount; qdrant JWT_RBAC env; up{job=qdrant}; curl from server A with no and dummy Basic credentials; qdrant log since restart | HOME, 2026-11-28 15:29 KST after the owner ran RUN-0034 steps 1 to 3 | PASS | Password 0600 and htpasswd 0640 present and mounted; traefik and qdrant healthy, JWT RBAC on; Prometheus up=1; /collections/vault-notes 302 without Basic and 403 with Basic from server A; /collections and /collections/vault-notes/snapshots 302; ollama-api still 401 on dummy Basic; no rejected request in the Qdrant log | required | - |
 | E09 | 186 | W202 | method=observation; tool=stat, docker logs; command=qdrant_api_key size; qdrant startup warning | HOME, 2026-11-28 | FAIL | qdrant_api_key is 16 bytes and Qdrant warns it should be 32 bytes once it signs JWTs | required | - |
@@ -104,9 +113,8 @@ needs the owner to create the collection and its index once.
 | E13 | 186 | W202 | method=automated; tool=Python3 venv; command=python -m unittest test_compose_baseline_gates.OllamaPortContractTests.test_blog_data_reaches_only_vault_notes_with_basic_from_server_b | 32-character assertion before the Compose change | FAIL | Compose still required 16 | required | - |
 | E14 | 186 | W202 | method=automated; tool=Python3 venv; command=python -m unittest test_compose_baseline_gates.OllamaPortContractTests.test_blog_data_reaches_only_vault_notes_with_basic_from_server_b | After the change | PASS | OK | required | E13 |
 | E15 | 186 | W202 | method=observation; tool=find, docker, Prometheus API, docker logs; command=token file search; qdrant health and warning; up{job=qdrant} and collection_vectors; Traefik access log since 07:49Z | HOME, 2026-11-28 after the owner rotated qdrant_api_key again (16:49 KST), minted the vault-notes r and rw tokens and delivered both to server B | PASS | No token file left on server A; qdrant healthy, no 32-byte warning, Prometheus up=1, vault-notes 7,264 vectors; 17 requests from 192.168.0.22 since the rotation (collection read, 12 scrolls, 4 queries) all 200, no 401 or 403 from an old credential. No write since the rotation yet, so the rw token write is not observed | required | - |
-| E16 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | Server B 2026-11-28 after the r and rw token delivery, reported by blog-data and matched in the Traefik access log | PASS | From 192.168.0.22: wrong Basic GET /collections/vault-notes 401, read-only token PUT points 403, read-write token PUT points 200 (a fixed-id probe point, deleted with 200); blog-data removed the master key and an index update ran on the read-write token; server A side in E08, E10 and E15 | required | - |
+| E16 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | Server B 2026-11-28 after the r and rw token delivery, reported by blog-data and matched in the Traefik access log | PASS | From 192.168.0.22: wrong Basic GET /collections/vault-notes 401, read-only token PUT points 403, read-write token PUT points 200 (a fixed-id probe point, deleted with 200); blog-data removed the master key and an index update ran on the read-write token; server A side in E08, E10 and E15 | required | E06 |
 | E17 | 186 | W202 | method=observation; tool=SQLite backup API in a no-network container, Python set comparison; command=Gateway exports by state against the receipts.txt names from server B | Gateway blog-ingestion copy taken 2026-11-28 after the receipt list arrived; 408 receipt names | PASS | 515 exports: 408 acknowledged (latest 13:12 KST), 107 held; 408 receipt names, all export UUIDs; acknowledged only on A 0, receipt only on B 0; server B reports every receipt acked and published, so no state differs | optional | - |
-| E06 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | After owner provisioning | NOT_RUN | Owner provisioning pending | required | - |
 
 ##### Resolution Links
 
@@ -118,15 +126,12 @@ E02 resolves E01. E06 runs after the owner provisioning.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 186 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E12,E13,E14,E15,E16,E17 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
+| 186 | accepted | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E12,E13,E14,E15,E16,E17 | Owner @buenhyden accepted on 2026-11-28 in this chat after the server B checks (E16) and the export reconciliation (E17) | @buenhyden |
 
 ##### Remaining Conditions
 
-- The owner reported the two key rollback copies removed after E16.
-- Remove the Gateway copy and the receipt list in
-  `/home/hyunyoun/storage/backups/restore-scratch-d12/gateway-copy/` (agent
-  scratch with report data), then decide criterion186.
-- Step 4 delivery and the server B table from blog-data (E06).
+None. The owner removed the key rollback copies and the agent's Gateway
+copy and receipt list.
 
 #### Handoff
 
@@ -136,7 +141,9 @@ The procedure is promoted to RUN-0034 and the route to the Qdrant README.
 
 ##### Next Owner
 
-The owner provisions the credentials and decides criterion186.
+None; criterion186 is accepted and this Task is completed. Key, password or
+token changes and embedding model changes are announced to blog-data first
+(Qdrant and Ollama READMEs).
 
 ## 적용과 확인
 
