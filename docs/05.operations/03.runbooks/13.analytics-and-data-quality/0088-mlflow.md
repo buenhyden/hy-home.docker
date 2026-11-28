@@ -1,13 +1,13 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -322,6 +322,8 @@ SPEC-0212 TSK-0119가 소유하는 평가이며 `scripts/lib/ops/docs_retrieval_
 BM25, Qdrant dense 검색(embeddinggemma), 둘의 RRF hybrid를 비교해 MLflow 실험 `docs-retrieval-eval`에 기록한다.
 문서 최초 추가 commit 시각으로 앞 80%는 RRF 상수 선택, 뒤 20%는 결과 보고에 쓴다. 제목 줄과 20% 이상 문서가 공유하는
 template 줄은 색인에서 뺀다. 이 결과는 구조적 대리 지표이며 사람의 관련성 판정이 아니다.
+2026-11-28부터 embedding 입력에 모델의 질의·문서 prompt를 붙이고 `truncate: false`로 보낸다
+([Qdrant 가이드](../../01.guides/09.ai-and-search/0034-qdrant.md)). 그 전 실행의 dense·hybrid 결과와는 바로 비교하지 않는다.
 
 ```bash
 c=$(git rev-parse HEAD); o=$(mktemp -d)

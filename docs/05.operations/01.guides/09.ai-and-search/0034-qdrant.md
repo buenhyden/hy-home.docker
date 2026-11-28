@@ -1,13 +1,13 @@
 ---
 title: "Qdrant Usage Guide"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-28"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -78,7 +78,8 @@ Qdrant를 vector storage로 사용하며 service name, route, protocol, persiste
 
 | 항목 | 이 저장소의 구현 결정 |
 | --- | --- |
-| Consumer와 data 근거 | `ai`와 `ai-llm`의 AI/RAG consumer를 위한 HOME vector storage이며 `qdrant`로 직접 선택할 수도 있다. |
+| Consumer와 data 근거 | `ai`와 `ai-llm`의 AI/RAG consumer를 위한 HOME vector storage이며 `qdrant`로 직접 선택할 수도 있다. 현재 소비자는 [문서 검색 평가](../../03.runbooks/13.analytics-and-data-quality/0088-mlflow.md)뿐이다. |
+| Ollama embedding 연동 | Qdrant가 Ollama를 부르지 않는다. 클라이언트가 `ai_net`에서 `http://ollama:11434/api/embed`(구 `/api/embeddings`는 쓰지 않음)로 vector를 만들고 `qdrant:6333`에 쓴다. 기본 모델은 `embeddinggemma-2:740m`(768차원)이고 collection은 이 크기와 `Cosine`으로 만든다(`/api/embed` vector는 길이 1이다). Ollama는 입력을 그대로 보내므로 클라이언트가 질의에 `task: search result \| query: {query}`, 문서에 `title: none \| text: {document}`를 붙이고, 너무 긴 입력이 잘린 채 embedding되지 않게 `truncate: false`를 보낸다. 모델이나 `dimensions`를 바꾸면 collection 크기도 함께 바꾸고 다시 색인한다. 근거: [Qdrant Ollama 문서](https://qdrant.tech/documentation/embeddings/ollama/). |
 | Source·update 책임 | [Compose](../../../../infra/04-data/qdrant/docker-compose.yml)가 image source를 소유한다. snapshot/version 변경은 호환성 검토가 소유한다. |
 | 서비스·profile | 단일 `qdrant`; 정확한 profile은 `ai`, `ai-llm`, `qdrant`. |
 | 흐름·노출 | REST는 SSO 뒤의 Traefik HTTPS를 통한다. gRPC는 network 내부의 `qdrant:6334`에서만 사용하며 host에는 공개하지 않는다. |

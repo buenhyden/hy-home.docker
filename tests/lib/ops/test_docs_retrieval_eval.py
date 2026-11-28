@@ -12,6 +12,18 @@ def raw(title: str, body: str) -> str:
 
 
 class DocsRetrievalEvalTests(unittest.TestCase):
+    def test_embedding_inputs_carry_the_model_task_prompts(self):
+        # Ollama sends text as is, so the client adds each model's prompts.
+        model = "embeddinggemma-2:740m"
+        self.assertEqual(
+            ["task: search result | query: valkey"],
+            ev.prompted(model, ["valkey"], True),
+        )
+        self.assertEqual(
+            ["title: none | text: cache"], ev.prompted(model, ["cache"], False)
+        )
+        self.assertEqual(["cache"], ev.prompted("bge-m3", ["cache"], False))
+
     def test_parse_drops_frontmatter_and_title_heading(self):
         title, body = ev.parse_document(raw("Ollama Runbook", "Restart the model."))
         self.assertEqual("Ollama Runbook", title)
