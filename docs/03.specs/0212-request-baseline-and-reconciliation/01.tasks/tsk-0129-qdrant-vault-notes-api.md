@@ -1,6 +1,6 @@
 ---
 title: "blog-data Qdrant vault-notes Route Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -94,6 +94,8 @@ needs the owner to create the collection and its index once.
 | E04 | 186 | W202 | method=automated; tool=Python3; command=python3 -m unittest tests.validation.test_secret_metadata_sync.PublicSecretSchemaTests | Branch with the owner template rows | PASS | OK; the generator tests need the `referencing` module absent locally and run in hosted CI | required | - |
 | E05 | 186 | W202 | method=automated; tool=bash; command=validate-docker-compose.sh; ledger_rebind --write | Branch | PASS | Compose valid; 2 rows re-bound | required | - |
 | E07 | 186 | W202 | method=automated; tool=bash, zsh; command=bash -n and zsh -n of each RUN-0034 Remote Program Access block | Runbook after the paste-safety fix | PASS | 3 blocks parse, no indented line | required | - |
+| E08 | 186 | W202 | method=observation; tool=stat, docker, curl, Prometheus API; command=file modes; traefik secret mount; qdrant JWT_RBAC env; up{job=qdrant}; curl from server A with no and dummy Basic credentials; qdrant log since restart | HOME, 2026-11-28 15:29 KST after the owner ran RUN-0034 steps 1 to 3 | PASS | Password 0600 and htpasswd 0640 present and mounted; traefik and qdrant healthy, JWT RBAC on; Prometheus up=1; /collections/vault-notes 302 without Basic and 403 with Basic from server A; /collections and /collections/vault-notes/snapshots 302; ollama-api still 401 on dummy Basic; no rejected request in the Qdrant log | required | - |
+| E09 | 186 | W202 | method=observation; tool=stat, docker logs; command=qdrant_api_key size; qdrant startup warning | HOME, 2026-11-28 | FAIL | qdrant_api_key is 16 bytes and Qdrant warns it should be 32 bytes once it signs JWTs | required | - |
 | E06 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | After owner provisioning | NOT_RUN | Owner provisioning pending | required | - |
 
 ##### Resolution Links
@@ -106,13 +108,13 @@ E02 resolves E01. E06 runs after the owner provisioning.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 186 | pending | E01,E02,E03,E04,E05,E06,E07 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
+| 186 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- The owner runs RUN-0034 Remote Program Access steps 1 to 3; the agent then
-  checks server A (Prometheus Qdrant target, existing key calls) and blog-data
-  reports the server B table.
+- E09: rotate `qdrant_api_key` to 32 bytes or more before the values reach
+  blog-data, then mint the read token again.
+- Step 4 delivery and the server B table from blog-data (E06).
 
 #### Handoff
 
