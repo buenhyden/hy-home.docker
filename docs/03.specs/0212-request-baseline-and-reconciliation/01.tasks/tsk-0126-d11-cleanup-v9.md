@@ -1,6 +1,6 @@
 ---
 title: "D11 v9 Legacy and Temporary Cleanup Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -111,10 +111,12 @@ no step.
 | E06 | 183 | W199 | method=automated; tool=docker, tar, gzip; command=read-only alpine mount and tar -czf of each of the 55 data-bearing volumes; gzip -t of each archive | Owner approval on 2026-11-28 | PASS | 55 archives, 513 MB, 0 corrupt | required | - |
 | E07 | 183 | W199 | method=automated; tool=docker; command=docker volume rm of the 243 listed unattached volumes | Owner approval on 2026-11-28 | NOT_RUN | Denied again by the native deny rule; owner command above | required | - |
 | E08 | 183 | W199 | method=automated; tool=docker; command=docker volume rm of the 188 empty dangling volumes | Owner run, observed 2026-11-28 | PASS | 0 of the 188 listed IDs remain; the 55 archived volumes are still present | required | E05 |
+| E09 | 183 | W199 | method=automated; tool=docker; command=docker volume rm of the 243 listed unattached volumes | Owner run, observed 2026-11-28 | PASS | 0 of the 55 archived IDs remain | required | E07 |
+| E10 | 183 | W199 | method=automated; tool=docker, tar, gzip; command=read-only alpine mount and tar -czf of each of the 38 named unused volumes; gzip -t of each archive | Owner request on 2026-11-28 | PASS | 38 archives, 0 corrupt; backup folder 5.1 GB | required | - |
 
 ##### Resolution Links
 
-E08 resolves E05: the owner removed the 188 empty volumes. E07 is resolved when the owner runs the command above for the 55 archived volumes and a new row records
+E08 resolves E05 and E09 resolves E07: the owner removed the 188 empty and the 55 archived volumes and a new row records
 the remaining dangling volume count.
 
 #### Acceptance Decision
@@ -123,16 +125,20 @@ the remaining dangling volume count.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 183 | pending | E01,E02,E03,E04,E05,E06,E07,E08 | Awaiting the owner volume removal and acceptance | @buenhyden |
+| 183 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10 | Awaiting the owner volume removal and acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- The owner removes the 55 archived volumes with the command above; this Task
-  then records it.
-- 38 named dangling volumes outside both lists (stopped HOME services such as
-  `kafka-2`/`kafka-3` and `open-notebook`, the pre-upgrade copies
-  `grafana-data-pre-13.3.0` and `owui-prerollout-226`, and labs data) are not
-  D11 targets and stay.
+- On 2026-11-28 the owner also asked to remove the 38 named unused volumes:
+  stopped HOME services (`kafka-2`/`kafka-3`, `open-notebook`, `surrealdb`,
+  `stalwart` and others), the pre-upgrade copies `grafana-data-pre-13.3.0`
+  and `owui-prerollout-226`, and labs data. All 38 are archived (E10) and
+  listed in `/home/hyunyoun/storage/volumes/backups/cleanup-20261128/named-unused-volumes.txt`. Three are still declared by HOME
+  Compose (`open-notebook-data`, `surrealdb-data`, `renovate-cache`), so those
+  services start empty on their next start unless an archive is restored. The
+  owner removes them, since `docker volume rm` is denied to the agent:
+  `grep -xF -f <(docker volume ls -q -f dangling=true) named-unused-volumes.txt | xargs docker volume rm`
+  run in that folder; this Task then records it.
 
 #### Handoff
 
