@@ -1,13 +1,13 @@
 ---
 title: "Architecture Decision Records"
-version: "2.0.1"
+version: "2.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-25"
+updated: "2026-11-28"
 layer: "architecture"
 ---
 
@@ -84,6 +84,7 @@ ADR은 구현 명세나 운영 절차가 아니므로 이 디렉터리는 그것
 | [0060-hermes-report-source-contract.md](0060-hermes-report-source-contract.md) | Hermes `source_text`를 확정된 전체 일일 보고서 원문으로 두고 receipt 집합은 비공개 감사 기록으로 보존하는 accepted decision |
 | [0061-dedicated-ingress-for-sso-only-backends.md](0061-dedicated-ingress-for-sso-only-backends.md) | `sso-auth`만으로 보호되는 Traefik backend를 공유 `edge_net`에서 빼고 Traefik만 함께 붙는 전용 내부 ingress 망에 두는 proposed decision |
 | [0062-home-lab-membership.md](0062-home-lab-membership.md) | HOME 구성원을 root include로, LAB을 `labs/`로 나누는 ADR-0058 규칙을 유지하면서 comfyui·neo4j·open-notebook·pact-broker·wiremock·terrakube를 LAB으로 옮기고 단일 노드 opensearch 등을 퇴역시키는 accepted decision |
+| [0064-ollama-on-server-b.md](0064-ollama-on-server-b.md) | Ollama를 서버 B(192.168.0.22)의 native 설치로 옮기고 Windows 방화벽으로 서버 A만 허용하며, HOME의 `ollama`·`ollama-exporter`·`comfyui`를 걷어내는 결정(proposed) |
 
 ###### Current Items
 <!-- core-payload-level:4 -->
@@ -116,6 +117,7 @@ docs/02.architecture/02.decisions/
 ├── 0060-hermes-report-source-contract.md
 ├── 0061-dedicated-ingress-for-sso-only-backends.md
 ├── 0062-home-lab-membership.md
+├── 0064-ollama-on-server-b.md
 └── README.md
 ```
 

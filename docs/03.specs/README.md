@@ -1,13 +1,13 @@
 ---
 title: "명세 패키지"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-28"
 layer: "specs"
 ---
 
@@ -80,6 +80,7 @@ Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않
 | [0255-implementation-alignment-fixes/](./0255-implementation-alignment-fixes/) | 감사에서 확인된 문서와 구현의 차이 중 열린 branch 밖의 항목을 고칩니다: AD-0026 network, 삭제된 Spec을 현재 소유자로 가리키는 문구, 운영 문서의 secret 이름과 database 목록 |
 | [0262-analytics-labs-migration/](./0262-analytics-labs-migration/) | Lakehouse, dbt, Superset, JupyterLab, SonarQube, Stalwart를 root Compose에서 독립 LAB entrypoint로 옮기고, 참조와 Stage 05 문서를 `15-labs`로 정리함 |
 | [0263-lab-promotion-contract/](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
+| [0271-ollama-server-b-and-comfyui-retirement/](./0271-ollama-server-b-and-comfyui-retirement/) | Ollama를 서버 B(192.168.0.22)로 옮기고 HOME의 `ollama`·`ollama-exporter`·`comfyui`를 걷어내는 계획과 기록 |
 
 ###### Current Items
 <!-- core-payload-level:4 -->
@@ -102,6 +103,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0255 | [구현 정합성 수정](./0255-implementation-alignment-fixes/) | 감사에서 확인된 문서와 구현의 차이 중 열린 branch 밖의 항목을 고칩니다: AD-0026 network, 삭제된 Spec을 현재 소유자로 가리키는 문구, 운영 문서의 secret 이름과 database 목록 |
 | SPEC-0262 | [분석 서비스 LAB 이전](./0262-analytics-labs-migration/) | Lakehouse, dbt, Superset, JupyterLab, SonarQube, Stalwart를 root Compose에서 독립 LAB entrypoint로 옮기고, 참조와 Stage 05 문서를 `15-labs`로 정리함 |
 | SPEC-0263 | [LAB 이전 계약](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
+| SPEC-0271 | [Ollama 서버 B 이전·ComfyUI 정리](./0271-ollama-server-b-and-comfyui-retirement/) | Ollama를 서버 B(192.168.0.22)로 옮기고 HOME의 `ollama`·`ollama-exporter`·`comfyui`를 걷어내는 계획과 기록 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../00.workspace/03.process/sdlc.md#sequence)
