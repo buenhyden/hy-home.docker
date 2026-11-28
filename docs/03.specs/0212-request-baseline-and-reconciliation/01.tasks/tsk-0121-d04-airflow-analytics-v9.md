@@ -1,6 +1,6 @@
 ---
 title: "D04 v9 Airflow Business Path on 3.4.0 Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -143,6 +143,7 @@ stays inactive, so no mail is sent.
 | E09 | 178 | W194 | method=observation; tool=Prometheus API; command=kafka_topic_partitions, kafka_consumergroup_members; Compose reference census | HOME, 2026-11-27 | PASS | 7 topics, 0 consumer groups, no HOME client | optional | - |
 | E11 | 178 | W194 | method=automated; tool=Python3.12.3; command=python3 -m unittest tests.validation.test_opsflow_airflow_contract tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_opsflow_provision_contract | Branch after the adapter change | PASS | 82 tests OK | required | - |
 | E10 | 178 | W194 | method=observation; tool=-; command=- | HOME business run on 3.4.0 with a new synthetic input | NOT_RUN | Needs the S3 admin upload (Blockers and Decisions) | required | - |
+| E12 | 178 | W194 | method=observation; tool=-; command=- | HOME business run on 3.4.0 with a new synthetic input (SPEC-0212 TSK-0128 E18, E19) | PASS | Run d12-si18-2026-11-28-r2 on 2026-11-28 published the 2026-11-28 input: a published ops_flow.runs row, a second document, outbox row 2 and the validated object; the notifier delivered it once to Mailpit | required | E10 |
 
 ##### Resolution Links
 
@@ -155,12 +156,11 @@ fixes; its live confirmation is E10.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 178 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E11 | Awaiting owner acceptance and the HOME business run (E10) | @buenhyden |
+| 178 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E10,E11,E12 | Awaiting owner acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- E10: the owner uploads one synthetic input and triggers one HOME run; the
-  agent reads back the rows and the object.
+- E10 is resolved by E12 (the TSK-0128 HOME run on 2026-11-28).
 - Resolved 2026-11-27 (SPEC-0212 TSK-0052): the rehearsal companions now pin
   the HOME PostgreSQL 18.7, Valkey 9.1.4 and SeaweedFS 4.54, and the native
   rehearsals pass 17/17 on them.
