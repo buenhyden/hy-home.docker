@@ -61,7 +61,7 @@ services:
       - -ec
       - |
         QDRANT__SERVICE__API_KEY="$$(tr -d '\r\n' </run/secrets/qdrant_api_key)"
-        [ "$${#QDRANT__SERVICE__API_KEY}" -ge 16 ] || { echo 'qdrant: qdrant_api_key must be at least 16 characters' >&2; exit 64; }
+        [ "$${#QDRANT__SERVICE__API_KEY}" -ge 32 ] || { echo 'qdrant: qdrant_api_key must be at least 32 characters (it signs JWT RBAC tokens)' >&2; exit 64; }
         export QDRANT__SERVICE__API_KEY
         QDRANT__SERVICE__READ_ONLY_API_KEY="$$(tr -d '\r\n' </run/secrets/qdrant_read_only_api_key)"
         [ "$${#QDRANT__SERVICE__READ_ONLY_API_KEY}" -ge 16 ] || { echo 'qdrant: qdrant_read_only_api_key must be at least 16 characters' >&2; exit 64; }
