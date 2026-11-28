@@ -6362,6 +6362,25 @@ class AcceptanceDecisionTests(unittest.TestCase):
         self.assertEqual(1, len(found))
         self.assertIn("criterion 1 has no PASS for Work Unit W2", found[0].message)
 
+    def test_a_cancelled_task_neither_decides_nor_blocks_a_criterion(self) -> None:
+        # The SDLC gives a criterion's one acceptance row to a current,
+        # non-cancelled Task. A cancelled Task's leftover decision row and its
+        # open rows stay as history; they do not count against the live owner.
+        live = _handoff_task(
+            _evidence_row("One", "1", "W1") + _evidence_row("Two", "1", "W2"),
+            _decision_row("1", "One, Two") + _decision_row("2", "-", "pending"),
+        )
+        cancelled = _handoff_task(
+            _evidence_row("Old", "1", "W2", "FAIL"),
+            _decision_row("1", "Old", "pending"),
+            number=2,
+            status="cancelled",
+            cancellation={
+                "criteria_disposition": [{"criterion": "1"}, {"criterion": "2"}]
+            },
+        )
+        self.assertEqual((), self.findings((live, cancelled), plan=_SHARED_UNIT_PLAN))
+
     def test_a_decision_recorded_earlier_stands_as_recorded(self) -> None:
         unsupported = _handoff_task(
             _evidence_row("One", "1", "W1") + _evidence_row("Two", "2", "W2"),
