@@ -1,6 +1,6 @@
 ---
 title: "blog-data Qdrant vault-notes Route Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -103,6 +103,7 @@ needs the owner to create the collection and its index once.
 | E12 | 186 | W202 | method=observation; tool=docker exec; command=qdrant-api-auth block in the Traefik /dynamic/middleware.yml as loaded | HOME, 2026-11-28 | PASS | removeHeader: true is live | required | - |
 | E13 | 186 | W202 | method=automated; tool=Python3 venv; command=python -m unittest test_compose_baseline_gates.OllamaPortContractTests.test_blog_data_reaches_only_vault_notes_with_basic_from_server_b | 32-character assertion before the Compose change | FAIL | Compose still required 16 | required | - |
 | E14 | 186 | W202 | method=automated; tool=Python3 venv; command=python -m unittest test_compose_baseline_gates.OllamaPortContractTests.test_blog_data_reaches_only_vault_notes_with_basic_from_server_b | After the change | PASS | OK | required | E13 |
+| E15 | 186 | W202 | method=observation; tool=find, docker, Prometheus API, docker logs; command=token file search; qdrant health and warning; up{job=qdrant} and collection_vectors; Traefik access log since 07:49Z | HOME, 2026-11-28 after the owner rotated qdrant_api_key again (16:49 KST), minted the vault-notes r and rw tokens and delivered both to server B | PASS | No token file left on server A; qdrant healthy, no 32-byte warning, Prometheus up=1, vault-notes 7,264 vectors; 17 requests from 192.168.0.22 since the rotation (collection read, 12 scrolls, 4 queries) all 200, no 401 or 403 from an old credential. No write since the rotation yet, so the rw token write is not observed | required | - |
 | E06 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | After owner provisioning | NOT_RUN | Owner provisioning pending | required | - |
 
 ##### Resolution Links
@@ -115,14 +116,14 @@ E02 resolves E01. E06 runs after the owner provisioning.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 186 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E12,E13,E14 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
+| 186 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E12,E13,E14,E15 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- blog-data runs the negative server B checks (wrong Basic 401, read-only
-  token write 403) for E06.
-- Remove the old token folder `/tmp/tmp.CFgkrB4VMA` (minted before the key
-  rotation) and, after E06, the rollback copy `qdrant_api_key.txt.bak-20261128`.
+- blog-data runs the server B checks for E06: wrong Basic 401, read-only token
+  write 403, read-write token write 200, and removes the master key from Obsidian.
+- After E06 passes, remove the rollback copies `qdrant_api_key.txt.bak-20261128`
+  and `qdrant_api_key.txt.bak-20261128b`.
 - Step 4 delivery and the server B table from blog-data (E06).
 
 #### Handoff
