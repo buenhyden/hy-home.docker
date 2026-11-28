@@ -1,8 +1,8 @@
 ---
 title: "Host Logrotate Failure Alert Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
@@ -71,6 +71,14 @@ authority; this record is not.
 | Tests | Drop-in contract test runs the unescaped command for success and exit-code in a temporary directory; `logrotate-alerts.test.yml` promtool cases join the cached-promtool test |
 | Docs | RUN-0105 Rotation Failure Alert (install, check, rollback, order against the rule reload); OpenBao README file list |
 
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0023 | draft | ready | #inputs-and-authority |
+| SPEC-0204-TSK-0023 | ready | in-progress | #work-performed |
+| SPEC-0204-TSK-0023 | in-progress | completed | #criterion-decisions |
+
 ##### Blockers and Decisions
 
 The owner installed the drop-in and reloaded the Prometheus rules on
@@ -98,11 +106,12 @@ E02 resolves E01. E05 resolves E04.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 24 | pending | E01,E02,E03,E04,E05 | Awaiting owner acceptance | @buenhyden |
+| 24 | accepted | E01,E02,E03,E04,E05 | Owner @buenhyden accepted on 2026-11-28 in this chat after the HOME check (E05) | @buenhyden |
 
 ##### Remaining Conditions
 
-None; owner acceptance only.
+None; criterion 24 is accepted. The rest of W6 stays with criterion 11 in
+TSK-0006.
 
 #### Handoff
 
@@ -112,7 +121,8 @@ The procedure is promoted to RUN-0105 and the file to the OpenBao README.
 
 ##### Next Owner
 
-@buenhyden decides acceptance of criterion 24.
+None; criterion 24 is accepted and this Task is completed. Changing the
+metric path or the drop-in means reinstalling it and rechecking E05.
 
 ## 적용과 확인
 
