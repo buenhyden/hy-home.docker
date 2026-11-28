@@ -1,8 +1,8 @@
 ---
 title: "Qdrant and Ollama Embedding Contract Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
@@ -75,6 +75,14 @@ authorization is authority; this record is not.
 Earlier MLflow `docs-retrieval-eval` dense and hybrid runs used unprompted
 input; the MLflow runbook now says they are not directly comparable.
 
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0127 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0127 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0127 | in-progress | completed | #criterion-decisions |
+
 ##### Blockers and Decisions
 
 None. Changing the default embedding model, adding a RAG consumer or a
@@ -101,11 +109,11 @@ E02 resolves E01.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 184 | pending | E01,E02,E03,E04 | Awaiting owner acceptance | @buenhyden |
+| 184 | accepted | E01,E02,E03,E04 | Owner @buenhyden accepted on 2026-11-28 in this chat after PR #1296 merged | @buenhyden |
 
 ##### Remaining Conditions
 
-- The next `docs-retrieval-eval` run records the prompted baseline.
+None.
 
 #### Handoff
 
@@ -116,7 +124,9 @@ runbook.
 
 ##### Next Owner
 
-The owner decides criterion184. No other prompt is started automatically.
+None; criterion184 is accepted and this Task is completed. The next
+`docs-retrieval-eval` run records the prompted baseline. No other prompt is
+started automatically.
 
 ## 적용과 확인
 
