@@ -1,6 +1,6 @@
 ---
 title: "D11 v9 Legacy and Temporary Cleanup Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -73,26 +73,29 @@ authorization is authority; this record is not.
 | Inner sandbox images 1.15.0 (`008efc5a496e`, `sha256:d5084349…`) and 1.8.1 (`00daa6a14b72`, `sha256:b397f4b5…`) in `n8n-sandbox-runner-1` | D06 (TSK-0123) | No inner container; inner data root 25.9 GB | Removed by ID; only the pinned 1.16.0 `sha256:4b48ced7…` stays, data root 11.3 GB, runner and API healthy |
 | n8n workflow `d06e12CodeRunner01` | D06 (TSK-0118), D09 (TSK-0052) | Inactive, not published, 3 nodes; D09 accepted the native runner replacement on 2.49.7 | Exported to `/home/hyunyoun/storage/volumes/backups/cleanup-20261128/d06e12CodeRunner01.json`, then one row deleted in a transaction (`DELETE 1`); workflows 13 to 12 |
 | Kafka topics `_connect-configs`, `_connect-offsets`, `_connect-status`, `_schemas` | D08 (TSK-0046) | Kafka Connect and Schema Registry are no longer in HOME Compose; no consumer group exists | Deleted; `infra-events`, `application-logs` and `__consumer_offsets` stay, `kafka-1` healthy |
-| 242 dangling anonymous volumes (created 2026-09-22 to 2026-11-09) | This census | 188 have no entries; 54 hold data: 28 PostgreSQL 18 directories (1.56 GB), Kafka logs, a SeaweedFS filer store, MongoDB and a Pyroscope store | The 188 are listed in `/home/hyunyoun/storage/volumes/backups/cleanup-20261128/empty-anonymous-volumes.txt`; their removal was denied to the agent by the native `docker volume rm` deny rule, so the owner runs it. The 54 stay |
-| `hy-home-infra_open-webui` volume | This census | 265 MB of Open WebUI data (`webui.db`, uploads, vector store, its secret key file); Open WebUI moved to a LAB, so the Git move does not authorize deleting host data | Kept; a separate owner retirement decision |
+| 242 dangling anonymous volumes (created 2026-09-22 to 2026-11-09) | This census | 188 have no entries; 54 hold data: 28 PostgreSQL 18 directories (1.56 GB), Kafka logs, a SeaweedFS filer store, MongoDB and a Pyroscope store | The owner first approved removing the 188, then on 2026-11-28 the 54 as well. Each of the 54 was archived to `/home/hyunyoun/storage/volumes/backups/cleanup-20261128/vol-<id>.tgz` (gzip test passes for all); the ID lists are `empty-anonymous-volumes.txt` and `data-anonymous-volumes.txt` there. The native deny rule refused `docker volume rm` to the agent both times, so the owner runs the removal |
+| `hy-home-infra_open-webui` volume | This census | 265 MB of Open WebUI data (`webui.db`, uploads, vector store, its secret key file); no container uses it, and Open WebUI runs only as a LAB | The owner approved its removal on 2026-11-28; archived to `/home/hyunyoun/storage/volumes/backups/cleanup-20261128/vol-hy-home-infra_open-webui.tgz` and listed in `data-anonymous-volumes.txt`; the owner runs the removal |
 | `/tmp/hyhome-retained-n8n-2.49.7-attempt1-cc76d6c8` | D09 (TSK-0052) | Already absent | Nothing to do |
-| Retired OpenBao KV values `hy-home/08-ai/open-webui`, `hy-home/12-analytics/superset` | D07 (TSK-0116) | Deletion needs the OpenBao root token | Owner step in the next OpenBao window |
+| Retired OpenBao KV values `hy-home/08-ai/open-webui`, `hy-home/12-analytics/superset` | D07 (TSK-0116) | Already deleted: TSK-0116 E27 records `Success! Data deleted` for both metadata paths with root on 2026-11-25, and E26 records the narrowed `renderer` policy write (`RENDERER_ROLES_APPLIED`) in the same window. Its Next Owner text and D11 row, which still name both as open, are stale; this row is the correction, since TSK-0116 is terminal | Nothing to do; not re-verified live because a read needs a token |
 
 ###### Owner command
 
 ```bash
-xargs -a /home/hyunyoun/storage/volumes/backups/cleanup-20261128/empty-anonymous-volumes.txt docker volume rm
+cd /home/hyunyoun/storage/volumes/backups/cleanup-20261128
+cat empty-anonymous-volumes.txt data-anonymous-volumes.txt \
+  | grep -xF -f <(docker volume ls -q -f dangling=true) | xargs docker volume rm
 ```
 
-Run it only after `docker volume ls -q -f dangling=true` still lists every ID;
-`docker volume rm` refuses a volume that a container uses.
+The `grep` keeps only IDs that are still unattached; `docker volume rm` also
+refuses a volume a container uses. A volume is restored with `docker volume
+create <name>` and `tar -xzf vol-<name>.tgz` into it.
 
 ##### Blockers and Decisions
 
-The agent could not remove the empty anonymous volumes because the native
-deny rule covers `docker volume rm`; the command above is the owner step. The
-Open WebUI volume, the 54 data-bearing anonymous volumes and the two OpenBao
-KV values need their own owner decisions and are not part of this change.
+The agent could not remove any volume because the native deny rule covers
+`docker volume rm`; the command above is the owner step for all 243 (188
+empty, 54 data-bearing anonymous, Open WebUI). The two OpenBao KV values need
+no step.
 
 #### Verification Evidence
 
@@ -105,10 +108,12 @@ KV values need their own owner decisions and are not part of this change.
 | E03 | 183 | W199 | method=automated; tool=n8n CLI, psql; command=n8n export:workflow; DELETE FROM workflow_entity in a transaction | Owner approval in this chat | PASS | Export saved; `DELETE 1`; 0 rows left for the ID; 12 workflows | required | - |
 | E04 | 183 | W199 | method=automated; tool=kafka-topics; command=kafka-topics --delete for four topics | Owner approval in this chat | PASS | Topics gone, no consumer group, broker healthy | required | - |
 | E05 | 183 | W199 | method=automated; tool=docker; command=docker volume rm of the 188 empty dangling volumes | Owner approval in this chat | NOT_RUN | Denied to the agent by the native deny rule; ID list written for the owner | required | - |
+| E06 | 183 | W199 | method=automated; tool=docker, tar, gzip; command=read-only alpine mount and tar -czf of each of the 55 data-bearing volumes; gzip -t of each archive | Owner approval on 2026-11-28 | PASS | 55 archives, 513 MB, 0 corrupt | required | - |
+| E07 | 183 | W199 | method=automated; tool=docker; command=docker volume rm of the 243 listed unattached volumes | Owner approval on 2026-11-28 | NOT_RUN | Denied again by the native deny rule; owner command above | required | - |
 
 ##### Resolution Links
 
-E05 is resolved when the owner runs the command above and a new row records
+E05 and E07 are resolved when the owner runs the command above and a new row records
 the remaining dangling volume count.
 
 #### Acceptance Decision
@@ -117,13 +122,11 @@ the remaining dangling volume count.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 183 | pending | E01,E02,E03,E04,E05 | Awaiting the owner volume removal and acceptance | @buenhyden |
+| 183 | pending | E01,E02,E03,E04,E05,E06,E07 | Awaiting the owner volume removal and acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- The owner removes the 188 listed volumes; this Task then records it.
-- Open WebUI volume, the 54 data-bearing anonymous volumes and the two OpenBao
-  KV values stay with the owner.
+- The owner removes the 243 listed volumes; this Task then records it.
 
 #### Handoff
 
@@ -133,7 +136,7 @@ None: this Task records cleanup and routing only.
 
 ##### Next Owner
 
-The owner runs the volume command and decides criterion183 and the kept items.
+The owner runs the volume command and decides criterion183.
 D12 runs next; no other prompt is started automatically.
 
 ## 적용과 확인

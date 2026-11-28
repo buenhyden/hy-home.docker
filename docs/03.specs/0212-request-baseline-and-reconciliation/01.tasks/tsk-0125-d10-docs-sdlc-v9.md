@@ -1,6 +1,6 @@
 ---
 title: "D10 v9 Task Lifecycle and Document Contract Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -87,9 +87,10 @@ rows. Direct user authorization is authority; this record is not.
   TSK-0109, TSK-0111 to TSK-0113 and TSK-0115 to TSK-0120.
 - Tasks moved to `in-progress` (executed, criteria pending): TSK-0106,
   TSK-0108, TSK-0110, TSK-0114 and TSK-0121 to TSK-0124.
-- Next Owner of TSK-0115, TSK-0116 and TSK-0120 refreshed; the TSK-0116
-  renderer policy write and KV deletion are named as owner steps for D07 and
-  D11.
+- Next Owner of TSK-0115, TSK-0116 and TSK-0120 refreshed. The TSK-0116
+  text naming the renderer policy write and KV deletion as owner steps for D07
+  and D11 was stale: its own E26 and E27 record both done on 2026-11-25
+  (correction in TSK-0126).
 - The connection model reads the n8n-worker to Ollama edge from the n8n leaf.
 - `ci_gate_runner.py --explain` names, on stderr, the admitted invocations its
   rows do not show; stdout rows are unchanged. The TSK-0044 residual rows stay
