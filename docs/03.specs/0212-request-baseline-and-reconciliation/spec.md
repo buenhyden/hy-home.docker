@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.24.0"
+version: "2.25.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -415,7 +415,8 @@ TSK-0121 owns the Airflow 3.4.0 business path. The same day the user requested
 D05 of the v9 prompts; criterion179/W195 in TSK-0122 owns it. D06 of the v9
 prompts follows; criterion180/W196 in TSK-0123 owns it. D07 of the v9 prompts
 follows; criterion181/W197 in TSK-0124 owns it. D10 of the v9 prompts
-follows; criterion182/W198 in TSK-0125 owns it.
+follows; criterion182/W198 in TSK-0125 owns it. D11 of the v9 prompts
+follows; criterion183/W199 in TSK-0126 owns it.
 
 #### Scope
 
@@ -1707,6 +1708,10 @@ target, backup, recovery boundary, and action-specific authorization.
      Registry agreeing, gives the SPEC-0212 Tasks whose criteria are accepted
      or still executing the status their evidence supports, and removes the
      retired overlay input from the connection model.
+183. TSK-0126 removes only the cleanup targets the owner approved by exact
+     identifier, after checking each one's consumers and backing up the one
+     row that carried data, keeps the data-bearing volumes, and hands every
+     remaining target to its owner.
 
 ##### Evidence Requirements
 
