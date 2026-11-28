@@ -1,6 +1,6 @@
 ---
 title: "D12 v9 Runtime and Restore Acceptance Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -151,6 +151,9 @@ endpoint; the next attempt sets path-style addressing (Remaining Conditions).
 | E09 | 185 | W201 | method=observation; tool=docker, journalctl; command=audit file inodes and descriptor; hyhome-backup runs | HOME, 2026-11-28 | PASS | Reopened after rotation; backups 11-27 19:51 and 11-28 04:00 finished | required | - |
 | E10 | 185 | W201 | method=observation; tool=-; command=real SMTP send and final receipt | - | NOT_RUN | No approved target or credential | optional | - |
 | E11 | 185 | W201 | method=observation; tool=ls, rmdir; command=presence check of the four scratch paths after the owner removal; rmdir of the empty Grafana directory | HOME, 2026-11-28 | PASS | R2 scratch (restored secrets), both Valkey copies and the Grafana copy absent; only the MNG PostgreSQL scratch remains for the 7-day review | required | - |
+| E18 | 185 | W201 | method=observation; tool=docker, airflow, psql, weed shell; command=DAG trigger d12-si18-2026-11-28, dry read in airflow-worker, filer listing, row counts | HOME, 2026-11-28 17:45 KST, run d12-si18-2026-11-28-r2 after the owner uploaded the input with the gateway's admin key ID | PASS | Filer shows the 351-byte input; dry read validates 1 record; run success; ops_flow.runs gains a published 2026-11-28 row, documents 1 to 2, outbox row 2 pending; validated artifact present. The first three uploads failed with InvalidAccessKeyId because the quoted .env value kept its quotes | required | E01 |
+| E19 | 185 | W201 | method=observation; tool=n8n CLI, psql, Mailpit API; command=publish:workflow WSyLpKMPsWUaS0dX, wait for one claim, unpublish:workflow, wait 150 s, outbox, executions and Mailpit readback | HOME notifier after E18 | PASS | A CLI `n8n execute` first timed out without a runner and claimed nothing (execution 220 error, row 2 still pending); after publish, execution 221 succeeded, outbox row 2 accepted_by_smtp on attempt 1, Mailpit gained exactly one DEV manifest publication to `manifest@opsflow.invalid` (2 total); after unpublish the workflow is inactive and no execution followed | required | - |
+| E20 | 185 | W201 | method=observation; tool=docker, rmdir; command=empty the MNG PostgreSQL restore scratch from a network-less container, rmdir, list restore-scratch-d12 | Owner approval on 2026-11-28 to remove it before the 2026-12-05 review date | PASS | mng-pg-5a-20261128 removed; restore-scratch-d12 is empty | optional | - |
 
 ##### Resolution Links
 
@@ -163,21 +166,13 @@ registered SeaweedFS restore executor.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 185 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11 | Awaiting the SI-18 rerun and owner acceptance | @buenhyden |
+| 185 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E18,E19,E20 | Awaiting the SeaweedFS filer restore (E07) and owner acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- SI-18: upload the input with path-style addressing (`aws configure set
-  default.s3.addressing_style path` before `aws s3 cp`), confirm it with a
-  filer listing, trigger one run, read back `runs`, `documents` and `outbox`,
-  then publish the notifier for one claim, confirm one Mailpit message and
-  `accepted_by_smtp`, unpublish and confirm the next poll sends nothing.
 - SeaweedFS filer metadata and S3 read restore: needs a registered executor.
 - Criterion 85 reboot regression and the OpenBao postrotate failure alert.
-- The MNG PostgreSQL scratch
-  `/home/hyunyoun/storage/backups/restore-scratch-d12/mng-pg-5a-20261128` stays
-  for the owner review until 2026-12-05; the other scratch copies are removed
-  (E11).
+- The restore scratch copies are all removed (E11, E20).
 
 #### Handoff
 
