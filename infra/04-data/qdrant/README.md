@@ -1,13 +1,13 @@
 ---
 title: "Qdrant"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-28"
 created: "2025-11-12"
 ---
 
@@ -85,7 +85,7 @@ qdrant/
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| REST `${QDRANT_PORT:-6333}` | `qdrant` | 이 README는 소비자를 기록하지 않는다. | HTTP REST이며 SSO 뒤에서 라우팅되고 `qdrant_api_key` API key가 필요하다. | key가 없으면 health 엔드포인트만 응답하며 `/readyz`와 Compose 헬스체크로 확인하고 RUN-0034를 따른다. |
+| REST `${QDRANT_PORT:-6333}` | `qdrant` | HOME 소비자는 `ai_net`에서 도는 문서 검색 평가(`scripts/lib/ops/docs_retrieval_eval.py`)뿐이며 평가 뒤 지우는 임시 collection만 쓴다. n8n workflow는 Qdrant를 쓰지 않는다. | HTTP REST이며 SSO 뒤에서 라우팅되고 `qdrant_api_key` API key가 필요하다. | key가 없으면 health 엔드포인트만 응답하며 `/readyz`와 Compose 헬스체크로 확인하고 RUN-0034를 따른다. |
 | gRPC `${QDRANT_GRPC_PORT:-6334}` | `qdrant` | 이 README는 소비자를 기록하지 않는다. | gRPC이며 네트워크 내부 전용이다. | 이 README는 실패 처리를 기록하지 않는다. |
 | Prometheus 스크레이프 | `qdrant` | Prometheus | `qdrant_read_only_api_key`의 read-only key로 스크레이프한다. | 이 README는 실패 처리를 기록하지 않는다. |
 

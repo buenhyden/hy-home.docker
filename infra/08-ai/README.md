@@ -1,13 +1,13 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-28"
 created: "2025-11-12"
 ---
 
@@ -120,7 +120,7 @@ Ollama와 ComfyUI는 소유자가 확인한 상시 HOME 역량입니다. 런타�
 | :--- | :--- | :--- |
 | Inference | Ollama | Compose에 선언됨 |
 | Acceleration | NVIDIA CUDA | NVIDIA Container Toolkit 필요 |
-| Vector store | Qdrant(`04-data`) | HOME RAG는 Qdrant와 n8n이 맡음 |
+| Vector store | Qdrant(`04-data`) | embedding은 클라이언트가 Ollama `/api/embed`로 만들어 Qdrant에 쓴다. 현재 소비자는 문서 검색 평가뿐이다([Qdrant 가이드](../../docs/05.operations/01.guides/09.ai-and-search/0034-qdrant.md)) |
 
 ##### Selected Start
 

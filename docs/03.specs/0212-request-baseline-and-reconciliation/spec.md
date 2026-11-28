@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.25.0"
+version: "2.26.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -416,7 +416,8 @@ D05 of the v9 prompts; criterion179/W195 in TSK-0122 owns it. D06 of the v9
 prompts follows; criterion180/W196 in TSK-0123 owns it. D07 of the v9 prompts
 follows; criterion181/W197 in TSK-0124 owns it. D10 of the v9 prompts
 follows; criterion182/W198 in TSK-0125 owns it. D11 of the v9 prompts
-follows; criterion183/W199 in TSK-0126 owns it.
+follows; criterion183/W199 in TSK-0126 owns it. The Qdrant and Ollama
+embedding contract follows; criterion184/W200 in TSK-0127 owns it.
 
 #### Scope
 
@@ -1712,6 +1713,11 @@ target, backup, recovery boundary, and action-specific authorization.
      identifier, after checking each one's consumers and backing up the one
      row that carried data, keeps the data-bearing volumes, and hands every
      remaining target to its owner.
+184. TSK-0127 makes the HOME client that embeds with Ollama and writes to
+     Qdrant follow the Qdrant Ollama embedding contract: `/api/embed`, the
+     model's query and document prompts, `truncate: false`, and a collection
+     sized for the model with Cosine distance, and documents that contract
+     and its only consumer.
 
 ##### Evidence Requirements
 

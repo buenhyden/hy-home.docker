@@ -125,6 +125,27 @@ def metrics(results: Sequence[tuple[int, Sequence[int]]]) -> dict[str, float]:
     return out
 
 
+# Ollama embeds text as is; these model families expect their own query and
+# document prompts (https://qdrant.tech/documentation/embeddings/ollama/).
+PROMPTS = {
+    "embeddinggemma": ("task: search result | query: ", "title: none | text: "),
+    "qwen3-embedding": (
+        "Instruct: Given a web search query, retrieve relevant passages that "
+        "answer the query\nQuery:",
+        "",
+    ),
+    "nomic-embed-text": ("search_query: ", "search_document: "),
+}
+
+
+def prompted(model: str, texts: list[str], query: bool) -> list[str]:
+    """Prefix texts with the model family's query or document prompt."""
+    for family, pair in PROMPTS.items():
+        if model.startswith(family):
+            return [pair[0 if query else 1] + t for t in texts]
+    return texts
+
+
 def chunks(text: str, size: int = 1200, limit: int = 6) -> list[str]:
     out: list[str] = []
     cur: list[str] = []
@@ -222,15 +243,20 @@ def run(args) -> dict:
     auth = {"api-key": Path(args.qdrant_key_file).read_text().strip()}
     coll = f"docs_eval_{args.commit[:12]}"
 
-    def embed(texts: list[str]) -> list[list[float]]:
-        body = {"model": args.model, "input": texts}
+    def embed(texts: list[str], query: bool) -> list[list[float]]:
+        # truncate=False: an over-long input fails instead of embedding a prefix.
+        body = {
+            "model": args.model,
+            "input": prompted(args.model, texts, query),
+            "truncate": False,
+        }
         return _http("POST", f"{args.ollama}/api/embed", body)["embeddings"]
 
     pieces = [(i, c) for i, d in enumerate(docs) for c in chunks(d["text"])]
     vectors: list[list[float]] = []
     for s in range(0, len(pieces), 32):
-        vectors += embed([c for _, c in pieces[s : s + 32]])
-    qvec = embed([d["title"] for d in docs])
+        vectors += embed([c for _, c in pieces[s : s + 32]], False)
+    qvec = embed([d["title"] for d in docs], True)
     base = f"{args.qdrant}/collections/{coll}"
     _http(
         "PUT", base, {"vectors": {"size": len(vectors[0]), "distance": "Cosine"}}, auth
