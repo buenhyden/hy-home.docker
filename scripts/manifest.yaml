@@ -1321,6 +1321,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_root_resource_contract.py
+- path: scripts/operations/seaweedfs-isolated-restore.py
+  kind: operations
+  authority: docs/05.operations/03.runbooks/05.databases-and-storage/0024-seaweedfs.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/03.runbooks/05.databases-and-storage/0024-seaweedfs.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_seaweedfs_isolated_restore.py
 - path: scripts/operations/secret-catalog.py
   kind: operations
   authority: docs/05.operations/03.runbooks/04.security-and-secrets/0106-openbao-consumer-catalog.md

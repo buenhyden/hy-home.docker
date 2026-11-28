@@ -1,6 +1,6 @@
 ---
 title: "D12 v9 Runtime and Restore Acceptance Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -154,6 +154,9 @@ endpoint; the next attempt sets path-style addressing (Remaining Conditions).
 | E18 | 185 | W201 | method=observation; tool=docker, airflow, psql, weed shell; command=DAG trigger d12-si18-2026-11-28, dry read in airflow-worker, filer listing, row counts | HOME, 2026-11-28 17:45 KST, run d12-si18-2026-11-28-r2 after the owner uploaded the input with the gateway's admin key ID | PASS | Filer shows the 351-byte input; dry read validates 1 record; run success; ops_flow.runs gains a published 2026-11-28 row, documents 1 to 2, outbox row 2 pending; validated artifact present. The first three uploads failed with InvalidAccessKeyId because the quoted .env value kept its quotes | required | E01 |
 | E19 | 185 | W201 | method=observation; tool=n8n CLI, psql, Mailpit API; command=publish:workflow WSyLpKMPsWUaS0dX, wait for one claim, unpublish:workflow, wait 150 s, outbox, executions and Mailpit readback | HOME notifier after E18 | PASS | A CLI `n8n execute` first timed out without a runner and claimed nothing (execution 220 error, row 2 still pending); after publish, execution 221 succeeded, outbox row 2 accepted_by_smtp on attempt 1, Mailpit gained exactly one DEV manifest publication to `manifest@opsflow.invalid` (2 total); after unpublish the workflow is inactive and no execution followed | required | - |
 | E20 | 185 | W201 | method=observation; tool=docker, rmdir; command=empty the MNG PostgreSQL restore scratch from a network-less container, rmdir, list restore-scratch-d12 | Owner approval on 2026-11-28 to remove it before the 2026-12-05 review date | PASS | mng-pg-5a-20261128 removed; restore-scratch-d12 is empty | optional | - |
+| E21 | 185 | W201 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_seaweedfs_isolated_restore | Tests switched to the real 4.54 fsck line format before the parser fix | FAIL | The first parser counted only lines containing "missing" and read the real `<fid> <path> volume not found` lines as clean | required | - |
+| E22 | 185 | W201 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_seaweedfs_isolated_restore | After the parser fix | PASS | 5 tests OK: missing chunks counted per bucket, unparsed lines fail the run | required | E21 |
+| E23 | 185 | W201 | method=observation; tool=-; command=filer meta load, volume.fsck and S3 read in an isolated four-service SeaweedFS | R2 pair 4e6347d0/d057ab44 restored again into an owned scratch, 2026-11-28; `scripts/operations/seaweedfs-isolated-restore.py` with the fixed parser, no --keep | PASS | 35 volumes, ready in 36 s, filer.meta loaded (6,373 files); volume.fsck missing chunks only in the excluded loki-bucket (5,260) and tempo-bucket (1,080), none unparsed; hyhome-migration 4, lakehouse 17, mlflow-artifacts 4 and opsflow-dev 2 objects: S3 listing, bytes read and filer fs.du all equal (67,419 bytes); container and workdir removed. A first run with the old parser also said PASS for the wrong reason; its kept logs exposed the defect (E21) | required | E07 |
 
 ##### Resolution Links
 
@@ -166,11 +169,13 @@ registered SeaweedFS restore executor.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 185 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E18,E19,E20 | Awaiting the SeaweedFS filer restore (E07) and owner acceptance | @buenhyden |
+| 185 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E18,E19,E20,E21,E22,E23 | Awaiting owner acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- SeaweedFS filer metadata and S3 read restore: needs a registered executor.
+- The R2 scratch `/home/hyunyoun/storage/backups/r2-restore-scratch/r2-restore-zVJXUy`
+  (holds restored secrets) is removed by the owner; the agent's removal was
+  refused by a safety check.
 - Criterion 85 reboot regression and the OpenBao postrotate failure alert.
 - The restore scratch copies are all removed (E11, E20).
 
