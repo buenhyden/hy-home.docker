@@ -1,14 +1,14 @@
 ---
 title: "P10 Session Capture and Analysis Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0108"
 parent_ids:
@@ -114,6 +114,13 @@ old ID until the next analysis run rewrites candidate and outbox references.
 `promote --include-earlier` records intents for candidates accepted before
 the outbox. ENVIRONMENT-CONSTRAINTS 2.4.0 changes R136, R137 and R139, and the
 harness maintenance guide is 2.4.0.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0108 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0108 | ready | in-progress | #work-performed |
 
 ##### Blockers and Decisions
 

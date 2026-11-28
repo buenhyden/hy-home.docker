@@ -1,14 +1,14 @@
 ---
 title: "P04 Templates Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0102"
 parent_ids:
@@ -148,6 +148,14 @@ rule for each common H3, and the metadata validator rejects drift. Only
 payloads, native outputs and relation links are unchanged. The version catalog
 in the documentation protocol gains the missing `document-core-contract` and
 `payload-encoding-adapter` rows.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0102 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0102 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0102 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

@@ -1,14 +1,14 @@
 ---
 title: "D02 v8 Network and Gateway Authentication Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-27"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0117"
 parent_ids:
@@ -166,6 +166,14 @@ Correction to E16: the server B probes (E09 to E13) covered the 38 hosts and
 port 8644 only. "Only 80 and 443 answer" holds for those probes, not for every
 port; the POL-0096-R22 ports above are published on the LAN by design and were
 not probed from server B.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0117 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0117 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0117 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

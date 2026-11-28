@@ -1,14 +1,14 @@
 ---
 title: "Repository Docs Retrieval Evaluation Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0119"
 parent_ids:
@@ -108,6 +108,14 @@ date is its move date. The time split orders queries; every query searches
 the full corpus at the same commit, so the split guards the tuned constant,
 not the index contents. The result does not adopt a product or change any
 consumer.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0119 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0119 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0119 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

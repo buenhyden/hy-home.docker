@@ -1614,6 +1614,29 @@ class CiGateRunnerContractTests(unittest.TestCase):
         execute.assert_not_called()
         self.assertEqual(expected, tuple(stdout.getvalue().splitlines()))
 
+    def test_explain_reports_admitted_invocations_its_rows_do_not_show(self) -> None:
+        # A plan of internal admissions only printed nothing and exited 0, the
+        # same output as "no gate selected" (TSK-0044 recorded it as NOT_RUN).
+        root = pathlib.Path(__file__).resolve().parents[2]
+        with (
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch.object(
+                runner,
+                "collect_changed_paths",
+                return_value=("scripts/validation/check-p03-hermes.py",),
+            ),
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+            mock.patch.dict(
+                os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False
+            ),
+        ):
+            self.assertEqual(0, runner.main(["--profile", "changed", "--explain"]))
+        execute.assert_not_called()
+        self.assertEqual("", stdout.getvalue())
+        self.assertIn("leaf.p03-hermes", stderr.getvalue())
+        self.assertIn("not listed above", stderr.getvalue())
+
     def test_crosswalk_reports_every_leaf_without_executing(self) -> None:
         root = pathlib.Path(__file__).resolve().parents[2]
         with (

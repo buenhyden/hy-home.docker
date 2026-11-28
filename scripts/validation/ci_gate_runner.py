@@ -1889,6 +1889,21 @@ def main(argv: list[str] | None = None) -> int:
                 )
             for line in lines:
                 print(line)
+            if not arguments.local_only and not arguments.job:
+                # The rows list public validators only. Admitted internal
+                # invocations run too, so name them: an empty listing must not
+                # read as "no gate selected" when the plan is not empty.
+                shown = {line.split("\t")[2] for line in lines}
+                hidden = [
+                    item.gate_id for item in full_plan if item.gate_id not in shown
+                ]
+                if hidden:
+                    print(
+                        f"explain: {len(hidden)} admitted invocation(s) not listed "
+                        "above (--job <name> lists a job's slice): "
+                        + ", ".join(hidden),
+                        file=sys.stderr,
+                    )
             return 0
         if arguments.requirements:
             if context is not ExecutionContext.PULL_REQUEST:

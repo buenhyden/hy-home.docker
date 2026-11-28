@@ -1,10 +1,10 @@
 ---
 title: "P01 CI Routing and Document Validation Task"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0099"
 parent_ids:
@@ -293,17 +293,23 @@ the current head, all required results and a clean merge state. No protection
 or hook was bypassed. This result-only receipt is delivered through a
 separate ordinary PR, without repeating the source implementation.
 
+#### Lifecycle Events
+
+This newly added Task starts at draft under the recorded package contract.
+Execution, checks, merge and owner acceptance are separate axes.
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0099 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0099 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0099 | in-progress | completed | #criterion-decisions |
+
 ### Blockers and Decisions
 
 No Q-01–Q-04 decision blocks P01. Permission, privacy, native provider,
 external deletion and paid execution scopes are unchanged. Previously merged
 work is not reopened. P00's current Task and the eleven previously completed
 areas are reused by their existing evidence, without replaying their prompts.
-
-#### Lifecycle Events
-
-This newly added Task starts at draft under the recorded package contract.
-Execution, checks, merge and owner acceptance are separate axes.
 
 ## Verification Evidence
 

@@ -1,14 +1,14 @@
 ---
 title: "P11 Task Forecast Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0109"
 parent_ids:
@@ -91,6 +91,14 @@ This Task is itself the first real consumer. Its forecast was recorded in the
 real store before any edit, at 2026-11-23T23:55:52Z: type `harness-change`,
 elapsed basis, P30 60, P50 90 and P80 150 minutes, with its assumptions and
 reference class, declared sample 0. The outcome is recorded after the merge.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0109 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0109 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0109 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

@@ -1,14 +1,14 @@
 ---
 title: "P14 Docker Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0112"
 parent_ids:
@@ -87,6 +87,14 @@ reads the same label for root and LAB scopes. `template-job-low` and
 `template-job-med` carry the label, so all 18 HOME jobs that extend them and
 every LAB job inherit it, and `k6` declares it directly. POL-0001 2.1.0
 (R20, R21), SPEC-0218 and GDE-0099 state the role contract.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0112 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0112 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0112 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

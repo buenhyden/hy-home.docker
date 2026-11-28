@@ -1,14 +1,14 @@
 ---
 title: "P09 Shared Memory Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0107"
 parent_ids:
@@ -92,6 +92,14 @@ with its reason and exit 1, and a retry after a lost receipt replays the
 capacity ledger's recorded result instead of writing again or reviving an
 erased record. ENVIRONMENT-CONSTRAINTS 2.2.0 changes R125 and R147 and adds
 R165 to R167, and the harness maintenance guide 2.2.0 documents the commands.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0107 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0107 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0107 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

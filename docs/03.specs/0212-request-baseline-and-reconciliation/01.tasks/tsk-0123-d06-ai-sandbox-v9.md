@@ -1,14 +1,14 @@
 ---
 title: "D06 v9 Ollama and Sandbox Version Recheck Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-27"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0123"
 parent_ids:
@@ -89,6 +89,13 @@ default gateway `192.168.0.1:80`), the internet `1.1.1.1:443`, and DNS names
 This equals TSK-0118 E10 and E15 on 1.8.1. Afterwards no probe container and
 no other inner container remained, and the API, runner, Ollama and n8n-worker
 were healthy.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0123 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0123 | ready | in-progress | #work-performed |
 
 ##### Blockers and Decisions
 

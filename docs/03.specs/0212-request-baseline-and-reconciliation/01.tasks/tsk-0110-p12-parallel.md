@@ -1,14 +1,14 @@
 ---
 title: "P12 Parallel Provider Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0110"
 parent_ids:
@@ -89,6 +89,13 @@ the unit if the brief does not allow it, and records the final JSON session,
 cost and error; a provider error fails the unit. ENVIRONMENT-CONSTRAINTS
 2.6.0 changes R156 and adds R168, and the harness maintenance guide 2.6.0
 documents the plan fields.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0110 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0110 | ready | in-progress | #work-performed |
 
 ##### Blockers and Decisions
 

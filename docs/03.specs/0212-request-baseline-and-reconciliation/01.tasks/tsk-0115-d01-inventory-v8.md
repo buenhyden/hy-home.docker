@@ -1,14 +1,14 @@
 ---
 title: "D01 v8 Inventory Reconciliation Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-27"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0115"
 parent_ids:
@@ -181,6 +181,14 @@ changed: whether each stays started is an owner choice outside D01.
 | D12 | Final A/B and Git acceptance | D04, D08, D09, D10 results |
 | D13, D14 | Held; not a precondition for any other prompt | Owner selection |
 
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0115 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0115 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0115 | in-progress | completed | #criterion-decisions |
+
 ##### Blockers and Decisions
 
 The prompt asks to reuse the committed DATA-0096 ledger, which no longer
@@ -236,8 +244,7 @@ long-lived rule.
 ##### Next Owner
 
 The owner chooses the next prompt from the v9 table above; no prompt is
-started automatically. The `draft` frontmatter of this Task stays for D10 to
-reconcile.
+started automatically. D10 v9 (TSK-0125) moved this Task to `completed` on 2026-11-28.
 
 ## 적용과 확인
 

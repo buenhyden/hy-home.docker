@@ -1,14 +1,14 @@
 ---
 title: "P08 Native Brief Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0106"
 parent_ids:
@@ -82,6 +82,13 @@ the record inside the workspace was itself an edit. The ignored
 `.request-brief/` folder is now outside the first-edit check, so a session
 writes the BriefRecord there and binds with `bind SESSION < FILE`. AGENTIC
 4.1.0 records the gate, notice and draft route in R37, R63 and its prose.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0106 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0106 | ready | in-progress | #work-performed |
 
 ##### Blockers and Decisions
 

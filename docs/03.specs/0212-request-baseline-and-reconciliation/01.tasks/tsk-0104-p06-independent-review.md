@@ -1,14 +1,14 @@
 ---
 title: "P06 Independent Review Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0104"
 parent_ids:
@@ -103,6 +103,14 @@ an explicit provider limitation. Missing Write catalog, tool-policy denial and
 OS write denial are separate observations. Work-dispatch is an arbitrary shell
 worker/worktree owner for P12, not an existing reviewer isolation producer;
 do not rewrite it to manufacture reviewer proof or create a parallel runner.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0104 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0104 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0104 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

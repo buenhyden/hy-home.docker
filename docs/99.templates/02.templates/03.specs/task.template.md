@@ -82,6 +82,15 @@ Actual inputs and preconditions are those declared by the role payload below.
 | --- | --- | --- | --- | --- |
 | {{ITEM}} | {{ITEM_WORK_UNIT}} | {{ITEM_OWNER}} | {{ITEM_STATUS}} | {{BLOCKER}} |
 
+###### Lifecycle Events
+<!-- core-payload-level:4 -->
+
+<!-- Author prompt: Record every frontmatter `status` change as one row, in order from the initial `draft` (`draft` to `ready` to `in-progress`, then `completed`, `blocked` or `cancelled`); the metadata gate refuses a status that no row reaches. Each Evidence cell is one unique heading anchor of this Task that shows why the step happened. `completed` also needs PASS evidence and an accepted decision for every assigned criterion. A Task still in `draft` removes this heading and table. -->
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| {{ARTIFACT_ID}} | {{FROM_STATUS}} | {{TO_STATUS}} | {{EVIDENCE_ANCHOR}} |
+
 ##### Blockers and Decisions
 
 {{BLOCKERS_DEFERRALS_AND_RULINGS}}

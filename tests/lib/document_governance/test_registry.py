@@ -1778,6 +1778,27 @@ class DocumentRegistryTests(unittest.TestCase):
                     },
                 )
 
+    def test_task_template_has_the_registered_lifecycle_event_table(self) -> None:
+        # A Task can leave its initial status only through recorded lifecycle
+        # events; without the table a template-made Task stays draft forever.
+        source = (
+            ROOT / "docs/99.templates/02.templates/03.specs/task.template.md"
+        ).read_text()
+        contract = load_registry().common["task_lifecycle_events"]
+        form = load_registry().common["section_forms"][contract["section"]]
+        lines = source.splitlines()
+        log = lines.index("#### " + form["section"])
+        work = lines.index("##### " + form["subsection"], log)
+        end = next(
+            index
+            for index in range(work + 1, len(lines))
+            if re.match(r"#{1,5} ", lines[index])
+        )
+        block = lines[work:end]
+        self.assertIn("###### " + contract["subsection"], block)
+        header = "| " + " | ".join(contract["table_headers"]) + " |"
+        self.assertIn(header, block)
+
     def test_cancelled_task_template_needs_authored_cancellation(self) -> None:
         source = (
             ROOT / "docs/99.templates/02.templates/03.specs/task.template.md"

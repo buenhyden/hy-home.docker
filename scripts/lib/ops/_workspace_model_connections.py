@@ -177,19 +177,12 @@ def compose_rows(
                 )
             )
 
-    if path == "infra/07-workflow/n8n/docker-compose.ollama-local.yml":
+    # The retired docker-compose.ollama-local.yml overlay carried this edge; the
+    # n8n leaf now joins the worker to the root-declared internal network, whose
+    # declaration the Compose contract tests own.
+    if path == "infra/07-workflow/n8n/docker-compose.yml":
         worker = definitions.get("n8n-worker")
-        ollama = definitions.get("ollama")
-        networks = doc.get("networks", {})
-        network = (
-            networks.get("n8n_ollama_net") if isinstance(networks, Mapping) else None
-        )
-        if (
-            "n8n_ollama_net" in _networks(worker)
-            and "n8n_ollama_net" in _networks(ollama)
-            and isinstance(network, Mapping)
-            and network.get("internal") is True
-        ):
+        if "n8n_ollama_net" in _networks(worker):
             rows.append(
                 row(
                     source,

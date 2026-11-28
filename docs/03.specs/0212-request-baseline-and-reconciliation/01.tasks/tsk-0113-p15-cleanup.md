@@ -1,14 +1,14 @@
 ---
 title: "P15 Cleanup Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0113"
 parent_ids:
@@ -94,6 +94,14 @@ Q-04 are summarized in TSK-0098 and implemented by their owners
 deleting it last, so no durable dependency has to move out of the package.
 This program's other run artifacts already left: the P12 plan, decoy and
 report copies, every brief draft and every linked worktree it made.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0113 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0113 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0113 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 
