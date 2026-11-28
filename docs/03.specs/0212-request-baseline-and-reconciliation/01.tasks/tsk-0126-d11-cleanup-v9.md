@@ -1,6 +1,6 @@
 ---
 title: "D11 v9 Legacy and Temporary Cleanup Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -110,10 +110,11 @@ no step.
 | E05 | 183 | W199 | method=automated; tool=docker; command=docker volume rm of the 188 empty dangling volumes | Owner approval in this chat | NOT_RUN | Denied to the agent by the native deny rule; ID list written for the owner | required | - |
 | E06 | 183 | W199 | method=automated; tool=docker, tar, gzip; command=read-only alpine mount and tar -czf of each of the 55 data-bearing volumes; gzip -t of each archive | Owner approval on 2026-11-28 | PASS | 55 archives, 513 MB, 0 corrupt | required | - |
 | E07 | 183 | W199 | method=automated; tool=docker; command=docker volume rm of the 243 listed unattached volumes | Owner approval on 2026-11-28 | NOT_RUN | Denied again by the native deny rule; owner command above | required | - |
+| E08 | 183 | W199 | method=automated; tool=docker; command=docker volume rm of the 188 empty dangling volumes | Owner run, observed 2026-11-28 | PASS | 0 of the 188 listed IDs remain; the 55 archived volumes are still present | required | E05 |
 
 ##### Resolution Links
 
-E05 and E07 are resolved when the owner runs the command above and a new row records
+E08 resolves E05: the owner removed the 188 empty volumes. E07 is resolved when the owner runs the command above for the 55 archived volumes and a new row records
 the remaining dangling volume count.
 
 #### Acceptance Decision
@@ -122,11 +123,16 @@ the remaining dangling volume count.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 183 | pending | E01,E02,E03,E04,E05,E06,E07 | Awaiting the owner volume removal and acceptance | @buenhyden |
+| 183 | pending | E01,E02,E03,E04,E05,E06,E07,E08 | Awaiting the owner volume removal and acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- The owner removes the 243 listed volumes; this Task then records it.
+- The owner removes the 55 archived volumes with the command above; this Task
+  then records it.
+- 38 named dangling volumes outside both lists (stopped HOME services such as
+  `kafka-2`/`kafka-3` and `open-notebook`, the pre-upgrade copies
+  `grafana-data-pre-13.3.0` and `owui-prerollout-226`, and labs data) are not
+  D11 targets and stay.
 
 #### Handoff
 
