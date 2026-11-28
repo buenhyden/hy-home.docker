@@ -1,6 +1,6 @@
 ---
 title: "D12 v9 Runtime and Restore Acceptance Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -150,6 +150,7 @@ endpoint; the next attempt sets path-style addressing (Remaining Conditions).
 | E08 | 185 | W201 | method=automated; tool=sha256sum, ls; command=manifest and key-name comparison | R2 copy and live | PASS | 8 of 8 manifests, 198 of 198 names | required | - |
 | E09 | 185 | W201 | method=observation; tool=docker, journalctl; command=audit file inodes and descriptor; hyhome-backup runs | HOME, 2026-11-28 | PASS | Reopened after rotation; backups 11-27 19:51 and 11-28 04:00 finished | required | - |
 | E10 | 185 | W201 | method=observation; tool=-; command=real SMTP send and final receipt | - | NOT_RUN | No approved target or credential | optional | - |
+| E11 | 185 | W201 | method=observation; tool=ls, rmdir; command=presence check of the four scratch paths after the owner removal; rmdir of the empty Grafana directory | HOME, 2026-11-28 | PASS | R2 scratch (restored secrets), both Valkey copies and the Grafana copy absent; only the MNG PostgreSQL scratch remains for the 7-day review | required | - |
 
 ##### Resolution Links
 
@@ -162,7 +163,7 @@ registered SeaweedFS restore executor.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 185 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10 | Awaiting the SI-18 rerun and owner acceptance | @buenhyden |
+| 185 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11 | Awaiting the SI-18 rerun and owner acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
@@ -173,10 +174,10 @@ registered SeaweedFS restore executor.
   `accepted_by_smtp`, unpublish and confirm the next poll sends nothing.
 - SeaweedFS filer metadata and S3 read restore: needs a registered executor.
 - Criterion 85 reboot regression and the OpenBao postrotate failure alert.
-- Cleanup: the R2 scratch `/home/hyunyoun/storage/backups/r2-restore-scratch/r2-restore-mYTk3E`
-  (holds restored secrets) and the Valkey and Grafana copies under
-  `/home/hyunyoun/storage/backups/restore-scratch-d12/` are removed after owner
-  approval; the MNG PostgreSQL scratch stays for the 7-day review.
+- The MNG PostgreSQL scratch
+  `/home/hyunyoun/storage/backups/restore-scratch-d12/mng-pg-5a-20261128` stays
+  for the owner review until 2026-12-05; the other scratch copies are removed
+  (E11).
 
 #### Handoff
 
