@@ -1,6 +1,6 @@
 {
   "contract_id": "workspace-document-role-design",
-  "contract_version": "4.0.0",
+  "contract_version": "4.1.0",
   "status": "DESIGN_PROPOSAL_NOT_WORKSPACE_ADOPTION",
   "rule": "공통 core는 동일한 의미·section ID·영어 heading·표 열·타입·상태·관계·검증 보장을 사용한다. 로컬 경로·owner 값·본문 언어·네이티브 문법은 분리된 바인딩이다. 제목만 같거나 정규화만 같다고 양식 통일로 판정하지 않는다. 이 설계 채택은 각 워크스페이스의 실제 적용·인수와 별도다.",
   "roles": [
@@ -1731,6 +1731,58 @@
             }
           ],
           "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        },
+        {
+          "table_id": "task.lifecycle_events",
+          "section_id": "task.work",
+          "required_when": "status_change",
+          "columns": [
+            {
+              "key": "artifact",
+              "label": "Artifact",
+              "value_type": "identifier",
+              "meaning": "상태가 바뀐 Task 식별자",
+              "required": true
+            },
+            {
+              "key": "from",
+              "label": "From",
+              "value_type": "enum",
+              "meaning": "직전 frontmatter status",
+              "required": true,
+              "allowed_values": [
+                "draft",
+                "ready",
+                "in-progress",
+                "blocked",
+                "completed",
+                "cancelled"
+              ]
+            },
+            {
+              "key": "to",
+              "label": "To",
+              "value_type": "enum",
+              "meaning": "Registry가 허용한 다음 status",
+              "required": true,
+              "allowed_values": [
+                "draft",
+                "ready",
+                "in-progress",
+                "blocked",
+                "completed",
+                "cancelled"
+              ]
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "value_type": "reference",
+              "meaning": "전이 근거인 같은 Task의 고유 heading anchor",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 전이를 만들지 않음. 초기 draft Task는 표를 두지 않으며 status가 바뀔 때마다 한 행씩 기록"
         },
         {
           "table_id": "task.evidence",

@@ -1,14 +1,14 @@
 ---
 title: "P16 Acceptance Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0114"
 parent_ids:
@@ -109,6 +109,13 @@ Renovate branches with their PRs (#1047, #1048, #1140, #1141); one tag,
 recovery and package removal read D17 from the 1.2.0 package, which stays
 until P17's last step (TSK-0113). Template and Blog boundaries do not apply
 to this workspace.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0114 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0114 | ready | in-progress | #work-performed |
 
 ##### Blockers and Decisions
 

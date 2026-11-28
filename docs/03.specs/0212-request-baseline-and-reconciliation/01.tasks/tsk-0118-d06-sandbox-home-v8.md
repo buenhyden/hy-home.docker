@@ -1,14 +1,14 @@
 ---
 title: "D06 v8 Sandbox HOME Selection Task"
-version: "0.9.0"
+version: "0.9.1"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0118"
 parent_ids:
@@ -222,6 +222,14 @@ bulk indexing about 30 times slower; bulk indexing runs at quiet times. The
 owner also moved both server B loopback proxies to background tasks that
 start at boot without a logon, restart themselves and log to a file (E37);
 the SearXNG and Ollama runbooks carry the procedure.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0118 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0118 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0118 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

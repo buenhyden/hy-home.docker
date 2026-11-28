@@ -1,10 +1,10 @@
 ---
 title: "P02 Local Feedback Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0100"
 parent_ids:
@@ -189,6 +189,14 @@ zero approving reviews are required. Fast-forward reconciliation kept the
 current checkout and a clean tree. Brief revision4 binds this Task-only
 receipt to that merged baseline. The receipt has its own ordinary PR check
 and delivery read-back; this text never substitutes for its future result.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0100 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0100 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0100 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 

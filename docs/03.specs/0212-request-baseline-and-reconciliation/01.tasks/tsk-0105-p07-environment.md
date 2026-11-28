@@ -1,14 +1,14 @@
 ---
 title: "P07 Environment Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0105"
 parent_ids:
@@ -116,6 +116,14 @@ not a source-write, Docker access or native model success. The existing P06
 Codex/Claude routes are separately reused. Missing hard controls refuse this
 managed shell route; unsupported capabilities are not hidden by an unrestricted
 fallback. Provider-specific actual workers remain P12, not this shell probe.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0105 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0105 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0105 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

@@ -1,14 +1,14 @@
 ---
 title: "D04 v9 Airflow Business Path on 3.4.0 Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-27"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0121"
 parent_ids:
@@ -108,6 +108,13 @@ already absent when inspected, no resource carried the owner label, and the
 retained attempt directory held only the synthetic input and synthetic
 secrets of that attempt. That exact directory was removed. Runs 1 and 3
 cleaned up with PASS and retained nothing.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0121 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0121 | ready | in-progress | #work-performed |
 
 ##### Blockers and Decisions
 

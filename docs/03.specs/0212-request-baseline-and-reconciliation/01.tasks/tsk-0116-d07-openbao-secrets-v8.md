@@ -1,14 +1,14 @@
 ---
 title: "D07 v8 OpenBao and Secret Reconciliation Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0116"
 parent_ids:
@@ -268,6 +268,14 @@ should read `required` only inside `_verify_bundle`, is applied.
 | D10 | Task lifecycle states of TSK-0098 to TSK-0114 | None |
 | D12 | Final A/B acceptance | Other prompts' results |
 
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0116 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0116 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0116 | in-progress | completed | #criterion-decisions |
+
 ##### Blockers and Decisions
 
 The private `.env` diagnosis is blocked for this session by the permission
@@ -335,8 +343,12 @@ consumer-migration files; no long-lived rule is promoted.
 
 ##### Next Owner
 
-The owner runs the window and the rotation and records the results; no other
-prompt is started automatically.
+The window and the AI-011/INFRA-008 rotation ran on 2026-11-25 (E15), so nothing
+is left for this Task. The narrowed `renderer` policy write (step 3, root token)
+and the deletion of the two retired KV values stay owner steps: D07 (SPEC-0212
+TSK-0124) carries the private cleanup and D11 the KV deletion. D10 v9 (TSK-0125)
+moved this Task to `completed` on 2026-11-28; no other prompt is started
+automatically.
 
 ## 적용과 확인
 

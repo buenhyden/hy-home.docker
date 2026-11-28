@@ -1,10 +1,10 @@
 ---
 title: "P03 Ownership Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0101"
 parent_ids:
@@ -109,6 +109,14 @@ F-DKR-007 remains a future P05 promotion/consumer-transition obligation;
 its draft owners are observed, not claimed active. No known P03 defect is
 hidden under runtime observation. Native service/provider operation and
 owner acceptance are distinct from static implementation.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0101 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0101 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0101 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 

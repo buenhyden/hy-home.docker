@@ -82,21 +82,13 @@ services:
     environment:
       N8N_RUNNERS_TASK_BROKER_URI: http://n8n-worker:${N8N_BROKER_PORT:-5679}
     secrets: [n8n_runner_auth_token]
-""",
-        )
-        overlay = self.put(
-            "infra/07-workflow/n8n/docker-compose.ollama-local.yml",
-            """
-services:
+  # The retired docker-compose.ollama-local.yml overlay is gone; the worker
+  # joins the root-declared internal network in the n8n leaf itself.
   n8n-worker:
     networks: {n8n_ollama_net: {}}
-  ollama:
-    networks: {n8n_ollama_net: {}}
-networks:
-  n8n_ollama_net: {internal: true}
 """,
         )
-        result = self.inspect(runners, overlay)
+        result = self.inspect(runners)
         broker_rows = [
             row
             for row in result["connections"]

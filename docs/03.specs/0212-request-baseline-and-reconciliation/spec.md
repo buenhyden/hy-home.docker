@@ -1,13 +1,13 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.23.0"
+version: "2.24.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -414,7 +414,8 @@ On 2026-11-27 the user requested D04 of the v9 prompts; criterion178/W194 in
 TSK-0121 owns the Airflow 3.4.0 business path. The same day the user requested
 D05 of the v9 prompts; criterion179/W195 in TSK-0122 owns it. D06 of the v9
 prompts follows; criterion180/W196 in TSK-0123 owns it. D07 of the v9 prompts
-follows; criterion181/W197 in TSK-0124 owns it.
+follows; criterion181/W197 in TSK-0124 owns it. D10 of the v9 prompts
+follows; criterion182/W198 in TSK-0125 owns it.
 
 #### Scope
 
@@ -1701,6 +1702,11 @@ target, backup, recovery boundary, and action-specific authorization.
      MATCH after the D03 and Terrakube key changes, using only the registered
      value-preserving scripts and owner steps, keeps the SMTP single source,
      and shows OpenBao 2.7.3 unsealed with a healthy Agent.
+182. TSK-0125 lets a Task made from the current Task template record its
+     lifecycle and reach `completed`, with the template, role design and
+     Registry agreeing, gives the SPEC-0212 Tasks whose criteria are accepted
+     or still executing the status their evidence supports, and removes the
+     retired overlay input from the connection model.
 
 ##### Evidence Requirements
 

@@ -1,14 +1,14 @@
 ---
 title: "P05 Documents and SDLC Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0103"
 parent_ids:
@@ -144,6 +144,14 @@ The reliable repeated run exposed the consumer failure below and its repair.
 Local Ruff0.16.10 is author feedback; pinned0.15.12 style remains owned by
 normal delivery. No global installation or live harness/store/service command
 was run for this document ownership change.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0103 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0103 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0103 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

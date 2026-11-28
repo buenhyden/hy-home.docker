@@ -1,14 +1,14 @@
 ---
 title: "D05 v9 n8n Notifier and Hermes Delivery Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-27"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0122"
 parent_ids:
@@ -98,6 +98,13 @@ plain capture credential:
 The synthetic message was then deleted by its Mailpit ID (HTTP 200) and a
 search for its Message-ID returns 0. No outbox row, database or workflow was
 touched.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0122 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0122 | ready | in-progress | #work-performed |
 
 ##### Blockers and Decisions
 

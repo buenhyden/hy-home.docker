@@ -1,13 +1,13 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.23.0"
+version: "2.24.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -465,6 +465,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W195 | 179 | Record the D05 changed inputs, check the rebuilt notifier node on the live worker with a synthetic Mailpit claim, check Hermes delivery health, and route the stale notifier rehearsal pins to D09 | W194 | TSK-0122 | Live node load and send with negatives, Mailpit readback and delete, unit and journal observation, document checks; normal hosted delivery |
 | W196 | 180 | Recheck the D06 inputs changed after criteria 174 to 176: a local model call on Ollama 0.40.18, the local-only settings, and the 1.16.0 sandbox network boundary; route the superseded inner images to D11 | W195 | TSK-0123 | Consumer chat call, setting readback, inner-container probes with cleanup, document checks; normal hosted delivery |
 | W197 | 181 | Recheck the private structure after the D03 and Terrakube key changes, run the owner-approved metadata sync, name the remaining private-only entries for the owner, and check OpenBao and the Agent | W196 | TSK-0124 | Value-free structure and SMTP checks, sync and sync check, catalog tests in the project venv, OpenBao status, document checks; normal hosted delivery |
+| W198 | 182 | Add the registered Lifecycle Events table to the Task template and the Task role design, move the SPEC-0212 Tasks whose criteria are all accepted to `completed` and the executing ones to `in-progress` with their event chains, refresh stale Next Owner text, and retarget the retired n8n Ollama overlay input of the connection model | W197 | TSK-0125 | RED/GREEN template and connection-model tests, document governance suite, metadata check-active and check-changed, corpus lifecycle, link alignment, Spec package load; normal hosted delivery |
 
 ###### Current D06 v8 sandbox boundary
 <!-- core-payload-level:4 -->
@@ -500,6 +501,11 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 <!-- core-payload-level:4 -->
 
 [TSK-0124](01.tasks/tsk-0124-d07-openbao-secrets-v9.md) owns criterion181/W197.
+
+###### Current D10 v9 document lifecycle boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0125](01.tasks/tsk-0125-d10-docs-sdlc-v9.md) owns criterion182/W198.
 
 ###### Current D02 v8 route boundary
 <!-- core-payload-level:4 -->

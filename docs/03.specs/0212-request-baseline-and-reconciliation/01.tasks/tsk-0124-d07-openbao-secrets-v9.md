@@ -1,14 +1,14 @@
 ---
 title: "D07 v9 Secret Structure and OpenBao Recheck Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-27"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0124"
 parent_ids:
@@ -91,6 +91,13 @@ After the sync the structure check still returns DRIFT: env public line 146
 `PUBLIC_ASSIGNMENT` and registry `PRIVATE_EXTRA`. Plain sync keeps private
 entries that public sources dropped; only prune removes them, and prune also
 rewrites `labs/.env`.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0124 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0124 | ready | in-progress | #work-performed |
 
 ##### Blockers and Decisions
 

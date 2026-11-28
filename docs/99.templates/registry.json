@@ -1693,10 +1693,10 @@
     },
     "role_design_contract": {
       "contract_id": "workspace-document-role-design",
-      "contract_version": "4.0.0",
+      "contract_version": "4.1.0",
       "source_path": "docs/99.templates/01.contracts/document-role-design.json",
       "schema_path": "docs/99.templates/01.contracts/document-role-design.schema.json",
-      "source_sha256": "3ac2806ec2db8b9f7cd320faa1b5bfe36675624555e63269783be8cdc2039a0e",
+      "source_sha256": "78394cd18bf3e81e948c9946fab8f0dd95e76b691277d75a2031f31da8e6595c",
       "schema_sha256": "a07b2f24bc9980bab04895128e4ddf3339a2d719485a6f48f49e7ba26e227ad2"
     },
     "document_core": {

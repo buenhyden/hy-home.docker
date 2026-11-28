@@ -1,14 +1,14 @@
 ---
 title: "P13 Observability Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0111"
 parent_ids:
@@ -90,6 +90,14 @@ linked candidate without an effect stays until 90 days after its decision.
 finished run's report and the run folder after 90, keeping a folder with a
 process record for `cleanup`; each daily analysis run calls it. The harness
 maintenance guide 2.7.0 documents the commands and report fields.
+
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0111 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0111 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0111 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 

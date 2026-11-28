@@ -1,10 +1,10 @@
 ---
 title: "P00 Current Workspace Reconciliation Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-24"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0098"
 parent_ids:
@@ -222,6 +222,18 @@ owns its bounded change; later Tasks record actual checks and acceptance.
 | P16-ACCEPT / workflow-supervisor | This sequence's actual Tasks and TSK-0082/0092/0095 remainders; F010 and changed decisions | Check every remaining required native/runtime obligation and 138/148 current metadata/results; failures cannot be waived or hidden as observation-only deferral. No P17 readiness while required residuals remain. |
 | P17-FINAL-CUTOVER / doc-writer with rules-engineer review | Valid active owners, Registry/identity/history/link consumers, memory baseline and confirmed Q-01 remote/local Git scope; F008 | After required preparation/acceptance, promote obligations, renumber and verify current state; rehearse exact history removals, preserve ref names/current product meaning, apply expected-ref updates and freshly verify remote refs, then related local residue and package cleanup. Hosting/fork/locked-backup copies are separate. |
 
+#### Lifecycle Events
+
+The initial Task started at draft. This 1.1.0 pass reuses that nonterminal
+record; no terminal Task body or historical acceptance is rewritten. The
+work and checks remain separate from the still-pending owner acceptance.
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0098 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0098 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0098 | in-progress | completed | #criterion-decisions |
+
 ### Blockers and Decisions
 
 No unresolved additional conflict blocks P00. Q-01–Q-04 are confirmed by the
@@ -258,12 +270,6 @@ the changed durable policy and consumer behavior together.
 Only an actually discovered protected-ref/signature/consumer conflict, an
 out-of-account paid capability or ownership conflict would need a new scoped
 question. None was found in this P00 read-only comparison.
-
-#### Lifecycle Events
-
-The initial Task started at draft. This 1.1.0 pass reuses that nonterminal
-record; no terminal Task body or historical acceptance is rewritten. The
-work and checks remain separate from the still-pending owner acceptance.
 
 ## Verification Evidence
 

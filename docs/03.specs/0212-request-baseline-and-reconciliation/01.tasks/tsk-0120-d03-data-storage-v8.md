@@ -1,14 +1,14 @@
 ---
 title: "D03 v8 Data Storage and Shared Valkey Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
 document_lifecycle: draft
-updated: "2026-11-27"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0120"
 parent_ids:
@@ -146,6 +146,14 @@ Correction: the Remaining Conditions and Next Owner text below named D11 and
 the LAB move owner for three items that "Closed on 2026-11-26" already
 records as done; that text is replaced.
 
+###### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0120 | draft | ready | #inputs-and-authority |
+| SPEC-0212-TSK-0120 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0120 | in-progress | completed | #criterion-decisions |
+
 ##### Blockers and Decisions
 
 Files under `secrets/` are outside the agent's read permission, so the owner
@@ -218,8 +226,7 @@ and OAuth2 Proxy READMEs carry the change.
 
 ##### Next Owner
 
-Criterion 177 is accepted and nothing is handed on. D10 reconciles this
-Task's `draft` frontmatter; D03 resumes only if a consumer, ACL pattern,
+Criterion 177 is accepted and nothing is handed on. D10 v9 (TSK-0125) moved this Task to `completed` on 2026-11-28; D03 resumes only if a consumer, ACL pattern,
 version or load change causes a real failure.
 
 ## 적용과 확인
