@@ -1,6 +1,6 @@
 ---
 title: "blog-data Qdrant vault-notes Route Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -72,6 +72,7 @@ or printed. Direct user authorization is authority; this record is not.
 | Secrets | Root secret `traefik_qdrant_api_htpasswd`; catalog `INFRA-010` (derived), `AI-014` (`QDRANT_API_USERNAME`), `AI-015`; `gen-secrets.sh` derives `INFRA-010`; registry template rows added by the owner |
 | Docs | RUN-0034 Remote Program Access (owner password, htpasswd, JWT minting, OpenBao delivery, checks, rollback); GDE-0034, the Qdrant and Traefik READMEs, GDE-0013 and GDE-0079 tables |
 | Ledger | `ledger_rebind --write` re-bound the qdrant and traefik rows |
+| Runbook fix | The owner's first token run stopped at `heredoc>` because the indented list code block carried spaces before `PY`; the blocks are now top-level and unindented, step 1 adds the `.env` username, step 2 keeps an existing password and reports a missing username, and delivery follows the RUN-0110 SSH-to-file pattern because HOME OpenBao has no delivery path to server B |
 
 ##### Blockers and Decisions
 
@@ -92,6 +93,7 @@ needs the owner to create the collection and its index once.
 | E03 | 186 | W202 | method=automated; tool=Python3 venv; command=python -m unittest tests.validation.test_compose_baseline_gates | Branch | PASS | 148 tests, 29 skipped | required | - |
 | E04 | 186 | W202 | method=automated; tool=Python3; command=python3 -m unittest tests.validation.test_secret_metadata_sync.PublicSecretSchemaTests | Branch with the owner template rows | PASS | OK; the generator tests need the `referencing` module absent locally and run in hosted CI | required | - |
 | E05 | 186 | W202 | method=automated; tool=bash; command=validate-docker-compose.sh; ledger_rebind --write | Branch | PASS | Compose valid; 2 rows re-bound | required | - |
+| E07 | 186 | W202 | method=automated; tool=bash, zsh; command=bash -n and zsh -n of each RUN-0034 Remote Program Access block | Runbook after the paste-safety fix | PASS | 3 blocks parse, no indented line | required | - |
 | E06 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | After owner provisioning | NOT_RUN | Owner provisioning pending | required | - |
 
 ##### Resolution Links
@@ -104,7 +106,7 @@ E02 resolves E01. E06 runs after the owner provisioning.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 186 | pending | E01,E02,E03,E04,E05,E06 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
+| 186 | pending | E01,E02,E03,E04,E05,E06,E07 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
