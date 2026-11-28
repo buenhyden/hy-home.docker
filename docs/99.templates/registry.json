@@ -9783,8 +9783,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 63,
-      "next_number": 64,
+      "high_water": 64,
+      "next_number": 65,
       "reserved_history": [
         3,
         5,
@@ -9824,8 +9824,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 270,
-      "next_number": 271,
+      "high_water": 271,
+      "next_number": 272,
       "reserved_history": [
         1,
         2,
