@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "2.1.0"
+version: "2.2.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -214,6 +214,7 @@ The order between work units is the Dependencies column of the Work Breakdown ta
 | W82 | 23 | Prepare bounded generic transport; adopt exact Gateway fixtures and inactive n8n forwarding | W81 | TSK-0022 | Fixed PR620 dev contract/fixture and source review; actual conversion needs an authoritative article collection time; native operation is a separate lane; status in [TSK-0022](01.tasks/tsk-0022-hermes-blog-ingestion.md) |
 | W83 | 8, 23 | Document recovery/metrics/MCP, independently review and admit approved Native checks | W80-W82 | TSK-0022 | Source/synthetic and actual worker-to-Gateway evidence separated |
 | W84 | 24 | Add the `logrotate.service` result drop-in, the two host logrotate alerts and their promtool cases, and document the owner install in RUN-0105 | None | TSK-0023 | RED/GREEN drop-in and promtool tests, a real unit-file probe, document checks; HOME checks after the owner install |
+| W85 | 25 | Measure audit growth and rotation on HOME, raise the rule's maxsize for 14-day retention, make the audit filesystem visible to node-exporter, and document the reinstall in RUN-0105 | W84 | TSK-0024 | RED/GREEN rule test, HOME file metadata and Prometheus readback; owner reinstall and the next natural rotations |
 
 ###### P10 staged admission and acceptance ownership
 <!-- core-payload-level:4 -->

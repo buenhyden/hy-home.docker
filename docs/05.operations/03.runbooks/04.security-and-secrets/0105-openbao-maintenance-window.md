@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -150,7 +150,17 @@ rename/create(0600, UID 100/GID 1000)와 대상 OpenBao `SIGHUP` reopen을 등�
 `copytruncate`로 손실을 감추거나 audit device를 제거하지 않는다. `/` 용량 알림은 실제
 mountpoint가 `/`라는 관찰이 있어야 audit 용량 증거로 인정한다. 2026-10-15 owner가 rotation
 규칙과 시간 단위 drop-in을 설치했다(SPEC-0243). 이후 HOME audit 파일 성장과 mount 적용은
-2026-10-22 Task에 기록됐다. 첫 자연 회전·회전 inode와 HOME 용량 추세는 아직 미확보다. 임시 용량 장애 시험은 실제 host 용량 최적값이 아니다.
+2026-10-22 Task에 기록됐다. 자연 회전·회전 inode·용량 추세와 보존 조정은 SPEC-0204 TSK-0024가
+기록한다. audit filesystem은 `/`가 아니라 `/home/hyunyoun/storage`(/dev/sdb)이며, 그 용량 경보
+`SeaweedFSDataDiskLow`는 node-exporter(`nobody`)가 `/home/hyunyoun`을 지날 수 있어야(`o+x`)
+동작한다. 임시 용량 장애 시험은 실제 host 용량 최적값이 아니다.
+
+규칙을 바꾸면 owner가 다시 설치하고 parser를 확인한다.
+
+```bash
+sudo install -o root -g root -m 0644 infra/03-security/openbao/config/logrotate/openbao /etc/logrotate.d/openbao
+sudo logrotate -d /etc/logrotate.d/openbao 2>&1 | grep -iE 'error|audit.json'
+```
 
 ###### Audit Failure Behavior
 <!-- core-payload-level:5 -->
@@ -461,9 +471,12 @@ process는 chroot되어 위험이 작으며 [POL-0085](../../02.policies/04.secu
 이것도 [POL-0085](../../02.policies/04.security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 받아들인 잔여 위험입니다. 최초 숫자 group
 표기는 실제 격리 parser에서 거부돼 이름으로 수정했습니다. rename/create0600,
 `nocopytruncate`, `compress`/`delaycompress`와 고정 container ID의 상태·Compose 라벨
-검증 뒤 같은 ID에만 `SIGHUP`을 보내는 계약입니다. 성장률 미측정으로 `maxsize256M`,
-`rotate14`는 초기값이며 14개 파일을 뜻합니다. 14일 보존이나 최대 파일 크기의 엄격한
-상한을 보장하지 않습니다.
+검증 뒤 같은 ID에만 `SIGHUP`을 보내는 계약입니다. 2026-11-20~28 HOME 측정에서 audit는
+하루 약 250~270 MB 늘었고, 초기값 `maxsize 256M`에서는 대부분의 날 크기 회전(약 22:00 KST)과
+일 단위 회전(00:00 KST)이 함께 일어나 `rotate 14`가 약 7~8일만 남겼습니다. 그래서
+`maxsize 512M`로 올려 일 단위 회전만 돌게 하고 약 2배 burst만 크기로 자르며, `rotate 14`로
+약 14일(디스크 약 1 GB)을 보존합니다. 엄격한 보존 기간이나 파일 크기 상한은 아니며, 하루
+양이 512M에 가까워지면 다시 측정합니다.
 
 ###### Host Logrotate Observation
 <!-- core-payload-level:6 -->

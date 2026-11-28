@@ -294,6 +294,8 @@ groups:
       # The volume data lives under ${DEFAULT_DATA_DIR}/seaweedfs/volume, whose
       # filesystem is mounted at /home/hyunyoun/storage on this host. Change the
       # mountpoint if DEFAULT_MOUNT_VOLUME_PATH moves to another filesystem.
+      # node-exporter runs as nobody, so /home/hyunyoun needs o+x (traverse only)
+      # or statfs fails, node_filesystem_device_error is 1 and this never fires.
       - alert: SeaweedFSDataDiskLow
         expr: |
           node_filesystem_avail_bytes{job="node-exporter",mountpoint="/home/hyunyoun/storage"}
