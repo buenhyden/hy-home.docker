@@ -1,6 +1,6 @@
 ---
 title: "blog-data Qdrant vault-notes Route Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -96,6 +96,7 @@ needs the owner to create the collection and its index once.
 | E07 | 186 | W202 | method=automated; tool=bash, zsh; command=bash -n and zsh -n of each RUN-0034 Remote Program Access block | Runbook after the paste-safety fix | PASS | 3 blocks parse, no indented line | required | - |
 | E08 | 186 | W202 | method=observation; tool=stat, docker, curl, Prometheus API; command=file modes; traefik secret mount; qdrant JWT_RBAC env; up{job=qdrant}; curl from server A with no and dummy Basic credentials; qdrant log since restart | HOME, 2026-11-28 15:29 KST after the owner ran RUN-0034 steps 1 to 3 | PASS | Password 0600 and htpasswd 0640 present and mounted; traefik and qdrant healthy, JWT RBAC on; Prometheus up=1; /collections/vault-notes 302 without Basic and 403 with Basic from server A; /collections and /collections/vault-notes/snapshots 302; ollama-api still 401 on dummy Basic; no rejected request in the Qdrant log | required | - |
 | E09 | 186 | W202 | method=observation; tool=stat, docker logs; command=qdrant_api_key size; qdrant startup warning | HOME, 2026-11-28 | FAIL | qdrant_api_key is 16 bytes and Qdrant warns it should be 32 bytes once it signs JWTs | required | - |
+| E10 | 186 | W202 | method=observation; tool=docker logs, Prometheus API, curl; command=qdrant startup warning; up{job=qdrant}; route probes from server A | HOME, 2026-11-28 15:41 KST after the owner rotated qdrant_api_key and recreated qdrant | PASS | No 32-byte warning and no error since the restart; qdrant healthy; Prometheus up=1; route still 302, 403 and 302 from server A | required | E09 |
 | E06 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | After owner provisioning | NOT_RUN | Owner provisioning pending | required | - |
 
 ##### Resolution Links
@@ -108,12 +109,13 @@ E02 resolves E01. E06 runs after the owner provisioning.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 186 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
+| 186 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
 
 ##### Remaining Conditions
 
-- E09: rotate `qdrant_api_key` to 32 bytes or more before the values reach
-  blog-data, then mint the read token again.
+- Mint the read token again after the key rotation (RUN-0034 step 3); the
+  earlier token no longer verifies. Remove the rollback copy
+  `qdrant_api_key.txt.bak-20261128` after the server B checks pass.
 - Step 4 delivery and the server B table from blog-data (E06).
 
 #### Handoff
