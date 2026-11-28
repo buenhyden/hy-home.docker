@@ -578,6 +578,7 @@ run_generation() {
     process_htpasswd "INFRA-007" "OBS-012" "OBS-013" "secrets/auth/traefik/traefik_prometheus_api_htpasswd.txt"
     process_htpasswd "INFRA-008" "AI-010" "AI-011" "secrets/auth/traefik/traefik_searxng_api_htpasswd.txt"
     process_htpasswd "INFRA-009" "AI-012" "AI-013" "secrets/auth/traefik/traefik_ollama_api_htpasswd.txt"
+    process_htpasswd "INFRA-010" "AI-014" "AI-015" "secrets/auth/traefik/traefik_qdrant_api_htpasswd.txt"
 
     info "Updating Markdown registry..."
     rewrite_registry

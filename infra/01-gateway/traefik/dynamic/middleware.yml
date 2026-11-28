@@ -78,6 +78,13 @@ http:
       basicAuth:
         usersFile: "/run/secrets/traefik_ollama_api_htpasswd"
 
+    # 7. Qdrant vault-notes 기계 API용 Basic Auth (서버 B의 blog-data).
+    # removeHeader가 Basic 헤더를 지우므로 Qdrant에는 api-key 헤더만 간다.
+    qdrant-api-auth:
+      basicAuth:
+        usersFile: "/run/secrets/traefik_qdrant_api_htpasswd"
+        removeHeader: true
+
     large-body:
       buffering:
         maxRequestBodyBytes: 104857600  # 100MB
