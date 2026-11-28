@@ -2,7 +2,9 @@
 
 import hashlib
 import json
+import os
 import re
+import shlex
 import subprocess
 import tempfile
 import unittest
@@ -12,6 +14,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 DROP_IN = ROOT / "infra/03-security/openbao/config/systemd/logrotate-hourly.conf"
+RESULT_DROP_IN = ROOT / "infra/03-security/openbao/config/systemd/logrotate-result.conf"
+METRICS_DIR = "/home/hyunyoun/backups/metrics"
 # service: (overlay, base Compose file, CA mount target)
 BASE = {
     "traefik": (
@@ -71,6 +75,32 @@ class WindowOverrideTests(unittest.TestCase):
         self.assertEqual(
             lines, ["[Timer]", "OnCalendar=", "OnCalendar=hourly", "AccuracySec=5m"]
         )
+
+    def test_result_drop_in_writes_every_run_outcome_for_node_exporter(self):
+        lines = [
+            line
+            for line in RESULT_DROP_IN.read_text().splitlines()
+            if line and not line.startswith("#")
+        ]
+        self.assertEqual("[Service]", lines[0])
+        self.assertEqual(2, len(lines))
+        key, value = lines[1].split("=", 1)
+        self.assertEqual("ExecStopPost", key)
+        # systemd turns $$ into $ and %% into % before running the command.
+        argv = shlex.split(value.replace("$$", "$").replace("%%", "%"))
+        self.assertEqual(["/bin/sh", "-c"], argv[:2])
+        self.assertIn(METRICS_DIR, argv[2])
+        with tempfile.TemporaryDirectory() as directory:
+            script = argv[2].replace(METRICS_DIR, directory)
+            for result, ok in (("success", "1"), ("exit-code", "0")):
+                env = {"SERVICE_RESULT": result, "PATH": "/usr/bin:/bin"}
+                subprocess.run([*argv[:2], script], env=env, check=True)
+                text = (Path(directory) / "hyhome_logrotate.prom").read_text()
+                self.assertIn(f"hyhome_logrotate_last_run_success {ok}\n", text)
+                self.assertRegex(
+                    text, r"hyhome_logrotate_last_run_timestamp_seconds \d{10}\n"
+                )
+            self.assertEqual(["hyhome_logrotate.prom"], os.listdir(directory))
 
     def test_bootstrap_source_manifest_pins_match_the_files(self):
         # A stale pin would stop the window at W1's sha256sum check.

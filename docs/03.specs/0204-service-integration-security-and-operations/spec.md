@@ -1,13 +1,13 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "2.1.0"
+version: "2.2.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-25"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -668,6 +668,11 @@ Missing permission or target defers only the dependent operation.
     Gateway durable receipt, the attester signature and the Windows ACK are
     separate boundaries; a PASS at one neither authenticates nor accepts
     another.
+24. The host audit rotation alerts on failure: a `logrotate.service` drop-in
+    writes every run's result for node-exporter, and `HostLogrotateFailed`
+    and `HostLogrotateNotRunning` fire when a run fails, such as the OpenBao
+    audit postrotate HUP, or when no run is recorded for 3 hours. TSK-0023
+    owns W84; the rest of W6 stays with criterion 11.
 <!-- markdownlint-enable MD029 -->
 
 ##### Evidence Requirements

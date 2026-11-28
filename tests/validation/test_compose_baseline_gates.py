@@ -6710,7 +6710,7 @@ class N8nTaskRunnerWarmupContractTests(unittest.TestCase):
 
 
 class ContainerThrottleAlertNativeTests(unittest.TestCase):
-    """Cached promtool execution of the throttle rule cases."""
+    """Cached promtool execution of the throttle and logrotate rule cases."""
 
     def test_throttle_alert_ignores_short_bursts(self) -> None:
         image = (
@@ -6728,7 +6728,13 @@ class ContainerThrottleAlertNativeTests(unittest.TestCase):
             / "infra/06-observability/prometheus/config/alert_rules"
             / "alert_rules.local.infra.yml"
         )
-        cases = ROOT / "tests/validation/fixtures/container-throttle-alerts.test.yml"
+        for name in ("container-throttle-alerts", "logrotate-alerts"):
+            with self.subTest(cases=name):
+                self._promtool(
+                    image, rules, ROOT / f"tests/validation/fixtures/{name}.test.yml"
+                )
+
+    def _promtool(self, image, rules, cases) -> None:
         result = subprocess.run(
             [
                 "docker",

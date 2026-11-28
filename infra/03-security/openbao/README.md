@@ -1,13 +1,13 @@
 ---
 title: "OpenBao Implementation"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-24"
+updated: "2026-11-28"
 ---
 
 # OpenBao
@@ -66,6 +66,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
   - [backup-snapshot](config/policies/backup-snapshot.hcl): snapshot read와 자기 lookup·renew·revoke만 허용합니다.
 - [audit rotation](config/logrotate/openbao): 이 HOME의 UID/GID 매핑과 고정 container ID를 검증하는 host 규칙입니다. 실제 등록·schedule·재개방 결과는 Runbook에서 확인합니다.
 - [hourly logrotate](config/systemd/logrotate-hourly.conf): host `logrotate.timer` drop-in입니다. 일정만 시간 단위로 바꾸며 owner가 sudo로 설치합니다(RUN-0085 W0).
+- [logrotate result](config/systemd/logrotate-result.conf): host `logrotate.service` drop-in입니다. 실행마다 성공 여부를 node-exporter textfile에 써서 `HostLogrotateFailed`·`HostLogrotateNotRunning` 경보가 보게 하며 owner가 sudo로 설치합니다(RUN-0105).
 - window overlay: [Traefik](../../01-gateway/traefik/compose.window-ca.override.yml). maintenance window에서 Traefik을 실행 중 image 그대로 다시 만들어 OpenBao CA mount를 배포하는 `x-hyhome-overlay` 두 번째 `-f`입니다. Prometheus는 2026-10-20부터 Compose pin에서 CA mount를 갖고 있어 overlay가 없습니다.
 - [renderer role helper](./scripts/protected-renderer-roles.py): W1c에서 root로 renderer 정책·token role·AppRole을 `plan` 후 `apply`합니다.
 - [window driver](./scripts/window-run.sh): RUN-0105 window의 준비부터 Finish까지를 `owner-window.sh` 단계로 순서대로 실행하며, 실패하면 멈춥니다.

@@ -1,0 +1,58 @@
+rule_files:
+- /rules/alert_rules.local.infra.yml
+evaluation_interval: 1m
+tests:
+# The last run failed: fire at once.
+- interval: 1m
+  input_series:
+  - series: hyhome_logrotate_last_run_success{job="node-exporter"}
+    values: 1 1 0 0 0
+  - series: hyhome_logrotate_last_run_timestamp_seconds{job="node-exporter"}
+    values: 0+60x4
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: HostLogrotateFailed
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: HostLogrotateFailed
+    exp_alerts:
+    - exp_labels:
+        job: node-exporter
+        severity: critical
+        domain: security
+      exp_annotations:
+        summary: '마지막 logrotate 실행 실패'
+        description: 'logrotate.service가 실패로 끝났습니다. journalctl -u logrotate로 실패한 규칙을 확인하세요. OpenBao audit postrotate(HUP)가 실패했다면 다음 회전 전에 OpenBao가 새 audit.json에 쓰는지 확인하세요.'
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/04.security-and-secrets/0105-openbao-maintenance-window.md
+# Hourly runs keep the timestamp fresh: no alert.
+- interval: 1m
+  input_series:
+  - series: hyhome_logrotate_last_run_success{job="node-exporter"}
+    values: 1x360
+  # Rewritten every hour, sampled every minute.
+  - series: hyhome_logrotate_last_run_timestamp_seconds{job="node-exporter"}
+    values: 0x59 3600x59 7200x59 10800x59 14400x59 18000x59
+  alert_rule_test:
+  - eval_time: 5h
+    alertname: HostLogrotateNotRunning
+    exp_alerts: []
+# Runs stop after the first one: fire once 3 h have passed, plus 15 m.
+- interval: 1m
+  input_series:
+  - series: hyhome_logrotate_last_run_timestamp_seconds{job="node-exporter"}
+    values: 0x240
+  alert_rule_test:
+  - eval_time: 3h
+    alertname: HostLogrotateNotRunning
+    exp_alerts: []
+  - eval_time: 3h30m
+    alertname: HostLogrotateNotRunning
+    exp_alerts:
+    - exp_labels:
+        job: node-exporter
+        severity: warning
+        domain: security
+      exp_annotations:
+        summary: '3시간 넘게 logrotate 실행 기록 없음'
+        description: 'logrotate.service 결과 metric이 3시간 넘게 갱신되지 않았거나 없습니다. logrotate.timer, logrotate.service.d/result.conf drop-in 설치와 ConditionACPower를 확인하세요.'
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/03.runbooks/04.security-and-secrets/0105-openbao-maintenance-window.md
