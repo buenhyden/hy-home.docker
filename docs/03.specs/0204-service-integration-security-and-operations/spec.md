@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "2.2.0"
+version: "2.3.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -673,6 +673,11 @@ Missing permission or target defers only the dependent operation.
     and `HostLogrotateNotRunning` fire when a run fails, such as the OpenBao
     audit postrotate HUP, or when no run is recorded for 3 hours. TSK-0023
     owns W84; the rest of W6 stays with criterion 11.
+25. The audit rotation's retention, capacity and reopening are measured on
+    HOME: the rule's size limit follows the measured daily volume so
+    `rotate 14` keeps about 14 days, the audit filesystem reports to
+    node-exporter so its capacity alert can fire, and a rotated audit inode
+    stops growing while the new one grows. TSK-0024 owns W85.
 <!-- markdownlint-enable MD029 -->
 
 ##### Evidence Requirements

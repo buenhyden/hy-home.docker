@@ -1,7 +1,9 @@
 /home/hyunyoun/storage/volumes/security/openbao/audit/audit.json {
-    # shortcut: limits lack a HOME growth sample, recalibrate after the first receipt.
+    # HOME 2026-11-20..28: about 250-270 MB a day. maxsize 512M leaves the daily
+    # rotation alone and still cuts a burst near twice that, so rotate 14 keeps
+    # about 14 days (~1 GB). Remeasure if the daily volume nears 512M.
     daily
-    maxsize 256M
+    maxsize 512M
     rotate 14
     missingok
     notifempty

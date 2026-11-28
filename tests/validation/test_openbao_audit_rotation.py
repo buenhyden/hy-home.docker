@@ -111,7 +111,7 @@ fi
         self.assertTrue(
             {
                 "daily",
-                "maxsize 256M",
+                "maxsize 512M",
                 "rotate 14",
                 "su dhcpcd hyunyoun",
                 "create 0600 dhcpcd hyunyoun",
