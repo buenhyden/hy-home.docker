@@ -1,6 +1,6 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "2.1.1"
+version: "2.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -176,27 +176,34 @@ docker ps --filter name=^traefik$ --filter name=^qdrant$ --format '{{.Names}} {{
 
 기대: 마지막 줄에 `traefik`과 `qdrant`가 잠시 뒤 `healthy`로 보인다. `docker inspect qdrant --format '{{range .Config.Env}}{{println .}}{{end}}' | grep -c JWT_RBAC=true`는 1이다.
 
-**3. 읽기 전용 JWT.** 플러그인용 `vault-notes` 읽기 전용 token을 만든다. JWT RBAC는 token을 `qdrant_api_key`(`AI-008`)로 서명해
-확인하므로 새로 저장할 secret이 없다. token은 출력하지 않고 0700 임시 디렉터리의 0600 파일로만 쓴다. 출력된 디렉터리 경로는 4·5단계에 쓴다.
-`qdrant_api_key`를 회전하면 token도 다시 만든다. Qdrant가 2단계로 JWT RBAC를 켠 뒤부터 token이 받아들여진다.
+**3. collection 전용 JWT 두 개.** `vault-notes`만 다루는 token 두 개를 만든다. 플러그인 패널은 읽기 전용(`r`) token을,
+색인 CLI는 읽기·쓰기(`rw`) token을 쓴다. 서버 B에는 `qdrant_api_key`(`AI-008`)를 주지 않는다. 이 key는 모든 collection과
+snapshot·cluster API를 다루는 관리 key이고, 두 token의 서명 key이기도 하다. `rw` token은 collection을 만들거나 지우지 못하므로
+`vault-notes`와 payload index(`path`, `root`)는 미리 있어야 한다(2026-11-28 blog-data가 만들었다). token은 출력하지 않고
+0700 임시 디렉터리의 0600 파일로만 쓴다. 출력된 디렉터리 경로는 4·5단계에 쓴다. `exp`가 없으므로 `qdrant_api_key`를 회전할 때만
+무효가 된다. 회전하면 두 token을 다시 만들어 전달한다. Qdrant가 2단계로 JWT RBAC를 켠 뒤부터 token이 받아들여진다.
 
 ```bash
 t=$(mktemp -d)
-python3 - secrets/data/qdrant/qdrant_api_key.txt "$t/vault-notes-read.jwt" <<'PY'
+python3 - secrets/data/qdrant/qdrant_api_key.txt "$t" <<'PY'
 import base64, hashlib, hmac, json, os, sys
 b = lambda x: base64.urlsafe_b64encode(x).rstrip(b"=")
 key = open(sys.argv[1], "rb").read().strip()
 head = b(json.dumps({"alg": "HS256", "typ": "JWT"}, separators=(",", ":")).encode())
-body = b(json.dumps({"access": [{"collection": "vault-notes", "access": "r"}]}, separators=(",", ":")).encode())
-sig = b(hmac.new(key, head + b"." + body, hashlib.sha256).digest())
-fd = os.open(sys.argv[2], os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-os.write(fd, head + b"." + body + b"." + sig)
-os.close(fd)
+for name, access in (("vault-notes-read.jwt", "r"), ("vault-notes-write.jwt", "rw")):
+    body = b(json.dumps({"access": [{"collection": "vault-notes", "access": access}]}, separators=(",", ":")).encode())
+    sig = b(hmac.new(key, head + b"." + body, hashlib.sha256).digest())
+    fd = os.open(os.path.join(sys.argv[2], name), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    os.write(fd, head + b"." + body + b"." + sig)
+    os.close(fd)
 PY
 echo "$t"; ls -l "$t"
 ```
 
-기대: `vault-notes-read.jwt`가 `-rw-------`, 약 120~130 byte다.
+기대: `vault-notes-read.jwt`와 `vault-notes-write.jwt`가 둘 다 `-rw-------`, 약 120~130 byte다.
+
+서버 B가 이미 `qdrant_api_key`를 받았다면 먼저 그 key를 회전한다(새 key는 32자 이상, Qdrant 재생성). 그다음 이 단계로 두 token을 새로 만들어
+4단계로 전달하고, 서버 B 쪽에서 관리 key를 지우게 한다. 회전으로 이전 key와 이전 token은 모두 무효가 된다.
 
 **4. 전달.** HOME OpenBao에는 서버 B로 보내는 경로가 아직 없으므로([SearXNG runbook](0110-searxng.md) 7단계 3번과 같이)
 서버 B가 SSH로 받아 바로 그 사용자만 읽는 파일에 쓴다. 화면·채팅·명령 인자를 거치지 않는다.
@@ -205,8 +212,8 @@ echo "$t"; ls -l "$t"
 | --- | --- |
 | `VAULT_SEARCH_OLLAMA_BASIC_AUTH` | `ollama-api:` + `secrets/tools/ollama/ollama_api_password.txt`(`AI-012`:`AI-013`) |
 | `VAULT_SEARCH_QDRANT_BASIC_AUTH` | `qdrant-api:` + `secrets/tools/qdrant/qdrant_api_password.txt`(`AI-014`:`AI-015`) |
-| `VAULT_SEARCH_QDRANT_API_KEY` | `secrets/data/qdrant/qdrant_api_key.txt`(`AI-008`) |
-| `VAULT_RELATED_QDRANT_API_KEY` | 3단계 디렉터리의 `vault-notes-read.jwt` |
+| `VAULT_SEARCH_QDRANT_API_KEY` | 3단계 디렉터리의 `vault-notes-write.jwt`(`vault-notes` 읽기·쓰기) |
+| `VAULT_RELATED_QDRANT_API_KEY` | 3단계 디렉터리의 `vault-notes-read.jwt`(`vault-notes` 읽기 전용) |
 
 Windows PowerShell 7 예(파일마다 경로와 이름만 바꾼다):
 
