@@ -1,13 +1,13 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -87,7 +87,7 @@ Infra/DevOps 엔지니어, 운영자, 기여자가 Traefik dashboard 라우터 �
 
 ##### Authority
 
-Docker Secret `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`, `traefik_ollama_api_htpasswd`를 참조하며 값은 문서에 남기지 않는다. healthcheck는 승인된 root stack이 실행 중일 때만 쓴다.
+Docker Secret `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`, `traefik_ollama_api_htpasswd`, `traefik_qdrant_api_htpasswd`를 참조하며 값은 문서에 남기지 않는다. healthcheck는 승인된 root stack이 실행 중일 때만 쓴다.
 
 #### Procedure
 
@@ -129,7 +129,7 @@ sign-in 서비스의 응답으로 바꾸며 401은 machine client에게 그대�
 필수 입력은 `DEFAULT_URL`, `DEFAULT_CERT_DIR`, `DEFAULT_SECURITY_DIR`의
 `openbao/tls/ca.pem`, `CERT_GROUP_GID`·`SECRETS_GID`, root network와
 Docker Secret 참조(`traefik_basicauth_password`,
-`traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`, `traefik_ollama_api_htpasswd`)다.
+`traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`, `traefik_searxng_api_htpasswd`, `traefik_ollama_api_htpasswd`, `traefik_qdrant_api_htpasswd`)다.
 `HOST_LAN_BIND_IP`, `BLOG_EXPORT_RECEIVER_IP`, `OAUTH2_PROXY_PORT`는 dynamic 파일이
 `{{ env }}`로 읽으므로 값 변경은 재생성이 필요하다. 네트워크는 `edge_net`(고정
 `10.250.1.2`, `keycloak.${DEFAULT_URL}`/`auth.${DEFAULT_URL}` alias), `obs_net`,

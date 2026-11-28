@@ -105,3 +105,4 @@ services:
       - traefik_prometheus_api_htpasswd
       - traefik_searxng_api_htpasswd
       - traefik_ollama_api_htpasswd
+      - traefik_qdrant_api_htpasswd

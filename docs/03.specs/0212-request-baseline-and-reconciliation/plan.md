@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.27.0"
+version: "2.28.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -469,6 +469,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W199 | 183 | Recheck every D11 cleanup candidate at runtime, remove the owner-approved superseded images, inner sandbox images, probe workflow and retired Kafka Connect topics by exact identifier, hand the empty anonymous volume list to the owner and keep data-bearing volumes | W198 | TSK-0126 | Consumer checks, exact-ID removal readback, service health, document checks; normal hosted delivery |
 | W200 | 184 | Add the model query and document prompts and `truncate: false` to the docs retrieval eval embedding call, and record the Qdrant and Ollama embedding contract and its consumer in the Qdrant guide, the Qdrant and AI READMEs and the MLflow runbook | W199 | TSK-0127 | RED/GREEN prompt test, live `/api/embed` smoke, document checks; normal hosted delivery |
 | W201 | 185 | Run one HOME Airflow to n8n business input, restore the HOME backup population without independent restore evidence into isolated targets, observe the OpenBao audit reopening and the latest backups, and record every remaining step with its condition | W200 | TSK-0128 | Live DAG run readback, R2 scratch restore, mng-pg 5a rehearsal, disposable Valkey and Grafana, offline SeaweedFS volume read, manifest and key-name comparison; normal hosted delivery |
+| W202 | 186 | Add the qdrant-api router, qdrant-api-auth middleware and traefik_qdrant_api_htpasswd secret, enable Qdrant JWT RBAC, register INFRA-010, AI-014 and AI-015, and document the owner provisioning in RUN-0034 | W201 | TSK-0129 | RED/GREEN route test, Compose baseline and secret schema tests, Compose validation, ledger rebind; normal hosted delivery; runtime checks after owner provisioning |
 
 ###### Current D06 v8 sandbox boundary
 <!-- core-payload-level:4 -->
@@ -524,6 +525,11 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 <!-- core-payload-level:4 -->
 
 [TSK-0128](01.tasks/tsk-0128-d12-e2e-restore-v9.md) owns criterion185/W201.
+
+###### Current blog-data Qdrant route boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0129](01.tasks/tsk-0129-qdrant-vault-notes-api.md) owns criterion186/W202.
 
 ###### Current D02 v8 route boundary
 <!-- core-payload-level:4 -->

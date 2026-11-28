@@ -1079,6 +1079,62 @@ class OllamaPortContractTests(unittest.TestCase):
             ]["file"],
         )
 
+    def test_blog_data_reaches_only_vault_notes_with_basic_from_server_b(self):
+        # SPEC-0212 TSK-0129: blog-data on server B reaches one Qdrant
+        # collection with Basic credentials; people keep the SSO router and no
+        # snapshot, shard, cluster or other collection path is routed.
+        import yaml
+
+        service = yaml.safe_load(
+            (ROOT / "infra/04-data/qdrant/docker-compose.yml").read_text()
+        )["services"]["qdrant"]
+        labels = service["labels"]
+        self.assertEqual(
+            "gateway-standard-chain@file,sso-errors@file,sso-auth@file",
+            labels["traefik.http.routers.qdrant.middlewares"],
+        )
+        rule = labels["traefik.http.routers.qdrant-api.rule"]
+        self.assertIn("HeaderRegexp(`Authorization`, `^Basic `)", rule)
+        allowed = {
+            "/collections/vault-notes" + suffix
+            for suffix in (
+                "",
+                "/index",
+                "/points",
+                "/points/scroll",
+                "/points/query",
+                "/points/delete",
+            )
+        }
+        import re
+
+        self.assertEqual(allowed, set(re.findall(r"Path\(`([^`]+)`\)", rule)))
+        for forbidden in ("PathPrefix", "PathRegexp", "snapshots", "shards", "cluster"):
+            self.assertNotIn(forbidden, rule)
+        self.assertEqual(
+            "blog-export-windows@file,gateway-standard-chain@file,qdrant-api-auth@file",
+            labels["traefik.http.routers.qdrant-api.middlewares"],
+        )
+        self.assertEqual("qdrant", labels["traefik.http.routers.qdrant-api.service"])
+        self.assertEqual("true", service["environment"]["QDRANT__SERVICE__JWT_RBAC"])
+        middleware = yaml.safe_load(
+            (ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml").read_text()
+        )["http"]["middlewares"]["qdrant-api-auth"]["basicAuth"]
+        self.assertEqual(
+            "/run/secrets/traefik_qdrant_api_htpasswd", middleware["usersFile"]
+        )
+        self.assertIs(True, middleware["removeHeader"])
+        traefik = yaml.safe_load(
+            (ROOT / "infra/01-gateway/traefik/docker-compose.yml").read_text()
+        )["services"]["traefik"]
+        self.assertIn("traefik_qdrant_api_htpasswd", traefik["secrets"])
+        self.assertEqual(
+            "./secrets/auth/traefik/traefik_qdrant_api_htpasswd.txt",
+            yaml.safe_load((ROOT / "docker-compose.yml").read_text())["secrets"][
+                "traefik_qdrant_api_htpasswd"
+            ]["file"],
+        )
+
 
 MNG_DB_COMPOSE = "infra/04-data/mng-db/docker-compose.yml"
 PG_CLUSTER_COMPOSE = "labs/postgresql-ha/docker-compose.yml"
@@ -6093,6 +6149,7 @@ ROUTES_WITHOUT_SSO = {
     "prometheus-api": "gateway-basic-auth",
     "searxng-api": "gateway-basic-auth",
     "ollama-api": "gateway-basic-auth",
+    "qdrant-api": "gateway-basic-auth",
     # Signed machine API
     "s3": "sigv4",
     # MCP resource server: Keycloak bearer tokens for its own URL (SPEC-0219)

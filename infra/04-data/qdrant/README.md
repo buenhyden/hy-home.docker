@@ -1,6 +1,6 @@
 ---
 title: "Qdrant"
-version: "2.0.1"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -86,6 +86,7 @@ qdrant/
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | REST `${QDRANT_PORT:-6333}` | `qdrant` | HOME 소비자는 `ai_net`에서 도는 문서 검색 평가(`scripts/lib/ops/docs_retrieval_eval.py`)뿐이며 평가 뒤 지우는 임시 collection만 쓴다. n8n workflow는 Qdrant를 쓰지 않는다. | HTTP REST이며 SSO 뒤에서 라우팅되고 `qdrant_api_key` API key가 필요하다. | key가 없으면 health 엔드포인트만 응답하며 `/readyz`와 Compose 헬스체크로 확인하고 RUN-0034를 따른다. |
+| REST `qdrant-api` router | `qdrant` | 서버 B의 blog-data가 상시 collection `vault-notes`를 쓴다. 색인 CLI는 `qdrant_api_key`, Obsidian 플러그인 `vault-related-notes`는 `vault-notes` 읽기 전용 JWT를 쓴다. | `Host(qdrant.<DEFAULT_URL>)`, `Authorization: Basic`, `/collections/vault-notes`와 `/index`, `/points`, `/points/scroll`, `/points/query`, `/points/delete`만 받는다. `blog-export-windows`(서버 B만), `gateway-standard-chain`, `qdrant-api-auth`(`traefik_qdrant_api_htpasswd`, Basic 헤더 제거)를 거친 뒤 Qdrant `api-key` 헤더가 필요하다. | 틀린 Basic은 401, 서버 B가 아닌 출발지는 403, 다른 경로는 SSO router로 가서 302, 읽기 전용 JWT의 쓰기는 403이다(RUN-0034). |
 | gRPC `${QDRANT_GRPC_PORT:-6334}` | `qdrant` | 이 README는 소비자를 기록하지 않는다. | gRPC이며 네트워크 내부 전용이다. | 이 README는 실패 처리를 기록하지 않는다. |
 | Prometheus 스크레이프 | `qdrant` | Prometheus | `qdrant_read_only_api_key`의 read-only key로 스크레이프한다. | 이 README는 실패 처리를 기록하지 않는다. |
 

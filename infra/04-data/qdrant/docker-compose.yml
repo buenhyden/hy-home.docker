@@ -42,6 +42,10 @@ services:
 
       # 스냅샷 임시 파일은 tmpfs 사용
       QDRANT__STORAGE__TEMP_PATH: '/tmp'
+      # JWT RBAC: tokens signed with qdrant_api_key can be limited to one
+      # collection (the blog-data vault-notes read token). The API key and the
+      # read-only key keep working unchanged.
+      QDRANT__SERVICE__JWT_RBAC: 'true'
 
     volumes:
       - qdrant-data:/qdrant/storage:rw
@@ -83,4 +87,12 @@ services:
       traefik.http.routers.qdrant.entrypoints: websecure
       traefik.http.routers.qdrant.tls: 'true'
       traefik.http.routers.qdrant.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      # blog-data on server B only: Basic credentials, the vault-notes
+      # collection and its index and point paths; no snapshot, shard, cluster
+      # or other collection API. Qdrant still needs its api-key header (OPS-0034).
+      traefik.http.routers.qdrant-api.rule: Host(`qdrant.${DEFAULT_URL}`) && HeaderRegexp(`Authorization`, `^Basic `) && (Path(`/collections/vault-notes`) || Path(`/collections/vault-notes/index`) || Path(`/collections/vault-notes/points`) || Path(`/collections/vault-notes/points/scroll`) || Path(`/collections/vault-notes/points/query`) || Path(`/collections/vault-notes/points/delete`))
+      traefik.http.routers.qdrant-api.entrypoints: websecure
+      traefik.http.routers.qdrant-api.tls: 'true'
+      traefik.http.routers.qdrant-api.middlewares: blog-export-windows@file,gateway-standard-chain@file,qdrant-api-auth@file
+      traefik.http.routers.qdrant-api.service: qdrant
       traefik.http.services.qdrant.loadbalancer.server.port: ${QDRANT_PORT:-6333}
