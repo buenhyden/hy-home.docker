@@ -1,8 +1,8 @@
 ---
 title: "D04 v9 Airflow Business Path on 3.4.0 Task"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
@@ -115,6 +115,7 @@ cleaned up with PASS and retained nothing.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0121 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0121 | ready | in-progress | #work-performed |
+| SPEC-0212-TSK-0121 | in-progress | completed | #criterion-decisions |
 
 ##### Blockers and Decisions
 
@@ -144,6 +145,7 @@ stays inactive, so no mail is sent.
 | E11 | 178 | W194 | method=automated; tool=Python3.12.3; command=python3 -m unittest tests.validation.test_opsflow_airflow_contract tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_opsflow_provision_contract | Branch after the adapter change | PASS | 82 tests OK | required | - |
 | E10 | 178 | W194 | method=observation; tool=-; command=- | HOME business run on 3.4.0 with a new synthetic input | NOT_RUN | Needs the S3 admin upload (Blockers and Decisions) | required | - |
 | E12 | 178 | W194 | method=observation; tool=-; command=- | HOME business run on 3.4.0 with a new synthetic input (SPEC-0212 TSK-0128 E18, E19) | PASS | Run d12-si18-2026-11-28-r2 on 2026-11-28 published the 2026-11-28 input: a published ops_flow.runs row, a second document, outbox row 2 and the validated object; the notifier delivered it once to Mailpit | required | E10 |
+| E13 | 178 | W194 | method=observation; tool=docker, Python in airflow-worker; command=image env, PID 1 env name, LIBPQ_ENVIRONMENT guard with and without SSL_CERT_FILE, PgPublisher.publish with synthetic identifiers | HOME worker on `hy-home/airflow:3.4.0-keycloak`, 2026-11-28 | PASS | The image still sets SSL_CERT_FILE to the default store; the guard returns no override with or without it and still refuses a non-default SSL_CERT_FILE; PgPublisher.publish ran on this worker in run d12-si18-2026-11-28-r2 (E12), so no extra synthetic row was written | required | E02 |
 
 ##### Resolution Links
 
@@ -156,15 +158,11 @@ fixes; its live confirmation is E10.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 178 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E10,E11,E12 | Awaiting owner acceptance | @buenhyden |
+| 178 | accepted | E01,E02,E03,E04,E05,E06,E07,E08,E10,E11,E12,E13 | Owner @buenhyden accepted on 2026-11-28 in this chat after the HOME business run (E12) and the live guard recheck (E13) | @buenhyden |
 
 ##### Remaining Conditions
 
-- E10 is resolved by E12 (the TSK-0128 HOME run on 2026-11-28).
-- Resolved 2026-11-27 (SPEC-0212 TSK-0052): the rehearsal companions now pin
-  the HOME PostgreSQL 18.7, Valkey 9.1.4 and SeaweedFS 4.54, and the native
-  rehearsals pass 17/17 on them.
-- Timescale, OIDC and a HOME restore are NOT_RUN in the rehearsal scope.
+None. Timescale, OIDC and a HOME restore stay outside this rehearsal scope.
 
 #### Handoff
 
@@ -175,9 +173,8 @@ the current-attempt read.
 
 ##### Next Owner
 
-The owner runs E10 and decides criterion 178. D09 owns the companion image
-pins; D11 owns the leftover Connect and Schema Registry topics. No other
-prompt is started automatically.
+None; criterion178 is accepted and this Task is completed. D09 owns the
+companion image pins. No other prompt is started automatically.
 
 ## 적용과 확인
 
