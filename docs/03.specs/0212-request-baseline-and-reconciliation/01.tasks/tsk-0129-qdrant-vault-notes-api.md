@@ -1,6 +1,6 @@
 ---
 title: "blog-data Qdrant vault-notes Route Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -72,6 +72,7 @@ or printed. Direct user authorization is authority; this record is not.
 | Secrets | Root secret `traefik_qdrant_api_htpasswd`; catalog `INFRA-010` (derived), `AI-014` (`QDRANT_API_USERNAME`), `AI-015`; `gen-secrets.sh` derives `INFRA-010`; registry template rows added by the owner |
 | Docs | RUN-0034 Remote Program Access (owner password, htpasswd, JWT minting, OpenBao delivery, checks, rollback); GDE-0034, the Qdrant and Traefik READMEs, GDE-0013 and GDE-0079 tables |
 | Ledger | `ledger_rebind --write` re-bound the qdrant and traefik rows |
+| blog-data follow-up | blog-data reported the first index (859 notes, 7,221 points) and its consumer contract. The Ollama and Qdrant READMEs register blog-data (model, collection shape, payload text as personal data, not backed up, rate limit, `/points/query/groups` excluded, JWT without `exp`, change notice); the Qdrant start check now requires a 32-character `qdrant_api_key`, which signs the JWT tokens, effective at the next Qdrant start |
 | Runbook fix | The owner's first token run stopped at `heredoc>` because the indented list code block carried spaces before `PY`; the blocks are now top-level and unindented, step 1 adds the `.env` username, step 2 keeps an existing password and reports a missing username, and delivery follows the RUN-0110 SSH-to-file pattern because HOME OpenBao has no delivery path to server B |
 
 ##### Blockers and Decisions
@@ -98,6 +99,9 @@ needs the owner to create the collection and its index once.
 | E09 | 186 | W202 | method=observation; tool=stat, docker logs; command=qdrant_api_key size; qdrant startup warning | HOME, 2026-11-28 | FAIL | qdrant_api_key is 16 bytes and Qdrant warns it should be 32 bytes once it signs JWTs | required | - |
 | E10 | 186 | W202 | method=observation; tool=stat, docker logs; command=qdrant_api_key size; qdrant startup warning | HOME, 2026-11-28 15:41 KST after the owner rotated qdrant_api_key and recreated qdrant | PASS | stat of the key file was refused this time; Qdrant no longer logs the 32-byte warning and logs no error since the restart, so the key is 32 bytes or more; qdrant healthy, Prometheus up=1, route still 302, 403 and 302 from server A | required | E09 |
 | E11 | 186 | W202 | method=observation; tool=docker logs, Prometheus API; command=Traefik access log for qdrant-api and ollama-api over 60 minutes; collection_vectors{collection=vault-notes} | HOME, 2026-11-28 after the owner delivered the values to server B | PASS | From 192.168.0.22 only: 893 /api/embed, 859 point upserts, 766 point deletes, 2,291 scrolls, 28 queries and 5 collection reads answered 200; one 401, three 404 before the collection existed, one 429 and one 400 upsert; vault-notes holds 7,221 vectors. The read-only token write refusal is not yet observed | required | - |
+| E12 | 186 | W202 | method=observation; tool=docker exec; command=qdrant-api-auth block in the Traefik /dynamic/middleware.yml as loaded | HOME, 2026-11-28 | PASS | removeHeader: true is live | required | - |
+| E13 | 186 | W202 | method=automated; tool=Python3 venv; command=python -m unittest test_compose_baseline_gates.OllamaPortContractTests.test_blog_data_reaches_only_vault_notes_with_basic_from_server_b | 32-character assertion before the Compose change | FAIL | Compose still required 16 | required | - |
+| E14 | 186 | W202 | method=automated; tool=Python3 venv; command=python -m unittest test_compose_baseline_gates.OllamaPortContractTests.test_blog_data_reaches_only_vault_notes_with_basic_from_server_b | After the change | PASS | OK | required | E13 |
 | E06 | 186 | W202 | method=observation; tool=-; command=RUN-0034 step 4 checks from server B and server A | After owner provisioning | NOT_RUN | Owner provisioning pending | required | - |
 
 ##### Resolution Links
@@ -110,7 +114,7 @@ E02 resolves E01. E06 runs after the owner provisioning.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 186 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
+| 186 | pending | E01,E02,E03,E04,E05,E06,E07,E08,E09,E10,E11,E12,E13,E14 | Awaiting owner provisioning, the runtime checks and acceptance | @buenhyden |
 
 ##### Remaining Conditions
 

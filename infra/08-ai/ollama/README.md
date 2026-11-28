@@ -1,13 +1,13 @@
 ---
 title: "Ollama Inference Engine"
-version: "2.1.0"
+version: "2.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-28"
 created: "2025-11-12"
 ---
 
@@ -76,7 +76,7 @@ ollama/
 | --- | --- | --- | --- | --- |
 | Ollama API `127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` (`ai_net`, `ollama_ingress_net`, `n8n_ollama_net`) | `ollama` | 이 README는 소비자를 기록하지 않는다. | `/api/tags`, `/api/generate` 등 추론 API를 제공하며 `OLLAMA_NO_CLOUD=1`이다. | API 오류 시 `docker logs --tail=200 ollama`와 포트 바인딩을 확인한다. |
 | Traefik 라우터 `ollama` | `ollama` | 이 README는 소비자를 기록하지 않는다. | `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거친다. | Compose 헬스체크가 선언되어 있다. |
-| Traefik 라우터 `ollama-api` | `ollama` | 다른 host의 프로그램(OpenClaw 등) | `Authorization: Basic` header가 있는 추론·조회 경로만 `gateway-standard-chain`·`ollama-api-auth`로 받는다(POL-0056-R24). | 같은 서비스 헬스체크 |
+| Traefik 라우터 `ollama-api` | `ollama` | 다른 host의 프로그램: OpenClaw, 서버 B(`192.168.0.22`)의 blog-data 의미 검색 CLI(`/api/version`, `/api/tags`, 16개씩 묶은 `/api/embed`; `embeddinggemma-2:740m` 768차원, 전체 색인에 약 450회 뒤 하루 한 번 증분). embedding 모델을 바꾸면 blog-data에 미리 알린다(새 collection으로 다시 색인). | `Authorization: Basic` header가 있는 추론·조회 경로만 `gateway-standard-chain`·`ollama-api-auth`로 받는다(POL-0056-R24). | 같은 서비스 헬스체크 |
 | exporter 지표 `${OLLAMA_EXPORTER_PORT:-8000}` (`ai_net`, `obs_net`) | `ollama-exporter` | 이 README는 소비자를 기록하지 않는다. | 지표 수집 포트로 노출한다. | Compose 헬스체크가 선언되어 있다. |
 
 ###### Inputs and Outputs

@@ -1117,6 +1117,9 @@ class OllamaPortContractTests(unittest.TestCase):
         )
         self.assertEqual("qdrant", labels["traefik.http.routers.qdrant-api.service"])
         self.assertEqual("true", service["environment"]["QDRANT__SERVICE__JWT_RBAC"])
+        # JWT RBAC signs tokens with the API key; Qdrant asks for 32 bytes.
+        script = "\n".join(service["command"])
+        self.assertIn('"$${#QDRANT__SERVICE__API_KEY}" -ge 32', script)
         middleware = yaml.safe_load(
             (ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml").read_text()
         )["http"]["middlewares"]["qdrant-api-auth"]["basicAuth"]
