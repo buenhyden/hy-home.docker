@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "2.27.0"
+version: "2.28.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -418,7 +418,8 @@ follows; criterion181/W197 in TSK-0124 owns it. D10 of the v9 prompts
 follows; criterion182/W198 in TSK-0125 owns it. D11 of the v9 prompts
 follows; criterion183/W199 in TSK-0126 owns it. The Qdrant and Ollama
 embedding contract follows; criterion184/W200 in TSK-0127 owns it. D12 of the
-v9 prompts follows; criterion185/W201 in TSK-0128 owns it.
+v9 prompts follows; criterion185/W201 in TSK-0128 owns it. The blog-data
+Qdrant route follows; criterion186/W202 in TSK-0129 owns it.
 
 #### Scope
 
@@ -1724,6 +1725,11 @@ target, backup, recovery boundary, and action-specific authorization.
      population that had no independent restore evidence, the current
      OpenBao audit reopening and backup observations, and every step that
      stays NOT_RUN or blocked with its exact condition and owner.
+186. TSK-0129 gives blog-data on server B a Basic-auth, source-limited Qdrant
+     route that reaches only the `vault-notes` collection, its index and point
+     paths, turns on Qdrant JWT RBAC for a collection read token, wires the
+     generated htpasswd secret and catalog rows, and documents the owner
+     provisioning and checks; Ollama reuses the existing server-B account.
 
 ##### Evidence Requirements
 

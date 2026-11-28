@@ -1,13 +1,13 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:

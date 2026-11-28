@@ -1,13 +1,13 @@
 ---
 title: "Traefik Edge Router"
-version: "2.0.1"
+version: "2.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-28"
 created: "2025-11-12"
 ---
 

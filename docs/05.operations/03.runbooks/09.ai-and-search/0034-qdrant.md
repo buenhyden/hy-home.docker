@@ -1,13 +1,13 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-28"
 layer: "operations"
 artifact_id: "RUN-0034"
 parent_ids:

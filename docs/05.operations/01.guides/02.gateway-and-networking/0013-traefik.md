@@ -1,13 +1,13 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-26"
+updated: "2026-11-28"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
