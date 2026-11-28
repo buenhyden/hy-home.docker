@@ -1,13 +1,13 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-28"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -82,9 +82,9 @@ Steps의 첫 코드 블록에서 `config --quiet`는 렌더링만 검증하는 �
 | 2 | First activation: `gen-grpc-certs.sh`로 gRPC certificate 발급 | 기본 `secrets/certs/seaweedfs`에 발급되고 Compose mount 경로와 일치 | 불완전한 세트면 중단 |
 | 3 | First activation: data 디렉터리를 UID 1000으로 만든 뒤 `docker compose --profile seaweedfs up -d --wait` 실행 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 | 4 | First activation: admin identity로 disposable bucket 생성/삭제와 anonymous 요청 확인 | anonymous 보호 대상 요청이 403 반환 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
-| 5 | Restore: Restic snapshot과 `seaweedfs-filer.meta` export를 동일 version의 빈 target에 복원 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
-| 6 | Restore: 네 service를 시작하고 health 대기 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
-| 7 | Restore: `fs.meta.load`와 `volume.fsck` 실행 | 문서에 기록 없음 | Restic window 동안 변경된 객체는 누락될 수 있음(POL-0024), 실패 target과 증거를 보존하고 escalation |
+| 5 | Restore: Restic snapshot과 `seaweedfs-filer.meta` export를 동일 version의 빈 target에 복원 | `seaweedfs-isolated-restore.py`가 restore된 state tree의 volume 파일과 export를 새 0700 workdir로 복사하고 원본은 쓰지 않는다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Restore: 네 service를 시작하고 health 대기 | 같은 pin의 `weed server -filer -s3` container 하나가 `--network none`으로 올라와 volume 수만큼 volume을 싣고 filer와 S3가 응답한다(`ready_seconds`) | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | Restore: `fs.meta.load`와 `volume.fsck` 실행 | `meta_loaded=true`; `volume.fsck -findMissingChunksInFiler`의 bucket별 빠진 chunk는 제외 bucket(`loki-bucket`, `tempo-bucket`)에만 있고 `unparsed`가 비어 있다 | Restic window 동안 변경된 객체는 누락될 수 있음(POL-0024), 실패 target과 증거를 보존하고 escalation |
 | 8 | Restore: 복구 범위 bucket을 S3로 읽어 manifest와 count/byte 비교 | manifest와 count/byte 일치, 제외된 telemetry 이력은 별도 기록, Loki/Tempo 신규 수집 확인 | client 전환 전 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 
 repository root에서 실행한다.
@@ -166,16 +166,32 @@ Filer metadata가 복원되더라도 제외된 object 이력은 돌아오지 않
 ###### Restore (isolated first)
 <!-- core-payload-level:4 -->
 
-1. Restic snapshot의 `data/seaweedfs/{volume,master}`와
-   `seaweedfs-filer.meta` export(RUN-0021 step 6)를 동일한 version의 빈
-   target에 빈 `filer` 디렉터리와 함께 복원한다.
-2. 네 service를 시작하고 health를 기다린다.
-3. export를 `seaweedfs-master`로 복사하고 `hyhome-seaweedfs.sh shell`을 통해
-   `fs.meta.load`를 실행한 뒤 `volume.fsck`를 실행한다. backup의 Restic
-   window 동안 변경된 객체는 누락될 수 있다(POL-0024).
-4. client를 전환하기 전에 승인된 복구 범위에 포함된 bucket의 객체를 S3로 읽어
-   manifest와 count/byte를 비교한다. 제외된 telemetry 이력은 별도로 기록하고
-   Loki와 Tempo가 새 데이터를 수집하는지 확인한다.
+격리 복원은 owner가 실행하는 `scripts/operations/seaweedfs-isolated-restore.py`로만 한다.
+입력은 RUN-0021 8.3(R2) 또는 step 6(로컬)으로 빈 scratch에 복원한 state tree이며,
+`volumes/data/seaweedfs/volume`과 `exports/seaweedfs-filer.meta`가 있어야 한다.
+
+```bash
+python3 scripts/operations/seaweedfs-isolated-restore.py \
+  --state-dir "$SCR/state/src/state" \
+  --workdir ~/storage/backups/restore-scratch-d12/swfs-restore
+```
+
+script는 다음을 한다.
+
+1. volume 파일과 export를 실행 사용자로 새 0700 `--workdir`에 복사한다. 원본 state tree는 쓰지 않는다.
+   master 디렉터리와 filer store(`filerldb2`)는 비운 채 시작한다.
+2. Compose와 같은 pin의 image로 master·volume·filer·S3를 한 `weed server` container에서
+   실행 사용자, `--network none`, capability 없음, 4 GiB·2 CPU 제한으로 띄우고 volume 수만큼 실릴 때까지 기다린다.
+   HOME의 JWT·mTLS·S3 identity는 쓰지 않는다. network가 없으므로 노출 면이 없고, 보안 동작은 rehearsal(Service Checks)이 따로 확인한다.
+3. `fs.meta.load`로 export를 싣고 `volume.fsck -findMissingChunksInFiler`로 filer entry의 chunk가 volume에 있는지 본다.
+   backup이 volume을 빼는 `loki-bucket`·`tempo-bucket`의 빠진 chunk는 예상된 결과로 따로 센다(POL-0021).
+4. 나머지 bucket마다 S3로 목록을 받고 모든 객체를 한 번씩 읽어 객체 수·목록 byte·읽은 byte를 filer의 `fs.du`와 비교한다.
+5. 성공과 실패 모두 container를 지우고, `--keep`이 없으면 그 뒤 workdir도 지운다. 운영 container와 volume은 건드리지 않는다.
+
+출력은 JSON receipt다. `result=PASS`는 metadata를 실었고, 제외 bucket 밖에 빠진 chunk가 없으며,
+해석하지 못한 fsck 줄이 없고, 모든 bucket이 세 값에서 일치한다는 뜻이다. exit code는 0 PASS, 1 FAIL, 2 입력 거부다.
+FAIL이면 `--keep`으로 다시 실행해 workdir의 `fsck.log`·`meta-load.log`를 보존하고 escalation한다.
+client를 전환하는 실제 복구에서는 이 PASS 뒤에 Loki와 Tempo가 새 데이터를 수집하는지 따로 확인한다.
 
 ##### Stop Conditions
 
