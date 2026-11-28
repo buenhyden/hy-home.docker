@@ -1,13 +1,13 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-20"
+updated: "2026-11-28"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -213,6 +213,7 @@ The order between work units is the Dependencies column of the Work Breakdown ta
 | W81 | 23 | Implement adapter-independent delivery and reconciliation | W80 | TSK-0022 | Fake adapters prove bounded retry, response loss, strict durable receipt and request binding |
 | W82 | 23 | Prepare bounded generic transport; adopt exact Gateway fixtures and inactive n8n forwarding | W81 | TSK-0022 | Fixed PR620 dev contract/fixture and source review; actual conversion needs an authoritative article collection time; native operation is a separate lane; status in [TSK-0022](01.tasks/tsk-0022-hermes-blog-ingestion.md) |
 | W83 | 8, 23 | Document recovery/metrics/MCP, independently review and admit approved Native checks | W80-W82 | TSK-0022 | Source/synthetic and actual worker-to-Gateway evidence separated |
+| W84 | 24 | Add the `logrotate.service` result drop-in, the two host logrotate alerts and their promtool cases, and document the owner install in RUN-0105 | None | TSK-0023 | RED/GREEN drop-in and promtool tests, a real unit-file probe, document checks; HOME checks after the owner install |
 
 ###### P10 staged admission and acceptance ownership
 <!-- core-payload-level:4 -->

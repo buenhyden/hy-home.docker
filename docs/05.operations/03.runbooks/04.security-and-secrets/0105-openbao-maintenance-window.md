@@ -1,13 +1,13 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "1.0.7"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
 document_scope:
   subject: hy-home.docker
   layer: workspace
-updated: "2026-11-27"
+updated: "2026-11-28"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -496,6 +496,31 @@ owner가 `sudo install -D -o root -g root -m 0644` 로
 신호 전달만으로 등록·재개방을 완료했다고 보지 않으며, host 권한·등록·schedule 입력이
 준비되지 않으면 W0에서 중단합니다. W6는 실제 inode 변경과 후속 audit 성장·실패 알림을
 검증하고, 그 결과로 보존 개수·간격·용량 reserve를 조정합니다.
+
+###### Rotation Failure Alert
+<!-- core-payload-level:6 -->
+
+회전 실패는 [result drop-in](../../../../infra/03-security/openbao/config/systemd/logrotate-result.conf)이
+알린다. `logrotate.service`의 모든 실행 뒤 `ExecStopPost`가 결과를 node-exporter textfile
+`~/backups/metrics/hyhome_logrotate.prom`에 쓰고, `HostLogrotateFailed`(마지막 실행 실패, critical)와
+`HostLogrotateNotRunning`(3시간 넘게 기록 없음, warning)이 이를 본다. OpenBao audit postrotate의
+HUP가 실패하면 logrotate가 0이 아닌 값으로 끝나 실패로 기록된다. 이때 OpenBao는 `audit.json.1`에
+계속 쓰고 다음 일 단위 회전이 그 파일을 압축하므로, 경보를 받으면 그 전에 OpenBao가 새
+`audit.json`을 열었는지 확인한다.
+
+owner가 설치한다.
+
+```bash
+sudo install -D -o root -g root -m 0644 \
+  infra/03-security/openbao/config/systemd/logrotate-result.conf \
+  /etc/systemd/system/logrotate.service.d/result.conf
+sudo systemctl daemon-reload
+```
+
+다음 정시 실행 뒤 `hyhome_logrotate.prom`에 `hyhome_logrotate_last_run_success 1`이 있는지 보고,
+RUN-0045 절차로 Prometheus rule을 reload해 두 경보가 inactive인지 확인한다. drop-in보다 rule을
+먼저 reload하면 `HostLogrotateNotRunning`이 15분 뒤 울린다. 되돌리기는 drop-in을 지우고
+`sudo systemctl daemon-reload`다.
 
 ###### Monitoring CA Mount Rollout
 <!-- core-payload-level:6 -->
