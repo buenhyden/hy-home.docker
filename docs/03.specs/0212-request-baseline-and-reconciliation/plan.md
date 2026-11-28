@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "2.26.0"
+version: "2.27.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -468,6 +468,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W198 | 182 | Add the registered Lifecycle Events table to the Task template and the Task role design, move the SPEC-0212 Tasks whose criteria are all accepted to `completed` and the executing ones to `in-progress` with their event chains, refresh stale Next Owner text, and retarget the retired n8n Ollama overlay input of the connection model | W197 | TSK-0125 | RED/GREEN template and connection-model tests, document governance suite, metadata check-active and check-changed, corpus lifecycle, link alignment, Spec package load; normal hosted delivery |
 | W199 | 183 | Recheck every D11 cleanup candidate at runtime, remove the owner-approved superseded images, inner sandbox images, probe workflow and retired Kafka Connect topics by exact identifier, hand the empty anonymous volume list to the owner and keep data-bearing volumes | W198 | TSK-0126 | Consumer checks, exact-ID removal readback, service health, document checks; normal hosted delivery |
 | W200 | 184 | Add the model query and document prompts and `truncate: false` to the docs retrieval eval embedding call, and record the Qdrant and Ollama embedding contract and its consumer in the Qdrant guide, the Qdrant and AI READMEs and the MLflow runbook | W199 | TSK-0127 | RED/GREEN prompt test, live `/api/embed` smoke, document checks; normal hosted delivery |
+| W201 | 185 | Run one HOME Airflow to n8n business input, restore the HOME backup population without independent restore evidence into isolated targets, observe the OpenBao audit reopening and the latest backups, and record every remaining step with its condition | W200 | TSK-0128 | Live DAG run readback, R2 scratch restore, mng-pg 5a rehearsal, disposable Valkey and Grafana, offline SeaweedFS volume read, manifest and key-name comparison; normal hosted delivery |
 
 ###### Current D06 v8 sandbox boundary
 <!-- core-payload-level:4 -->
@@ -518,6 +519,11 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 <!-- core-payload-level:4 -->
 
 [TSK-0127](01.tasks/tsk-0127-qdrant-ollama-embedding.md) owns criterion184/W200.
+
+###### Current D12 v9 runtime and restore boundary
+<!-- core-payload-level:4 -->
+
+[TSK-0128](01.tasks/tsk-0128-d12-e2e-restore-v9.md) owns criterion185/W201.
 
 ###### Current D02 v8 route boundary
 <!-- core-payload-level:4 -->
