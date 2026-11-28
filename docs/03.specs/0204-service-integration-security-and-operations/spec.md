@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "2.3.0"
+version: "2.4.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -678,6 +678,10 @@ Missing permission or target defers only the dependent operation.
     `rotate 14` keeps about 14 days, the audit filesystem reports to
     node-exporter so its capacity alert can fire, and a rotated audit inode
     stops growing while the new one grows. TSK-0024 owns W85.
+26. The Stage 03 validator reads Criterion Acceptance as the SDLC states: a
+    current, non-cancelled Task holds a criterion's one decision, and a
+    cancelled Task's leftover decision row and open rows stay as history
+    without counting against that live decision. TSK-0025 owns W86.
 <!-- markdownlint-enable MD029 -->
 
 ##### Evidence Requirements

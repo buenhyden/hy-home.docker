@@ -2075,7 +2075,8 @@ def _v6_evidence_contract(
     decision_rows: dict[str, tuple[pathlib.PurePosixPath, tuple[str, ...]]] = {}
     gaps: dict[str, str] = {}
     current_tasks = tuple(task for task in tasks if task.path not in historical_tasks)
-    for task in tasks:
+    # Cancelled Tasks last, so a live decision row is registered before them.
+    for task in sorted(tasks, key=lambda task: task.status == "cancelled"):
         assigned_pairs = {
             pair
             for pair, assigned_tasks in assignments.items()
@@ -2160,7 +2161,8 @@ def _v6_evidence_contract(
                         failures.get(criterion, set()).discard(
                             f"{task.artifact_id}:{target}"
                         )
-            if (
+            # A cancelled Task's open rows stay as history (SDLC acceptance).
+            if task.status != "cancelled" and (
                 (result != "PASS" and required == "required")
                 if generation >= 7
                 else result == "FAIL"
@@ -2180,6 +2182,10 @@ def _v6_evidence_contract(
         live_pass.update(pair for pair in passed if _unit_is_live(task, pair[1]))
         for row in _criterion_acceptance_rows(task, task_registry):
             criterion, decision, evidence, rationale, *owner = row
+            # A current Task's row is the criterion's one decision (SDLC); a
+            # cancelled Task, read last, keeps its earlier row only as history.
+            if task.status == "cancelled" and criterion in acceptance:
+                continue
             if generation >= 7 and (not owner or owner[0] == "-"):
                 raise SpecPackageError("Criterion Acceptance requires a Current Owner")
             if criterion not in criteria:
